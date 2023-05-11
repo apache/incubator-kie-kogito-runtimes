@@ -22,12 +22,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.function.Predicate.not;
 
 abstract class BaseCloudEventValidator {
 
-    private static final Pattern RFCC2046 = Pattern.compile("^[a-zA-Z]+/[a-zA-Z]+(?:[+\\-.][a-zA-Z0-9]+){0,10}$");
+    private static final Pattern RFC2046 = Pattern.compile("^[a-zA-Z]+/[a-zA-Z]+(?:[+\\-.][a-zA-Z0-9]+){0,10}$");
 
     protected abstract String getRfc3339Attribute();
 
@@ -50,9 +51,10 @@ abstract class BaseCloudEventValidator {
         }
     }
 
-    private static void validateAttribute(Map<String, Object> cloudEvent, String attribute, Predicate<Object> validation, String message, Collection<String> errors) {
-        Object value = cloudEvent.get(attribute);
-        if (value != null && validation.test(value)) {
+    private static <T> void validateAttribute(Map<String, Object> cloudEvent, String attribute, Predicate<T> validation, String message, Collection<String> errors) {
+        @SuppressWarnings("unchecked")
+        T value = (T) cloudEvent.get(attribute);
+        if (value != null && !validation.test(value)) {
             errors.add(attribute + message);
         }
     }
@@ -67,7 +69,7 @@ abstract class BaseCloudEventValidator {
         validateAttribute(
                 cloudEvent,
                 getRfc3339Attribute(),
-                value -> !isRfc3339Value(value),
+                BaseCloudEventValidator::isRfc3339Value,
                 " MUST adhere to the format specified in RFC 3339 (https://datatracker.ietf.org/doc/html/rfc3339).",
                 errors);
     }
@@ -82,31 +84,27 @@ abstract class BaseCloudEventValidator {
         validateAttribute(
                 cloudEvent,
                 getRfc2046Attribute(),
-                value -> !isRfc2046Value((String) value),
+                BaseCloudEventValidator::isRfc2046Value,
                 " MUST adhere to the format specified in RFC 2046 (https://datatracker.ietf.org/doc/html/rfc2046).",
                 errors);
     }
 
-    private static boolean isRfc3339Value(Object value) {
-        if (value instanceof String) {
-            try {
-                DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse((String) value);
-                return true;
-            } catch (DateTimeParseException e) {
-                return false;
-            }
+    private static boolean isRfc3339Value(String value) {
+        try {
+            DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(value);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
         }
-
-        return false;
     }
 
     private static boolean isRfc2046Value(String value) {
-       return RFCC2046.matches(value).matches();
+        return RFC2046.matcher(value).matches();
     }
 
     private void validateNonEmptyAttributes(Map<String, Object> cloudEvent, List<String> errors) {
         for (String attribute : getNonEmptyAttributes()) {
-            validateAttribute(cloudEvent, attribute, ""::equals, " must be a non-empty String.", errors);
+            validateAttribute(cloudEvent, attribute, not(""::equals), " must be a non-empty String.", errors);
         }
     }
 

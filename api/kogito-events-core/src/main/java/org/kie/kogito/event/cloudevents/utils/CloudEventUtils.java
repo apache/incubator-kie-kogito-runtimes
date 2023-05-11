@@ -270,16 +270,8 @@ public final class CloudEventUtils {
 
     public static void validateCloudEvent(Map<String, Object> cloudEvent) throws InvalidCloudEventException {
         SpecVersion specVersion = SpecVersion.parse(String.valueOf(cloudEvent.get(CloudEventV1.SPECVERSION)));
-        switch (specVersion) {
-            case V1:
-                CloudEventValidatorV1.getInstance().validateCloudEvent(cloudEvent);
-                break;
-            case V03:
-                CloudEventValidatorV03.getInstance().validateCloudEvent(cloudEvent);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unsupported CloudEvents version: " + specVersion);
-        }
+        BaseCloudEventValidator validator = specVersion == SpecVersion.V1 ? CloudEventValidatorV1.getInstance() : CloudEventValidatorV03.getInstance();
+        validator.validateCloudEvent(cloudEvent);
     }
 
     public static List<String> getMissingAttributes(Map<String, Object> cloudEventInfo) {
