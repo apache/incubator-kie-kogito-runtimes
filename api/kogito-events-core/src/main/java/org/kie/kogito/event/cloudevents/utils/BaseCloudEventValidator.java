@@ -101,11 +101,7 @@ abstract class BaseCloudEventValidator {
     }
 
     private static boolean isRfc2046Value(String value) {
-        if (value != null) {
-            Matcher matcher = RFCC2046.matcher(value);
-            return matcher.matches();
-        }
-        return false;
+       return RFCC2046.matches(value).matches();
     }
 
     private void validateNonEmptyAttributes(Map<String, Object> cloudEvent, List<String> errors) {
