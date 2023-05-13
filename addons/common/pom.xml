@@ -16,6 +16,7 @@
 
   <!-- Please keep in alphabetical order -->
   <modules>
+    <module>dashboard</module>
     <module>marshallers</module>
     <module>messaging</module>
     <module>persistence</module>
