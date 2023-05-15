@@ -61,8 +61,9 @@ abstract class KnativeServiceRequestClient {
     }
 
     protected final JsonNode responseAsJsonObject(HttpResponse<Buffer> response) {
-
-        logger.debug("Response - status code: {}, body: {}", response.statusCode(), response.bodyAsString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Response - status code: {}, body: {}", response.statusCode(), response.bodyAsString());
+        }
 
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             throw new WorkItemExecutionException(Integer.toString(response.statusCode()), response.statusMessage());
