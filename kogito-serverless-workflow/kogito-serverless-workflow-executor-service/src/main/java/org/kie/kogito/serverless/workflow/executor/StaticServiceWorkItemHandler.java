@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.serverless.workflow.executor;
 
-import java.lang.reflect.Method;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,10 +24,9 @@ public class StaticServiceWorkItemHandler extends ServiceWorkItemHandler {
 
     @Override
     protected Object invoke(String className, String methodName, Object... parameters) throws ReflectiveOperationException {
-        Class<?> clazz = Class.forName(className);
         ClassLoader cls = Thread.currentThread().getContextClassLoader();
-        Method method = ReflectionUtils.getMethod(cls, clazz, methodName, Stream.of(parameters).map(Object::getClass).map(Class::getName).collect(Collectors.toList()));
-        return method.invoke(getInstance(clazz), parameters);
+        Class<?> clazz = cls.loadClass(className);
+        return ReflectionUtils.getMethod(cls, clazz, methodName, Stream.of(parameters).map(Object::getClass).map(Class::getName).collect(Collectors.toList())).invoke(getInstance(clazz), parameters);
     }
 
     protected Object getInstance(Class<?> clazz) throws ReflectiveOperationException {
