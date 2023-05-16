@@ -34,10 +34,10 @@ public class EnumDataType implements DataType {
         this.enumClass = Enum.class;
     }
 
-    @Deprecated
     /**
      * @deprecated use constructor that accepts enum class
      */
+    @Deprecated
     public EnumDataType(String className) {
         try {
             this.enumClass = Class.forName(className).asSubclass(Enum.class);
@@ -63,7 +63,7 @@ public class EnumDataType implements DataType {
 
     @Override
     public boolean verifyDataType(final Object value) {
-        return enumClass.isAssignableFrom(value.getClass());
+        return value == null || enumClass.isAssignableFrom(value.getClass());
     }
 
     @Override
