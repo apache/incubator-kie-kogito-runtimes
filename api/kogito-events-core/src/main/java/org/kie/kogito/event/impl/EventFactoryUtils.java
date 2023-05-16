@@ -29,50 +29,49 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EventFactoryUtils {
-	
-	private static final Logger logger = LoggerFactory.getLogger(EventFactoryUtils.class);
-	private static ServiceLoader<EventReceiverFactory> receivers = ServiceLoader.load(EventReceiverFactory.class);
-	private static ServiceLoader<EventEmitterFactory> emitters = ServiceLoader.load(EventEmitterFactory.class);
- 	
-	public static EventReceiver getEventReceiver (String trigger) {
-		return getInstance (trigger, receivers, () -> new EventReceiver() {
-			@Override
-			public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> dataClass) {
-				// default receiver does nothing
-			}
-		});
-	}
-		
-	private static <T extends AutoCloseable> void cleanUp (ServiceLoader<T> closeables) {
-		for (AutoCloseable closeable: closeables) {
-			try {
-				closeable.close();
-			} catch (Exception ex) {
-				logger.error("Error closing factory", ex);
-			}
-		}
-	}
-	
-	public static EventEmitter getEventEmitter (String trigger) {
-		return getInstance (trigger, emitters, () -> new EventEmitter() {
-			@Override
-			public CompletionStage<Void> emit(DataEvent<?> dataEvent) {
-				// default emitter does nothing
-				return CompletableFuture.completedStage(null);
-			}
-			
-		});
-	}
-	
-	private static <T, V extends Function<String,T>>  T getInstance (String trigger, ServiceLoader<V> service, Supplier<T> defaultValue) {
-		return service.stream().map(f -> f.get().apply(trigger)).filter(Objects::nonNull).findAny().orElseGet(defaultValue);
-	}
-	
-	public static void cleanUp () {
-		cleanUp(receivers);
-		cleanUp(emitters);
-	}
 
-	
-	private EventFactoryUtils() {}
+    private static final Logger logger = LoggerFactory.getLogger(EventFactoryUtils.class);
+    private static ServiceLoader<EventReceiverFactory> receivers = ServiceLoader.load(EventReceiverFactory.class);
+    private static ServiceLoader<EventEmitterFactory> emitters = ServiceLoader.load(EventEmitterFactory.class);
+    
+    public static EventReceiver getEventReceiver(String trigger) {
+        return getInstance(trigger, receivers, () -> new EventReceiver() {
+            @Override
+            public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> dataClass) {
+                // default receiver does nothing
+            }
+        });
+    }
+
+    private static <T extends AutoCloseable> void cleanUp(ServiceLoader<T> closeables) {
+        for (AutoCloseable closeable : closeables) {
+            try {
+                closeable.close();
+            } catch (Exception ex) {
+                logger.error("Error closing factory", ex);
+            }
+        }
+    }
+
+    public static EventEmitter getEventEmitter(String trigger) {
+        return getInstance(trigger, emitters, () -> new EventEmitter() {
+            @Override
+            public CompletionStage<Void> emit(DataEvent<?> dataEvent) {
+                // default emitter does nothing
+                return CompletableFuture.completedStage(null);
+            }
+        });
+    }
+
+    private static <T, V extends Function<String, T>> T getInstance(String trigger, ServiceLoader<V> service, Supplier<T> defaultValue) {
+        return service.stream().map(f -> f.get().apply(trigger)).filter(Objects::nonNull).findAny().orElseGet(defaultValue);
+    }
+
+    public static void cleanUp() {
+        cleanUp(receivers);
+        cleanUp(emitters);
+    }
+
+    private EventFactoryUtils() {
+    }
 }

@@ -24,16 +24,16 @@ import java.util.concurrent.CompletionStage;
  * @see EventMarshaller
  * @see CloudEventMarshaller
  */
-public interface EventEmitter extends AutoCloseable{
+public interface EventEmitter extends AutoCloseable {
     /**
      * Publish the data event object into an external event service.
      * 
      * @param dataEvent The DataEvent
      */
     CompletionStage<Void> emit(DataEvent<?> dataEvent);
-    
+
     @Override
-	default void close() {
-    	
+    default void close() {
+
     }
 }

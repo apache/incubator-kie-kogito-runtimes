@@ -18,7 +18,6 @@ package org.kie.kogito.serverless.workflow.actions;
 import java.util.function.Supplier;
 
 import org.jbpm.process.instance.impl.actions.ProduceEventAction;
-import org.kie.kogito.event.impl.AbstractMessageProducer;
 import org.kie.kogito.event.impl.MessageProducer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;

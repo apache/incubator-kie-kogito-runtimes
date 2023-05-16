@@ -19,5 +19,5 @@ import java.util.function.Function;
 
 import org.kie.kogito.event.EventEmitter;
 
-public interface EventEmitterFactory extends Function<String, EventEmitter>, AutoCloseable{
+public interface EventEmitterFactory extends Function<String, EventEmitter>, AutoCloseable {
 }

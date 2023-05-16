@@ -21,11 +21,11 @@ import org.kie.kogito.event.impl.EventFactoryUtils;
 
 public class StaticMessageProducer<D> extends AbstractMessageProducer<D> {
 
-	public StaticMessageProducer (String trigger) {
-		this (trigger, EventFactoryUtils.getEventEmitter(trigger));
-	}
-	
-	public StaticMessageProducer(String trigger, EventEmitter emitter) {
-		super(emitter, trigger);
-	}
+    public StaticMessageProducer(String trigger) {
+        this(trigger, EventFactoryUtils.getEventEmitter(trigger));
+    }
+
+    public StaticMessageProducer(String trigger, EventEmitter emitter) {
+        super(emitter, trigger);
+    }
 }

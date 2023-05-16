@@ -19,5 +19,5 @@ import java.util.function.Function;
 
 import org.kie.kogito.event.EventReceiver;
 
-public interface EventReceiverFactory extends Function<String, EventReceiver>, AutoCloseable{
+public interface EventReceiverFactory extends Function<String, EventReceiver>, AutoCloseable {
 }

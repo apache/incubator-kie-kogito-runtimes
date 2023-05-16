@@ -25,4 +25,3 @@ public interface StaticProcessRegister extends AutoCloseable {
     default void close() {
     }
 }
-

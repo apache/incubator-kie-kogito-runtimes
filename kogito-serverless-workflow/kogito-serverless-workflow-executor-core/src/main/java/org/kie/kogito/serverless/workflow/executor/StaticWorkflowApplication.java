@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.drools.model.functions.Operator.Register;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.kie.kogito.Addons;
@@ -63,13 +62,13 @@ import io.serverlessworkflow.api.Workflow;
  */
 public class StaticWorkflowApplication extends StaticApplication implements AutoCloseable {
 
-	private static final Logger logger = LoggerFactory.getLogger(StaticWorkflowApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(StaticWorkflowApplication.class);
     private final StaticWorkflowProcesses processes = new StaticWorkflowProcesses();
     private Collection<KogitoWorkItemHandler> handlers = new ArrayList<>();
     private Iterable<StaticApplicationRegister> applicationRegisters;
     private Iterable<StaticWorkflowRegister> workflowRegisters;
     private Iterable<StaticProcessRegister> processRegisters;
-    private Collection<AutoCloseable> closeables;
+    private Collection<AutoCloseable> closeables = new ArrayList<>();
 
     public static StaticWorkflowApplication create() {
         StaticWorkflowApplication application = new StaticWorkflowApplication();
@@ -159,9 +158,9 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     public void registerHandler(KogitoWorkItemHandler handler) {
         handlers.add(handler);
     }
-    
-    public void registerCloseable (AutoCloseable closeable) {
-    	closeables.add(closeable);
+
+    public void registerCloseable(AutoCloseable closeable) {
+        closeables.add(closeable);
     }
 
     private Process<JsonNodeModel> createProcess(Workflow workflow) {
@@ -203,15 +202,15 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
 
     @Override
     public void close() {
-    	processRegisters.forEach(StaticProcessRegister::close);
+        processRegisters.forEach(StaticProcessRegister::close);
         workflowRegisters.forEach(StaticWorkflowRegister::close);
         applicationRegisters.forEach(StaticApplicationRegister::close);
         closeables.forEach(t -> {
-			try {
-				t.close();
-			} catch (Exception e) {
-				logger.warn("Error closing resource", e);
-			}
-		});
+            try {
+                t.close();
+            } catch (Exception e) {
+                logger.warn("Error closing resource", e);
+            }
+        });
     }
 }
