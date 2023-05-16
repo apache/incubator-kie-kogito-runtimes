@@ -20,6 +20,7 @@ import org.jbpm.compiler.canonical.AbstractNodeVisitor;
 import org.jbpm.compiler.canonical.ExpressionSupplier;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.jbpm.process.core.event.StaticMessageProducer;
 import org.jbpm.process.instance.impl.Action;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
@@ -27,6 +28,7 @@ import org.kie.kogito.serverless.workflow.actions.SWFProduceEventAction;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -35,12 +37,14 @@ import io.serverlessworkflow.api.Workflow;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 
-public class ProduceEventActionSupplier implements ExpressionSupplier, Action {
+public class ProduceEventActionSupplier extends SWFProduceEventAction implements ExpressionSupplier {
 
-    private final String exprLang;
+    private static final long serialVersionUID = 1L;
+	private final String exprLang;
     private final String data;
 
-    public ProduceEventActionSupplier(Workflow workflow, String data) {
+    public ProduceEventActionSupplier(Workflow workflow, String trigger, String varName, String data) {
+    	super(trigger, varName , () -> new StaticMessageProducer<JsonNode>(trigger), workflow.getExpressionLang(), data);
         this.exprLang = workflow.getExpressionLang();
         this.data = ExpressionHandlerUtils.replaceExpr(workflow, data);
     }
@@ -51,10 +55,4 @@ public class ProduceEventActionSupplier implements ExpressionSupplier, Action {
                 .addArgument(new StringLiteralExpr(exprLang))
                 .addArgument(data != null ? new StringLiteralExpr().setString(data) : new NullLiteralExpr());
     }
-
-    @Override
-    public void execute(KogitoProcessContext context) throws Exception {
-        LoggerFactory.getLogger(ProduceEventActionSupplier.class).warn("Code generation step is needed for event production");
-    }
-
 }

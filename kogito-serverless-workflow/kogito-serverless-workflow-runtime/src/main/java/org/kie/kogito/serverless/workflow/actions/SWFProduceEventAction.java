@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 
 import org.jbpm.process.instance.impl.actions.ProduceEventAction;
 import org.kie.kogito.event.impl.AbstractMessageProducer;
+import org.kie.kogito.event.impl.MessageProducer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
@@ -34,7 +35,7 @@ public class SWFProduceEventAction extends ProduceEventAction<JsonNode> {
     private Expression expr;
     private JsonNode value;
 
-    public SWFProduceEventAction(String triggerName, String varName, Supplier<AbstractMessageProducer<JsonNode>> supplier, String exprLang, String data) {
+    public SWFProduceEventAction(String triggerName, String varName, Supplier<MessageProducer<JsonNode>> supplier, String exprLang, String data) {
         super(triggerName, varName, supplier);
         if (data != null) {
             this.expr = ExpressionHandlerFactory.get(exprLang, data);

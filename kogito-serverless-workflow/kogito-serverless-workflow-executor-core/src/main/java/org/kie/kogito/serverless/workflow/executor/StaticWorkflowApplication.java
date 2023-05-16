@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.drools.model.functions.Operator.Register;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.kie.kogito.Addons;
@@ -37,6 +38,8 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.StaticProcessConfig;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -60,10 +63,13 @@ import io.serverlessworkflow.api.Workflow;
  */
 public class StaticWorkflowApplication extends StaticApplication implements AutoCloseable {
 
+	private static final Logger logger = LoggerFactory.getLogger(StaticWorkflowApplication.class);
     private final StaticWorkflowProcesses processes = new StaticWorkflowProcesses();
     private Collection<KogitoWorkItemHandler> handlers = new ArrayList<>();
     private Iterable<StaticApplicationRegister> applicationRegisters;
     private Iterable<StaticWorkflowRegister> workflowRegisters;
+    private Iterable<StaticProcessRegister> processRegisters;
+    private Collection<AutoCloseable> closeables;
 
     public static StaticWorkflowApplication create() {
         StaticWorkflowApplication application = new StaticWorkflowApplication();
@@ -75,6 +81,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
         super(new StaticConfig(new Addons(Collections.emptySet()), new StaticProcessConfig()));
         applicationRegisters = ServiceLoader.load(StaticApplicationRegister.class);
         workflowRegisters = ServiceLoader.load(StaticWorkflowRegister.class);
+        processRegisters = ServiceLoader.load(StaticProcessRegister.class);
     }
 
     /**
@@ -152,11 +159,16 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     public void registerHandler(KogitoWorkItemHandler handler) {
         handlers.add(handler);
     }
+    
+    public void registerCloseable (AutoCloseable closeable) {
+    	closeables.add(closeable);
+    }
 
     private Process<JsonNodeModel> createProcess(Workflow workflow) {
-        workflowRegisters.forEach(register -> register.register(this, workflow));
+        workflowRegisters.forEach(r -> r.register(this, workflow));
         StaticWorkflowProcess process = new StaticWorkflowProcess(this, handlers, ServerlessWorkflowParser
                 .of(workflow, JavaKogitoBuildContext.builder().withApplicationProperties(System.getProperties()).build()).getProcessInfo().info());
+        processRegisters.forEach(r -> r.register(this, workflow, process));
         WorkflowProcessImpl workflowProcess = (WorkflowProcessImpl) process.get();
         workflowProcess.getNodesRecursively().forEach(node -> {
             if (node instanceof SubProcessNode) {
@@ -191,7 +203,15 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
 
     @Override
     public void close() {
+    	processRegisters.forEach(StaticProcessRegister::close);
         workflowRegisters.forEach(StaticWorkflowRegister::close);
         applicationRegisters.forEach(StaticApplicationRegister::close);
+        closeables.forEach(t -> {
+			try {
+				t.close();
+			} catch (Exception e) {
+				logger.warn("Error closing resource", e);
+			}
+		});
     }
 }
