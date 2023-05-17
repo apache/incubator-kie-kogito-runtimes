@@ -18,6 +18,7 @@ package org.kie.kogito.event;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.event.cloudevents.SpecVersionDeserializer;
@@ -143,9 +145,23 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     protected String kogitoProcessType;
 
+    private static final Set<String> INTERNAL_EXTENSION_ATTRIBUTES = Arrays.stream(new String[] {
+            CloudEventExtensionConstants.PROCESS_INSTANCE_ID,
+            CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_INSTANCE_ID,
+            CloudEventExtensionConstants.PROCESS_ID,
+            CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID,
+            CloudEventExtensionConstants.ADDONS,
+            CloudEventExtensionConstants.PROCESS_INSTANCE_VERSION,
+            CloudEventExtensionConstants.PROCESS_PARENT_PROCESS_INSTANCE_ID,
+            CloudEventExtensionConstants.PROCESS_INSTANCE_STATE,
+            CloudEventExtensionConstants.PROCESS_REFERENCE_ID,
+            CloudEventExtensionConstants.PROCESS_START_FROM_NODE,
+            CloudEventExtensionConstants.BUSINESS_KEY,
+            CloudEventExtensionConstants.PROCESS_TYPE }).collect(Collectors.toSet());
+
     private Map<String, Object> extensionAttributes = new HashMap<>();
 
-    public AbstractDataEvent() {
+    protected AbstractDataEvent() {
     }
 
     protected AbstractDataEvent(String type,
@@ -309,10 +325,19 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         return extensionAttributes.keySet();
     }
 
+    /**
+     * This method is for internal use and jackson marshalling purposes, should not be used.
+     */
     @JsonAnyGetter
-    @JsonIgnore
-    public Map<String, Object> getExtensionAttributes() {
-        return extensionAttributes;
+    private Map<String, Object> getExtensionAttributes() {
+        return extensionAttributes.entrySet()
+                .stream()
+                .filter(entry -> !isInternalAttribute(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    protected boolean isInternalAttribute(String name) {
+        return INTERNAL_EXTENSION_ATTRIBUTES.contains(name);
     }
 
     public void setSpecVersion(SpecVersion specVersion) {

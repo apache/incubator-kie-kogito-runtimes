@@ -15,7 +15,10 @@
  */
 package org.kie.kogito.event.process;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.kie.kogito.event.AbstractDataEvent;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
@@ -32,6 +35,10 @@ public class UserTaskInstanceDataEvent extends AbstractDataEvent<UserTaskInstanc
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE)
     private String kogitoUserTaskinstanceState;
+
+    private static final Set<String> INTERNAL_EXTENSION_ATTRIBUTES = Arrays.stream(new String[] {
+            CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_ID,
+            CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE }).collect(Collectors.toSet());
 
     public UserTaskInstanceDataEvent() {
     }
@@ -58,6 +65,14 @@ public class UserTaskInstanceDataEvent extends AbstractDataEvent<UserTaskInstanc
         return kogitoUserTaskinstanceState;
     }
 
+    public void setKogitoUserTaskinstanceId(String kogitoUserTaskinstanceId) {
+        addExtensionAttribute(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_ID, kogitoUserTaskinstanceId);
+    }
+
+    public void setKogitoUserTaskinstanceState(String kogitoUserTaskinstanceState) {
+        addExtensionAttribute(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE, kogitoUserTaskinstanceState);
+    }
+
     @Override
     @JsonAnySetter
     public void addExtensionAttribute(String name, Object value) {
@@ -68,8 +83,14 @@ public class UserTaskInstanceDataEvent extends AbstractDataEvent<UserTaskInstanc
                     break;
                 case CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_ID:
                     this.kogitoUserTaskinstanceId = (String) value;
+                    break;
             }
             super.addExtensionAttribute(name, value);
         }
+    }
+
+    @Override
+    protected boolean isInternalAttribute(String name) {
+        return INTERNAL_EXTENSION_ATTRIBUTES.contains(name) || super.isInternalAttribute(name);
     }
 }
