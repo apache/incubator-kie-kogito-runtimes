@@ -44,9 +44,14 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
 
     protected final S state;
     protected final Collection<FunctionBuilder> functionDefinitions = new ArrayList<>();
+    protected final Collection<EventBuilder> eventDefinitions = new ArrayList<>();
 
     Collection<FunctionBuilder> getFunctions() {
         return functionDefinitions;
+    }
+
+    Collection<EventBuilder> getEvents() {
+        return eventDefinitions;
     }
 
     protected StateBuilder(S state) {

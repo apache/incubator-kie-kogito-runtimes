@@ -38,6 +38,6 @@ public interface EventReceiver extends AutoCloseable {
     <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> dataClass);
 
     @Override
-    default void close() {
+    default void close() throws Exception {
     }
 }

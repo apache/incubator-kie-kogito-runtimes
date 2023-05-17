@@ -15,13 +15,13 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class SystemPropertiesConfigResolver implements ConfigResolver {
 
     @Override
     public <T> Optional<T> getConfigProperty(String name, Class<T> clazz) {
-
         Object value = null;
         if (Integer.class.isAssignableFrom(clazz)) {
             value = Integer.getInteger(name);
@@ -34,6 +34,11 @@ public class SystemPropertiesConfigResolver implements ConfigResolver {
     @Override
     public Iterable getPropertyNames() {
         return System.getProperties().keySet();
+    }
+
+    @Override
+    public Map asMap() {
+        return System.getProperties();
     }
 
 }

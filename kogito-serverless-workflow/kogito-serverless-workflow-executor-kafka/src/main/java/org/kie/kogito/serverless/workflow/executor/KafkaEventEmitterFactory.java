@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventEmitterFactory;
 import org.kie.kogito.serverless.workflow.utils.ConfigResolver;
@@ -29,8 +30,8 @@ public class KafkaEventEmitterFactory implements EventEmitterFactory {
     private static final String MAPPING_PREFIX = "kogito.addon.messaging.outgoing.trigger.";
     private Map<String, String> trigger2Topic = new HashMap<>();
     private Map<String, EventEmitter> emitters = new HashMap<>();
-    // TODO? support different serializer/deserializer
-    private KafkaProducer producer = new KafkaProducer(KafkaPropertiesFactory.get().getKafkaConfig());
+    // TODO? support different per chanel serializer/deserializer
+    private Producer producer;
 
     public KafkaEventEmitterFactory() {
         ConfigResolver config = ConfigResolverHolder.getConfigResolver();
@@ -47,11 +48,22 @@ public class KafkaEventEmitterFactory implements EventEmitterFactory {
     }
 
     private EventEmitter createEmitter(String trigger) {
+        synchronized (this) {
+            if (producer == null) {
+                producer = createKafkaProducer();
+            }
+        }
         return new KafkaEventEmitter(producer, trigger);
     }
 
     @Override
-    public void close() throws Exception {
-        producer.close();
+    public void close() {
+        if (producer != null) {
+            producer.close();
+        }
+    }
+
+    protected Producer createKafkaProducer() {
+        return new KafkaProducer(KafkaPropertiesFactory.get().getKafkaPublishConfig());
     }
 }

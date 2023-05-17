@@ -15,10 +15,13 @@
  */
 package org.kie.kogito.serverless.workflow.executor;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,6 +40,8 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.StaticProcessConfig;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
+import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
+import org.kie.kogito.serverless.workflow.utils.MultiSourceConfigResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,13 +76,28 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     private Collection<AutoCloseable> closeables = new ArrayList<>();
 
     public static StaticWorkflowApplication create() {
-        StaticWorkflowApplication application = new StaticWorkflowApplication();
+        Properties properties = new Properties();
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties")) {
+            if (is != null) {
+                properties.load(is);
+            }
+        } catch (IOException io) {
+            logger.warn("Error loading application.properties from classpath", io);
+        }
+        return create((Map) properties);
+    }
+
+    public static StaticWorkflowApplication create(Map<String, Object> properties) {
+        StaticWorkflowApplication application = new StaticWorkflowApplication(properties);
         application.applicationRegisters.forEach(register -> register.register(application));
         return application;
     }
 
-    private StaticWorkflowApplication() {
+    private StaticWorkflowApplication(Map<String, Object> properties) {
         super(new StaticConfig(new Addons(Collections.emptySet()), new StaticProcessConfig()));
+        if (!properties.isEmpty()) {
+            ConfigResolverHolder.setConfigResolver(MultiSourceConfigResolver.withSystemProperties(properties));
+        }
         applicationRegisters = ServiceLoader.load(StaticApplicationRegister.class);
         workflowRegisters = ServiceLoader.load(StaticWorkflowRegister.class);
         processRegisters = ServiceLoader.load(StaticProcessRegister.class);

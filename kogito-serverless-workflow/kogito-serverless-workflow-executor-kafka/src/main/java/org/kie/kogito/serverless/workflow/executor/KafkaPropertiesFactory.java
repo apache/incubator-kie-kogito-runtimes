@@ -15,9 +15,14 @@
  */
 package org.kie.kogito.serverless.workflow.executor;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
+
+import io.cloudevents.kafka.CloudEventSerializer;
 
 public class KafkaPropertiesFactory {
 
@@ -27,8 +32,18 @@ public class KafkaPropertiesFactory {
         return INSTANCE;
     }
 
-    public Map<String, Object> getKafkaConfig() {
-        return ConfigResolverHolder.getConfigResolver().asMap();
+    private void initCommonProperties(Map<String, Object> map) {
+        map.putIfAbsent(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     }
 
+    public Map<String, Object> getKafkaPublishConfig() {
+        Map<String, Object> map = new HashMap<>(ConfigResolverHolder.getConfigResolver().asMap());
+        initCommonProperties(map);
+        map.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, CloudEventSerializer.class);
+        map.putIfAbsent(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
+        return map;
+    }
+
+    private KafkaPropertiesFactory() {
+    }
 }

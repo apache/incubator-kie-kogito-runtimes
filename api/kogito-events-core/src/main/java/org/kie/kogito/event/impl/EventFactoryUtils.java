@@ -17,6 +17,7 @@ package org.kie.kogito.event.impl;
 
 import java.util.Objects;
 import java.util.ServiceLoader;
+import java.util.ServiceLoader.Provider;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -66,7 +67,7 @@ public class EventFactoryUtils {
     }
 
     private static <T, V extends Function<String, T>> T getInstance(String trigger, ServiceLoader<V> service, Supplier<T> defaultValue) {
-        return service.stream().map(f -> f.get().apply(trigger)).filter(Objects::nonNull).findAny().orElseGet(defaultValue);
+        return service.stream().map(Provider::get).sorted().map(s -> s.apply(trigger)).filter(Objects::nonNull).findFirst().orElseGet(defaultValue);
     }
 
     public static void cleanUp() {

@@ -17,5 +17,18 @@ package org.kie.kogito.event;
 
 import java.util.function.Function;
 
-public interface EventEmitterFactory extends Function<String, EventEmitter>, AutoCloseable {
+public interface EventEmitterFactory extends Function<String, EventEmitter>, AutoCloseable, Comparable<EventEmitterFactory> {
+
+    default int ordinal() {
+        return 100;
+    }
+
+    @Override
+    default int compareTo(EventEmitterFactory o) {
+        return ordinal() - o.ordinal();
+    }
+
+    @Override
+    default void close() throws Exception {
+    }
 }

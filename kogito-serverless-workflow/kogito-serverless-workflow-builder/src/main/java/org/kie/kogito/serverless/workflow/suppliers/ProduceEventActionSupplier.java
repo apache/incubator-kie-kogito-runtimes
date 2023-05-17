@@ -37,13 +37,9 @@ import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 public class ProduceEventActionSupplier extends SWFProduceEventAction implements ExpressionSupplier {
 
     private static final long serialVersionUID = 1L;
-    private final String exprLang;
-    private final String data;
 
     public ProduceEventActionSupplier(Workflow workflow, String trigger, String varName, String data) {
-        super(trigger, varName, () -> new StaticMessageProducer<JsonNode>(trigger), workflow.getExpressionLang(), data);
-        this.exprLang = workflow.getExpressionLang();
-        this.data = ExpressionHandlerUtils.replaceExpr(workflow, data);
+        super(trigger, varName, () -> new StaticMessageProducer<JsonNode>(trigger), workflow.getExpressionLang(), ExpressionHandlerUtils.replaceExpr(workflow, data));
     }
 
     @Override

@@ -15,16 +15,20 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 public class MapConfigResolver implements ConfigResolver {
 
-    private Map<String, Object> map;
+    private final Map<String, Object> map;
 
     public MapConfigResolver(Map<String, Object> map) {
         this.map = map;
+    }
+
+    public MapConfigResolver(Properties props) {
+        this((Map) props);
     }
 
     @Override
@@ -39,6 +43,6 @@ public class MapConfigResolver implements ConfigResolver {
 
     @Override
     public Map<String, Object> asMap() {
-        return Collections.unmodifiableMap(map);
+        return map;
     }
 }

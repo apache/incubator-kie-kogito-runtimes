@@ -33,7 +33,6 @@ public interface EventEmitter extends AutoCloseable {
     CompletionStage<Void> emit(DataEvent<?> dataEvent);
 
     @Override
-    default void close() {
-
+    default void close() throws Exception {
     }
 }
