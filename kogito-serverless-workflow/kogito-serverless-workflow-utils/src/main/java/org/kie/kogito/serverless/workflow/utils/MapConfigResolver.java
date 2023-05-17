@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2023 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,30 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-public interface ConfigResolver {
+public class MapConfigResolver implements ConfigResolver {
 
-    <T> Optional<T> getConfigProperty(String name, Class<T> clazz);
+    private Map<String, Object> map;
 
-    Iterable<String> getPropertyNames();
+    public MapConfigResolver(Map<String, Object> map) {
+        this.map = map;
+    }
 
-    default Map<String, Object> asMap() {
-        Map<String, Object> map = new HashMap<>();
-        for (String name : getPropertyNames()) {
-            map.put(name, getConfigProperty(name, Object.class).orElseThrow());
-        }
-        return map;
+    @Override
+    public <T> Optional<T> getConfigProperty(String name, Class<T> clazz) {
+        return Optional.ofNullable(clazz.cast(map.get(name)));
+    }
+
+    @Override
+    public Iterable<String> getPropertyNames() {
+        return map.keySet();
+    }
+
+    @Override
+    public Map<String, Object> asMap() {
+        return Collections.unmodifiableMap(map);
     }
 }

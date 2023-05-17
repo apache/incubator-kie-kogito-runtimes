@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event.impl;
+package org.kie.kogito.event;
 
 import java.util.function.Function;
-
-import org.kie.kogito.event.EventEmitter;
 
 public interface EventEmitterFactory extends Function<String, EventEmitter>, AutoCloseable {
 }

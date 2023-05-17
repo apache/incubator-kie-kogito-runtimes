@@ -13,11 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event.impl;
+package org.kie.kogito.serverless.workflow.executor;
 
-import java.util.function.Function;
+import java.util.Map;
 
-import org.kie.kogito.event.EventReceiver;
+import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
 
-public interface EventReceiverFactory extends Function<String, EventReceiver>, AutoCloseable {
+public class KafkaPropertiesFactory {
+
+    private static KafkaPropertiesFactory INSTANCE = new KafkaPropertiesFactory();
+
+    public static KafkaPropertiesFactory get() {
+        return INSTANCE;
+    }
+
+    public Map<String, Object> getKafkaConfig() {
+        return ConfigResolverHolder.getConfigResolver().asMap();
+    }
+
 }

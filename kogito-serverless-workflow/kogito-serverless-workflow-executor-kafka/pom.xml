@@ -9,14 +9,18 @@
     <version>2.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>kogito-serverless-workflow-executor-events</artifactId>
-  <name>Kogito :: Serverless Workflow :: Executor:: Events</name>
-  <description>Classes for event support of a workflow without code generation</description>
+  <artifactId>kogito-serverless-workflow-executor-kafka</artifactId>
+  <name>Kogito :: Serverless Workflow :: Executor:: Kafka event implementation</name>
+  <description>Classes for kafka event support of a workflow without code generation</description>
 
   <dependencies>
     <dependency>
        <groupId>org.kie.kogito</groupId>
        <artifactId>kogito-serverless-workflow-executor-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>

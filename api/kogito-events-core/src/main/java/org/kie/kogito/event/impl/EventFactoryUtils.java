@@ -24,7 +24,9 @@ import java.util.function.Supplier;
 
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
+import org.kie.kogito.event.EventEmitterFactory;
 import org.kie.kogito.event.EventReceiver;
+import org.kie.kogito.event.EventReceiverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,7 @@ public class EventFactoryUtils {
     private static final Logger logger = LoggerFactory.getLogger(EventFactoryUtils.class);
     private static ServiceLoader<EventReceiverFactory> receivers = ServiceLoader.load(EventReceiverFactory.class);
     private static ServiceLoader<EventEmitterFactory> emitters = ServiceLoader.load(EventEmitterFactory.class);
-    
+
     public static EventReceiver getEventReceiver(String trigger) {
         return getInstance(trigger, receivers, () -> new EventReceiver() {
             @Override
