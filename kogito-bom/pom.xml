@@ -319,12 +319,7 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-addons-quarkus-fabric8-kubernetes-service-catalog-deployment</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-addons-quarkus-fabric8-kubernetes-service-catalog-deployment</artifactId>
-            <version>${project.version}</version>
-            <classifier>sources</classifier>
+            <type>pom</type>
         </dependency>
 
         <dependency>
@@ -343,12 +338,7 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-addons-quarkus-kubernetes-service-catalog-deployment</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-addons-quarkus-kubernetes-service-catalog-deployment</artifactId>
-            <version>${project.version}</version>
-            <classifier>sources</classifier>
+            <type>pom</type>
         </dependency>
 
         <dependency>
