@@ -21,7 +21,6 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-kubernetes-client</artifactId>
         </dependency>
-        <!-- this dependency will be made optional: https://issues.redhat.com/browse/KOGITO-7901 -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-openshift-client</artifactId>
