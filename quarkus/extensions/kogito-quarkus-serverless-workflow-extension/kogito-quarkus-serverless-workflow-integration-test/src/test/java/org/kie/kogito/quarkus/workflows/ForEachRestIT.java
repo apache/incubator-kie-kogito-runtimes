@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
@@ -32,17 +34,9 @@ import static org.hamcrest.CoreMatchers.nullValue;
 @QuarkusIntegrationTest
 class ForEachRestIT {
 
-    @Test
-    void testForEachRpc() {
-        testForEachWorkItem("/forEachCustomType");
-    }
-
-    @Test
-    void testForEachRest() {
-        testForEachWorkItem("/forEachRest");
-    }
-
-    private void testForEachWorkItem(String id) {
+    @ParameterizedTest
+    @ValueSource(strings = { "/forEachCustomType", "/forEachRest" })
+    void testForEachWorkItem(String id) {
         given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)

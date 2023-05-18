@@ -16,7 +16,6 @@
 
 package org.kie.kogito.quarkus.workflows;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -45,9 +44,7 @@ public class DivisionMockService implements QuarkusTestResourceLifecycleManager 
             stubFor(dividend, divisor);
         }
         server.start();
-        Map<String, String> result = new HashMap<>();
-        result.put(DIVISION_SERVICE_MOCK_PORT, Integer.toString(server.port()));
-        return result;
+        return Map.of(DIVISION_SERVICE_MOCK_PORT, Integer.toString(server.port()));
     }
 
     private void stubFor(int dividend, int divisor) {
