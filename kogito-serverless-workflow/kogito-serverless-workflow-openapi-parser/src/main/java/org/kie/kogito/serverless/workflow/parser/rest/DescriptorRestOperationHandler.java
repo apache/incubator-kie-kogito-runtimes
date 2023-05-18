@@ -28,6 +28,7 @@ import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.handlers.openapi.OpenAPIDescriptor;
 import org.kie.kogito.serverless.workflow.parser.handlers.openapi.OpenAPIDescriptorFactory;
 import org.kie.kogito.serverless.workflow.parser.types.OpenAPITypeHandler;
+import org.kie.kogito.serverless.workflow.rest.JsonRestWorkItemHandlerResult;
 import org.kie.kogito.serverless.workflow.suppliers.ApiKeyAuthDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.BasicAuthDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.BearerTokenAuthDecoratorSupplier;
@@ -95,7 +96,8 @@ public class DescriptorRestOperationHandler extends OpenAPITypeHandler {
                                         new MethodCallExpr(ConversionUtils.class.getCanonicalName() + ".concatPaths")
                                                 .addArgument(new NameExpr("calculatedKey")).addArgument(new StringLiteralExpr(openAPIDescriptor.getPath()))))))
                 .workParameter(RestWorkItemHandler.METHOD, openAPIDescriptor.getMethod())
-                .workParameter(RestWorkItemHandler.PARAMS_DECORATOR, new CollectionParamsDecoratorSupplier(openAPIDescriptor.getHeaderParams(), openAPIDescriptor.getQueryParams()));
+                .workParameter(RestWorkItemHandler.PARAMS_DECORATOR, new CollectionParamsDecoratorSupplier(openAPIDescriptor.getHeaderParams(), openAPIDescriptor.getQueryParams()))
+                .workParameter(RestWorkItemHandler.BODY_BUILDER, new JsonRestWorkItemHandlerResult());
 
     }
 
