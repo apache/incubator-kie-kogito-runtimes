@@ -18,7 +18,6 @@ package org.kie.kogito.serverless.workflow.parser.types;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
-import org.kie.kogito.serverless.workflow.suppliers.JsonRestWorkItemHandlerResultSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.auth.ApiKeyAuthDecorator;
@@ -67,7 +66,6 @@ public class RestTypeHandler extends WorkItemTypeHandler {
                 .workParameter(RestWorkItemHandler.PORT, runtimeRestApi(functionDef, PORT, context.getContext(), Integer.class,
                         context.getContext().getApplicationProperty(APP_PROPERTIES_FUNCTIONS_BASE + PORT).map(Integer::parseInt).orElse(RestWorkItemHandler.DEFAULT_PORT)))
                 .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
-                .workParameter(RestWorkItemHandler.RESULT_HANDLER, new JsonRestWorkItemHandlerResultSupplier())
                 .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeRestApi(functionDef, ACCESS_TOKEN, context.getContext()))
                 .workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeRestApi(functionDef, API_KEY_PREFIX, context.getContext()))
                 .workParameter(ApiKeyAuthDecorator.KEY, runtimeRestApi(functionDef, API_KEY, context.getContext())));
