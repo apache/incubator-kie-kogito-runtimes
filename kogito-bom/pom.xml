@@ -304,38 +304,62 @@
       </dependency>
 
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-fabric8-kubernetes-service-catalog</artifactId>
-        <version>${project.version}</version>
+          <groupId>org.kie.kogito</groupId>
+          <artifactId>kogito-addons-quarkus-fabric8-kubernetes-service-catalog</artifactId>
+          <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-fabric8-kubernetes-service-catalog</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-fabric8-kubernetes-service-catalog</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
 
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-kubernetes-service-catalog</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-kubernetes-service-catalog</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-fabric8-kubernetes-service-catalog-deployment</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-fabric8-kubernetes-service-catalog-deployment</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
 
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-common-deployment</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-common-deployment</artifactId>
-        <version>${project.version}</version>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-kubernetes-service-catalog</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-kubernetes-service-catalog</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-kubernetes-service-catalog-deployment</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-kubernetes-service-catalog-deployment</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-common-deployment</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-common-deployment</artifactId>
+            <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
 
