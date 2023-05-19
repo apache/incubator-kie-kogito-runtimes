@@ -1,0 +1,61 @@
+/*
+ * Copyright 2023 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
+
+import java.util.Optional;
+
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
+import org.kogito.workitem.rest.RestWorkItemHandler;
+import org.kogito.workitem.rest.RestWorkItemHandlerUtils;
+
+import io.vertx.ext.web.client.WebClientOptions;
+import io.vertx.mutiny.core.Vertx;
+import io.vertx.mutiny.ext.web.client.WebClient;
+
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.REQUEST_TIMEOUT_PROPERTY_NAME;
+
+public final class KnativeWorkItemHandlerProducer {
+
+    @Inject
+    Vertx vertx;
+
+    @Inject
+    KubernetesServiceCatalog kubernetesServiceCatalog;
+
+    @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME)
+    Optional<Long> requestTimeoutInMillis;
+
+    @Produces
+    KnativeWorkItemHandler createKnativeWorkItemHandler() {
+        return new KnativeWorkItemHandler(createRestWorkItemHandler(), kubernetesServiceCatalog, requestTimeoutInMillis.orElse(null));
+    }
+
+    private RestWorkItemHandler createRestWorkItemHandler() {
+        return new RestWorkItemHandler(getHttpClient(vertx), getHttpsClient());
+    }
+
+    private WebClient getHttpsClient() {
+        return WebClient.create(vertx, RestWorkItemHandlerUtils.sslWebClientOptions());
+    }
+
+    private static WebClient getHttpClient(Vertx vertx) {
+        return WebClient.create(vertx, new WebClientOptions());
+    }
+}
