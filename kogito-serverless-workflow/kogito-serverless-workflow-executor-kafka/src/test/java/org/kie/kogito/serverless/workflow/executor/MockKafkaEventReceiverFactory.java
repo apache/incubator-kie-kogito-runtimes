@@ -15,22 +15,15 @@
  */
 package org.kie.kogito.serverless.workflow.executor;
 
-import org.apache.kafka.clients.producer.MockProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.common.header.internals.RecordHeaders;
-import org.apache.kafka.common.serialization.ByteArraySerializer;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.MockConsumer;
+import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 
 import io.cloudevents.CloudEvent;
-import io.cloudevents.kafka.CloudEventSerializer;
 
-public class MockKafkaEventEmitterFactory extends KafkaEventEmitterFactory {
+public class MockKafkaEventReceiverFactory extends KafkaEventReceiverFactory {
 
-    public static MockProducer<byte[], CloudEvent> producer = new MockProducer<>(true, new ByteArraySerializer(), new CloudEventSerializer() {
-        @Override
-        public byte[] serialize(String topic, CloudEvent data) {
-            return super.serialize(topic, new RecordHeaders(), data);
-        }
-    });
+    public static MockConsumer<byte[], CloudEvent> consumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
 
     @Override
     public int ordinal() {
@@ -38,7 +31,7 @@ public class MockKafkaEventEmitterFactory extends KafkaEventEmitterFactory {
     }
 
     @Override
-    protected Producer<byte[], CloudEvent> createKafkaProducer() {
-        return producer;
+    protected Consumer<byte[], CloudEvent> createKafkaConsumer() {
+        return consumer;
     }
 }

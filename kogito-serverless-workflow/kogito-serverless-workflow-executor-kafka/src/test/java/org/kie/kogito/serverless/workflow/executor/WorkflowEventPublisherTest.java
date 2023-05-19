@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.serverless.workflow.executor;
 
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.DataEventFactory;
@@ -43,13 +42,11 @@ public class WorkflowEventPublisherTest {
             assertThat(MockKafkaEventEmitterFactory.producer.history()).isEmpty();
             application.execute(workflow, expected);
             assertThat(MockKafkaEventEmitterFactory.producer.history()).hasSize(1);
-            Object value = ((ProducerRecord) MockKafkaEventEmitterFactory.producer.history().get(0)).value();
-            assertThat(value).isInstanceOf(CloudEvent.class);
-            CloudEvent cloudEvent = (CloudEvent) value;
+            CloudEvent cloudEvent = MockKafkaEventEmitterFactory.producer.history().get(0).value();
             assertThat(cloudEvent.getData()).isInstanceOf(JsonCloudEventData.class);
-            DataEvent dataEvent = DataEventFactory.from(cloudEvent, data -> ((JsonCloudEventData) data).getNode());
+            DataEvent<JsonNode> dataEvent = DataEventFactory.from(cloudEvent, data -> ((JsonCloudEventData) data).getNode());
             assertThat(dataEvent.getData()).isInstanceOf(JsonNode.class);
-            JsonNode jsonNode = (JsonNode) dataEvent.getData();
+            JsonNode jsonNode = dataEvent.getData();
             assertThat(jsonNode).isEqualTo(expected);
         }
     }

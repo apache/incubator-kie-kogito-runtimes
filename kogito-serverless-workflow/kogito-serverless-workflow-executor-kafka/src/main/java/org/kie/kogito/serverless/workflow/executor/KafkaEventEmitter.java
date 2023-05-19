@@ -25,22 +25,22 @@ import org.kie.kogito.event.EventEmitter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import io.cloudevents.CloudEvent;
 import io.cloudevents.jackson.JsonCloudEventData;
 
 public class KafkaEventEmitter implements EventEmitter {
 
-    private final Producer kafkaProducer;
+    private final Producer<byte[], CloudEvent> kafkaProducer;
     private final String topic;
 
-    public KafkaEventEmitter(Producer kafkaProducer, String topic) {
+    public KafkaEventEmitter(Producer<byte[], CloudEvent> kafkaProducer, String topic) {
         this.kafkaProducer = kafkaProducer;
         this.topic = topic;
     }
 
     @Override
     public CompletionStage<Void> emit(DataEvent<?> dataEvent) {
-        // rely on kafka serializer/deserializer
-        kafkaProducer.send(new ProducerRecord(topic, dataEvent.asCloudEvent(o -> JsonCloudEventData.wrap((JsonNode) o))));
+        kafkaProducer.send(new ProducerRecord<>(topic, dataEvent.asCloudEvent(o -> JsonCloudEventData.wrap((JsonNode) o))));
         return CompletableFuture.completedStage(null);
     }
 

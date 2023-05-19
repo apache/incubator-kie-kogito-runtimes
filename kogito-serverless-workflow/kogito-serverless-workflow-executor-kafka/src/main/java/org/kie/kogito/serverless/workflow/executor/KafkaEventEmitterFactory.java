@@ -15,44 +15,33 @@
  */
 package org.kie.kogito.serverless.workflow.executor;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventEmitterFactory;
-import org.kie.kogito.serverless.workflow.utils.ConfigResolver;
-import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
+
+import io.cloudevents.CloudEvent;
 
 public class KafkaEventEmitterFactory implements EventEmitterFactory {
 
-    private static final String MAPPING_PREFIX = "kogito.addon.messaging.outgoing.trigger.";
-    private Map<String, String> trigger2Topic = new HashMap<>();
-    private Map<String, EventEmitter> emitters = new HashMap<>();
-    // TODO? support different per chanel serializer/deserializer
-    private Producer producer;
-
-    public KafkaEventEmitterFactory() {
-        ConfigResolver config = ConfigResolverHolder.getConfigResolver();
-        for (String name : config.getPropertyNames()) {
-            if (name.startsWith(MAPPING_PREFIX)) {
-                trigger2Topic.put(name.substring(MAPPING_PREFIX.length()), config.getConfigProperty(name, String.class).orElseThrow());
-            }
-        }
-    }
+    private Map<String, String> trigger2Topic = KafkaPropertiesFactory.get().triggerToTopicMap("kogito.addon.messaging.incoming.trigger.");
+    private Map<String, EventEmitter> emitters = new ConcurrentHashMap<>();
+    private Producer<byte[], CloudEvent> producer;
 
     @Override
     public EventEmitter apply(String trigger) {
-        return emitters.computeIfAbsent(trigger2Topic.getOrDefault(trigger, trigger), this::createEmitter);
-    }
-
-    private EventEmitter createEmitter(String trigger) {
         synchronized (this) {
             if (producer == null) {
                 producer = createKafkaProducer();
             }
         }
+        return emitters.computeIfAbsent(trigger2Topic.getOrDefault(trigger, trigger), this::createEmitter);
+    }
+
+    private EventEmitter createEmitter(String trigger) {
         return new KafkaEventEmitter(producer, trigger);
     }
 
@@ -63,7 +52,7 @@ public class KafkaEventEmitterFactory implements EventEmitterFactory {
         }
     }
 
-    protected Producer createKafkaProducer() {
-        return new KafkaProducer(KafkaPropertiesFactory.get().getKafkaPublishConfig());
+    protected Producer<byte[], CloudEvent> createKafkaProducer() {
+        return new KafkaProducer<>(KafkaPropertiesFactory.get().getKafkaProducerConfig());
     }
 }

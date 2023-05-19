@@ -38,6 +38,10 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
         return new ParallelStateBuilder();
     }
 
+    public static CallbackStateBuilder callback(ActionBuilder action, EventBuilder event) {
+        return new CallbackStateBuilder(event, action);
+    }
+
     public static ForEachStateBuilder forEach(String inputExpr) {
         return new ForEachStateBuilder(inputExpr);
     }

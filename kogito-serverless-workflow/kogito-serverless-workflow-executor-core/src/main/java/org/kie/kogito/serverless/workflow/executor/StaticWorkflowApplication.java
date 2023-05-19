@@ -17,13 +17,17 @@ package org.kie.kogito.serverless.workflow.executor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.core.node.SubProcessNode;
@@ -33,6 +37,7 @@ import org.kie.kogito.Model;
 import org.kie.kogito.StaticApplication;
 import org.kie.kogito.StaticConfig;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
+import org.kie.kogito.config.StaticConfigBean;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -74,6 +79,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     private Iterable<StaticWorkflowRegister> workflowRegisters;
     private Iterable<StaticProcessRegister> processRegisters;
     private Collection<AutoCloseable> closeables = new ArrayList<>();
+    private Map<String, ProcessInstance<JsonNodeModel>> processInstances = new HashMap<>();
 
     public static StaticWorkflowApplication create() {
         Properties properties = new Properties();
@@ -94,7 +100,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     }
 
     private StaticWorkflowApplication(Map<String, Object> properties) {
-        super(new StaticConfig(new Addons(Collections.emptySet()), new StaticProcessConfig()));
+        super(new StaticConfig(new Addons(Collections.emptySet()), new StaticProcessConfig(), new StaticConfigBean()));
         if (!properties.isEmpty()) {
             ConfigResolverHolder.setConfigResolver(MultiSourceConfigResolver.withSystemProperties(properties));
         }
@@ -161,6 +167,9 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     public JsonNodeModel execute(Process<JsonNodeModel> process, JsonNodeModel model) {
         ProcessInstance<JsonNodeModel> processInstance = process.createInstance(model);
         processInstance.start();
+        if (!isFinish(processInstance)) {
+            processInstances.put(processInstance.id(), processInstance);
+        }
         return processInstance.variables();
     }
 
@@ -181,6 +190,41 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
 
     public void registerCloseable(AutoCloseable closeable) {
         closeables.add(closeable);
+    }
+
+    public Optional<JsonNodeModel> variables(String id) {
+        return Optional.ofNullable(processInstances.get(id)).map(ProcessInstance::variables);
+    }
+
+    public Optional<JsonNodeModel> waitForFinish(String id, Duration duration) throws InterruptedException, TimeoutException {
+        return waitForFinish(id, duration, Duration.ofMillis(750));
+    }
+
+    public Optional<JsonNodeModel> waitForFinish(String id, Duration duration, Duration pollInterval) throws InterruptedException, TimeoutException {
+        if (duration.compareTo(pollInterval) < 0) {
+            throw new IllegalArgumentException("Duration " + duration + " is lower than poll interval " + pollInterval);
+        }
+        ProcessInstance<JsonNodeModel> pi = processInstances.get(id);
+        if (pi == null) {
+            return Optional.empty();
+        }
+        Duration time = Duration.ZERO;
+        while (!isFinish(pi)) {
+            Thread.sleep(pollInterval.toMillis());
+            time = time.plus(pollInterval);
+            if (time.compareTo(duration) > 0) {
+                throw new TimeoutException("Elapsed time " + time + " Max time " + duration);
+            }
+        }
+        if (isFinish(pi)) {
+            processInstances.remove(id);
+        }
+        return Optional.of(pi.variables());
+    }
+
+    private boolean isFinish(ProcessInstance<JsonNodeModel> pi) {
+        int status = pi.status();
+        return status == ProcessInstance.STATE_COMPLETED || status == ProcessInstance.STATE_ERROR || status == ProcessInstance.STATE_ABORTED;
     }
 
     private Process<JsonNodeModel> createProcess(Workflow workflow) {
