@@ -39,7 +39,7 @@ final class IngressUtils {
      * @param kubeURI
      * @return the found exposed ingress route
      */
-    static Optional<URI> queryIngressByName(KubernetesClient client, VanillaKubernetesResourceUri kubeURI) {
+    static Optional<URI> queryIngressByName(KubernetesClient client, KubernetesResourceUri kubeURI) {
         Ingress ingress = client
                 .network()
                 .v1().ingresses()

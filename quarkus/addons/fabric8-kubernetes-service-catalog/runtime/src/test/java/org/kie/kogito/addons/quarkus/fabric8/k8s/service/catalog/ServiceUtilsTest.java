@@ -35,7 +35,7 @@ public class ServiceUtilsTest {
     @Test
     public void testExternalNameServiceKind() {
         String externalName = "kourier-internal.kourier-system.svc.cluster.local";
-        var kubeURI = VanillaKubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -51,7 +51,7 @@ public class ServiceUtilsTest {
 
     @Test
     public void testClusterIPServiceKind() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -67,7 +67,7 @@ public class ServiceUtilsTest {
 
     @Test
     public void testClusterIPServiceKindWithSSL() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -84,7 +84,7 @@ public class ServiceUtilsTest {
 
     @Test
     public void testClusterIPServiceKindWithWebNamedPort() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -101,7 +101,7 @@ public class ServiceUtilsTest {
 
     @Test
     public void testClusterIPServiceKindWithAleatoryNamePort() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -117,7 +117,7 @@ public class ServiceUtilsTest {
 
     @Test
     public void testNodePortServiceKind() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -133,7 +133,7 @@ public class ServiceUtilsTest {
 
     @Test
     public void testClusterIPServiceKindWithCustomPortName() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli?port-name=my-custom-port");
+        var kubeURI = KubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli?port-name=my-custom-port");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -151,7 +151,7 @@ public class ServiceUtilsTest {
 
     @Test
     public void testLoadBalancerServiceKind() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KubernetesResourceUri.parse("services.v1/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()

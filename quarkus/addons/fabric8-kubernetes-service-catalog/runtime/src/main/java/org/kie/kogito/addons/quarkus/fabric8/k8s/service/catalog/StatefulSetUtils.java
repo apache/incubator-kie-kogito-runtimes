@@ -40,7 +40,7 @@ class StatefulSetUtils {
      * @param kubeURI
      * @return the valid endpoint for the given StatefulSet
      */
-    static Optional<URI> queryStatefulSetByName(KubernetesClient client, VanillaKubernetesResourceUri kubeURI) {
+    static Optional<URI> queryStatefulSetByName(KubernetesClient client, KubernetesResourceUri kubeURI) {
 
         StatefulSet statefulSet = client.apps().statefulSets()
                 .inNamespace(kubeURI.getNamespace())

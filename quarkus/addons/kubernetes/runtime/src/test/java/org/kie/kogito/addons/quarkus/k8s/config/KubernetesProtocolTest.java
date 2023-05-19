@@ -24,9 +24,9 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class KubernetesProtocolTest {
 
     @Test
-    void parseVanillaKubernetes() {
+    void parseKubernetes() {
         assertThat(KubernetesProtocol.from("kubernetes"))
-                .isEqualTo(KubernetesProtocol.VANILLA_KUBERNETES);
+                .isEqualTo(KubernetesProtocol.KUBERNETES);
     }
 
     @Test

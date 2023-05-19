@@ -49,7 +49,7 @@ public class DeploymentUtilsTest {
     KubernetesServer mockServer;
 
     @Inject
-    VanillaKubernetesResourceDiscovery discovery;
+    KubernetesResourceDiscovery discovery;
 
     private final String namespace = "serverless-workflow-greeting-quarkus";
 
@@ -60,12 +60,12 @@ public class DeploymentUtilsTest {
         deployment.getMetadata().setName("test");
         mockServer.getClient().resource(deployment).inNamespace(namespace).createOrReplace();
         assertEquals(Optional.empty(),
-                discovery.query(VanillaKubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/invalid")));
+                discovery.query(KubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/invalid")));
     }
 
     @Test
     public void testDeploymentWithService() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/example-deployment-with-service");
+        var kubeURI = KubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/example-deployment-with-service");
 
         Deployment deployment = mockServer.getClient().apps().deployments().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("deployment/deployment.yaml")).get();
@@ -81,7 +81,7 @@ public class DeploymentUtilsTest {
 
     @Test
     public void testDeploymentWithServiceWithCustomPortName() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/custom-port-deployment?port-name=my-custom-port");
+        var kubeURI = KubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/custom-port-deployment?port-name=my-custom-port");
 
         Deployment deployment = mockServer.getClient().apps().deployments().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("deployment/deployment.yaml")).get();
@@ -105,7 +105,7 @@ public class DeploymentUtilsTest {
 
     @Test
     public void testDeploymentNoService() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/example-deployment-no-service");
+        var kubeURI = KubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/example-deployment-no-service");
 
         Deployment deployment = mockServer.getClient().apps().deployments().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("deployment/deployment-no-service.yaml")).get();
@@ -128,7 +128,7 @@ public class DeploymentUtilsTest {
 
     @Test
     public void testDeploymentNoService2Replicas() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/example-deployment-no-service-2-replicas");
+        var kubeURI = KubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/example-deployment-no-service-2-replicas");
 
         Deployment deployment = mockServer.getClient().apps().deployments().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("deployment/deployment-no-service.yaml")).get();
@@ -154,7 +154,7 @@ public class DeploymentUtilsTest {
 
     @Test
     public void testDeploymentNoServiceCustomPortName() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/custom-port-deployment-1?port-name=my-custom-port");
+        var kubeURI = KubernetesResourceUri.parse("deployments.v1.apps/" + namespace + "/custom-port-deployment-1?port-name=my-custom-port");
 
         Deployment deployment = mockServer.getClient().apps().deployments().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("deployment/deployment-no-service.yaml")).get();

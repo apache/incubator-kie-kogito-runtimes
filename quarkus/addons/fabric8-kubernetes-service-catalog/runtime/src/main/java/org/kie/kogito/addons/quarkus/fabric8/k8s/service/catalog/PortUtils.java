@@ -38,7 +38,7 @@ final class PortUtils {
      * @param containerPorts {@link List<ContainerPort>}
      * @return port filtered {@link ContainerPort}
      */
-    static ContainerPort findContainerPort(List<ContainerPort> containerPorts, VanillaKubernetesResourceUri kubeURI) {
+    static ContainerPort findContainerPort(List<ContainerPort> containerPorts, KubernetesResourceUri kubeURI) {
         Optional<ContainerPort> containerPort = containerPortHasCustomPort(containerPorts, kubeURI)
                 .or(() -> containerPortHasSSLPort(containerPorts))
                 .or(() -> containerPortHasDefaultNamedPort(containerPorts));
@@ -62,7 +62,7 @@ final class PortUtils {
      * @param servicePorts {@link List<ServicePort>}
      * @return port filtered {@link ServicePort}
      */
-    static ServicePort findServicePort(List<ServicePort> servicePorts, VanillaKubernetesResourceUri kubeURI) {
+    static ServicePort findServicePort(List<ServicePort> servicePorts, KubernetesResourceUri kubeURI) {
         Optional<ServicePort> servicePort = servicePortHasCustomPort(servicePorts, kubeURI)
                 .or(() -> servicePortHasSSLPort(servicePorts))
                 .or(() -> servicePortHasDefaultNamedPort(servicePorts));
@@ -92,10 +92,10 @@ final class PortUtils {
      * Search if there is the KubeURI custom port parameter set, if so, returns the named ContainerPort.
      * 
      * @param containerPorts {@link List<ContainerPort>}
-     * @param kubeURI {@link VanillaKubernetesResourceUri}
+     * @param kubeURI {@link KubernetesResourceUri}
      * @return port {@link Optional<ContainerPort>}, if no port is found return Optional.empty()
      */
-    private static Optional<ContainerPort> containerPortHasCustomPort(List<ContainerPort> containerPorts, VanillaKubernetesResourceUri kubeURI) {
+    private static Optional<ContainerPort> containerPortHasCustomPort(List<ContainerPort> containerPorts, KubernetesResourceUri kubeURI) {
         if (kubeURI.getCustomPortName() != null) {
             Optional<ContainerPort> sp = containerPorts.stream().filter(p -> p.getName() != null && p.getName().equals(kubeURI.getCustomPortName())).findFirst();
             if (sp.isPresent()) {
@@ -113,10 +113,10 @@ final class PortUtils {
      * Search if there is the KubeURI custom port parameter set, if so, returns the name Service Port.
      *
      * @param servicePorts {@link List<ServicePort>}
-     * @param kubeURI {@link VanillaKubernetesResourceUri}
+     * @param kubeURI {@link KubernetesResourceUri}
      * @return port {@link Optional<ServicePort>}, if no port is found return Optional.empty()
      */
-    private static Optional<ServicePort> servicePortHasCustomPort(List<ServicePort> servicePorts, VanillaKubernetesResourceUri kubeURI) {
+    private static Optional<ServicePort> servicePortHasCustomPort(List<ServicePort> servicePorts, KubernetesResourceUri kubeURI) {
         if (kubeURI.getCustomPortName() != null) {
             Optional<ServicePort> sp = servicePorts.stream().filter(p -> p.getName() != null && p.getName().equals(kubeURI.getCustomPortName())).findFirst();
             if (sp.isPresent()) {

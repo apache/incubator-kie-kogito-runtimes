@@ -43,7 +43,7 @@ public class PodUtilsTest {
     KubernetesServer mockServer;
 
     @Inject
-    VanillaKubernetesResourceDiscovery discovery;
+    KubernetesResourceDiscovery discovery;
 
     private final String namespace = "serverless-workflow-greeting-quarkus";
 
@@ -54,12 +54,12 @@ public class PodUtilsTest {
         pod.getMetadata().setName("test-pod");
         mockServer.getClient().resource(pod).inNamespace(namespace).createOrReplace();
         assertEquals(Optional.empty(),
-                discovery.query(VanillaKubernetesResourceUri.parse("pods.v1/" + namespace + "/hello")));
+                discovery.query(KubernetesResourceUri.parse("pods.v1/" + namespace + "/hello")));
     }
 
     @Test
     public void testPodWithNoService() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("pods.v1/" + namespace + "/process-quarkus-example-pod-no-service");
+        var kubeURI = KubernetesResourceUri.parse("pods.v1/" + namespace + "/process-quarkus-example-pod-no-service");
 
         Pod pod = mockServer.getClient().pods().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("pod/pod-no-service.yaml")).get();
@@ -71,7 +71,7 @@ public class PodUtilsTest {
 
     @Test
     public void testPodWithNoServiceCustomPortName() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("pods.v1/" + namespace + "/pod-no-service-custom-port?port-name=my-custom-port");
+        var kubeURI = KubernetesResourceUri.parse("pods.v1/" + namespace + "/pod-no-service-custom-port?port-name=my-custom-port");
 
         Pod pod = mockServer.getClient().pods().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("pod/pod-no-service-custom-port-name.yaml")).get();
@@ -83,7 +83,7 @@ public class PodUtilsTest {
 
     @Test
     public void testPodWithService() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("pods.v1/" + namespace + "/test-pod-with-service");
+        var kubeURI = KubernetesResourceUri.parse("pods.v1/" + namespace + "/test-pod-with-service");
 
         Pod pod = mockServer.getClient().pods().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("pod/pod-no-service.yaml")).get();
@@ -101,7 +101,7 @@ public class PodUtilsTest {
 
     @Test
     public void testPodWithServiceWithCustomLabel() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("pods.v1/" + namespace + "/test-pod-with-service-custom-label?labels=label-name=test-label;other-label=other-value");
+        var kubeURI = KubernetesResourceUri.parse("pods.v1/" + namespace + "/test-pod-with-service-custom-label?labels=label-name=test-label;other-label=other-value");
 
         Pod pod = mockServer.getClient().pods().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("pod/pod-no-service.yaml")).get();

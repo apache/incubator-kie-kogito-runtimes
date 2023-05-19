@@ -34,15 +34,15 @@ final class Fabric8KubernetesServiceCatalog implements KubernetesServiceCatalog 
 
     private final KnativeServiceDiscovery knativeServiceDiscovery;
 
-    private final VanillaKubernetesResourceDiscovery vanillaKubernetesResourceDiscovery;
+    private final KubernetesResourceDiscovery kubernetesResourceDiscovery;
 
     private final OpenShiftResourceDiscovery openShiftResourceDiscovery;
 
     @Inject
-    Fabric8KubernetesServiceCatalog(KnativeServiceDiscovery knativeServiceDiscovery, VanillaKubernetesResourceDiscovery vanillaKubernetesResourceDiscovery,
+    Fabric8KubernetesServiceCatalog(KnativeServiceDiscovery knativeServiceDiscovery, KubernetesResourceDiscovery kubernetesResourceDiscovery,
             OpenShiftResourceDiscovery openShiftResourceDiscovery) {
         this.knativeServiceDiscovery = knativeServiceDiscovery;
-        this.vanillaKubernetesResourceDiscovery = vanillaKubernetesResourceDiscovery;
+        this.kubernetesResourceDiscovery = kubernetesResourceDiscovery;
         this.openShiftResourceDiscovery = openShiftResourceDiscovery;
     }
 
@@ -57,16 +57,16 @@ final class Fabric8KubernetesServiceCatalog implements KubernetesServiceCatalog 
                 if (splitCoordinates.length == 1) {
                     function = coordinates -> knativeServiceDiscovery.query(new KnativeServiceUri(null, coordinates));
                 } else if (GVK.isValid(splitCoordinates[0])) {
-                    function = coordinates -> vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse(coordinates));
+                    function = coordinates -> kubernetesResourceDiscovery.query(KubernetesResourceUri.parse(coordinates));
                 } else {
                     function = coordinates -> knativeServiceDiscovery.query(new KnativeServiceUri(splitCoordinates[0], splitCoordinates[1]));
                 }
                 break;
             case OPENSHIFT:
-                function = coordinates -> openShiftResourceDiscovery.query(VanillaKubernetesResourceUri.parse(coordinates));
+                function = coordinates -> openShiftResourceDiscovery.query(KubernetesResourceUri.parse(coordinates));
                 break;
-            case VANILLA_KUBERNETES:
-                function = coordinates -> vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse(coordinates));
+            case KUBERNETES:
+                function = coordinates -> kubernetesResourceDiscovery.query(KubernetesResourceUri.parse(coordinates));
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported protocol: " + key.getProtocol());

@@ -43,7 +43,7 @@ final class ServiceUtils {
      * @param kubeURI
      * @return Optional.of(URI) or Optional.empty() if the given service doesn't exist
      */
-    static Optional<URI> queryServiceByName(KubernetesClient client, VanillaKubernetesResourceUri kubeURI) {
+    static Optional<URI> queryServiceByName(KubernetesClient client, KubernetesResourceUri kubeURI) {
         Service service = client.services().inNamespace(kubeURI.getNamespace()).withName(kubeURI.getResourceName()).get();
         if (service == null) {
             logger.error("Service {} not found on the {} namespace.", kubeURI.getResourceName(), kubeURI.getNamespace());
@@ -62,7 +62,7 @@ final class ServiceUtils {
      * @return the found URI from pod or service
      */
     static Optional<URI> queryServiceByLabelOrSelector(KubernetesClient client, Map<String, String> labels,
-            Map<String, String> selector, VanillaKubernetesResourceUri kubeURI) {
+            Map<String, String> selector, KubernetesResourceUri kubeURI) {
 
         if (selector != null) {
             logger.info("filtering service by label selector for resource {}", kubeURI.getResourceName());
@@ -128,7 +128,7 @@ final class ServiceUtils {
      * @param kubeURI
      * @return the service url
      */
-    static Optional<URI> getURLFromService(Service service, VanillaKubernetesResourceUri kubeURI) {
+    static Optional<URI> getURLFromService(Service service, KubernetesResourceUri kubeURI) {
         switch (service.getSpec().getType()) {
             case KubeConstants.EXTERNAL_NAME_TYPE:
                 logger.debug("Using external service name {}", service.getSpec().getExternalName());

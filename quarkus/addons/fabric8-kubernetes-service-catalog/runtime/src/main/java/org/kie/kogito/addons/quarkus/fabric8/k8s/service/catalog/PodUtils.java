@@ -33,7 +33,7 @@ final class PodUtils {
     private PodUtils() {
     }
 
-    static Optional<URI> queryPodByName(KubernetesClient client, VanillaKubernetesResourceUri kubeURI) {
+    static Optional<URI> queryPodByName(KubernetesClient client, KubernetesResourceUri kubeURI) {
         Pod pod = client.pods().inNamespace(kubeURI.getNamespace())
                 .withName(kubeURI.getResourceName())
                 .get();
@@ -61,7 +61,7 @@ final class PodUtils {
                 });
     }
 
-    static Optional<URI> queryPodByOwnerReference(KubernetesClient client, String uid, String namespace, VanillaKubernetesResourceUri kubeURI) {
+    static Optional<URI> queryPodByOwnerReference(KubernetesClient client, String uid, String namespace, KubernetesResourceUri kubeURI) {
 
         Optional<Pod> foundPod = client.pods()
                 .inNamespace(namespace)

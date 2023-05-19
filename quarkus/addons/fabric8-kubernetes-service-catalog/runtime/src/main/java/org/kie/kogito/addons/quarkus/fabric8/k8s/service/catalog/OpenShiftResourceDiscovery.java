@@ -37,15 +37,15 @@ class OpenShiftResourceDiscovery extends AbstractResourceDiscovery {
 
     private final OpenShiftClient openShiftClient;
 
-    private final VanillaKubernetesResourceDiscovery vanillaKubernetesResourceDiscovery;
+    private final KubernetesResourceDiscovery kubernetesResourceDiscovery;
 
     @Inject
-    OpenShiftResourceDiscovery(OpenShiftClient openShiftClient, VanillaKubernetesResourceDiscovery vanillaKubernetesResourceDiscovery) {
+    OpenShiftResourceDiscovery(OpenShiftClient openShiftClient, KubernetesResourceDiscovery kubernetesResourceDiscovery) {
         this.openShiftClient = openShiftClient;
-        this.vanillaKubernetesResourceDiscovery = vanillaKubernetesResourceDiscovery;
+        this.kubernetesResourceDiscovery = kubernetesResourceDiscovery;
     }
 
-    Optional<URI> query(VanillaKubernetesResourceUri resourceUri) {
+    Optional<URI> query(KubernetesResourceUri resourceUri) {
         resourceUri = resolveNamespace(resourceUri, openShiftClient::getNamespace);
 
         switch (resourceUri.getGvk()) {
@@ -56,11 +56,11 @@ class OpenShiftResourceDiscovery extends AbstractResourceDiscovery {
                 return queryRouteByName(resourceUri);
 
             default:
-                return vanillaKubernetesResourceDiscovery.query(resourceUri);
+                return kubernetesResourceDiscovery.query(resourceUri);
         }
     }
 
-    private VanillaKubernetesResourceUri resolveNamespace(VanillaKubernetesResourceUri uri, Supplier<String> defaultNamespaceSupplier) {
+    private KubernetesResourceUri resolveNamespace(KubernetesResourceUri uri, Supplier<String> defaultNamespaceSupplier) {
         if (uri.getNamespace() == null) {
             String defaultNamespace = defaultNamespaceSupplier.get();
 
@@ -73,7 +73,7 @@ class OpenShiftResourceDiscovery extends AbstractResourceDiscovery {
         return uri;
     }
 
-    private Optional<URI> queryDeploymentConfigByName(VanillaKubernetesResourceUri kubeURI) {
+    private Optional<URI> queryDeploymentConfigByName(KubernetesResourceUri kubeURI) {
         logConnection(openShiftClient, kubeURI.getResourceName());
 
         DeploymentConfig deploymentConfig = openShiftClient.deploymentConfigs()
@@ -114,7 +114,7 @@ class OpenShiftResourceDiscovery extends AbstractResourceDiscovery {
                 });
     }
 
-    private Optional<URI> queryRouteByName(VanillaKubernetesResourceUri kubeURI) {
+    private Optional<URI> queryRouteByName(KubernetesResourceUri kubeURI) {
         logConnection(openShiftClient, kubeURI.getResourceName());
 
         Route route = openShiftClient.routes()

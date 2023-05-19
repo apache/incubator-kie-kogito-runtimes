@@ -28,21 +28,21 @@ import org.slf4j.LoggerFactory;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 @ApplicationScoped
-class VanillaKubernetesResourceDiscovery extends AbstractResourceDiscovery {
+class KubernetesResourceDiscovery extends AbstractResourceDiscovery {
 
-    private static final Logger logger = LoggerFactory.getLogger(VanillaKubernetesResourceDiscovery.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(KubernetesResourceDiscovery.class.getName());
 
     private final KubernetesClient kubernetesClient;
 
     private final KnativeServiceDiscovery knativeServiceDiscovery;
 
     @Inject
-    VanillaKubernetesResourceDiscovery(KubernetesClient kubernetesClient, KnativeServiceDiscovery knativeServiceDiscovery) {
+    KubernetesResourceDiscovery(KubernetesClient kubernetesClient, KnativeServiceDiscovery knativeServiceDiscovery) {
         this.kubernetesClient = kubernetesClient;
         this.knativeServiceDiscovery = knativeServiceDiscovery;
     }
 
-    Optional<URI> query(VanillaKubernetesResourceUri resourceUri) {
+    Optional<URI> query(KubernetesResourceUri resourceUri) {
         logConnection(kubernetesClient, resourceUri.getResourceName());
 
         resourceUri = resolveNamespace(resourceUri, kubernetesClient::getNamespace);
@@ -72,7 +72,7 @@ class VanillaKubernetesResourceDiscovery extends AbstractResourceDiscovery {
         }
     }
 
-    private VanillaKubernetesResourceUri resolveNamespace(VanillaKubernetesResourceUri uri, Supplier<String> defaultNamespaceSupplier) {
+    private KubernetesResourceUri resolveNamespace(KubernetesResourceUri uri, Supplier<String> defaultNamespaceSupplier) {
         if (uri.getNamespace() == null) {
             String defaultNamespace = defaultNamespaceSupplier.get();
 

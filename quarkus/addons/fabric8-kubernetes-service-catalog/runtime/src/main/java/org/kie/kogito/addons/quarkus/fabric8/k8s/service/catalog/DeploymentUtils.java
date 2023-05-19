@@ -40,7 +40,7 @@ final class DeploymentUtils {
      * @param kubeURI
      * @return the valid endpoint for the given Deployment
      */
-    static Optional<URI> queryDeploymentByName(KubernetesClient client, VanillaKubernetesResourceUri kubeURI) {
+    static Optional<URI> queryDeploymentByName(KubernetesClient client, KubernetesResourceUri kubeURI) {
         Deployment deployment = client.apps().deployments()
                 .inNamespace(kubeURI.getNamespace())
                 .withName(kubeURI.getResourceName())

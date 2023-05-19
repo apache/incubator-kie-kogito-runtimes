@@ -42,12 +42,12 @@ public class Fabric8KubernetesServiceCatalogProvider implements KubernetesServic
 
         var knativeServiceDiscovery = new KnativeServiceDiscovery(kubernetesClient.adapt(KnativeClient.class));
 
-        var vanillaKubernetesResourceDiscovery = new VanillaKubernetesResourceDiscovery(kubernetesClient,
+        var kubernetesResourceDiscovery = new KubernetesResourceDiscovery(kubernetesClient,
                 knativeServiceDiscovery);
 
         var openShiftResourceDiscovery = new OpenShiftResourceDiscovery(kubernetesClient.adapt(OpenShiftClient.class),
-                vanillaKubernetesResourceDiscovery);
+                kubernetesResourceDiscovery);
 
-        return new Fabric8KubernetesServiceCatalog(knativeServiceDiscovery, vanillaKubernetesResourceDiscovery, openShiftResourceDiscovery);
+        return new Fabric8KubernetesServiceCatalog(knativeServiceDiscovery, kubernetesResourceDiscovery, openShiftResourceDiscovery);
     }
 }

@@ -49,7 +49,7 @@ public class StatefulSetUtilsTest {
     KubernetesServer mockServer;
 
     @Inject
-    VanillaKubernetesResourceDiscovery discovery;
+    KubernetesResourceDiscovery discovery;
 
     private final String namespace = "serverless-workflow-greeting-quarkus";
 
@@ -66,12 +66,12 @@ public class StatefulSetUtilsTest {
         statefulSet.getMetadata().setName("test");
         mockServer.getClient().resource(statefulSet).inNamespace(namespace).createOrReplace();
         assertEquals(Optional.empty(),
-                discovery.query(VanillaKubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/invalid")));
+                discovery.query(KubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/invalid")));
     }
 
     @Test
     public void testStatefulSetWithService() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/example-statefulset-with-service");
+        var kubeURI = KubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/example-statefulset-with-service");
 
         StatefulSet statefulSet = mockServer.getClient().apps().statefulSets().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset.yaml")).get();
@@ -87,7 +87,7 @@ public class StatefulSetUtilsTest {
 
     @Test
     public void testStatefulSetWithServiceWithCustomPortName() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/custom-port-statefulset?port-name=my-custom-port-stateful");
+        var kubeURI = KubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/custom-port-statefulset?port-name=my-custom-port-stateful");
         StatefulSet statefulSet = mockServer.getClient().apps().statefulSets().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset.yaml")).get();
         statefulSet.getMetadata().setName("custom-port-statefulset");
@@ -114,7 +114,7 @@ public class StatefulSetUtilsTest {
 
     @Test
     public void testStatefulSetNoService() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/process-quarkus-example-statefulset-no-service");
+        var kubeURI = KubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/process-quarkus-example-statefulset-no-service");
 
         StatefulSet statefulSet = mockServer.getClient().apps().statefulSets().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-no-service.yaml")).get();
@@ -132,7 +132,7 @@ public class StatefulSetUtilsTest {
 
     @Test
     public void testStatefulSetNoService2Replicas() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/example-statefulset-no-service-2-replicas");
+        var kubeURI = KubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/example-statefulset-no-service-2-replicas");
 
         StatefulSet statefulSet = mockServer.getClient().apps().statefulSets().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-no-service.yaml")).get();
@@ -152,7 +152,7 @@ public class StatefulSetUtilsTest {
 
     @Test
     public void testStatefulSetNoServiceCustomPortName() {
-        var kubeURI = VanillaKubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/custom-port-statefulset-1?port-name=my-custom-port");
+        var kubeURI = KubernetesResourceUri.parse("statefulsets.v1.apps/" + namespace + "/custom-port-statefulset-1?port-name=my-custom-port");
 
         StatefulSet statefulSet = mockServer.getClient().apps().statefulSets().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-no-service.yaml")).get();

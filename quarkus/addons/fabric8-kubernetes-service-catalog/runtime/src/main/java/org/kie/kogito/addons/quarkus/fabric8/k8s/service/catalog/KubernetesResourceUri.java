@@ -24,9 +24,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class VanillaKubernetesResourceUri {
+final class KubernetesResourceUri {
 
-    private static final Logger logger = LoggerFactory.getLogger(VanillaKubernetesResourceUri.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(KubernetesResourceUri.class.getName());
 
     private final GVK gvk;
 
@@ -38,7 +38,7 @@ final class VanillaKubernetesResourceUri {
 
     private final Map<String, String> customLabel;
 
-    private VanillaKubernetesResourceUri(Builder builder) {
+    private KubernetesResourceUri(Builder builder) {
         if (builder.resourceName == null || builder.resourceName.isBlank()) {
             throw new IllegalArgumentException("resource name can't be empty");
         }
@@ -72,7 +72,7 @@ final class VanillaKubernetesResourceUri {
 
     @Override
     public String toString() {
-        return "VanillaKubernetesResourceUri{" +
+        return "KubernetesResourceUri{" +
                 "gvk=" + gvk +
                 ", namespace='" + namespace + '\'' +
                 ", resourceName='" + resourceName + '\'' +
@@ -81,10 +81,10 @@ final class VanillaKubernetesResourceUri {
                 "} " + super.toString();
     }
 
-    static VanillaKubernetesResourceUri parse(String rawUri) {
-        VanillaKubernetesResourceUri vanillaKubernetesResourceUri = Builder.parse(rawUri).build();
-        logger.debug("KubernetesResourceUri successfully parsed: {}", vanillaKubernetesResourceUri);
-        return vanillaKubernetesResourceUri;
+    static KubernetesResourceUri parse(String rawUri) {
+        KubernetesResourceUri kubernetesResourceUri = Builder.parse(rawUri).build();
+        logger.debug("KubernetesResourceUri successfully parsed: {}", kubernetesResourceUri);
+        return kubernetesResourceUri;
     }
 
     Builder copyBuilder() {
@@ -104,7 +104,7 @@ final class VanillaKubernetesResourceUri {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        VanillaKubernetesResourceUri that = (VanillaKubernetesResourceUri) o;
+        KubernetesResourceUri that = (KubernetesResourceUri) o;
         return gvk == that.gvk
                 && Objects.equals(namespace, that.namespace)
                 && Objects.equals(resourceName, that.resourceName)
@@ -205,8 +205,8 @@ final class VanillaKubernetesResourceUri {
             return this;
         }
 
-        VanillaKubernetesResourceUri build() {
-            return new VanillaKubernetesResourceUri(this);
+        KubernetesResourceUri build() {
+            return new KubernetesResourceUri(this);
         }
     }
 }

@@ -17,7 +17,7 @@ package org.kie.kogito.addons.k8s.resource.catalog;
 
 public enum KubernetesProtocol {
 
-    VANILLA_KUBERNETES("kubernetes"),
+    KUBERNETES("kubernetes"),
     OPENSHIFT("openshift"),
     KNATIVE("knative");
 
@@ -34,7 +34,7 @@ public enum KubernetesProtocol {
     public static KubernetesProtocol from(String value) {
         switch (value) {
             case "kubernetes":
-                return VANILLA_KUBERNETES;
+                return KUBERNETES;
             case "openshift":
                 return OPENSHIFT;
             case "knative":
