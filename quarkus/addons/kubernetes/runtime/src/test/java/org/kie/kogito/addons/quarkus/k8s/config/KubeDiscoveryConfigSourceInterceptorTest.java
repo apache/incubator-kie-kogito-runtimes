@@ -21,7 +21,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogProvider;
-import org.kie.kogito.addons.quarkus.k8s.resource.catalog.DefaultKubernetesServiceCatalogProvider;
 
 import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
@@ -32,7 +31,7 @@ class KubeDiscoveryConfigSourceInterceptorTest {
 
     @Test
     void shouldNotThrowExceptionWhenOneProviderIsPresent() {
-        assertThatCode(() -> KubeDiscoveryConfigSourceInterceptor.createKubernetesServiceCatalog(List.of(new DefaultKubernetesServiceCatalogProvider())))
+        assertThatCode(() -> KubeDiscoveryConfigSourceInterceptor.createKubernetesServiceCatalog(List.of(new TestKubernetesServiceCatalogProvider())))
                 .doesNotThrowAnyException();
     }
 
@@ -45,7 +44,7 @@ class KubeDiscoveryConfigSourceInterceptorTest {
     @Test
     void shouldThrowExceptionWhenMoreThanOneProviderIsPresent() {
         List<KubernetesServiceCatalogProvider> providers = List.of(
-                new DefaultKubernetesServiceCatalogProvider(), new AnotherKubernetesServiceCatalogProvider());
+                new TestKubernetesServiceCatalogProvider(), new TestKubernetesServiceCatalogProvider());
 
         String providersName = providers.stream()
                 .map(provider -> provider.getClass().getName())
@@ -59,11 +58,11 @@ class KubeDiscoveryConfigSourceInterceptorTest {
                 .withMessage(expectedMessage);
     }
 
-    private static class AnotherKubernetesServiceCatalogProvider implements KubernetesServiceCatalogProvider {
+    private static class TestKubernetesServiceCatalogProvider implements KubernetesServiceCatalogProvider {
 
         @Override
         public KubernetesServiceCatalog create() {
-            throw new UnsupportedOperationException("This method is not supposed to be called.");
+            return null;
         }
     }
 }

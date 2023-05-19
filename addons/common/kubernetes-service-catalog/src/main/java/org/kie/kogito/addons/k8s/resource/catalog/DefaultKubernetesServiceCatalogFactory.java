@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.quarkus.k8s.resource.catalog;
+package org.kie.kogito.addons.k8s.resource.catalog;
 
-import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
-import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogProvider;
+public final class DefaultKubernetesServiceCatalogFactory {
 
-public final class DefaultKubernetesServiceCatalogProvider implements KubernetesServiceCatalogProvider {
+    private DefaultKubernetesServiceCatalogFactory() {
+    }
 
-    @Override
-    public KubernetesServiceCatalog create() {
+    public static KubernetesServiceCatalog createKubernetesServiceCatalog() {
         return new DefaultKubernetesServiceCatalog();
     }
 }

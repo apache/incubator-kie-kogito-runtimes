@@ -13,7 +13,7 @@
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-quarkus-kubernetes-service-catalog</artifactId>
+      <artifactId>kogito-addons-kubernetes-service-catalog</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>

@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
+import org.kie.kogito.addons.k8s.resource.catalog.DefaultKubernetesServiceCatalogFactory;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogProvider;
-import org.kie.kogito.addons.quarkus.k8s.resource.catalog.DefaultKubernetesServiceCatalogProvider;
 
 import io.smallrye.config.ConfigSourceInterceptor;
 import io.smallrye.config.ConfigSourceInterceptorContext;
@@ -52,7 +52,7 @@ public final class KubeDiscoveryConfigSourceInterceptor implements ConfigSourceI
         if (providers.size() == 1) {
             return providers.get(0).create();
         } else if (providers.isEmpty()) {
-            return new DefaultKubernetesServiceCatalogProvider().create();
+            return DefaultKubernetesServiceCatalogFactory.createKubernetesServiceCatalog();
         } else {
             String providersNames = providers.stream()
                     .map(provider -> provider.getClass().getName())

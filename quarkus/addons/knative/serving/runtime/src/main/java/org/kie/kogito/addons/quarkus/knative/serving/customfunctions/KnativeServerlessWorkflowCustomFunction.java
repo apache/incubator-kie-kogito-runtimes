@@ -19,8 +19,10 @@ import java.net.URI;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.kie.kogito.addons.k8s.resource.catalog.DefaultKubernetesServiceCatalogFactory;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogKey;
@@ -41,11 +43,13 @@ final class KnativeServerlessWorkflowCustomFunction {
     private final KnativeServiceRequestClientResolver knativeServiceRequestClientResolver;
 
     @Inject
-    KnativeServerlessWorkflowCustomFunction(KubernetesServiceCatalog kubernetesServiceCatalog,
+    KnativeServerlessWorkflowCustomFunction(Instance<KubernetesServiceCatalog> kubernetesServiceCatalog,
             KnativeServiceRequestClientResolver knativeServiceRequestClientResolver) {
-        this.kubernetesServiceCatalog = kubernetesServiceCatalog;
-        this.knativeServiceRequestClientResolver = knativeServiceRequestClientResolver;
+        this.kubernetesServiceCatalog = kubernetesServiceCatalog.isUnsatisfied()
+                ? DefaultKubernetesServiceCatalogFactory.createKubernetesServiceCatalog()
+                : kubernetesServiceCatalog.get();
 
+        this.knativeServiceRequestClientResolver = knativeServiceRequestClientResolver;
     }
 
     JsonNode execute(String processInstanceId, String operationString, Map<String, Object> arguments) {

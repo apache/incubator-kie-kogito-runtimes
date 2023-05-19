@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.quarkus.k8s.resource.catalog;
+package org.kie.kogito.addons.k8s.resource.catalog;
 
 import java.net.URI;
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-
-import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
-import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogKey;
-
-import io.quarkus.arc.DefaultBean;
-
-@ApplicationScoped
-@DefaultBean
 final class DefaultKubernetesServiceCatalog implements KubernetesServiceCatalog {
 
     @Override

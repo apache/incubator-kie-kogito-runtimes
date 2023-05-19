@@ -15,10 +15,6 @@
       <artifactId>quarkus-kubernetes-client-deployment</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-quarkus-kubernetes-service-catalog-deployment</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-cache-deployment</artifactId>
     </dependency>
