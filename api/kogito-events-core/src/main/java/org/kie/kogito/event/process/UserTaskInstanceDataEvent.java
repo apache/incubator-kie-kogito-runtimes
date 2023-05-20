@@ -15,10 +15,8 @@
  */
 package org.kie.kogito.event.process;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.kie.kogito.event.AbstractDataEvent;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
@@ -36,9 +34,9 @@ public class UserTaskInstanceDataEvent extends AbstractDataEvent<UserTaskInstanc
     @JsonProperty(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE)
     private String kogitoUserTaskinstanceState;
 
-    private static final Set<String> INTERNAL_EXTENSION_ATTRIBUTES = Arrays.stream(new String[] {
+    private static final Set<String> INTERNAL_EXTENSION_ATTRIBUTES = Set.of(
             CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_ID,
-            CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE }).collect(Collectors.toSet());
+            CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE);
 
     public UserTaskInstanceDataEvent() {
     }

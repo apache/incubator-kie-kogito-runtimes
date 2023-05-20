@@ -20,6 +20,7 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -145,7 +146,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     protected String kogitoProcessType;
 
-    private static final Set<String> INTERNAL_EXTENSION_ATTRIBUTES = Arrays.stream(new String[] {
+    private static final Set<String> INTERNAL_EXTENSION_ATTRIBUTES = new HashSet<>(Arrays.asList(
             CloudEventExtensionConstants.PROCESS_INSTANCE_ID,
             CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_INSTANCE_ID,
             CloudEventExtensionConstants.PROCESS_ID,
@@ -157,7 +158,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
             CloudEventExtensionConstants.PROCESS_REFERENCE_ID,
             CloudEventExtensionConstants.PROCESS_START_FROM_NODE,
             CloudEventExtensionConstants.BUSINESS_KEY,
-            CloudEventExtensionConstants.PROCESS_TYPE }).collect(Collectors.toSet());
+            CloudEventExtensionConstants.PROCESS_TYPE));
 
     private Map<String, Object> extensionAttributes = new HashMap<>();
 
