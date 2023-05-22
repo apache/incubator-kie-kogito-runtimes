@@ -38,13 +38,13 @@ public class ActionBuilder {
 
     private Action action;
     private Optional<FunctionBuilder> functionDefinition = Optional.empty();
-    private Optional<EventBuilder> eventDefinition = Optional.empty();
+    private Optional<EventDefBuilder> eventDefinition = Optional.empty();
 
     final Optional<FunctionBuilder> getFunction() {
         return functionDefinition;
     }
 
-    final Optional<EventBuilder> getEvent() {
+    final Optional<EventDefBuilder> getEvent() {
         return eventDefinition;
     }
 
@@ -60,7 +60,7 @@ public class ActionBuilder {
         return call(functionName, JsonObjectUtils.fromValue(args));
     }
 
-    public static ActionBuilder trigger(EventBuilder builder, String data) {
+    public static ActionBuilder trigger(EventDefBuilder builder, String data) {
         ActionBuilder actionBuilder = new ActionBuilder(new Action().withEventRef(new EventRef().withData(data).withTriggerEventRef(builder.getName())));
         actionBuilder.eventDefinition = Optional.of(builder);
         return actionBuilder;
@@ -157,5 +157,4 @@ public class ActionBuilder {
         }
         return this;
     }
-
 }

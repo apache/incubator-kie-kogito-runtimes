@@ -20,15 +20,15 @@ import java.util.Map;
 
 import io.serverlessworkflow.api.events.EventDefinition;
 
-public class EventBuilder {
+public class EventDefBuilder {
 
     private EventDefinition eventDefinition;
 
-    public static EventBuilder event(String type) {
-        return new EventBuilder(new EventDefinition().withType(type).withName(type));
+    public static EventDefBuilder eventDef(String type) {
+        return new EventDefBuilder(new EventDefinition().withType(type).withName(type));
     }
 
-    public EventBuilder metadata(String key, String value) {
+    public EventDefBuilder metadata(String key, String value) {
         Map<String, String> metadata = eventDefinition.getMetadata();
 
         if (metadata == null) {
@@ -39,17 +39,17 @@ public class EventBuilder {
         return this;
     }
 
-    public EventBuilder dataOnly(boolean dataOnly) {
+    public EventDefBuilder dataOnly(boolean dataOnly) {
         eventDefinition.withDataOnly(dataOnly);
         return this;
     }
 
-    public EventBuilder source(String source) {
+    public EventDefBuilder source(String source) {
         eventDefinition.withSource(source);
         return this;
     }
 
-    private EventBuilder(EventDefinition eventDefinition) {
+    private EventDefBuilder(EventDefinition eventDefinition) {
         this.eventDefinition = eventDefinition;
     }
 
@@ -60,5 +60,4 @@ public class EventBuilder {
     public String getName() {
         return eventDefinition.getName();
     }
-
 }

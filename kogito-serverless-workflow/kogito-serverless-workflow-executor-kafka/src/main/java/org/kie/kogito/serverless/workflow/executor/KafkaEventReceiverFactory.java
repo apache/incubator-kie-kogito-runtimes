@@ -19,6 +19,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -37,6 +39,7 @@ public class KafkaEventReceiverFactory implements EventReceiverFactory {
     private Map<String, String> trigger2Topic = KafkaPropertiesFactory.get().triggerToTopicMap("kogito.addon.messaging.incoming.trigger.");
     private Map<String, KafkaEventReceiver> receivers = new HashMap<>();
     private Consumer<byte[], CloudEvent> consumer;
+    private Lock consumerLock = new ReentrantLock();
     private Thread consumerThread;
 
     @Override
@@ -47,29 +50,35 @@ public class KafkaEventReceiverFactory implements EventReceiverFactory {
             receiver = receivers.computeIfAbsent(trigger2Topic.getOrDefault(trigger, trigger), k -> new KafkaEventReceiver());
             topics = receivers.keySet();
         }
-        synchronized (this) {
-            if (consumer == null) {
+        try {
+            consumerLock.lock();
+            boolean createConsumer = consumer == null;
+            if (createConsumer) {
                 consumer = createKafkaConsumer();
                 consumerThread = new Thread(this::eventLoop);
             }
-        }
-        synchronized (consumer) {
             consumer.subscribe(topics);
-        }
-        synchronized (consumerThread) {
-            if (!consumerThread.isAlive()) {
+            if (createConsumer) {
                 consumerThread.start();
             }
+        } finally {
+            consumerLock.unlock();
         }
         return receiver;
     }
 
     private void eventLoop() {
-        // note that poll will throw exception if consumer is closed, so a running variable is not really needed
         while (true) {
             Iterable<ConsumerRecord<byte[], CloudEvent>> records;
-            synchronized (consumer) {
-                records = consumer.poll(Duration.ofSeconds(ConfigResolverHolder.getConfigResolver().getConfigProperty("kogito.severless.workflow.executor.event.pollTimeout", int.class).orElse(10)));
+            int pollTimeout = ConfigResolverHolder.getConfigResolver().getConfigProperty("kogito.sw.executor.event.pollInterval", int.class).orElse(10);
+            try {
+                consumerLock.lock();
+                if (consumer == null) {
+                    return;
+                }
+                records = consumer.poll(Duration.ofSeconds(pollTimeout));
+            } finally {
+                consumerLock.unlock();
             }
             for (ConsumerRecord<byte[], CloudEvent> record : records) {
                 KafkaEventReceiver receiver;
@@ -83,18 +92,34 @@ public class KafkaEventReceiverFactory implements EventReceiverFactory {
                     receiver.onEvent(record.value());
                 }
             }
-            synchronized (consumer) {
-                consumer.commitSync();
+            try {
+                consumerLock.lock();
+                if (consumer == null) {
+                    return;
+                }
+                consumer.commitAsync();
+            } finally {
+                consumerLock.unlock();
             }
         }
     }
 
     @Override
-    public void close() {
-        if (consumer != null) {
-            consumer.close();
+    public void close() throws InterruptedException {
+        synchronized (receivers) {
+            receivers.clear();
         }
-        consumerThread = null;
+        try {
+            consumerLock.lock();
+            if (consumer != null) {
+                consumer.close();
+                consumer = null;
+                consumerThread.join();
+                consumerThread = null;
+            }
+        } finally {
+            consumerLock.unlock();
+        }
     }
 
     protected Consumer<byte[], CloudEvent> createKafkaConsumer() {

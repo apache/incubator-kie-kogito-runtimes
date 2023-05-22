@@ -27,7 +27,7 @@ import io.serverlessworkflow.api.Workflow;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.trigger;
-import static org.kie.kogito.serverless.workflow.fluent.EventBuilder.event;
+import static org.kie.kogito.serverless.workflow.fluent.EventDefBuilder.eventDef;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.operation;
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.jsonObject;
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.workflow;
@@ -37,7 +37,7 @@ public class WorkflowEventPublisherTest {
     @Test
     void testPublisher() {
         JsonNode expected = jsonObject().put("name", "Javierito");
-        Workflow workflow = workflow("testPublishEvent").start(operation().action(trigger(event("testPublish"), "{name: .name}"))).end().build();
+        Workflow workflow = workflow("testPublishEvent").start(operation().action(trigger(eventDef("testPublish"), "{name: .name}"))).end().build();
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             assertThat(MockKafkaEventEmitterFactory.producer.history()).isEmpty();
             application.execute(workflow, expected);

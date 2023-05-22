@@ -104,7 +104,7 @@ public class WorkflowBuilder {
         return this;
     }
 
-    public final WorkflowBuilder event(EventBuilder eventBuilder) {
+    public final WorkflowBuilder event(EventDefBuilder eventBuilder) {
         EventDefinition event = eventBuilder.build();
         events.add(event);
         return this;
@@ -130,7 +130,7 @@ public class WorkflowBuilder {
         functions.forEach(this::function);
     }
 
-    void addEvents(Collection<EventBuilder> events) {
+    void addEvents(Collection<EventDefBuilder> events) {
         events.forEach(this::event);
     }
 }

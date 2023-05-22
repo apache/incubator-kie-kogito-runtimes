@@ -19,19 +19,13 @@ import java.net.URI;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
-import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.node.TextNode;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
@@ -41,58 +35,68 @@ import io.serverlessworkflow.api.Workflow;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.call;
-import static org.kie.kogito.serverless.workflow.fluent.EventBuilder.event;
+import static org.kie.kogito.serverless.workflow.fluent.EventDefBuilder.eventDef;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.expr;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.callback;
+import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.event;
+import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.operation;
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.jsonObject;
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.workflow;
 
 public class WorkflowEventSubscriberTest {
 
-    private MockConsumer<byte[], CloudEvent> mockConsumer = MockKafkaEventReceiverFactory.consumer;
-
     @Test
-    void testSubscriber() throws InterruptedException, TimeoutException {
+    void testCallbackSubscriber() throws InterruptedException, TimeoutException {
         final String eventType = "testSubscribe";
         final String additionalData = "This has been injected by the event";
-        Workflow workflow = workflow("testSubscribeEvent").start(callback(call(expr("concat", ".slogan+\" er Beti\"")), event(eventType))).end().build();
+        Workflow workflow = workflow("testCallback").start(callback(call(expr("concat", "{slogan:.slogan+\"er Beti\"}")), eventDef(eventType))).end().build();
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
-            String id = application.execute(workflow, jsonObject().put("slogan", "Viva")).getId();
-            publish(id, eventType, CloudEventBuilder.v1()
-                    .withId(UUID.randomUUID().toString())
-                    .withSource(URI.create(""))
-                    .withType(eventType)
-                    .withTime(OffsetDateTime.now())
-                    .withExtension("kogitoprocrefid", id)
+            String id = application.execute(workflow, jsonObject().put("slogan", "Viva ")).getId();
+            publish(eventType, buildCloudEvent(eventType, id)
                     .withData(JsonCloudEventData.wrap(jsonObject().put("additionalData", additionalData)))
                     .build());
-            assertThat(application.waitForFinish(id, Duration.ofSeconds(3)).orElseThrow().getWorkflowdata()).contains(new TextNode(additionalData));
+            assertThat(application.waitForFinish(id, Duration.ofSeconds(3)).orElseThrow().getWorkflowdata())
+                    .isEqualTo(jsonObject().put("additionalData", additionalData).put("slogan", "Viva er Beti"));
         }
     }
 
     @Test
-    void testSubscriberWithoutEvent() throws InterruptedException {
+    void testEventSubscriber() throws InterruptedException, TimeoutException {
+        final String eventType = "testSubscribe";
+        Workflow workflow =
+                workflow("testEvent").start(operation()).next(event().events().event(eventDef(eventType)).action(call(expr("concat", "{slogan:.slogan+\"er Beti\"}"))).endBranch()).end().build();
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            String id = application.execute(workflow, Collections.emptyMap()).getId();
+            publish(eventType, buildCloudEvent(eventType, id)
+                    .withData(JsonCloudEventData.wrap(jsonObject().put("slogan", "Viva ")))
+                    .build());
+            assertThat(application.waitForFinish(id, Duration.ofSeconds(3)).orElseThrow().getWorkflowdata()).isEqualTo(jsonObject().put("slogan", "Viva er Beti"));
+        }
+    }
+
+    @Test
+    void testCallbackSubscriberWithoutEvent() throws InterruptedException {
         final String eventType = "testSubscribeEvent";
-        Workflow workflow = workflow("testSubscribeEvent").start(callback(call(expr("concat", ".slogan+\" er Beti\"")), event(eventType))).end().build();
+        Workflow workflow = workflow("testFailure").start(callback(call(expr("concat", ".slogan+\" er Beti\"")), eventDef(eventType))).end().build();
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             String id = application.execute(workflow, jsonObject().put("slogan", "Viva")).getId();
             assertThatExceptionOfType(TimeoutException.class).isThrownBy(() -> application.waitForFinish(id, Duration.ofSeconds(2)));
         }
     }
 
-    private void publish(String id, String topic, CloudEvent event) {
+    private CloudEventBuilder buildCloudEvent(String eventType, String id) {
+        return CloudEventBuilder.v1()
+                .withId(UUID.randomUUID().toString())
+                .withSource(URI.create(""))
+                .withType(eventType)
+                .withTime(OffsetDateTime.now())
+                .withExtension("kogitoprocrefid", id);
+    }
+
+    private void publish(String topic, CloudEvent event) {
+        MockConsumer<byte[], CloudEvent> mockConsumer = MockKafkaEventReceiverFactory.consumer;
         Set<String> topics = mockConsumer.subscription();
         assertThat(topics).contains(topic);
-        List<TopicPartition> partitions = Collections.singletonList(new TopicPartition(topic, 0));
-        Map<TopicPartition, Long> partitionsBeginningMap = new HashMap<>();
-        Map<TopicPartition, Long> partitionsEndMap = new HashMap<>();
-        for (TopicPartition partition : partitions) {
-            partitionsBeginningMap.put(partition, 0L);
-            partitionsEndMap.put(partition, 10L);
-        }
-        mockConsumer.rebalance(partitions);
-        mockConsumer.updateBeginningOffsets(partitionsBeginningMap);
-        mockConsumer.updateEndOffsets(partitionsEndMap);
         mockConsumer.addRecord(new ConsumerRecord<>(topic, 0, 0, new byte[0], event));
     }
 }

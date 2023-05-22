@@ -76,5 +76,4 @@ public class KafkaEventReceiver implements EventReceiver {
             }
         })));
     }
-
 }

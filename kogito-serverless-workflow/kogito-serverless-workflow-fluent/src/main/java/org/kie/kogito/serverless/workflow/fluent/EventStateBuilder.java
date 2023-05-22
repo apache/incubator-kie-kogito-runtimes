@@ -15,16 +15,30 @@
  */
 package org.kie.kogito.serverless.workflow.fluent;
 
-import io.serverlessworkflow.api.states.CallbackState;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.serverlessworkflow.api.events.OnEvents;
 import io.serverlessworkflow.api.states.DefaultState.Type;
+import io.serverlessworkflow.api.states.EventState;
 
-public class CallbackStateBuilder extends StateBuilder<CallbackStateBuilder, CallbackState> {
+public class EventStateBuilder extends StateBuilder<EventStateBuilder, EventState> {
 
-    protected CallbackStateBuilder(EventDefBuilder eventBuilder, ActionBuilder actionBuilder) {
-        super(new CallbackState().withType(Type.CALLBACK).withAction(actionBuilder.build()).withEventRef(eventBuilder.getName()));
-        actionBuilder.getEvent().ifPresent(eventDefinitions::add);
-        actionBuilder.getFunction().ifPresent(functionDefinitions::add);
-        eventDefinitions.add(eventBuilder);
+    private List<OnEvents> onEvents = new ArrayList<>();
+
+    protected EventStateBuilder() {
+        super(new EventState().withType(Type.EVENT));
+        state.withOnEvents(onEvents);
     }
 
+    public EventStateBuilder exclusive(boolean exclusive) {
+        state.withExclusive(exclusive);
+        return this;
+    }
+
+    public EventBranchBuilder events() {
+        OnEvents events = new OnEvents();
+        onEvents.add(events);
+        return new EventBranchBuilder(this, events);
+    }
 }

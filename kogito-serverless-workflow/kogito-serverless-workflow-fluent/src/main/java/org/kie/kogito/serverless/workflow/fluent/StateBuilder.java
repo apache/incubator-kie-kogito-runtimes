@@ -38,8 +38,12 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
         return new ParallelStateBuilder();
     }
 
-    public static CallbackStateBuilder callback(ActionBuilder action, EventBuilder event) {
+    public static CallbackStateBuilder callback(ActionBuilder action, EventDefBuilder event) {
         return new CallbackStateBuilder(event, action);
+    }
+
+    public static EventStateBuilder event() {
+        return new EventStateBuilder();
     }
 
     public static ForEachStateBuilder forEach(String inputExpr) {
@@ -48,13 +52,13 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
 
     protected final S state;
     protected final Collection<FunctionBuilder> functionDefinitions = new ArrayList<>();
-    protected final Collection<EventBuilder> eventDefinitions = new ArrayList<>();
+    protected final Collection<EventDefBuilder> eventDefinitions = new ArrayList<>();
 
     Collection<FunctionBuilder> getFunctions() {
         return functionDefinitions;
     }
 
-    Collection<EventBuilder> getEvents() {
+    Collection<EventDefBuilder> getEvents() {
         return eventDefinitions;
     }
 

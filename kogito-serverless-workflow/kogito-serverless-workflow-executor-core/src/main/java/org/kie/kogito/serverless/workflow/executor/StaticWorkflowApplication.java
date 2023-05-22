@@ -219,7 +219,9 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
         if (isFinish(pi)) {
             processInstances.remove(id);
         }
-        return Optional.of(pi.variables());
+        JsonNodeModel model = pi.variables();
+        logger.info("Process finished {}", model);
+        return Optional.of(model);
     }
 
     private boolean isFinish(ProcessInstance<JsonNodeModel> pi) {
