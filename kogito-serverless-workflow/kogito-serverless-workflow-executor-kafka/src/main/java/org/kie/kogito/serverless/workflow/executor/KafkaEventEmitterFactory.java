@@ -33,15 +33,15 @@ public class KafkaEventEmitterFactory implements EventEmitterFactory {
 
     @Override
     public EventEmitter apply(String trigger) {
+        return emitters.computeIfAbsent(trigger2Topic.getOrDefault(trigger, trigger), this::createEmitter);
+    }
+
+    private EventEmitter createEmitter(String trigger) {
         synchronized (this) {
             if (producer == null) {
                 producer = createKafkaProducer();
             }
         }
-        return emitters.computeIfAbsent(trigger2Topic.getOrDefault(trigger, trigger), this::createEmitter);
-    }
-
-    private EventEmitter createEmitter(String trigger) {
         return new KafkaEventEmitter(producer, trigger);
     }
 

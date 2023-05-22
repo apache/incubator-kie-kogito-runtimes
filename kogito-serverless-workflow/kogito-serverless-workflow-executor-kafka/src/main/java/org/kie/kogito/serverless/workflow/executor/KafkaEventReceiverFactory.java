@@ -16,9 +16,9 @@
 package org.kie.kogito.serverless.workflow.executor;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -37,34 +37,60 @@ public class KafkaEventReceiverFactory implements EventReceiverFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaEventReceiverFactory.class);
     private Map<String, String> trigger2Topic = KafkaPropertiesFactory.get().triggerToTopicMap("kogito.addon.messaging.incoming.trigger.");
-    private Map<String, KafkaEventReceiver> receivers = new HashMap<>();
+    private Map<String, KafkaEventReceiver> receivers = new ConcurrentHashMap<>();
     private Consumer<byte[], CloudEvent> consumer;
     private Lock consumerLock = new ReentrantLock();
     private Thread consumerThread;
 
     @Override
     public EventReceiver apply(String trigger) {
-        Set<String> topics;
-        EventReceiver receiver;
-        synchronized (receivers) {
-            receiver = receivers.computeIfAbsent(trigger2Topic.getOrDefault(trigger, trigger), k -> new KafkaEventReceiver());
-            topics = receivers.keySet();
-        }
+        return receivers.computeIfAbsent(trigger2Topic.getOrDefault(trigger, trigger), k -> new KafkaEventReceiver());
+    }
+
+    @Override
+    public void close() throws InterruptedException {
+        receivers.clear();
+        boolean consumerClosed;
         try {
             consumerLock.lock();
-            boolean createConsumer = consumer == null;
-            if (createConsumer) {
-                consumer = createKafkaConsumer();
-                consumerThread = new Thread(this::eventLoop);
-            }
-            consumer.subscribe(topics);
-            if (createConsumer) {
-                consumerThread.start();
+            consumerClosed = consumer != null;
+            if (consumerClosed) {
+                consumer.close();
+                consumer = null;
             }
         } finally {
             consumerLock.unlock();
         }
-        return receiver;
+        if (consumerClosed) {
+            consumerThread.join();
+            consumerThread = null;
+        }
+    }
+
+    @Override
+    public void ready() {
+        Set<String> topics = receivers.keySet();
+        if (!topics.isEmpty()) {
+            boolean consumerCreated;
+            try {
+                consumerLock.lock();
+                consumerCreated = consumer == null;
+                if (consumerCreated) {
+                    consumer = createKafkaConsumer();
+                }
+                consumer.subscribe(topics);
+            } finally {
+                consumerLock.unlock();
+            }
+            if (consumerCreated) {
+                consumerThread = new Thread(this::eventLoop);
+                consumerThread.start();
+            }
+        }
+    }
+
+    protected Consumer<byte[], CloudEvent> createKafkaConsumer() {
+        return new KafkaConsumer<>(KafkaPropertiesFactory.get().getKafkaConsumerConfig());
     }
 
     private void eventLoop() {
@@ -81,11 +107,8 @@ public class KafkaEventReceiverFactory implements EventReceiverFactory {
                 consumerLock.unlock();
             }
             for (ConsumerRecord<byte[], CloudEvent> record : records) {
-                KafkaEventReceiver receiver;
                 String topic = record.topic();
-                synchronized (receivers) {
-                    receiver = receivers.get(topic);
-                }
+                KafkaEventReceiver receiver = receivers.get(topic);
                 if (receiver == null) {
                     logger.info("No subscription for topic {}", topic);
                 } else {
@@ -102,27 +125,5 @@ public class KafkaEventReceiverFactory implements EventReceiverFactory {
                 consumerLock.unlock();
             }
         }
-    }
-
-    @Override
-    public void close() throws InterruptedException {
-        synchronized (receivers) {
-            receivers.clear();
-        }
-        try {
-            consumerLock.lock();
-            if (consumer != null) {
-                consumer.close();
-                consumer = null;
-                consumerThread.join();
-                consumerThread = null;
-            }
-        } finally {
-            consumerLock.unlock();
-        }
-    }
-
-    protected Consumer<byte[], CloudEvent> createKafkaConsumer() {
-        return new KafkaConsumer<>(KafkaPropertiesFactory.get().getKafkaConsumerConfig());
     }
 }

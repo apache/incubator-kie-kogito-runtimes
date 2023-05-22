@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.event.impl;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
@@ -22,10 +23,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventEmitterFactory;
+import org.kie.kogito.event.EventFactory;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.EventReceiverFactory;
 import org.slf4j.Logger;
@@ -34,8 +37,12 @@ import org.slf4j.LoggerFactory;
 public class EventFactoryUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(EventFactoryUtils.class);
-    private static ServiceLoader<EventReceiverFactory> receivers = ServiceLoader.load(EventReceiverFactory.class);
-    private static ServiceLoader<EventEmitterFactory> emitters = ServiceLoader.load(EventEmitterFactory.class);
+    private static Collection<EventReceiverFactory> receivers = getSortedLoaders(EventReceiverFactory.class);
+    private static Collection<EventEmitterFactory> emitters = getSortedLoaders(EventEmitterFactory.class);
+
+    private static <V extends EventFactory<?>> Collection<V> getSortedLoaders(Class<V> clazz) {
+        return ServiceLoader.load(clazz).stream().map(Provider::get).sorted().collect(Collectors.toList());
+    }
 
     public static EventReceiver getEventReceiver(String trigger) {
         return getInstance(trigger, receivers, () -> new EventReceiver() {
@@ -46,7 +53,11 @@ public class EventFactoryUtils {
         });
     }
 
-    private static <T extends AutoCloseable> void cleanUp(ServiceLoader<T> closeables) {
+    private static <T extends EventFactory<?>> void ready(Iterable<T> factories) {
+        factories.forEach(EventFactory::ready);
+    }
+
+    private static <T extends AutoCloseable> void cleanUp(Iterable<T> closeables) {
         for (AutoCloseable closeable : closeables) {
             try {
                 closeable.close();
@@ -66,13 +77,18 @@ public class EventFactoryUtils {
         });
     }
 
-    private static <T, V extends Function<String, T>> T getInstance(String trigger, ServiceLoader<V> service, Supplier<T> defaultValue) {
-        return service.stream().map(Provider::get).sorted().map(s -> s.apply(trigger)).filter(Objects::nonNull).findFirst().orElseGet(defaultValue);
+    private static <T, V extends Function<String, T>> T getInstance(String trigger, Collection<V> services, Supplier<T> defaultValue) {
+        return services.stream().map(s -> s.apply(trigger)).filter(Objects::nonNull).findFirst().orElseGet(defaultValue);
     }
 
     public static void cleanUp() {
         cleanUp(receivers);
         cleanUp(emitters);
+    }
+
+    public static void ready() {
+        ready(receivers);
+        ready(emitters);
     }
 
     private EventFactoryUtils() {

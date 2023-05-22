@@ -38,6 +38,7 @@ import org.kie.kogito.StaticApplication;
 import org.kie.kogito.StaticConfig;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.config.StaticConfigBean;
+import org.kie.kogito.event.impl.EventFactoryUtils;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -241,6 +242,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
                 subProcess.setSubProcessFactory(new StaticSubprocessFactory(processes.map.get(subProcess.getProcessId())));
             }
         });
+        EventFactoryUtils.ready();
         return process;
     }
 

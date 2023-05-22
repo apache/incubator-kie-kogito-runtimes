@@ -17,7 +17,7 @@ package org.kie.kogito.serverless.workflow.executor;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -39,7 +39,7 @@ import io.cloudevents.CloudEventData;
 public class KafkaEventReceiver implements EventReceiver {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaEventReceiver.class);
-    private final List<Subscription<?, CloudEvent>> subscriptions = new ArrayList<>();
+    private final Collection<Subscription<?, CloudEvent>> subscriptions = new ArrayList<>();
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void onEvent(CloudEvent value) {

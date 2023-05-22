@@ -43,5 +43,4 @@ public class KafkaEventEmitter implements EventEmitter {
         kafkaProducer.send(new ProducerRecord<>(topic, dataEvent.asCloudEvent(o -> JsonCloudEventData.wrap((JsonNode) o))));
         return CompletableFuture.completedStage(null);
     }
-
 }

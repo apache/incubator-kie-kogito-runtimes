@@ -15,21 +15,6 @@
  */
 package org.kie.kogito.event;
 
-import java.util.function.Function;
-
-public interface EventReceiverFactory extends Function<String, EventReceiver>, AutoCloseable, Comparable<EventReceiverFactory> {
-
-    default int ordinal() {
-        return 100;
-    }
-
-    @Override
-    default int compareTo(EventReceiverFactory o) {
-        return ordinal() - o.ordinal();
-    }
-
-    @Override
-    default void close() throws Exception {
-    }
+public interface EventReceiverFactory extends EventFactory<EventReceiver> {
 
 }
