@@ -26,6 +26,7 @@
     <module>knative</module>
     <module>kubernetes</module>
     <module>kubernetes-service-catalog</module>
+    <module>jobs</module>
   </modules>
 
   <profiles>
