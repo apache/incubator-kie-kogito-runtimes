@@ -82,8 +82,9 @@ public class WorkflowBuilder {
     public TransitionBuilder<WorkflowBuilder> start(StateBuilder<?, ?> stateBuilder) {
         addFunctions(stateBuilder.getFunctions());
         addEvents(stateBuilder.getEvents());
-        startState(stateBuilder.build());
-        return new TransitionBuilder<>(this, this);
+        DefaultState state = stateBuilder.build();
+        startState(state);
+        return new TransitionBuilder<>(this, this, state);
     }
 
     private void startState(DefaultState state) {
@@ -122,8 +123,8 @@ public class WorkflowBuilder {
         states.add(state);
     }
 
-    DefaultState getLastState() {
-        return states.getLast();
+    Collection<DefaultState> states() {
+        return states;
     }
 
     void addFunctions(Collection<FunctionBuilder> functions) {

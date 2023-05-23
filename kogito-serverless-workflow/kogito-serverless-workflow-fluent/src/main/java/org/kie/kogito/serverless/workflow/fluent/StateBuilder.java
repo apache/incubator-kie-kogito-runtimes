@@ -20,7 +20,6 @@ import java.util.Collection;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.serverlessworkflow.api.end.End;
 import io.serverlessworkflow.api.filters.StateDataFilter;
 import io.serverlessworkflow.api.states.DefaultState;
 
@@ -92,11 +91,6 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
 
     public S build() {
         return ensureName(state);
-    }
-
-    public S build(End end) {
-        ensureName(state).withEnd(end);
-        return state;
     }
 
     private static int counter;

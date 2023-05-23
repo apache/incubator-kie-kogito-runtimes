@@ -22,6 +22,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.serverless.workflow.actions.WorkflowLogLevel;
+import org.kie.kogito.serverless.workflow.fluent.OperationStateBuilder;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
 import org.kie.kogito.serverless.workflow.utils.KogitoProcessContextResolver;
@@ -105,6 +106,21 @@ public class StaticFluentWorkflowApplicationTest {
             Process<JsonNodeModel> process = application.process(workflow);
             assertThat(application.execute(process, Collections.singletonMap("input", 4)).getWorkflowdata().get(MESSAGE).asText()).isEqualTo(ODD);
             assertThat(application.execute(process, Collections.singletonMap("input", 7)).getWorkflowdata().get(MESSAGE).asText()).isEqualTo(EVEN);
+        }
+    }
+
+    @Test
+    void testSwitchLoop() {
+        OperationStateBuilder startTask = operation().action(call(expr("startTask", "{finish:true}")));
+        OperationStateBuilder pollTask = operation().action(call(expr("pollTask", "{finish:.finish|not}")));
+        OperationStateBuilder sleepState = operation().action(call(expr("inc", ".count=.count+1")));
+
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow workflow = workflow("Polling").start(startTask)
+                    .next(sleepState)
+                    .next(pollTask)
+                    .when(".finish").end().or().next(sleepState).end().build();
+            assertThat(application.execute(workflow, Collections.singletonMap("count", 2)).getWorkflowdata().get("count").asInt()).isEqualTo(4);
         }
     }
 
