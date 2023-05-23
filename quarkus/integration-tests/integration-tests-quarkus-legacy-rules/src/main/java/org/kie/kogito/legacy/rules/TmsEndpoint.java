@@ -15,29 +15,46 @@
  */
 package org.kie.kogito.legacy.rules;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 
-import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieRuntimeBuilder;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.FactHandle;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 @Path("/test-tms")
 public class TmsEndpoint {
     @Inject
     KieRuntimeBuilder kieRuntimeBuilder;
 
-    @POST()
-    public Object executeQuery(@QueryParam("string") String string) {
-        return test(kieRuntimeBuilder, string);
+    private KieSession session;
+
+    private final Map<String, FactHandle> map = new HashMap<>();
+
+    @PostConstruct
+    void init() {
+        this.session = kieRuntimeBuilder.newKieSession();
     }
 
-    public static Object test(KieRuntimeBuilder kieRuntimeBuilder, String string) {
-        KieSession session = kieRuntimeBuilder.newKieSession();
+    @GET()
+    public int executeQuery() {
+        return session.getObjects(Integer.class::isInstance).stream().map(Integer.class::cast).mapToInt(Integer::intValue).findFirst().orElse(-1);
+    }
 
-        session.insert(string);
-        session.fireAllRules();
+    @POST
+    public int insert(@QueryParam("string") String string) {
+        map.put(string, session.insert(string));
+        return session.fireAllRules();
+    }
 
-        return session.getObjects(new ClassObjectFilter(Integer.class)).iterator().next();
+    @DELETE
+    public int delete(@QueryParam("string") String string) {
+        session.delete(map.get(string));
+        return session.fireAllRules();
     }
 }
