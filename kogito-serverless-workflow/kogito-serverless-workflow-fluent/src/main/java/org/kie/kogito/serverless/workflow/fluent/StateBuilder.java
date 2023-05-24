@@ -16,8 +16,8 @@
 package org.kie.kogito.serverless.workflow.fluent;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -53,8 +53,8 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
     }
 
     protected final S state;
-    protected final Collection<FunctionBuilder> functionDefinitions = new ArrayList<>();
-    protected final Collection<EventDefBuilder> eventDefinitions = new ArrayList<>();
+    protected final Collection<FunctionBuilder> functionDefinitions = new HashSet<>();
+    protected final Collection<EventDefBuilder> eventDefinitions = new HashSet<>();
 
     Collection<FunctionBuilder> getFunctions() {
         return functionDefinitions;

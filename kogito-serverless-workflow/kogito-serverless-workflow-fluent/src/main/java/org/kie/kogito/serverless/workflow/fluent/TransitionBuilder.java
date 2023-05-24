@@ -40,12 +40,9 @@ public class TransitionBuilder<T> {
 
     public TransitionBuilder<T> next(StateBuilder<?, ?> stateBuilder) {
         DefaultState state = stateBuilder.build();
-        boolean firstTimeAdded = !workflow.states().stream().anyMatch(s -> s == state);
-        if (firstTimeAdded) {
-            workflow.addFunctions(stateBuilder.getFunctions());
-            workflow.addEvents(stateBuilder.getEvents());
-        }
-        next(state, firstTimeAdded);
+        workflow.addFunctions(stateBuilder.getFunctions());
+        workflow.addEvents(stateBuilder.getEvents());
+        next(state);
         lastState = state;
         return this;
     }
@@ -56,7 +53,7 @@ public class TransitionBuilder<T> {
             switchState = StateBuilder.ensureName(new SwitchState().withType(DefaultState.Type.SWITCH));
             conditions = new ArrayList<>();
             switchState.withDataConditions(conditions);
-            next(switchState, true);
+            next(switchState);
         } else {
             conditions = switchState.getDataConditions();
         }
@@ -89,11 +86,9 @@ public class TransitionBuilder<T> {
         return container;
     }
 
-    private void next(DefaultState state, boolean firstTimeAdded) {
+    private void next(DefaultState state) {
         addTransition(state);
-        if (firstTimeAdded) {
-            workflow.addState(state);
-        }
+        workflow.addState(state);
     }
 
     protected void addTransition(DefaultState state) {

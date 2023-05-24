@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.executor;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
@@ -191,6 +192,16 @@ public class StaticFluentWorkflowApplicationTest {
             Workflow workflow = workflow("PlayingWithExpression").constant("name", "Javierito").function(expr(INTERPOLATION, "\"My name is \"+$CONST.name"))
                     .start(operation().action(call(INTERPOLATION))).end().build();
             assertThat(application.execute(workflow, Collections.emptyMap()).getWorkflowdata().get("response").asText()).isEqualTo("My name is Javierito");
+        }
+    }
+
+    @Test
+    void testLogging() throws IOException {
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow workflow = workflow("Testing logs").constant("name", "Javierito")
+                    .start(operation().action(log(WorkflowLogLevel.INFO, "Soy minero")).action(log(WorkflowLogLevel.INFO, "\"My name is \\($CONST.name)\""))).end().build();
+            assertThat(workflow.getFunctions().getFunctionDefs()).hasSize(1);
+            assertThat(application.execute(workflow, Collections.emptyMap()).getWorkflowdata()).isEmpty();
         }
     }
 
