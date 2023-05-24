@@ -282,7 +282,12 @@ void tagLatest() {
 }
 
 String getPreviousTag(){
-    return sh(script: "git describe --abbrev=0 --tags `git rev-list --tags --skip=1  --max-count=1`", returnStdout: true).trim()
+    String latestTag = sh(returnStdout: true, script: 'git tag --sort=-taggerdate | head -n 1').trim()
+    if (latestTag == getGitTag()) {
+        latestTag = sh(returnStdout: true, script: 'git tag --sort=-taggerdate | head -n 2 | tail -n 1').trim()    
+    }
+    echo "Got latestTag = ${latestTag}"
+    return latestTag
 }
 
 void prepareForPR() {
