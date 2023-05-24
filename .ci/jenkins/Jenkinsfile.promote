@@ -79,8 +79,8 @@ pipeline {
                         if(githubscm.isReleaseExist(getGitTag(), getGitAuthorCredsID())) {
                             githubscm.deleteRelease(getGitTag(), getGitAuthorCredsID())
                         }
-                        createReleaseNotesFile()
                         githubscm.createReleaseWithReleaseNotes(getGitTag(), getBuildBranch(), getReleaseNotesFile(), getGitAuthorCredsID())
+                        updateReleaseBody(getGitTag(), getGitAuthorCredsID())
                     }
                 }
             }
@@ -245,16 +245,29 @@ String getReleaseNotesFile(){
     return "RELEASE_NOTES_${getGitTag()}"
 }
 
-String createReleaseNotesFile(){
-    sh """
-        #!/bin/bash
-        echo "Release Notes" > ${getReleaseNotesFile()}
-        echo "" >> ${getReleaseNotesFile()}
-        git log --pretty='%s' ${getPreviousTag()}..HEAD | sed -e '/KOGITO/!d'| sed -e 's/\\[//g' -e 's/\\]//g' -e 's/\\://g' | sed -r 's/(KOGITO-[0-9]*)( .*)/\\[\\1\\](https\\:\\/\\/issues\\.redhat\\.com\\/browse\\/\\1)\\2/g' >> ${getReleaseNotesFile()}
-        echo "" >> ${getReleaseNotesFile()}
-        echo "*****************************************************" >> ${getReleaseNotesFile()}
-        echo "" >> ${getReleaseNotesFile()}
-    """
+String updateReleaseBody(String tagName, String credsId){
+    withCredentials([usernamePassword(credentialsId: credsId, usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+        sh "gh release view ${tagName} --json body --jq .body > release_notes"
+
+        sh '''
+            #!/bin/bash
+            sed -i -r 's|\\[(KOGITO-[0-9]*)\\](.*)|\\1\\2|g' release_notes
+            sed -i -r 's|(KOGITO-[0-9]*)(.*)|\\[\\1\\](https\\://issues\\.redhat\\.com/browse/\\1)\\2|g' release_notes
+
+            sed -i -r 's|\\[(DROOLS-[0-9]*)\\](.*)|\\1\\2|g' release_notes
+            sed -i -r 's|(DROOLS-[0-9]*)(.*)|\\[\\1\\](https\\://issues\\.redhat\\.com/browse/\\1)\\2|g' release_notes
+
+            sed -i -r 's|\\[(BXMSPROD-[0-9]*)\\](.*)|\\1\\2|g' release_notes
+            sed -i -r 's|(BXMSPROD-[0-9]*)(.*)|\\[\\1\\](https\\://issues\\.redhat\\.com/browse/\\1)\\2|g' release_notes
+
+            sed -i -r 's|\\[(kie-issues-[0-9]*)\\](.*)|\\1\\2|g' release_notes
+            sed -i -r 's|kie-issues#([0-9]*)(.*)|\\[kie-issues#\\1\\](https\\://github\\.com/kiegroup/kie-issues/issues/\\1)\\2|g' release_notes
+            sed -i -r 's|kie-issues-([0-9]*)(.*)|\\[kie-issues#\\1\\](https\\://github\\.com/kiegroup/kie-issues/issues/\\1)\\2|g' release_notes
+            cat release_notes
+        '''
+
+        sh "gh release edit ${tagName} -F release_notes"
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -279,15 +292,6 @@ void tagLatest() {
     if (getGitTag()) {
         githubscm.tagLocalAndRemoteRepository('origin', getGitTag(), getGitAuthorCredsID(), env.BUILD_TAG, true)
     }
-}
-
-String getPreviousTag(){
-    String latestTag = sh(returnStdout: true, script: 'git tag --sort=-taggerdate | head -n 1').trim()
-    if (latestTag == getGitTag()) {
-        latestTag = sh(returnStdout: true, script: 'git tag --sort=-taggerdate | head -n 2 | tail -n 1').trim()    
-    }
-    echo "Got latestTag = ${latestTag}"
-    return latestTag
 }
 
 void prepareForPR() {
