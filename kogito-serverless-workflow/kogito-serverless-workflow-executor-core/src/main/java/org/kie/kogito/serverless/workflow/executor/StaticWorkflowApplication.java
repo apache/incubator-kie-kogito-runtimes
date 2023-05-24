@@ -102,7 +102,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
         @Override
         public void afterProcessCompleted(ProcessCompletedEvent event) {
             WorkflowProcessInstance instance = (WorkflowProcessInstance) event.getProcessInstance();
-            SynchronousQueue<JsonNodeModel> queue = queues.get(instance.getId());
+            SynchronousQueue<JsonNodeModel> queue = queues.remove(instance.getId());
             if (queue != null) {
                 queue.add(new JsonNodeModel(instance.getId(), instance.getVariables().get(SWFConstants.DEFAULT_WORKFLOW_VAR)));
             }
