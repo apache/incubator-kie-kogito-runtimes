@@ -19,7 +19,7 @@ import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
-@ConfigRoot(prefix = "org.kie.kogito.addons.knative", phase = ConfigPhase.BUILD_TIME)
+@ConfigRoot(prefix = "org.kie.kogito.addons.knative", name = "eventing", phase = ConfigPhase.BUILD_TIME)
 public class EventingConfiguration {
 
     /**
