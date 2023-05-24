@@ -15,9 +15,11 @@
  */
 package org.kie.kogito.serverless.workflow.executor;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.process.Process;
@@ -110,17 +112,18 @@ public class StaticFluentWorkflowApplicationTest {
     }
 
     @Test
-    void testSwitchLoop() {
+    void testSwitchLoop() throws InterruptedException, TimeoutException {
         OperationStateBuilder startTask = operation().action(call(expr("startTask", "{finish:true}")));
         OperationStateBuilder pollTask = operation().action(call(expr("pollTask", "{finish:.finish|not}")));
-        OperationStateBuilder sleepState = operation().action(call(expr("inc", ".count=.count+1")));
+        OperationStateBuilder sleepState = operation().action(call(expr("inc", ".count=.count+1")).sleepAfter(Duration.ofSeconds(1)));
 
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             Workflow workflow = workflow("Polling").start(startTask)
                     .next(sleepState)
                     .next(pollTask)
                     .when(".finish").end().or().next(sleepState).end().build();
-            assertThat(application.execute(workflow, Collections.singletonMap("count", 2)).getWorkflowdata().get("count").asInt()).isEqualTo(4);
+            String id = application.execute(workflow, Collections.singletonMap("count", 2)).getId();
+            assertThat(application.waitForFinish(id, Duration.ofMillis(2500)).orElseThrow().getWorkflowdata().get("count").asInt()).isEqualTo(4);
         }
     }
 

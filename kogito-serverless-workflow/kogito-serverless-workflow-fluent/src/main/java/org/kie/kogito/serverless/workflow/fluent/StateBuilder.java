@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.fluent;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -22,6 +23,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.filters.StateDataFilter;
 import io.serverlessworkflow.api.states.DefaultState;
+import io.serverlessworkflow.api.timeouts.StateExecTimeout;
+import io.serverlessworkflow.api.timeouts.TimeoutsDefinition;
 
 public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends DefaultState> {
 
@@ -68,6 +71,25 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
     public T name(String name) {
         state.withName(name);
         return (T) this;
+    }
+
+    public T stateTimeout(Duration duration) {
+        timeouts().withStateExecTimeout(new StateExecTimeout().withSingle(duration.toString()));
+        return (T) this;
+    }
+
+    public T eventTimeout(Duration duration) {
+        timeouts().withEventTimeout(duration.toString());
+        return (T) this;
+    }
+
+    private TimeoutsDefinition timeouts() {
+        TimeoutsDefinition timeouts = state.getTimeouts();
+        if (timeouts == null) {
+            timeouts = new TimeoutsDefinition();
+            state.withTimeouts(timeouts);
+        }
+        return timeouts;
     }
 
     private StateDataFilter getFilter() {
