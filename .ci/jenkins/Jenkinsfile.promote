@@ -241,32 +241,29 @@ String getSnapshotBranch() {
     return "${getSnapshotVersion().toLowerCase()}-${env.BOT_BRANCH_HASH}"
 }
 
-String getReleaseNotesFile(){
-    return "RELEASE_NOTES_${getGitTag()}"
-}
-
 String updateReleaseBody(String tagName, String credsId){
+    String releaseNotesFile = 'release_notes'
     withCredentials([usernamePassword(credentialsId: credsId, usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
-        sh "gh release view ${tagName} --json body --jq .body > release_notes"
+        sh "gh release view ${tagName} --json body --jq .body > ${releaseNotesFile}"
 
-        sh '''
+        sh """
             #!/bin/bash
-            sed -i -r 's|\\[(KOGITO-[0-9]*)\\](.*)|\\1\\2|g' release_notes
-            sed -i -r 's|(KOGITO-[0-9]*)(.*)|\\[\\1\\](https\\://issues\\.redhat\\.com/browse/\\1)\\2|g' release_notes
+            sed -i -r 's|\\[(KOGITO-[0-9]*)\\](.*)|\\1\\2|g' ${releaseNotesFile}
+            sed -i -r 's|(KOGITO-[0-9]*)(.*)|\\[\\1\\](https\\://issues\\.redhat\\.com/browse/\\1)\\2|g' ${releaseNotesFile}
 
-            sed -i -r 's|\\[(DROOLS-[0-9]*)\\](.*)|\\1\\2|g' release_notes
-            sed -i -r 's|(DROOLS-[0-9]*)(.*)|\\[\\1\\](https\\://issues\\.redhat\\.com/browse/\\1)\\2|g' release_notes
+            sed -i -r 's|\\[(DROOLS-[0-9]*)\\](.*)|\\1\\2|g' ${releaseNotesFile}
+            sed -i -r 's|(DROOLS-[0-9]*)(.*)|\\[\\1\\](https\\://issues\\.redhat\\.com/browse/\\1)\\2|g' ${releaseNotesFile}
 
-            sed -i -r 's|\\[(BXMSPROD-[0-9]*)\\](.*)|\\1\\2|g' release_notes
-            sed -i -r 's|(BXMSPROD-[0-9]*)(.*)|\\[\\1\\](https\\://issues\\.redhat\\.com/browse/\\1)\\2|g' release_notes
+            sed -i -r 's|\\[(BXMSPROD-[0-9]*)\\](.*)|\\1\\2|g' ${releaseNotesFile}
+            sed -i -r 's|(BXMSPROD-[0-9]*)(.*)|\\[\\1\\](https\\://issues\\.redhat\\.com/browse/\\1)\\2|g' ${releaseNotesFile}
 
-            sed -i -r 's|\\[(kie-issues-[0-9]*)\\](.*)|\\1\\2|g' release_notes
-            sed -i -r 's|kie-issues#([0-9]*)(.*)|\\[kie-issues#\\1\\](https\\://github\\.com/kiegroup/kie-issues/issues/\\1)\\2|g' release_notes
-            sed -i -r 's|kie-issues-([0-9]*)(.*)|\\[kie-issues#\\1\\](https\\://github\\.com/kiegroup/kie-issues/issues/\\1)\\2|g' release_notes
-            cat release_notes
-        '''
+            sed -i -r 's|\\[(kie-issues-[0-9]*)\\](.*)|\\1\\2|g' ${releaseNotesFile}
+            sed -i -r 's|kie-issues#([0-9]*)(.*)|\\[kie-issues#\\1\\](https\\://github\\.com/kiegroup/kie-issues/issues/\\1)\\2|g' ${releaseNotesFile}
+            sed -i -r 's|kie-issues-([0-9]*)(.*)|\\[kie-issues#\\1\\](https\\://github\\.com/kiegroup/kie-issues/issues/\\1)\\2|g' ${releaseNotesFile}
+            cat ${releaseNotesFile}
+        """
 
-        sh "gh release edit ${tagName} -F release_notes"
+        sh "gh release edit ${tagName} -F ${releaseNotesFile}"
     }
 }
 
