@@ -104,7 +104,11 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
             WorkflowProcessInstance instance = (WorkflowProcessInstance) event.getProcessInstance();
             SynchronousQueue<JsonNodeModel> queue = queues.remove(instance.getId());
             if (queue != null) {
-                queue.add(new JsonNodeModel(instance.getId(), instance.getVariables().get(SWFConstants.DEFAULT_WORKFLOW_VAR)));
+                try {
+                    queue.offer(new JsonNodeModel(instance.getId(), instance.getVariables().get(SWFConstants.DEFAULT_WORKFLOW_VAR)), 1000L, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
     }
@@ -236,14 +240,13 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     }
 
     public Optional<JsonNodeModel> waitForFinish(String id, Duration duration) throws InterruptedException, TimeoutException {
-        Optional<ProcessInstance<JsonNodeModel>> pi = findProcessInstance(id);
-        if (pi.isEmpty()) {
-            return pi.map(ProcessInstance::variables);
-        }
-        SynchronousQueue<JsonNodeModel> queue = new SynchronousQueue<>();
-        queues.put(id, queue);
-        JsonNodeModel model = queue.poll(duration.toMillis(), TimeUnit.MILLISECONDS);
+        JsonNodeModel model = queues.computeIfAbsent(id, k -> new SynchronousQueue<>()).poll(duration.toMillis(), TimeUnit.MILLISECONDS);
         if (model == null) {
+            Optional<ProcessInstance<JsonNodeModel>> pi = findProcessInstance(id);
+            if (pi.isEmpty()) {
+                queues.remove(id);
+                return pi.map(ProcessInstance::variables);
+            }
             throw new TimeoutException("Process " + id + " has not finished after " + duration);
         }
         return Optional.of(model);
