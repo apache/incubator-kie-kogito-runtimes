@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.quarkus.processes;
+package org.kie.kogito.quarkus.runtime;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
-import org.kogito.workitem.rest.RestWorkItemHandlerUtils;
-
 import io.quarkus.arc.DefaultBean;
 import io.vertx.ext.web.client.WebClientOptions;
+
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.sslWebClientOptions;
 
 @ApplicationScoped
 public class SSLWebClientOptionsProducer {
@@ -30,6 +30,6 @@ public class SSLWebClientOptionsProducer {
     @Produces
     @DefaultBean
     public WebClientOptions webClientOptions() {
-        return RestWorkItemHandlerUtils.sslWebClientOptions();
+        return sslWebClientOptions();
     }
 }
