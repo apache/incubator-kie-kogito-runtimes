@@ -25,7 +25,7 @@ import org.eclipse.microprofile.config.spi.ConfigSource;
  */
 class KSinkInjectionHealthCheckConfigSource implements ConfigSource {
 
-    static final String CONFIG_ALIAS = "org.kie.kogito.addons.knative.eventing.health-enabled";
+    private static final String CONFIG_ALIAS = org.kie.kogito.addons.quarkus.knative.eventing.KSinkInjectionHealthCheck.CONFIG_ALIAS;
 
     private final String configValue;
 

@@ -74,7 +74,7 @@ public class KogitoAddOnKnativeEventingProcessor extends AnyEngineKogitoAddOnPro
         return new FeatureBuildItem(FEATURE);
     }
 
-    @BuildStep(onlyIfNot = { IsTest.class, IsDevelopment.class })
+    @BuildStep(onlyIfNot = { IsDevelopment.class })
     HealthBuildItem registerHealthCheck() {
         return new HealthBuildItem("org.kie.kogito.addons.quarkus.knative.eventing.KSinkInjectionHealthCheck", true);
     }

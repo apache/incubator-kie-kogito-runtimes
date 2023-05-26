@@ -24,11 +24,13 @@ import io.smallrye.config.ConfigSourceContext;
 import io.smallrye.config.ConfigSourceFactory;
 import io.smallrye.config.ConfigValue;
 
+import static org.kie.kogito.addons.quarkus.knative.eventing.KSinkInjectionHealthCheck.CONFIG_ALIAS;
+
 public final class KSinkInjectionHealthCheckConfigSourceFactory implements ConfigSourceFactory {
 
     @Override
     public Iterable<ConfigSource> getConfigSources(ConfigSourceContext context) {
-        ConfigValue configValue = context.getValue(KSinkInjectionHealthCheckConfigSource.CONFIG_ALIAS);
+        ConfigValue configValue = context.getValue(CONFIG_ALIAS);
         String value = configValue.getValue();
         if (value == null || value.isEmpty()) {
             return List.of();
