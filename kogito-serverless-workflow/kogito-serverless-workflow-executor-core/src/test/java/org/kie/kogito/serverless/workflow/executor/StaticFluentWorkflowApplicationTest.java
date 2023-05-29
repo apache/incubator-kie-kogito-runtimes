@@ -210,12 +210,22 @@ public class StaticFluentWorkflowApplicationTest {
     }
 
     @Test
-    void testMissingMessageException() throws IOException {
+    void testMissingMessageException() {
         final String funcName = "badlogging";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             Workflow workflow = workflow("Testing logs").function(FunctionBuilder.def(funcName, Type.CUSTOM, SysOutTypeHandler.SYSOUT_TYPE)).start(operation().action(
                     call(funcName))).end().build();
             assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> application.process(workflow)).withMessageContaining("message");
+        }
+    }
+
+    @Test
+    void testNoArgsMessageException() {
+        final String funcName = "badlogging";
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow workflow = workflow("Testing logs").function(FunctionBuilder.def(funcName, Type.CUSTOM, SysOutTypeHandler.SYSOUT_TYPE)).start(operation().action(
+                    call(funcName, null))).end().build();
+            assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> application.process(workflow)).withMessageContaining("Arguments cannot be null");
         }
     }
 

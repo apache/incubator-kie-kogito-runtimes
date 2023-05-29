@@ -40,7 +40,7 @@ public class SysOutTypeHandler extends ActionTypeHandler {
             VariableInfo varInfo) {
         JsonNode args = functionRef.getArguments();
         if (args == null) {
-            throw new IllegalArgumentException("Arguments cannot be empty for a sysout function");
+            throw new IllegalArgumentException("Arguments cannot be null for a sysout function");
         }
         JsonNode message = args.get(SYSOUT_TYPE_PARAM);
         if (message == null) {
@@ -54,5 +54,4 @@ public class SysOutTypeHandler extends ActionTypeHandler {
     public String type() {
         return SYSOUT_TYPE;
     }
-
 }
