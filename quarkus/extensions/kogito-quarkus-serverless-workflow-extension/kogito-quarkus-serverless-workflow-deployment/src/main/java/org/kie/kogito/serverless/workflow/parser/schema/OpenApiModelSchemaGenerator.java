@@ -31,8 +31,6 @@ import org.eclipse.microprofile.openapi.models.media.Content;
 import org.eclipse.microprofile.openapi.models.media.MediaType;
 import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.eclipse.microprofile.openapi.models.media.Schema.SchemaType;
-import org.eclipse.microprofile.openapi.models.tags.Tag;
-import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.WorkflowModelValidator;
 import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -61,20 +59,11 @@ public final class OpenApiModelSchemaGenerator {
             WorkflowProcess workflowProcess = (WorkflowProcess) workflow;
             Optional<Schema> inputSchemaSupplier = getSchema(workflowProcess.getInputValidator());
             Optional<Schema> outputSchemaSupplier = getSchema(workflowProcess.getOutputValidator());
-            Map<String, Object> metadata = workflowProcess.getMetaData();
-            Collection<String> tags = (Collection<String>) metadata.get(Metadata.TAGS);
-            String description = (String) metadata.get(Metadata.DESCRIPTION);
-            if (inputSchemaSupplier.isPresent() || outputSchemaSupplier.isPresent() || tags != null || description != null) {
+            if (inputSchemaSupplier.isPresent() || outputSchemaSupplier.isPresent()) {
                 OpenAPI openAPI = OASFactory.createOpenAPI().openapi(workflow.getId() + '_' + "workflowmodelschema").components(OASFactory.createComponents());
                 inputSchemaSupplier.ifPresent(v -> openAPI.getComponents().addSchema(getInputSchemaName(workflow.getId()), v));
                 outputSchemaSupplier.ifPresent(v -> openAPI.getComponents().addSchema(getOutputSchemaName(workflow.getId()),
                         OASFactory.createSchema().addProperty("workflowdata", v).addProperty("id", ID_SCHEMA)));
-                if (tags != null) {
-                    tags.forEach(tag -> openAPI.addTag(OASFactory.createObject(Tag.class).name(tag)));
-                }
-                if (description != null) {
-                    openAPI.addTag(OASFactory.createObject(Tag.class).name(workflow.getId()).description(description));
-                }
                 return Optional.of(openAPI);
             }
         }
