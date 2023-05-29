@@ -16,8 +16,8 @@
 package org.kie.kogito.codegen.process;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jbpm.ruleflow.core.Metadata;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -46,8 +46,11 @@ final class TagResourceGenerator {
      */
     static void addTags(CompilationUnit compilationUnit, KogitoWorkflowProcess process) {
         Map<String, Object> metadata = process.getMetaData();
+        @SuppressWarnings("unchecked")
+        Collection<String> tags = (Collection<String>) metadata.getOrDefault(Metadata.TAGS, Set.of());
+        String description = (String) metadata.get(Metadata.DESCRIPTION);
         compilationUnit.findAll(ClassOrInterfaceDeclaration.class)
-                .forEach(cls -> addTags(process, (Collection<String>) metadata.getOrDefault(Metadata.TAGS, List.of()), (String) metadata.get(Metadata.DESCRIPTION), cls));
+                .forEach(cls -> addTags(process, tags, description, cls));
     }
 
     private static void addTags(KogitoWorkflowProcess process, Collection<String> tags, String description, ClassOrInterfaceDeclaration cls) {
