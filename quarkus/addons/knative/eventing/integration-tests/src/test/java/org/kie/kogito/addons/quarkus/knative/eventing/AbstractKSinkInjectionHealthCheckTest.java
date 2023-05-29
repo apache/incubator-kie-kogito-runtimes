@@ -13,18 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.integrationtests.quarkus.knative.eventing;
+package org.kie.kogito.addons.quarkus.knative.eventing;
 
-import java.util.Map;
+import javax.inject.Inject;
 
-import org.kie.kogito.addons.quarkus.knative.eventing.KSinkInjectionHealthCheck;
+import org.eclipse.microprofile.config.Config;
+import org.hamcrest.Matcher;
 
-import io.quarkus.test.junit.QuarkusTestProfile;
+import static io.restassured.RestAssured.given;
 
-public class KSinkInjectionHealthCheckDisabledProfile implements QuarkusTestProfile {
+abstract class AbstractKSinkInjectionHealthCheckTest {
 
-    @Override
-    public Map<String, String> getConfigOverrides() {
-        return Map.of(KSinkInjectionHealthCheck.CONFIG_ALIAS, "false");
+    @Inject
+    Config config;
+
+    protected void assertHealthChecks(Matcher<?> matcher) {
+        given()
+                .when()
+                .get("/q/health/live")
+                .then()
+                .body("checks", matcher);
     }
 }

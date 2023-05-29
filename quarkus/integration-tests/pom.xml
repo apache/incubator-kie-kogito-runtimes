@@ -16,7 +16,6 @@
 
   <modules>
     <module>integration-tests-quarkus-openapi-client</module>
-      <module>integration-tests-quarkus-knative-eventing</module>
   </modules>
 
   <profiles>

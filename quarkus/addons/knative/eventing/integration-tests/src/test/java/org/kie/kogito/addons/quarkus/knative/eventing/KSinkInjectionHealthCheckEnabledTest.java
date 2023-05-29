@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.integrationtests.quarkus.knative.eventing;
+package org.kie.kogito.addons.quarkus.knative.eventing;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.addons.quarkus.knative.eventing.KSinkInjectionHealthCheck;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -25,20 +24,19 @@ import io.restassured.RestAssured;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.not;
 import static org.kie.kogito.addons.quarkus.knative.eventing.KSinkInjectionHealthCheck.CONFIG_ALIAS;
 
 @QuarkusTest
-@TestProfile(KSinkInjectionHealthCheckDisabledProfile.class)
-class KSinkInjectionHealthCheckDisabledTest extends AbstractKSinkInjectionHealthCheckTest {
+@TestProfile(KSinkInjectionHealthCheckEnabledProfile.class)
+class KSinkInjectionHealthCheckEnabledTest extends AbstractKSinkInjectionHealthCheckTest {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
-    void kSinkInjectionHealthDisabled() {
-        assertThat(config.getOptionalValue(CONFIG_ALIAS, Boolean.class)).hasValue(false);
-        assertHealthChecks(not(hasItems(hasEntry("name", KSinkInjectionHealthCheck.NAME))));
+    void kSinkInjectionHealthEnabled() {
+        assertThat(config.getOptionalValue(CONFIG_ALIAS, Boolean.class)).hasValue(true);
+        assertHealthChecks(hasItems(hasEntry("name", KSinkInjectionHealthCheck.NAME)));
     }
 }

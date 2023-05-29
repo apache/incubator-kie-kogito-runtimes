@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.integrationtests.quarkus.knative.eventing;
+package org.kie.kogito.addons.quarkus.knative.eventing;
 
 import java.util.Map;
-
-import org.kie.kogito.addons.quarkus.knative.eventing.KSinkInjectionHealthCheck;
 
 import io.quarkus.test.junit.QuarkusTestProfile;
 
