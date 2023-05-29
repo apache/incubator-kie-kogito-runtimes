@@ -40,6 +40,8 @@ import net.thisptr.jackson.jq.exception.JsonQueryException;
 
 public class JqExpression implements Expression {
 
+    static final String LANG = "jq";
+
     private static final Logger logger = LoggerFactory.getLogger(JqExpression.class);
     private final Supplier<Scope> scope;
     private final String expr;
@@ -173,7 +175,7 @@ public class JqExpression implements Expression {
         }
     }
 
-    private static Pattern JQ_FUNCTION_NAME = Pattern.compile("[a-zA-z][a-zA-z0-9_]*");
+    private static final Pattern JQ_FUNCTION_NAME = Pattern.compile("[a-zA-Z][a-zA-Z0-9_]*");
 
     @Override
     public boolean isValid() {
@@ -198,5 +200,10 @@ public class JqExpression implements Expression {
     @Override
     public Exception validationError() {
         return validationError;
+    }
+
+    @Override
+    public String lang() {
+        return LANG;
     }
 }

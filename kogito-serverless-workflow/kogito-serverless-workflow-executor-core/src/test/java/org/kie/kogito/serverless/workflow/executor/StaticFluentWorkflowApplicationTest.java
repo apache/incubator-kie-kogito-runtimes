@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.serverless.workflow.executor;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
@@ -202,25 +201,30 @@ public class StaticFluentWorkflowApplicationTest {
     }
 
     @Test
-    void testLogging() throws IOException {
+    void testLogging() {
+        Workflow workflow = workflow("Testing logs").constant("name", "Javierito")
+                .start(operation()
+                        .action(log(WorkflowLogLevel.INFO, "minero"))
+                        .action(log(WorkflowLogLevel.INFO, "0zapatero"))
+                        .action(log(WorkflowLogLevel.INFO, "keys"))
+                        .action(log(WorkflowLogLevel.INFO, "\"keys:\"+({pepe:1}|keys|tostring)"))
+                        .action(log(WorkflowLogLevel.INFO, "\"My name is \\($CONST.name)\""))
+                        .action(log(WorkflowLogLevel.INFO, "Viva er Beti")))
+                .end().build();
+        assertThat(workflow.getFunctions().getFunctionDefs()).hasSize(1);
+        Logger testLogger = (Logger) LoggerFactory.getLogger(SysoutAction.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        testLogger.addAppender(listAppender);
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
-            Workflow workflow = workflow("Testing logs").constant("name", "Javierito")
-                    .start(operation().action(log(WorkflowLogLevel.INFO, "minero")).action(log(WorkflowLogLevel.INFO, "0zapatero")).action(log(WorkflowLogLevel.INFO, "keys"))
-                            .action(log(WorkflowLogLevel.INFO, "\"keys:\"+({pepe:1}|keys|tostring)"))
-                            .action(log(WorkflowLogLevel.INFO, "\"My name is \\($CONST.name)\"")))
-                    .end().build();
-            assertThat(workflow.getFunctions().getFunctionDefs()).hasSize(1);
-            Logger testLogger = (Logger) LoggerFactory.getLogger(SysoutAction.class);
-            ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-            listAppender.start();
-            testLogger.addAppender(listAppender);
             assertThat(application.execute(workflow, Collections.emptyMap()).getWorkflowdata()).isEmpty();
-            assertThat(listAppender.list).isNotEmpty();
+            assertThat(listAppender.list).hasSize(6);
             assertThat(listAppender.list.get(0).getMessage()).isEqualTo("minero");
             assertThat(listAppender.list.get(1).getMessage()).isEqualTo("0zapatero");
-            assertThat(listAppender.list.get(2).getMessage()).isEqualTo("");
+            assertThat(listAppender.list.get(2).getMessage()).isEmpty();
             assertThat(listAppender.list.get(3).getMessage()).isEqualTo("keys:[\"pepe\"]");
             assertThat(listAppender.list.get(4).getMessage()).isEqualTo("My name is Javierito");
+            assertThat(listAppender.list.get(5).getMessage()).isEqualTo("Viva er Beti");
         }
     }
 

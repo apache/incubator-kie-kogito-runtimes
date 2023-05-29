@@ -25,16 +25,13 @@ import com.github.javaparser.ast.expr.Expression;
 
 public class SysoutActionSupplier extends SysoutAction implements ExpressionSupplier {
 
-    private final String lang;
-
     public SysoutActionSupplier(String lang, String expr, String inputVar, String logLevel) {
         super(lang, expr, inputVar, logLevel);
-        this.lang = lang;
     }
 
     @Override
     public Expression get(KogitoNode node, ProcessMetaData metadata) {
-        return ExpressionUtils.getObjectCreationExpr(SysoutAction.class, lang, expr.asString(), modelVar, logLevel, validExpr);
+        return ExpressionUtils.getObjectCreationExpr(SysoutAction.class, expr.lang(), expr.asString(), modelVar, logLevel, validExpr);
     }
 
 }
