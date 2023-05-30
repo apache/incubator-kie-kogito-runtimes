@@ -33,11 +33,15 @@ import org.eclipse.microprofile.openapi.models.media.Content;
 import org.eclipse.microprofile.openapi.models.media.MediaType;
 import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.eclipse.microprofile.openapi.models.media.Schema.SchemaType;
+import org.eclipse.microprofile.openapi.models.responses.APIResponse;
 import org.jbpm.workflow.core.WorkflowModelValidator;
 import org.jbpm.workflow.core.WorkflowProcess;
+import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.actions.JsonSchemaValidator;
+import org.kie.kogito.serverless.workflow.models.JsonNodeModelInput;
+import org.kie.kogito.serverless.workflow.models.JsonNodeModelOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,26 +52,27 @@ public final class OpenApiModelSchemaGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiModelSchemaGenerator.class);
 
-    private static final Schema ID_SCHEMA;
+    private static final Schema ID_SCHEMA = OASFactory.createSchema().type(SchemaType.STRING).description("Process instance id");
     private static final String INPUT_SUFFIX = "_input";
     private static final String OUTPUT_SUFFIX = "_output";
-
-    static {
-        ID_SCHEMA = OASFactory.createSchema();
-        ID_SCHEMA.setType(SchemaType.STRING);
-        ID_SCHEMA.setDescription("Process instance id");
-    }
 
     public static void addOpenAPIModelSchema(KogitoWorkflowProcess workflow, Map<String, Schema> schemas) {
         if (workflow instanceof WorkflowProcess) {
             WorkflowProcess workflowProcess = (WorkflowProcess) workflow;
-            getSchema(workflowProcess.getInputValidator()).ifPresent(v -> schemas.computeIfAbsent(getSchemaName(workflow.getId(), INPUT_SUFFIX), k -> schemaTitle(k, v)));
-            getSchema(workflowProcess.getOutputValidator()).ifPresent(v -> schemas.computeIfAbsent(getSchemaName(workflow.getId(), OUTPUT_SUFFIX), k -> createOutputSchema(schemaTitle(k, v))));
+            getSchema(workflowProcess.getInputValidator()).ifPresent(v -> {
+                String key = getSchemaName(workflow.getId(), INPUT_SUFFIX);
+                schemas.put(key, schemaTitle(key, v));
+            });
+            getSchema(workflowProcess.getOutputValidator()).ifPresent(v -> {
+                String key = getSchemaName(workflow.getId(), OUTPUT_SUFFIX);
+                schemas.put(key, createOutputSchema(schemaTitle(key, v)));
+            });
         }
     }
 
     private static Schema schemaTitle(String key, Schema schema) {
         if (!useTitle()) {
+            logger.debug("use schema title is disabled, using {} as title", key);
             schema.title(key);
         } else if (schema.getTitle() == null) {
             logger.warn("Title for schema {} is null, using {}", schema, key);
@@ -99,6 +104,7 @@ public final class OpenApiModelSchemaGenerator {
                 processOperation(schemas, pathItem.getPUT());
                 processOperation(schemas, pathItem.getPATCH());
                 processOperation(schemas, pathItem.getGET());
+                processOperation(schemas, pathItem.getDELETE());
             }
         }
     }
@@ -116,7 +122,7 @@ public final class OpenApiModelSchemaGenerator {
     }
 
     private static String getSchemaName(String id, String suffix) {
-        return id + "_" + suffix;
+        return id + suffix;
     }
 
     private static void processOperation(Map<String, Schema> schemas, Operation operation) {
@@ -127,19 +133,38 @@ public final class OpenApiModelSchemaGenerator {
                     if (operation.getRequestBody() != null) {
                         Schema schema = schemas.get(getSchemaName(tag, INPUT_SUFFIX));
                         if (schema != null) {
-                            getMediaTypes(operation.getRequestBody().getContent()).forEach(mediaType -> mediaType.setSchema(schema));
+                            getMediaTypes(operation.getRequestBody().getContent()).stream().filter(OpenApiModelSchemaGenerator::isInput).forEach(mediaType -> mediaType.setSchema(schema));
                         }
                     }
                     if (operation.getResponses() != null && operation.getResponses().getAPIResponses() != null) {
                         Schema schema = schemas.get(getSchemaName(tag, OUTPUT_SUFFIX));
                         if (schema != null) {
-                            operation.getResponses().getAPIResponses().values().stream()
-                                    .flatMap(response -> getMediaTypes(response.getContent()).stream()).forEach(mediaType -> mediaType.setSchema(schema));
+                            for (APIResponse response : operation.getResponses().getAPIResponses().values()) {
+                                Content content = response.getContent();
+                                if (content == null) {
+                                    response.setContent(OASFactory.createContent().addMediaType("application/json", OASFactory.createMediaType().schema(schema)));
+                                } else {
+                                    getMediaTypes(content).stream().filter(OpenApiModelSchemaGenerator::isOutput).forEach(mediaType -> mediaType.setSchema(schema));
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    private static boolean isOutput(MediaType type) {
+        return isJsonModelRef(type, JsonNodeModelOutput.class);
+    }
+
+    private static boolean isInput(MediaType type) {
+        return isJsonModelRef(type, JsonNodeModelInput.class);
+    }
+
+    private static boolean isJsonModelRef(MediaType type, Class<? extends Model> clazz) {
+        Schema schema = type.getSchema();
+        return schema != null && type.getSchema().getRef() != null && type.getSchema().getRef().endsWith(clazz.getSimpleName());
     }
 
     private static Collection<MediaType> getMediaTypes(Content content) {

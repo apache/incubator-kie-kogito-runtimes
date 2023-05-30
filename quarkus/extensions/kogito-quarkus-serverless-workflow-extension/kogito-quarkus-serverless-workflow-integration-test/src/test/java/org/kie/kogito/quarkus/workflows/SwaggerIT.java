@@ -48,6 +48,7 @@ class SwaggerIT {
         logger.trace("Open API body {}", response);
         OpenAPI openAPI = new OpenAPIParser().readContents(response, null, null).getOpenAPI();
         Set<String> tags = new HashSet<>();
+
         for (PathItem path : openAPI.getPaths().values()) {
             checkOperation(path.getPost(), tags);
             checkOperation(path.getGet(), tags);
@@ -56,7 +57,8 @@ class SwaggerIT {
             checkOperation(path.getPut(), tags);
         }
         logger.debug("Tags collected {}", tags);
-        assertThat(tags).isNotEmpty();
+        assertThat(tags).contains("expression");
+
     }
 
     private void checkOperation(Operation operation, Set<String> tags) {
