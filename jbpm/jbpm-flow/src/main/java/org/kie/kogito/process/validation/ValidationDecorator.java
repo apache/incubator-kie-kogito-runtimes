@@ -29,6 +29,8 @@ public abstract class ValidationDecorator {
 
     @Override
     public String toString() {
-        return exceptions.toString();
+        StringBuilder sb = new StringBuilder();
+        exceptions.forEach((processId, exception) -> sb.append(String.format("Invalid process: '%s'. Found error: %s\n", processId, exception)));
+        return sb.toString();
     }
 }

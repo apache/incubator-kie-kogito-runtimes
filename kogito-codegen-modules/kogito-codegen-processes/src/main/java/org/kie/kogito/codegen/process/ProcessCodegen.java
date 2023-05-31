@@ -43,6 +43,7 @@ import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.core.SemanticModules;
+import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.core.validation.ProcessValidatorRegistry;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
@@ -123,7 +124,7 @@ public class ProcessCodegen extends AbstractGenerator {
                             if (useSvgAddon) {
                                 processSVG(resource, resources, p, processSVGMap);
                             }
-                            return p.stream().map(KogitoWorkflowProcess.class::cast).map(GeneratedInfo::new);
+                            return p.stream().map(KogitoWorkflowProcess.class::cast).map(GeneratedInfo::new).map(info -> addResource(info, resource));
                         } else {
                             return SUPPORTED_SW_EXTENSIONS.entrySet()
                                     .stream()
@@ -131,7 +132,7 @@ public class ProcessCodegen extends AbstractGenerator {
                                     .map(e -> {
                                         GeneratedInfo<KogitoWorkflowProcess> generatedInfo = parseWorkflowFile(resource, e.getValue(), context);
                                         notifySourceFileCodegenBindListeners(context, resource, Collections.singletonList(generatedInfo.info()));
-                                        return generatedInfo;
+                                        return addResource(generatedInfo, resource);
                                     });
                         }
                     } catch (ValidationException | ProcessParsingException e) {
@@ -152,6 +153,11 @@ public class ProcessCodegen extends AbstractGenerator {
         return ofProcesses(context, processes);
     }
 
+    private static GeneratedInfo<KogitoWorkflowProcess> addResource(GeneratedInfo<KogitoWorkflowProcess> info, Resource r) {
+        ((ProcessImpl) info.info()).setResource(r);
+        return info;
+    }
+
     private static void notifySourceFileCodegenBindListeners(KogitoBuildContext context, Resource resource, Collection<Process> processes) {
         context.getSourceFileCodegenBindNotifier()
                 .ifPresent(notifier -> processes.forEach(p -> notifier.notify(new SourceFileCodegenBindEvent(p.getId(), resource.getSourcePath()))));
@@ -163,7 +169,7 @@ public class ProcessCodegen extends AbstractGenerator {
             decorator.decorate();
             //rethrow exception to break the flow after decoration unless property is set to false
             if (context.getApplicationProperty("kogito.process.build.failOnError", Boolean.class).orElse(true)) {
-                throw new ProcessCodegenException(decorator.toString());
+                throw new ProcessCodegenException("Processes with errors are " + decorator.toString());
             }
         }
     }
