@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2023 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow;
+package org.kie.kogito.serverless.workflow.executor;
 
-public class SWFConstants {
+import org.kie.kogito.serverless.workflow.python.PythonWorkItemHandler;
 
-    public static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
-    public static final String MODEL_WORKFLOW_VAR = "Parameter";
-    public static final String CONTENT_DATA = "ContentData";
-    public static final String SCRIPT = "script";
-    public static final String PYTHON = "python";
+public class StaticPythonScriptRegister implements StaticApplicationRegister {
 
-    private SWFConstants() {
+    private PythonWorkItemHandler wih;
+
+    @Override
+    public void register(StaticWorkflowApplication application) {
+        application.registerHandler(wih = new PythonWorkItemHandler());
+    }
+
+    @Override
+    public void close() {
+        if (wih != null) {
+            wih.close();
+        }
     }
 }
