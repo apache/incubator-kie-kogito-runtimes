@@ -26,7 +26,8 @@ import io.serverlessworkflow.api.functions.FunctionRef;
 
 public class ActionNodeUtils {
 
-    public static ActionNodeFactory<?> actionNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, ParserContext context, FunctionDefinition functionDef) {
+    public static <T extends RuleFlowNodeContainerFactory<T, ?>> ActionNodeFactory<T> actionNode(RuleFlowNodeContainerFactory<T, ?> embeddedSubProcess, ParserContext context,
+            FunctionDefinition functionDef) {
         return embeddedSubProcess.actionNode(context.newId()).name(functionDef.getName());
     }
 

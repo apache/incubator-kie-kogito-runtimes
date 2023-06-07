@@ -34,7 +34,7 @@ public class PythonFluentWorkflowApplicationTest {
     @Test
     void testPythonNoArgs() {
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
-            Workflow workflow = workflow("PythonTest").start(operation().action(script("x='pepe'", ScriptType.Python)).outputFilter("{result:$WORKFLOW.python.x}"))
+            Workflow workflow = workflow("PythonTest").start(operation().action(script("x='pepe'", ScriptType.PYTHON)).outputFilter("{result:$WORKFLOW.python.x}"))
                     .end().build();
             assertThat(application.execute(workflow, Collections.emptyMap()).getWorkflowdata().get("result").asText()).isEqualTo("pepe");
         }
@@ -43,7 +43,7 @@ public class PythonFluentWorkflowApplicationTest {
     @Test
     void testPythonWithArgs() {
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
-            Workflow workflow = workflow("PythonTest").start(operation().action(script("x*=2", ScriptType.Python, jsonObject().put("x", ".x"))).outputFilter("{result:$WORKFLOW.python.x}"))
+            Workflow workflow = workflow("PythonTest").start(operation().action(script("x*=2", ScriptType.PYTHON, jsonObject().put("x", ".x"))).outputFilter("{result:$WORKFLOW.python.x}"))
                     .end().build();
             assertThat(application.execute(workflow, Map.of("x", 2)).getWorkflowdata().get("result").asInt()).isEqualTo(4);
         }

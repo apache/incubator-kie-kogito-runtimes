@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-addons-quarkus-serverless-workflow-parent</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+  </parent>
+  <name>Kogito:: Addons :: Quarkus:: Serverless Workflow:: Python</name>
+  <description>Python support for serverless workflow</description>
+  <artifactId>kogito-addons-quarkus-serverless-workflow-python</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-serverless-workflow-python-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-arc</artifactId>
+    </dependency>
+  </dependencies>
+</project>

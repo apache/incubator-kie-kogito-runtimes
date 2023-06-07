@@ -47,8 +47,8 @@ public class ActionBuilder {
     private Optional<EventDefBuilder> eventDefinition = Optional.empty();
 
     public enum ScriptType {
-        Python,
-        Java
+        PYTHON,
+        JAVA
     }
 
     final Optional<FunctionBuilder> getFunction() {

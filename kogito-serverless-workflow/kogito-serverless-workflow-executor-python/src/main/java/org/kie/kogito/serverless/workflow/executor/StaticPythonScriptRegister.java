@@ -23,7 +23,8 @@ public class StaticPythonScriptRegister implements StaticApplicationRegister {
 
     @Override
     public void register(StaticWorkflowApplication application) {
-        application.registerHandler(wih = new PythonWorkItemHandler());
+        wih = new PythonWorkItemHandler();
+        application.registerHandler(wih);
     }
 
     @Override
