@@ -17,9 +17,12 @@ package org.kie.kogito.quarkus.serverless.workflow;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
+import java.util.WeakHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -47,6 +50,7 @@ import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.F
 public class WorkflowCodeGenUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkflowCodeGenUtils.class);
+    private static Map<Path, Optional<Workflow>> workflowCache = new WeakHashMap<>();
 
     private WorkflowCodeGenUtils() {
     }
@@ -90,8 +94,8 @@ public class WorkflowCodeGenUtils {
                 URIContentLoaderFactory.buildLoader(operationId.getUri(), Thread.currentThread().getContextClassLoader(), workflow, function.getAuthRef()));
     }
 
-    private static Optional<Workflow> getWorkflow(Path p) {
-        return ProcessCodegen.SUPPORTED_SW_EXTENSIONS.entrySet()
+    private static Optional<Workflow> getWorkflow(Path path) {
+        return workflowCache.computeIfAbsent(path, p -> ProcessCodegen.SUPPORTED_SW_EXTENSIONS.entrySet()
                 .stream()
                 .filter(e -> p.getFileName().toString().endsWith(e.getKey()))
                 .map(e -> {
@@ -99,12 +103,12 @@ public class WorkflowCodeGenUtils {
                         return Optional.of(ServerlessWorkflowUtils.getWorkflow(r, e.getValue()));
                     } catch (IOException ex) {
                         if (ConfigProvider.getConfig().getOptionalValue(FAIL_ON_ERROR_PROPERTY, Boolean.class).orElse(true)) {
-                            throw new IllegalStateException(ex);
+                            throw new UncheckedIOException(ex);
                         } else {
                             logger.error("Error reading workflow file {}", p, ex);
                             return Optional.<Workflow> empty();
                         }
                     }
-                }).flatMap(Optional::stream).findFirst();
+                }).flatMap(Optional::stream).findFirst());
     }
 }
