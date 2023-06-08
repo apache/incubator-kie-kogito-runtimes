@@ -22,8 +22,6 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.parsers.SAXParser;
-
 import org.jbpm.compiler.xml.core.ExtensibleXmlParser;
 import org.jbpm.compiler.xml.core.SemanticModules;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
@@ -46,10 +44,7 @@ public class XmlProcessReader {
     private List<Process> processes;
 
     public XmlProcessReader(final SemanticModules modules, ClassLoader classLoader) {
-        this(modules, classLoader, null);
-    }
 
-    public XmlProcessReader(final SemanticModules modules, ClassLoader classLoader, final SAXParser parser) {
         this.parser = new ExtensibleXmlParser() {
             @Override
             protected String buildPrintMessage(final SAXParseException x) {
@@ -73,9 +68,6 @@ public class XmlProcessReader {
             }
         };
 
-        if (parser != null) {
-            this.parser.setParser(parser);
-        }
         this.parser.setSemanticModules(modules);
         this.parser.setData(new ProcessBuildData());
         this.parser.setClassLoader(classLoader);

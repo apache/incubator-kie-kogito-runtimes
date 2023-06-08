@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,6 +52,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -83,9 +85,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     /** SAX parser. */
     private SAXParser parser;
 
-    /** isValidating */
-    private boolean isValidating = true;
-
     private int timeout = 0;
 
     /** Locator for errors. */
@@ -109,11 +108,12 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
     private final MessageFormat message = new MessageFormat("({0}: {1}, {2}): {3}");
 
-    private final Map namespaces = new HashMap();
+    private final Map<String, String> namespaces = new HashMap<>();
 
     private EntityResolver entityResolver;
 
     private Document document;
+
     private DocumentFragment docFragment;
 
     private ClassLoader classLoader;
@@ -202,119 +202,64 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
      * @return The rule-set.
      * @throws ParserConfigurationException
      */
-    public Object read(final InputSource in) throws SAXException,
-            IOException {
-        if (this.docFragment == null) {
-            DocumentBuilderFactory f;
-            try {
-                f = DocumentBuilderFactory.newInstance();
-            } catch (FactoryConfigurationError e) {
-                // obscure JDK1.5 bug where FactoryFinder in the JRE returns a null ClassLoader, so fall back to hard coded xerces.
-                // https://stg.network.org/bugzilla/show_bug.cgi?id=47169
-                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4633368
-                try {
-                    f = (DocumentBuilderFactory) Class.forName("org.apache.xerces.jaxp.DocumentBuilderFactoryImpl").newInstance();
-                } catch (Exception e1) {
-                    throw new RuntimeException("Unable to create new DOM Document",
-                            e1);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to create new DOM Document",
-                        e);
-            }
-            // XXE protection start
-            try {
-                f.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                f.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+    public Object read(final InputSource in) throws SAXException, IOException {
 
-            } catch (ParserConfigurationException e) {
-                logger.warn("Unable to set parser features due to {}", e.getMessage());
-            }
-            // XXE protection end
+        if (this.docFragment == null) {
             try {
-                this.document = f.newDocumentBuilder().newDocument();
+                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+                // XXE protection start
+                documentBuilderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                documentBuilderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+                documentBuilder.setEntityResolver(this);
+
+                this.document = documentBuilder.newDocument();
+                this.docFragment = this.document.createDocumentFragment();
+
+            } catch (FactoryConfigurationError e) {
+                throw new RuntimeException("Unable to create new DocumentBuilderFactory", e);
+            } catch (ParserConfigurationException e) {
+                throw new RuntimeException("Could not set parser features", e);
             } catch (Exception e) {
-                throw new RuntimeException("Unable to create new DOM Document",
-                        e);
+                throw new RuntimeException("Unable to create new DOM Document", e);
             }
-            this.docFragment = this.document.createDocumentFragment();
         }
 
-        SAXParser localParser = null;
         if (this.parser == null) {
-            SAXParserFactory factory = null;
             try {
-                factory = SAXParserFactory.newInstance();
-            } catch (FactoryConfigurationError e) {
-                // obscure JDK1.5 bug where FactoryFinder in the JRE returns a null ClassLoader, so fall back to hard coded xerces.
-                // https://stg.network.org/bugzilla/show_bug.cgi?id=47169
-                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4633368
-                try {
-                    factory = (SAXParserFactory) Class.forName("org.apache.xerces.jaxp.SAXParserFactoryImpl").newInstance();
-                } catch (Exception e1) {
-                    throw new RuntimeException("Unable to create new DOM Document",
-                            e1);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to create new DOM Document",
-                        e);
-            }
-
-            factory.setNamespaceAware(true);
-            // XXE protection start
-            try {
+                SAXParserFactory factory = SAXParserFactory.newInstance();
+                factory.setNamespaceAware(true);
+                // XXE protection start with an entity resolver used in this class implementation
+                factory.setValidating(true);
                 factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
                 factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
+                SAXParser candidateParser = factory.newSAXParser();
+                candidateParser.setProperty(ExtensibleXmlParser.JAXP_SCHEMA_LANGUAGE, ExtensibleXmlParser.W3C_XML_SCHEMA);
+                this.parser = candidateParser;
+            } catch (FactoryConfigurationError e) {
+                throw new RuntimeException("Unable to create SAX Parser Factory", e);
             } catch (ParserConfigurationException e) {
-                logger.warn("Unable to set parser features due to {}", e.getMessage());
+                throw new RuntimeException("Unable to set parser features", e);
+            } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
+                throw new RuntimeException("Unable to set parser properties", e);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create new DOM Document", e);
             }
-            // XXE protection end
-
-            if (System.getProperty("drools.schema.validating") != null) {
-                this.isValidating = Boolean.getBoolean("drools.schema.validating");
-            }
-
-            if (this.isValidating == true) {
-                factory.setValidating(true);
-                try {
-                    localParser = factory.newSAXParser();
-                } catch (final ParserConfigurationException e) {
-                    throw new RuntimeException(e.getMessage());
-                }
-
-                try {
-                    localParser.setProperty(ExtensibleXmlParser.JAXP_SCHEMA_LANGUAGE,
-                            ExtensibleXmlParser.W3C_XML_SCHEMA);
-                } catch (final SAXNotRecognizedException e) {
-                    boolean hideWarnings = Boolean.getBoolean("drools.schema.hidewarnings");
-                    if (!hideWarnings) {
-                        logger.warn("Your SAX parser is not JAXP 1.2 compliant - turning off validation.");
-                    }
-                    localParser = null;
-                }
-            }
-
-            if (localParser == null) {
-                // not jaxp1.2 compliant so turn off validation
-                try {
-                    this.isValidating = false;
-                    factory.setValidating(this.isValidating);
-                    localParser = factory.newSAXParser();
-                } catch (final ParserConfigurationException e) {
-                    throw new RuntimeException(e.getMessage());
-                }
-            }
-        } else {
-            localParser = this.parser;
         }
 
-        if (!localParser.isNamespaceAware()) {
+        if (this.parser == null) {
+            throw new RuntimeException("Could not create a XML parser");
+        }
+
+        if (!this.parser.isNamespaceAware()) {
             throw new RuntimeException("parser must be namespace-aware");
         }
 
-        localParser.parse(in,
-                this);
+        // the XXE protection is about enabling the validation plus the entity resolver of this class,
+        // which resolves locally the xsd (within jars/file system)
+        this.parser.parse(in, this);
 
         return this.data;
     }
@@ -359,7 +304,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
     @Override
     public void startDocument() {
-        this.isValidating = true;
         this.current = null;
         this.peer = null;
         this.parents.clear();
@@ -610,10 +554,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
         }
     }
 
-    public SAXParser getParser() {
-        return parser;
-    }
-
     public Object getParent(int index) {
         ListIterator it = this.parents.listIterator(this.parents.size());
         int x = 0;
@@ -653,20 +593,65 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     }
 
     @Override
-    public InputSource resolveEntity(final String publicId,
-            final String systemId) throws SAXException {
+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
         try {
-            final InputSource inputSource = resolveSchema(publicId,
-                    systemId);
+            InputSource inputSource = resolveSchema(publicId, systemId);
             if (inputSource != null) {
                 return inputSource;
             }
             if (this.entityResolver != null) {
-                return this.entityResolver.resolveEntity(publicId,
-                        systemId);
+                return this.entityResolver.resolveEntity(publicId, systemId);
             }
-        } catch (final IOException ioe) {
+        } catch (IOException | SAXException ioe) {
+            logger.warn("Not being able to process publicId {} and systemId {}", publicId, systemId);
         }
+        return null;
+    }
+
+    @SuppressWarnings("resource")
+    private InputSource resolveSchema(String publicId, String systemId) throws SAXException, IOException {
+        // Schema files must end with xsd
+        if (!systemId.toLowerCase().endsWith("xsd")) {
+            return null;
+        }
+
+        // Try and get the index for the filename, else return null
+        String xsd;
+        int index = systemId.lastIndexOf("/");
+        if (index == -1) {
+            index = systemId.lastIndexOf("\\");
+        }
+
+        if (index != -1) {
+            xsd = systemId.substring(index + 1);
+        } else {
+            xsd = systemId;
+        }
+
+        // Try looking at root of classpath
+
+        InputStream is = ExtensibleXmlParser.class.getResourceAsStream("/" + xsd);
+        if (is != null) {
+            return new InputSource(is);
+        }
+
+        // Try looking in /META-INF
+        is = ExtensibleXmlParser.class.getResourceAsStream("/META-INF/" + xsd);
+        if (is != null) {
+            return new InputSource(is);
+        }
+
+        // Try looking in META-INF
+        is = ExtensibleXmlParser.class.getResourceAsStream("META-INF/" + xsd);
+        if (is != null) {
+            return new InputSource(is);
+        }
+
+        File file = new File(xsd);
+        if (file.exists()) {
+            return new InputSource(new BufferedInputStream(new FileInputStream(file)));
+        }
+
         return null;
     }
 
@@ -705,61 +690,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
         throw x;
     }
 
-    private InputSource resolveSchema(final String publicId,
-            final String systemId) throws SAXException,
-            IOException {
-        // Schema files must end with xsd
-        if (!systemId.toLowerCase().endsWith("xsd")) {
-            return null;
-        }
-
-        // Try and get the index for the filename, else return null
-        String xsd;
-        int index = systemId.lastIndexOf("/");
-        if (index == -1) {
-            index = systemId.lastIndexOf("\\");
-        }
-        if (index != -1) {
-            xsd = systemId.substring(index + 1);
-        } else {
-            xsd = systemId;
-        }
-
-        // Try looking at root of classpath
-        {
-            InputStream is = ExtensibleXmlParser.class.getResourceAsStream("/" + xsd);
-            if (is != null) {
-                return new InputSource(is);
-            }
-        }
-
-        // Try looking in /META-INF
-        {
-            final InputStream is = ExtensibleXmlParser.class.getResourceAsStream("/META-INF/" + xsd);
-            if (is != null) {
-                return new InputSource(is);
-            }
-        }
-
-        // Try looking in META-INF
-        {
-            final InputStream is = ExtensibleXmlParser.class.getResourceAsStream("META-INF/" + xsd);
-            if (is != null) {
-                return new InputSource(is);
-            }
-        }
-
-        // Try current working directory
-        {
-            final File file = new File(xsd);
-            if (file.exists()) {
-                return new InputSource(new BufferedInputStream(new FileInputStream(file)));
-            }
-        }
-
-        return null;
-    }
-
     /**
      * Initializes EntityResolver that is configured via system property ENTITY_RESOLVER_PROPERTY_NAME.
      */
@@ -795,10 +725,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
     public Attributes getAttrs() {
         return this.attrs;
-    }
-
-    public void setParser(final SAXParser parser) {
-        this.parser = parser;
     }
 
     public Object getNamespaceURI(String namespace) {

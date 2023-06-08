@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
-import javax.xml.parsers.SAXParser;
-
 import org.drools.drl.ast.descr.PackageDescr;
 import org.jbpm.compiler.xml.core.ExtensibleXmlParser;
 import org.jbpm.compiler.xml.core.SemanticModules;
@@ -33,15 +31,7 @@ public class XmlPackageReader {
     private PackageDescr packageDescr;
 
     public XmlPackageReader(final SemanticModules modules) {
-        this(modules, null);
-    }
-
-    public XmlPackageReader(final SemanticModules modules, final SAXParser parser) {
-        if (parser == null) {
-            this.parser = new ExtensibleXmlParser();
-        } else {
-            this.parser = new ExtensibleXmlParser(parser);
-        }
+        this.parser = new ExtensibleXmlParser();
         this.parser.setSemanticModules(modules);
     }
 
@@ -57,8 +47,7 @@ public class XmlPackageReader {
      *
      * @return The rule-set.
      */
-    public PackageDescr read(final Reader reader) throws SAXException,
-            IOException {
+    public PackageDescr read(final Reader reader) throws SAXException, IOException {
         this.packageDescr = (PackageDescr) this.parser.read(reader);
         return this.packageDescr;
     }
