@@ -113,7 +113,7 @@ public class ProcessGenerator {
         this.processExecutable = processGenerator;
         this.typeName = typeName;
         this.modelTypeName = modelTypeName;
-        this.targetTypeName = typeName + "Process";
+        this.targetTypeName = typeName.replace('-', '_') + "Process";
         this.targetCanonicalName = packageName + "." + targetTypeName;
         this.generatedFilePath = targetCanonicalName.replace('.', '/') + ".java";
         this.completePath = "src/main/java/" + generatedFilePath;
