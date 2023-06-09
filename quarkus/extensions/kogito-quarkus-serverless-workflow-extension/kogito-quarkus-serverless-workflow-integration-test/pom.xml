@@ -25,10 +25,6 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-serverless-workflow</artifactId>
     </dependency>
-     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-quarkus-serverless-workflow-python</artifactId>
-    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>

@@ -17,16 +17,14 @@ package org.kie.kogito.quarkus.workflows;
 
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
-@QuarkusTestResource(GrpcServerPortResource.class)
-@QuarkusIntegrationTest
-class PythonFlowIT {
+@QuarkusTest
+class PythonFlowTest {
 
     @Test
     void testPython() {

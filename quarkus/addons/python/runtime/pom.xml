@@ -18,4 +18,26 @@
       <artifactId>quarkus-arc</artifactId>
     </dependency>
   </dependencies>
+  <build>
+	  <plugins>
+	   <plugin>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-maven-plugin</artifactId>
+        <version>${version.io.quarkus}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <skip>${skipTests}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build</goal>
+              <goal>generate-code</goal>
+              <goal>generate-code-tests</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      </plugins>
+  </build>
 </project>
