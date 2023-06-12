@@ -72,7 +72,7 @@ public abstract class ProcessSvgServiceTest {
 
         Diff myDiff = new CustomSVGDiffer(content).withTest(Input.fromString(readFileContent("travels-expected.svg")));
 
-        assertThat(myDiff.hasDifferences()).isEqualTo(false);
+        assertThat(myDiff.hasDifferences()).isFalse();
 
         assertThat(getTestedProcessSvgService().annotateExecutedPath(
                 null,
