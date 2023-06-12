@@ -30,7 +30,6 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.correlation.Correlation;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
@@ -58,6 +57,7 @@ import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 import static org.kie.kogito.codegen.core.CodegenUtils.isApplicationField;
 import static org.kie.kogito.codegen.core.CodegenUtils.isObjectMapperField;
 import static org.kie.kogito.codegen.core.CodegenUtils.isProcessField;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
 
 public class MessageConsumerGenerator {
 
@@ -87,7 +87,7 @@ public class MessageConsumerGenerator {
         this.processPackageName = process.getPackageName();
         this.processId = process.getId();
         this.processName = processId.substring(processId.lastIndexOf('.') + 1);
-        this.resourceClazzName = CodegenUtils.sanitizeClassName(processName) + "MessageConsumer_" + trigger.getOwnerId();
+        this.resourceClazzName = sanitizeClassName(processName) + "MessageConsumer_" + trigger.getOwnerId();
         this.dataClazzName = modelfqcn.substring(modelfqcn.lastIndexOf('.') + 1);
         this.processClazzName = processfqcn;
         this.appCanonicalName = appCanonicalName;

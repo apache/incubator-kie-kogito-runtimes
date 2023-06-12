@@ -29,6 +29,8 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
+
 public class MessageProducerGenerator {
 
     protected static final String EVENT_DATA_VAR = "eventData";
@@ -64,7 +66,7 @@ public class MessageProducerGenerator {
         this.processPackageName = process.getPackageName();
         this.processId = process.getId();
         this.processName = processId.substring(processId.lastIndexOf('.') + 1);
-        this.resourceClazzName = CodegenUtils.sanitizeClassName(processName) + "MessageProducer_" + trigger.getOwnerId();
+        this.resourceClazzName = sanitizeClassName(processName) + "MessageProducer_" + trigger.getOwnerId();
 
         this.generator = TemplatedGenerator.builder()
                 .withTargetTypeName(resourceClazzName)

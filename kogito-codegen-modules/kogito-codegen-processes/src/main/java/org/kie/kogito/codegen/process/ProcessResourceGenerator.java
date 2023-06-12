@@ -53,6 +53,8 @@ import com.github.javaparser.ast.type.Type;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeJavaName;
 
 /**
  * ProcessResourceGenerator
@@ -92,7 +94,7 @@ public class ProcessResourceGenerator {
         this.process = process;
         this.processId = process.getId();
         this.processName = processId.substring(processId.lastIndexOf('.') + 1);
-        this.resourceClazzName = CodegenUtils.sanitizeClassName(processName + "Resource");
+        this.resourceClazzName = sanitizeClassName(processName + "Resource");
         this.relativePath = process.getPackageName().replace(".", "/") + "/" + resourceClazzName + ".java";
         this.modelfqcn = modelfqcn;
         this.dataClazzName = modelfqcn.substring(modelfqcn.lastIndexOf('.') + 1);
@@ -206,7 +208,7 @@ public class ProcessResourceGenerator {
 
         Map<String, String> typeInterpolations = new HashMap<>();
         taskModelFactoryUnit = parse(this.getClass().getResourceAsStream("/class-templates/TaskModelFactoryTemplate.java"));
-        String taskModelFactorySimpleClassName = CodegenUtils.sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + "TaskModelFactory");
+        String taskModelFactorySimpleClassName = sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + "TaskModelFactory");
         taskModelFactoryUnit.setPackageDeclaration(process.getPackageName());
         taskModelFactoryClassName = process.getPackageName() + "." + taskModelFactorySimpleClassName;
         ClassOrInterfaceDeclaration taskModelFactoryClass = taskModelFactoryUnit.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(IllegalStateException::new);
@@ -340,7 +342,7 @@ public class ProcessResourceGenerator {
     private void interpolateMethods(MethodDeclaration m) {
         SimpleName methodName = m.getName();
         String interpolated =
-                methodName.asString().replace("$name$", CodegenUtils.sanitizeJavaName(processName));
+                methodName.asString().replace("$name$", sanitizeJavaName(processName));
         m.setName(interpolated);
     }
 

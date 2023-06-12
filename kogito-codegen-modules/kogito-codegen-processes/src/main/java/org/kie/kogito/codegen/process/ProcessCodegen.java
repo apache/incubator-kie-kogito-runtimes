@@ -55,7 +55,6 @@ import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.AbstractGenerator;
-import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
@@ -74,6 +73,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.buildDashboardName;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.generateOperationalDashboard;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.FAIL_ON_ERROR_PROPERTY;
 
 /**
@@ -330,7 +330,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // generate Process, ProcessInstance classes and the REST resource
         for (ProcessExecutableModelGenerator execModelGen : processExecutableModelGenerators) {
-            String classPrefix = CodegenUtils.sanitizeClassName(execModelGen.extractedProcessId());
+            String classPrefix = sanitizeClassName(execModelGen.extractedProcessId());
             KogitoWorkflowProcess workFlowProcess = execModelGen.process();
             ModelClassGenerator modelClassGenerator =
                     processIdToModelGenerator.getOrDefault(execModelGen.getProcessId(), new ModelClassGenerator(context(), workFlowProcess));

@@ -20,7 +20,7 @@ import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
-import static org.kie.kogito.codegen.core.CodegenUtils.sanitizeClassName;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
 
 public class InputModelClassGenerator {
 

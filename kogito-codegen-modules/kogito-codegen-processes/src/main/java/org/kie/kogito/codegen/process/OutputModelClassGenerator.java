@@ -19,7 +19,8 @@ import org.jbpm.compiler.canonical.ModelMetaData;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.CodegenUtils;
+
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
 
 public class OutputModelClassGenerator {
 
@@ -32,7 +33,7 @@ public class OutputModelClassGenerator {
 
     public OutputModelClassGenerator(KogitoBuildContext context, WorkflowProcess workFlowProcess) {
         String pid = workFlowProcess.getId();
-        className = CodegenUtils.sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(pid) + "ModelOutput");
+        className = sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(pid) + "ModelOutput");
         this.modelClassName = workFlowProcess.getPackageName() + "." + className;
 
         this.context = context;

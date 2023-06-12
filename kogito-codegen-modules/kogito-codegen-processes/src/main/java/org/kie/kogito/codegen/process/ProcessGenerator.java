@@ -33,7 +33,6 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.correlation.CorrelationService;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -68,6 +67,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
 
 /**
  * Generates the Process&lt;T&gt; container
@@ -492,7 +492,7 @@ public class ProcessGenerator {
                 ClassOrInterfaceType modelType = new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()),
                         NodeList.nodeList(
                                 new ClassOrInterfaceType(null, processMetaData.getModelPackageName() != null ? processMetaData.getModelPackageName() + "." + processMetaData.getModelClassName()
-                                        : CodegenUtils.sanitizeClassName(subProcess.getKey() + "Model"))));
+                                        : sanitizeClassName(subProcess.getKey() + "Model"))));
                 if (context.hasDI()) {
                     subprocessFieldDeclaration
                             .addVariable(new VariableDeclarator(modelType, fieldName));
