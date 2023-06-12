@@ -26,7 +26,6 @@ import java.util.Optional;
 import javax.lang.model.SourceVersion;
 
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
-import org.drools.util.StringUtils;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.Process;
@@ -34,6 +33,7 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.correlation.CorrelationService;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -111,9 +111,9 @@ public class ProcessGenerator {
         this.packageName = process.getPackageName();
         this.process = process;
         this.processExecutable = processGenerator;
-        this.typeName = typeName.replace('-', '_');
+        this.typeName = typeName;
         this.modelTypeName = modelTypeName;
-        this.targetTypeName = this.typeName + "Process";
+        this.targetTypeName = typeName + "Process";
         this.targetCanonicalName = packageName + "." + targetTypeName;
         this.generatedFilePath = targetCanonicalName.replace('.', '/') + ".java";
         this.completePath = "src/main/java/" + generatedFilePath;
@@ -492,7 +492,7 @@ public class ProcessGenerator {
                 ClassOrInterfaceType modelType = new ClassOrInterfaceType(null, new SimpleName(org.kie.kogito.process.Process.class.getCanonicalName()),
                         NodeList.nodeList(
                                 new ClassOrInterfaceType(null, processMetaData.getModelPackageName() != null ? processMetaData.getModelPackageName() + "." + processMetaData.getModelClassName()
-                                        : StringUtils.ucFirst(subProcess.getKey() + "Model"))));
+                                        : CodegenUtils.sanitizeClassName(subProcess.getKey() + "Model"))));
                 if (context.hasDI()) {
                     subprocessFieldDeclaration
                             .addVariable(new VariableDeclarator(modelType, fieldName));

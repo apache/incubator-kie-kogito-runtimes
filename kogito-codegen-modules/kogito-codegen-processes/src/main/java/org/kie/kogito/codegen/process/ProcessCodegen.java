@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
-import org.drools.util.StringUtils;
 import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
 import org.jbpm.bpmn2.xml.BPMNExtensionsSemanticModule;
 import org.jbpm.bpmn2.xml.BPMNSemanticModule;
@@ -56,6 +55,7 @@ import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.AbstractGenerator;
+import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
@@ -330,7 +330,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // generate Process, ProcessInstance classes and the REST resource
         for (ProcessExecutableModelGenerator execModelGen : processExecutableModelGenerators) {
-            String classPrefix = StringUtils.ucFirst(execModelGen.extractedProcessId());
+            String classPrefix = CodegenUtils.sanitizeClassName(execModelGen.extractedProcessId());
             KogitoWorkflowProcess workFlowProcess = execModelGen.process();
             ModelClassGenerator modelClassGenerator =
                     processIdToModelGenerator.getOrDefault(execModelGen.getProcessId(), new ModelClassGenerator(context(), workFlowProcess));

@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.drools.util.StringUtils;
+
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
@@ -37,6 +39,20 @@ public class CodegenUtils {
 
     private CodegenUtils() {
         // utility class
+    }
+
+    public static String sanitizeClassName(String className) {
+        String capitalized = StringUtils.ucFirst(className);
+        return sanitizeJavaName(capitalized);
+    }
+
+    public static String sanitizeJavaName(String name) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            sb.append(Character.isJavaIdentifierPart(c) ? c : "_");
+        }
+        return sb.toString();
     }
 
     public static ClassOrInterfaceType genericType(Class<?> outer, Class<?> inner) {

@@ -260,6 +260,6 @@ public class ProcessToExecModelGenerator {
             return processId.substring(processId.lastIndexOf('.') + 1);
         }
 
-        return processId.replace('-', '_');
+        return processId;
     }
 }

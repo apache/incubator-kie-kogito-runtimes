@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.codegen.process;
 
-import org.drools.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -65,8 +64,7 @@ public class MessageProducerGenerator {
         this.processPackageName = process.getPackageName();
         this.processId = process.getId();
         this.processName = processId.substring(processId.lastIndexOf('.') + 1);
-        String classPrefix = StringUtils.ucFirst(processName);
-        this.resourceClazzName = classPrefix + "MessageProducer_" + trigger.getOwnerId();
+        this.resourceClazzName = CodegenUtils.sanitizeClassName(processName) + "MessageProducer_" + trigger.getOwnerId();
 
         this.generator = TemplatedGenerator.builder()
                 .withTargetTypeName(resourceClazzName)
