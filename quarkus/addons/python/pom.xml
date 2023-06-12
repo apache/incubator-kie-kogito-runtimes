@@ -10,8 +10,8 @@
   <description>Serverless Workflow Python Quarkus Addons</description>
   <packaging>pom</packaging>
   <modules>
+    <module>deployment</module>
     <module>runtime</module>
     <module>test</module>
-    <module>deployment</module>
   </modules>
 </project>
