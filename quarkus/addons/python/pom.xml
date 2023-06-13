@@ -12,6 +12,6 @@
   <modules>
     <module>deployment</module>
     <module>runtime</module>
-    <module>test</module>
+    <module>integration-tests</module>
   </modules>
 </project>
