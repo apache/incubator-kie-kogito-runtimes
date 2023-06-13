@@ -78,7 +78,17 @@
       </dependency>
       <dependency>
         <groupId>io.quarkiverse.embedded.postgresql</groupId>
+        <artifactId>quarkus-embedded-postgresql-arm64</artifactId>
+        <version>${version.io.quarkiverse.embedded.postgresql}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.quarkiverse.embedded.postgresql</groupId>
         <artifactId>quarkus-embedded-postgresql-deployment</artifactId>
+        <version>${version.io.quarkiverse.embedded.postgresql}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.quarkiverse.embedded.postgresql</groupId>
+        <artifactId>quarkus-embedded-postgresql-deployment-arm64</artifactId>
         <version>${version.io.quarkiverse.embedded.postgresql}</version>
       </dependency>
     </dependencies>
