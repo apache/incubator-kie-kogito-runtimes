@@ -32,6 +32,8 @@
     <version.io.quarkiverse.asyncapi>0.0.3</version.io.quarkiverse.asyncapi>
     <version.io.quarkiverse.reactivemessaging.http>1.0.8</version.io.quarkiverse.reactivemessaging.http>
     <version.io.quarkiverse.embedded.postgresql>0.0.3</version.io.quarkiverse.embedded.postgresql>
+    <!-- to bring other archs than amd64 to inmemory postgresql addons -->
+    <version.io.zonky.test.postgres>15.3.0</version.io.zonky.test.postgres>
     <version.com.github.haifengl.smile>1.5.2</version.com.github.haifengl.smile>
     <version.com.github.javaparser>3.24.2</version.com.github.javaparser>
     <version.com.github.java-json-tools>2.2.14</version.com.github.java-json-tools>
@@ -348,6 +350,13 @@
         <groupId>jakarta.ws.rs</groupId>
         <artifactId>jakarta.ws.rs-api</artifactId>
         <version>${version.jakarta.ws.rs}</version>
+      </dependency>
+
+      <!-- embedded postgresql extended libraries -->
+      <dependency>
+        <groupId>io.zonky.test.postgres</groupId>
+        <artifactId>embedded-postgres-binaries-linux-arm64v8</artifactId>
+        <version>${version.io.zonky.test.postgres}</version>
       </dependency>
 
       <dependency>
