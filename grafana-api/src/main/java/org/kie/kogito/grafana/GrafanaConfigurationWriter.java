@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +48,8 @@ public class GrafanaConfigurationWriter {
 
     private static final String AUDIT_LINK_NAME = "Audit UI";
     private static final String AUDIT_LINK_URL_PLACEHOLDER = "${{urlPlaceholder}}";
+
+    private static final SecureRandom randomGenerator = new SecureRandom();
 
     private GrafanaConfigurationWriter() {
         // Intentionally left blank.
@@ -199,11 +200,7 @@ public class GrafanaConfigurationWriter {
 
     private static String customizeTemplate(String template, String handlerName, String artifactId, String version) {
         template = template.replaceAll("\\$handlerName\\$", handlerName);
-        try {
-            template = template.replaceAll("\\$id\\$", String.valueOf(SecureRandom.getInstanceStrong().nextInt()));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        template = template.replaceAll("\\$id\\$", String.valueOf(randomGenerator.nextInt()));
         template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
         template = template.replaceAll("\\$gavArtifactId\\$", artifactId);
         template = template.replaceAll("\\$gavVersion\\$", version);
