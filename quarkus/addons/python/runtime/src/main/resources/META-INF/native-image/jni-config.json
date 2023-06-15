@@ -1,12 +1,5 @@
 [
   {
-    "name": "jep.ClassList", 
-    "methods" : [ {
-      "name": "isJavaPackage",
-      "parameterTypes": [ "java.lang.String"]}
-    ]
-  },
-  {
     "name": "[Z"
   },
   {
@@ -52,6 +45,7 @@
     ]
   },
   {"name":"java.lang.IllegalStateException","allPublicMethods":true},
+  {"name":"java.lang.NoSuchMethodError","allPublicMethods":true,"allPublicConstructors":true, "allPublicClasses": true},
   {"name":"java.lang.IllegalStateException[]","allPublicMethods":true},
   {"name":"java.lang.ClassNotFoundException","allPublicMethods":true},
   {"name":"java.lang.ClassNotFoundException[]","allPublicMethods":true},
@@ -99,7 +93,7 @@
   {"name":"java.util.HashMap[]","allPublicMethods":true},
   {"name":"java.lang.reflect.Constructor","allPublicMethods":true},
   {"name":"java.lang.reflect.Constructor[]","allPublicMethods":true},
-  {"name":"java.lang.Long","allPublicMethods":true},
+  {"name":"java.lang.Long","allPublicMethods":true, "allPublicConstructors":true, "allPublicFields":true, "allPublicClasses": true },
   {"name":"java.lang.Long[]","allPublicMethods":true},
   {"name":"java.lang.Character","allPublicMethods":true},
   {"name":"java.lang.Character[]","allPublicMethods":true},
@@ -107,8 +101,9 @@
   {"name":"java.lang.AutoCloseable[]","allPublicMethods":true},
   {"name":"java.lang.Comparable","allPublicMethods":true},
   {"name":"java.lang.Comparable[]","allPublicMethods":true},
-  {"name":"jep.JepException","allPublicMethods":true},
+  {"name":"jep.JepException","allPublicMethods":true,"allPublicConstructors":true,"allPublicClasses":true, "allDeclaredConstructors": true},
   {"name":"jep.JepException[]","allPublicMethods":true},
+  {"name":"java.lang.RuntimeException","allPublicMethods":true,"allPublicConstructors":true,"allPublicClasses":true},
   {"name":"java.lang.Boolean","allPublicMethods":true},
   {"name":"java.lang.Boolean[]","allPublicMethods":true},
   {"name":"java.util.List","allPublicMethods":true},{"name":"java.util.List[]","allPublicMethods":true},
@@ -155,7 +150,8 @@
   {"name":"jdk.internal.loader.BootLoader","allPublicMethods":true},
   {"name":"jdk.internal.loader.BootLoader[]","allPublicMethods":true},
   {
-    "name": "java.lang.reflect.Proxy"
+    "name": "java.lang.reflect.Proxy",
+    "allPublicMethods":true
   },
   {
     "name": "java.io.BufferedInputStream"
@@ -203,6 +199,9 @@
     "name": "java.io.FilterWriter"
   },
   {
+    "name": "java.util.SplittableRandom"
+  },
+  {
     "name": "java.io.InputStream"
   },
   {
@@ -243,6 +242,16 @@
   },
   {
     "name": "java.io.Serializable"
+  },
+  {
+     "name":"java.lang.StackTraceElement[]",
+     "allDeclaredConstructors": true,
+     "allPublicConstructors": true
+  },
+  {
+     "name":"java.lang.StackTraceElement",
+     "allDeclaredConstructors": true,
+     "allPublicConstructors": true
   },
   {
     "name": "java.io.StringReader"
@@ -655,6 +664,10 @@
     "name": "java.util.concurrent.BlockingDeque"
   },
   {
+    "name": "java.util.ArrayDeque",
+    "allPublicMethods" : true
+  },
+  {
     "name": "java.util.concurrent.BlockingQueue"
   },
   {
@@ -769,12 +782,17 @@
     "name": "jep.MainInterpreter"
   },
   {
-    "name": "jep.NDArray"
+    "name": "jep.NDArray",
+    "allPublicMethods": true,
+    "allPublicConstructors": true
   },
   {
-    "name": "jep.SharedInterpreter"
+    "name": "jep.python.PyObject",
+    "allPublicMethods": true,
+    "allPublicConstructors": true
   },
   {
-    "name": "jep.python.PyObject"
+    "name": "jep.ClassList",
+    "allPublicMethods": true
   }
 ]

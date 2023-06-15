@@ -89,8 +89,6 @@
       </activation>
       <properties>
         <quarkus.package.type>native</quarkus.package.type>
-       <quarkus.native.additional-build-args>--verbose</quarkus.native.additional-build-args>
-<!--        <quarkus.native.additional-build-args>-H:NativeLinkerOption=/home/ftirados/.local/lib/python3.11/site-packages/jep/libjep.so</quarkus.native.additional-build-args>-->
       </properties>
     </profile>
   </profiles> 
