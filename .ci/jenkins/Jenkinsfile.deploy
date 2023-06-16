@@ -124,7 +124,9 @@ pipeline {
         stage('Deploy locally') {
             steps {
                 script {
-                    runMavenDeploy(true)
+                    dir(getRepoName()) {
+                        runMavenDeploy(true)
+                    }
                 }
             }
         }
