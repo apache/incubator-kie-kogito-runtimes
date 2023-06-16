@@ -29,21 +29,6 @@
   {
     "name": "java.util.Map$Entry[]"
   },
-  {
-    "name": "java.lang.ClassLoader",
-    "methods": [
-      {
-        "name": "getPlatformClassLoader",
-        "parameterTypes": []
-      },
-      {
-        "name": "loadClass",
-        "parameterTypes": [
-          "java.lang.String"
-        ]
-      }
-    ]
-  },
   {"name":"java.lang.IllegalStateException","allPublicMethods":true},
   {"name":"java.lang.NoSuchMethodError","allPublicMethods":true,"allPublicConstructors":true, "allPublicClasses": true},
   {"name":"java.lang.IllegalStateException[]","allPublicMethods":true},
@@ -69,17 +54,17 @@
   {"name":"java.lang.ClassLoader[]","allPublicMethods":true},
   {"name":"java.nio.CharBuffer","allPublicMethods":true},
   {"name":"java.nio.CharBuffer[]","allPublicMethods":true},
-  {"name":"java.lang.Float","allPublicMethods":true},
+  {"name":"java.lang.Float","allPublicMethods":true, "allPublicConstructors":true, "allPublicFields":true, "allPublicClasses": true },
   {"name":"java.lang.Float[]","allPublicMethods":true},
   {"name":"java.nio.IntBuffer","allPublicMethods":true},
   {"name":"java.nio.IntBuffer[]","allPublicMethods":true},
-  {"name":"java.lang.Short","allPublicMethods":true},
+  {"name":"java.lang.Short","allPublicMethods":true, "allPublicConstructors":true, "allPublicFields":true, "allPublicClasses": true},
   {"name":"java.lang.Short[]","allPublicMethods":true},
   {"name":"jep.python.PyCallable","allPublicMethods":true},
   {"name":"jep.python.PyCallable[]","allPublicMethods":true},
   {"name":"java.nio.ByteOrder","allPublicMethods":true},
   {"name":"java.nio.ByteOrder[]","allPublicMethods":true},
-  {"name":"jep.python.PyObject","allPublicMethods":true},
+  {"name":"jep.python.PyObject","allPublicMethods":true, "allPublicConstructors": true},
   {"name":"jep.python.PyObject[]","allPublicMethods":true},
   {"name":"java.util.Map","allPublicMethods":true},
   {"name":"java.util.Map[]","allPublicMethods":true},
@@ -95,7 +80,7 @@
   {"name":"java.lang.reflect.Constructor[]","allPublicMethods":true},
   {"name":"java.lang.Long","allPublicMethods":true, "allPublicConstructors":true, "allPublicFields":true, "allPublicClasses": true },
   {"name":"java.lang.Long[]","allPublicMethods":true},
-  {"name":"java.lang.Character","allPublicMethods":true},
+  {"name":"java.lang.Character","allPublicMethods":true, "allPublicConstructors":true, "allPublicFields":true, "allPublicClasses": true },
   {"name":"java.lang.Character[]","allPublicMethods":true},
   {"name":"java.lang.AutoCloseable","allPublicMethods":true},
   {"name":"java.lang.AutoCloseable[]","allPublicMethods":true},
@@ -104,9 +89,10 @@
   {"name":"jep.JepException","allPublicMethods":true,"allPublicConstructors":true,"allPublicClasses":true, "allDeclaredConstructors": true},
   {"name":"jep.JepException[]","allPublicMethods":true},
   {"name":"java.lang.RuntimeException","allPublicMethods":true,"allPublicConstructors":true,"allPublicClasses":true},
-  {"name":"java.lang.Boolean","allPublicMethods":true},
+  {"name":"java.lang.Boolean","allPublicMethods":true, "allPublicConstructors":true,"allPublicClasses":true, "allDeclaredConstructors": true},
   {"name":"java.lang.Boolean[]","allPublicMethods":true},
-  {"name":"java.util.List","allPublicMethods":true},{"name":"java.util.List[]","allPublicMethods":true},
+  {"name":"java.util.List","allPublicMethods":true},
+  {"name":"java.util.List[]","allPublicMethods":true},
   {"name":"java.nio.Buffer","allPublicMethods":true},
   {"name":"java.nio.Buffer[]","allPublicMethods":true},
   {"name":"java.lang.Throwable","allPublicMethods":true},
@@ -117,7 +103,7 @@
   {"name":"java.nio.ShortBuffer[]","allPublicMethods":true},
   {"name":"java.lang.Class","allPublicMethods":true},
   {"name":"java.lang.Class[]","allPublicMethods":true},
-  {"name":"java.lang.Double","allPublicMethods":true},
+  {"name":"java.lang.Double","allPublicMethods":true, "allPublicConstructors":true, "allPublicFields":true, "allPublicClasses": true},
   {"name":"java.lang.Double[]","allPublicMethods":true},
   {"name":"java.lang.Object","allPublicMethods":true},
   {"name":"java.lang.Object[]","allPublicMethods":true},
@@ -133,19 +119,19 @@
   {"name":"java.lang.reflect.Modifier[]","allPublicMethods":true},
   {"name":"java.nio.DoubleBuffer","allPublicMethods":true},
   {"name":"java.nio.DoubleBuffer[]","allPublicMethods":true},
-  {"name":"java.lang.Integer","allPublicMethods":true},
+  {"name":"java.lang.Integer","allPublicMethods":true, "allPublicConstructors":true, "allPublicFields":true, "allPublicClasses": true },
   {"name":"java.lang.Integer[]","allPublicMethods":true},
   {"name":"java.lang.reflect.Member","allPublicMethods":true},
   {"name":"java.lang.reflect.Member[]","allPublicMethods":true},
   {"name":"java.util.Iterator","allPublicMethods":true},
   {"name":"java.util.Iterator[]","allPublicMethods":true},
-  {"name":"java.lang.Byte","allPublicMethods":true},
+  {"name":"java.lang.Byte","allPublicMethods":true, "allPublicConstructors":true, "allPublicFields":true, "allPublicClasses": true},
   {"name":"java.lang.Byte[]","allPublicMethods":true},
   {"name":"java.lang.Iterable","allPublicMethods":true},
   {"name":"java.lang.Iterable[]","allPublicMethods":true},
   {"name":"java.util.Collections","allPublicMethods":true},
   {"name":"java.util.Collections[]","allPublicMethods":true},
-  {"name":"java.lang.String","allPublicMethods":true},
+  {"name":"java.lang.String","allPublicMethods":true, "allPublicConstructors":true},
   {"name":"java.lang.String[]","allPublicMethods":true},
   {"name":"jdk.internal.loader.BootLoader","allPublicMethods":true},
   {"name":"jdk.internal.loader.BootLoader[]","allPublicMethods":true},
@@ -271,163 +257,13 @@
     ]
   },
   {
-    "name": "java.lang.Byte",
-    "fields": [
-      {
-        "name": "BYTES"
-      },
-      {
-        "name": "SIZE"
-      },
-      {
-        "name": "TYPE"
-      }
-    ]
-  },
-  {
-    "name": "java.lang.Character",
-    "fields": [
-      {
-        "name": "BYTES"
-      },
-      {
-        "name": "SIZE"
-      },
-      {
-        "name": "TYPE"
-      }
-    ]
-  },
-  {
-    "name": "java.lang.Class"
-  },
-  {
-    "name": "java.lang.Class[]"
-  },
-  {
-    "name": "java.lang.Double",
-    "fields": [
-      {
-        "name": "BYTES"
-      },
-      {
-        "name": "SIZE"
-      },
-      {
-        "name": "TYPE"
-      }
-    ]
-  },
-  {
     "name": "java.lang.Enum"
-  },
-  {
-    "name": "java.lang.Float",
-    "fields": [
-      {
-        "name": "BYTES"
-      },
-      {
-        "name": "SIZE"
-      },
-      {
-        "name": "TYPE"
-      }
-    ]
-  },
-  {
-    "name": "java.lang.Integer",
-    "fields": [
-      {
-        "name": "BYTES"
-      },
-      {
-        "name": "SIZE"
-      },
-      {
-        "name": "TYPE"
-      }
-    ]
-  },
-  {
-    "name": "java.lang.Iterable"
-  },
-  {
-    "name": "java.lang.Long",
-    "fields": [
-      {
-        "name": "BYTES"
-      },
-      {
-        "name": "SIZE"
-      },
-      {
-        "name": "TYPE"
-      }
-    ]
-  },
-  {
-    "name": "java.lang.Number"
-  },
-  {
-    "name": "java.lang.Object"
-  },
-  {
-    "name": "java.lang.Object[]"
-  },
-  {
-    "name": "java.util.ArrayList"
-  },
-  {
-    "name": "java.util.ArrayList[]"
-  },
-  {
-    "name": "java.nio.Buffer"
-  },
-  {
-    "name": "java.nio.Buffer[]"
-  },
-  {
-    "name": "java.nio.ByteBuffer"
-  },
-  {
-    "name": "java.nio.ByteBuffer[]"
-  },
-  {
-    "name": "java.lang.Short",
-    "fields": [
-      {
-        "name": "BYTES"
-      },
-      {
-        "name": "SIZE"
-      },
-      {
-        "name": "TYPE"
-      }
-    ]
-  },
-  {
-    "name": "java.lang.StackTraceElement"
-  },
-  {
-    "name": "java.lang.StackTraceElement[]"
-  },
-  {
-    "name": "java.lang.String",
-    "allPublicMethods": true
-  },
-  {
-    "name": "java.lang.String[]"
   },
   {
     "name": "java.lang.Thread"
   },
   {
     "name": "java.lang.ThreadLocal"
-  },
-  {
-    "name": "java.lang.Throwable"
   },
   {
     "name": "java.lang.UnsupportedOperationException"
@@ -448,27 +284,6 @@
   },
   {
     "name": "java.lang.reflect.Array"
-  },
-  {
-    "name": "java.lang.reflect.Constructor"
-  },
-  {
-    "name": "java.lang.reflect.Constructor[]"
-  },
-  {
-    "name": "java.lang.reflect.Field"
-  },
-  {
-    "name": "java.lang.reflect.Field[]"
-  },
-  {
-    "name": "java.lang.reflect.Method"
-  },
-  {
-    "name": "java.lang.reflect.Method[]"
-  },
-  {
-    "name": "java.lang.reflect.Modifier"
   },
   {
     "name": "java.math.BigDecimal"
@@ -507,31 +322,10 @@
     "name": "java.net.URLEncoder"
   },
   {
-    "name": "java.nio.ByteBuffer"
-  },
-  {
     "name": "java.nio.ByteOrder"
   },
   {
     "name": "java.nio.ByteOrder[]"
-  },
-  {
-    "name": "java.nio.CharBuffer"
-  },
-  {
-    "name": "java.nio.DoubleBuffer"
-  },
-  {
-    "name": "java.nio.FloatBuffer"
-  },
-  {
-    "name": "java.nio.IntBuffer"
-  },
-  {
-    "name": "java.nio.LongBuffer"
-  },
-  {
-    "name": "java.nio.ShortBuffer"
   },
   {
     "name": "java.nio.channels.ByteChannel"
@@ -627,12 +421,6 @@
     "name": "java.util.GregorianCalendar"
   },
   {
-    "name": "java.util.List"
-  },
-  {
-    "name": "java.util.Map"
-  },
-  {
     "name": "java.util.Properties",
     "allPublicMethods": true
   },
@@ -644,12 +432,6 @@
   },
   {
     "name": "java.util.Set[]"
-  },
-  {
-    "name": "java.util.Iterator"
-  },
-  {
-    "name": "java.util.Iterator[]"
   },
   {
     "name": "java.util.TimeZone"
@@ -783,11 +565,6 @@
   },
   {
     "name": "jep.NDArray",
-    "allPublicMethods": true,
-    "allPublicConstructors": true
-  },
-  {
-    "name": "jep.python.PyObject",
     "allPublicMethods": true,
     "allPublicConstructors": true
   },
