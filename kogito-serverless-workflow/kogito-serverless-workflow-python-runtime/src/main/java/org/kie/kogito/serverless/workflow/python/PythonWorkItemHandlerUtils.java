@@ -15,22 +15,17 @@
  */
 package org.kie.kogito.serverless.workflow.python;
 
-import java.util.Collections;
-import java.util.Map;
-
-import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
-
 import jep.Interpreter;
 import jep.SharedInterpreter;
 
-import static org.kie.kogito.serverless.workflow.SWFConstants.PYTHON;
-import static org.kie.kogito.serverless.workflow.SWFConstants.SCRIPT;
+public class PythonWorkItemHandlerUtils {
 
-public class PythonWorkItemHandler extends WorkflowWorkItemHandler {
+    private PythonWorkItemHandlerUtils() {
+    }
+
     private static ThreadLocal<Interpreter> interpreter = new ThreadLocal<>();
 
-    private static Interpreter interpreter() {
+    protected static Interpreter interpreter() {
         Interpreter py = interpreter.get();
         if (py == null) {
             py = new SharedInterpreter();
@@ -39,29 +34,16 @@ public class PythonWorkItemHandler extends WorkflowWorkItemHandler {
         return py;
     }
 
-    @Override
-    public String getName() {
-        return PYTHON;
-    }
-
-    @Override
-    protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
-        Interpreter py = interpreter();
-        String source = (String) parameters.remove(SCRIPT);
-        parameters.forEach(py::set);
-        py.exec(source);
-        return Collections.emptyMap();
-    }
-
-    public static Object getValue(String key) {
-        return interpreter().getValue(key);
-    }
-
-    public void close() {
+    protected static void closeInterpreter() {
         Interpreter py = interpreter.get();
         if (py != null) {
             interpreter.remove();
             py.close();
         }
     }
+
+    protected static Object getValue(String key) {
+        return interpreter().getValue(key);
+    }
+
 }

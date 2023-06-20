@@ -20,14 +20,14 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
-import org.kie.kogito.serverless.workflow.python.PythonWorkItemHandler;
+import org.kie.kogito.serverless.workflow.python.PythonScriptWorkItemHandler;
 
 @ApplicationScoped
 public class PythonWorkItemHandlerConfig extends CachedWorkItemHandlerConfig {
 
     @PostConstruct
     void init() {
-        KogitoWorkItemHandler handler = new PythonWorkItemHandler();
+        KogitoWorkItemHandler handler = new PythonScriptWorkItemHandler();
         register(handler.getName(), handler);
     }
 }
