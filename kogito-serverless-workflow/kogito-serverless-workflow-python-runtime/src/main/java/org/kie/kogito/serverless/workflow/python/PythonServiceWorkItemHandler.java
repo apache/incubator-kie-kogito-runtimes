@@ -45,16 +45,13 @@ public class PythonServiceWorkItemHandler extends ServiceWorkItemHandler {
         Interpreter py = interpreter();
         // make sure module is imported
         py.exec("import " + moduleName);
-        return py.invoke(moduleName + "." + methodName, toMap(parameters));
-    }
-
-    private Map<String, Object> toMap(Object parameters) {
+        final String funcName = moduleName + "." + methodName;
         if (parameters instanceof Map) {
-            return (Map<String, Object>) parameters;
+            return py.invoke(funcName, (Map<String, Object>) parameters);
         }
         if (parameters instanceof JsonNode) {
-            return JsonObjectUtils.convertValue((JsonNode) parameters, Map.class);
+            return py.invoke(funcName, JsonObjectUtils.convertValue((JsonNode) parameters, Map.class));
         }
-        throw new IllegalArgumentException("Expecting an object that can be converted to a Map, but found type " + parameters.getClass());
+        return py.invoke(funcName, parameters);
     }
 }

@@ -21,11 +21,15 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.serverless.workflow.fluent.ActionBuilder.ScriptType;
 
+import com.fasterxml.jackson.databind.node.TextNode;
+
 import io.serverlessworkflow.api.Workflow;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.call;
 import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.script;
-import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.*;
+import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.python;
+import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.operation;
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.jsonObject;
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.workflow;
 
@@ -46,6 +50,15 @@ public class PythonFluentWorkflowApplicationTest {
             Workflow workflow = workflow("PythonTest").start(operation().action(script("x*=2", ScriptType.PYTHON, jsonObject().put("x", ".x"))).outputFilter("{result:$WORKFLOW.python.x}"))
                     .end().build();
             assertThat(application.execute(workflow, Map.of("x", 2)).getWorkflowdata().get("result").asInt()).isEqualTo(4);
+        }
+    }
+
+    @Test
+    void testPythonService() {
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow workflow = workflow("Factorial").start(operation().action(call(python("factorial", "math", "factorial"), new TextNode(".x")).outputFilter(".result")))
+                    .end().build();
+            assertThat(application.execute(workflow, Map.of("x", 5)).getWorkflowdata().get("result").asInt()).isEqualTo(120);
         }
     }
 }
