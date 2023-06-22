@@ -50,6 +50,15 @@ public class ConversionUtils {
         return convertToCollection(value, clazz, ",");
     }
 
+    /**
+     * Converts a string into a list of objects
+     * 
+     * @param <T>
+     * @param value object to be converted into list
+     * @param clazz the item target class
+     * @param separator the separator of values
+     * @return a collection
+     */
     public static <T> Collection<T> convertToCollection(Object value, Class<T> clazz, String separator) {
         if (value == null) {
             return Collections.emptyList();
