@@ -39,7 +39,7 @@ public class ConversionUtils {
     }
 
     /**
-     * Converts a string into a list of objects
+     * Converts a string into a list of objects using `,` as a separator
      * 
      * @param <T>
      * @param value object to be converted into list
