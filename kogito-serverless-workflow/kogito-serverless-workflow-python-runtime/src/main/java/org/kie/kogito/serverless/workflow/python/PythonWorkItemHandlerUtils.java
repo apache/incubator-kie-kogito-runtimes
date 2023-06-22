@@ -15,6 +15,10 @@
  */
 package org.kie.kogito.serverless.workflow.python;
 
+import java.util.Collection;
+
+import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
+
 import jep.Interpreter;
 import jep.SharedInterpreter;
 
@@ -23,13 +27,21 @@ public class PythonWorkItemHandlerUtils {
     private PythonWorkItemHandlerUtils() {
     }
 
-    private static ThreadLocal<Interpreter> interpreter = new ThreadLocal<>();
+    private static final String PYTHON_SYS_PATH = "sys.path.append('%s')\n";
+
+    private static final ThreadLocal<Interpreter> interpreter = new ThreadLocal<>();
 
     protected static Interpreter interpreter() {
         Interpreter py = interpreter.get();
         if (py == null) {
             py = new SharedInterpreter();
             interpreter.set(py);
+            Collection<String> searchPath = ConfigResolverHolder.getConfigResolver().getIndexedConfigProperty("sonata.python.searchPath", String.class);
+            if (!searchPath.isEmpty()) {
+                StringBuilder sb = new StringBuilder("import sys\n");
+                searchPath.forEach(path -> sb.append(String.format(PYTHON_SYS_PATH, path)));
+                py.exec(sb.toString());
+            }
         }
         return py;
     }
@@ -45,5 +57,4 @@ public class PythonWorkItemHandlerUtils {
     protected static Object getValue(String key) {
         return interpreter().getValue(key);
     }
-
 }

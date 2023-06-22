@@ -61,4 +61,13 @@ public class PythonFluentWorkflowApplicationTest {
             assertThat(application.execute(workflow, Map.of("x", 5)).getWorkflowdata().get("result").asInt()).isEqualTo(120);
         }
     }
+
+    @Test
+    void testNotStandardPythonService() {
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create(Map.of("sonata.python.searchPath", "./src/test/resources/"))) {
+            Workflow workflow = workflow("Factorial").start(operation().action(call(python("factorial", "custom", "factorial"), new TextNode(".x")).outputFilter(".result")))
+                    .end().build();
+            assertThat(application.execute(workflow, Map.of("x", 5)).getWorkflowdata().get("result").asInt()).isEqualTo(120);
+        }
+    }
 }
