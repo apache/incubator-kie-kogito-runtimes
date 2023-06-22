@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.serverless.workflow.fluent.ActionBuilder.ScriptType;
+import org.kie.kogito.serverless.workflow.python.PythonWorkItemHandlerUtils;
 
 import com.fasterxml.jackson.databind.node.TextNode;
 
@@ -64,7 +65,7 @@ public class PythonFluentWorkflowApplicationTest {
 
     @Test
     void testNotStandardPythonService() {
-        try (StaticWorkflowApplication application = StaticWorkflowApplication.create(Map.of("sonata.python.searchPath", "./src/test/resources/"))) {
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create(Map.of(PythonWorkItemHandlerUtils.SEARCH_PATH_PROPERTY, "./src/test/resources/"))) {
             Workflow workflow = workflow("Factorial").start(operation().action(call(python("factorial", "custom", "factorial"), new TextNode(".x")).outputFilter(".result")))
                     .end().build();
             assertThat(application.execute(workflow, Map.of("x", 5)).getWorkflowdata().get("result").asInt()).isEqualTo(120);

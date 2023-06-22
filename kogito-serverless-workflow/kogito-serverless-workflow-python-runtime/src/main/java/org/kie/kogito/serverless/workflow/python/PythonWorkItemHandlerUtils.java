@@ -27,6 +27,7 @@ public class PythonWorkItemHandlerUtils {
     private PythonWorkItemHandlerUtils() {
     }
 
+    public static final String SEARCH_PATH_PROPERTY = "org.sonataflow.python.searchpath";
     private static final String PYTHON_SYS_PATH = "sys.path.append('%s')\n";
 
     private static final ThreadLocal<Interpreter> interpreter = new ThreadLocal<>();
@@ -36,7 +37,7 @@ public class PythonWorkItemHandlerUtils {
         if (py == null) {
             py = new SharedInterpreter();
             interpreter.set(py);
-            Collection<String> searchPath = ConfigResolverHolder.getConfigResolver().getIndexedConfigProperty("sonata.python.searchPath", String.class);
+            Collection<String> searchPath = ConfigResolverHolder.getConfigResolver().getIndexedConfigProperty(SEARCH_PATH_PROPERTY, String.class);
             if (!searchPath.isEmpty()) {
                 StringBuilder sb = new StringBuilder("import sys\n");
                 searchPath.forEach(path -> sb.append(String.format(PYTHON_SYS_PATH, path)));
