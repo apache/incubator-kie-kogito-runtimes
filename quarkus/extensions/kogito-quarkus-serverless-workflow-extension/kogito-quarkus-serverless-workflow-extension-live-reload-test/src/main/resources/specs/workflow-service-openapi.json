@@ -1,0 +1,57 @@
+{
+    "openapi" : "3.0.3",
+    "info" : {
+      "title" : "Score Service",
+      "version" : "1.0.0"
+    },
+    "servers" : [ {
+      "url" : "https://kogito-demo-scores-kverlaen-dev.apps.sandbox-m2.ll9k.p1.openshiftapps.com/"
+    } ],
+    "paths" : {
+      "/scores" : {
+        "get" : {
+          "operationId" : "countWinners",
+          "responses" : {
+            "200" : {
+              "description" : "OK",
+              "content" : {
+                "text/plain" : {
+                  "schema" : {
+                    "format" : "int64",
+                    "type" : "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post" : {
+          "operationId" : "isWinner",
+          "responses" : {
+            "200" : {
+              "description" : "OK",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/ScoreResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components" : {
+      "schemas" : {
+        "ScoreResult" : {
+          "type" : "object",
+          "properties" : {
+            "result" : {
+              "type" : "boolean"
+            }
+          }
+        }
+      }
+    }
+  }

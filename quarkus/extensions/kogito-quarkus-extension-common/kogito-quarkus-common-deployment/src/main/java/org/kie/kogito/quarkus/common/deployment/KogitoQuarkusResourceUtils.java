@@ -162,12 +162,15 @@ public class KogitoQuarkusResourceUtils {
     }
 
     public static IndexView generateAggregatedIndex(IndexView baseIndex, List<KogitoGeneratedClassesBuildItem> generatedKogitoClasses) {
-        List<IndexView> indexes = new ArrayList<>();
-        indexes.add(baseIndex);
-
-        indexes.addAll(generatedKogitoClasses.stream()
+        return generateAggregatedIndexNew(baseIndex, generatedKogitoClasses.stream()
                 .map(KogitoGeneratedClassesBuildItem::getIndexedClasses)
                 .collect(Collectors.toList()));
+    }
+
+    public static IndexView generateAggregatedIndexNew(IndexView baseIndex, List<IndexView> newIndexViews) {
+        List<IndexView> indexes = new ArrayList<>();
+        indexes.add(baseIndex);
+        indexes.addAll(newIndexViews);
         return CompositeIndex.create(indexes.toArray(new IndexView[0]));
     }
 

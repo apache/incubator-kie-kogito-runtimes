@@ -38,6 +38,7 @@ import org.kie.kogito.event.process.VariableInstanceEventBody;
 import org.kie.kogito.process.expr.ExpressionHandler;
 import org.kie.kogito.quarkus.common.deployment.KogitoAddonsPreGeneratedSourcesBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
+import org.kie.kogito.quarkus.common.deployment.LiveReloadExecutionBuildItem;
 import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGeneratedFile;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGenerator;
@@ -53,7 +54,6 @@ import org.kie.kogito.serverless.workflow.rpc.FileDescriptorHolder;
 
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
@@ -86,9 +86,9 @@ public class ServerlessWorkflowAssetsProcessor extends WorkflowProcessor {
     }
 
     @BuildStep
-    void addWorkItemHandlers(KogitoBuildContextBuildItem contextBI, CombinedIndexBuildItem indexBuildItem, BuildProducer<KogitoAddonsPreGeneratedSourcesBuildItem> sources) {
+    void addWorkItemHandlers(KogitoBuildContextBuildItem contextBI, LiveReloadExecutionBuildItem liveReloadExecutionBuildItem, BuildProducer<KogitoAddonsPreGeneratedSourcesBuildItem> sources) {
         KogitoBuildContext context = contextBI.getKogitoBuildContext();
-        IndexView index = indexBuildItem.getIndex();
+        IndexView index = liveReloadExecutionBuildItem.getIndexView();
         Collection<GeneratedFile> generatedFiles = new ArrayList<>();
         for (WorkflowHandlerGenerator generator : generators) {
             for (WorkflowHandlerGeneratedFile generated : generator.generateHandlerClasses(context, index)) {
