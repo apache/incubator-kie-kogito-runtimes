@@ -15,10 +15,10 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -82,7 +82,7 @@ public class MultiSourceConfigResolver implements ConfigResolver {
         if (collect != null) {
             return ConversionUtils.convertToCollection(collect.get(name), clazz);
         }
-        Collection<T> result = new ArrayList<>();
+        Collection<T> result = new LinkedHashSet<>();
         for (ConfigResolver resolver : configResolvers) {
             result.addAll(resolver.getIndexedConfigProperty(name, clazz));
         }
