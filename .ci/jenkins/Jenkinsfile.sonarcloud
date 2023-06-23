@@ -33,7 +33,7 @@ pipeline {
             steps {
                 script {
                     util.runWithPythonVirtualEnv(getMavenCommand()
-                        .withProfiles(['run-code-coverage'])
+                        .withProfiles(['run-code-coverage', 'python'])
                         .getFullRunCommand('clean install'), 
                         'swf')
                 }
