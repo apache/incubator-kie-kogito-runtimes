@@ -51,7 +51,7 @@
       </modules>
     </profile>
     <profile>
-      <id>python</id>
+      <id>full</id>
       <modules>
         <module>python</module>
        </modules>

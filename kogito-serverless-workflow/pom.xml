@@ -49,7 +49,7 @@
       </modules>
     </profile>
     <profile>
-      <id>python</id>
+      <id>full</id>
       <modules>
         <module>kogito-serverless-workflow-python-runtime</module>
         <module>kogito-serverless-workflow-executor-python</module>
