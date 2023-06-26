@@ -52,6 +52,11 @@
     </profile>
     <profile>
       <id>full</id>
+      <activation>
+        <property>
+          <name>full</name>
+        </property>
+      </activation>
       <modules>
         <module>python</module>
        </modules>
