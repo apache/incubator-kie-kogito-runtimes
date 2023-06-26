@@ -6,7 +6,7 @@
     <parent>
         <artifactId>kogito-addons-quarkus-source-files-parent</artifactId>
         <groupId>org.kie.kogito</groupId>
-        <version>1.40.2-SNAPSHOT</version>
+        <version>1.40.3-SNAPSHOT</version>
     </parent>
     <artifactId>kogito-addons-quarkus-source-files-deployment</artifactId>
     <name>Kogito Add-On Source Files - Deployment</name>

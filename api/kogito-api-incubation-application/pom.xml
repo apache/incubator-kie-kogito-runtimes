@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-api-parent</artifactId>
-        <version>1.40.2-SNAPSHOT</version>
+        <version>1.40.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>kogito-api-incubation-application</artifactId>
