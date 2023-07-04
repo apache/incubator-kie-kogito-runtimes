@@ -55,14 +55,14 @@ final class TagResourceGenerator {
 
     private static void addTags(KogitoWorkflowProcess process, Collection<String> tags, String description, ClassOrInterfaceDeclaration cls) {
         tags.forEach(tag -> addTag(cls, tag));
-        if (description != null) {
-            addDescription(process, description, cls);
-        }
+        addDescription(process, description, cls);
     }
 
     private static void addDescription(KogitoWorkflowProcess process, String description, ClassOrInterfaceDeclaration cls) {
         NodeList<MemberValuePair> attributes = attributes(process.getId());
-        attributes.add(new MemberValuePair("description", new StringLiteralExpr(description)));
+        if (description != null) {
+            attributes.add(new MemberValuePair("description", new StringLiteralExpr(description)));
+        }
         cls.addAnnotation(new NormalAnnotationExpr(new Name("Tag"), attributes));
     }
 
