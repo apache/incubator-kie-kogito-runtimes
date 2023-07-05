@@ -6,14 +6,14 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-quarkus-workflow-extension-common</artifactId>
-    <version>1.41.0.Final</version>
+    <version>1.41.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>kogito-quarkus-workflow-common-deployment</artifactId>
   <name>Kogito :: Quarkus Workflow Extension Common :: Deployment</name>
 
   <properties>
-    <data-index-ephemeral.image>quay.io/kiegroup/kogito-data-index-ephemeral:1.41</data-index-ephemeral.image>
+    <data-index-ephemeral.image>quay.io/kiegroup/kogito-data-index-ephemeral-nightly:1.41</data-index-ephemeral.image>
   </properties>
 
   <dependencies>
