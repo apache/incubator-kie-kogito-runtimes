@@ -20,6 +20,8 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
@@ -31,6 +33,10 @@ import org.drools.codegen.common.GeneratedFileType;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.ProcessCodegen;
+import org.kie.kogito.codegen.process.ProcessContainerGenerator;
+import org.kie.kogito.codegen.process.ProcessGenerator;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationId;
 import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationIdFactory;
@@ -61,6 +67,11 @@ public class WorkflowCodeGenUtils {
 
     public static Stream<WorkflowOperationResource> operationResources(Stream<Path> files, Predicate<FunctionDefinition> predicate, CodeGenContext context) {
         return getWorkflows(files).flatMap(w -> processFunction(w, predicate, operationIdFactory(context)));
+    }
+
+    public static Stream<KogitoWorkflowProcess> getProcesses(List<KogitoProcessContainerGeneratorBuildItem> processBuildItem) {
+        return processBuildItem.stream().flatMap(it -> it.getProcessContainerGenerators().stream())
+                .map(ProcessContainerGenerator::getProcesses).flatMap(Collection::stream).map(ProcessGenerator::getProcess);
     }
 
     public static Stream<Workflow> getWorkflows(Stream<Path> files) {

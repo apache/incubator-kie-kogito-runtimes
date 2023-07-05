@@ -25,7 +25,6 @@ import org.drools.codegen.common.GeneratedFile;
 import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.jboss.jandex.IndexView;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.process.ProcessContainerGenerator;
 import org.kie.kogito.event.process.NodeInstanceEventBody;
 import org.kie.kogito.event.process.ProcessDataEvent;
 import org.kie.kogito.event.process.ProcessErrorEventBody;
@@ -33,11 +32,11 @@ import org.kie.kogito.event.process.ProcessInstanceDataEvent;
 import org.kie.kogito.event.process.ProcessInstanceEventBody;
 import org.kie.kogito.event.process.VariableInstanceDataEvent;
 import org.kie.kogito.event.process.VariableInstanceEventBody;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.expr.ExpressionHandler;
 import org.kie.kogito.quarkus.common.deployment.KogitoAddonsPreGeneratedSourcesBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
+import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGeneratedFile;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGenerator;
 import org.kie.kogito.quarkus.serverless.workflow.openapi.ServerlessWorkflowOASFilter;
@@ -102,12 +101,10 @@ public class ServerlessWorkflowAssetsProcessor extends WorkflowProcessor {
     void addOpenAPIModelSchema(List<KogitoProcessContainerGeneratorBuildItem> processBuildItem, BuildProducer<AddToOpenAPIDefinitionBuildItem> openAPIProducer,
             BuildProducer<AnnotationsTransformerBuildItem> annotationProducer) {
         Map<String, Schema> schemasInfo = new HashMap<>();
-        processBuildItem.stream().flatMap(it -> it.getProcessContainerGenerators().stream())
-                .map(ProcessContainerGenerator::getProcesses).flatMap(Collection::stream).forEach(processGenerator -> {
-                    KogitoWorkflowProcess process = processGenerator.getProcess();
-                    OpenApiModelSchemaGenerator.addOpenAPIModelSchema(process, schemasInfo);
-                    processGenerator.getResourceGenerator().compilationUnit().ifPresent(cu -> TagResourceGenerator.addTags(cu, process));
-                });
+        WorkflowCodeGenUtils.getProcesses(processBuildItem).forEach(process -> {
+            OpenApiModelSchemaGenerator.addOpenAPIModelSchema(process, schemasInfo);
+            annotationProducer.produce(new AnnotationsTransformerBuildItem(new TagResourceGenerator(process)));
+        });
         if (!schemasInfo.isEmpty()) {
             openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(new ServerlessWorkflowOASFilter(schemasInfo)));
         }
