@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-serverless-workflow-python-parent</artifactId>
-    <version>1.41.0.Final</version>
+    <version>1.41.1-SNAPSHOT</version>
   </parent>
   <name>Kogito:: Addons :: Quarkus:: Serverless Workflow:: Python:: Runtime</name>
   <description>Python support for serverless workflow</description>
