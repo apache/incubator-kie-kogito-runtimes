@@ -57,8 +57,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController

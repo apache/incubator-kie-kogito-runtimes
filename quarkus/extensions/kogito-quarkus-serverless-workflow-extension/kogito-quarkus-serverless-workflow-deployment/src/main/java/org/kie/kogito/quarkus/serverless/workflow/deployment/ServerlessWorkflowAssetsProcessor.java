@@ -25,8 +25,6 @@ import org.drools.codegen.common.GeneratedFile;
 import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.jboss.jandex.IndexView;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.process.ProcessContainerGenerator;
-import org.kie.kogito.codegen.process.ProcessGenerator;
 import org.kie.kogito.event.process.NodeInstanceEventBody;
 import org.kie.kogito.event.process.ProcessDataEvent;
 import org.kie.kogito.event.process.ProcessErrorEventBody;
@@ -38,6 +36,7 @@ import org.kie.kogito.process.expr.ExpressionHandler;
 import org.kie.kogito.quarkus.common.deployment.KogitoAddonsPreGeneratedSourcesBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
+import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGeneratedFile;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGenerator;
 import org.kie.kogito.quarkus.serverless.workflow.openapi.ServerlessWorkflowOASFilter;
@@ -50,6 +49,7 @@ import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandler;
 import org.kie.kogito.serverless.workflow.parser.schema.OpenApiModelSchemaGenerator;
 import org.kie.kogito.serverless.workflow.rpc.FileDescriptorHolder;
 
+import io.quarkus.arc.deployment.AnnotationsTransformerBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
@@ -98,11 +98,13 @@ public class ServerlessWorkflowAssetsProcessor extends WorkflowProcessor {
     }
 
     @BuildStep
-    void addOpenAPIModelSchema(List<KogitoProcessContainerGeneratorBuildItem> processBuildItem, BuildProducer<AddToOpenAPIDefinitionBuildItem> openAPIProducer) {
+    void addOpenAPIModelSchema(List<KogitoProcessContainerGeneratorBuildItem> processBuildItem, BuildProducer<AddToOpenAPIDefinitionBuildItem> openAPIProducer,
+            BuildProducer<AnnotationsTransformerBuildItem> annotationProducer) {
         Map<String, Schema> schemasInfo = new HashMap<>();
-        processBuildItem.stream().flatMap(it -> it.getProcessContainerGenerators().stream())
-                .map(ProcessContainerGenerator::getProcesses).flatMap(Collection::stream).map(ProcessGenerator::getProcess)
-                .forEach(process -> OpenApiModelSchemaGenerator.addOpenAPIModelSchema(process, schemasInfo));
+        WorkflowCodeGenUtils.getProcesses(processBuildItem).forEach(process -> {
+            OpenApiModelSchemaGenerator.addOpenAPIModelSchema(process, schemasInfo);
+            annotationProducer.produce(new AnnotationsTransformerBuildItem(new TagResourceGenerator(process)));
+        });
         if (!schemasInfo.isEmpty()) {
             openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(new ServerlessWorkflowOASFilter(schemasInfo)));
         }
