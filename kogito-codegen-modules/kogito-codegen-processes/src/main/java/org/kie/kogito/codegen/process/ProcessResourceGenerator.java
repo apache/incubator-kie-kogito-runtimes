@@ -83,6 +83,7 @@ public class ProcessResourceGenerator {
     private Map<String, String> signals;
     private CompilationUnit taskModelFactoryUnit;
     private String taskModelFactoryClassName;
+    private CompilationUnit clazz;
 
     public ProcessResourceGenerator(
             KogitoBuildContext context,
@@ -137,10 +138,14 @@ public class ProcessResourceGenerator {
         return isQuarkus && isReactiveGenerator ? REACTIVE_REST_TEMPLATE_NAME : REST_TEMPLATE_NAME;
     }
 
+    public Optional<CompilationUnit> compilationUnit() {
+        return Optional.ofNullable(clazz);
+    }
+
     public String generate() {
         TemplatedGenerator.Builder templateBuilder = TemplatedGenerator.builder()
                 .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME);
-        CompilationUnit clazz = templateBuilder.build(context, getRestTemplateName())
+        clazz = templateBuilder.build(context, getRestTemplateName())
                 .compilationUnitOrThrow();
         clazz.setPackageDeclaration(process.getPackageName());
         clazz.addImport(modelfqcn);

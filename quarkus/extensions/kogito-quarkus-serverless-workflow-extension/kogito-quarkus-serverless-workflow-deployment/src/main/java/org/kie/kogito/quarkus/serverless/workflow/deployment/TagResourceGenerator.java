@@ -19,58 +19,61 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.Path;
-
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.AnnotationInstanceBuilder;
-import org.jboss.jandex.AnnotationTarget.Kind;
 import org.jbpm.ruleflow.core.Metadata;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
-import io.quarkus.arc.processor.AnnotationsTransformer;
-import io.quarkus.arc.processor.Transformation;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.expr.MemberValuePair;
+import com.github.javaparser.ast.expr.Name;
+import com.github.javaparser.ast.expr.NormalAnnotationExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 
-class TagResourceGenerator implements AnnotationsTransformer {
+/**
+ * Adds {@code org.eclipse.microprofile.openapi.annotations.tags.Tag} annotations to a {@link CompilationUnit}
+ */
+final class TagResourceGenerator {
 
-    private KogitoWorkflowProcess process;
-
-    public TagResourceGenerator(KogitoWorkflowProcess process) {
-        this.process = process;
+    private TagResourceGenerator() {
     }
 
-    @Override
-    public boolean appliesTo(Kind kind) {
-        return kind == Kind.CLASS;
+    /**
+     * Adds {@code org.eclipse.microprofile.openapi.annotations.tags.Tag} annotations to the specified {@link CompilationUnit}
+     *
+     * @param compilationUnit the compilation unit to add the {@code org.eclipse.microprofile.openapi.annotations.tags.Tag} annotations to
+     * @param process the {@link KogitoWorkflowProcess} to get the tags from
+     */
+    static void addTags(CompilationUnit compilationUnit, KogitoWorkflowProcess process) {
+        Map<String, Object> metadata = process.getMetaData();
+        @SuppressWarnings("unchecked")
+        Collection<String> tags = (Collection<String>) metadata.getOrDefault(Metadata.TAGS, Set.of());
+        String description = (String) metadata.get(Metadata.DESCRIPTION);
+        compilationUnit.findAll(ClassOrInterfaceDeclaration.class)
+                .forEach(cls -> addTags(process, tags, description, cls));
     }
 
-    private void addDescription(Transformation ctx, String description) {
-        AnnotationInstanceBuilder builder = attributes(process.getId());
+    private static void addTags(KogitoWorkflowProcess process, Collection<String> tags, String description, ClassOrInterfaceDeclaration cls) {
+        tags.forEach(tag -> addTag(cls, tag));
+        addDescription(process, description, cls);
+    }
+
+    private static void addDescription(KogitoWorkflowProcess process, String description, ClassOrInterfaceDeclaration cls) {
+        NodeList<MemberValuePair> attributes = attributes(process.getId());
         if (description != null) {
-            builder.add("description", description);
+            attributes.add(new MemberValuePair("description", new StringLiteralExpr(description)));
         }
-        ctx.add(builder.build());
+        cls.addAnnotation(new NormalAnnotationExpr(new Name("Tag"), attributes));
     }
 
-    private void addTag(Transformation ctx, String tag) {
-        ctx.add(attributes(tag).build());
+    private static void addTag(ClassOrInterfaceDeclaration cls, String tag) {
+        cls.addAnnotation(new NormalAnnotationExpr(new Name("Tag"), attributes(tag)));
     }
 
-    private static AnnotationInstanceBuilder attributes(String tag) {
-        return AnnotationInstance.builder(Tag.class).add("name", tag);
-    }
-
-    @Override
-    public void transform(TransformationContext ctx) {
-        if (ctx.getTarget().asClass().hasAnnotation(Path.class)) {
-            Map<String, Object> metadata = process.getMetaData();
-            @SuppressWarnings("unchecked")
-            Collection<String> tags = (Collection<String>) metadata.getOrDefault(Metadata.TAGS, Set.of());
-            String description = (String) metadata.get(Metadata.DESCRIPTION);
-            Transformation trans = ctx.transform();
-            tags.forEach(tag -> addTag(trans, tag));
-            addDescription(trans, description);
-            trans.done();
-        }
+    private static NodeList<MemberValuePair> attributes(String tag) {
+        NodeList<MemberValuePair> attributes = new NodeList<>();
+        MemberValuePair name = new MemberValuePair("name", new StringLiteralExpr(tag));
+        attributes.add(name);
+        return attributes;
     }
 }

@@ -392,7 +392,7 @@ public class ProcessCodegen extends AbstractGenerator {
             }
 
             processGenerators.add(p);
-
+            p.addResourceGenerator(processResourceGenerator);
             ps.add(p);
             pis.add(pi);
         }

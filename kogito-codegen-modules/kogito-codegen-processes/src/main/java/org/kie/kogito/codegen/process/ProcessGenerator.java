@@ -97,6 +97,7 @@ public class ProcessGenerator {
     private String targetTypeName;
 
     private List<CompilationUnit> additionalClasses = new ArrayList<>();
+    private ProcessResourceGenerator processResourceGenerator;
 
     public ProcessGenerator(KogitoBuildContext context,
             KogitoWorkflowProcess process,
@@ -568,5 +569,14 @@ public class ProcessGenerator {
 
     public List<CompilationUnit> getAdditionalClasses() {
         return additionalClasses;
+    }
+
+    public ProcessResourceGenerator getResourceGenerator() {
+        return processResourceGenerator;
+    }
+
+    public void addResourceGenerator(ProcessResourceGenerator processResourceGenerator) {
+        this.processResourceGenerator = processResourceGenerator;
+
     }
 }
