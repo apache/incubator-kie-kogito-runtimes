@@ -17,6 +17,7 @@ package org.kie.kogito.serverless.workflow.actions;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jbpm.workflow.core.WorkflowModelValidator;
@@ -27,9 +28,9 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion.VersionFlag;
+import com.networknt.schema.ValidationMessage;
 
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readAllBytes;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.runtimeLoader;
@@ -52,8 +53,9 @@ public class JsonSchemaValidator implements WorkflowModelValidator {
     @Override
     public void validate(Map<String, Object> model) {
         try {
-            ProcessingReport report = JsonSchemaFactory.byDefault().getJsonSchema(schemaData()).validate((JsonNode) model.getOrDefault(SWFConstants.DEFAULT_WORKFLOW_VAR, NullNode.instance));
-            if (!report.isSuccess()) {
+            Set<ValidationMessage> report =
+                    JsonSchemaFactory.getInstance(VersionFlag.V4).getSchema(schemaData()).validate((JsonNode) model.getOrDefault(SWFConstants.DEFAULT_WORKFLOW_VAR, NullNode.instance));
+            if (!report.isEmpty()) {
                 StringBuilder sb = new StringBuilder("There are JsonSchema validation errors:");
                 report.forEach(m -> sb.append(System.lineSeparator()).append(m.getMessage()));
                 final String validationMessage = sb.toString();
@@ -62,7 +64,7 @@ public class JsonSchemaValidator implements WorkflowModelValidator {
                     throw new IllegalArgumentException(validationMessage);
                 }
             }
-        } catch (ProcessingException | IOException ex) {
+        } catch (IOException ex) {
             throw new IllegalStateException("Unexpected error validating schema", ex);
         }
     }
