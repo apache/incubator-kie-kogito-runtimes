@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.drools.drl.quarkus.util.deployment.DroolsQuarkusResourceUtils;
+import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
@@ -115,12 +116,8 @@ public class LiveReloadProcessor {
     private CodeGenerationResult generateCode(LiveReloadableCodeGenProvider codeGenProvider) {
         try {
             Collection<GeneratedFile> generatedFiles = new ArrayList<>(generateSources(codeGenProvider));
-            if (!generatedFiles.isEmpty()) {
-                Collection<GeneratedBeanBuildItem> generatedBeanBuildItems = compileGeneratedSources(generatedFiles);
-                return new CodeGenerationResult(generatedFiles, indexCompiledSources(generatedBeanBuildItems));
-            } else {
-                return new CodeGenerationResult(List.of(), computingIndex);
-            }
+            return !generatedFiles.isEmpty() ? new CodeGenerationResult(generatedFiles, indexCompiledSources(compileGeneratedSources(generatedFiles)))
+                    : new CodeGenerationResult(List.of(), computingIndex);
         } catch (CodeGenException e) {
             throw new IllegalStateException(e);
         } catch (IOException e) {
@@ -155,11 +152,12 @@ public class LiveReloadProcessor {
     private Collection<GeneratedFile> generateSources(LiveReloadableCodeGenProvider codeGenProvider)
             throws CodeGenException, IOException {
         Path outDir = workDir.resolve("generated-sources").resolve(codeGenProvider.providerId());
-        var generatedFiles = new ArrayList<GeneratedFile>();
+        Collection<GeneratedFile> generatedFiles = new ArrayList<>();
+        Config config = ConfigProvider.getConfig();
         for (Path sourcePath : kogitoBuildContext.getAppPaths().getSourcePaths()) {
             Path inputDir = sourcePath.resolve("main").resolve(codeGenProvider.inputDirectory());
-            var codeGenContext = new CodeGenContext(applicationModel, outDir, workDir, inputDir, false, ConfigProvider.getConfig(), false);
-            if (codeGenProvider.trigger(codeGenContext)) {
+            CodeGenContext codeGenContext = new CodeGenContext(applicationModel, outDir, workDir, inputDir, false, config, false);
+            if (codeGenProvider.shouldRun(inputDir, config) && codeGenProvider.trigger(codeGenContext)) {
                 try (Stream<Path> sources = Files.walk(outDir)) {
                     sources.filter(Files::isRegularFile)
                             .filter(path -> path.toString().endsWith(".java"))
@@ -196,5 +194,25 @@ public class LiveReloadProcessor {
     @BuildStep(onlyIfNot = IsDevelopment.class)
     public LiveReloadExecutionBuildItem executeWhenNotDevelopment() {
         return new LiveReloadExecutionBuildItem(computingIndex);
+    }
+
+    private static class CodeGenerationResult {
+
+        private final Collection<GeneratedFile> generatedFiles;
+
+        private final IndexView indexView;
+
+        CodeGenerationResult(Collection<GeneratedFile> generatedFiles, IndexView indexView) {
+            this.generatedFiles = generatedFiles;
+            this.indexView = indexView;
+        }
+
+        Collection<GeneratedFile> getGeneratedFiles() {
+            return generatedFiles;
+        }
+
+        IndexView getIndexView() {
+            return indexView;
+        }
     }
 }

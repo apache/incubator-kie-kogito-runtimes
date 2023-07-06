@@ -15,6 +15,10 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.deployment.livereload;
 
+import java.nio.file.Path;
+
+import org.eclipse.microprofile.config.Config;
+
 import io.quarkus.bootstrap.prebuild.CodeGenException;
 import io.quarkus.deployment.CodeGenContext;
 
@@ -28,4 +32,6 @@ interface LiveReloadableCodeGenProvider {
     String providerId();
 
     String inputDirectory();
+
+    boolean shouldRun(Path sourceDir, Config config);
 }
