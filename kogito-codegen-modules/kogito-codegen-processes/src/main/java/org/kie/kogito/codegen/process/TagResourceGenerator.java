@@ -44,12 +44,14 @@ final class TagResourceGenerator {
      * @param process the {@link KogitoWorkflowProcess} to get the tags from
      */
     static void addTags(CompilationUnit compilationUnit, KogitoWorkflowProcess process, KogitoBuildContext context) {
-        Map<String, Object> metadata = process.getMetaData();
-        @SuppressWarnings("unchecked")
-        Collection<String> tags = (Collection<String>) metadata.getOrDefault(Metadata.TAGS, Set.of());
-        String description = (String) metadata.get(Metadata.DESCRIPTION);
-        compilationUnit.findAll(ClassOrInterfaceDeclaration.class)
-                .forEach(cls -> addTags(process, tags, description, cls, context));
+        if (context.hasDI()) {
+            Map<String, Object> metadata = process.getMetaData();
+            @SuppressWarnings("unchecked")
+            Collection<String> tags = (Collection<String>) metadata.getOrDefault(Metadata.TAGS, Set.of());
+            String description = (String) metadata.get(Metadata.DESCRIPTION);
+            compilationUnit.findAll(ClassOrInterfaceDeclaration.class)
+                    .forEach(cls -> addTags(process, tags, description, cls, context));
+        }
     }
 
     private static void addTags(KogitoWorkflowProcess process, Collection<String> tags, String description, ClassOrInterfaceDeclaration cls, KogitoBuildContext context) {

@@ -263,5 +263,5 @@ public interface DependencyInjectionAnnotator {
 
     default <T extends NodeWithAnnotations<?>> T withTagAnnotation(T node, NodeList<MemberValuePair> attributes) {
         return node;
-    };
+    }
 }
