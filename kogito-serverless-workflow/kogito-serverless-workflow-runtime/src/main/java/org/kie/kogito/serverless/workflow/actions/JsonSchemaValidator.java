@@ -54,7 +54,9 @@ public class JsonSchemaValidator implements WorkflowModelValidator {
         try {
             ProcessingReport report = JsonSchemaFactory.byDefault().getJsonSchema(schemaData()).validate((JsonNode) model.getOrDefault(SWFConstants.DEFAULT_WORKFLOW_VAR, NullNode.instance));
             if (!report.isSuccess()) {
-                final String validationMessage = String.format("Validation errors %s", report.toString());
+                StringBuilder sb = new StringBuilder("There are JsonSchema validation errors:");
+                report.forEach(m -> sb.append(System.lineSeparator()).append(m.getMessage()));
+                final String validationMessage = sb.toString();
                 logger.warn(validationMessage);
                 if (failOnValidationErrors) {
                     throw new IllegalArgumentException(validationMessage);
