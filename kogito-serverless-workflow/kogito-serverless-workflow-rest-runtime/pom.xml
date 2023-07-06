@@ -17,6 +17,12 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-rest-workitem</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jpmml</groupId>
+          <artifactId>pmml-model</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
