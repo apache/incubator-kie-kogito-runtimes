@@ -36,7 +36,6 @@
     <version.com.github.javaparser>3.24.2</version.com.github.javaparser>
     <version.com.github.java-json-tools>2.2.14</version.com.github.java-json-tools>
     <version.com.fasterxml.jackson.datatype>2.14.2</version.com.fasterxml.jackson.datatype>
-    <version.com.github.erosb>1.14.2</version.com.github.erosb>
     <version.com.github.victools>4.18.0</version.com.github.victools>
     <version.com.github.tomakehurst.wiremock>2.33.2</version.com.github.tomakehurst.wiremock>
     <version.com.google.protobuf>3.22.0</version.com.google.protobuf>
@@ -707,19 +706,12 @@
         <groupId>com.github.java-json-tools</groupId>
         <artifactId>json-schema-validator</artifactId>
         <version>${version.com.github.java-json-tools}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
         <artifactId>jackson-datatype-json-org</artifactId>
         <version>${version.com.fasterxml.jackson.datatype}</version>
       </dependency>
-      <dependency>
-        <groupId>com.github.erosb</groupId>
-        <artifactId>everit-json-schema</artifactId>
-        <version>${version.com.github.erosb}</version>
-      </dependency>
-
       <!-- Serverless Workflow -->
       <dependency>
         <groupId>io.serverlessworkflow</groupId>

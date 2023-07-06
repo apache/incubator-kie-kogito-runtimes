@@ -27,8 +27,8 @@
       <artifactId>kogito-rest-utils</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.github.erosb</groupId>
-      <artifactId>everit-json-schema</artifactId>
+      <groupId>com.github.java-json-tools</groupId>
+      <artifactId>json-schema-validator</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
