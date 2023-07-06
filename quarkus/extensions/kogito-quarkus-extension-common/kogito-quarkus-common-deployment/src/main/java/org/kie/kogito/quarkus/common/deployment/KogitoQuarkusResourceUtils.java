@@ -171,7 +171,7 @@ public class KogitoQuarkusResourceUtils {
         List<IndexView> indexes = new ArrayList<>();
         indexes.add(baseIndex);
         indexes.addAll(newIndexViews);
-        return CompositeIndex.create(indexes.toArray(new IndexView[0]));
+        return CompositeIndex.create(indexes);
     }
 
     public static Path getTargetClassesPath(AppPaths appPaths) {
