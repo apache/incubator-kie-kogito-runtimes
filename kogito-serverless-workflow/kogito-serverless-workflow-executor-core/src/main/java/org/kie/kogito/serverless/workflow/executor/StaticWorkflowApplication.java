@@ -225,6 +225,10 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
         closeables.add(closeable);
     }
 
+    public Optional<Process<JsonNodeModel>> findProcessById(String id) {
+        return Optional.ofNullable((Process<JsonNodeModel>) processes.processById(id));
+    }
+
     private Optional<ProcessInstance<JsonNodeModel>> findProcessInstance(String id) {
         for (Process<JsonNodeModel> process : processes.map.values()) {
             Optional<ProcessInstance<JsonNodeModel>> pi = process.instances().findById(id);
