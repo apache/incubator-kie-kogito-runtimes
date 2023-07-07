@@ -127,7 +127,7 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Guava should not be used directly by Kogito, here we are managing it to override dependency added by GRPC -->
+      <!-- Guava should not be used directly by Kogito, here we are managing it to override dependency added by GRPC to fix this CVE: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-2976 -->
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
