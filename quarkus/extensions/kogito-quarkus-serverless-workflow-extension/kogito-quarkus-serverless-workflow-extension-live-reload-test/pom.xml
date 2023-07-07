@@ -122,9 +122,6 @@
             </resource>
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>
-<!--                <includes>-->
-<!--                    <include>workflow-service-openapi.json</include>-->
-<!--                </includes>-->
             </resource>
         </resources>
     </build>
