@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow;
+package org.kie.kogito.process.definitions;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -29,12 +29,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.kie.kogito.serverless.workflow.executor.StaticWorkflowApplication;
+import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModelInput;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 import org.kie.kogito.serverless.workflow.utils.WorkflowFormat;
 
+import com.fasterxml.jackson.databind.node.NullNode;
+
 @Path("/")
-public class KogitoGenericResource {
+public class ProcessDefinitionsResource {
 
     private StaticWorkflowApplication application;
 
@@ -53,13 +56,16 @@ public class KogitoGenericResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("{id}")
     public Response executeProcess(@PathParam("id") String processId, JsonNodeModelInput input) {
-        return Response.status(200).entity(
-                application.execute(application.findProcessById(processId).orElseThrow(() -> new IllegalArgumentException("Cannot find process id " + processId)), input.toModel())).build();
+        return Response.status(201).entity(
+                application.execute(application.findProcessById(processId).orElseThrow(() -> new IllegalArgumentException("Cannot find process id " + processId)),
+                        input != null ? input.toModel() : new JsonNodeModel(NullNode.instance)))
+                .build();
     }
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    @Path("{id}/upload")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("{id}/definition")
     public Response uploadProcess(@PathParam("id") String processId, String content) throws IOException {
         application.process(ServerlessWorkflowUtils.getWorkflow(new StringReader(content), content.startsWith("{") ? WorkflowFormat.JSON : WorkflowFormat.YAML));
         return Response.ok().build();
