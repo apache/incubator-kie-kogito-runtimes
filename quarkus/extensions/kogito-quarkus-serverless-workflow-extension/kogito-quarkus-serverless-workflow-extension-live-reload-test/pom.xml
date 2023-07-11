@@ -87,6 +87,19 @@
         </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-common-deployment</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-workflow-common-deployment</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
