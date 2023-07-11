@@ -19,10 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kie.kogito.examples.sw.greeting.GreeterGrpc;
-import org.kie.kogito.examples.sw.greeting.Greeting;
-import org.kie.kogito.examples.sw.greeting.Greeting.HelloReply;
-import org.kie.kogito.examples.sw.greeting.Greeting.HelloRequest;
+import org.kie.kogito.quarkus.serverless.workflow.deployment.livereload.Greeting.HelloReply;
+import org.kie.kogito.quarkus.serverless.workflow.deployment.livereload.Greeting.HelloRequest;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
