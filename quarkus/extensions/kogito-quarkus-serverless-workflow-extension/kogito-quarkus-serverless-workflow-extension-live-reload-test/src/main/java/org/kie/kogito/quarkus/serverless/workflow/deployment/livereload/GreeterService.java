@@ -31,7 +31,7 @@ import io.quarkus.grpc.GrpcService;
 @GrpcService
 public class GreeterService extends GreeterGrpc.GreeterImplBase {
 
-    public static final String[] SUPPORTED_LANGUAGES = { "English", "Spanish" };
+    protected static final String[] SUPPORTED_LANGUAGES = { "English", "Spanish" };
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Server server = buildServer(Integer.getInteger("grpc.port", 50051));
