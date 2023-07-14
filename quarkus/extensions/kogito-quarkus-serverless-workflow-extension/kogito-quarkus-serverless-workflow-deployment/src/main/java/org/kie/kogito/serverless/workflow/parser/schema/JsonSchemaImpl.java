@@ -23,6 +23,7 @@ import org.eclipse.microprofile.openapi.models.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import io.smallrye.openapi.api.models.media.SchemaImpl;
@@ -34,6 +35,12 @@ import io.smallrye.openapi.api.models.media.SchemaImpl;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JsonSchemaImpl extends SchemaImpl {
+
+    @JsonSetter("$ref")
+    @Override
+    public void setRef(String ref) {
+        super.setRef(ref);
+    }
 
     @JsonDeserialize(as = JsonSchemaImpl.class)
     @Override
