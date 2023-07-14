@@ -1,9 +1,0 @@
-name: Kogito Add-On Process Defintions
-description: Kogito Process Definitions REST API
-metadata:
-  keywords:
-    - kogito
-    - process
-    - serverless workflow
-  categories:
-    - "business-automation"
