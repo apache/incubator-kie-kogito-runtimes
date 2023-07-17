@@ -27,11 +27,11 @@ class RefSchemas {
     }
 
     private static class ThreadInfo {
-        public int counter;
-        public String id;
-        public Map<String, Schema> map = new HashMap<>();
+        private final String id;
+        private final Map<String, Schema> map = new HashMap<>();
+        private int counter;
 
-        public ThreadInfo(String id) {
+        private ThreadInfo(String id) {
             this.id = id;
         }
     }
@@ -52,6 +52,6 @@ class RefSchemas {
     }
 
     public static void reset() {
-        threadInfo.set(null);
+        threadInfo.remove();
     }
 }

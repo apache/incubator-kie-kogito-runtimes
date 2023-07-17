@@ -27,6 +27,8 @@ import java.util.Optional;
 import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -43,6 +45,8 @@ import io.smallrye.openapi.api.models.media.SchemaImpl;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JsonSchemaImpl extends SchemaImpl {
+
+    private static final Logger logger = LoggerFactory.getLogger(JsonSchemaImpl.class);
 
     @JsonSetter("$ref")
     @Override
@@ -63,6 +67,7 @@ public class JsonSchemaImpl extends SchemaImpl {
                 ref = OpenApiConstants.REF_PREFIX_SCHEMA + key;
             } catch (URISyntaxException | IOException e) {
                 // if not a valid uri, let super handle it
+                logger.info("Error loading ref {}", ref, e);
             }
         }
         super.setRef(ref);
