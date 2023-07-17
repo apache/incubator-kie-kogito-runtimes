@@ -16,16 +16,24 @@
 
 package org.kie.kogito.serverless.workflow.parser.schema;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.microprofile.openapi.models.media.Schema;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import io.smallrye.openapi.api.constants.OpenApiConstants;
 import io.smallrye.openapi.api.models.media.SchemaImpl;
 
 /**
@@ -39,6 +47,24 @@ public class JsonSchemaImpl extends SchemaImpl {
     @JsonSetter("$ref")
     @Override
     public void setRef(String ref) {
+        if (ref != null && !ref.startsWith("#")) {
+            try (InputStream is = URIContentLoaderFactory.loader(new URI(ref), Optional.empty(), Optional.empty(), Optional.empty(), null).getInputStream()) {
+                JsonSchemaImpl schema = ObjectMapperFactory.get().readValue(is.readAllBytes(), JsonSchemaImpl.class);
+                String key;
+                if (schema.getTitle() == null) {
+                    key = RefSchemas.getKey();
+                    schema.title(key);
+                } else {
+                    key = schema.getTitle();
+                }
+                if (key != null) {
+                    RefSchemas.get().put(key, schema);
+                }
+                ref = OpenApiConstants.REF_PREFIX_SCHEMA + key;
+            } catch (URISyntaxException | IOException e) {
+                // if not a valid uri, let super handle it
+            }
+        }
         super.setRef(ref);
     }
 

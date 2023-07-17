@@ -58,6 +58,7 @@ public final class OpenApiModelSchemaGenerator {
 
     public static void addOpenAPIModelSchema(KogitoWorkflowProcess workflow, Map<String, Schema> schemas) {
         if (workflow instanceof WorkflowProcess) {
+            RefSchemas.init(workflow.getId());
             WorkflowProcess workflowProcess = (WorkflowProcess) workflow;
             getSchema(workflowProcess.getInputValidator()).ifPresent(v -> {
                 String key = getSchemaName(workflow.getId(), INPUT_SUFFIX);
@@ -67,6 +68,8 @@ public final class OpenApiModelSchemaGenerator {
                 String key = getSchemaName(workflow.getId(), OUTPUT_SUFFIX);
                 schemas.put(key, createOutputSchema(schemaTitle(key, v)));
             });
+            schemas.putAll(RefSchemas.get());
+            RefSchemas.reset();
         }
     }
 
