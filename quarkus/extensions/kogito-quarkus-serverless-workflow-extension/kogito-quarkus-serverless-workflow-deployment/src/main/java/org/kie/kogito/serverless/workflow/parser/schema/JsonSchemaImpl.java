@@ -22,7 +22,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
@@ -48,11 +47,16 @@ public class JsonSchemaImpl extends SchemaImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaImpl.class);
 
+    @JsonSetter("$id")
+    public void setId(String id) {
+        RefSchemas.baseURI(id);
+    }
+
     @JsonSetter("$ref")
     @Override
     public void setRef(String ref) {
         if (ref != null && !ref.startsWith("#")) {
-            try (InputStream is = URIContentLoaderFactory.loader(new URI(ref), Optional.empty(), Optional.empty(), Optional.empty(), null).getInputStream()) {
+            try (InputStream is = URIContentLoaderFactory.builder(new URI(ref)).withBaseURI(RefSchemas.getBaseURI()).build().getInputStream()) {
                 JsonSchemaImpl schema = ObjectMapperFactory.get().readValue(is.readAllBytes(), JsonSchemaImpl.class);
                 String key;
                 if (schema.getTitle() == null) {
@@ -114,5 +118,4 @@ public class JsonSchemaImpl extends SchemaImpl {
     public Schema getNot() {
         return super.getNot();
     }
-
 }

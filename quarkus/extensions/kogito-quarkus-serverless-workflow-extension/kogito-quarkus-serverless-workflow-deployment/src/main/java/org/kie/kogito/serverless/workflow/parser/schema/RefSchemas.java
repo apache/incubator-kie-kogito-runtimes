@@ -30,6 +30,7 @@ class RefSchemas {
         private final String id;
         private final Map<String, Schema> map = new HashMap<>();
         private int counter;
+        private String baseURI;
 
         private ThreadInfo(String id) {
             this.id = id;
@@ -44,6 +45,14 @@ class RefSchemas {
 
     public static Map<String, Schema> get() {
         return threadInfo.get().map;
+    }
+
+    public static void baseURI(String baseURI) {
+        threadInfo.get().baseURI = baseURI;
+    }
+
+    public static String getBaseURI() {
+        return threadInfo.get().baseURI;
     }
 
     public static String getKey() {
