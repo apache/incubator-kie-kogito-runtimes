@@ -48,7 +48,10 @@ class RefSchemas {
     }
 
     public static void baseURI(String baseURI) {
-        threadInfo.get().baseURI = baseURI;
+        if (baseURI != null) {
+            int lastIndexOf = baseURI.lastIndexOf('/');
+            threadInfo.get().baseURI = lastIndexOf != -1 ? baseURI.substring(0, lastIndexOf) : baseURI;
+        }
     }
 
     public static String getBaseURI() {

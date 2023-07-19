@@ -68,7 +68,7 @@ public class URIContentLoaderFactory {
         private URIContentLoader fallback;
         private Workflow workflow;
         private String authRef;
-        private URI baseURI;
+        private String baseURI;
 
         private Builder(URI uri) {
             this.uri = uri;
@@ -95,10 +95,7 @@ public class URIContentLoaderFactory {
         }
 
         public Builder withBaseURI(String baseURI) {
-            if (baseURI != null) {
-                int lastIndexOf = baseURI.lastIndexOf('/');
-                this.baseURI = URI.create(lastIndexOf != -1 ? baseURI.substring(0, lastIndexOf) : baseURI);
-            }
+            this.baseURI = baseURI;
             return this;
         }
 
@@ -122,8 +119,8 @@ public class URIContentLoaderFactory {
         }
     }
 
-    private static URI compoundURI(URI baseURI, URI uri) {
-        return URI.create(baseURI.toString() + "/" + uri.toString());
+    private static URI compoundURI(String baseURI, URI uri) {
+        return URI.create(baseURI + "/" + uri.toString());
     }
 
     private URIContentLoaderFactory() {
