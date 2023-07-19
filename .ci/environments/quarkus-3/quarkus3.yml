@@ -84,10 +84,6 @@ recipeList:
     newValue: 21.0.1
   }
 - org.openrewrite.maven.ChangePropertyValue: {
-    key: version.io.serverlessworkflow,
-    newValue: 4.0.3.Final
-  }
-- org.openrewrite.maven.ChangePropertyValue: {
     key: version.com.github.javaparser,
     newValue: 3.25.1
   }
