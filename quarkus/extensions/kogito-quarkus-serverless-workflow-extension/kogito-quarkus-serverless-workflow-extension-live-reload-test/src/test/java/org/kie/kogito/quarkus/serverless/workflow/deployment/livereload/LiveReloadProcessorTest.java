@@ -21,42 +21,73 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.kie.kogito.test.utils.SocketUtils;
+
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 
 import io.grpc.Server;
 import io.quarkus.test.QuarkusDevModeTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 
 public class LiveReloadProcessorTest {
 
     private static final int PORT = SocketUtils.findAvailablePort();
 
     @RegisterExtension
-    public final static QuarkusDevModeTest test = new QuarkusDevModeTest()
-            .withApplicationRoot(jar -> {
-                try {
-                    jar.addAsResource(new StringAsset(applicationProperties()), "/application.properties");
-                    jar.add(new StringAsset(new String(Files.readAllBytes(Path.of("src/main/proto/greeting.proto")))), "src/main/proto/greeting.proto");
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
+    public final static QuarkusDevModeTest test = createTest();
 
-    private static String applicationProperties() {
+    private static WireMockServer wireMockServer;
+
+    private static QuarkusDevModeTest createTest() {
+        configureWiremockServer();
+
+        return new QuarkusDevModeTest()
+                .withApplicationRoot(jar -> {
+                    try {
+                        jar.addAsResource(new StringAsset(applicationProperties(wireMockServer.baseUrl())), "/application.properties");
+                        jar.add(new StringAsset(new String(Files.readAllBytes(Path.of("src/main/proto/greeting.proto")))), "src/main/proto/greeting.proto");
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
+    }
+
+    private static void configureWiremockServer() {
+        wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig().extensions(new ResponseTemplateTransformer(false)).dynamicPort());
+        wireMockServer.start();
+
+        wireMockServer.stubFor(post(urlEqualTo("/echo"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{ \"echoedMsgType\": \"{{jsonPath request.body '$.msgType'}}\"}")
+                        .withTransformers("response-template")));
+    }
+
+    private static String applicationProperties(String wireMockBaseUrl) {
         return Stream.of(
+                "quarkus.rest-client.\"enum_parameter_yaml\".url=" + wireMockBaseUrl,
                 "quarkus.grpc.clients.Greeter.host=localhost",
                 "quarkus.grpc.clients.Greeter.port=" + PORT,
                 "quarkus.grpc.server.port=" + PORT,
@@ -64,28 +95,37 @@ public class LiveReloadProcessorTest {
                 .collect(Collectors.joining(System.lineSeparator()));
     }
 
+    @AfterAll
+    static void tearDown() {
+        if (wireMockServer != null) {
+            wireMockServer.stop();
+        }
+    }
+
     @Test
     void testOpenApi() throws IOException {
         given()
                 .contentType(ContentType.JSON)
-                .accept("*/*")
-                .body("{ \"workflowdata\" : { \"name\" : \"Java\" } }")
+                .accept(ContentType.JSON)
                 .when()
-                .post("/service").then()
+                .body(Map.of())
+                .post("/openapienumparameter")
+                .then()
                 .statusCode(404);
 
-        try (FileInputStream inputStream = new FileInputStream("src/test/resources/workflow-service.sw.json")) {
-            test.addResourceFile("workflow-service.sw.json", new String(Objects.requireNonNull(inputStream).readAllBytes()));
+        try (FileInputStream inputStream = new FileInputStream("src/test/resources/openAPIEnumParameter.sw.json")) {
+            test.addResourceFile("openAPIEnumParameter.sw.json", new String(Objects.requireNonNull(inputStream).readAllBytes()));
         }
 
         given()
                 .contentType(ContentType.JSON)
-                .accept("*/*")
-                .body("{ \"workflowdata\" : { \"name\" : \"Java\" } }")
+                .accept(ContentType.JSON)
                 .when()
-                .post("/service").then()
-                .statusCode(201);
-
+                .body(Map.of())
+                .post("/openapienumparameter")
+                .then()
+                .statusCode(201)
+                .body("workflowdata.echoedMsgType", is("text"));
     }
 
     @Test
