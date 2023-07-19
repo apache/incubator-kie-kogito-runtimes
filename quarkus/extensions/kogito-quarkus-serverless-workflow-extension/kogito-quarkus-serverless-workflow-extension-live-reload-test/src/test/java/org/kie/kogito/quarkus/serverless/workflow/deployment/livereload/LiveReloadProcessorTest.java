@@ -86,7 +86,7 @@ public class LiveReloadProcessorTest {
     }
 
     @Test
-    void testEnglish() throws InterruptedException, IOException {
+    void testGrpc() throws InterruptedException, IOException {
         Server server = GreeterService.buildServer(PORT);
         server.start();
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
