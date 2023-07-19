@@ -20,11 +20,13 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.kie.kogito.test.utils.SocketUtils;
@@ -35,6 +37,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 
 public class LiveReloadProcessorTest {
@@ -116,5 +119,32 @@ public class LiveReloadProcessorTest {
             server.shutdownNow();
             server.awaitTermination();
         }
+    }
+
+    @Test
+    @Disabled("Disabled until https://issues.redhat.com/browse/KOGITO-9614 is resolved")
+    void testAsyncApi() throws IOException {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(Collections.singletonMap("workflowdata", Collections.emptyMap()))
+                .post("/asyncEventPublisher")
+                .then()
+                .statusCode(404);
+
+        try (FileInputStream inputStream = new FileInputStream("src/test/resources/asyncPublisher.sw.json")) {
+            test.addResourceFile("asyncPublisher.sw.json", new String(Objects.requireNonNull(inputStream).readAllBytes()));
+        }
+
+        String id = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(Collections.singletonMap("workflowdata", Collections.emptyMap()))
+                .post("/asyncEventPublisher")
+                .then()
+                .statusCode(201)
+                .extract().path("id");
+
+        assertThat(id).isNotBlank();
     }
 }
