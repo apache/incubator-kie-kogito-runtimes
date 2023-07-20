@@ -303,10 +303,5 @@ String getWorkflowCommonDeploymentRelativePath() {
 }
 
 String getCurrentNightlyImage() {
-    return "quay.io/kiegroup/kogito-data-index-ephemeral-nightly:${getMajorMinorKogitoVersion()}"
-}
-
-String getMajorMinorKogitoVersion() {
-    def parsed = getProjectVersion().split('\\.')
-    return parsed[0] + '.' + parsed[1]
+    return "quay.io/kiegroup/kogito-data-index-ephemeral-nightly:${util.getMajorMinorVersion(getProjectVersion())}"
 }
