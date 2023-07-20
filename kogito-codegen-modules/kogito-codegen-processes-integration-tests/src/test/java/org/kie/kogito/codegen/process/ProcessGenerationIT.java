@@ -113,8 +113,7 @@ public class ProcessGenerationIT extends AbstractCodegenIT {
         Set<String> ignoredFiles = Files.lines(BASE_PATH.resolve("org/kie/kogito/codegen/process/process-generation-test.skip.txt"))
                 .collect(Collectors.toSet());
         return Files.find(BASE_PATH, 10, ((path, basicFileAttributes) -> basicFileAttributes.isRegularFile()
-                && (SupportedExtensions.getBPMNExtensions().stream().anyMatch(ext -> path.getFileName().toString().endsWith(ext))
-                        || SupportedExtensions.getSWFExtensions().stream().anyMatch(ext -> path.getFileName().toString().endsWith(ext)))))
+                && SupportedExtensions.isSourceFile(path)))
                 .map(BASE_PATH::relativize)
                 .map(Path::toString)
                 .filter(p -> ignoredFiles.stream().noneMatch(ignored -> p.contains(ignored)));

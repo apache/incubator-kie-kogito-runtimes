@@ -96,7 +96,6 @@ class KogitoAddOnSourceFilesProcessor extends OneOfCapabilityKogitoAddOnProcesso
     }
 
     private boolean isSourceFile(Path file) {
-        return SupportedExtensions.getBPMNExtensions().stream().anyMatch(extension -> file.toString().endsWith(extension))
-                || SupportedExtensions.getSWFExtensions().stream().anyMatch(extension -> file.toString().endsWith(extension));
+        return SupportedExtensions.isSourceFile(file);
     }
 }

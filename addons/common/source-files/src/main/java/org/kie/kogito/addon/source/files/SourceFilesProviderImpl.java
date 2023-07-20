@@ -54,7 +54,6 @@ public final class SourceFilesProviderImpl implements SourceFilesProvider {
     }
 
     private boolean isValidDefinitionSource(SourceFile sourceFile) {
-        return SupportedExtensions.getBPMNExtensions().stream().anyMatch(sourceFile.getUri()::endsWith) ||
-                SupportedExtensions.getSWFExtensions().stream().anyMatch(sourceFile.getUri()::endsWith);
+        return SupportedExtensions.isSourceFile(sourceFile.getUri());
     }
 }
