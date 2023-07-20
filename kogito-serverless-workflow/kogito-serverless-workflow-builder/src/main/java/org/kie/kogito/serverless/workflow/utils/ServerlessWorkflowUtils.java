@@ -196,9 +196,9 @@ public class ServerlessWorkflowUtils {
     public static Optional<byte[]> loadResourceFile(String uriStr, Optional<Workflow> workflow, Optional<ParserContext> parserContext, String authRef) {
         final URI uri = URI.create(uriStr);
         try {
-        	Builder builder = URIContentLoaderFactory.builder(uri).withAuthRef(authRef);
-        	workflow.ifPresent(builder::withWorkflow);
-        	parserContext.map(p -> p.getContext().getClassLoader()).ifPresent(builder::withClassloader);
+            Builder builder = URIContentLoaderFactory.builder(uri).withAuthRef(authRef);
+            workflow.ifPresent(builder::withWorkflow);
+            parserContext.map(p -> p.getContext().getClassLoader()).ifPresent(builder::withClassloader);
             return Optional.of(URIContentLoaderFactory.readAllBytes(builder.build()));
         } catch (UncheckedIOException io) {
             // if file cannot be found in build context, warn it and return the unmodified uri (it might be possible that later the resource is available at runtime)

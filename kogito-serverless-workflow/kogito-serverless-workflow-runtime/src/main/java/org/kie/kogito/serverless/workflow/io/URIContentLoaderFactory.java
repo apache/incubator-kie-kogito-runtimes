@@ -102,7 +102,7 @@ public class URIContentLoaderFactory {
         public URIContentLoader build() {
             if (uri.getScheme() == null) {
                 if (baseURI != null) {
-                    uri = compoundURI(baseURI, uri);
+                    uri = URI.create(baseURI + "/" + uri.toString());
                 } else {
                     return new ClassPathContentLoader(uri, Optional.ofNullable(cl));
                 }
@@ -117,10 +117,6 @@ public class URIContentLoaderFactory {
                     return new ClassPathContentLoader(uri, Optional.ofNullable(cl));
             }
         }
-    }
-
-    private static URI compoundURI(String baseURI, URI uri) {
-        return URI.create(baseURI + "/" + uri.toString());
     }
 
     private URIContentLoaderFactory() {
