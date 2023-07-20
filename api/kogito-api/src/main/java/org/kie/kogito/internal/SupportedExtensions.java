@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.utils;
+package org.kie.kogito.internal;
 
-import java.nio.file.Path;
+import java.util.Set;
 
-public enum WorkflowFormat {
-    JSON,
-    YAML;
+public class SupportedExtensions {
 
-    private static final String JSON_EXTENSION = ".json";
+    private static final Set<String> BPMN_EXTENSIONS = Set.of(".bpmn", ".bpmn2");
+    private static final Set<String> SWF_EXTENSIONS = Set.of(".sw.yml", ".sw.yaml", ".sw.json");
 
-    public static WorkflowFormat fromFileName(String fileName) {
-        return fileName.endsWith(JSON_EXTENSION) ? JSON : YAML;
+    public static Set<String> getBPMNExtensions() {
+        return BPMN_EXTENSIONS;
     }
 
-    public static WorkflowFormat fromFileName(Path fileName) {
-        return fromFileName(fileName.toString());
+    public static Set<String> getSWFExtensions() {
+        return SWF_EXTENSIONS;
+    }
+
+    private SupportedExtensions() {
     }
 }
