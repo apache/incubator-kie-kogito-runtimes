@@ -16,6 +16,7 @@
 package org.kie.kogito.serverless.workflow.executor;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -26,6 +27,12 @@ import java.util.concurrent.TimeoutException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.kie.kogito.persistence.rocksdb.RocksDBProcessInstancesFactory;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDBException;
+
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
@@ -57,6 +64,25 @@ public class WorkflowEventSubscriberTest {
                     .build());
             assertThat(application.waitForFinish(id, Duration.ofSeconds(3)).orElseThrow().getWorkflowdata())
                     .isEqualTo(jsonObject().put("additionalData", additionalData).put("slogan", "Viva er Beti"));
+        }
+    }
+
+    @Test
+    void testCallbackSubscriberWithPersistence(@TempDir Path tempDir) throws InterruptedException, TimeoutException, RocksDBException {
+        final String eventType = "testSubscribe";
+        final String additionalData = "This has been injected by the event";
+        Workflow workflow = workflow("testCallback").start(callback(call(expr("concat", "{slogan:.slogan+\"er Beti\"}")), eventDef(eventType))).end().build();
+        try (StaticWorkflowApplication application =
+                StaticWorkflowApplication.create().withProcessInstances(new RocksDBProcessInstancesFactory(new Options().setCreateIfMissing(true), tempDir.toString()))) {
+            String id = application.execute(workflow, jsonObject().put("slogan", "Viva ")).getId();
+            assertThat(application.variables(id).orElseThrow().getWorkflowdata().get("slogan").equals(new TextNode("Viva ")));
+            publish(eventType, buildCloudEvent(eventType, id)
+                    .withData(JsonCloudEventData.wrap(jsonObject().put("additionalData", additionalData)))
+                    .build());
+            assertThat(application.waitForFinish(id, Duration.ofSeconds(20)).orElseThrow().getWorkflowdata())
+                    .isEqualTo(jsonObject().put("additionalData", additionalData).put("slogan", "Viva er Beti"));
+            Thread.sleep(10);
+            assertThat(application.variables(id)).isEmpty();
         }
     }
 

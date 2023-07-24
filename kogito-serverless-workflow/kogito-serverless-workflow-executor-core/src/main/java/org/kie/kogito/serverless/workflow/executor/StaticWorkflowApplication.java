@@ -46,6 +46,7 @@ import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
 import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
@@ -90,6 +91,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     private Iterable<StaticProcessRegister> processRegisters;
     private final Collection<AutoCloseable> closeables = new ArrayList<>();
     private final Map<String, SynchronousQueue<JsonNodeModel>> queues;
+    private ProcessInstancesFactory processInstancesFactory;
 
     private static class StaticCompletionEventListener extends DefaultKogitoProcessEventListener {
 
@@ -169,6 +171,11 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
      */
     public JsonNodeModel execute(Workflow workflow, JsonNode data) {
         return execute(findOrCreate(workflow), data);
+    }
+
+    public StaticWorkflowApplication withProcessInstances(ProcessInstancesFactory processInstanceFactory) {
+        this.processInstancesFactory = processInstanceFactory;
+        return this;
     }
 
     private Process<JsonNodeModel> findOrCreate(Workflow workflow) {
@@ -264,7 +271,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
 
     private Process<JsonNodeModel> createProcess(Workflow workflow) {
         workflowRegisters.forEach(r -> r.register(this, workflow));
-        StaticWorkflowProcess process = new StaticWorkflowProcess(this, handlers, ServerlessWorkflowParser
+        StaticWorkflowProcess process = new StaticWorkflowProcess(this, handlers, processInstancesFactory, ServerlessWorkflowParser
                 .of(workflow, JavaKogitoBuildContext.builder().withApplicationProperties(System.getProperties()).build()).getProcessInfo().info());
         processRegisters.forEach(r -> r.register(this, workflow, process));
         WorkflowProcessImpl workflowProcess = (WorkflowProcessImpl) process.get();
