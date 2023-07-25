@@ -107,7 +107,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
             SynchronousQueue<JsonNodeModel> queue = queues.remove(instance.getId());
             if (queue != null) {
                 try {
-                    queue.offer(new JsonNodeModel(instance.getId(), instance.getVariables().get(SWFConstants.DEFAULT_WORKFLOW_VAR)), 1000L, TimeUnit.SECONDS);
+                    queue.offer(new JsonNodeModel(instance.getId(), instance.getVariables().get(SWFConstants.DEFAULT_WORKFLOW_VAR)), 1L, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -173,7 +173,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
         return execute(findOrCreate(workflow), data);
     }
 
-    public StaticWorkflowApplication withProcessInstances(ProcessInstancesFactory processInstanceFactory) {
+    public StaticWorkflowApplication processInstancesFactory(ProcessInstancesFactory processInstanceFactory) {
         this.processInstancesFactory = processInstanceFactory;
         return this;
     }

@@ -41,6 +41,7 @@ import io.serverlessworkflow.api.Workflow;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.awaitility.Awaitility.await;
 import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.call;
 import static org.kie.kogito.serverless.workflow.fluent.EventDefBuilder.eventDef;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.expr;
@@ -73,16 +74,15 @@ public class WorkflowEventSubscriberTest {
         final String additionalData = "This has been injected by the event";
         Workflow workflow = workflow("testCallback").start(callback(call(expr("concat", "{slogan:.slogan+\"er Beti\"}")), eventDef(eventType))).end().build();
         try (StaticWorkflowApplication application =
-                StaticWorkflowApplication.create().withProcessInstances(new RocksDBProcessInstancesFactory(new Options().setCreateIfMissing(true), tempDir.toString()))) {
+                StaticWorkflowApplication.create().processInstancesFactory(new RocksDBProcessInstancesFactory(new Options().setCreateIfMissing(true), tempDir.toString()))) {
             String id = application.execute(workflow, jsonObject().put("slogan", "Viva ")).getId();
-            assertThat(application.variables(id).orElseThrow().getWorkflowdata().get("slogan").equals(new TextNode("Viva ")));
+            assertThat(application.variables(id).orElseThrow().getWorkflowdata()).doesNotContain(new TextNode(additionalData));
             publish(eventType, buildCloudEvent(eventType, id)
                     .withData(JsonCloudEventData.wrap(jsonObject().put("additionalData", additionalData)))
                     .build());
             assertThat(application.waitForFinish(id, Duration.ofSeconds(20)).orElseThrow().getWorkflowdata())
                     .isEqualTo(jsonObject().put("additionalData", additionalData).put("slogan", "Viva er Beti"));
-            Thread.sleep(10);
-            assertThat(application.variables(id)).isEmpty();
+            await().atMost(Duration.ofSeconds(1)).pollInterval(Duration.ofMillis(50)).until(() -> application.variables(id).isEmpty());
         }
     }
 
