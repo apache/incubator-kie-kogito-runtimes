@@ -107,7 +107,9 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
             SynchronousQueue<JsonNodeModel> queue = queues.remove(instance.getId());
             if (queue != null) {
                 try {
-                    queue.offer(new JsonNodeModel(instance.getId(), instance.getVariables().get(SWFConstants.DEFAULT_WORKFLOW_VAR)), 1L, TimeUnit.SECONDS);
+                    if (queue.offer(new JsonNodeModel(instance.getId(), instance.getVariables().get(SWFConstants.DEFAULT_WORKFLOW_VAR)), 1L, TimeUnit.SECONDS)) {
+                        logger.debug("waiting process instance {} has been notified about its completion", instance.getId());
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
