@@ -37,7 +37,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-quarkus-persistence-rocksdb</artifactId>
+      <artifactId>kogito-addons-quarkus-persistence-rocksdb-deployment</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
