@@ -38,6 +38,8 @@ import org.kie.api.definition.process.NodeContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * Default implementation of a RuleFlow process.
  *
@@ -49,8 +51,8 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
 
     private boolean autoComplete = false;
     private boolean dynamic = false;
-    private WorkflowModelValidator inputValidator;
-    private WorkflowModelValidator outputValidator;
+    private WorkflowModelValidator<JsonNode> inputValidator;
+    private WorkflowModelValidator<JsonNode> outputValidator;
     private org.jbpm.workflow.core.NodeContainer nodeContainer;
 
     private transient BiFunction<String, ProcessInstance, String> expressionEvaluator = (expression, p) -> {
@@ -218,22 +220,22 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
     }
 
     @Override
-    public Optional<WorkflowModelValidator> getInputValidator() {
+    public Optional<WorkflowModelValidator<JsonNode>> getInputValidator() {
         return Optional.ofNullable(inputValidator);
     }
 
     @Override
-    public void setInputValidator(WorkflowModelValidator inputValidator) {
+    public void setInputValidator(WorkflowModelValidator<JsonNode> inputValidator) {
         this.inputValidator = inputValidator;
     }
 
     @Override
-    public Optional<WorkflowModelValidator> getOutputValidator() {
+    public Optional<WorkflowModelValidator<JsonNode>> getOutputValidator() {
         return Optional.ofNullable(outputValidator);
     }
 
     @Override
-    public void setOutputValidator(WorkflowModelValidator outputValidator) {
+    public void setOutputValidator(WorkflowModelValidator<JsonNode> outputValidator) {
         this.outputValidator = outputValidator;
     }
 }

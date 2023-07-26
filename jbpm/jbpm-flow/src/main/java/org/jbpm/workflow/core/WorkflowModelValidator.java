@@ -18,7 +18,7 @@ package org.jbpm.workflow.core;
 import java.io.Serializable;
 import java.util.Map;
 
-public interface WorkflowModelValidator extends Serializable {
+public interface WorkflowModelValidator<T> extends Serializable {
 
     /**
      * Validates the input model
@@ -27,4 +27,6 @@ public interface WorkflowModelValidator extends Serializable {
      * @throws IllegalArgumentException if the validation failed
      */
     void validate(Map<String, Object> model);
+
+    T schemaData();
 }

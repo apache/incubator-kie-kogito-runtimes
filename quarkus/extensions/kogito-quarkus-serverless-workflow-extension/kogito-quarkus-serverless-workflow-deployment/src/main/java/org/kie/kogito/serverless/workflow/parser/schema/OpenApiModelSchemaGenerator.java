@@ -45,6 +45,8 @@ import org.kie.kogito.serverless.workflow.models.JsonNodeModelOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public final class OpenApiModelSchemaGenerator {
 
     private OpenApiModelSchemaGenerator() {
@@ -115,16 +117,12 @@ public final class OpenApiModelSchemaGenerator {
         }
     }
 
-    private static Optional<Schema> getSchema(Optional<WorkflowModelValidator> validator) {
-        return validator.filter(JsonSchemaValidator.class::isInstance).map(JsonSchemaValidator.class::cast).map(OpenApiModelSchemaGenerator::getSchema);
+    private static Optional<Schema> getSchema(Optional<WorkflowModelValidator<JsonNode>> validator) {
+        return validator.map(OpenApiModelSchemaGenerator::getSchema);
     }
 
-    private static Schema getSchema(JsonSchemaValidator validator) {
-        try {
-            return ObjectMapperFactory.get().convertValue(validator.schemaData(), JsonSchemaImpl.class);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    private static Schema getSchema(WorkflowModelValidator<JsonNode> validator) {
+    	return ObjectMapperFactory.get().convertValue(validator.schemaData(), JsonSchemaImpl.class);
     }
 
     private static String getSchemaName(String id, String suffix) {

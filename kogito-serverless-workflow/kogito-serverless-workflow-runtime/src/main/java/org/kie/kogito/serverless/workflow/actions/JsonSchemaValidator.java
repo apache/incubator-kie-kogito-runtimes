@@ -16,6 +16,7 @@
 package org.kie.kogito.serverless.workflow.actions;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,7 +37,7 @@ import com.networknt.schema.ValidationMessage;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readAllBytes;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.runtimeLoader;
 
-public class JsonSchemaValidator implements WorkflowModelValidator {
+public class JsonSchemaValidator implements WorkflowModelValidator<JsonNode> {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,33 +54,36 @@ public class JsonSchemaValidator implements WorkflowModelValidator {
 
     @Override
     public void validate(Map<String, Object> model) {
-        try {
-            Set<ValidationMessage> report =
-                    schema().validate((JsonNode) model.getOrDefault(SWFConstants.DEFAULT_WORKFLOW_VAR, NullNode.instance));
-            if (!report.isEmpty()) {
-                StringBuilder sb = new StringBuilder("There are JsonSchema validation errors:");
-                report.forEach(m -> sb.append(System.lineSeparator()).append(m.getMessage()));
-                final String validationMessage = sb.toString();
-                logger.warn(validationMessage);
-                if (failOnValidationErrors) {
-                    throw new IllegalArgumentException(validationMessage);
-                }
+        Set<ValidationMessage> report =
+                schema().validate((JsonNode) model.getOrDefault(SWFConstants.DEFAULT_WORKFLOW_VAR, NullNode.instance));
+        if (!report.isEmpty()) {
+            StringBuilder sb = new StringBuilder("There are JsonSchema validation errors:");
+            report.forEach(m -> sb.append(System.lineSeparator()).append(m.getMessage()));
+            final String validationMessage = sb.toString();
+            logger.warn(validationMessage);
+            if (failOnValidationErrors) {
+                throw new IllegalArgumentException(validationMessage);
             }
-        } catch (IOException ex) {
-            throw new IllegalStateException("Unexpected error validating schema", ex);
         }
+
     }
 
-    public JsonNode schemaData() throws IOException {
+    @Override
+    public JsonNode schemaData() {
         return schema().getSchemaNode();
     }
 
-    private JsonSchema schema() throws IOException {
-        JsonSchema result = schemaObject.get();
-        if (result == null) {
-            result = JsonSchemaFactory.getInstance(VersionFlag.V7).getSchema(ObjectMapperFactory.get().readTree(readAllBytes(runtimeLoader(schemaRef))));
-            schemaObject.set(result);
+    private JsonSchema schema() {
+        try {
+
+            JsonSchema result = schemaObject.get();
+            if (result == null) {
+                result = JsonSchemaFactory.getInstance(VersionFlag.V7).getSchema(ObjectMapperFactory.get().readTree(readAllBytes(runtimeLoader(schemaRef))));
+                schemaObject.set(result);
+            }
+            return result;
+        } catch (IOException io) {
+            throw new UncheckedIOException(io);
         }
-        return result;
     }
 }

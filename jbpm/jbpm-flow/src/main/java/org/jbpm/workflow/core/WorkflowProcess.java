@@ -22,6 +22,8 @@ import org.jbpm.process.core.Process;
 import org.jbpm.process.instance.ProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * Represents a RuleFlow process.
  * 
@@ -47,12 +49,12 @@ public interface WorkflowProcess extends KogitoWorkflowProcess, Process, NodeCon
 
     String evaluateExpression(String metaData, ProcessInstance processInstance);
 
-    Optional<WorkflowModelValidator> getInputValidator();
+    Optional<WorkflowModelValidator<JsonNode>> getInputValidator();
 
-    void setInputValidator(WorkflowModelValidator validator);
+    void setInputValidator(WorkflowModelValidator<JsonNode> validator);
 
-    Optional<WorkflowModelValidator> getOutputValidator();
+    Optional<WorkflowModelValidator<JsonNode>> getOutputValidator();
 
-    void setOutputValidator(WorkflowModelValidator validator);
+    void setOutputValidator(WorkflowModelValidator<JsonNode> validator);
 
 }
