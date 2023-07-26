@@ -72,8 +72,8 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
                 data.put("description", processDefinition.getMetaData().get("description"));
                 if (processDefinition instanceof WorkflowProcess) {
                     WorkflowProcess workflowProcess = (WorkflowProcess) processDefinition;
-                    workflowProcess.getInputValidator().map(v -> v.schemaData()).ifPresent(s -> data.put("inputSchema", s));
-                    workflowProcess.getOutputValidator().map(v -> v.schemaData()).ifPresent(s -> data.put("outputSchema", s));
+                    workflowProcess.getInputValidator().flatMap(v -> v.schema()).ifPresent(s -> data.put("inputSchema", s));
+                    workflowProcess.getOutputValidator().flatMap(v -> v.schema()).ifPresent(s -> data.put("outputSchema", s));
                 }
             }
             return buildOkResponse(data);

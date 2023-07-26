@@ -17,6 +17,7 @@ package org.jbpm.workflow.core;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 public interface WorkflowModelValidator<T> extends Serializable {
 
@@ -28,5 +29,7 @@ public interface WorkflowModelValidator<T> extends Serializable {
      */
     void validate(Map<String, Object> model);
 
-    T schemaData();
+    default Optional<T> schema() {
+        return Optional.empty();
+    }
 }

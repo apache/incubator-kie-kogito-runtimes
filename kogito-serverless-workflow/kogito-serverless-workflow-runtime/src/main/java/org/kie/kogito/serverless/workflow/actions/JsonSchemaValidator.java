@@ -18,6 +18,7 @@ package org.kie.kogito.serverless.workflow.actions;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -55,7 +56,7 @@ public class JsonSchemaValidator implements WorkflowModelValidator<JsonNode> {
     @Override
     public void validate(Map<String, Object> model) {
         Set<ValidationMessage> report =
-                schema().validate((JsonNode) model.getOrDefault(SWFConstants.DEFAULT_WORKFLOW_VAR, NullNode.instance));
+                getSchema().validate((JsonNode) model.getOrDefault(SWFConstants.DEFAULT_WORKFLOW_VAR, NullNode.instance));
         if (!report.isEmpty()) {
             StringBuilder sb = new StringBuilder("There are JsonSchema validation errors:");
             report.forEach(m -> sb.append(System.lineSeparator()).append(m.getMessage()));
@@ -69,13 +70,12 @@ public class JsonSchemaValidator implements WorkflowModelValidator<JsonNode> {
     }
 
     @Override
-    public JsonNode schemaData() {
-        return schema().getSchemaNode();
+    public Optional<JsonNode> schema() {
+        return Optional.of(getSchema().getSchemaNode());
     }
 
-    private JsonSchema schema() {
+    private JsonSchema getSchema() {
         try {
-
             JsonSchema result = schemaObject.get();
             if (result == null) {
                 result = JsonSchemaFactory.getInstance(VersionFlag.V7).getSchema(ObjectMapperFactory.get().readTree(readAllBytes(runtimeLoader(schemaRef))));
