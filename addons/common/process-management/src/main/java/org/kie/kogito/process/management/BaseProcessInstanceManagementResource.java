@@ -37,6 +37,8 @@ import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 
 public abstract class BaseProcessInstanceManagementResource<T> implements ProcessInstanceManagement<T> {
@@ -72,8 +74,8 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
                 data.put("description", processDefinition.getMetaData().get("description"));
                 if (processDefinition instanceof WorkflowProcess) {
                     WorkflowProcess workflowProcess = (WorkflowProcess) processDefinition;
-                    workflowProcess.getInputValidator().flatMap(v -> v.schema()).ifPresent(s -> data.put("inputSchema", s));
-                    workflowProcess.getOutputValidator().flatMap(v -> v.schema()).ifPresent(s -> data.put("outputSchema", s));
+                    workflowProcess.getInputValidator().flatMap(v -> v.schema(JsonNode.class)).ifPresent(s -> data.put("inputSchema", s));
+                    workflowProcess.getOutputValidator().flatMap(v -> v.schema(JsonNode.class)).ifPresent(s -> data.put("outputSchema", s));
                 }
             }
             return buildOkResponse(data);

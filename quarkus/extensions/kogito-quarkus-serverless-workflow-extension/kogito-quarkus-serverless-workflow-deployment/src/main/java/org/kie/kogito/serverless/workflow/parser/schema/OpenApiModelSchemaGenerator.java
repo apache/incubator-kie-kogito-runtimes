@@ -114,8 +114,8 @@ public final class OpenApiModelSchemaGenerator {
         }
     }
 
-    private static Optional<Schema> getSchema(Optional<WorkflowModelValidator<JsonNode>> validator) {
-        return validator.flatMap(WorkflowModelValidator::schema).map(OpenApiModelSchemaGenerator::getSchema);
+    private static Optional<Schema> getSchema(Optional<WorkflowModelValidator> validator) {
+        return validator.flatMap(v -> v.schema(JsonNode.class)).map(OpenApiModelSchemaGenerator::getSchema);
     }
 
     private static Schema getSchema(JsonNode jsonNode) {

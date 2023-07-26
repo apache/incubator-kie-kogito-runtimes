@@ -38,7 +38,7 @@ import com.networknt.schema.ValidationMessage;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readAllBytes;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.runtimeLoader;
 
-public class JsonSchemaValidator implements WorkflowModelValidator<JsonNode> {
+public class JsonSchemaValidator implements WorkflowModelValidator {
 
     private static final long serialVersionUID = 1L;
 
@@ -70,8 +70,8 @@ public class JsonSchemaValidator implements WorkflowModelValidator<JsonNode> {
     }
 
     @Override
-    public Optional<JsonNode> schema() {
-        return Optional.of(getSchema().getSchemaNode());
+    public <T> Optional<T> schema(Class<T> clazz) {
+        return JsonNode.class.isAssignableFrom(clazz) ? Optional.of((T) getSchema().getSchemaNode()) : Optional.empty();
     }
 
     private JsonSchema getSchema() {

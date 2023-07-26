@@ -88,7 +88,7 @@ class BaseProcessInstanceManagementResourceTest {
     private WorkflowProcess workflowProcess;
 
     @Mock
-    private WorkflowModelValidator<JsonNode> workflowValidator;
+    private WorkflowModelValidator workflowValidator;
 
     @Mock
     private Node node;
@@ -113,7 +113,7 @@ class BaseProcessInstanceManagementResourceTest {
         lenient().when(process.type()).thenReturn("BPMN");
 
         lenient().when(workflowProcess.getMetaData()).thenReturn(Map.of("description", "cool"));
-        lenient().when(workflowValidator.schema()).thenReturn(Optional.of(NullNode.instance));
+        lenient().when(workflowValidator.schema(JsonNode.class)).thenReturn(Optional.of(NullNode.instance));
         lenient().when(workflowProcess.getInputValidator()).thenReturn(Optional.of(workflowValidator));
         lenient().when(workflowProcess.getOutputValidator()).thenReturn(Optional.empty());
         lenient().when(instances.findById(anyString())).thenReturn(Optional.of(processInstance));
