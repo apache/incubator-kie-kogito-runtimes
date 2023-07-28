@@ -41,6 +41,8 @@ class ApiWithSecurityContextIT {
     // injected by quarkus
     WireMockServer authWithApiKeyServer2;
     WireMockServer authWithApiKeyServer3;
+    WireMockServer authWithApiKeyServer2NoAuth;
+    WireMockServer authWithApiKeyServer3NoAuth;
 
     @BeforeAll
     static void init() {
@@ -69,6 +71,26 @@ class ApiWithSecurityContextIT {
     }
 
     @Test
+    void verifyAuthHeadersOpenApi2_0NoAuth() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(
+                        Collections
+                                .singletonMap(
+                                        "workflowdata",
+                                        Collections.singletonMap("foo", "bar")))
+                .post("/sec20noAuth")
+                .then()
+                .statusCode(201);
+
+        // verify if the headers were correctly sent
+        authWithApiKeyServer2NoAuth
+                .verify(postRequestedFor(urlEqualTo(AuthSecurityMockService.SEC_20_NO_AUTH.getPath()))
+                        .withHeader("X-Client-Id", matching("12345")));
+    }
+
+    @Test
     void verifyAuthHeadersOpenApi3_0() {
         given()
                 .contentType(ContentType.JSON)
@@ -86,6 +108,25 @@ class ApiWithSecurityContextIT {
                 .verify(postRequestedFor(urlEqualTo(AuthSecurityMockService.SEC_30.getPath()))
                         .withHeader("X-Client-Id", matching("Bearer mytoken,Bearer mytoken,Bearer"))
                         .withHeader("Authorization", matching("Bearer mytoken")));
+    }
+
+    @Test
+    void verifyAuthHeadersOpenApi3_0NoAuth() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(
+                        Collections
+                                .singletonMap(
+                                        "workflowdata",
+                                        Collections.singletonMap("foo", "bar")))
+                .post("/sec30noAuth")
+                .then()
+                .statusCode(201);
+
+        authWithApiKeyServer3NoAuth
+                .verify(postRequestedFor(urlEqualTo(AuthSecurityMockService.SEC_30_NO_AUTH.getPath()))
+                        .withHeader("X-Client-Id", matching("12345")));
     }
 
 }
