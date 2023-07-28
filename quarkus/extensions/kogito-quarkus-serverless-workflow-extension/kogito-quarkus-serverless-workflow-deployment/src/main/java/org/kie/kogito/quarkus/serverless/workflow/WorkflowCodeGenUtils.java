@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.ast.CompilationUnit;
 
-import io.quarkus.deployment.CodeGenContext;
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
@@ -56,12 +55,8 @@ public class WorkflowCodeGenUtils {
     private WorkflowCodeGenUtils() {
     }
 
-    private static WorkflowOperationIdFactory operationIdFactory(CodeGenContext context) {
-        return WorkflowOperationIdFactoryProvider.getFactory(context.config().getOptionalValue(WorkflowOperationIdFactoryProvider.PROPERTY_NAME, String.class));
-    }
-
-    public static Stream<WorkflowOperationResource> operationResources(Stream<Path> files, Predicate<FunctionDefinition> predicate, CodeGenContext context) {
-        return getWorkflows(files).flatMap(w -> processFunction(w, predicate, operationIdFactory(context)));
+    public static Stream<WorkflowOperationResource> operationResources(Stream<Path> files, Predicate<FunctionDefinition> predicate, Optional<String> operationIdProp) {
+        return getWorkflows(files).flatMap(w -> processFunction(w, predicate, WorkflowOperationIdFactoryProvider.getFactory(operationIdProp)));
     }
 
     public static Stream<Workflow> getWorkflows(Stream<Path> files) {
