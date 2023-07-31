@@ -30,6 +30,6 @@ public class ValidationLogDecorator extends ValidationDecorator {
 
     @Override
     public void decorate() {
-        exceptions.forEach((processId, exception) -> LOGGER.error("Invalid process: '{}'. Found error: {}", processId, exception));
+        exceptions.forEach((processId, exception) -> LOGGER.error("Invalid process: '{}'", processId, exception));
     }
 }

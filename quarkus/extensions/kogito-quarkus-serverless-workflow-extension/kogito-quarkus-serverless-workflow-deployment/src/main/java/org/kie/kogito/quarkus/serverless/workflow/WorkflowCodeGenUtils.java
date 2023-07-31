@@ -91,20 +91,20 @@ public class WorkflowCodeGenUtils {
     }
 
     private static Optional<Workflow> getWorkflow(Path path) {
-        return workflowCache.computeIfAbsent(path, p -> SupportedExtensions.getSWFExtensions()
-                .stream()
-                .filter(e -> p.getFileName().toString().endsWith(e))
-                .map(e -> {
-                    try (Reader r = Files.newBufferedReader(p)) {
-                        return Optional.of(ServerlessWorkflowUtils.getWorkflow(r, WorkflowFormat.fromFileName(p.getFileName())));
-                    } catch (IOException ex) {
-                        if (ConfigProvider.getConfig().getOptionalValue(FAIL_ON_ERROR_PROPERTY, Boolean.class).orElse(true)) {
-                            throw new UncheckedIOException(ex);
-                        } else {
-                            logger.error("Error reading workflow file {}", p, ex);
-                            return Optional.<Workflow> empty();
-                        }
+        if (SupportedExtensions.getSWFExtensions().stream().anyMatch(ext -> path.toString().endsWith(ext))) {
+            return workflowCache.computeIfAbsent(path, p -> {
+                try (Reader r = Files.newBufferedReader(p)) {
+                    return Optional.of(ServerlessWorkflowUtils.getWorkflow(r, WorkflowFormat.fromFileName(p.getFileName())));
+                } catch (IOException ex) {
+                    if (ConfigProvider.getConfig().getOptionalValue(FAIL_ON_ERROR_PROPERTY, Boolean.class).orElse(true)) {
+                        throw new UncheckedIOException(ex);
+                    } else {
+                        logger.error("Error reading workflow file {}", p, ex);
+                        return Optional.<Workflow> empty();
                     }
-                }).flatMap(Optional::stream).findFirst());
+                }
+            });
+        }
+        return Optional.empty();
     }
 }

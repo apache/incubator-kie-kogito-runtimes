@@ -39,9 +39,9 @@ public class WorkflowAsyncAPISpecInputProvider implements AsyncAPISpecInputProvi
     @Override
     public AsyncAPISpecInput read(ConfigSourceContext context) {
         if (isSourceModule(context)) {
-            for (String dir : AsyncAPIUtils.getValues(context, "kogito.extensions.asyncAPI.scanDirs", Arrays.asList("src/main/resources", "src/test/resources"))) {
+            for (String dir : AsyncAPIUtils.getValues(context, "kogito.extensions.asyncAPI.scanDirs", Arrays.asList("src", "target"))) {
                 Path rootPath = Path.of(dir);
-                if (Files.exists(rootPath)) {
+                if (Files.isDirectory(rootPath)) {
                     try (Stream<Path> workflowFiles = Files.walk(rootPath)) {
                         return new AsyncAPISpecInput(WorkflowCodeGenUtils
                                 .operationResources(workflowFiles, f -> f.getType() == Type.ASYNCAPI,
