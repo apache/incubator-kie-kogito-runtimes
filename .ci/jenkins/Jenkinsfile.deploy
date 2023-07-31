@@ -108,8 +108,10 @@ pipeline {
                     dir(getRepoName()) {
                         def mvnCmd = getMavenCommand()
                                             .withProperty('maven.test.failure.ignore', true)
-                                            .skipTests(params.SKIP_TESTS)
 
+                        if (params.SKIP_TESTS) {
+                            mvnCmd.skipTests() // Conflict somehow with Python testing. If `skipTests={anyvalue}` is set, then exec plugin is not executed ...
+                        }
                         if (isRelease()) {
                             // Use nightly image for testing as the released one does not exist yet ...
                             mvnCmd.withProperty('data-index-ephemeral.image', getDataIndexEphemeralNightlyImage())
