@@ -16,11 +16,8 @@
 package org.kie.kogito.quarkus.serverless.workflow.asyncapi;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,33 +27,18 @@ import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationIdFactory
 
 import io.quarkiverse.asyncapi.config.AsyncAPISpecInput;
 import io.quarkiverse.asyncapi.config.AsyncAPISpecInputProvider;
-import io.quarkiverse.asyncapi.config.AsyncAPIUtils;
 import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
 import io.smallrye.config.ConfigSourceContext;
 
 public class WorkflowAsyncAPISpecInputProvider implements AsyncAPISpecInputProvider {
 
     @Override
-    public AsyncAPISpecInput read(ConfigSourceContext context) {
-        if (isSourceModule(context)) {
-            for (String dir : AsyncAPIUtils.getValues(context, "kogito.extensions.asyncAPI.scanDirs", Arrays.asList("src", "target"))) {
-                Path rootPath = Path.of(dir);
-                if (Files.isDirectory(rootPath)) {
-                    try (Stream<Path> workflowFiles = Files.walk(rootPath)) {
-                        return new AsyncAPISpecInput(WorkflowCodeGenUtils
-                                .operationResources(workflowFiles, f -> f.getType() == Type.ASYNCAPI,
-                                        Optional.ofNullable(context.getValue(WorkflowOperationIdFactoryProvider.PROPERTY_NAME).getValue()))
-                                .collect(Collectors.toMap(resource -> resource.getOperationId().getFileName(), AsyncAPIInputStreamSupplier::new, (key1, key2) -> key1)));
-                    } catch (IOException io) {
-                        throw new UncheckedIOException(io);
-                    }
-                }
-            }
+    public AsyncAPISpecInput read(ConfigSourceContext context) throws IOException {
+        try (Stream<Path> workflowFiles = Files.walk(Path.of(System.getProperty("user.dir")))) {
+            return new AsyncAPISpecInput(WorkflowCodeGenUtils
+                    .operationResources(workflowFiles, f -> f.getType() == Type.ASYNCAPI,
+                            Optional.ofNullable(context.getValue(WorkflowOperationIdFactoryProvider.PROPERTY_NAME).getValue()))
+                    .collect(Collectors.toMap(resource -> resource.getOperationId().getFileName(), AsyncAPIInputStreamSupplier::new, (key1, key2) -> key1)));
         }
-        return new AsyncAPISpecInput(Collections.emptyMap());
-    }
-
-    protected boolean isSourceModule(ConfigSourceContext context) {
-        return !context.getValue("user.dir").getValue().equals(context.getValue("maven.multiModuleProjectDirectory").getValue());
     }
 }
