@@ -17,7 +17,6 @@ package org.kie.kogito.quarkus.serverless.workflow;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
@@ -44,8 +42,6 @@ import com.github.javaparser.ast.CompilationUnit;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
-
-import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.FAIL_ON_ERROR_PROPERTY;
 
 public class WorkflowCodeGenUtils {
 
@@ -96,12 +92,8 @@ public class WorkflowCodeGenUtils {
                 try (Reader r = Files.newBufferedReader(p)) {
                     return Optional.of(ServerlessWorkflowUtils.getWorkflow(r, WorkflowFormat.fromFileName(p.getFileName())));
                 } catch (IOException ex) {
-                    if (ConfigProvider.getConfig().getOptionalValue(FAIL_ON_ERROR_PROPERTY, Boolean.class).orElse(true)) {
-                        throw new UncheckedIOException(ex);
-                    } else {
-                        logger.error("Error reading workflow file {}", p, ex);
-                        return Optional.<Workflow> empty();
-                    }
+                    logger.info("Error reading workflow file {}. Ignoring exception {}", p, ex);
+                    return Optional.<Workflow> empty();
                 }
             });
         }
