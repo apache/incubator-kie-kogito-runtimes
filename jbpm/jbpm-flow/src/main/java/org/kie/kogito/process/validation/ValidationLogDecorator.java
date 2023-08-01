@@ -24,12 +24,12 @@ public class ValidationLogDecorator extends ValidationDecorator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationLogDecorator.class);
 
-    public ValidationLogDecorator(Map<String, Exception> exceptions) {
+    public ValidationLogDecorator(Map<String, Throwable> exceptions) {
         super(exceptions);
     }
 
     @Override
     public void decorate() {
-        exceptions.forEach((processId, exception) -> LOGGER.error("Invalid process: '{}'", processId, exception));
+        exceptions.forEach((processId, exception) -> LOGGER.error("Invalid process: '{}'. Found error: {}", processId, exception));
     }
 }
