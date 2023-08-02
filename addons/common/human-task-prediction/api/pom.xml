@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-human-task-prediction-parent</artifactId>
-    <version>1.42.0.Final</version>
+    <version>1.42.1-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-human-task-prediction-api</artifactId>
   <name>Kogito :: Add-Ons :: Predictions :: API</name>
