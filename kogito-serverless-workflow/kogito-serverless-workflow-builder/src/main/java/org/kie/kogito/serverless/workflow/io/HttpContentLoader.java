@@ -41,15 +41,15 @@ import io.serverlessworkflow.api.auth.BearerAuthDefinition;
 import io.serverlessworkflow.api.auth.OauthDefinition;
 import io.serverlessworkflow.api.workflow.Auth;
 
-class HttpContentLoader extends FallbackContentLoader {
+class HttpContentLoader extends CachedContentLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpContentLoader.class);
 
     private Optional<Workflow> workflow;
     private String authRef;
 
-    public HttpContentLoader(URI uri, Optional<URIContentLoader> fallback, Optional<Workflow> workflow, String authRef) {
-        super(uri, fallback);
+    HttpContentLoader(URI uri, Optional<Workflow> workflow, String authRef) {
+        super(uri);
         this.workflow = workflow;
         this.authRef = authRef;
     }

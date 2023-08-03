@@ -20,15 +20,14 @@ import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
-public class FileContentLoader extends FallbackContentLoader {
+public class FileContentLoader extends CachedContentLoader {
 
     private final Path path;
 
-    public FileContentLoader(URI uri, Optional<URIContentLoader> fallbackLoader) {
-        super(uri, fallbackLoader);
-        this.path = Path.of(uri);
+    FileContentLoader(URI uri) {
+        super(uri);
+        this.path = getPath(uri);
     }
 
     public Path getPath() {
@@ -47,5 +46,9 @@ public class FileContentLoader extends FallbackContentLoader {
         } catch (IOException io) {
             throw new UncheckedIOException(io);
         }
+    }
+
+    static Path getPath(URI uri) {
+        return Path.of(uri.getPath());
     }
 }

@@ -17,16 +17,14 @@ package org.kie.kogito.serverless.workflow.utils;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.io.Writer;
-import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.drools.codegen.common.GeneratedFile;
-import org.drools.codegen.common.GeneratedFileType;
 import org.jbpm.compiler.canonical.ModelMetaData;
 import org.jbpm.compiler.canonical.VariableDeclarations;
 import org.kie.api.definition.process.WorkflowProcess;
@@ -35,10 +33,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.serverless.workflow.extensions.FunctionNamespaces;
 import org.kie.kogito.serverless.workflow.extensions.OutputSchema;
 import org.kie.kogito.serverless.workflow.extensions.URIDefinitions;
-import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
-import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.Builder;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
-import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.suppliers.ConfigWorkItemSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +97,12 @@ public class ServerlessWorkflowUtils {
     public static Workflow getWorkflow(Reader reader, WorkflowFormat workflowFormat) throws IOException {
         BaseObjectMapper objectMapper = workflowFormat == WorkflowFormat.YAML ? yamlReaderMapper : jsonReaderMapper;
         return objectMapper.readValue(reader, Workflow.class);
+    }
+
+    public static WorkflowResource getWorkflow(Path path) throws IOException {
+        try (Reader reader = Files.newBufferedReader(path)) {
+            return new WorkflowResource(path.toUri(), getWorkflow(reader, WorkflowFormat.fromFileName(path.getFileName())));
+        }
     }
 
     /**
@@ -176,35 +177,6 @@ public class ServerlessWorkflowUtils {
 
     public interface ExpressionBuilder<T> {
         Supplier<Expression> create(String key, Class<T> clazz, T defaultValue);
-    }
-
-    public static Optional<byte[]> processResourceFile(Workflow workflow, ParserContext parserContext, String uriStr) {
-        return processResourceFile(workflow, parserContext, uriStr, null);
-    }
-
-    public static Optional<byte[]> processResourceFile(Workflow workflow, ParserContext parserContext, String uriStr, String authRef) {
-        final URI uri = URI.create(uriStr);
-        final Optional<byte[]> bytes = loadResourceFile(workflow, Optional.of(parserContext), uriStr, authRef);
-        bytes.ifPresent(value -> parserContext.addGeneratedFile(new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, uri.getPath(), value)));
-        return bytes;
-    }
-
-    public static Optional<byte[]> loadResourceFile(Workflow workflow, Optional<ParserContext> parserContext, String uriStr, String authRef) {
-        return loadResourceFile(uriStr, Optional.of(workflow), parserContext, authRef);
-    }
-
-    public static Optional<byte[]> loadResourceFile(String uriStr, Optional<Workflow> workflow, Optional<ParserContext> parserContext, String authRef) {
-        final URI uri = URI.create(uriStr);
-        try {
-            Builder builder = URIContentLoaderFactory.builder(uri).withAuthRef(authRef);
-            workflow.ifPresent(builder::withWorkflow);
-            parserContext.map(p -> p.getContext().getClassLoader()).ifPresent(builder::withClassloader);
-            return Optional.of(URIContentLoaderFactory.readAllBytes(builder.build()));
-        } catch (UncheckedIOException io) {
-            // if file cannot be found in build context, warn it and return the unmodified uri (it might be possible that later the resource is available at runtime)
-            logger.warn("Resource {} cannot be found at build time, ignoring", uri, io);
-        }
-        return Optional.empty();
     }
 
     public static String removeExt(String fileName) {
