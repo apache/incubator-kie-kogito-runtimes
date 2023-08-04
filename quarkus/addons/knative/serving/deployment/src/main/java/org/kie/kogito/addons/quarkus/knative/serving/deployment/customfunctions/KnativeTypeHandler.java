@@ -24,6 +24,7 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.CloudEventKnativeParamsDecorator;
+import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.GetRequestKnativeParamsDecorator;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Operation;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.PlainJsonKnativeParamsDecorator;
@@ -32,6 +33,7 @@ import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
+import org.kogito.workitem.rest.decorators.ParamsDecorator;
 
 import com.github.javaparser.ast.expr.Expression;
 
@@ -79,22 +81,27 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
 
         Operation operation = Operation.parse(trimCustomOperation(functionDef));
 
-        if (operation.isCloudEvent()) {
-            node.workParameter(RestWorkItemHandler.PARAMS_DECORATOR, CloudEventKnativeParamsDecorator.class.getName());
-        } else {
-            node.workParameter(RestWorkItemHandler.PARAMS_DECORATOR, PlainJsonKnativeParamsDecorator.class.getName());
-        }
-
         Supplier<Expression> requestTimeout = runtimeRestApi(functionDef, "timeout",
                 context.getContext(), String.class, DEFAULT_REQUEST_TIMEOUT_VALUE);
 
         return node.workParameter(KnativeWorkItemHandler.SERVICE_PROPERTY_NAME, operation.getService())
                 .workParameter(KnativeWorkItemHandler.PATH_PROPERTY_NAME, operation.getPath())
                 .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
-                .workParameter(RestWorkItemHandler.METHOD, HttpMethod.POST)
+                .workParameter(RestWorkItemHandler.PARAMS_DECORATOR, getParamsDecorator(operation).getName())
+                .workParameter(RestWorkItemHandler.METHOD, operation.getHttpMethod())
                 .workParameter(RestWorkItemHandler.REQUEST_TIMEOUT_IN_MILLIS, requestTimeout)
                 .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, RestWorkItemHandler.REST_TASK_TYPE)
                 .workName(KnativeWorkItemHandler.NAME);
+    }
+
+    private static Class<? extends ParamsDecorator> getParamsDecorator(Operation operation) {
+        if (operation.isCloudEvent()) {
+            return CloudEventKnativeParamsDecorator.class;
+        } else if (HttpMethod.GET.equals(operation.getHttpMethod())) {
+            return GetRequestKnativeParamsDecorator.class;
+        } else {
+            return PlainJsonKnativeParamsDecorator.class;
+        }
     }
 
     @Override
