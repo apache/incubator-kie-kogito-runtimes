@@ -47,19 +47,10 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
             RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, FunctionDefinition functionDef,
             FunctionRef functionRef, VariableInfo varInfo) {
         validateArgs(functionRef);
-        return addFunctionArgs(workflow,
-                fillWorkItemHandler(buildWorkItem(embeddedSubProcess, context, varInfo.getInputVar(), varInfo.getOutputVar()).name(functionDef.getName()), functionDef, functionRef),
-                functionRef);
-    }
 
-    @Override
-    protected <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(
-            Workflow workflow, ParserContext context, WorkItemNodeFactory<T> node, FunctionDefinition functionDef) {
-        throw new UnsupportedOperationException("This method must never be invoked.");
-    }
+        WorkItemNodeFactory<?> node = buildWorkItem(embeddedSubProcess, context, varInfo.getInputVar(), varInfo.getOutputVar())
+                .name(functionDef.getName());
 
-    private <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(
-            WorkItemNodeFactory<T> node, FunctionDefinition functionDef, FunctionRef functionRef) {
         if (functionRef.getArguments() != null && !functionRef.getArguments().isEmpty()) {
             List<String> payloadFields = new ArrayList<>();
             functionRef.getArguments().fieldNames().forEachRemaining(payloadFields::add);
@@ -68,6 +59,14 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
             }
         }
 
+        return addFunctionArgs(workflow,
+                fillWorkItemHandler(workflow, context, node, functionDef),
+                functionRef);
+    }
+
+    @Override
+    protected <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(
+            Workflow workflow, ParserContext context, WorkItemNodeFactory<T> node, FunctionDefinition functionDef) {
         if (functionDef.getMetadata() != null) {
             functionDef.getMetadata().forEach(node::metaData);
         }
