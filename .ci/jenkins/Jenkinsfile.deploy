@@ -327,10 +327,6 @@ String getWorkflowCommonDeploymentPath() {
     return "${getRepoName()}/quarkus/extensions/kogito-quarkus-workflow-extension-common/kogito-quarkus-workflow-common-deployment"
 }
 
-String getDataIndexEphemeralNightlyImage() {
-    return "quay.io/kiegroup/kogito-data-index-ephemeral-nightly:${util.getMajorMinorVersion(getProjectVersion())}"
-}
-
 String getDataIndexEphemeralReleaseImage() {
     return "quay.io/kiegroup/kogito-data-index-ephemeral:${util.getMajorMinorVersion(getProjectVersion())}"
 }
