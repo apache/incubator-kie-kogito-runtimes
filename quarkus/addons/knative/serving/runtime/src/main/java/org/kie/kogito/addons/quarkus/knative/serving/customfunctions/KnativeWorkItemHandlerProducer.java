@@ -15,12 +15,9 @@
  */
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
-import java.util.Optional;
-
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.RestWorkItemHandlerUtils;
@@ -28,8 +25,6 @@ import org.kogito.workitem.rest.RestWorkItemHandlerUtils;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.client.WebClient;
-
-import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.REQUEST_TIMEOUT_PROPERTY_NAME;
 
 public final class KnativeWorkItemHandlerProducer {
 
@@ -39,12 +34,9 @@ public final class KnativeWorkItemHandlerProducer {
     @Inject
     KubernetesServiceCatalog kubernetesServiceCatalog;
 
-    @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME)
-    Optional<Long> requestTimeoutInMillis;
-
     @Produces
     KnativeWorkItemHandler createKnativeWorkItemHandler() {
-        return new KnativeWorkItemHandler(createRestWorkItemHandler(), kubernetesServiceCatalog, requestTimeoutInMillis.orElse(null));
+        return new KnativeWorkItemHandler(createRestWorkItemHandler(), kubernetesServiceCatalog);
     }
 
     private RestWorkItemHandler createRestWorkItemHandler() {

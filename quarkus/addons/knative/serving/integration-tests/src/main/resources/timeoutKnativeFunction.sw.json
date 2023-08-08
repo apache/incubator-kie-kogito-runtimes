@@ -6,7 +6,7 @@
   "start": "invokeFunction",
   "functions": [
     {
-      "name": "greet",
+      "name": "greet_with_timeout",
       "type": "custom",
       "operation": "knative:services.v1.serving.knative.dev/default/serverless-workflow-greeting-quarkus?path=/timeout"
     }
@@ -18,7 +18,7 @@
       "actions": [
         {
           "functionRef": {
-            "refName": "greet",
+            "refName": "greet_with_timeout",
             "arguments": {
               "name": ".name"
             }

@@ -17,6 +17,7 @@ package org.kie.kogito.addons.quarkus.knative.serving.deployment.customfunctions
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.jbpm.compiler.canonical.descriptors.TaskDescriptor;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
@@ -32,6 +33,8 @@ import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 
+import com.github.javaparser.ast.expr.Expression;
+
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionRef;
@@ -39,8 +42,11 @@ import io.vertx.core.http.HttpMethod;
 
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.PAYLOAD_FIELDS_PROPERTY_NAME;
 import static org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory.trimCustomOperation;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.runtimeRestApi;
 
 public class KnativeTypeHandler extends WorkItemTypeHandler {
+
+    private static final String DEFAULT_REQUEST_TIMEOUT_VALUE = "10000";
 
     @Override
     public NodeFactory<?, ?> getActionNode(Workflow workflow, ParserContext context,
@@ -79,10 +85,14 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
             node.workParameter(RestWorkItemHandler.PARAMS_DECORATOR, PlainJsonKnativeParamsDecorator.class.getName());
         }
 
+        Supplier<Expression> requestTimeout = runtimeRestApi(functionDef, "timeout",
+                context.getContext(), String.class, DEFAULT_REQUEST_TIMEOUT_VALUE);
+
         return node.workParameter(KnativeWorkItemHandler.SERVICE_PROPERTY_NAME, operation.getService())
                 .workParameter(KnativeWorkItemHandler.PATH_PROPERTY_NAME, operation.getPath())
                 .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
                 .workParameter(RestWorkItemHandler.METHOD, HttpMethod.POST)
+                .workParameter(RestWorkItemHandler.REQUEST_TIMEOUT_IN_MILLIS, requestTimeout)
                 .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, RestWorkItemHandler.REST_TASK_TYPE)
                 .workName(KnativeWorkItemHandler.NAME);
     }

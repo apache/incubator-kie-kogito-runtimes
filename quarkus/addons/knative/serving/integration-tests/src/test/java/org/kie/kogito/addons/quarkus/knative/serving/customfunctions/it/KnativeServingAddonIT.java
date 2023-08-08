@@ -22,7 +22,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -63,7 +62,7 @@ class KnativeServingAddonIT {
 
     private static String remoteServiceUrl;
 
-    @ConfigProperty(name = KnativeWorkItemHandler.REQUEST_TIMEOUT_PROPERTY_NAME)
+    @ConfigProperty(name = "kogito.sw.functions.greet_with_timeout.timeout")
     Long requestTimeout;
 
     @KubernetesTestServer

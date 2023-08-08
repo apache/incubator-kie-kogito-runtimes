@@ -27,13 +27,8 @@ import org.kie.kogito.process.workitem.WorkItemExecutionException;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 
 import static org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol.KNATIVE;
-import static org.kogito.workitem.rest.RestWorkItemHandler.REQUEST_TIMEOUT_IN_MILLIS;
 
 public final class KnativeWorkItemHandler implements KogitoWorkItemHandler {
-
-    protected static final long DEFAULT_REQUEST_TIMEOUT_VALUE = 10_000L;
-
-    public static final String REQUEST_TIMEOUT_PROPERTY_NAME = "kogito.addon.knative-serving.request-timeout";
 
     public static final String APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8 = "application/cloudevents+json; charset=UTF-8";
 
@@ -55,26 +50,15 @@ public final class KnativeWorkItemHandler implements KogitoWorkItemHandler {
 
     private final KubernetesServiceCatalog kubernetesServiceCatalog;
 
-    private final Long requestTimeoutInMillis;
-
     public KnativeWorkItemHandler(KogitoWorkItemHandler delegate, KubernetesServiceCatalog kubernetesServiceCatalog) {
-        this(delegate, kubernetesServiceCatalog, null);
-    }
-
-    public KnativeWorkItemHandler(KogitoWorkItemHandler delegate, KubernetesServiceCatalog kubernetesServiceCatalog,
-            Long requestTimeoutInMillis) {
         this.delegate = delegate;
         this.kubernetesServiceCatalog = kubernetesServiceCatalog;
-        this.requestTimeoutInMillis = requestTimeoutInMillis != null ? requestTimeoutInMillis : DEFAULT_REQUEST_TIMEOUT_VALUE;
     }
 
     @Override
     public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         Map<String, Object> parameters = workItem.getParameters();
-
         parameters.put(RestWorkItemHandler.URL, getUrl(parameters));
-        parameters.put(REQUEST_TIMEOUT_IN_MILLIS, requestTimeoutInMillis);
-
         delegate.executeWorkItem(workItem, manager);
     }
 
