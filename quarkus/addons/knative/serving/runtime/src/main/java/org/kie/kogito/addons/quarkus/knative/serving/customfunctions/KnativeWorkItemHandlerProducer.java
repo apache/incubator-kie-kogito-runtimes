@@ -19,7 +19,6 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
-import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.RestWorkItemHandlerUtils;
 
 import io.vertx.ext.web.client.WebClientOptions;
@@ -36,11 +35,7 @@ public final class KnativeWorkItemHandlerProducer {
 
     @Produces
     KnativeWorkItemHandler createKnativeWorkItemHandler() {
-        return new KnativeWorkItemHandler(createRestWorkItemHandler(), kubernetesServiceCatalog);
-    }
-
-    private RestWorkItemHandler createRestWorkItemHandler() {
-        return new RestWorkItemHandler(getHttpClient(vertx), getHttpsClient());
+        return new KnativeWorkItemHandler(getHttpClient(vertx), getHttpsClient(), kubernetesServiceCatalog);
     }
 
     private WebClient getHttpsClient() {

@@ -21,14 +21,15 @@ import java.util.Map;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogKey;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 
+import io.vertx.mutiny.ext.web.client.WebClient;
+
 import static org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol.KNATIVE;
 
-public final class KnativeWorkItemHandler implements KogitoWorkItemHandler {
+public final class KnativeWorkItemHandler extends RestWorkItemHandler {
 
     public static final String APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8 = "application/cloudevents+json; charset=UTF-8";
 
@@ -46,12 +47,10 @@ public final class KnativeWorkItemHandler implements KogitoWorkItemHandler {
 
     public static final String CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE = "A Knative custom function argument cannot be a CloudEvent when the 'asCloudEvent' property are not set to 'true'";
 
-    private final KogitoWorkItemHandler delegate;
-
     private final KubernetesServiceCatalog kubernetesServiceCatalog;
 
-    public KnativeWorkItemHandler(KogitoWorkItemHandler delegate, KubernetesServiceCatalog kubernetesServiceCatalog) {
-        this.delegate = delegate;
+    public KnativeWorkItemHandler(WebClient httpClient, WebClient httpsClient, KubernetesServiceCatalog kubernetesServiceCatalog) {
+        super(httpClient, httpsClient);
         this.kubernetesServiceCatalog = kubernetesServiceCatalog;
     }
 
@@ -59,7 +58,7 @@ public final class KnativeWorkItemHandler implements KogitoWorkItemHandler {
     public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         Map<String, Object> parameters = workItem.getParameters();
         parameters.put(RestWorkItemHandler.URL, getUrl(parameters));
-        delegate.executeWorkItem(workItem, manager);
+        super.executeWorkItem(workItem, manager);
     }
 
     private String getUrl(Map<String, Object> parameters) {
@@ -78,10 +77,5 @@ public final class KnativeWorkItemHandler implements KogitoWorkItemHandler {
     @Override
     public String getName() {
         return NAME;
-    }
-
-    @Override
-    public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
-        delegate.abortWorkItem(workItem, manager);
     }
 }
