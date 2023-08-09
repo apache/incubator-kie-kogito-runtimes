@@ -330,14 +330,14 @@ index 914a5ed1a5..840df84c51 100644
          </plugin>
          <plugin>
 diff --git a/kogito-build/kogito-dependencies-bom/pom.xml b/kogito-build/kogito-dependencies-bom/pom.xml
-index 4c79cc0340..8cdb515b46 100644
+index ab4b803d0f..09bf47e0d9 100644
 --- a/kogito-build/kogito-dependencies-bom/pom.xml
 +++ b/kogito-build/kogito-dependencies-bom/pom.xml
 @@ -16,9 +16,9 @@
  
    <properties>
      <!-- this version property is used in plugins but also in dependencies too -->
--    <version.io.quarkus>2.16.8.Final</version.io.quarkus>
+-    <version.io.quarkus>2.16.9.Final</version.io.quarkus>
 +    <version.io.quarkus>3.0.0.Final</version.io.quarkus>
      <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>
 -    <version.org.springframework.boot>2.6.6</version.org.springframework.boot>
@@ -366,7 +366,7 @@ index 4c79cc0340..8cdb515b46 100644
      <version.com.github.tomakehurst.wiremock>2.33.2</version.com.github.tomakehurst.wiremock>
      <version.com.google.protobuf>3.22.0</version.com.google.protobuf>
      <!-- We don't use gson directly. This is just to align versions of transitive dependencies -->
--    <version.com.google.gson>2.9.0</version.com.google.gson>
+-    <version.com.google.gson>2.10</version.com.google.gson>
 +    <version.com.google.gson>2.10.1</version.com.google.gson>
      <!-- currently required for integration test only -->
      <version.com.oracle.database.jdbc>21.3.0.0</version.com.oracle.database.jdbc>
@@ -401,7 +401,7 @@ index 4c79cc0340..8cdb515b46 100644
 +    <version.io.smallrye.reactive.mutiny-vertx-web-client>3.2.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
  
      <version.io.vertx>4.3.7</version.io.vertx>
--    <version.io.grpc>1.51.1</version.io.grpc>
+-    <version.io.grpc>1.53.0</version.io.grpc>
 +    <version.io.grpc>1.54.0</version.io.grpc>
  
 -    <version.io.quarkus.camel>2.15.0</version.io.quarkus.camel>
@@ -1819,7 +1819,7 @@ index eb4b1234d8..f71582eba9 100644
      }
  }
 diff --git a/quarkus/addons/messaging/common/src/main/java/org/kie/kogito/addon/quarkus/messaging/common/message/CloudEventHttpOutgoingDecorator.java b/quarkus/addons/messaging/common/src/main/java/org/kie/kogito/addon/quarkus/messaging/common/message/CloudEventHttpOutgoingDecorator.java
-index 9de0c4cb5b..c4174c800b 100644
+index 53c35657ad..75b74d2c89 100644
 --- a/quarkus/addons/messaging/common/src/main/java/org/kie/kogito/addon/quarkus/messaging/common/message/CloudEventHttpOutgoingDecorator.java
 +++ b/quarkus/addons/messaging/common/src/main/java/org/kie/kogito/addon/quarkus/messaging/common/message/CloudEventHttpOutgoingDecorator.java
 @@ -15,7 +15,7 @@
@@ -3727,11 +3727,11 @@ index 6c3bc7471b..6d23aa87de 100644
  import com.fasterxml.jackson.databind.ObjectMapper;
  
 diff --git a/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/deployment/livereload/LiveReloadProcessor.java b/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/deployment/livereload/LiveReloadProcessor.java
-index 398cb4257e..72aa1347bc 100644
+index 4940e8a246..7be51afdd0 100644
 --- a/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/deployment/livereload/LiveReloadProcessor.java
 +++ b/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/deployment/livereload/LiveReloadProcessor.java
-@@ -26,7 +26,7 @@ import java.util.List;
- import java.util.ServiceLoader;
+@@ -27,7 +27,7 @@ import java.util.ServiceLoader;
+ import java.util.stream.Collectors;
  import java.util.stream.Stream;
  
 -import javax.inject.Inject;
