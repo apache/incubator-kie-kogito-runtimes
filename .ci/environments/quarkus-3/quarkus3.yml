@@ -93,7 +93,7 @@ recipeList:
   }
 - org.openrewrite.maven.ChangePropertyValue: {
     key: version.io.quarkiverse.openapi.generator,
-    newValue: 2.2.2
+    newValue: 2.2.8
   }
 - org.openrewrite.maven.ChangePropertyValue: {
     key: version.io.quarkiverse.asyncapi,
@@ -101,7 +101,7 @@ recipeList:
   }
 - org.openrewrite.maven.ChangePropertyValue: {
     key: version.io.quarkiverse.reactivemessaging.http,
-    newValue: 2.0.1
+    newValue: 2.0.2
   }
 - org.openrewrite.maven.ChangePropertyValue: {
     key: version.io.quarkiverse.jackson-jq,
