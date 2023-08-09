@@ -51,8 +51,8 @@ recipeList:
       key: version.io.quarkiverse.asyncapi
       newValue: 0.2.0
   - org.openrewrite.java.ChangePackage: # This change goes with the quarkiverse asyncapi version update
-      oldPackageName: com.asyncapi.v2.model,
-      newPackageName: com.asyncapi.v2._6_0.model,
+      oldPackageName: com.asyncapi.v2.model
+      newPackageName: com.asyncapi.v2._6_0.model
       recursive: true
   - org.openrewrite.maven.ChangePropertyValue:
       key: version.io.quarkiverse.reactivemessaging.http
