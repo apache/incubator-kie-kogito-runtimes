@@ -3726,6 +3726,23 @@ index 6c3bc7471b..6d23aa87de 100644
  
  import com.fasterxml.jackson.databind.ObjectMapper;
  
+diff --git a/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/asyncapi/AsyncAPIInfoConverter.java b/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/asyncapi/AsyncAPIInfoConverter.java
+index c44ad0c604..c476df0aa1 100644
+--- a/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/asyncapi/AsyncAPIInfoConverter.java
++++ b/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/asyncapi/AsyncAPIInfoConverter.java
+@@ -24,9 +24,9 @@ import org.kie.kogito.serverless.workflow.asyncapi.AsyncChannelInfo;
+ import org.kie.kogito.serverless.workflow.asyncapi.AsyncInfo;
+ import org.kie.kogito.serverless.workflow.asyncapi.AsyncInfoConverter;
+ 
+-import com.asyncapi.v2.model.AsyncAPI;
+-import com.asyncapi.v2.model.channel.ChannelItem;
+-import com.asyncapi.v2.model.channel.operation.Operation;
++import com.asyncapi.v2._6_0.model.AsyncAPI;
++import com.asyncapi.v2._6_0.model.channel.ChannelItem;
++import com.asyncapi.v2._6_0.model.channel.operation.Operation;
+ 
+ import io.quarkiverse.asyncapi.config.AsyncAPIRegistry;
+ 
 diff --git a/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/deployment/livereload/LiveReloadProcessor.java b/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/deployment/livereload/LiveReloadProcessor.java
 index 4940e8a246..7be51afdd0 100644
 --- a/quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-deployment/src/main/java/org/kie/kogito/quarkus/serverless/workflow/deployment/livereload/LiveReloadProcessor.java
