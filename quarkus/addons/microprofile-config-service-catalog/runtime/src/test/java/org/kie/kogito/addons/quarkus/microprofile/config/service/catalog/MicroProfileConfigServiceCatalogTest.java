@@ -17,53 +17,18 @@ package org.kie.kogito.addons.quarkus.microprofile.config.service.catalog;
 
 import javax.inject.Inject;
 
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogTest;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.quarkus.test.junit.QuarkusTest;
 
-import static org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol.KNATIVE;
-import static org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol.KUBERNETES;
-import static org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol.OPENSHIFT;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 @QuarkusTest
-@ExtendWith(MockitoExtension.class)
 public class MicroProfileConfigServiceCatalogTest extends KubernetesServiceCatalogTest {
 
-    private static final String KNATIVE_URI = "http://serverless-workflow-greeting-quarkus.test.10.99.154.147.sslip.io";
-    private static final String KUBERNETES_URI = "http://serverless-workflow-greeting-quarkus-kubernetes.test.10.99.154.147.sslip.io";
-    private static final String OPENSHIFT_URI = "http://serverless-workflow-greeting-quarkus-openshift.test.10.99.154.147.sslip.io";
-
     @Inject
-    private Config config;
-
-    @BeforeEach
-    void setUp() {
-        config = mock(Config.class);
-        try (MockedStatic<ConfigProvider> mockConfigProvider = Mockito.mockStatic(ConfigProvider.class)) {
-            mockConfigProvider.when(ConfigProvider::getConfig).thenReturn(config);
-            when(config.getValue(eq(KNATIVE + ":" + getNamespace() + "/" + getKnativeServiceName()), eq(String.class)))
-                    .thenReturn(KNATIVE_URI);
-            when(config.getValue(eq(KUBERNETES + ":" + getNamespace() + "/" + getKubernetesServiceName()), eq(String.class)))
-                    .thenReturn(KUBERNETES_URI);
-            when(config.getValue(eq(OPENSHIFT + ":" + getNamespace() + "/" + getKubernetesServiceName()), eq(String.class)))
-                    .thenReturn(OPENSHIFT_URI);
-
-        }
-    }
+    MicroProfileConfigServiceCatalog configServiceCatalog;
 
     @Inject
     MicroProfileConfigServiceCatalogTest(MicroProfileConfigServiceCatalog configServiceCatalog) {
         super(configServiceCatalog);
     }
-
 }

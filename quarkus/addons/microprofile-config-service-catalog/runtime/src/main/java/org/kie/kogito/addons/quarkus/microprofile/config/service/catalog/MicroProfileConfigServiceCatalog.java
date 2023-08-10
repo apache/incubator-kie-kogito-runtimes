@@ -17,42 +17,28 @@ package org.kie.kogito.addons.quarkus.microprofile.config.service.catalog;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogKey;
 
 @ApplicationScoped
 public class MicroProfileConfigServiceCatalog implements KubernetesServiceCatalog {
 
-    private final Map<KubernetesServiceCatalogKey, URI> services = new ConcurrentHashMap<>();
+    @Inject
+    Config config;
 
     @Override
     public Optional<URI> getServiceAddress(KubernetesServiceCatalogKey key) {
-        URI serviceUrl = services.get(key);
-
-        if (serviceUrl == null) {
-            serviceUrl = fetchServiceAddressFromConfig(key);
-            services.put(key, serviceUrl);
-        }
-
-        return Optional.ofNullable(serviceUrl);
-    }
-
-    private URI fetchServiceAddressFromConfig(KubernetesServiceCatalogKey key) {
+        String configValue = config.getValue(key.getProtocol().getValue() + ":" + key.getCoordinates(), String.class);
         try {
-            Config config = ConfigProvider.getConfig();
-            String configValue = config.getValue(key.getProtocol().getValue() + ":" + key.getCoordinates(), String.class);
-            return new URI(configValue);
+            return Optional.of(new URI(configValue));
         } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
     }
 }
