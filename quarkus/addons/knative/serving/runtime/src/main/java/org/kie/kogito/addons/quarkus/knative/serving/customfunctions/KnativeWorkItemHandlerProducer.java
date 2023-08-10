@@ -35,14 +35,14 @@ public final class KnativeWorkItemHandlerProducer {
 
     @Produces
     KnativeWorkItemHandler createKnativeWorkItemHandler() {
-        return new KnativeWorkItemHandler(getHttpClient(vertx), getHttpsClient(), kubernetesServiceCatalog);
+        return new KnativeWorkItemHandler(getHttpClient(), getHttpsClient(), kubernetesServiceCatalog);
     }
 
     private WebClient getHttpsClient() {
         return WebClient.create(vertx, RestWorkItemHandlerUtils.sslWebClientOptions());
     }
 
-    private static WebClient getHttpClient(Vertx vertx) {
+    private WebClient getHttpClient() {
         return WebClient.create(vertx, new WebClientOptions());
     }
 }
