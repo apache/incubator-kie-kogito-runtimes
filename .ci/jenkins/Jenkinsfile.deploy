@@ -110,7 +110,8 @@ pipeline {
                 script {
                     dir(getRepoName()) {
                         def mvnCmd = getMavenCommand()
-                                            .withProperty('maven.test.failure.ignore', true)
+                            .withOptions(env.BUILD_MVN_OPTS_CURRENT ? [ env.BUILD_MVN_OPTS_CURRENT ] : [])
+                            .withProperty('maven.test.failure.ignore', true)
 
                         if (params.SKIP_TESTS) {
                             mvnCmd.skipTests() // Conflict somehow with Python testing. If `skipTests={anyvalue}` is set, then exec plugin is not executed ...
@@ -290,6 +291,7 @@ MavenCommand getMavenCommand(String directory = '') {
     directory = directory ?: getRepoName()
     return new MavenCommand(this, ['-fae', '-ntp'])
                 .withSettingsXmlId(env.MAVEN_SETTINGS_CONFIG_FILE_ID)
+                .withOptions(env.BUILD_MVN_OPTS ? [ env.BUILD_MVN_OPTS ] : [])
                 .inDirectory(directory)
                 .withProperty('full')
 }
