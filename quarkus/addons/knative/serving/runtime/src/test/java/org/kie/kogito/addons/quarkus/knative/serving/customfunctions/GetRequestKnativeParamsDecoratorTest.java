@@ -43,9 +43,11 @@ class GetRequestKnativeParamsDecoratorTest {
 
     @Test
     void decorate() {
-        Map<String, String> expectedParams = Map.of(
+        Map<String, Object> expectedParams = Map.of(
                 "key1", "value1",
-                "key2", "value2");
+                "key2", "value2",
+                "booleanParam", true,
+                "numberParam", 42);
 
         HttpRequest<?> request = createRequest();
 
@@ -54,12 +56,12 @@ class GetRequestKnativeParamsDecoratorTest {
 
         decorator.decorate(null, parameters, request);
 
-        assertThat(request.queryParams()).hasSize(2);
-        expectedParams.forEach((k, v) -> assertThat(request.queryParams().get(k)).isEqualTo(v));
+        assertThat(request.queryParams()).hasSize(4);
+        expectedParams.forEach((k, v) -> assertThat(request.queryParams().get(k)).isEqualTo(String.valueOf(v)));
     }
 
     @Test
-    void decorateNonStringValuesShouldThrowException() {
+    void decorateInvalidTypeShouldThrowException() {
         Map<String, Object> expectedParams = Map.of(
                 "key1", "value1",
                 "key2", new Object());

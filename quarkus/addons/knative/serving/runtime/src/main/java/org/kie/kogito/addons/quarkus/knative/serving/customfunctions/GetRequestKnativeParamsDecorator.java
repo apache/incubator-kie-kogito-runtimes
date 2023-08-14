@@ -30,8 +30,10 @@ public final class GetRequestKnativeParamsDecorator implements ParamsDecorator {
         KnativeFunctionPayloadSupplier.getPayload(parameters).forEach((key, value) -> {
             if (value instanceof String) {
                 request.addQueryParam(key, (String) value);
+            } else if (value instanceof Number || value instanceof Boolean) {
+                request.addQueryParam(key, String.valueOf(value));
             } else {
-                String message = "Knative functions support only GET requests with String attributes. {0} has a {1} value.";
+                String message = "Knative functions support only GET requests with String, Number or Boolean attributes. {0} has a {1} value.";
                 throw new IllegalArgumentException(MessageFormat.format(message, key, value.getClass()));
             }
         });
