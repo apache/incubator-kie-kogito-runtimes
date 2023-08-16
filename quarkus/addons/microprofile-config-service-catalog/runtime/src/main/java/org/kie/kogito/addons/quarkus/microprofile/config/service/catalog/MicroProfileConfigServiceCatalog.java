@@ -28,13 +28,15 @@ import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogKey;
 @ApplicationScoped
 public class MicroProfileConfigServiceCatalog implements KubernetesServiceCatalog {
 
+    private static final String CONFIG_PREFIX = "org.kie.kogito.addons.discovery.";
+
     @Inject
     Config config;
 
     @Override
     public Optional<URI> getServiceAddress(KubernetesServiceCatalogKey key) {
 
-        return config.getOptionalValue(key.getProtocol().getValue() + ":" + key.getCoordinates(), String.class)
+        return config.getOptionalValue(CONFIG_PREFIX + key.getProtocol().getValue() + ":" + key.getCoordinates(), String.class)
                 .map(URI::create);
     }
 }
