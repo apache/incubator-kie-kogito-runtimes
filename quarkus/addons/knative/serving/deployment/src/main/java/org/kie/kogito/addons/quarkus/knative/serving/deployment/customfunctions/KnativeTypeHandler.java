@@ -24,7 +24,6 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.CloudEventKnativeParamsDecorator;
-import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.GetRequestKnativeParamsDecorator;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Operation;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.PlainJsonKnativeParamsDecorator;
@@ -34,6 +33,7 @@ import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.decorators.ParamsDecorator;
+import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
 import com.github.javaparser.ast.expr.Expression;
 
@@ -42,6 +42,7 @@ import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionRef;
 import io.vertx.core.http.HttpMethod;
 
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.PAYLOAD_FIELDS_DELIMITER;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.PAYLOAD_FIELDS_PROPERTY_NAME;
 import static org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory.trimCustomOperation;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.runtimeRestApi;
@@ -63,7 +64,7 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
             List<String> payloadFields = new ArrayList<>();
             functionRef.getArguments().fieldNames().forEachRemaining(payloadFields::add);
             if (!payloadFields.isEmpty()) {
-                node.workParameter(PAYLOAD_FIELDS_PROPERTY_NAME, String.join(";", payloadFields));
+                node.workParameter(PAYLOAD_FIELDS_PROPERTY_NAME, String.join(PAYLOAD_FIELDS_DELIMITER, payloadFields));
             }
         }
 
@@ -98,7 +99,7 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
         if (operation.isCloudEvent()) {
             return CloudEventKnativeParamsDecorator.class;
         } else if (HttpMethod.GET.equals(operation.getHttpMethod())) {
-            return GetRequestKnativeParamsDecorator.class;
+            return PrefixParamsDecorator.class;
         } else {
             return PlainJsonKnativeParamsDecorator.class;
         }

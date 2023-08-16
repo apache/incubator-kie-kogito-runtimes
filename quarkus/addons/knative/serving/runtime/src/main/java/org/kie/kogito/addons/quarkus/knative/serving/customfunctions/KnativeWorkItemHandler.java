@@ -16,6 +16,7 @@
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
@@ -25,9 +26,11 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 
+import io.vertx.core.http.HttpMethod;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
 import static org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol.KNATIVE;
+import static org.kogito.workitem.rest.decorators.PrefixParamsDecorator.QUERY_PREFIX;
 
 public final class KnativeWorkItemHandler extends RestWorkItemHandler {
 
@@ -58,7 +61,20 @@ public final class KnativeWorkItemHandler extends RestWorkItemHandler {
     public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         Map<String, Object> parameters = workItem.getParameters();
         parameters.put(RestWorkItemHandler.URL, getUrl(parameters));
+
+        if (HttpMethod.GET.name().equals(workItem.getParameters().get(RestWorkItemHandler.METHOD))) {
+            addQueryParamsPrefix(workItem);
+        }
+
         super.executeWorkItem(workItem, manager);
+    }
+
+    private static void addQueryParamsPrefix(KogitoWorkItem workItem) {
+        String payloadFields = workItem.getParameters().remove(PAYLOAD_FIELDS_PROPERTY_NAME).toString();
+        if (payloadFields != null) {
+            Arrays.stream(payloadFields.split(PAYLOAD_FIELDS_DELIMITER))
+                    .forEach(field -> workItem.getParameters().put(QUERY_PREFIX + field, workItem.getParameters().remove(field)));
+        }
     }
 
     private String getUrl(Map<String, Object> parameters) {
