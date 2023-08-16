@@ -97,7 +97,7 @@ public abstract class KubernetesServiceCatalogTest {
                 .map(URI::toString)
                 .hasValue(expectedUri);
     }
-    
+
     protected static Stream<Arguments> possibleUriFormats() {
         return Stream.of(
                 Arguments.of(KNATIVE, KNATIVE_SERVICENAME, EXPECTED_KNATIVE_URI),
