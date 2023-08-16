@@ -184,7 +184,7 @@
             <!-- provides configFileProvider() and configFile() steps -->
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>config-file-provider</artifactId>
-            <version>3.6.2</version>
+            <version>953.v0432a_802e4d2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
