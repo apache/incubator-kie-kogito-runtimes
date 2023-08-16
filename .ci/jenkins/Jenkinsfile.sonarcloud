@@ -8,7 +8,7 @@ pipeline {
     }
     tools {
         maven env.BUILD_MAVEN_TOOL
-        jdk env.BUILD_JDK_TOOL
+        jdk env.SONAR_JDK_TOOL
     }
     options {
         timestamps()
