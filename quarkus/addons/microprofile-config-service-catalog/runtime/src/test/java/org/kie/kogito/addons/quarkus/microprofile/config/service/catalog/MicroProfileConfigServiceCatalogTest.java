@@ -17,41 +17,16 @@ package org.kie.kogito.addons.quarkus.microprofile.config.service.catalog;
 
 import javax.inject.Inject;
 
-import org.eclipse.microprofile.config.Config;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol;
-import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogKey;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogTest;
 
 import io.quarkus.test.junit.QuarkusTest;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 @QuarkusTest
 public class MicroProfileConfigServiceCatalogTest extends KubernetesServiceCatalogTest {
-
-    private static final String KUBERNETES_SERVICENAME = "serverless-workflow-greeting-quarkus-kubernetes";
-
-    private static final String NAMESPACE = "test";
-
-    private static final String NAMESPACE_KUBERNETES_SERVICENAME = NAMESPACE + '/' + KUBERNETES_SERVICENAME;
-
-    @Inject
-    MicroProfileConfigServiceCatalog configServiceCatalog;
-
-    @Inject
-    Config config;
 
     @Inject
     MicroProfileConfigServiceCatalogTest(MicroProfileConfigServiceCatalog configServiceCatalog) {
         super(configServiceCatalog);
-    }
-
-    @Test
-    public void testGetServiceAddressWithInvalidURI() {
-        KubernetesServiceCatalogKey key = new KubernetesServiceCatalogKey(KubernetesProtocol.KUBERNETES, NAMESPACE_KUBERNETES_SERVICENAME);
-
-        assertThrows(RuntimeException.class, () -> configServiceCatalog.getServiceAddress(key));
     }
 
 }

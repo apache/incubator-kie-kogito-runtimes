@@ -16,7 +16,6 @@
 package org.kie.kogito.addons.quarkus.microprofile.config.service.catalog;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -34,11 +33,8 @@ public class MicroProfileConfigServiceCatalog implements KubernetesServiceCatalo
 
     @Override
     public Optional<URI> getServiceAddress(KubernetesServiceCatalogKey key) {
-        String configValue = config.getValue(key.getProtocol().getValue() + ":" + key.getCoordinates(), String.class);
-        try {
-            return Optional.of(new URI(configValue));
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+
+        return config.getOptionalValue(key.getProtocol().getValue() + ":" + key.getCoordinates(), String.class)
+                .map(URI::create);
     }
 }
