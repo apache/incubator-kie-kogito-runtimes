@@ -17,8 +17,8 @@ package org.kie.kogito.mail;
 
 import java.util.Arrays;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.kie.kogito.event.process.UserTaskDeadlineDataEvent;

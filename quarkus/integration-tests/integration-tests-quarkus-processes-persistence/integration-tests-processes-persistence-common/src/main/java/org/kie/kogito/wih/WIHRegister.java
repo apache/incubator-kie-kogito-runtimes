@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.wih;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 
