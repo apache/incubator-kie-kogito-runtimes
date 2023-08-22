@@ -133,6 +133,7 @@ class HttpContentLoader extends CachedContentLoader {
         return BuildEvaluator.eval(ExpressionHandlerUtils.trimExpr(expr));
     }
 
+    @SuppressWarnings("squid:S2647")
     private void basicAuth(HttpURLConnection conn, BasicAuthDefinition basicAuth) {
         conn.setRequestProperty("Authorization", "Basic " + encode(eval(basicAuth.getUsername()) + ":" + eval(basicAuth.getPassword())));
     }

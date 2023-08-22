@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.actions;
+package org.kie.kogito.serverless.workflow.parser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
+import org.kie.kogito.serverless.workflow.actions.JsonSchemaValidator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,8 +41,8 @@ public class JsonSchemaValidatorTest {
 
     @BeforeAll
     static void init() throws IOException {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("expression.json")) {
-            validator = new JsonSchemaValidator(ObjectMapperFactory.get().readTree(is), true);
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/expression.json")) {
+            validator = new JsonSchemaValidator(JsonSchemaReader.read(null, is.readAllBytes()), true);
         }
     }
 
@@ -66,5 +67,4 @@ public class JsonSchemaValidatorTest {
         ObjectMapper mapper = ObjectMapperFactory.get();
         return mapper.createObjectNode().set("numbers", mapper.createArrayNode().add(mapper.createObjectNode().<ObjectNode> set("x", x).set("y", y)));
     }
-
 }

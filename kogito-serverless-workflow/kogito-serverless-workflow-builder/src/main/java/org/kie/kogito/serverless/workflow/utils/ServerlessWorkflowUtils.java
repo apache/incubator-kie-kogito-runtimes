@@ -62,6 +62,7 @@ public class ServerlessWorkflowUtils {
     public static final String USER_PROP = "username";
     public static final String PASSWORD_PROP = "password";
     public static final String OPERATION_SEPARATOR = "#";
+    public static final String DEFS_PREFIX = "#/$defs/";
     private static final String BASE_URI = "baseURI";
 
     /**

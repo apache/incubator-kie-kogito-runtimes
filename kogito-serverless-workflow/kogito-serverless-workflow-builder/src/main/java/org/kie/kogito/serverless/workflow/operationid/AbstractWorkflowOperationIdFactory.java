@@ -16,6 +16,7 @@
 package org.kie.kogito.serverless.workflow.operationid;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.Optional;
 
@@ -77,8 +78,7 @@ public abstract class AbstractWorkflowOperationIdFactory implements WorkflowOper
             try {
                 definitions = uri == null ? NullNode.instance : ObjectMapperFactory.get().readTree(readBytes(uri, workflow, context));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new UncheckedIOException(e);
             }
             uriDefinitions.setDefinitions(definitions);
         }

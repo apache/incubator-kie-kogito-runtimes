@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
+import org.drools.io.InternalResource;
 import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
 import org.jbpm.bpmn2.xml.BPMNExtensionsSemanticModule;
 import org.jbpm.bpmn2.xml.BPMNSemanticModule;
@@ -62,6 +63,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.validation.ValidationException;
 import org.kie.kogito.process.validation.ValidationLogDecorator;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
+import org.kie.kogito.serverless.workflow.utils.WorkflowFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -212,8 +214,15 @@ public class ProcessCodegen extends AbstractGenerator {
     }
 
     protected static GeneratedInfo<KogitoWorkflowProcess> parseWorkflowFile(Resource r, KogitoBuildContext context) {
-        try {
-            return ServerlessWorkflowParser.of(r, context).getProcessInfo();
+        InternalResource resource = (InternalResource) r;
+        try (Reader reader = resource.getReader()) {
+            ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(reader, WorkflowFormat.fromFileName(resource.getSourcePath()), context);
+            if (resource.hasURL()) {
+                parser.withBaseURI(resource.getURL());
+            } else {
+                parser.withBaseURI("classpath:/" + resource.getSourcePath());
+            }
+            return parser.getProcessInfo();
         } catch (Exception e) {
             throw new ProcessParsingException(e);
         }

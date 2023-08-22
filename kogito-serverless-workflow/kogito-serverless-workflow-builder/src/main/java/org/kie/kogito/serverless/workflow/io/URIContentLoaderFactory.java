@@ -133,7 +133,7 @@ public class URIContentLoaderFactory {
         }
     }
 
-    private static URI compoundURI(URI baseURI, URI uri) {
+    public static URI compoundURI(URI baseURI, URI uri) {
         char separator;
         switch (URIContentLoaderType.from(uri)) {
             case HTTP:
