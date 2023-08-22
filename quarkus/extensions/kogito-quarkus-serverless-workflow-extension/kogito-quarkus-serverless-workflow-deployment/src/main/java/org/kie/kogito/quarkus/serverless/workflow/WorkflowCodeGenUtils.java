@@ -33,7 +33,6 @@ import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationId;
 import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationIdFactory;
 import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationIdFactoryProvider;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
-import org.kie.kogito.serverless.workflow.utils.WorkflowResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +45,7 @@ import io.serverlessworkflow.api.functions.FunctionDefinition;
 public class WorkflowCodeGenUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkflowCodeGenUtils.class);
-    private static Map<Path, Optional<WorkflowResource>> workflowCache = new WeakHashMap<>();
+    private static Map<Path, Optional<Workflow>> workflowCache = new WeakHashMap<>();
 
     private WorkflowCodeGenUtils() {
     }
@@ -59,7 +58,7 @@ public class WorkflowCodeGenUtils {
         return getWorkflows(files).flatMap(w -> processFunction(w, predicate, operationIdFactory(context)));
     }
 
-    public static Stream<WorkflowResource> getWorkflows(Stream<Path> files) {
+    public static Stream<Workflow> getWorkflows(Stream<Path> files) {
         return files
                 .filter(Files::isRegularFile)
                 .map(WorkflowCodeGenUtils::getWorkflow)
@@ -77,28 +76,27 @@ public class WorkflowCodeGenUtils {
                 unit.toString());
     }
 
-    private static Stream<WorkflowOperationResource> processFunction(WorkflowResource workflowURI, Predicate<FunctionDefinition> predicate, WorkflowOperationIdFactory factory) {
-        Workflow workflow = workflowURI.getWorkflow();
+    private static Stream<WorkflowOperationResource> processFunction(Workflow workflow, Predicate<FunctionDefinition> predicate, WorkflowOperationIdFactory factory) {
         if (workflow.getFunctions() == null || workflow.getFunctions().getFunctionDefs() == null) {
             return Stream.empty();
         }
-        return workflow.getFunctions().getFunctionDefs().stream().filter(predicate).map(f -> getResource(workflowURI, f, factory));
+        return workflow.getFunctions().getFunctionDefs().stream().filter(predicate).map(f -> getResource(workflow, f, factory));
     }
 
-    private static WorkflowOperationResource getResource(WorkflowResource workflowURI, FunctionDefinition function, WorkflowOperationIdFactory factory) {
-        WorkflowOperationId operationId = factory.from(workflowURI.getWorkflow(), function, Optional.empty());
+    private static WorkflowOperationResource getResource(Workflow workflow, FunctionDefinition function, WorkflowOperationIdFactory factory) {
+        WorkflowOperationId operationId = factory.from(workflow, function, Optional.empty());
         return new WorkflowOperationResource(operationId,
-                URIContentLoaderFactory.buildLoader(operationId.getUri(), workflowURI, function.getAuthRef()));
+                URIContentLoaderFactory.buildLoader(operationId.getUri(), workflow, Optional.empty(), function.getAuthRef()));
     }
 
-    private static Optional<WorkflowResource> getWorkflow(Path path) {
+    private static Optional<Workflow> getWorkflow(Path path) {
         if (SupportedExtensions.getSWFExtensions().stream().anyMatch(ext -> path.toString().endsWith(ext))) {
             return workflowCache.computeIfAbsent(path, p -> {
                 try {
                     return Optional.of(ServerlessWorkflowUtils.getWorkflow(p));
                 } catch (IOException ex) {
                     logger.info("Error reading workflow file {}. Ignoring exception {}", p, ex);
-                    return Optional.<WorkflowResource> empty();
+                    return Optional.<Workflow> empty();
                 }
             });
         }

@@ -16,8 +16,8 @@
 package org.kie.kogito.serverless.workflow.executor;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 
 import org.junit.jupiter.api.AfterAll;
@@ -26,12 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
-import org.kie.kogito.serverless.workflow.utils.WorkflowFormat;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-
-import io.serverlessworkflow.api.Workflow;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -60,16 +57,15 @@ class OpenAPIWorkflowApplicationTest {
     }
 
     @Test
-    void openAPIInvocation() throws IOException {
+    void openAPIInvocation() throws IOException, URISyntaxException {
         final double fahrenheit = 100;
         final double difference = fahrenheit - 32.0;
         final double product = difference * 0.5556;
         wm.stubFor(post("/multiply").willReturn(aResponse().withStatus(200).withJsonBody(ObjectMapperFactory.get().createObjectNode().put("product", product))));
         wm.stubFor(post("/substract").willReturn(aResponse().withStatus(200).withJsonBody(ObjectMapperFactory.get().createObjectNode().put("difference", difference))));
-        try (StaticWorkflowApplication application = StaticWorkflowApplication.create();
-                Reader reader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("fahrenheit-to-celsius.sw.json"))) {
-            Workflow workflow = ServerlessWorkflowUtils.getWorkflow(reader, WorkflowFormat.JSON);
-            ObjectNode node = (ObjectNode) application.execute(workflow, Collections.singletonMap("fahrenheit", fahrenheit)).getWorkflowdata();
+        URL resource = Thread.currentThread().getContextClassLoader().getResource("fahrenheit-to-celsius.sw.json");
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            ObjectNode node = (ObjectNode) application.execute(ServerlessWorkflowUtils.getWorkflow(resource), Collections.singletonMap("fahrenheit", fahrenheit)).getWorkflowdata();
             assertThat(node.get("product").asDouble()).isEqualByComparingTo(product);
         }
     }

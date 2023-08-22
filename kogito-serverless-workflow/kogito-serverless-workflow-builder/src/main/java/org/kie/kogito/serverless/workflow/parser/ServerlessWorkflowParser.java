@@ -18,6 +18,8 @@ package org.kie.kogito.serverless.workflow.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
+import java.net.URI;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +28,7 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.workflow.core.WorkflowModelValidator;
+import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.api.GeneratedInfo;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -50,6 +53,7 @@ import io.serverlessworkflow.api.timeouts.WorkflowExecTimeout;
 import io.serverlessworkflow.api.workflow.Constants;
 
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readBytes;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.withBaseURI;
 
 public class ServerlessWorkflowParser {
 
@@ -64,8 +68,17 @@ public class ServerlessWorkflowParser {
 
     private NodeIdGenerator idGenerator = DefaultNodeIdGenerator.get();
     private Workflow workflow;
+
     private GeneratedInfo<KogitoWorkflowProcess> processInfo;
     private KogitoBuildContext context;
+
+    public static ServerlessWorkflowParser of(Resource resource, KogitoBuildContext context) throws IOException {
+        try (Reader workflowFile = resource.getReader()) {
+            String path = resource.getSourcePath();
+            Workflow workflow = ServerlessWorkflowUtils.getWorkflow(workflowFile, WorkflowFormat.fromFileName(path));
+            return ServerlessWorkflowParser.of(workflow, context).withBaseURI(path);
+        }
+    }
 
     public static ServerlessWorkflowParser of(Reader workflowFile, WorkflowFormat workflowFormat, KogitoBuildContext context) throws IOException {
         return of(ServerlessWorkflowUtils.getWorkflow(workflowFile, workflowFormat), context);
@@ -85,6 +98,19 @@ public class ServerlessWorkflowParser {
 
     public ServerlessWorkflowParser withIdGenerator(NodeIdGenerator idGenerator) {
         this.idGenerator = idGenerator;
+        return this;
+    }
+
+    public ServerlessWorkflowParser withBaseURI(Path baseURI) {
+        return withBaseURI(baseURI.toUri());
+    }
+
+    public ServerlessWorkflowParser withBaseURI(URI baseURI) {
+        return withBaseURI(baseURI.toString());
+    }
+
+    public ServerlessWorkflowParser withBaseURI(String baseURI) {
+        ServerlessWorkflowUtils.withBaseURI(workflow, baseURI);
         return this;
     }
 

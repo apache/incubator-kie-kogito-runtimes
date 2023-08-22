@@ -16,11 +16,16 @@
 package org.kie.kogito.serverless.workflow.utils;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -35,8 +40,6 @@ import org.kie.kogito.serverless.workflow.extensions.OutputSchema;
 import org.kie.kogito.serverless.workflow.extensions.URIDefinitions;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 import org.kie.kogito.serverless.workflow.suppliers.ConfigWorkItemSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.expr.Expression;
@@ -52,8 +55,6 @@ import io.serverlessworkflow.api.serializers.ExtensionSerializer;
 
 public class ServerlessWorkflowUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServerlessWorkflowUtils.class);
-
     public static final String FAIL_ON_ERROR_PROPERTY = "kogito.codegen.process.failOnError";
     public static final String API_KEY_PREFIX = "api_key_prefix";
     public static final String API_KEY = "api_key";
@@ -61,6 +62,8 @@ public class ServerlessWorkflowUtils {
     public static final String USER_PROP = "username";
     public static final String PASSWORD_PROP = "password";
     public static final String OPERATION_SEPARATOR = "#";
+    private static final String BASE_URI = "baseURI";
+
     /**
      * @deprecated Replaced by WorkflowFormat enum
      */
@@ -99,9 +102,15 @@ public class ServerlessWorkflowUtils {
         return objectMapper.readValue(reader, Workflow.class);
     }
 
-    public static WorkflowResource getWorkflow(Path path) throws IOException {
+    public static Workflow getWorkflow(Path path) throws IOException {
         try (Reader reader = Files.newBufferedReader(path)) {
-            return new WorkflowResource(path.toUri(), getWorkflow(reader, WorkflowFormat.fromFileName(path.getFileName())));
+            return withBaseURI(getWorkflow(reader, WorkflowFormat.fromFileName(path.getFileName())), path.toString());
+        }
+    }
+
+    public static Workflow getWorkflow(URL url) throws IOException {
+        try (Reader reader = new InputStreamReader(url.openStream())) {
+            return withBaseURI(getWorkflow(reader, WorkflowFormat.fromFileName(url.getPath())), url.toString());
         }
     }
 
@@ -126,6 +135,24 @@ public class ServerlessWorkflowUtils {
     public static void writeWorkflow(Workflow workflow, Writer writer, WorkflowFormat workflowFormat) throws IOException {
         ObjectMapper objectMapper = workflowFormat == WorkflowFormat.YAML ? yamlWriterMapper : jsonWriterMapper;
         objectMapper.writeValue(writer, workflow);
+    }
+
+    public static Optional<URI> getBaseURI(Workflow workflow) {
+        return Optional.ofNullable(getMetadata(workflow).get(BASE_URI)).map(URI::create);
+    }
+
+    public static Workflow withBaseURI(Workflow workflow, String baseURI) {
+        getMetadata(workflow).put(BASE_URI, baseURI);
+        return workflow;
+    }
+
+    public static Map<String, String> getMetadata(Workflow workflow) {
+        Map<String, String> metadata = workflow.getMetadata();
+        if (metadata == null) {
+            metadata = new HashMap<>();
+            workflow.setMetadata(metadata);
+        }
+        return metadata;
     }
 
     private static BaseObjectMapper deserializer(BaseObjectMapper objectMapper) {

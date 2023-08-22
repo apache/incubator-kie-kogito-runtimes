@@ -17,27 +17,26 @@ package org.kie.kogito.serverless.workflow.io;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URISyntaxException;
 
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
-import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readString;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.builder;
-
+import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readString;
 
 class URIContentLoaderTest {
 
     @Test
-    void testExistingFile() throws IOException {
-        assertThat(new String(readString(builder("file:/pepe.txt")))).isEqualTo("my name is javierito");
+    void testExistingFile() throws IOException, URISyntaxException {
+        assertThat(readString(builder(Thread.currentThread().getContextClassLoader().getResource("pepe.txt").toURI()))).isEqualTo("my name is javierito");
     }
 
     @Test
     void testExistingClasspath() throws IOException {
-        assertThat(new String(readString(builder("classpath:/pepe.txt")))).isEqualTo("my name is javierito");
+        assertThat(new String(readString(builder("classpath:pepe.txt")))).isEqualTo("my name is javierito");
     }
 
     @Test

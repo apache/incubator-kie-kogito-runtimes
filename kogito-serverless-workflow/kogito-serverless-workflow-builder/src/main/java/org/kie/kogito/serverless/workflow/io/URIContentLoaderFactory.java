@@ -24,9 +24,10 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
-import org.kie.kogito.serverless.workflow.utils.WorkflowResource;
 
 import io.serverlessworkflow.api.Workflow;
+
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getBaseURI;
 
 public class URIContentLoaderFactory {
 
@@ -62,14 +63,10 @@ public class URIContentLoaderFactory {
         return readString(builder.build());
     }
 
-    public static URIContentLoader buildLoader(URI uri, WorkflowResource workflowURI, String authRef) {
-        return new Builder(uri).withWorkflow(workflowURI.getWorkflow()).withBaseURI(workflowURI.getUri()).withAuthRef(authRef).build();
-    }
-
     public static URIContentLoader buildLoader(URI uri, Workflow workflow, Optional<ParserContext> context, String authRef) {
         Builder builder = new Builder(uri).withWorkflow(workflow).withAuthRef(authRef);
         context.map(c -> c.getContext().getClassLoader()).ifPresent(builder::withClassloader);
-        // TODO add base URI
+        getBaseURI(workflow).ifPresent(builder::withBaseURI);
         return builder.build();
     }
 

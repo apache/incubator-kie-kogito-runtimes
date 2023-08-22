@@ -32,7 +32,6 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
 import com.networknt.schema.ValidationMessage;
 
-
 public class JsonSchemaValidator implements WorkflowModelValidator {
 
     private static final long serialVersionUID = 1L;
@@ -69,11 +68,11 @@ public class JsonSchemaValidator implements WorkflowModelValidator {
     }
 
     private JsonSchema getSchema() {
-    	JsonSchema result = schemaObject.get();
-    	if (result == null) {
-    		result = JsonSchemaFactory.getInstance(VersionFlag.V7).getSchema(jsonNode);
-    		schemaObject.set(result);
-    	}
-    	return result;
+        JsonSchema result = schemaObject.get();
+        if (result == null) {
+            result = JsonSchemaFactory.getInstance(VersionFlag.V7).getSchema(jsonNode);
+            schemaObject.set(result);
+        }
+        return result;
     }
 }

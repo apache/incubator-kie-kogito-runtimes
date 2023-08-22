@@ -62,7 +62,6 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.validation.ValidationException;
 import org.kie.kogito.process.validation.ValidationLogDecorator;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
-import org.kie.kogito.serverless.workflow.utils.WorkflowFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -120,7 +119,7 @@ public class ProcessCodegen extends AbstractGenerator {
                             }
                             return p.stream().map(KogitoWorkflowProcess.class::cast).map(GeneratedInfo::new).map(info -> addResource(info, resource));
                         } else if (SupportedExtensions.getSWFExtensions().stream().anyMatch(resource.getSourcePath()::endsWith)) {
-                            GeneratedInfo<KogitoWorkflowProcess> generatedInfo = parseWorkflowFile(resource, WorkflowFormat.fromFileName(resource.getSourcePath()), context);
+                            GeneratedInfo<KogitoWorkflowProcess> generatedInfo = parseWorkflowFile(resource, context);
                             notifySourceFileCodegenBindListeners(context, resource, Collections.singletonList(generatedInfo.info()));
                             return Stream.of(addResource(generatedInfo, resource));
                         }
@@ -212,9 +211,9 @@ public class ProcessCodegen extends AbstractGenerator {
         return new ProcessCodegen(context, processes);
     }
 
-    protected static GeneratedInfo<KogitoWorkflowProcess> parseWorkflowFile(Resource r, WorkflowFormat format, KogitoBuildContext context) {
-        try (Reader reader = r.getReader()) {
-            return ServerlessWorkflowParser.of(reader, format, context).getProcessInfo();
+    protected static GeneratedInfo<KogitoWorkflowProcess> parseWorkflowFile(Resource r, KogitoBuildContext context) {
+        try {
+            return ServerlessWorkflowParser.of(r, context).getProcessInfo();
         } catch (Exception e) {
             throw new ProcessParsingException(e);
         }

@@ -16,6 +16,7 @@
 package org.kie.kogito.serverless.workflow.actions;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 
@@ -38,8 +39,10 @@ public class JsonSchemaValidatorTest {
     private static JsonSchemaValidator validator;
 
     @BeforeAll
-    static void init() {
-        validator = new JsonSchemaValidator("expression.json", true);
+    static void init() throws IOException {
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("expression.json")) {
+            validator = new JsonSchemaValidator(ObjectMapperFactory.get().readTree(is), true);
+        }
     }
 
     @Test
