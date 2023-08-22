@@ -23,6 +23,7 @@ import org.jbpm.compiler.canonical.descriptors.TaskDescriptor;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
+import org.jetbrains.annotations.NotNull;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.CloudEventKnativeParamsDecorator;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Operation;
@@ -30,10 +31,9 @@ import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.PlainJsonKn
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
+import org.kie.kogito.serverless.workflow.suppliers.CollectionParamsDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
-import org.kogito.workitem.rest.decorators.ParamsDecorator;
-import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
 import com.github.javaparser.ast.expr.Expression;
 
@@ -42,7 +42,6 @@ import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionRef;
 import io.vertx.core.http.HttpMethod;
 
-import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.PAYLOAD_FIELDS_DELIMITER;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.PAYLOAD_FIELDS_PROPERTY_NAME;
 import static org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory.trimCustomOperation;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.runtimeRestApi;
@@ -60,17 +59,40 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
         WorkItemNodeFactory<?> node = buildWorkItem(embeddedSubProcess, context, varInfo.getInputVar(), varInfo.getOutputVar())
                 .name(functionDef.getName());
 
-        if (functionRef.getArguments() != null && !functionRef.getArguments().isEmpty()) {
-            List<String> payloadFields = new ArrayList<>();
-            functionRef.getArguments().fieldNames().forEachRemaining(payloadFields::add);
+        List<String> payloadFields = getPayloadFields(functionRef);
+
+        Operation operation = Operation.parse(trimCustomOperation(functionDef));
+
+        if (HttpMethod.GET.equals(operation.getHttpMethod())) {
+            node.workParameter(RestWorkItemHandler.PARAMS_DECORATOR, new CollectionParamsDecoratorSupplier(List.of(), payloadFields));
+        } else {
             if (!payloadFields.isEmpty()) {
-                node.workParameter(PAYLOAD_FIELDS_PROPERTY_NAME, String.join(PAYLOAD_FIELDS_DELIMITER, payloadFields));
+                node.workParameter(PAYLOAD_FIELDS_PROPERTY_NAME, payloadFields);
+            }
+            if (operation.isCloudEvent()) {
+                node.workParameter(RestWorkItemHandler.PARAMS_DECORATOR, CloudEventKnativeParamsDecorator.class.getName());
+            } else {
+                node.workParameter(RestWorkItemHandler.PARAMS_DECORATOR, PlainJsonKnativeParamsDecorator.class.getName());
             }
         }
+
+        node.workParameter(KnativeWorkItemHandler.SERVICE_PROPERTY_NAME, operation.getService())
+                .workParameter(KnativeWorkItemHandler.PATH_PROPERTY_NAME, operation.getPath())
+                .workParameter(RestWorkItemHandler.METHOD, operation.getHttpMethod());
 
         return addFunctionArgs(workflow,
                 fillWorkItemHandler(workflow, context, node, functionDef),
                 functionRef);
+    }
+
+    @NotNull
+    private static List<String> getPayloadFields(FunctionRef functionRef) {
+        List<String> payloadFields = new ArrayList<>();
+
+        if (functionRef.getArguments() != null && !functionRef.getArguments().isEmpty()) {
+            functionRef.getArguments().fieldNames().forEachRemaining(payloadFields::add);
+        }
+        return payloadFields;
     }
 
     @Override
@@ -80,29 +102,13 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
             functionDef.getMetadata().forEach(node::metaData);
         }
 
-        Operation operation = Operation.parse(trimCustomOperation(functionDef));
-
         Supplier<Expression> requestTimeout = runtimeRestApi(functionDef, "timeout",
                 context.getContext(), String.class, DEFAULT_REQUEST_TIMEOUT_VALUE);
 
-        return node.workParameter(KnativeWorkItemHandler.SERVICE_PROPERTY_NAME, operation.getService())
-                .workParameter(KnativeWorkItemHandler.PATH_PROPERTY_NAME, operation.getPath())
-                .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
-                .workParameter(RestWorkItemHandler.PARAMS_DECORATOR, getParamsDecorator(operation).getName())
-                .workParameter(RestWorkItemHandler.METHOD, operation.getHttpMethod())
+        return node.workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
                 .workParameter(RestWorkItemHandler.REQUEST_TIMEOUT_IN_MILLIS, requestTimeout)
                 .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, RestWorkItemHandler.REST_TASK_TYPE)
                 .workName(KnativeWorkItemHandler.NAME);
-    }
-
-    private static Class<? extends ParamsDecorator> getParamsDecorator(Operation operation) {
-        if (operation.isCloudEvent()) {
-            return CloudEventKnativeParamsDecorator.class;
-        } else if (HttpMethod.GET.equals(operation.getHttpMethod())) {
-            return PrefixParamsDecorator.class;
-        } else {
-            return PlainJsonKnativeParamsDecorator.class;
-        }
     }
 
     @Override

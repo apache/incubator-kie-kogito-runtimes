@@ -18,7 +18,7 @@ package org.kogito.workitem.rest.decorators;
 public class PrefixParamsDecorator extends AbstractParamsDecorator {
 
     private static final String HEADER_PREFIX = "HEADER_";
-    public static final String QUERY_PREFIX = "QUERY_";
+    private static final String QUERY_PREFIX = "QUERY_";
 
     @Override
     protected boolean isHeaderParameter(String key) {
