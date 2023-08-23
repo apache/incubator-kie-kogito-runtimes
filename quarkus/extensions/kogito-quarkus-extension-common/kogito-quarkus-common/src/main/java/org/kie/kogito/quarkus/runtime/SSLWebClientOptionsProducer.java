@@ -18,10 +18,12 @@ package org.kie.kogito.quarkus.runtime;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.inject.Named;
 
 import io.quarkus.arc.DefaultBean;
 import io.vertx.ext.web.client.WebClientOptions;
 
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.sslQuarkusWebClientOptions;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.sslWebClientOptions;
 
 @ApplicationScoped
@@ -31,5 +33,11 @@ public class SSLWebClientOptionsProducer {
     @DefaultBean
     public WebClientOptions webClientOptions() {
         return sslWebClientOptions();
+    }
+
+    @Produces
+    @Named("quarkusWebClientOptions")
+    public WebClientOptions quarkusWebClientOptions() {
+        return sslQuarkusWebClientOptions();
     }
 }
