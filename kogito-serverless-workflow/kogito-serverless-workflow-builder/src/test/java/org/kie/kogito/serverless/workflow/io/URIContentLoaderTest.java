@@ -20,6 +20,7 @@ import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.Builder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -41,12 +42,13 @@ class URIContentLoaderTest {
 
     @Test
     void testNotExistingFile() {
-        assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(() -> readString(builder("file:/noPepe.txt")));
+        Builder builder = builder("file:/noPepe.txt");
+        assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(() -> readString(builder));
     }
 
     @Test
     void testNotExistingClasspath() {
-        assertThatIllegalArgumentException().isThrownBy(() -> readString(builder("classpath:/noPepe.txt")));
+        Builder builder = builder("classpath:/noPepe.txt");
+        assertThatIllegalArgumentException().isThrownBy(() -> readString(builder));
     }
-
 }

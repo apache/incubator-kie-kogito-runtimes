@@ -15,12 +15,17 @@
  */
 package org.kie.kogito.serverless.workflow.actions;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jbpm.workflow.core.WorkflowModelValidator;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,15 +37,18 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion.VersionFlag;
 import com.networknt.schema.ValidationMessage;
 
-public class JsonSchemaValidator implements WorkflowModelValidator {
+public class JsonSchemaValidator implements WorkflowModelValidator, Externalizable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaValidator.class);
 
-    protected final JsonNode jsonNode;
-    protected final boolean failOnValidationErrors;
-    private final AtomicReference<JsonSchema> schemaObject = new AtomicReference<>();
+    protected JsonNode jsonNode;
+    protected boolean failOnValidationErrors;
+    private transient final AtomicReference<JsonSchema> schemaObject = new AtomicReference<>();
+
+    public JsonSchemaValidator() {
+    }
 
     public JsonSchemaValidator(JsonNode jsonNode, boolean failOnValidationErrors) {
         this.jsonNode = jsonNode;
@@ -74,5 +82,17 @@ public class JsonSchemaValidator implements WorkflowModelValidator {
             schemaObject.set(result);
         }
         return result;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeBoolean(failOnValidationErrors);
+        out.writeUTF(ObjectMapperFactory.get().writeValueAsString(jsonNode));
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        this.failOnValidationErrors = in.readBoolean();
+        this.jsonNode = ObjectMapperFactory.get().readTree(in.readUTF());
     }
 }
