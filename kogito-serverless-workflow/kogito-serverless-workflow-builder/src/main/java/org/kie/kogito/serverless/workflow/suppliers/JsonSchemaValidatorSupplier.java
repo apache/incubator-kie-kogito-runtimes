@@ -27,6 +27,10 @@ public class JsonSchemaValidatorSupplier extends JsonSchemaValidator implements 
 
     private static final long serialVersionUID = 1L;
 
+    public JsonSchemaValidatorSupplier() {
+        // parent class implements Externalizable
+    }
+
     public JsonSchemaValidatorSupplier(JsonNode schema, boolean failOnValidationErrors) {
         super(schema, failOnValidationErrors);
     }

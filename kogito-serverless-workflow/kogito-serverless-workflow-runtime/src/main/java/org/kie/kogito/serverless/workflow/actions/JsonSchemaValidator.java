@@ -43,11 +43,13 @@ public class JsonSchemaValidator implements WorkflowModelValidator, Externalizab
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaValidator.class);
 
+    @SuppressWarnings("squid:S1948") // sonar apparently does not realize that if a class implements externalizable, it is not mandatory for all each attributes to be serializable
     protected JsonNode jsonNode;
     protected boolean failOnValidationErrors;
-    private transient final AtomicReference<JsonSchema> schemaObject = new AtomicReference<>();
+    private final transient AtomicReference<JsonSchema> schemaObject = new AtomicReference<>();
 
     public JsonSchemaValidator() {
+        // for serialization purposes
     }
 
     public JsonSchemaValidator(JsonNode jsonNode, boolean failOnValidationErrors) {
@@ -72,7 +74,7 @@ public class JsonSchemaValidator implements WorkflowModelValidator, Externalizab
 
     @Override
     public <T> Optional<T> schema(Class<T> clazz) {
-        return JsonNode.class.isAssignableFrom(clazz) ? Optional.of((T) getSchema().getSchemaNode()) : Optional.empty();
+        return JsonNode.class.isAssignableFrom(clazz) ? Optional.of(clazz.cast(getSchema().getSchemaNode())) : Optional.empty();
     }
 
     private JsonSchema getSchema() {
