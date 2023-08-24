@@ -93,7 +93,7 @@ public class JsonSchemaValidator implements WorkflowModelValidator, Externalizab
     }
 
     @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+    public void readExternal(ObjectInput in) throws IOException {
         this.failOnValidationErrors = in.readBoolean();
         this.jsonNode = ObjectMapperFactory.get().readTree(in.readUTF());
     }

@@ -31,7 +31,7 @@ public class FileNameWorkflowOperationIdFactory extends AbstractWorkflowOperatio
 
     @Override
     public String getFileName(Workflow workflow, FunctionDefinition function, Optional<ParserContext> context, URI uri, String operation, String service) {
-        return URIContentLoaderFactory.uriToPath(uri).getFileName().toString();
+        return URIContentLoaderFactory.getFileName(uri);
     }
 
     @Override

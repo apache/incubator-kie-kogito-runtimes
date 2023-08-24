@@ -27,7 +27,7 @@ public class FileContentLoader extends CachedContentLoader {
 
     FileContentLoader(URI uri) {
         super(uri);
-        this.path = getPath(uri);
+        this.path = Path.of(getPath(uri));
     }
 
     public Path getPath() {
@@ -48,7 +48,7 @@ public class FileContentLoader extends CachedContentLoader {
         }
     }
 
-    static Path getPath(URI uri) {
-        return Path.of(uri.getPath());
+    static String getPath(URI uri) {
+        return uri.getPath();
     }
 }

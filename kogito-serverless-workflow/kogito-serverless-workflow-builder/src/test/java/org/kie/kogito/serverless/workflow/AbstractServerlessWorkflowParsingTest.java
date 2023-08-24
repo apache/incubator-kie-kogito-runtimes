@@ -19,7 +19,6 @@ package org.kie.kogito.serverless.workflow;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URISyntaxException;
 import java.util.Objects;
 
 import org.junit.jupiter.api.AfterAll;
@@ -41,14 +40,14 @@ public abstract class AbstractServerlessWorkflowParsingTest {
         System.clearProperty("jbpm.enable.multi.con");
     }
 
-    protected Process getWorkflowParser(String workflowLocation) throws IOException, URISyntaxException {
+    protected Process getWorkflowParser(String workflowLocation) throws IOException {
         WorkflowFormat format = workflowLocation.endsWith(".sw.json") ? WorkflowFormat.JSON : WorkflowFormat.YAML;
         try (Reader reader = new InputStreamReader(Objects.requireNonNull(this.getClass().getResourceAsStream(workflowLocation),
                 "Required resource was no found: " + workflowLocation))) {
             ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(
                     reader,
                     format,
-                    JavaKogitoBuildContext.builder().build());
+                    JavaKogitoBuildContext.builder().build()).withBaseURI("classpath:" + workflowLocation);
             return parser.getProcessInfo().info();
         }
     }

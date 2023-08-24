@@ -220,7 +220,7 @@ public class ProcessCodegen extends AbstractGenerator {
             if (resource.hasURL()) {
                 parser.withBaseURI(resource.getURL());
             } else {
-                parser.withBaseURI("classpath:/" + resource.getSourcePath());
+                parser.withBaseURI("classpath:" + resource.getSourcePath());
             }
             return parser.getProcessInfo();
         } catch (Exception e) {

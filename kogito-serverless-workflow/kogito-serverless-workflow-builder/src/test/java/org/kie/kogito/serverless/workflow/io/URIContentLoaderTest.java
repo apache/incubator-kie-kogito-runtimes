@@ -17,6 +17,7 @@ package org.kie.kogito.serverless.workflow.io;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.builder;
+import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.compoundURI;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readString;
 
 class URIContentLoaderTest {
@@ -50,5 +52,17 @@ class URIContentLoaderTest {
     void testNotExistingClasspath() {
         Builder builder = builder("classpath:/noPepe.txt");
         assertThatIllegalArgumentException().isThrownBy(() -> readString(builder));
+    }
+
+    @Test
+    void testCompoundURI() {
+        assertThat(compoundURI(URI.create("classpath:pepe.json"), URI.create("pepa.json"))).isEqualTo(URI.create("classpath:/pepa.json"));
+        assertThat(compoundURI(URI.create("classpath:pepe.json"), URI.create("file:///pepa.json"))).isEqualTo(URI.create("file:///pepa.json"));
+        assertThat(compoundURI(URI.create("classpath:schema/pepe.json"), URI.create("/pepa.json"))).isEqualTo(URI.create("classpath:/pepa.json"));
+        assertThat(compoundURI(URI.create("classpath:schema/pepe.json"), URI.create("pepa.json"))).isEqualTo(URI.create("classpath:/schema/pepa.json"));
+        assertThat(compoundURI(URI.create("pepe.json"), URI.create("pepa.json"))).isEqualTo(URI.create("file:///pepa.json"));
+        assertThat(compoundURI(URI.create("schema/pepe.json"), URI.create("pepa.json"))).isEqualTo(URI.create("file:///schema/pepa.json"));
+        assertThat(compoundURI(URI.create("schema/pepe.json"), URI.create("/pepa.json"))).isEqualTo(URI.create("file:///pepa.json"));
+        assertThat(compoundURI(URI.create("pepe.json"), URI.create("classpath:pepa.json"))).isEqualTo(URI.create("classpath:pepa.json"));
     }
 }

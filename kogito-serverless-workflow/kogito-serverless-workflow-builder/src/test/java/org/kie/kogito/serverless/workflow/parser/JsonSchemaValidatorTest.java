@@ -62,7 +62,6 @@ public class JsonSchemaValidatorTest {
                 assertThatNoException().isThrownBy(() -> newValidator.validate(model));
             }
         }
-
     }
 
     @Test

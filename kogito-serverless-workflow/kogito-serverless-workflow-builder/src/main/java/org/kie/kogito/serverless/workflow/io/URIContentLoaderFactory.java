@@ -15,12 +15,11 @@
  */
 package org.kie.kogito.serverless.workflow.io;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
@@ -47,15 +46,21 @@ public class URIContentLoaderFactory {
         return new String(readAllBytes(loader));
     }
 
-    public static Path uriToPath(URI uri) {
-        switch (URIContentLoaderType.from(uri)) {
+    public static String getFileName(URI uri) {
+        URIContentLoaderType type = URIContentLoaderType.from(uri);
+        String path = uriToPath(type, uri);
+        return type.lastPart(path);
+    }
+
+    private static String uriToPath(URIContentLoaderType type, URI uri) {
+        switch (type) {
             case CLASSPATH:
-                return Path.of(ClassPathContentLoader.getPath(uri));
+                return ClassPathContentLoader.getPath(uri);
             case FILE:
                 return FileContentLoader.getPath(uri);
             case HTTP:
             default:
-                return Path.of(uri.getPath());
+                return uri.getPath();
         }
     }
 
@@ -118,7 +123,7 @@ public class URIContentLoaderFactory {
         }
 
         public URIContentLoader build() {
-            if (uri.getScheme() == null && baseURI != null) {
+            if (baseURI != null) {
                 uri = compoundURI(baseURI, uri);
             }
             switch (URIContentLoaderType.from(uri)) {
@@ -134,23 +139,23 @@ public class URIContentLoaderFactory {
     }
 
     public static URI compoundURI(URI baseURI, URI uri) {
-        char separator;
-        switch (URIContentLoaderType.from(uri)) {
-            case HTTP:
-            case CLASSPATH:
-                separator = '/';
-                break;
-            case FILE:
-            default:
-                separator = File.separatorChar;
-                break;
+        if (uri.getScheme() != null) {
+            return uri;
         }
-        String result = baseURI.toString();
-        int lastIndexOf = result.lastIndexOf(separator);
-        if (lastIndexOf != -1) {
-            result = result.substring(0, lastIndexOf);
+        URIContentLoaderType type = URIContentLoaderType.from(baseURI);
+        String basePath = type.trimLast(uriToPath(type, baseURI));
+        String additionalPath = uriToPath(type, uri);
+        String path;
+        if (type.isAbsolutePath(additionalPath)) {
+            path = additionalPath;
+        } else {
+            path = type.concat(basePath, additionalPath);
         }
-        return URI.create(result.concat(separator + uri.toString()));
+        try {
+            return new URI(type.toString().toLowerCase(), baseURI.getAuthority(), path, uri.getQuery(), uri.getFragment());
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
     }
 
     private URIContentLoaderFactory() {
