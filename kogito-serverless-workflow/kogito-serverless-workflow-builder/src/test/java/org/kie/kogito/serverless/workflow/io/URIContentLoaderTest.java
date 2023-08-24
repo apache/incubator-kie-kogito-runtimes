@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.serverless.workflow.io;
 
-import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,13 +32,13 @@ import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.read
 class URIContentLoaderTest {
 
     @Test
-    void testExistingFile() throws IOException, URISyntaxException {
+    void testExistingFile() throws URISyntaxException {
         assertThat(readString(builder(Thread.currentThread().getContextClassLoader().getResource("pepe.txt").toURI()))).isEqualTo("my name is javierito");
     }
 
     @Test
-    void testExistingClasspath() throws IOException {
-        assertThat(new String(readString(builder("classpath:pepe.txt")))).isEqualTo("my name is javierito");
+    void testExistingClasspath() {
+        assertThat(readString(builder("classpath:pepe.txt"))).isEqualTo("my name is javierito");
     }
 
     @Test

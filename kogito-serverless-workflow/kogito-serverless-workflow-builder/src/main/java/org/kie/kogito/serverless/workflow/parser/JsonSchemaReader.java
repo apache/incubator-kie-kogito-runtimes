@@ -27,7 +27,6 @@ import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.DEFS_PREFIX;
@@ -56,7 +55,7 @@ class JsonSchemaReader {
 
         private static String getId(JsonNode schemaContent, Counter counter) {
             JsonNode title = schemaContent.get("title");
-            return title != null ? title.asText() + "_" + Integer.toString(counter.next()) : "nested_" + Integer.toString(counter.next());
+            return title != null ? title.asText() + "_" + counter.next() : "nested_" + counter.next();
         }
     }
 
@@ -88,7 +87,7 @@ class JsonSchemaReader {
 
     private static void replaceRefsWithDefs(JsonNode node, URI baseURI, Map<String, JsonSchema> schemas, Counter counter) {
         if (node.isArray()) {
-            ((ArrayNode) node).elements().forEachRemaining(n -> replaceRefsWithDefs(n, baseURI, schemas, counter));
+            node.elements().forEachRemaining(n -> replaceRefsWithDefs(n, baseURI, schemas, counter));
         } else if (node.isObject()) {
             ObjectNode objectNode = (ObjectNode) node;
             JsonNode refNode = objectNode.get("$ref");

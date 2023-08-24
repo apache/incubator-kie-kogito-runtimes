@@ -16,7 +16,6 @@
 package org.kie.kogito.serverless.workflow.executor;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 
@@ -57,7 +56,7 @@ class OpenAPIWorkflowApplicationTest {
     }
 
     @Test
-    void openAPIInvocation() throws IOException, URISyntaxException {
+    void openAPIInvocation() throws IOException {
         final double fahrenheit = 100;
         final double difference = fahrenheit - 32.0;
         final double product = difference * 0.5556;
