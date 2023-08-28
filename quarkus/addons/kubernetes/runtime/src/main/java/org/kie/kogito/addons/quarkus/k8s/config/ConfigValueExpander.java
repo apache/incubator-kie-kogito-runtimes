@@ -15,14 +15,24 @@
  */
 package org.kie.kogito.addons.quarkus.k8s.config;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import io.smallrye.config.ConfigValue;
+import org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol;
 
 class ConfigValueExpander {
 
-    private static final Pattern placeholderPattern = Pattern.compile("\\$\\{([^}]+)}");
+    private static final Pattern placeholderPattern = createPlaceholderPattern();
+
+    private static Pattern createPlaceholderPattern() {
+        String protocols = Arrays.stream(KubernetesProtocol.values())
+                .map(KubernetesProtocol::getValue)
+                .collect(Collectors.joining("|"));
+        return Pattern.compile("\\$\\{(" + protocols + "):.+}");
+    }
 
     private final KubeDiscoveryConfigCache kubeDiscoveryConfigCache;
 
