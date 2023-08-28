@@ -28,31 +28,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConfigValueExpanderTest {
 
     @ParameterizedTest
-    @ValueSource(strings = { "kubernetes:pods.v1/kie/kogito", "openshift:pods.v1/kie/kogito", "knative:kie/kogito" })
+    @ValueSource(strings = { "${kubernetes:pods.v1/kie/kogito}/path", "${openshift:pods.v1/kie/kogito}/path", "${knative:kie/kogito}/path" })
     void expandable(String expandableValues) {
-        String expectedValue = "https://localhost/8080";
+        String expectedUrl = "https://localhost/8080";
+        String expectedValue = expectedUrl + "/path";
 
-        ConfigValueExpander expander = new ConfigValueExpander(new FakeKubeDiscoveryConfigCache(expectedValue));
+        ConfigValueExpander expander = new ConfigValueExpander(new FakeKubeDiscoveryConfigCache(expectedUrl));
 
         ConfigValue configValue = ConfigValue.builder()
-                .withValue(expandableValues)
+                .withRawValue(expandableValues)
                 .build();
 
         assertThat(expander.expand(configValue).getValue())
                 .isEqualTo(expectedValue);
     }
 
-    @Test
-    void nonExpandable() {
-        String nonExpandableValue = "https://localhost/8080";
-
+    @ParameterizedTest
+    @ValueSource(strings = { "https://localhost/8080", "kubernetes:pods.v1/kie/kogito", "openshift:pods.v1/kie/kogito", "knative:kie/kogito" })
+    void nonExpandable(String nonExpandableValue) {
         ConfigValueExpander expander = new ConfigValueExpander(new FakeKubeDiscoveryConfigCache("should not be returned"));
 
         ConfigValue configValue = ConfigValue.builder()
-                .withValue(nonExpandableValue)
+                .withRawValue(nonExpandableValue)
                 .build();
 
-        assertThat(expander.expand(configValue).getValue())
+        assertThat(expander.expand(configValue).getRawValue())
                 .isEqualTo(nonExpandableValue);
     }
 
@@ -61,7 +61,7 @@ class ConfigValueExpanderTest {
         ConfigValueExpander expander = new ConfigValueExpander(new FakeKubeDiscoveryConfigCache("should not be returned"));
 
         ConfigValue configValue = ConfigValue.builder()
-                .withValue(null)
+                .withRawValue(null)
                 .build();
 
         assertThat(expander.expand(configValue).getValue())

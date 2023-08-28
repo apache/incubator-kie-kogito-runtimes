@@ -15,11 +15,14 @@
  */
 package org.kie.kogito.addons.quarkus.k8s.config;
 
-import org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.smallrye.config.ConfigValue;
 
 class ConfigValueExpander {
+
+    private static final Pattern placeholderPattern = Pattern.compile("\\$\\{([^}]+)}");
 
     private final KubeDiscoveryConfigCache kubeDiscoveryConfigCache;
 
@@ -28,22 +31,30 @@ class ConfigValueExpander {
     }
 
     ConfigValue expand(ConfigValue configValue) {
-        if (configValue == null || !valueContainsDiscovery(configValue)) {
-            return configValue;
-        }
-
-        return kubeDiscoveryConfigCache.get(configValue.getName(), configValue.getValue())
-                .map(configValue::withValue)
-                .orElse(configValue);
-    }
-
-    private boolean valueContainsDiscovery(ConfigValue configValue) {
-        for (KubernetesProtocol protocol : KubernetesProtocol.values()) {
-            String value = configValue.getValue();
-            if (value != null && value.startsWith(protocol.getValue() + ":")) {
-                return true;
+        if (configValue != null && configValue.getRawValue() != null) {
+            String serviceCoordinates = extractServiceCoordinates(configValue.getRawValue());
+            if (serviceCoordinates != null) {
+                return kubeDiscoveryConfigCache.get(configValue.getName(), serviceCoordinates)
+                        .map(value -> interpolate(configValue.getRawValue(), value))
+                        .map(configValue::withValue)
+                        .orElse(configValue);
             }
         }
-        return false;
+
+        return configValue;
+    }
+
+    public static String interpolate(String input, String replacement) {
+        return placeholderPattern.matcher(input).replaceAll(replacement);
+    }
+
+    private static String extractServiceCoordinates(String rawValue) {
+        Matcher matcher = placeholderPattern.matcher(rawValue);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return null;
+        }
     }
 }
