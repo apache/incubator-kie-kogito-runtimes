@@ -56,24 +56,29 @@ mvn:
 	$(mvn_cmd) ${cmd}
 
 ## Update the quarkus version. Needs the `quarkus_version` argument set
+.PHONY: update-quarkus
 update-quarkus:
 	export BUILD_MVN_OPTS=${mvn_opts} && .ci/environments/common/update_quarkus.sh ${quarkus_version}
 	$(MAKE) show-diff
 
 ## Prepare the repository for a specific environment. Needs the `environment` argument set
+.PHONY: prepare-env
 prepare-env:
     export BUILD_MVN_OPTS=${mvn_opts} && .ci/environments/update.sh ${environment}
 
 ## Show project dependencies
+.PHONY: tree
 tree:
 	$(mvn_cmd) dependency:tree
 
 ## Show Git diff
+.PHONY: show-diff
 show-diff:
 	git status
 	git diff
 
 ## This help screen
+.PHONY: help
 help:
 	@printf "Available targets:\n\n"
 	@awk '/^[a-zA-Z\-_0-9%:\\]+/ { \
@@ -91,5 +96,6 @@ help:
 	@printf "All Maven commands can include some maven options via the \`mvn_opts\` argument !"
 	@printf "\n"
 
+.PHONY: build-chain
 build-chain:
 	which build-chain || npm i @kie/build-chain-action -g || printf "\nERROR: Cannot install build-chain. Please run \`npm i @kie/build-chain-action -g\` as sudo user\n"
