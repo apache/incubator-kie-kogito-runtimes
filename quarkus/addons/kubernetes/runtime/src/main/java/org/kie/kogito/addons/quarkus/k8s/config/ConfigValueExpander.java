@@ -20,8 +20,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import io.smallrye.config.ConfigValue;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol;
+
+import io.smallrye.config.ConfigValue;
 
 class ConfigValueExpander {
 
