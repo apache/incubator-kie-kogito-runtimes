@@ -105,6 +105,11 @@
       <groupId>io.quarkiverse.openapi.generator</groupId>
       <artifactId>quarkus-openapi-generator</artifactId>
     </dependency>
+    <!-- required to openapi with security -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-oidc-client-filter</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.quarkiverse.asyncapi</groupId>
       <artifactId>quarkus-asyncapi</artifactId>
