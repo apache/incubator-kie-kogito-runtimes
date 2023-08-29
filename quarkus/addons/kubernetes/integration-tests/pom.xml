@@ -84,6 +84,11 @@
             <artifactId>kogito-quarkus-workflow-common-deployment</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-quarkus-messaging-deployment</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <pluginManagement>
