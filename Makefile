@@ -19,16 +19,16 @@ build-quickly:
 	$(mvn_cmd) clean install -Dquickly
 
 .PHONY: build-upstream
-## Build (build-chain) upstream projects from the same branch. If needed, you can modify the `build_chain_file`, `build_chain_group` and `build_chain_branch` if needed.
+## (build-chain) Build upstream projects from the same branch. If needed, you can modify the `build_chain_file`, `build_chain_group` and `build_chain_branch`. See `build_chain_file` for setting correct environment variables
 build-upstream: build-chain
-	export BUILD_MVN_OPTS="${mvn_opts}" && build-chain build cross_pr -f ${build_chain_file} -o /tmp/bc -p ${build_chain_project} -b ${build_chain_branch} -g ${build_chain_group} --skipParallelCheckout --skipProjectExecution kiegroup/kogito-runtimes --skipProjectCheckout kiegroup/kogito-runtimes
+	build-chain build cross_pr -f ${build_chain_file} -o /tmp/bc -p ${build_chain_project} -b ${build_chain_branch} -g ${build_chain_group} --skipParallelCheckout --skipProjectExecution kiegroup/kogito-runtimes --skipProjectCheckout kiegroup/kogito-runtimes
 
 .PHONY: build-pr
 pr_link=
-## Build (build-chain) projects from a given `pr_link` argument. If needed, you can also modify the `build_chain_file` and `build_chain_project` if needed.
+## (build-chain) Build projects from a given `pr_link` argument. If needed, you can also modify the `build_chain_file` and `build_chain_project`. See `build_chain_file` for setting correct environment variables
 build-pr: build-chain
 	$(if $(pr_link),,$(error Please provide the 'pr_link' argument))
-	export BUILD_MVN_OPTS=${mvn_opts} && build-chain build cross_pr -f ${build_chain_file} -o /tmp/bc -p ${build_chain_project} -u ${pr_link} --skipParallelCheckout
+	build-chain build cross_pr -f ${build_chain_file} -o /tmp/bc -p ${build_chain_project} -u ${pr_link} --skipParallelCheckout
 
 .PHONY: test
 ## Launch full testing
@@ -55,30 +55,30 @@ clean:
 mvn:
 	$(mvn_cmd) ${cmd}
 
-## Update the quarkus version. Needs the `quarkus_version` argument set
 .PHONY: update-quarkus
+## Update the quarkus version. Needs the `quarkus_version` argument set. See also '.ci/environments/common/update_quarkus.sh' for setting correct environment variables
 update-quarkus:
-	export BUILD_MVN_OPTS=${mvn_opts} && .ci/environments/common/update_quarkus.sh ${quarkus_version}
+	.ci/environments/common/update_quarkus.sh ${quarkus_version}
 	$(MAKE) show-diff
 
-## Prepare the repository for a specific environment. Needs the `environment` argument set
 .PHONY: prepare-env
+## Prepare the repository for a specific environment. Needs the `environment` argument set. See also '.ci/environments/{environment}' script for setting correct environment variables
 prepare-env:
-    export BUILD_MVN_OPTS=${mvn_opts} && .ci/environments/update.sh ${environment}
+	.ci/environments/update.sh ${environment}
 
-## Show project dependencies
 .PHONY: tree
+## Show project dependencies
 tree:
 	$(mvn_cmd) dependency:tree
 
-## Show Git diff
 .PHONY: show-diff
+## Show Git diff
 show-diff:
 	git status
 	git diff
 
-## This help screen
 .PHONY: help
+## This help screen
 help:
 	@printf "Available targets:\n\n"
 	@awk '/^[a-zA-Z\-_0-9%:\\]+/ { \
