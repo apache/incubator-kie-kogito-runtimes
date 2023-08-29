@@ -15,6 +15,10 @@
  */
 package org.kie.kogito.addons.quarkus.k8s.config;
 
+import java.util.Arrays;
+
+import org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol;
+
 import io.smallrye.config.ConfigValue;
 
 class ConfigValueExpander {
@@ -51,9 +55,17 @@ class ConfigValueExpander {
         int endIndex = rawValue.indexOf("}", startIndex);
 
         if (startIndex != -1 && endIndex != -1) {
-            return rawValue.substring(startIndex + 2, endIndex);
-        } else {
-            return null;
+            String substring = rawValue.substring(startIndex + 2, endIndex);
+
+            boolean isKubernetesServiceCoordinate = Arrays.stream(KubernetesProtocol.values())
+                    .map(KubernetesProtocol::getValue)
+                    .anyMatch(protocol -> substring.startsWith(protocol + ":"));
+
+            if (isKubernetesServiceCoordinate) {
+                return substring;
+            }
         }
+
+        return null;
     }
 }

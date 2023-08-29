@@ -61,7 +61,7 @@ class ConfigValueExpanderTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "https://localhost/8080", "kubernetes:pods.v1/kie/kogito", "openshift:pods.v1/kie/kogito", "knative:kie/kogito" })
+    @ValueSource(strings = { "https://localhost/8080", "kubernetes:pods.v1/kie/kogito", "openshift:pods.v1/kie/kogito", "knative:kie/kogito", "${something}" })
     void nonExpandable(String nonExpandableValue) {
         ConfigValueExpander expander = new ConfigValueExpander(new FakeKubeDiscoveryConfigCache("should not be returned"));
 
