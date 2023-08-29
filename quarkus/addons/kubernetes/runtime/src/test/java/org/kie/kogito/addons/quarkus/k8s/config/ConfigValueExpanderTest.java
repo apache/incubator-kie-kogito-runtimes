@@ -16,9 +16,12 @@
 package org.kie.kogito.addons.quarkus.k8s.config;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import io.smallrye.config.ConfigValue;
@@ -26,6 +29,20 @@ import io.smallrye.config.ConfigValue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ConfigValueExpanderTest {
+
+    static Stream<Arguments> extractServiceCoordinatesSource() {
+        return Stream.of(
+                Arguments.of("${kubernetes:pods.v1/kie/kogito}/path", "kubernetes:pods.v1/kie/kogito"),
+                Arguments.of("${knative:services.v1.serving.knative.dev/default/serverless-workflow-greeting-quarkus}/path",
+                        "knative:services.v1.serving.knative.dev/default/serverless-workflow-greeting-quarkus"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("extractServiceCoordinatesSource")
+    void extractServiceCoordinates(String expandableValue, String expectedCoordinate) {
+        assertThat(ConfigValueExpander.extractServiceCoordinates(expandableValue))
+                .isEqualTo(expectedCoordinate);
+    }
 
     @ParameterizedTest
     @ValueSource(strings = { "${kubernetes:pods.v1/kie/kogito}/path", "${openshift:pods.v1/kie/kogito}/path", "${knative:kie/kogito}/path" })

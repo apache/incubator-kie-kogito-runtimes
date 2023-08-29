@@ -15,25 +15,9 @@
  */
 package org.kie.kogito.addons.quarkus.k8s.config;
 
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol;
-
 import io.smallrye.config.ConfigValue;
 
 class ConfigValueExpander {
-
-    private static final Pattern placeholderPattern = createPlaceholderPattern();
-
-    private static Pattern createPlaceholderPattern() {
-        String protocols = Arrays.stream(KubernetesProtocol.values())
-                .map(KubernetesProtocol::getValue)
-                .collect(Collectors.joining("|"));
-        return Pattern.compile("\\$\\{(" + protocols + "):.+}");
-    }
 
     private final KubeDiscoveryConfigCache kubeDiscoveryConfigCache;
 
@@ -56,14 +40,18 @@ class ConfigValueExpander {
     }
 
     public static String interpolate(String input, String replacement) {
-        return placeholderPattern.matcher(input).replaceAll(replacement);
+        int startIndex = input.indexOf("${");
+        int endIndex = input.indexOf("}", startIndex);
+
+        return input.substring(0, startIndex) + replacement + input.substring(endIndex + 1);
     }
 
-    private static String extractServiceCoordinates(String rawValue) {
-        Matcher matcher = placeholderPattern.matcher(rawValue);
+    static String extractServiceCoordinates(String rawValue) {
+        int startIndex = rawValue.indexOf("${");
+        int endIndex = rawValue.indexOf("}", startIndex);
 
-        if (matcher.find()) {
-            return matcher.group(1);
+        if (startIndex != -1 && endIndex != -1) {
+            return rawValue.substring(startIndex + 2, endIndex);
         } else {
             return null;
         }
