@@ -4,8 +4,7 @@ pr_check_script = null
 
 pipeline {
     agent {
-        // TODO to change to Apache ones after tests
-        label "${env.ADDITIONAL_LABEL?.trim() ?: 'kie-rhel8 && docker && kie-mem16g'} && !built-in"
+        label env.ADDITIONAL_LABEL?.trim() ?: 'ubuntu'
     }
     options {
         timestamps()
