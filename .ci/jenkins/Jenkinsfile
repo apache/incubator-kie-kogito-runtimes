@@ -1,0 +1,39 @@
+@Library('jenkins-pipeline-shared-libraries')_
+
+pr_check_script = null
+
+pipeline {
+    agent {
+        // TODO to change to Apache ones after tests
+        label "${env.ADDITIONAL_LABEL?.trim() ?: 'kie-rhel8-priority'} && !built-in"
+    }
+    tools { // TODO should be removed once using docker image
+        nodejs 'nodejs-16.2.0'
+        jdk 'kie-jdk11'
+        maven 'kie-maven-3.8.7'
+    }
+    options {
+        timestamps()
+        timeout(time: env.ADDITIONAL_TIMEOUT?.trim() ?: '180', unit: 'MINUTES')
+    }
+    stages {
+        stage('Initialize') {
+            steps {
+                script {
+                    // load `pr_check.groovy` file from kogito-pipelines:main
+                    dir('kogito-pipelines') {
+                        checkout(githubscm.resolveRepository('kogito-pipelines', 'radtriste', 'apache_migration_test', false, 'kie-ci')) // TODO to change back to kiegroup:main
+                        pr_check_script = load 'dsl/scripts/pr_check.groovy'
+                    }
+                }
+            }
+        }
+        stage('PR check') {
+            steps {
+                script {
+                    pr_check_script.launch()
+                }
+            }
+        }
+    }
+}
