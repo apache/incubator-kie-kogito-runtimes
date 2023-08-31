@@ -35,7 +35,7 @@ public class HelloModel implements Model, MapInput, MapInputId, MapOutput {
 
     @org.kie.kogito.codegen.VariableInfo(tags = "")
     @com.fasterxml.jackson.annotation.JsonProperty(value = "person")
-    @javax.validation.Valid()
+    @jakarta.validation.Valid()
     private Person person;
 
     public Person getPerson() {
@@ -48,7 +48,7 @@ public class HelloModel implements Model, MapInput, MapInputId, MapOutput {
 
     @org.kie.kogito.codegen.VariableInfo(tags = "")
     @com.fasterxml.jackson.annotation.JsonProperty(value = "var2")
-    @javax.validation.Valid()
+    @jakarta.validation.Valid()
     private String var2;
 
     public String getVar2() {
@@ -61,7 +61,7 @@ public class HelloModel implements Model, MapInput, MapInputId, MapOutput {
 
     @org.kie.kogito.codegen.VariableInfo(tags = "")
     @com.fasterxml.jackson.annotation.JsonProperty(value = "var1")
-    @javax.validation.Valid()
+    @jakarta.validation.Valid()
     private String var1;
 
     public String getVar1() {

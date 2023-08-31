@@ -38,7 +38,7 @@ public final class KnativeResourceDiscoveryTestUtil {
             Service service = knativeClient.services()
                     .inNamespace(namespace)
                     .load(getResourceAsStream(knativeYaml))
-                    .get();
+                    .item();
 
             if (remoteServiceUrl != null) {
                 service.getStatus().setUrl(remoteServiceUrl);
