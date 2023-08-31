@@ -31,7 +31,9 @@ pipeline {
         stage('PR check') {
             steps {
                 script {
-                    pr_check_script.launch()
+                    dir('kogito-pipelines') {
+                        pr_check_script.launch()
+                    }
                 }
             }
         }
