@@ -16,28 +16,32 @@
 package org.kie.kogito;
 
 import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class Models {
-
-    private static final ObjectMapper mapper = JsonMapper.builder()
-            .disable(MapperFeature.AUTO_DETECT_CREATORS, MapperFeature.AUTO_DETECT_FIELDS, MapperFeature.AUTO_DETECT_GETTERS, MapperFeature.AUTO_DETECT_IS_GETTERS)
-            .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-            .build();
 
     private Models() {
     }
 
     public static Map<String, Object> toMap(Object m) {
-        return mapper.convertValue(m, new TypeReference<Map<String, Object>>() {
-        });
+        Map<String, Object> map = new LinkedHashMap<>();
+        for (Field field : m.getClass().getDeclaredFields()) {
+            JsonProperty jsonAnnotation = field.getAnnotation(JsonProperty.class);
+            if (jsonAnnotation != null) {
+                String name = jsonAnnotation.value();
+                field.setAccessible(true);
+                try {
+                    map.put(name, field.get(m));
+                } catch (ReflectiveOperationException e) {
+                    throw new ReflectiveModelAccessException(e);
+                }
+
+            }
+        }
+        return map;
     }
 
     public static <T> T fromMap(T m, String id, Map<String, Object> map) {
@@ -61,10 +65,6 @@ public class Models {
             }
         }
         return m;
-    }
-
-    public static <T> T fromMap(Class<T> cls, Map<String, Object> map) {
-        return mapper.convertValue(map, cls);
     }
 
     public static void setId(Object m, String id) {
