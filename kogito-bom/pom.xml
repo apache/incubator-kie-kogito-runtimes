@@ -331,7 +331,6 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-addons-quarkus-fabric8-kubernetes-service-catalog-deployment</artifactId>
             <version>${project.version}</version>
-            <type>pom</type>
         </dependency>
 
       <dependency>
@@ -2311,6 +2310,28 @@
       <!-- Data Index extension -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-common-runtime</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-common-runtime</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-common-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-common-deployment</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-addons-quarkus-data-index-common-runtime</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2328,6 +2349,28 @@
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-addons-quarkus-data-index-common-deployment</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-postgresql</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-postgresql</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-postgresql-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-postgresql-deployment</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -2394,6 +2437,28 @@
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-addons-quarkus-data-index-infinispan-deployment</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-infinispan</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-infinispan</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-infinispan-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-data-index-persistence-infinispan-deployment</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>

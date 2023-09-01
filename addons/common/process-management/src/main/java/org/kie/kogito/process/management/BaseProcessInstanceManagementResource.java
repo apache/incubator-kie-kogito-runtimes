@@ -40,8 +40,6 @@ import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-
 public abstract class BaseProcessInstanceManagementResource<T> implements ProcessInstanceManagement<T> {
 
     private static final String PROCESS_REQUIRED = "Process id must be given";
@@ -76,7 +74,15 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             data.put("version", process.version());
             if (process instanceof Supplier) {
                 org.kie.api.definition.process.Process processDefinition = ((Supplier<org.kie.api.definition.process.Process>) process).get();
-                data.put("description", processDefinition.getMetaData().get(Metadata.DESCRIPTION));
+                Map<String, Object> metadata = processDefinition.getMetaData();
+                String description = (String) metadata.get(Metadata.DESCRIPTION);
+                if (description != null) {
+                    data.put("description", description);
+                }
+                List<String> annotations = (List<String>) metadata.get(Metadata.ANNOTATIONS);
+                if (annotations != null) {
+                    data.put("annotations", annotations);
+                }
                 if (processDefinition instanceof WorkflowProcess) {
                     WorkflowProcess workflowProcess = (WorkflowProcess) processDefinition;
                     workflowProcess.getInputValidator().flatMap(v -> v.schema(JsonNode.class)).ifPresent(s -> data.put("inputSchema", s));
@@ -94,7 +100,8 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
                 Map<String, Object> data = new HashMap<>();
                 data.put("id", n.getId());
                 data.put("uniqueId", ((Node) n).getUniqueId());
-                data.put("nodeDefinitionId", n.getMetaData().get(UNIQUE_ID));
+                data.put("nodeDefinitionId", n.getMetaData().get(Metadata.UNIQUE_ID));
+                data.put("metadata", n.getMetaData());
                 data.put("type", n.getClass().getSimpleName());
                 data.put("name", n.getName());
                 return data;
