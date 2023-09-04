@@ -18,8 +18,7 @@ package org.kie.kogito.test.resources;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

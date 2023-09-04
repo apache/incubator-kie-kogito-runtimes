@@ -15,7 +15,7 @@
  */
 package io.quarkus.it.kogito.process;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * HotReloadTestHelper
