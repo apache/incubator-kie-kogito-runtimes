@@ -12,7 +12,7 @@ index 8ee023830e..b495cd9857 100644
      <version.org.springframework.cloud.kubernetes.fabric8>3.0.2</version.org.springframework.cloud.kubernetes.fabric8>
      <!-- CVE-2022-25857: Upgrading snakeyaml until we upgrade to Spring Boot 3.x -->
      <!-- See: https://github.com/spring-projects/spring-boot/issues/32221 -->
-+    <version.org.springframework.security>1.0.2</version.org.springframework.security>
++    <version.org.springframework.security>1.1.2</version.org.springframework.security>
    </properties>
    
    <dependencyManagement>
