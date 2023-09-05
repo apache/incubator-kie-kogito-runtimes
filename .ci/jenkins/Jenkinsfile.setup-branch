@@ -8,7 +8,7 @@ dataIndexEphemeralImageName = 'quay.io/kiegroup/kogito-data-index-ephemeral'
 
 pipeline {
     agent {
-        label 'kie-rhel8 && !built-in'
+        label 'ubuntu'
     }
 
     tools {
