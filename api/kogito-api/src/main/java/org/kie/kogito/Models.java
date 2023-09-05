@@ -26,6 +26,7 @@ public class Models {
     private Models() {
     }
 
+    @SuppressWarnings("squid:S3011")
     public static Map<String, Object> toMap(Object m) {
         Map<String, Object> map = new LinkedHashMap<>();
         for (Field field : m.getClass().getDeclaredFields()) {
@@ -38,7 +39,6 @@ public class Models {
                 } catch (ReflectiveOperationException e) {
                     throw new ReflectiveModelAccessException(e);
                 }
-
             }
         }
         return map;
@@ -49,6 +49,7 @@ public class Models {
         return fromMap(m, map);
     }
 
+    @SuppressWarnings("squid:S3011")
     public static <T> T fromMap(T m, Map<String, Object> map) {
         for (Field field : m.getClass().getDeclaredFields()) {
             JsonProperty jsonAnnotation = field.getAnnotation(JsonProperty.class);
