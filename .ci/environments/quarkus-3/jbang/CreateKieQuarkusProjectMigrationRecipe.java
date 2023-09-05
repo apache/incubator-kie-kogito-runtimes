@@ -21,7 +21,7 @@ import picocli.CommandLine.Option;
 
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 // Version to be changed when needed
-//DEPS io.quarkus:quarkus-devtools-common:3.0.0.Final
+//DEPS io.quarkus:quarkus-devtools-common:3.2.5.Final
 //DEPS info.picocli:picocli:4.5.0
 
 /*
