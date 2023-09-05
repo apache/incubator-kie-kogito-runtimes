@@ -20,16 +20,16 @@ displayName: All Quarkus 3 Migration for Kogito Runtimes project
 recipeList: 
   - org.openrewrite.maven.ChangePropertyValue:
       key: version.org.springframework.boot
-      newValue: 3.0.5
+      newValue: 3.1.3
   - org.openrewrite.maven.ChangePropertyValue:
       key: version.org.springframework.cloud.kubernetes.fabric8
-      newValue: 3.0.2
+      newValue: 3.0.4
   - org.openrewrite.maven.ChangePropertyValue:
       key: version.ch.qos.logback
       newValue: 1.4.7
   - org.openrewrite.maven.ChangePropertyValue:
       key: version.org.keycloak
-      newValue: 21.0.1
+      newValue: 22.0.1
   # TODO to update once sdk-java provides a library compatible with jakarta
   # cf https://github.com/serverlessworkflow/sdk-java/issues/225
 #   - org.openrewrite.maven.ChangePropertyValue:
@@ -37,7 +37,7 @@ recipeList:
 #       newValue: 4.0.4.Final
   - org.openrewrite.maven.ChangePropertyValue:
       key: version.com.github.javaparser
-      newValue: 3.25.1
+      newValue: 3.25.3
   # TODO to update to Final version once available
   - org.openrewrite.maven.ChangePropertyValue:
       key: version.io.quarkus.camel
@@ -71,7 +71,7 @@ recipeList:
   # Update infinispan libs to jakarta one
   - org.openrewrite.maven.ChangePropertyValue:
       key: version.org.infinispan
-      newValue: 14.0.7.Final
+      newValue: 14.0.11.Final
   - org.openrewrite.maven.ChangeManagedDependencyGroupIdAndArtifactId:
       oldGroupId: org.infinispan
       oldArtifactId: infinispan-core
