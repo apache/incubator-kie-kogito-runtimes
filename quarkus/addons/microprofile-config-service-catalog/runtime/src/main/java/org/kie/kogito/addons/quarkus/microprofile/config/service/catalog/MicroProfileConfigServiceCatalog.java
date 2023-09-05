@@ -18,8 +18,8 @@ package org.kie.kogito.addons.quarkus.microprofile.config.service.catalog;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.config.Config;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
