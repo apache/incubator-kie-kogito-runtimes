@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-persistence-infinispan-parent</artifactId>
-    <version>1.44.0.Final</version>
+    <version>1.44.1-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-quarkus-persistence-infinispan-deployment</artifactId>
   <name>Kogito Add-On Persistence Infinispan - Deployment</name>
