@@ -1,15 +1,9 @@
-commit 9484c20d8bdd78f9e1be0bdff0d4dcffd1fc6a9a
-Author: Pere Fernandez <pefernan@users.noreply.github.com>
-Date:   Mon May 15 21:22:56 2023 +0200
-
-    Remove Keycloak Spring Boot Adapter
-
 diff --git a/springboot/bom/pom.xml b/springboot/bom/pom.xml
-index 8ee023830e..b495cd9857 100644
+index 6822b0dd32..57f07435a2 100644
 --- a/springboot/bom/pom.xml
 +++ b/springboot/bom/pom.xml
 @@ -25,6 +25,7 @@
-     <version.org.springframework.cloud.kubernetes.fabric8>3.0.2</version.org.springframework.cloud.kubernetes.fabric8>
+     <version.org.springframework.cloud.kubernetes.fabric8>3.0.4</version.org.springframework.cloud.kubernetes.fabric8>
      <!-- CVE-2022-25857: Upgrading snakeyaml until we upgrade to Spring Boot 3.x -->
      <!-- See: https://github.com/spring-projects/spring-boot/issues/32221 -->
 +    <version.org.springframework.security>1.1.2</version.org.springframework.security>
