@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-build-parent</artifactId>
-    <version>2.44.0.Alpha</version>
+    <version>2.44.1-SNAPSHOT</version>
     <relativePath>../kogito-build/kogito-build-parent/pom.xml</relativePath>
   </parent>
   <artifactId>kogito-workitems</artifactId>

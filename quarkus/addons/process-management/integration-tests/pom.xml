@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-process-management-parent</artifactId>
-    <version>2.44.0.Alpha</version>
+    <version>2.44.1-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-quarkus-process-management-integration-tests</artifactId>
   <name>Kogito:: Addons :: Quarkus:: Process Management :: Integration Test</name>
