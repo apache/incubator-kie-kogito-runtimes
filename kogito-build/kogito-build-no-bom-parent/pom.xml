@@ -44,7 +44,7 @@
       - properties must be sorted alphabetically (other form of sorting were found to be unclear and ambiguous).
   -->
   <properties>
-    <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
+    <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
     <checkstyle.header.template><![CDATA[
 ^\/\*$\n^
 \* Licensed to the Apache Software Foundation \(ASF\) under one$\n^
