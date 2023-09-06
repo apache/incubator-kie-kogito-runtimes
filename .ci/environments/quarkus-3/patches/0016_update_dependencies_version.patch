@@ -55,8 +55,8 @@ index 9d84bd1683..efd8095bba 100644
      <version.org.junit.pioneer>1.5.0</version.org.junit.pioneer>
 -    <version.org.mockito>4.11.0</version.org.mockito>
 -    <version.org.testcontainers>1.17.6</version.org.testcontainers>
-+    <version.org.mockito>5.3.1</version.org.mockito>
-+    <version.org.testcontainers>1.18.3</version.org.testcontainers>
++    <version.org.mockito>4.11.0</version.org.mockito>
++    <version.org.testcontainers>1.17.6</version.org.testcontainers>
      <version.org.xmlunit-core>2.9.1</version.org.xmlunit-core>
      <version.io.rest-assured>5.3.1</version.io.rest-assured>
  
