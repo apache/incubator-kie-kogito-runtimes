@@ -75,7 +75,7 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
     }
 
     public Optional<Path> getPath(WorkflowOperationResource resource, Path outputPath) {
-        logger.debug("Checking if resource {} should be writen to {}", resource, outputPath);
+        logger.debug("Checking if resource {} should be written to {}", resource, outputPath);
         URIContentLoader contentLoader = resource.getContentLoader();
         Optional<Path> path = contentLoader.getPath();
         if (path.isPresent()) {

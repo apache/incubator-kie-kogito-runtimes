@@ -132,7 +132,7 @@ public class URIContentLoaderFactory {
                     return new HttpContentLoader(finalURI, Optional.ofNullable(workflow), authRef);
                 case CLASSPATH:
                     Optional<ClassLoader> optionalCl = Optional.ofNullable(cl);
-                    return finalURI != uri ? new ClassPathContentLoader(finalURI, optionalCl) : new ClassPathContentLoader(finalURI, optionalCl, new ClassPathContentLoader(uri, optionalCl));
+                    return finalURI == uri ? new ClassPathContentLoader(finalURI, optionalCl) : new ClassPathContentLoader(finalURI, optionalCl, new ClassPathContentLoader(uri, optionalCl));
             }
         }
     }
