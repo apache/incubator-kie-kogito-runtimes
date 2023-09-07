@@ -19,7 +19,7 @@ pipeline {
                 script {
                     // load `pr_check.groovy` file from kogito-pipelines:main
                     dir('kogito-pipelines') {
-                        checkout(githubscm.resolveRepository('kogito-pipelines', 'radtriste', 'update_docker_image', false, 'kie-ci')) // TODO to change back to kiegroup:main
+                        checkout(githubscm.resolveRepository('kogito-pipelines', 'kiegroup', 'apache_migration', false, 'kie-ci')) // TODO to change back to kiegroup:main
                         pr_check_script = load 'dsl/scripts/pr_check.groovy'
                     }
                 }
