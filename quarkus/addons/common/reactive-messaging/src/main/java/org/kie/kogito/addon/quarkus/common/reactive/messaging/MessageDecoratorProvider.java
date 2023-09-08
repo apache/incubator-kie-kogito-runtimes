@@ -15,13 +15,13 @@
  */
 package org.kie.kogito.addon.quarkus.common.reactive.messaging;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
 

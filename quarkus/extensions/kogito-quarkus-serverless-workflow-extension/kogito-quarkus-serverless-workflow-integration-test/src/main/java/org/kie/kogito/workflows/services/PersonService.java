@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.workflows.services;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class PersonService {

@@ -35,7 +35,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withProduces(T node, boolean isDefault) {
-        node.addAndGetAnnotation("javax.enterprise.inject.Produces");
+        node.addAndGetAnnotation("jakarta.enterprise.inject.Produces");
         if (isDefault) {
             node.addAndGetAnnotation("io.quarkus.arc.DefaultBean");
         }
@@ -44,13 +44,13 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withNamed(T node, String name) {
-        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("javax.inject.Named"), new StringLiteralExpr(name)));
+        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("jakarta.inject.Named"), new StringLiteralExpr(name)));
         return node;
     }
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withApplicationComponent(T node) {
-        node.addAnnotation("javax.enterprise.context.ApplicationScoped");
+        node.addAnnotation("jakarta.enterprise.context.ApplicationScoped");
         return node;
     }
 
@@ -61,7 +61,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withSingletonComponent(T node) {
-        node.addAnnotation("javax.inject.Singleton");
+        node.addAnnotation("jakarta.inject.Singleton");
         return node;
     }
 
@@ -72,7 +72,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withInjection(T node, boolean lazy) {
-        node.addAnnotation("javax.inject.Inject");
+        node.addAnnotation("jakarta.inject.Inject");
         return node;
     }
 
@@ -106,7 +106,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public String optionalInstanceInjectionType() {
-        return "javax.enterprise.inject.Instance";
+        return "jakarta.enterprise.inject.Instance";
     }
 
     @Override
@@ -133,7 +133,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public String applicationComponentType() {
-        return "javax.enterprise.context.ApplicationScoped";
+        return "jakarta.enterprise.context.ApplicationScoped";
     }
 
     @Override
@@ -173,7 +173,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withFactoryMethod(T node) {
-        node.addAnnotation("javax.enterprise.inject.Produces");
+        node.addAnnotation("jakarta.enterprise.inject.Produces");
         return node;
     }
 
