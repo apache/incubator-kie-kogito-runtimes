@@ -32,8 +32,7 @@ public interface MapInput {
      *        in the class
      */
     default MapInput fromMap(Map<String, Object> params) {
-        Models.fromMap(this, params);
-        return this;
+        return Models.fromMap(this, params);
     }
 
 }

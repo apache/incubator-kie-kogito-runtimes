@@ -46,7 +46,7 @@ class ClassPathContentLoaderTest {
 
     void testPath(String prefix) {
         ClassPathContentLoader contentLoader = new ClassPathContentLoader(URI.create(prefix + PATH), Optional.empty());
-        assertThat(contentLoader.getPath()).isEqualTo(PATH);
+        assertThat(contentLoader.classpath()).isEqualTo(PATH);
     }
 
 }
