@@ -4,11 +4,11 @@ pr_check_script = null
 
 pipeline {
     agent {
-        label env.ADDITIONAL_LABEL?.trim() ?: 'ubuntu'
+        label 'ubuntu'
     }
     options {
         timestamps()
-        timeout(time: env.ADDITIONAL_TIMEOUT?.trim() ?: '180', unit: 'MINUTES')
+        timeout(time: '720', unit: 'MINUTES')
     }
     environment {
         BUILDCHAIN_PROJECT = 'kiegroup/kogito-runtimes'
