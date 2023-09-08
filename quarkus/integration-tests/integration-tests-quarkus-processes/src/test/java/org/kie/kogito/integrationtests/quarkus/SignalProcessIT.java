@@ -25,6 +25,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
@@ -35,6 +36,28 @@ class SignalProcessIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    }
+
+    @Test
+    void testSignalStartProcess() {
+        String pid = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body("hello world")
+                .post("/signalStart/start")
+                .then()
+                .statusCode(201)
+                .body("id", not(emptyOrNullString()))
+                .extract()
+                .path("id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/signalStart/{pid}", pid)
+                .then()
+                .statusCode(200)
+                .body("message", equalTo("hello world"));
     }
 
     @Test

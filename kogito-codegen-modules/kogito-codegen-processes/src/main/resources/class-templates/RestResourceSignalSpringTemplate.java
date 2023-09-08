@@ -31,9 +31,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class $Type$Resource {
 
     Process<$Type$> process;
+    @PostMapping(value = "/$signalName$", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<$Type$Output> signalProcess(@RequestHeader HttpHeaders httpHeaders,
+                                                      @RequestBody(required = false) $signalType$ data,
+                                                      UriComponentsBuilder uriComponentsBuilder) {
+
+        $Type$ model = new $Type$();
+        model.set$SetModelMethodName$(data);
+
+        ProcessInstance<$Type$> pi = this.processService.signalProcess(process,
+                                                                       model,
+                                                                       httpHeaders,
+                                                                       "$signalName$");
+
+        return ResponseEntity.created(uriComponentsBuilder.path("/$name$/{id}").buildAndExpand(pi.id()).toUri())
+                .body(pi.checkError().variables().toModel());
+    }
 
     @PostMapping(value = "/{id}/$signalPath$", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public $Type$Output signal(@PathVariable("id") final String id, final @RequestBody(required = false) $signalType$ data) {
+    public $Type$Output signalInstance(@PathVariable("id") final String id, final @RequestBody(required = false) $signalType$ data) {
         return processService.signalProcessInstance(process, id, data, "$signalName$")
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
