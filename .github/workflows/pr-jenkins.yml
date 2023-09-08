@@ -25,7 +25,7 @@ jobs:
     - name: Checkout shared libraries
       uses: actions/checkout@v3
       with:
-        repository: kiegroup/jenkins-pipeline-shared-libraries
+        repository: apache/jenkins-pipeline-shared-libraries
         path: shared-libs
 
     - name: Set up JDK 8
@@ -51,6 +51,6 @@ jobs:
     - name: DSL tests
       uses: kiegroup/kie-ci/.ci/actions/dsl-tests@main
       with:
-        main-config-file-repo: kiegroup/kogito-pipelines
+        main-config-file-repo: apache/kogito-pipelines
         main-config-file-path: .ci/jenkins/config/main.yaml
-        branch-config-file-repo: kiegroup/kogito-pipelines
+        branch-config-file-repo: apache/kogito-pipelines
