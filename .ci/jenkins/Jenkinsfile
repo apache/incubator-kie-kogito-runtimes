@@ -11,7 +11,7 @@ pipeline {
         timeout(time: '720', unit: 'MINUTES')
     }
     environment {
-        BUILDCHAIN_PROJECT = 'apache/kogito-runtimes'
+        BUILDCHAIN_PROJECT = 'apache/incubator-kie-kogito-runtimes'
 
         ENABLE_SONARCLOUD = 'true'
         KOGITO_RUNTIMES_BUILD_MVN_OPTS = '-Dvalidate-formatting -Prun-code-coverage'

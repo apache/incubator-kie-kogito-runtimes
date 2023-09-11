@@ -44,11 +44,11 @@ jobs:
         with:
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-          definition-file: https://raw.githubusercontent.com/${GROUP:apache}/kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
+          definition-file: https://raw.githubusercontent.com/${GROUP:apache}/incubator-kie-kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
         env:
           BUILD_MVN_OPTS_CURRENT: '-T 1.5C'
       - name: Junit Report
-        uses: apache/kogito-pipelines/.ci/actions/action-junit-report@main
+        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/action-junit-report@main
         if: ${{ always() }}
         with:
           report_paths: '**/*-reports/TEST-*.xml'
