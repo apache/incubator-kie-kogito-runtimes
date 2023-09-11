@@ -5,7 +5,7 @@ author=$1
 branch=$2
 
 if [ -z $author ]; then
-  author='apache'
+  author='kiegroup'
 fi
 
 if [ -z $branch ]; then
