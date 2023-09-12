@@ -118,7 +118,7 @@ setupReleasePromoteJob()
 
 // Tools job
 if (isMainStream()) {
-    KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'kogito-runtimes', [
+    KogitoJobUtils.createQuarkusVersionUpdateToolsJobForCurrentRepo(this, [
         modules: [ 'kogito-dependencies-bom', 'kogito-build-parent', 'kogito-quarkus-bom', 'kogito-build-no-bom-parent' ],
         compare_deps_remote_poms: [ 'io.quarkus:quarkus-bom' ],
         properties: [ 'version.io.quarkus' ],
@@ -148,7 +148,6 @@ void createSetupBranchJob() {
     def jobParams = JobParamsUtils.getBasicJobParams(this, 'kogito-runtimes', JobType.SETUP_BRANCH, "${jenkins_path}/Jenkinsfile.setup-branch", 'Kogito Runtimes Setup branch')
     JobParamsUtils.setupJobParamsAgentDockerBuilderImageConfiguration(this, jobParams)
     jobParams.env.putAll([
-        REPO_NAME: 'kogito-runtimes',
         JENKINS_EMAIL_CREDS_ID: "${JENKINS_EMAIL_CREDS_ID}",
 
         GIT_AUTHOR: "${GIT_AUTHOR_NAME}",
