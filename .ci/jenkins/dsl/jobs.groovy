@@ -29,8 +29,6 @@ Closure setup4AMCronTriggerJobParamsGetter = { script ->
     return jobParams
 }
 
-
-
 Map getMultijobPRConfig(JenkinsFolder jobFolder) {
     String defaultBuildMvnOptsCurrent = jobFolder.getDefaultEnvVarValue('BUILD_MVN_OPTS_CURRENT') ?: ''
     def jobConfig = [
@@ -95,9 +93,7 @@ List getRuntimesBuildMvnOptions(JenkinsFolder jobFolder) {
 }
 
 // PR checks
-// Deactivated due to ghprb not available on Apache Jenkins
-// TODO create PR job with branch source plugin
-// KogitoJobUtils.createAllEnvironmentsPerRepoPRJobs(this) { jobFolder -> getMultijobPRConfig(jobFolder) }
+isMainStream() && KogitoJobTemplate.createPullRequestMultibranchPipelineJob(this, "${jenkins_path}/Jenkinsfile")
 
 // Init branch
 createSetupBranchJob()
