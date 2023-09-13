@@ -103,7 +103,7 @@ class ProcessResourceGeneratorTest {
                 .orElseThrow();
 
         assertThat(startSignalMethod.isPublic()).isTrue();
-        assertThat(startSignalMethod.getParameters().size()).isEqualTo(3);
+        assertThat(startSignalMethod.getParameters().size()).isEqualTo(4);
         assertThat(startSignalMethod.getParameters().stream()
                 .filter(parameter -> parameter.getNameAsString().equals("data"))
                 .findFirst()
@@ -136,7 +136,7 @@ class ProcessResourceGeneratorTest {
                 .orElseThrow();
 
         assertThat(startSignalMethod.isPublic()).isTrue();
-        assertThat(startSignalMethod.getParameters().size()).isEqualTo(2);
+        assertThat(startSignalMethod.getParameters().size()).isEqualTo(3);
         assertThat(startSignalMethod.getParameters()
                 .stream()
                 .anyMatch(parameter -> parameter.getNameAsString().equals("data"))).isFalse();

@@ -156,11 +156,6 @@ public interface ProcessService {
             String taskId,
             SecurityPolicy policy);
 
-    <T extends Model> ProcessInstance<T> signalProcess(Process<T> process,
-            T model,
-            Map<String, List<String>> headers,
-            String signalName);
-
     <T extends MappableToModel<R>, R> Optional<R> signalProcessInstance(Process<T> process, String id, Object data, String signalName);
 
     //Schema

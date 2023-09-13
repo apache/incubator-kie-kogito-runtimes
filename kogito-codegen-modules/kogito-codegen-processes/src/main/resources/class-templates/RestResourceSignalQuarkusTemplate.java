@@ -31,15 +31,21 @@ public class $Type$Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response signalProcess(@Context HttpHeaders httpHeaders,
                                   @Context UriInfo uriInfo,
+                                  @QueryParam("businessKey") @DefaultValue("") String businessKey,
                                   $signalType$ data) {
 
         $Type$ model = new $Type$();
         model.set$SetModelMethodName$(data);
 
-        ProcessInstance<$Type$> pi = this.processService.signalProcess(process,
-                                                                       model,
-                                                                       httpHeaders.getRequestHeaders(),
-                                                                       "$signalName$");
+
+        ProcessInstance<$Type$> pi = this.processService.createProcessInstance(process,
+                                                                               businessKey,
+                                                                               model,
+                                                                               httpHeaders.getRequestHeaders(),
+                                                                               httpHeaders.getHeaderString("X-KOGITO-StartFromNode"),
+                                                                               "$signalName$",
+                                                                               httpHeaders.getHeaderString("X-KOGITO-ReferenceId"),
+                                                                               null);
 
         return Response.created(uriInfo.getAbsolutePathBuilder().path(pi.id()).build())
                 .entity(pi.checkError().variables().toModel())
