@@ -93,7 +93,7 @@ List getRuntimesBuildMvnOptions(JenkinsFolder jobFolder) {
 }
 
 // PR checks
-isMainStream() && KogitoJobTemplate.createPullRequestMultibranchPipelineJob(this, "${jenkins_path}/Jenkinsfile")
+Utils.isMainBranch(this) && KogitoJobTemplate.createPullRequestMultibranchPipelineJob(this, "${jenkins_path}/Jenkinsfile")
 
 // Init branch
 createSetupBranchJob()
