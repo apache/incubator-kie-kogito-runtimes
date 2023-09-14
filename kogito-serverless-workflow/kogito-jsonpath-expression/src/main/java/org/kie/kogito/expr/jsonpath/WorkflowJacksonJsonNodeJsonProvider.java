@@ -21,6 +21,8 @@ package org.kie.kogito.expr.jsonpath;
 import java.util.function.Function;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.kie.kogito.jackson.utils.JsonObjectUtils;
+import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
 
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
@@ -40,7 +42,7 @@ public class WorkflowJacksonJsonNodeJsonProvider extends JacksonJsonNodeJsonProv
         } else {
             switch (key) {
                 case "$" + ExpressionHandlerUtils.SECRET_MAGIC:
-                    return (Function<String, Object>) ExpressionHandlerUtils::getSecret;
+                    return JsonObjectUtils.fromValue(ConfigResolverHolder.getConfigResolver().asNestedMap());
                 case "$" + ExpressionHandlerUtils.CONTEXT_MAGIC:
                     return ExpressionHandlerUtils.getContextFunction(context);
                 case "$" + ExpressionHandlerUtils.CONST_MAGIC:

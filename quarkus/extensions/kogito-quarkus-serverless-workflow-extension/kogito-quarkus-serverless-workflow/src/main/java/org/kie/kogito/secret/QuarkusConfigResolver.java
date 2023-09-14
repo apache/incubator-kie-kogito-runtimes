@@ -25,12 +25,16 @@ import java.util.Optional;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.serverless.workflow.utils.ConfigResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.quarkus.runtime.Startup;
 import io.smallrye.config.SecretKeys;
 
 @Startup
 public class QuarkusConfigResolver implements ConfigResolver {
+
+    private static Logger logger = LoggerFactory.getLogger(QuarkusConfigResolver.class);
 
     private Config config;
 
@@ -45,6 +49,9 @@ public class QuarkusConfigResolver implements ConfigResolver {
         } catch (SecurityException ex) {
             // see https://smallrye.io/docs/smallrye-config/config/secret-keys.html
             return SecretKeys.doUnlocked(() -> config.getOptionalValue(key, clazz));
+        } catch (IllegalArgumentException ex) {
+            logger.info("Error {} retrieving key {}", ex.getMessage(), key);
+            return Optional.empty();
         }
     }
 

@@ -31,6 +31,24 @@ public interface ConfigResolver {
 
     <T> Collection<T> getIndexedConfigProperty(String name, Class<T> clazz);
 
+    default Map<String, Object> asNestedMap() {
+        Map<String, Object> map = new HashMap<>();
+        for (String name : getPropertyNames()) {
+            Optional<String> value = getConfigProperty(name, String.class);
+            if (value.isPresent()) {
+                String[] parts = name.split("\\.");
+                Map<String, Object> localMap = map;
+                for (int i = 0; i < parts.length - 1; i++) {
+                    Map<String, Object> newMap = new HashMap<>();
+                    localMap.put(parts[i], newMap);
+                    localMap = newMap;
+                }
+                localMap.put(parts[parts.length - 1], value.orElseThrow());
+            }
+        }
+        return map;
+    }
+
     default Map<String, Object> asMap() {
         Map<String, Object> map = new HashMap<>();
         for (String name : getPropertyNames()) {
