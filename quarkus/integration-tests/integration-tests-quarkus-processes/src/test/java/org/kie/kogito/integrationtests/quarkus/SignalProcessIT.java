@@ -40,24 +40,22 @@ class SignalProcessIT {
 
     @Test
     void testSignalStartProcess() {
-        String pid = given()
+        given()
                 .contentType(ContentType.JSON)
                 .when()
                 .body("hello world")
                 .post("/signalStart/start")
                 .then()
-                .statusCode(201)
-                .body("id", not(emptyOrNullString()))
-                .extract()
-                .path("id");
+                .statusCode(202);
 
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/signalStart/{pid}", pid)
+                .get("/signalStart/")
                 .then()
                 .statusCode(200)
-                .body("message", equalTo("hello world"));
+                .body("$.size()", is(1))
+                .body("[0].message", equalTo("hello world"));
     }
 
     @Test

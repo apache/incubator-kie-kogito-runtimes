@@ -33,23 +33,17 @@ public class $Type$Resource {
                                   @Context UriInfo uriInfo,
                                   @QueryParam("businessKey") @DefaultValue("") String businessKey,
                                   $signalType$ data) {
-
         $Type$ model = new $Type$();
         model.set$SetModelMethodName$(data);
-
-
-        ProcessInstance<$Type$> pi = this.processService.createProcessInstance(process,
-                                                                               businessKey,
-                                                                               model,
-                                                                               httpHeaders.getRequestHeaders(),
-                                                                               httpHeaders.getHeaderString("X-KOGITO-StartFromNode"),
-                                                                               "$signalName$",
-                                                                               httpHeaders.getHeaderString("X-KOGITO-ReferenceId"),
-                                                                               null);
-
-        return Response.created(uriInfo.getAbsolutePathBuilder().path(pi.id()).build())
-                .entity(pi.checkError().variables().toModel())
-                .build();
+        this.processService.createProcessInstance(process,
+                                                  businessKey,
+                                                  model,
+                                                  httpHeaders.getRequestHeaders(),
+                                                  httpHeaders.getHeaderString("X-KOGITO-StartFromNode"),
+                                                  "$signalName$",
+                                                  httpHeaders.getHeaderString("X-KOGITO-ReferenceId"),
+                                                  null);
+        return Response.accepted().build();
     }
 
     @POST

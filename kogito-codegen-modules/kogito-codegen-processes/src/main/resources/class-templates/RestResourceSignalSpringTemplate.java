@@ -40,17 +40,16 @@ public class $Type$Resource {
         $Type$ model = new $Type$();
         model.set$SetModelMethodName$(data);
 
-        ProcessInstance<$Type$> pi = this.processService.createProcessInstance(process,
-                                                                               businessKey,
-                                                                               model,
-                                                                               httpHeaders,
-                                                                               httpHeaders.getOrEmpty("X-KOGITO-StartFromNode").stream().findFirst().orElse(null),
-                                                                               "$signalName$",
-                                                                               httpHeaders.getOrEmpty("X-KOGITO-ReferenceId").stream().findFirst().orElse(null),
-                                                                               null);
+        this.processService.createProcessInstance(process,
+                                                  businessKey,
+                                                  model,
+                                                  httpHeaders,
+                                                  httpHeaders.getOrEmpty("X-KOGITO-StartFromNode").stream().findFirst().orElse(null),
+                                                  "$signalName$",
+                                                  httpHeaders.getOrEmpty("X-KOGITO-ReferenceId").stream().findFirst().orElse(null),
+                                                  null);
 
-        return ResponseEntity.created(uriComponentsBuilder.path("/$name$/{id}").buildAndExpand(pi.id()).toUri())
-                .body(pi.checkError().variables().toModel());
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping(value = "/{id}/$signalPath$", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)

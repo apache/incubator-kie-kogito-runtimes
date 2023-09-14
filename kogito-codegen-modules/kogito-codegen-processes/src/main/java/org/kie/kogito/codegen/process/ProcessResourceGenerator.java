@@ -77,6 +77,8 @@ public class ProcessResourceGenerator {
     private static final String REST_USER_TASK_TEMPLATE_NAME = "RestResourceUserTask";
     private static final String REST_SIGNAL_TEMPLATE_NAME = "RestResourceSignal";
 
+    private static final String SIGNAL_METHOD_PREFFIX = "signal_";
+
     private final String relativePath;
 
     private final KogitoBuildContext context;
@@ -224,7 +226,7 @@ public class ProcessResourceGenerator {
                                         setterMethod.setName(setterMethod.getNameAsString().replace("$SetModelMethodName$", StringUtils.ucFirst(name)));
                                     }
 
-                                    template.addMethod("signal_" + signalName, Keyword.PUBLIC)
+                                    template.addMethod(SIGNAL_METHOD_PREFFIX + signalName, Keyword.PUBLIC)
                                             .setType(signalProcessDeclarationClone.getType())
                                             .setParameters(signalProcessDeclarationClone.getParameters())
                                             .setBody(signalProcessBody)
@@ -240,7 +242,7 @@ public class ProcessResourceGenerator {
                                     signalInstanceBody.findAll(NameExpr.class, nameExpr -> "data".equals(nameExpr.getNameAsString())).forEach(name -> name.replace(new NullLiteralExpr()));
                                 }
 
-                                template.addMethod("signal_" + index.getAndIncrement(), Keyword.PUBLIC)
+                                template.addMethod(SIGNAL_METHOD_PREFFIX + index.getAndIncrement(), Keyword.PUBLIC)
                                         .setType(signalInstanceDeclarationClone.getType())
                                         // Remove data parameter ( payload ) if signalType is null
                                         .setParameters(signalType == null ? NodeList.nodeList(signalInstanceDeclarationClone.getParameter(0)) : signalInstanceDeclaration.getParameters())
@@ -306,7 +308,7 @@ public class ProcessResourceGenerator {
                 if (!userTask.isAdHoc()) {
                     template.findAll(MethodDeclaration.class)
                             .stream()
-                            .filter(md -> md.getNameAsString().equals("signal_" + methodSuffix))
+                            .filter(md -> md.getNameAsString().equals(SIGNAL_METHOD_PREFFIX + methodSuffix))
                             .collect(Collectors.toList()).forEach(template::remove);
                 }
                 switchExpr.getEntries().add(0, userTask.getModelSwitchEntry());
