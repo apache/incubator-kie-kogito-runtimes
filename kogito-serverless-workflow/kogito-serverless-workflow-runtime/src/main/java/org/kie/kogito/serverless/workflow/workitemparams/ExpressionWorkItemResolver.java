@@ -57,7 +57,7 @@ public abstract class ExpressionWorkItemResolver<T> implements WorkItemParamReso
             }
             return expr.isValid() ? expr.eval(inputModel, JsonNode.class, context) : node;
         } catch (Exception ex) {
-            logger.info("Error {} evaluating expression}, returning original text {}", ex.getMessage(), expr.asString(), node);
+            logger.info("Error evaluating expression, returning original text {}", node);
             return node;
         }
     }

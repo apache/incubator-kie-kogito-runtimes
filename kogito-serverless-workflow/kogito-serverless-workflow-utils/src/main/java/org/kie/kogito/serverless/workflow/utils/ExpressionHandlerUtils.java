@@ -20,7 +20,6 @@ package org.kie.kogito.serverless.workflow.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.jbpm.ruleflow.core.Metadata;
@@ -55,11 +54,7 @@ public class ExpressionHandlerUtils {
     }
 
     public static String getSecret(String key) {
-        return getProperty(key).orElse(null);
-    }
-
-    private static Optional<String> getProperty(String key) {
-        return ConfigResolverHolder.getConfigResolver().getConfigProperty(key, String.class);
+        return ConfigResolverHolder.getConfigResolver().getConfigProperty(key, String.class).orElse(null);
     }
 
     public static Function<String, Object> getContextFunction(KogitoProcessContext context) {

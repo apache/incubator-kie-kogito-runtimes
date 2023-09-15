@@ -31,7 +31,6 @@ import org.kie.kogito.jackson.utils.FunctionJsonNode;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.process.expr.Expression;
-import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
 import org.kie.kogito.serverless.workflow.utils.JsonNodeContext;
 import org.slf4j.Logger;
@@ -175,7 +174,7 @@ public class JqExpression implements Expression {
 
     private Scope getScope(KogitoProcessContext processInfo) {
         Scope childScope = Scope.newChildScope(scope.get());
-        childScope.setValue(ExpressionHandlerUtils.SECRET_MAGIC, JsonObjectUtils.fromValue(ConfigResolverHolder.getConfigResolver().asNestedMap()));
+        childScope.setValue(ExpressionHandlerUtils.SECRET_MAGIC, new FunctionJsonNode(ExpressionHandlerUtils::getSecret));
         childScope.setValue(ExpressionHandlerUtils.CONTEXT_MAGIC, new FunctionJsonNode(ExpressionHandlerUtils.getContextFunction(processInfo)));
         childScope.setValue(ExpressionHandlerUtils.CONST_MAGIC, ExpressionHandlerUtils.getConstants(processInfo));
         return childScope;
