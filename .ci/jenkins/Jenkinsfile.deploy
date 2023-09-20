@@ -22,6 +22,7 @@ pipeline {
     // parameters {
     // For parameters, check into ./dsl/jobs.groovy file
     // }
+    // new line to simulate a change in this file 
 
     environment {
         // Static env is defined into ./dsl/jobs.groovy file
