@@ -45,6 +45,7 @@ import net.thisptr.jackson.jq.Version;
 import net.thisptr.jackson.jq.exception.JsonQueryException;
 import net.thisptr.jackson.jq.internal.javacc.ExpressionParser;
 import net.thisptr.jackson.jq.internal.tree.FunctionCall;
+import net.thisptr.jackson.jq.internal.tree.binaryop.BinaryOperatorExpression;
 
 public class JqExpression implements Expression {
 
@@ -59,6 +60,16 @@ public class JqExpression implements Expression {
 
     private net.thisptr.jackson.jq.Expression internalExpr;
     private JsonQueryException validationError;
+    private static Field rhsField;
+
+    static {
+        try {
+            rhsField = BinaryOperatorExpression.class.getDeclaredField("rhs");
+            rhsField.setAccessible(true);
+        } catch (ReflectiveOperationException e) {
+            logger.warn("Unexpected exception while resolving rhs field", e);
+        }
+    }
 
     public JqExpression(Supplier<Scope> scope, String expr, Version version) {
         this.expr = expr;
@@ -170,11 +181,11 @@ public class JqExpression implements Expression {
     }
 
     private <T> T eval(JsonNode context, Class<T> returnClass, KogitoProcessContext processInfo) {
+        if (validationError != null) {
+            throw new IllegalArgumentException("Unable to evaluate content " + context + " using expr " + expr, validationError);
+        }
+        TypedOutput output = output(returnClass);
         try (JsonNodeContext jsonNode = JsonNodeContext.from(context, processInfo)) {
-            TypedOutput output = output(returnClass);
-            if (validationError != null) {
-                throw validationError;
-            }
             internalExpr.apply(getScope(processInfo), jsonNode.getNode(), output);
             return JsonObjectUtils.convertValue(output.getResult(), returnClass);
         } catch (JsonQueryException e) {
@@ -191,7 +202,15 @@ public class JqExpression implements Expression {
         if (toCheck instanceof FunctionCall) {
             toCheck.apply(scope.get(), ObjectMapperFactory.get().createObjectNode(), out -> {
             });
-        } else {
+        } else if (toCheck instanceof BinaryOperatorExpression) {
+            if (rhsField != null) {
+                try {
+                    checkFunctionCall((net.thisptr.jackson.jq.Expression) rhsField.get(toCheck));
+                } catch (ReflectiveOperationException e) {
+                    logger.warn("Ignoring unexpected error {} while accesing field {} for class{} and expression {}", e.getMessage(), rhsField.getName(), toCheck.getClass(), expr);
+                }
+            }
+        } else if (toCheck != null) {
             for (Field f : getAllExprFields(toCheck))
                 try {
                     checkFunctionCall((net.thisptr.jackson.jq.Expression) f.get(toCheck));
