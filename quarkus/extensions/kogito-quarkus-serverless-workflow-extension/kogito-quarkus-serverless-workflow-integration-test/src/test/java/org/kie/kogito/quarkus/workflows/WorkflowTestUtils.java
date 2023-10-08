@@ -26,13 +26,15 @@ import java.util.function.Predicate;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.process.ProcessInstanceStateDataEvent;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.restassured.path.json.JsonPath;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WorkflowTestUtils {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowTestUtils.class);
     public static final int TIME_OUT_SECONDS = 50;
     public static final String KOGITO_PROCESSINSTANCES_EVENTS = "kogito-processinstances-events";
 
@@ -50,6 +52,7 @@ public class WorkflowTestUtils {
 
         kafkaClient.consume(KOGITO_PROCESSINSTANCES_EVENTS, rawCloudEvent -> {
             JsonPath path = new JsonPath(rawCloudEvent);
+            LOGGER.debug("CLOUD EVENT:\n{}" + path.prettyPrint());
             String type = path.get("type");
             if (eventType.getSimpleName().equals(type) && predicate.test(path)) {
                 cloudEvent.set(path);

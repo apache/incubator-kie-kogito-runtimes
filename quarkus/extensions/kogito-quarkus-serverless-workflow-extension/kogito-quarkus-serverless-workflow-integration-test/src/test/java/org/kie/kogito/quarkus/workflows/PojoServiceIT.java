@@ -133,7 +133,8 @@ class PojoServiceIT {
                 .body("workflowdata.enabled", is(enabled))
                 .body("workflowdata.birthDate", is(birthDate.getTime()));
 
-        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, ProcessInstanceVariableDataEvent.class, e -> "workflowdata".equals(e.get("data.variableName")), true);
+        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, ProcessInstanceVariableDataEvent.class,
+                e -> "pojoServiceTypes".equals(e.get("kogitoprocid")) && "workflowdata".equals(e.get("data.variableName")), true);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variableValue");
         assertThat(workflowDataMap)
                 .hasSize(9)
@@ -162,7 +163,8 @@ class PojoServiceIT {
                 .body("id", notNullValue())
                 .body("workflowdata.name", is("javieritoPerson"))
                 .body("workflowdata.age", nullValue());
-        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, ProcessInstanceVariableDataEvent.class, e -> "workflowdata".equals(e.get("data.variableName")), true);
+        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, ProcessInstanceVariableDataEvent.class,
+                e -> flowName.equals(e.get("kogitoprocid")) && "workflowdata".equals(e.get("data.variableName")), true);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variableValue");
         assertThat(workflowDataMap).hasSize(1);
         assertThat(workflowDataMap).containsEntry("name", "javieritoPerson");

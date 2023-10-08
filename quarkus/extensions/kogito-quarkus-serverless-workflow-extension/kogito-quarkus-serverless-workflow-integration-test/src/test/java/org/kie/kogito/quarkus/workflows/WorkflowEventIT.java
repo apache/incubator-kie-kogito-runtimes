@@ -80,13 +80,13 @@ public class WorkflowEventIT {
         kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS), s -> {
             LOGGER.info("Received from kafka: {}", s);
             try {
-                ProcessInstanceDataEvent event = mapper.readValue(s, ProcessInstanceDataEvent.class);
+                ProcessInstanceDataEvent<?> event = mapper.readValue(s, ProcessInstanceDataEvent.class);
                 Map data = (Map) event.getData();
                 if ("secure".equals(data.get("processId"))) {
-                    if (event.getType().equals("ProcessInstanceEvent")) {
-                        assertEquals("ProcessInstanceEvent", event.getType());
+                    if (event.getType().equals("ProcessInstanceStateDataEvent")) {
+                        assertEquals("ProcessInstanceStateEvent", event.getType());
                         assertEquals("/secure", event.getSource().toString());
-                        assertEquals("secure", data.get("processId"));
+                        assertEquals("secure", event.getKogitoProcessId());
                         assertEquals("1.0", event.getKogitoProcessInstanceVersion());
                         assertEquals(username, event.getKogitoIdentity());
                     }
