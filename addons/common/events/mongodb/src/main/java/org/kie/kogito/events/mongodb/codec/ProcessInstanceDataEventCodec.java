@@ -26,31 +26,37 @@ import org.bson.Document;
 import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
-import org.kie.kogito.event.process.ProcessInstanceStateDataEvent;
-import org.kie.kogito.event.process.ProcessInstanceStateEventBody;
+import org.kie.kogito.event.process.ProcessInstanceDataEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.codec;
-import static org.kie.kogito.events.mongodb.codec.CodecUtils.encodeDataEvent;
 
-public class ProcessInstanceDataEventCodec implements CollectibleCodec<ProcessInstanceStateDataEvent> {
+public class ProcessInstanceDataEventCodec implements CollectibleCodec<ProcessInstanceDataEvent> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessInstanceDataEventCodec.class);
 
     @Override
-    public ProcessInstanceStateDataEvent generateIdIfAbsentFromDocument(ProcessInstanceStateDataEvent processInstanceDataEvent) {
+    public ProcessInstanceDataEvent generateIdIfAbsentFromDocument(ProcessInstanceDataEvent processInstanceDataEvent) {
         return processInstanceDataEvent;
     }
 
     @Override
-    public boolean documentHasId(ProcessInstanceStateDataEvent processInstanceDataEvent) {
+    public boolean documentHasId(ProcessInstanceDataEvent processInstanceDataEvent) {
         return processInstanceDataEvent.getId() != null;
     }
 
     @Override
-    public BsonValue getDocumentId(ProcessInstanceStateDataEvent processInstanceDataEvent) {
+    public BsonValue getDocumentId(ProcessInstanceDataEvent processInstanceDataEvent) {
         return new BsonString(processInstanceDataEvent.getId());
     }
 
     @Override
-    public ProcessInstanceStateDataEvent decode(BsonReader bsonReader, DecoderContext decoderContext) {
+    public ProcessInstanceDataEvent decode(BsonReader bsonReader, DecoderContext decoderContext) {
         // The events persist in an outbox collection
         // The events are deleted immediately (in the same transaction)
         // "decode" is not supposed to take place in any scenario
@@ -58,41 +64,21 @@ public class ProcessInstanceDataEventCodec implements CollectibleCodec<ProcessIn
     }
 
     @Override
-    public void encode(BsonWriter bsonWriter, ProcessInstanceStateDataEvent processInstanceDataEvent, EncoderContext encoderContext) {
-        Document doc = new Document();
-        encodeDataEvent(doc, processInstanceDataEvent);
-        doc.put("kogitoProcessType", processInstanceDataEvent.getKogitoProcessType());
-        doc.put("kogitoProcessInstanceVersion", processInstanceDataEvent.getKogitoProcessInstanceVersion());
-        doc.put("kogitoParentProcessinstanceId", processInstanceDataEvent.getKogitoParentProcessInstanceId());
-        doc.put("kogitoProcessinstanceState", processInstanceDataEvent.getKogitoProcessInstanceState());
-        doc.put("kogitoReferenceId", processInstanceDataEvent.getKogitoReferenceId());
-        doc.put("kogitoStartFromNode", processInstanceDataEvent.getKogitoStartFromNode());
-        doc.put("kogitoIdentity", processInstanceDataEvent.getKogitoIdentity());
-        doc.put("data", encodeData(processInstanceDataEvent.getData()));
-        codec().encode(bsonWriter, doc, encoderContext);
-    }
-
-    private Document encodeData(ProcessInstanceStateEventBody data) {
-        Document doc = new Document();
-        doc.put("id", data.getProcessInstanceId());
-        doc.put("version", data.getProcessVersion());
-        doc.put("parentInstanceId", data.getParentInstanceId());
-        doc.put("rootInstanceId", data.getRootProcessInstanceId());
-        doc.put("processId", data.getProcessId());
-        doc.put("processType", data.getProcessType());
-        doc.put("rootProcessId", data.getRootProcessId());
-        doc.put("processName", data.getProcessName());
-        doc.put("eventDate", data.getEventDate());
-        doc.put("state", data.getState());
-        doc.put("businessKey", data.getBusinessKey());
-        doc.put("roles", data.getRoles());
-        doc.put("identity", data.getEventUser());
-
-        return doc;
+    public void encode(BsonWriter bsonWriter, ProcessInstanceDataEvent processInstanceDataEvent, EncoderContext encoderContext) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.findAndRegisterModules();
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            Document document = Document.parse(mapper.writeValueAsString(processInstanceDataEvent));
+            document.put(CodecUtils.ID, processInstanceDataEvent.getId());
+            codec().encode(bsonWriter, document, encoderContext);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Could not process json event", e);
+        }
     }
 
     @Override
-    public Class<ProcessInstanceStateDataEvent> getEncoderClass() {
-        return ProcessInstanceStateDataEvent.class;
+    public Class<ProcessInstanceDataEvent> getEncoderClass() {
+        return ProcessInstanceDataEvent.class;
     }
 }

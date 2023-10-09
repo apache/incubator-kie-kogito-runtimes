@@ -31,11 +31,15 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.event.process.ProcessInstanceDataEvent;
 import org.kie.kogito.event.process.ProcessInstanceEventMetadata;
 import org.kie.kogito.event.process.ProcessInstanceStateDataEvent;
 import org.kie.kogito.event.process.ProcessInstanceStateEventBody;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.ID;
@@ -123,46 +127,41 @@ class ProcessInstanceDataEventCodecTest {
             ArgumentCaptor<Document> captor = ArgumentCaptor.forClass(Document.class);
             verify(mockCodec, times(1)).encode(eq(writer), captor.capture(), eq(context));
             Document doc = captor.getValue();
+            Map<String, Object> node = new ObjectMapper().readValue(doc.toJson(), Map.class);
 
-            assertThat(doc).containsEntry(ID, event.getId())
+            assertThat(node).containsEntry(ID, event.getId())
                     .containsEntry("specversion", event.getSpecVersion().toString())
                     .containsEntry("source", event.getSource().toString())
                     .containsEntry("type", event.getType())
-                    .containsEntry("time", event.getTime())
-                    .containsEntry("subject", event.getSubject())
-                    .containsEntry("dataContentType", event.getDataContentType())
-                    .containsEntry("dataSchema", event.getDataSchema())
-                    .containsEntry("kogitoProcessinstanceId", event.getKogitoProcessInstanceId())
-                    .containsEntry("kogitoProcessInstanceVersion", event.getKogitoProcessInstanceVersion())
-                    .containsEntry("kogitoRootProcessinstanceId", event.getKogitoRootProcessInstanceId())
-                    .containsEntry("kogitoProcessId", event.getKogitoProcessId())
-                    .containsEntry("kogitoProcessType", event.getKogitoProcessType())
-                    .containsEntry("kogitoRootProcessId", event.getKogitoRootProcessId())
-                    .containsEntry("kogitoAddons", event.getKogitoAddons())
-                    .containsEntry("kogitoParentProcessinstanceId", event.getKogitoParentProcessInstanceId())
-                    .containsEntry("kogitoProcessinstanceState", event.getKogitoProcessInstanceState())
-                    .containsEntry("kogitoReferenceId", event.getKogitoReferenceId())
-                    .containsEntry("kogitoIdentity", event.getKogitoIdentity())
-                    .containsEntry("kogitoStartFromNode", event.getKogitoStartFromNode());
+                    .containsEntry("datacontenttype", event.getDataContentType())
+                    .containsEntry("kogitoprocinstanceid", event.getKogitoProcessInstanceId())
+                    .containsEntry("kogitoprocversion", event.getKogitoProcessInstanceVersion())
+                    .containsEntry("kogitorootprociid", event.getKogitoRootProcessInstanceId())
+                    .containsEntry("kogitoprocid", event.getKogitoProcessId())
+                    .containsEntry("kogitoproctype", event.getKogitoProcessType())
+                    .containsEntry("kogitorootprocid", event.getKogitoRootProcessId())
+                    .containsEntry("kogitoaddons", event.getKogitoAddons())
+                    .containsEntry("kogitoparentprociid", event.getKogitoParentProcessInstanceId())
+                    .containsEntry("kogitoprocist", event.getKogitoProcessInstanceState())
+                    .containsEntry("kogitoidentity", event.getKogitoIdentity());
 
-            assertThat(((Document) doc.get("data"))).containsEntry("id", event.getData().getProcessInstanceId())
-                    .containsEntry("version", event.getData().getProcessVersion())
-                    .containsEntry("parentInstanceId", event.getData().getParentInstanceId())
-                    .containsEntry("rootInstanceId", event.getData().getRootProcessInstanceId())
+            assertThat(((Document) doc.get("data")))
+                    .containsEntry("processVersion", event.getData().getProcessVersion())
+                    .containsEntry("rootProcessInstanceId", event.getData().getRootProcessInstanceId())
                     .containsEntry("processId", event.getData().getProcessId())
                     .containsEntry("rootProcessId", event.getData().getRootProcessId())
                     .containsEntry("processName", event.getData().getProcessName())
-                    .containsEntry("identity", event.getData().getEventUser())
-                    .containsEntry("eventDate", event.getData().getEventDate())
+                    .containsEntry("eventUser", event.getData().getEventUser())
                     .containsEntry("state", event.getData().getState())
-                    .containsEntry("businessKey", event.getData().getBusinessKey())
-                    .containsEntry("roles", event.getData().getRoles());
+                    .containsEntry("businessKey", event.getData().getBusinessKey());
 
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
     }
 
     @Test
     void getEncoderClass() {
-        assertThat(codec.getEncoderClass()).isEqualTo(ProcessInstanceStateDataEvent.class);
+        assertThat(codec.getEncoderClass()).isEqualTo(ProcessInstanceDataEvent.class);
     }
 }

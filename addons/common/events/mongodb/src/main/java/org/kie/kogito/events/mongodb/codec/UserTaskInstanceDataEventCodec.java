@@ -26,31 +26,37 @@ import org.bson.Document;
 import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
-import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
-import org.kie.kogito.event.usertask.UserTaskInstanceStateEventBody;
+import org.kie.kogito.event.usertask.UserTaskInstanceDataEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.codec;
-import static org.kie.kogito.events.mongodb.codec.CodecUtils.encodeDataEvent;
 
-public class UserTaskInstanceDataEventCodec implements CollectibleCodec<UserTaskInstanceStateDataEvent> {
+public class UserTaskInstanceDataEventCodec implements CollectibleCodec<UserTaskInstanceDataEvent> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserTaskInstanceDataEventCodec.class);
 
     @Override
-    public UserTaskInstanceStateDataEvent generateIdIfAbsentFromDocument(UserTaskInstanceStateDataEvent userTaskInstanceDataEvent) {
+    public UserTaskInstanceDataEvent<?> generateIdIfAbsentFromDocument(UserTaskInstanceDataEvent userTaskInstanceDataEvent) {
         return userTaskInstanceDataEvent;
     }
 
     @Override
-    public boolean documentHasId(UserTaskInstanceStateDataEvent userTaskInstanceDataEvent) {
+    public boolean documentHasId(UserTaskInstanceDataEvent userTaskInstanceDataEvent) {
         return userTaskInstanceDataEvent.getId() != null;
     }
 
     @Override
-    public BsonValue getDocumentId(UserTaskInstanceStateDataEvent userTaskInstanceDataEvent) {
+    public BsonValue getDocumentId(UserTaskInstanceDataEvent userTaskInstanceDataEvent) {
         return new BsonString(userTaskInstanceDataEvent.getId());
     }
 
     @Override
-    public UserTaskInstanceStateDataEvent decode(BsonReader bsonReader, DecoderContext decoderContext) {
+    public UserTaskInstanceDataEvent decode(BsonReader bsonReader, DecoderContext decoderContext) {
         // The events persist in an outbox collection
         // The events are deleted immediately (in the same transaction)
         // "decode" is not supposed to take place in any scenario
@@ -58,32 +64,21 @@ public class UserTaskInstanceDataEventCodec implements CollectibleCodec<UserTask
     }
 
     @Override
-    public void encode(BsonWriter bsonWriter, UserTaskInstanceStateDataEvent userTaskInstanceDataEvent, EncoderContext encoderContext) {
-        Document doc = new Document();
-        encodeDataEvent(doc, userTaskInstanceDataEvent);
-        doc.put("kogitoUserTaskinstanceId", userTaskInstanceDataEvent.getKogitoUserTaskInstanceId());
-        doc.put("kogitoUserTaskinstanceState", userTaskInstanceDataEvent.getKogitoUserTaskInstanceState());
-        doc.put("data", encodeData(userTaskInstanceDataEvent.getData()));
-        codec().encode(bsonWriter, doc, encoderContext);
-    }
-
-    private Document encodeData(UserTaskInstanceStateEventBody data) {
-        Document doc = new Document();
-        doc.put("id", data.getUserTaskInstanceId());
-        doc.put("taskName", data.getUserTaskName());
-        doc.put("taskDescription", data.getUserTaskDescription());
-        doc.put("taskPriority", data.getUserTaskPriority());
-        doc.put("referenceName", data.getUserTaskReferenceName());
-        doc.put("eventDate", data.getEventDate());
-        doc.put("state", data.getState());
-        doc.put("actualOwner", data.getActualOwner());
-        doc.put("processInstanceId", data.getProcessInstanceId());
-        doc.put("identity", data.getEventUser());
-        return doc;
+    public void encode(BsonWriter bsonWriter, UserTaskInstanceDataEvent userTaskInstanceDataEvent, EncoderContext encoderContext) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.findAndRegisterModules();
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            Document document = Document.parse(mapper.writeValueAsString(userTaskInstanceDataEvent));
+            document.put(CodecUtils.ID, userTaskInstanceDataEvent.getId());
+            codec().encode(bsonWriter, document, encoderContext);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Could not process json event", e);
+        }
     }
 
     @Override
-    public Class<UserTaskInstanceStateDataEvent> getEncoderClass() {
-        return UserTaskInstanceStateDataEvent.class;
+    public Class<UserTaskInstanceDataEvent> getEncoderClass() {
+        return UserTaskInstanceDataEvent.class;
     }
 }

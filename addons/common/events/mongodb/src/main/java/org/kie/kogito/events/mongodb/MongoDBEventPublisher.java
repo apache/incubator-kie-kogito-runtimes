@@ -25,8 +25,8 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventPublisher;
-import org.kie.kogito.event.process.ProcessInstanceStateDataEvent;
-import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceDataEvent;
 import org.kie.kogito.events.mongodb.codec.EventMongoDBCodecProvider;
 import org.kie.kogito.mongodb.transaction.AbstractTransactionManager;
 import org.slf4j.Logger;
@@ -46,8 +46,8 @@ public abstract class MongoDBEventPublisher implements EventPublisher {
 
     static final String ID = "_id";
 
-    private MongoCollection<ProcessInstanceStateDataEvent> processInstanceDataEventCollection;
-    private MongoCollection<UserTaskInstanceStateDataEvent> userTaskInstanceDataEventCollection;
+    private MongoCollection<ProcessInstanceDataEvent> processInstanceDataEventCollection;
+    private MongoCollection<UserTaskInstanceDataEvent> userTaskInstanceDataEventCollection;
 
     protected abstract MongoClient mongoClient();
 
@@ -67,19 +67,19 @@ public abstract class MongoDBEventPublisher implements EventPublisher {
         CodecRegistry registry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), fromProviders(new EventMongoDBCodecProvider(),
                 PojoCodecProvider.builder().automatic(true).build()));
         MongoDatabase mongoDatabase = mongoClient().getDatabase(eventsDatabaseName()).withCodecRegistry(registry);
-        processInstanceDataEventCollection = mongoDatabase.getCollection(processInstancesEventsCollection(), ProcessInstanceStateDataEvent.class).withCodecRegistry(registry);
-        userTaskInstanceDataEventCollection = mongoDatabase.getCollection(userTasksEventsCollection(), UserTaskInstanceStateDataEvent.class).withCodecRegistry(registry);
+        processInstanceDataEventCollection = mongoDatabase.getCollection(processInstancesEventsCollection(), ProcessInstanceDataEvent.class).withCodecRegistry(registry);
+        userTaskInstanceDataEventCollection = mongoDatabase.getCollection(userTasksEventsCollection(), UserTaskInstanceDataEvent.class).withCodecRegistry(registry);
     }
 
     @Override
     public void publish(DataEvent<?> event) {
-        if (this.processInstancesEvents() && event instanceof ProcessInstanceStateDataEvent) {
-            publishEvent(processInstanceDataEventCollection, (ProcessInstanceStateDataEvent) event);
+        if (this.processInstancesEvents() && event instanceof ProcessInstanceDataEvent) {
+            publishEvent(processInstanceDataEventCollection, (ProcessInstanceDataEvent) event);
             return;
         }
 
-        if (this.userTasksEvents() && event instanceof UserTaskInstanceStateDataEvent) {
-            publishEvent(userTaskInstanceDataEventCollection, (UserTaskInstanceStateDataEvent) event);
+        if (this.userTasksEvents() && event instanceof UserTaskInstanceDataEvent) {
+            publishEvent(userTaskInstanceDataEventCollection, (UserTaskInstanceDataEvent) event);
             return;
         }
 
