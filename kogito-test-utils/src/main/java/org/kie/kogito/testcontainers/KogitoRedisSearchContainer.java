@@ -26,7 +26,7 @@ public class KogitoRedisSearchContainer extends KogitoGenericContainer<KogitoRed
     public KogitoRedisSearchContainer() {
         super(NAME);
         addExposedPort(PORT);
-        waitingFor(Wait.forLogMessage(".*Ready to accept connections.*\\s", 1));
+        waitingFor(Wait.forLogMessage(".*Ready to accept connections.*\\s", 1).withStartupTimeout(Constants.CONTAINER_START_TIMEOUT));
     }
 
     @Override
