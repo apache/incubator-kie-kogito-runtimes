@@ -32,10 +32,10 @@ public class EventMongoDBCodecProvider implements CodecProvider {
     @SuppressWarnings("unchecked")
     @Override
     public <T> Codec<T> get(Class<T> aClass, CodecRegistry codecRegistry) {
-        if (aClass.isAssignableFrom(ProcessInstanceDataEvent.class)) {
+        if (ProcessInstanceDataEvent.class.isAssignableFrom(aClass)) {
             return (Codec<T>) PROCESS_INSTANCE_DATA_EVENT_CODEC;
         }
-        if (aClass.isAssignableFrom(UserTaskInstanceDataEvent.class)) {
+        if (UserTaskInstanceDataEvent.class.isAssignableFrom(aClass)) {
             return (Codec<T>) USER_TASK_INSTANCE_DATA_EVENT_CODEC;
         }
         return null;
