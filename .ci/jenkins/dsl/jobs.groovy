@@ -41,9 +41,6 @@ Map getMultijobPRConfig(JenkinsFolder jobFolder) {
                 id: 'kogito-runtimes',
                 primary: true,
                 env : [
-                    // Sonarcloud analysis only on main branch
-                    // As we have only Community edition
-                    ENABLE_SONARCLOUD: EnvUtils.isDefaultEnvironment(this, jobFolder.getEnvironmentName()) && Utils.isMainBranch(this),
                     BUILD_MVN_OPTS_CURRENT: "${defaultBuildMvnOptsCurrent} ${getRuntimesBuildMvnOptions(jobFolder).join(' ')}",
                 ]
             ], [
