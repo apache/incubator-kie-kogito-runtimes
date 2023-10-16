@@ -19,7 +19,6 @@
 package org.kie.kogito.events.process;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -28,19 +27,16 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.smallrye.reactive.messaging.providers.locals.ContextAwareMessage;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.quarkus.common.reactive.messaging.MessageDecoratorProvider;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventPublisher;
+import org.kie.kogito.events.config.EventsRuntimeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.smallrye.reactive.messaging.MutinyEmitter;
-import io.smallrye.reactive.messaging.providers.locals.ContextAwareMessage;
 
 @Singleton
 public class ReactiveMessagingEventPublisher implements EventPublisher {
@@ -57,6 +53,10 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
     MutinyEmitter<String> processInstancesEventsEmitter;
 
     @Inject
+    @Channel(PD_TOPIC_NAME)
+    Emitter<String> processDefinitionEventsEmitter;
+
+    @Inject
     @Channel(UI_TOPIC_NAME)
     MutinyEmitter<String> userTasksEventsEmitter;
 
@@ -67,6 +67,9 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
     @Inject
     @ConfigProperty(name = "kogito.events.usertasks.enabled")
     Optional<Boolean> userTasksEvents;
+
+    @Inject
+    EventsRuntimeConfig eventsRuntimeConfig;
 
     @Inject
     Instance<MessageDecoratorProvider> decoratorProviderInstance;
@@ -82,6 +85,12 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
     public void publish(DataEvent<?> event) {
 
         switch (event.getType()) {
+            sdsfds
+            case "ProcessDefinitionEvent":
+                if (eventsRuntimeConfig.isProcessDefinitionEventsEnabled()) {
+                    publishToTopic(event, processDefinitionEventsEmitter, PD_TOPIC_NAME);
+                }
+                break;
             case "ProcessInstanceErrorDataEvent":
             case "ProcessInstanceNodeDataEvent":
             case "ProcessInstanceSLADataEvent":
@@ -91,6 +100,7 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
                     publishToTopic(event, processInstancesEventsEmitter, PI_TOPIC_NAME);
                 }
                 break;
+
             case "UserTaskInstanceAssignmentDataEvent":
             case "UserTaskInstanceAttachmentDataEvent":
             case "UserTaskInstanceCommentDataEvent":

@@ -31,6 +31,11 @@ import java.util.Collection;
  */
 public interface EventPublisher {
 
+    String PI_TOPIC_NAME = "kogito-processinstances-events";
+    String UI_TOPIC_NAME = "kogito-usertaskinstances-events";
+    String VI_TOPIC_NAME = "kogito-variables-events";
+    String PD_TOPIC_NAME = "kogito-process-definition-events";
+
     /**
      * Publishes individual event
      * 
