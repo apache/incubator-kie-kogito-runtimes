@@ -61,6 +61,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
+import org.kie.kogito.internal.utils.ConversionUtils;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
@@ -108,7 +109,7 @@ public class ProcessResourceGenerator {
         this.context = context;
         this.process = process;
         this.processId = process.getId();
-        this.processName = processId.substring(processId.lastIndexOf('.') + 1);
+        this.processName = ConversionUtils.sanitizeToSimpleName(processId);
         this.resourceClazzName = sanitizeClassName(processName + "Resource");
         this.relativePath = process.getPackageName().replace(".", "/") + "/" + resourceClazzName + ".java";
         this.modelfqcn = modelfqcn;

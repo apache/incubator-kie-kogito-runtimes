@@ -27,6 +27,7 @@ import org.kie.kogito.event.impl.ProcessEventBatch;
 import org.kie.kogito.event.process.NodeDefinitionEventBody;
 import org.kie.kogito.event.process.ProcessDefinitionDataEvent;
 import org.kie.kogito.event.process.ProcessDefinitionEventBody;
+import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
 import org.slf4j.Logger;
@@ -71,7 +72,9 @@ public class ProcessDefinitionEventRegistry {
     }
 
     private static String getEndpoint(String endpoint, Process<?> p) {
-        return endpoint + "/" + (p.id().contains(".") ? p.id().substring(p.id().lastIndexOf('.') + 1) : p.id());
+        //sanitize process path in case of fqdn org.acme.ProcessExample -> ProcessExample
+        String processPath = ConversionUtils.sanitizeToSimpleName(p.id());
+        return endpoint + "/" + processPath;
     }
     private List<NodeDefinitionEventBody> getNodesDefinitions(Process<?> p) {
         return p.findNodes(n -> true).stream()
