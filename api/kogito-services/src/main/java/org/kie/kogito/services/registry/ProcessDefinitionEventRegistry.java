@@ -76,6 +76,7 @@ public class ProcessDefinitionEventRegistry {
         String processPath = ConversionUtils.sanitizeToSimpleName(p.id());
         return endpoint + "/" + processPath;
     }
+
     private List<NodeDefinitionEventBody> getNodesDefinitions(Process<?> p) {
         return p.findNodes(n -> true).stream()
                 .map(node -> NodeDefinitionEventBody.builder()

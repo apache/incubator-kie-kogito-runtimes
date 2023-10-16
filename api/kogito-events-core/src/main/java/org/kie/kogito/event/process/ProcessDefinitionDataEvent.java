@@ -22,9 +22,10 @@ public class ProcessDefinitionDataEvent extends ProcessDataEvent<ProcessDefiniti
 
     public static final String PROCESS_DEFINITION_EVENT = "ProcessDefinitionEvent";
 
-    public ProcessDefinitionDataEvent(){
+    public ProcessDefinitionDataEvent() {
 
     }
+
     public ProcessDefinitionDataEvent(ProcessDefinitionEventBody body) {
         super(PROCESS_DEFINITION_EVENT,
                 body.getEndpoint(),

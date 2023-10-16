@@ -141,7 +141,7 @@ class ConversionUtilsTest {
     }
 
     @Test
-    public void testSanitizeToSimpleName(){
+    public void testSanitizeToSimpleName() {
         String nameFull = "org.acme.ProcessTest1";
         String nameSimple = "ProcessTest2";
         String nameEmpty = "";

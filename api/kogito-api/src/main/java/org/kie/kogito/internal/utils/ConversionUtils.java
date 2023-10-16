@@ -264,11 +264,12 @@ public class ConversionUtils {
 
     /**
      * Receives a String possibly with FQDN org.acme.ProcessTest1 and returns a simple name like ProcessTest1
+     * 
      * @param processId a possible FQDN
      * @return simple name
      */
-    public static String sanitizeToSimpleName(String processId){
-        if(Objects.isNull(processId)){
+    public static String sanitizeToSimpleName(String processId) {
+        if (Objects.isNull(processId)) {
             return null;
         }
         return processId.substring(processId.lastIndexOf('.') + 1);

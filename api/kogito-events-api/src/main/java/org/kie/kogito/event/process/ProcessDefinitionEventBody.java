@@ -84,9 +84,10 @@ public class ProcessDefinitionEventBody {
         return nodes;
     }
 
-    public static ProcessDefinitionEventBodyBuilder builder(){
+    public static ProcessDefinitionEventBodyBuilder builder() {
         return new ProcessDefinitionEventBodyBuilder();
     }
+
     public static class ProcessDefinitionEventBodyBuilder {
         private String id;
         private String name;

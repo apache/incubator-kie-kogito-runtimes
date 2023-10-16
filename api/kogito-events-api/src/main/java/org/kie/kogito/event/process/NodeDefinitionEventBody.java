@@ -11,6 +11,7 @@ public class NodeDefinitionEventBody {
 
     public NodeDefinitionEventBody() {
     }
+
     public NodeDefinitionEventBody(String id, String nodeName, String nodeType, String uniqueId, Map<String, ?> metadata) {
         this.id = id;
         this.nodeName = nodeName;
