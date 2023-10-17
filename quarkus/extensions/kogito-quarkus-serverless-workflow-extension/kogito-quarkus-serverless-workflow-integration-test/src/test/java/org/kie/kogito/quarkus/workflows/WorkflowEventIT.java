@@ -18,16 +18,23 @@
  */
 package org.kie.kogito.quarkus.workflows;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.assertj.core.api.Assertions;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.cloudevents.jackson.JsonFormat;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.EventPublisher;
@@ -42,17 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import io.cloudevents.jackson.JsonFormat;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -122,7 +120,7 @@ public class WorkflowEventIT {
 
     @Test
     void testWorkflowDefinitionsEvents() {
-        List<ProcessDefinitionDataEvent> definitionDataEvents = Collections.synchronizedList(new ArrayList<>());
+        Collection<ProcessDefinitionDataEvent> definitionDataEvents = new ConcurrentLinkedQueue<>();
         kafkaClient.consume(Set.of(EventPublisher.PD_TOPIC_NAME), s -> {
             LOGGER.debug("Received from kafka: {}", s);
             try {
@@ -143,13 +141,13 @@ public class WorkflowEventIT {
                 .extract()
                 .body().as(List.class);
 
-        Awaitility.waitAtMost(10, TimeUnit.SECONDS).untilAsserted(() -> Assertions.assertThat(definitionDataEvents).hasSize(processIds.size()));
+        Awaitility.waitAtMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).untilAsserted(() -> assertThat(definitionDataEvents).hasSize(processIds.size()));
 
         List<String> processIdsFromEvent = definitionDataEvents.stream()
                 .map(ProcessDefinitionDataEvent::getData)
                 .map(ProcessDefinitionEventBody::getId)
                 .collect(Collectors.toList());
 
-        Assertions.assertThat(processIdsFromEvent).containsAll(processIds);
+        assertThat(processIdsFromEvent).containsAll(processIds);
     }
 }
