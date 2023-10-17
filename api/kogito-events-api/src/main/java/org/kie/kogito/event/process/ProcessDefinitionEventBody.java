@@ -31,12 +31,12 @@ public class ProcessDefinitionEventBody {
     private Set<String> addons;
     private String endpoint;
     private String source;
-    private List<NodeDefinitionEventBody> nodes;
+    private List<NodeDefinition> nodes;
 
     public ProcessDefinitionEventBody() {
     }
 
-    public ProcessDefinitionEventBody(String id, String name, String version, String type, Set<String> roles, Set<String> addons, String endpoint, String source, List<NodeDefinitionEventBody> nodes) {
+    public ProcessDefinitionEventBody(String id, String name, String version, String type, Set<String> roles, Set<String> addons, String endpoint, String source, List<NodeDefinition> nodes) {
         this.id = id;
         this.name = name;
         this.version = version;
@@ -80,7 +80,7 @@ public class ProcessDefinitionEventBody {
         return source;
     }
 
-    public List<NodeDefinitionEventBody> getNodes() {
+    public List<NodeDefinition> getNodes() {
         return nodes;
     }
 
@@ -97,7 +97,7 @@ public class ProcessDefinitionEventBody {
         private Set<String> addons;
         private String endpoint;
         private String source;
-        private List<NodeDefinitionEventBody> nodes;
+        private List<NodeDefinition> nodes;
 
         public ProcessDefinitionEventBodyBuilder setId(String id) {
             this.id = id;
@@ -139,7 +139,7 @@ public class ProcessDefinitionEventBody {
             return this;
         }
 
-        public ProcessDefinitionEventBodyBuilder setNodes(List<NodeDefinitionEventBody> nodes) {
+        public ProcessDefinitionEventBodyBuilder setNodes(List<NodeDefinition> nodes) {
             this.nodes = nodes;
             return this;
         }
