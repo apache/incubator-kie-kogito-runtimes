@@ -31,7 +31,7 @@ import org.jboss.jandex.IndexView;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.ProcessContainerGenerator;
 import org.kie.kogito.codegen.process.ProcessGenerator;
-import org.kie.kogito.event.process.NodeDefinitionEventBody;
+import org.kie.kogito.event.process.NodeDefinition;
 import org.kie.kogito.event.process.NodeInstanceEventBody;
 import org.kie.kogito.event.process.ProcessDataEvent;
 import org.kie.kogito.event.process.ProcessDefinitionDataEvent;
@@ -134,7 +134,7 @@ public class ServerlessWorkflowAssetsProcessor extends WorkflowProcessor {
                 ProcessInstanceEventBody.class.getName(),
                 ProcessDefinitionDataEvent.class.getName(),
                 ProcessDefinitionEventBody.class.getName(),
-                NodeDefinitionEventBody.class.getName(),
+                NodeDefinition.class.getName(),
                 VariableInstanceDataEvent.class.getName(),
                 VariableInstanceEventBody.class.getName());
     }

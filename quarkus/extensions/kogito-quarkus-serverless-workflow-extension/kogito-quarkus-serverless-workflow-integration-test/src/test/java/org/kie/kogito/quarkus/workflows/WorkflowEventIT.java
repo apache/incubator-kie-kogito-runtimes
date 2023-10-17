@@ -19,6 +19,7 @@
 package org.kie.kogito.quarkus.workflows;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -121,7 +122,7 @@ public class WorkflowEventIT {
 
     @Test
     void testWorkflowDefinitionsEvents() {
-        List<ProcessDefinitionDataEvent> definitionDataEvents = new ArrayList<>();
+        List<ProcessDefinitionDataEvent> definitionDataEvents = Collections.synchronizedList(new ArrayList<>());
         kafkaClient.consume(Set.of(EventPublisher.PD_TOPIC_NAME), s -> {
             LOGGER.debug("Received from kafka: {}", s);
             try {
