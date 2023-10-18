@@ -23,11 +23,12 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import io.quarkus.runtime.StartupEvent;
 import org.kie.kogito.Application;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.quarkus.config.KogitoRuntimeConfig;
 import org.kie.kogito.services.registry.ProcessDefinitionEventRegistry;
+
+import io.quarkus.runtime.StartupEvent;
 
 @ApplicationScoped
 public class ProcessDefinitionRegistration {
