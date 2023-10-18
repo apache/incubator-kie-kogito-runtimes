@@ -43,6 +43,7 @@ import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.codegen.core.GeneratorConfig;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.internal.utils.ConversionUtils;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -61,7 +62,6 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
-import org.kie.kogito.internal.utils.ConversionUtils;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;

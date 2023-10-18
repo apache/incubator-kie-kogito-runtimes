@@ -35,7 +35,6 @@ public class SpringBootKogitoBuildContext extends AbstractKogitoBuildContext {
         return new SpringBootKogitoBuildContextBuilder();
     }
 
-
     @Override
     public boolean hasRest() {
         return hasClassAvailable(SPRING_REST);
