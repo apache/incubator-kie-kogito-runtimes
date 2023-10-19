@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.EventPublisher;
-import org.kie.kogito.event.process.ProcessDataEvent;
 import org.kie.kogito.event.process.ProcessDefinitionDataEvent;
 import org.kie.kogito.event.process.ProcessDefinitionEventBody;
 import org.kie.kogito.event.process.ProcessInstanceDataEvent;
@@ -87,7 +86,7 @@ public class WorkflowEventIT {
         String username = "buddy";
         String password = "buddy";
 
-        kafkaClient.consume(Set.of(EventPublisher.PI_TOPIC_NAME), s -> {
+        kafkaClient.consume(Set.of(EventPublisher.PROCESS_INSTANCES_TOPIC_NAME), s -> {
             LOGGER.info("Received from kafka: {}", s);
             try {
                 ProcessInstanceDataEvent<?> event = mapper.readValue(s, ProcessInstanceDataEvent.class);
@@ -123,7 +122,7 @@ public class WorkflowEventIT {
     @Test
     void testWorkflowDefinitionsEvents() {
         Collection<ProcessDefinitionDataEvent> definitionDataEvents = new ConcurrentLinkedQueue<>();
-        kafkaClient.consume(Set.of(EventPublisher.PD_TOPIC_NAME), s -> {
+        kafkaClient.consume(Set.of(EventPublisher.PROCESS_DEFINITIONS_TOPIC_NAME), s -> {
             LOGGER.debug("Received from kafka: {}", s);
             try {
                 ProcessDefinitionDataEvent event = mapper.readValue(s, ProcessDefinitionDataEvent.class);

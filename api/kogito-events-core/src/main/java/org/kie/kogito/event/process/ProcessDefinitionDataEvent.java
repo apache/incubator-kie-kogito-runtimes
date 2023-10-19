@@ -18,7 +18,9 @@
  */
 package org.kie.kogito.event.process;
 
-public class ProcessDefinitionDataEvent extends ProcessDataEvent<ProcessDefinitionEventBody> {
+import org.kie.kogito.event.AbstractDataEvent;
+
+public class ProcessDefinitionDataEvent extends AbstractDataEvent<ProcessDefinitionEventBody> {
 
     public static final String PROCESS_DEFINITION_EVENT = "ProcessDefinitionEvent";
 
@@ -32,14 +34,12 @@ public class ProcessDefinitionDataEvent extends ProcessDataEvent<ProcessDefiniti
                 body,
                 null,
                 null,
-                null,
-                null,
                 body.getId(),
                 null,
                 null,
                 null,
-                body.getType(),
                 null,
-                null);
+                null,
+                body.getType());
     }
 }

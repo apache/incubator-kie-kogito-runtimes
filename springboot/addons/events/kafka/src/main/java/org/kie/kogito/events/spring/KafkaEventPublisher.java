@@ -64,7 +64,7 @@ public class KafkaEventPublisher implements EventPublisher {
             case "ProcessInstanceSLADataEvent":
             case "ProcessInstanceStateDataEvent":
             case "ProcessInstanceVariableDataEvent":
-                publishToTopic(event, PI_TOPIC_NAME);
+                publishToTopic(event, PROCESS_INSTANCES_TOPIC_NAME);
                 break;
             case "UserTaskInstanceAssignmentDataEvent":
             case "UserTaskInstanceAttachmentDataEvent":
@@ -72,11 +72,11 @@ public class KafkaEventPublisher implements EventPublisher {
             case "UserTaskInstanceDeadlineDataEvent":
             case "UserTaskInstanceStateDataEvent":
             case "UserTaskInstanceVariableDataEvent":
-                publishToTopic(event, UI_TOPIC_NAME);
+                publishToTopic(event, USER_TASK_INSTANCES_TOPIC_NAME);
                 break;
             case "ProcessDefinitionEvent":
                 if (processDefinitionEvents) {
-                    publishToTopic(event, PD_TOPIC_NAME);
+                    publishToTopic(event, PROCESS_DEFINITIONS_TOPIC_NAME);
                 }
                 break;
             default:

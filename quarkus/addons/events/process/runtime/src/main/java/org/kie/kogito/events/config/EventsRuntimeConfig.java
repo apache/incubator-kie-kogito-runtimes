@@ -22,7 +22,7 @@ import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
-@ConfigRoot(name = "", phase = ConfigPhase.RUN_TIME, prefix = "kogito.events")
+@ConfigRoot(name = "kogito", phase = ConfigPhase.RUN_TIME, prefix = "events")
 public class EventsRuntimeConfig {
 
     /**
@@ -34,7 +34,7 @@ public class EventsRuntimeConfig {
     /**
      * Enable publishing processes definition events
      */
-    @ConfigItem(name = "process-definition.enabled", defaultValue = "true")
+    @ConfigItem(name = "processdefinitions.enabled", defaultValue = "true")
     boolean processDefinitionEventsEnabled;
 
     /**
@@ -42,12 +42,6 @@ public class EventsRuntimeConfig {
      */
     @ConfigItem(name = "usertasks.enabled", defaultValue = "true")
     boolean userTasksEventsEnabled;
-
-    /**
-     * Enable publishing processes instances variables events
-     */
-    @ConfigItem(name = "variables.enabled", defaultValue = "true")
-    boolean variablesEventsEnabled;
 
     public boolean isProcessInstancesEventsEnabled() {
         return processInstancesEventsEnabled;
@@ -61,7 +55,4 @@ public class EventsRuntimeConfig {
         return userTasksEventsEnabled;
     }
 
-    public boolean isVariablesEventsEnabled() {
-        return variablesEventsEnabled;
-    }
 }
