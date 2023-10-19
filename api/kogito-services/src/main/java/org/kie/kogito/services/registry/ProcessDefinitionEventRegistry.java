@@ -18,9 +18,12 @@
  */
 package org.kie.kogito.services.registry;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.kie.kogito.Application;
@@ -34,6 +37,9 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toSet;
 
 public class ProcessDefinitionEventRegistry {
 
@@ -61,16 +67,31 @@ public class ProcessDefinitionEventRegistry {
     }
 
     private Function<Process<?>, ProcessDefinitionDataEvent> mapProcessDefinition(Set<String> addons, String endpoint) {
-        return p -> new ProcessDefinitionDataEvent(ProcessDefinitionEventBody.builder()
-                .setId(p.id())
-                .setName(p.name())
-                .setVersion(p.version())
-                .setType(ProcessDefinitionDataEvent.PROCESS_DEFINITION_EVENT)
-                .setAddons(addons)
-                .setEndpoint(getEndpoint(endpoint, p))
-                .setSource(getProcessSource())
-                .setNodes(getNodesDefinitions(p))
-                .build());
+
+        return p -> {
+            Map<String, Object> metadata = Collections.emptyMap();
+            if (p instanceof Supplier) {
+                org.kie.api.definition.process.Process processDefinition = ((Supplier<org.kie.api.definition.process.Process>) p).get();
+                if (processDefinition != null) {
+                    metadata = processDefinition.getMetaData();
+                }
+            }
+            Set<String> annotations = ((List<String>) metadata.getOrDefault("annotations", emptyList())).stream().collect(toSet());
+            String description = (String) metadata.get("Description");
+            ProcessDefinitionDataEvent definitionDataEvent = new ProcessDefinitionDataEvent(ProcessDefinitionEventBody.builder()
+                    .setId(p.id())
+                    .setName(p.name())
+                    .setVersion(p.version())
+                    .setType(ProcessDefinitionDataEvent.PROCESS_DEFINITION_EVENT)
+                    .setAddons(addons)
+                    .setEndpoint(getEndpoint(endpoint, p))
+                    .setNodes(getNodesDefinitions(p))
+                    .setAnnotations(annotations)
+                    .setDescription(description)
+                    .setMetadata(metadata)
+                    .build());
+            return definitionDataEvent;
+        };
     }
 
     private static String getEndpoint(String endpoint, Process<?> p) {
@@ -89,9 +110,5 @@ public class ProcessDefinitionEventRegistry {
                         .setMetadata(node.getMetaData())
                         .build())
                 .collect(Collectors.toList());
-    }
-
-    private String getProcessSource() {
-        return null;
     }
 }

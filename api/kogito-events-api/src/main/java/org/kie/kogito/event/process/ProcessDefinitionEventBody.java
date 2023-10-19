@@ -18,33 +18,40 @@
  */
 package org.kie.kogito.event.process;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public class ProcessDefinitionEventBody {
-
     private String id;
     private String name;
+    private String description;
     private String version;
     private String type;
     private Set<String> roles;
     private Set<String> addons;
+    private Set<String> annotations;
     private String endpoint;
     private String source;
-    private List<NodeDefinition> nodes;
+    private Map<String, ?> metadata;
+    private Collection<NodeDefinition> nodes;
 
     public ProcessDefinitionEventBody() {
     }
 
-    public ProcessDefinitionEventBody(String id, String name, String version, String type, Set<String> roles, Set<String> addons, String endpoint, String source, List<NodeDefinition> nodes) {
+    public ProcessDefinitionEventBody(String id, String name, String description, String version, String type, Set<String> roles, Set<String> addons, Set<String> annotations, String endpoint,
+            String source, Map<String, ?> metadata, Collection<NodeDefinition> nodes) {
         this.id = id;
         this.name = name;
+        this.description = description;
         this.version = version;
         this.type = type;
         this.roles = roles;
         this.addons = addons;
+        this.annotations = annotations;
         this.endpoint = endpoint;
         this.source = source;
+        this.metadata = metadata;
         this.nodes = nodes;
     }
 
@@ -80,8 +87,20 @@ public class ProcessDefinitionEventBody {
         return source;
     }
 
-    public List<NodeDefinition> getNodes() {
+    public Collection<NodeDefinition> getNodes() {
         return nodes;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Set<String> getAnnotations() {
+        return annotations;
+    }
+
+    public Map<String, ?> getMetadata() {
+        return metadata;
     }
 
     public static ProcessDefinitionEventBodyBuilder builder() {
@@ -91,13 +110,16 @@ public class ProcessDefinitionEventBody {
     public static class ProcessDefinitionEventBodyBuilder {
         private String id;
         private String name;
+        private String description;
         private String version;
         private String type;
         private Set<String> roles;
         private Set<String> addons;
+        private Set<String> annotations;
         private String endpoint;
         private String source;
-        private List<NodeDefinition> nodes;
+        private Map<String, ?> metadata;
+        private Collection<NodeDefinition> nodes;
 
         public ProcessDefinitionEventBodyBuilder setId(String id) {
             this.id = id;
@@ -139,13 +161,28 @@ public class ProcessDefinitionEventBody {
             return this;
         }
 
-        public ProcessDefinitionEventBodyBuilder setNodes(List<NodeDefinition> nodes) {
+        public ProcessDefinitionEventBodyBuilder setDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public ProcessDefinitionEventBodyBuilder setAnnotations(Set<String> annotations) {
+            this.annotations = annotations;
+            return this;
+        }
+
+        public ProcessDefinitionEventBodyBuilder setMetadata(Map<String, ?> metadata) {
+            this.metadata = metadata;
+            return this;
+        }
+
+        public ProcessDefinitionEventBodyBuilder setNodes(Collection<NodeDefinition> nodes) {
             this.nodes = nodes;
             return this;
         }
 
         public ProcessDefinitionEventBody build() {
-            return new ProcessDefinitionEventBody(id, name, version, type, roles, addons, endpoint, source, nodes);
+            return new ProcessDefinitionEventBody(id, name, description, version, type, roles, addons, annotations, endpoint, source, metadata, nodes);
         }
     }
 }

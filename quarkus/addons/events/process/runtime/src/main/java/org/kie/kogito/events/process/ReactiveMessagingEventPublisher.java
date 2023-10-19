@@ -27,8 +27,6 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.smallrye.reactive.messaging.providers.locals.ContextAwareMessage;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.quarkus.common.reactive.messaging.MessageDecoratorProvider;
@@ -37,6 +35,10 @@ import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.events.config.EventsRuntimeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.smallrye.reactive.messaging.providers.locals.ContextAwareMessage;
 
 @Singleton
 public class ReactiveMessagingEventPublisher implements EventPublisher {
