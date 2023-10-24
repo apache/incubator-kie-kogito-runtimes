@@ -1,0 +1,47 @@
+@Library('jenkins-pipeline-shared-libraries')_
+
+pr_check_script = null
+
+pipeline {
+    agent {
+        label 'ubuntu'
+    }
+    options {
+        timestamps()
+        timeout(time: 480, unit: 'MINUTES')
+        disableConcurrentBuilds(abortPrevious: true)
+    }
+    environment {
+        BUILDCHAIN_PROJECT = 'apache/incubator-kie-kogito-runtimes'
+
+        ENABLE_SONARCLOUD = 'false'
+        KOGITO_RUNTIMES_BUILD_MVN_OPTS = '-Dvalidate-formatting -Prun-code-coverage'
+    }
+    stages {
+        stage('Initialize') {
+            steps {
+                script {
+                    // load `pr_check.groovy` file from kogito-pipelines:main
+                    dir('kogito-pipelines') {
+                        checkout(githubscm.resolveRepository('incubator-kie-kogito-pipelines', 'apache', 'main', false, 'ASF_Cloudbees_Jenkins_ci-builds'))
+                        pr_check_script = load 'dsl/scripts/pr_check.groovy'
+                    }
+                }
+            }
+        }
+        stage('PR check') {
+            steps {
+                script {
+                    dir('kogito-pipelines') {
+                        pr_check_script.launch()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        cleanup {
+            cleanWs()
+        }
+    }
+}
