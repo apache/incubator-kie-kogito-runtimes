@@ -471,7 +471,7 @@
             <skipInvocation>${skipTests}</skipInvocation>
             <failIfNoProjects>true</failIfNoProjects>
             <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-	    <writeJunitReport>true</writeJunitReport>
+            <writeJunitReport>true</writeJunitReport>
           </configuration>
         </plugin>
         <plugin>
