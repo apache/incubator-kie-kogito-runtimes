@@ -19,7 +19,7 @@
     },
     {
       "name": "timeoutError",
-      "code": "org.jbpm.process.core.context.exception.TimerExpiredException"
+      "code": "TimedOut"
     }
   ],
   "functions": [

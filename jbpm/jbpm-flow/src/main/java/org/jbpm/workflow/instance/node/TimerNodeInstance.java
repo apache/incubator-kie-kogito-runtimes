@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.jbpm.process.core.context.exception.ExceptionScope;
-import org.jbpm.process.core.context.exception.TimerExpiredException;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.workflow.core.Node;
@@ -40,6 +39,7 @@ import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
+import org.kie.kogito.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.services.uow.BaseWorkUnit;
 import org.kie.kogito.timer.TimerInstance;
 import org.kie.kogito.uow.WorkUnit;
@@ -117,8 +117,8 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
 
     @Override
     public void triggerCompleted(boolean remove) {
-        Exception e = new TimerExpiredException();
-        ExceptionScopeInstance esi = getExceptionScopeInstance(e);
+        Exception e = new WorkItemExecutionException("TimedOut");
+        ExceptionScopeInstance esi = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, e);
         if (esi != null) {
             logger.debug("Triggering exception handler for {}", e.getClass().getName());
             esi.handleException(e, getProcessContext(e));
@@ -126,10 +126,6 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
             logger.trace("No exception handler for {}", e.getClass().getName());
             triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, remove);
         }
-    }
-
-    private ExceptionScopeInstance getExceptionScopeInstance(Exception e) {
-        return (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, e);
     }
 
     @Override
