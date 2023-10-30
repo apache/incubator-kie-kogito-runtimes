@@ -175,6 +175,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         return false;
     }
 
+    @Override
     public CancelType getCancelType() {
         return cancelType;
     }

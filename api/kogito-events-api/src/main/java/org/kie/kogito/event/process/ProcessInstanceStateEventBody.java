@@ -62,6 +62,8 @@ public class ProcessInstanceStateEventBody {
 
     private Set<String> roles;
 
+    public Date slaDueDate;
+
     public Date getEventDate() {
         return eventDate;
     }
@@ -118,6 +120,10 @@ public class ProcessInstanceStateEventBody {
         return roles;
     }
 
+    public Date getSlaDueDate() {
+        return slaDueDate;
+    }
+    
     public Builder update() {
         return new Builder(this);
     }
@@ -245,8 +251,14 @@ public class ProcessInstanceStateEventBody {
             return this;
         }
 
+        public Builder slaDueDate(Date slaDueDate) {
+            instance.slaDueDate = slaDueDate;
+            return this;
+        }
+
         public ProcessInstanceStateEventBody build() {
             return instance;
         }
+
     }
 }

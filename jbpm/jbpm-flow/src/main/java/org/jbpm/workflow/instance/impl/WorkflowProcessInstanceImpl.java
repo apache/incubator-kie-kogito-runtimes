@@ -140,6 +140,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     private Date endDate;
 
     private String nodeIdInError;
+    private String nodeInstanceIdInError;
     private String errorMessage;
     private transient Optional<Throwable> errorCause = Optional.empty();
 
@@ -1105,6 +1106,11 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     public String getNodeIdInError() {
         return nodeIdInError;
     }
+    
+    @Override
+    public String getNodeInstanceIdInError() {
+        return nodeInstanceIdInError;
+    }
 
     @Override
     public String getErrorMessage() {
@@ -1137,12 +1143,12 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     @Override
     public void setErrorState(NodeInstance nodeInstanceInError, Exception e) {
         this.nodeIdInError = nodeInstanceInError.getNodeDefinitionId();
+        this.nodeInstanceIdInError = nodeInstanceInError.getId();
         this.errorCause = Optional.of(e);
         Throwable rootException = getRootException(e);
         this.errorMessage = rootException.getClass().getCanonicalName() + " - " + rootException.getMessage();
         setState(STATE_ERROR);
         logger.error("Unexpected error while executing node {} in process instance {}", nodeInstanceInError.getNode().getName(), this.getStringId(), e);
-        e.printStackTrace();
         // remove node instance that caused an error
         ((org.jbpm.workflow.instance.NodeInstanceContainer) nodeInstanceInError.getNodeInstanceContainer()).removeNodeInstance(nodeInstanceInError);
     }
