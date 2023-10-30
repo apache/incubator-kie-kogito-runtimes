@@ -1106,7 +1106,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     public String getNodeIdInError() {
         return nodeIdInError;
     }
-    
+
     @Override
     public String getNodeInstanceIdInError() {
         return nodeInstanceIdInError;

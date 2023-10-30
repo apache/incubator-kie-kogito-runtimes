@@ -42,9 +42,9 @@ public class ProcessInstanceSLAEventBody {
     private String nodeInstanceId;
 
     private String nodeName;
-    
+
     private String nodeType;
-    
+
     public Date getEventDate() {
         return eventDate;
     }
@@ -72,7 +72,7 @@ public class ProcessInstanceSLAEventBody {
     public String getNodeInstanceId() {
         return nodeInstanceId;
     }
-    
+
     public String getNodeName() {
         return nodeName;
     }
@@ -132,12 +132,12 @@ public class ProcessInstanceSLAEventBody {
             instance.nodeDefinitionId = nodeDefinitionId;
             return this;
         }
-        
+
         public Builder nodeName(String nodeName) {
             instance.nodeName = nodeName;
             return this;
         }
-        
+
         public Builder nodeType(String nodeType) {
             instance.nodeType = nodeType;
             return this;
@@ -147,6 +147,5 @@ public class ProcessInstanceSLAEventBody {
             return instance;
         }
     }
-
 
 }

@@ -339,7 +339,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
         Map<String, Object> metadata = buildUserTaskMetadata((HumanTaskWorkItem) event.getWorkItem());
         metadata.putAll(buildProcessMetadata((KogitoWorkflowProcessInstance) event.getProcessInstance()));
         KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
-        
+
         int eventType = UserTaskInstanceCommentEventBody.EVENT_TYPE_ADDED;
         if (event.getOldComment() != null && event.getNewComment() == null) {
             eventType = UserTaskInstanceCommentEventBody.EVENT_TYPE_DELETED;
@@ -383,7 +383,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
         Map<String, Object> metadata = buildUserTaskMetadata((HumanTaskWorkItem) event.getWorkItem());
         metadata.putAll(buildProcessMetadata((KogitoWorkflowProcessInstance) event.getProcessInstance()));
         KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
-        
+
         int eventType = UserTaskInstanceAttachmentEventBody.EVENT_TYPE_ADDED;
         if (event.getOldAttachment() != null && event.getNewAttachment() == null) {
             eventType = UserTaskInstanceAttachmentEventBody.EVENT_TYPE_DELETED;
@@ -438,7 +438,8 @@ public class ProcessInstanceEventBatch implements EventBatch {
                 .users(event.getNewUsersId());
 
         UserTaskInstanceAssignmentEventBody body = builder.build();
-        UserTaskInstanceAssignmentDataEvent utEvent = new UserTaskInstanceAssignmentDataEvent(buildSource(event.getProcessInstance().getProcessId()), addons.toString(), event.getEventUser(), metadata, body);
+        UserTaskInstanceAssignmentDataEvent utEvent =
+                new UserTaskInstanceAssignmentDataEvent(buildSource(event.getProcessInstance().getProcessId()), addons.toString(), event.getEventUser(), metadata, body);
         utEvent.setKogitoBusinessKey(pi.getBusinessKey());
         processedEvents.add(utEvent);
     }
@@ -456,7 +457,8 @@ public class ProcessInstanceEventBatch implements EventBatch {
                 .notification(event.getNotification());
 
         UserTaskInstanceDeadlineEventBody body = builder.build();
-        UserTaskInstanceDeadlineDataEvent utEvent = new UserTaskInstanceDeadlineDataEvent(buildSource(event.getProcessInstance().getProcessId()), addons.toString(), event.getEventUser(), metadata, body);
+        UserTaskInstanceDeadlineDataEvent utEvent =
+                new UserTaskInstanceDeadlineDataEvent(buildSource(event.getProcessInstance().getProcessId()), addons.toString(), event.getEventUser(), metadata, body);
         utEvent.setKogitoBusinessKey(pi.getBusinessKey());
         processedEvents.add(utEvent);
     }
@@ -501,7 +503,8 @@ public class ProcessInstanceEventBatch implements EventBatch {
                 .variableType(event.getVariableType().name());
 
         UserTaskInstanceVariableEventBody body = builder.build();
-        UserTaskInstanceVariableDataEvent utEvent = new UserTaskInstanceVariableDataEvent(buildSource(event.getProcessInstance().getProcessId()), addons.toString(), event.getEventUser(), metadata, body);
+        UserTaskInstanceVariableDataEvent utEvent =
+                new UserTaskInstanceVariableDataEvent(buildSource(event.getProcessInstance().getProcessId()), addons.toString(), event.getEventUser(), metadata, body);
         utEvent.setKogitoBusinessKey(pi.getBusinessKey());
         processedEvents.add(utEvent);
 

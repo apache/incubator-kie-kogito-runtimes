@@ -123,7 +123,7 @@ public class ProcessInstanceStateEventBody {
     public Date getSlaDueDate() {
         return slaDueDate;
     }
-    
+
     public Builder update() {
         return new Builder(this);
     }

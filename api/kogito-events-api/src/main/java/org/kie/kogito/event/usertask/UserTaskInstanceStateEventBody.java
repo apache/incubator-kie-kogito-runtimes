@@ -90,7 +90,7 @@ public class UserTaskInstanceStateEventBody {
     public String getProcessInstanceId() {
         return processInstanceId;
     }
-    
+
     public String getEventType() {
         return eventType;
     }
@@ -193,7 +193,7 @@ public class UserTaskInstanceStateEventBody {
             this.instance.actualOwner = userId;
             return this;
         }
-        
+
         public Builder eventType(String eventType) {
             this.instance.eventType = eventType;
             return this;
@@ -208,6 +208,5 @@ public class UserTaskInstanceStateEventBody {
             return this.instance;
         }
     }
-
 
 }
