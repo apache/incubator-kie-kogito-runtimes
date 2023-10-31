@@ -150,22 +150,21 @@ class PojoServiceIT {
     }
 
     private void doIt(String flowName) throws Exception {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "javierito");
+        body.put("age", 666);
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(Collections.singletonMap("workflowdata", body))
+                .post("/" + flowName)
+                .then()
+                .statusCode(201)
+                .body("id", notNullValue())
+                .body("workflowdata.name", is("javieritoPerson"))
+                .body("workflowdata.age", nullValue());
         JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, ProcessInstanceVariableDataEvent.class,
-                e -> flowName.equals(e.get("kogitoprocid")) && "workflowdata".equals(e.get("data.variableName")), true, () -> {
-                    Map<String, Object> body = new HashMap<>();
-                    body.put("name", "javierito");
-                    body.put("age", 666);
-                    given()
-                            .contentType(ContentType.JSON)
-                            .when()
-                            .body(Collections.singletonMap("workflowdata", body))
-                            .post("/" + flowName)
-                            .then()
-                            .statusCode(201)
-                            .body("id", notNullValue())
-                            .body("workflowdata.name", is("javieritoPerson"))
-                            .body("workflowdata.age", nullValue());
-                });
+                e -> flowName.equals(e.get("kogitoprocid")) && "workflowdata".equals(e.get("data.variableName")), true);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variableValue");
         assertThat(workflowDataMap).hasSize(1);
         assertThat(workflowDataMap).containsEntry("name", "javieritoPerson");
