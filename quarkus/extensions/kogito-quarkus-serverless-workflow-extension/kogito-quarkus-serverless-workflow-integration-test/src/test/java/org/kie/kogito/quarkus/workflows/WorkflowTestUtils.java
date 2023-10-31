@@ -47,6 +47,12 @@ public class WorkflowTestUtils {
 
     public static <T extends DataEvent<?>> JsonPath waitForKogitoProcessInstanceEvent(KafkaTestClient kafkaClient, Class<T> eventType, Predicate<JsonPath> predicate, boolean shutdownAfterConsume)
             throws Exception {
+        return waitForKogitoProcessInstanceEvent(kafkaClient, eventType, predicate, shutdownAfterConsume, () -> {
+        });
+    }
+
+    public static <T extends DataEvent<?>> JsonPath waitForKogitoProcessInstanceEvent(KafkaTestClient kafkaClient, Class<T> eventType, Predicate<JsonPath> predicate, boolean shutdownAfterConsume,
+            Runnable runnable) throws InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         final AtomicReference<JsonPath> cloudEvent = new AtomicReference<>();
 
@@ -61,6 +67,8 @@ public class WorkflowTestUtils {
                 countDownLatch.countDown();
             }
         });
+
+        runnable.run();
         // give some time to consume the event
         assertThat(countDownLatch.await(TIME_OUT_SECONDS, TimeUnit.SECONDS)).isTrue();
         if (shutdownAfterConsume) {
@@ -68,5 +76,4 @@ public class WorkflowTestUtils {
         }
         return cloudEvent.get();
     }
-
 }
