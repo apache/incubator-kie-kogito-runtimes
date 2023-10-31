@@ -298,7 +298,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     @Override
     public String getBusinessKey() {
-        return correlationKey;
+        return getCorrelationKey();
     }
 
     @Override

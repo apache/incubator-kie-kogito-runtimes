@@ -72,7 +72,7 @@ public interface KogitoNodeInstance extends NodeInstance {
 
     Date getSlaDueDate();
 
-    default Map<String, Object> getMetadata() {
+    default Map<String, Object> getMetaData() {
         return Collections.emptyMap();
     }
 }

@@ -69,6 +69,7 @@ import org.kie.kogito.event.usertask.UserTaskInstanceVariableEventBody;
 import org.kie.kogito.internal.process.event.KogitoProcessVariableChangedEvent;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.kie.kogito.process.workitem.HumanTaskWorkItem;
@@ -149,6 +150,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
 
     private void handleProcesssNodeEvent(SLAViolatedEvent event) {
         Map<String, Object> metadata = buildProcessMetadata((KogitoWorkflowProcessInstance) event.getProcessInstance());
+        KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
 
         ProcessInstanceSLAEventBody.Builder builder = ProcessInstanceSLAEventBody.create()
                 .eventDate(new Date())
@@ -165,8 +167,9 @@ public class ProcessInstanceEventBatch implements EventBatch {
         }
 
         ProcessInstanceSLAEventBody body = builder.build();
-        ProcessInstanceSLADataEvent pieEvent = new ProcessInstanceSLADataEvent(buildSource(event.getProcessInstance().getProcessId()), addons.toString(), event.getEventIdentity(), metadata, body);
-        processedEvents.add(pieEvent);
+        ProcessInstanceSLADataEvent piEvent = new ProcessInstanceSLADataEvent(buildSource(event.getProcessInstance().getProcessId()), addons.toString(), event.getEventIdentity(), metadata, body);
+        piEvent.setKogitoBusinessKey(pi.getBusinessKey());
+        processedEvents.add(piEvent);
     }
 
     private void handleProcesssNodeEvent(ProcessNodeLeftEvent event) {
@@ -212,11 +215,19 @@ public class ProcessInstanceEventBatch implements EventBatch {
                 .nodeType(event.getNodeInstance().getNode().getClass().getSimpleName())
                 .nodeInstanceId(event.getNodeInstance().getId())
                 .nodeDefinitionId(event.getNodeInstance().getNode().getNodeUniqueId())
-                .slaDueDate(nodeInstance.getSlaDueDate())
-                .connectionNodeDefinitionId((String) nodeInstance.getMetadata().get("OutgoingConnection"));
+                .slaDueDate(nodeInstance.getSlaDueDate());
+
+        if (eventType == ProcessInstanceNodeEventBody.EVENT_TYPE_ENTER) {
+            builder.connectionNodeDefinitionId((String) nodeInstance.getMetaData().get("IncomingConnection"));
+        } else {
+            builder.connectionNodeDefinitionId((String) nodeInstance.getMetaData().get("OutgoingConnection"));
+        }
 
         if (nodeInstance instanceof KogitoWorkItemNodeInstance) {
-            builder.workItemId(((KogitoWorkItemNodeInstance) nodeInstance).getWorkItem().getStringId());
+            KogitoWorkItem workItem = ((KogitoWorkItemNodeInstance) nodeInstance).getWorkItem();
+            if (workItem != null) {
+                builder.workItemId(workItem.getStringId());
+            }
         }
 
         ProcessInstanceNodeEventBody body = builder.build();
@@ -464,6 +475,9 @@ public class ProcessInstanceEventBatch implements EventBatch {
     }
 
     private void handleUserTaskStateEvent(UserTaskStateEvent event) {
+        if (event.getNewStatus() == null) {
+            return;
+        }
         Map<String, Object> metadata = buildUserTaskMetadata((HumanTaskWorkItem) event.getWorkItem());
         metadata.putAll(buildProcessMetadata((KogitoWorkflowProcessInstance) event.getProcessInstance()));
         KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
