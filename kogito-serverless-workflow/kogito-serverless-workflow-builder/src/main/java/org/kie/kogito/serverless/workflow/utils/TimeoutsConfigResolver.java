@@ -21,6 +21,8 @@ package org.kie.kogito.serverless.workflow.utils;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 
+import org.kie.kogito.process.expr.ExpressionHandlerFactory;
+
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.interfaces.State;
 import io.serverlessworkflow.api.timeouts.TimeoutsDefinition;
@@ -45,7 +47,8 @@ public class TimeoutsConfigResolver {
                     String.format(INVALID_EVENT_TIMEOUT_FOR_STATE_ERROR,
                             timeouts.getEventTimeout(),
                             state.getName(),
-                            workflow.getName()));
+                            workflow.getName()),
+                    workflow.getExpressionLang());
             return timeouts.getEventTimeout();
         } else {
             timeouts = workflow.getTimeouts();
@@ -53,18 +56,21 @@ public class TimeoutsConfigResolver {
                 validateDuration(timeouts.getEventTimeout(),
                         String.format(INVALID_EVENT_TIMEOUT_FOR_WORKFLOW_ERROR,
                                 timeouts.getEventTimeout(),
-                                workflow.getName()));
+                                workflow.getName()),
+                        workflow.getExpressionLang());
                 return timeouts.getEventTimeout();
             }
         }
         return null;
     }
 
-    private static void validateDuration(String value, String message) {
-        try {
-            Duration.parse(value);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException(message, e);
+    private static void validateDuration(String value, String message, String exprLanguage) {
+        if (!ExpressionHandlerFactory.get(exprLanguage, value).isValid()) {
+            try {
+                Duration.parse(value);
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException(message, e);
+            }
         }
     }
 }

@@ -129,6 +129,7 @@ public class ServerlessWorkflowParser {
                         DEFAULT_PACKAGE) : DEFAULT_PACKAGE)
                 .visibility("Public")
                 .expressionLanguage(workflow.getExpressionLang())
+                .metaData(Metadata.VARIABLE, DEFAULT_WORKFLOW_VAR)
                 .variable(DEFAULT_WORKFLOW_VAR, new ObjectDataType(JsonNode.class), ObjectMapperFactory.listenerAware().createObjectNode())
                 .type(KogitoWorkflowProcess.SW_TYPE);
         ParserContext parserContext =
