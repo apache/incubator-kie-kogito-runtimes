@@ -24,12 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.jbpm.process.core.timer.Timer;
-import org.jbpm.process.instance.impl.actions.CompleteStateBasedNodeInstanceAction;
 import org.jbpm.workflow.core.DroolsAction;
-import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
-
-import static org.jbpm.ruleflow.core.Metadata.ACTION;
 
 public class StateBasedNode extends ExtendedNodeImpl {
 
@@ -39,23 +35,8 @@ public class StateBasedNode extends ExtendedNodeImpl {
 
     private List<String> boundaryEvents;
 
-    private transient String duration;
-
     public Map<Timer, DroolsAction> getTimers() {
         return timers;
-    }
-
-    public void setTimeout(String duration) {
-        this.duration = duration;
-        Timer timer = new Timer();
-        timer.setDelay(duration);
-        DroolsConsequenceAction timeoutAction = new DroolsConsequenceAction("java", null);
-        timeoutAction.setMetaData(ACTION, new CompleteStateBasedNodeInstanceAction(getNodeUniqueId()));
-        addTimer(timer, timeoutAction);
-    }
-
-    public String getTimeout() {
-        return duration;
     }
 
     public void addTimer(Timer timer, DroolsAction action) {

@@ -40,11 +40,6 @@ public abstract class AbstractCompositeNodeFactory<T extends RuleFlowNodeContain
         return (CompositeContextNode) node;
     }
 
-    public T timeout(String timeout) {
-        getCompositeNode().setTimeout(timeout);
-        return (T) this;
-    }
-
     @Override
     public T variable(String name, DataType type) {
         return variable(name, type, null);
