@@ -39,7 +39,7 @@ public class ProcessDefinitionDataEvent extends AbstractDataEvent<ProcessDefinit
                 null,
                 null,
                 null,
-                null,
-                body.getType());
+                DATA_CONTENT_TYPE,
+                null);
     }
 }

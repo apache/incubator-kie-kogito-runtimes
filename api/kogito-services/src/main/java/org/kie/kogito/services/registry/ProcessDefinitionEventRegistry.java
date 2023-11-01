@@ -82,7 +82,7 @@ public class ProcessDefinitionEventRegistry {
                     .setId(p.id())
                     .setName(p.name())
                     .setVersion(p.version())
-                    .setType(ProcessDefinitionDataEvent.PROCESS_DEFINITION_EVENT)
+                    .setType(p.type())
                     .setAddons(addons)
                     .setEndpoint(getEndpoint(endpoint, p))
                     .setNodes(getNodesDefinitions(p))
