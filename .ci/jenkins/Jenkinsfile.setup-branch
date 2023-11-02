@@ -55,17 +55,33 @@ pipeline {
         stage('Update project version') {
             steps {
                 script {
-                    maven.mvnVersionsSet(getMavenCommand(getRepoName()).withProperty('full'), getKogitoVersion(), true)
-                    maven.mvnSetVersionProperty(getMavenCommand(getRepoName()), 'version.org.kie', getDroolsVersion())
-
-                    // Need artifacts available locally
                     configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]){
+                        maven.mvnVersionsSet(
+                            getMavenCommand(getRepoName())
+                                .withProperty('full')
+                                .withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            getKogitoVersion(),
+                            true
+                        )
+                        maven.mvnSetVersionProperty(
+                            getMavenCommand(getRepoName()).withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            'version.org.kie',
+                            getDroolsVersion()
+                        )
+
+                        // Need artifacts available locally
                         getMavenCommand(getRepoName())
                             .withProperty('quickly')
                             .withSettingsXmlFile(MAVEN_SETTINGS_FILE)
                             .run('clean install')
+                        maven.mvnSetVersionProperty(
+                            getMavenCommand(getRepoName())
+                                .withOptions(['-pl :kogito-quarkus-workflow-common-deployment'])
+                                .withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            'data-index-ephemeral.image',
+                            getDataIndexEphemeralImage()
+                        )
                     }
-                    maven.mvnSetVersionProperty(getMavenCommand(getRepoName()).withOptions(['-pl :kogito-quarkus-workflow-common-deployment']), 'data-index-ephemeral.image', getDataIndexEphemeralImage())
                 }
             }
         }

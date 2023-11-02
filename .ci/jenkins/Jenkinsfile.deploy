@@ -91,17 +91,28 @@ pipeline {
             }
             steps {
                 script {
-                    maven.mvnVersionsSet(getMavenCommand(), getProjectVersion(), !isRelease())
-                    maven.mvnSetVersionProperty(getMavenCommand(), 'version.org.kie', getDroolsVersion())
+                    configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]){
+                        maven.mvnVersionsSet(
+                            getMavenCommand().withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            getProjectVersion(),
+                            !isRelease()
+                        )
+                        maven.mvnSetVersionProperty(
+                            getMavenCommand().withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            'version.org.kie', getDroolsVersion()
+                        )
 
                     // Need artifacts available locally
-                    configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]){
                         getMavenCommand()
                             .withProperty('quickly')
                             .withSettingsXmlFile(MAVEN_SETTINGS_FILE)
                             .run('clean install')
+                        maven.mvnSetVersionProperty(
+                            getMavenCommand(getWorkflowCommonDeploymentPath()).withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            'data-index-ephemeral.image',
+                            getDataIndexEphemeralReleaseImage()
+                        )
                     }
-                    maven.mvnSetVersionProperty(getMavenCommand(getWorkflowCommonDeploymentPath()), 'data-index-ephemeral.image', getDataIndexEphemeralReleaseImage())
                 }
             }
         }
@@ -324,13 +335,15 @@ String getMavenRepoZipUrl() {
 }
 
 void runMavenStage() {
-    MavenStagingHelper stagingHelper = getStagingHelper()
-    deployProperties.putAll(stagingHelper.stageLocalArtifacts(env.NEXUS_STAGING_PROFILE_ID, getLocalDeploymentFolder()))
-    stagingHelper.promoteStagingRepository(env.NEXUS_BUILD_PROMOTION_PROFILE_ID)
+    configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]){
+        MavenStagingHelper stagingHelper = getStagingHelper(getMavenCommand().withSettingsXmlFile(MAVEN_SETTINGS_FILE))
+        deployProperties.putAll(stagingHelper.stageLocalArtifacts(env.NEXUS_STAGING_PROFILE_ID, getLocalDeploymentFolder()))
+        stagingHelper.promoteStagingRepository(env.NEXUS_BUILD_PROMOTION_PROFILE_ID)
+    }
 }
 
-MavenStagingHelper getStagingHelper() {
-    return new MavenStagingHelper(this, getMavenCommand())
+MavenStagingHelper getStagingHelper(MavenCommand mavenCommand) {
+    return new MavenStagingHelper(this, mavenCommand)
         .withNexusReleaseUrl(env.NEXUS_RELEASE_URL)
         .withNexusReleaseRepositoryId(env.NEXUS_RELEASE_REPOSITORY_ID)
 }
