@@ -1,7 +1,5 @@
 @Library('jenkins-pipeline-shared-libraries')_
 
-import org.kie.jenkins.MavenCommand
-
 pr_check_script = null
 
 pipeline {
