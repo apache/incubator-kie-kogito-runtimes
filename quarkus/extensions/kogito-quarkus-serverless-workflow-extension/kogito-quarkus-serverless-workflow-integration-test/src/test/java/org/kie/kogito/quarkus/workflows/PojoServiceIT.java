@@ -28,10 +28,7 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.kie.kogito.event.process.ProcessInstanceVariableDataEvent;
 import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
@@ -51,7 +48,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.waitForKogitoProcessInstanceEvent;
 
 @QuarkusIntegrationTest
-@TestMethodOrder(OrderAnnotation.class)
 class PojoServiceIT {
 
     @QuarkusTestProperty(name = KafkaQuarkusTestResource.KOGITO_KAFKA_PROPERTY)
@@ -77,13 +73,11 @@ class PojoServiceIT {
     }
 
     @Test
-    @Order(1)
     void testPojo() throws Exception {
         doIt("pojoService");
     }
 
     @Test
-    @Order(2)
     void testFilterPojo() throws Exception {
         doIt("pojoServiceFilter");
     }
