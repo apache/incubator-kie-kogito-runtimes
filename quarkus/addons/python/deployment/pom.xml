@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-serverless-workflow-python-parent</artifactId>
-    <version>1.40.2-SNAPSHOT</version>
+    <version>1.40.2.Final</version>
   </parent>
   <artifactId>kogito-addons-quarkus-serverless-workflow-python-deployment</artifactId>
   <name>Kogito:: Addons :: Quarkus:: Serverless Workflow:: Python:: Deployment</name>
