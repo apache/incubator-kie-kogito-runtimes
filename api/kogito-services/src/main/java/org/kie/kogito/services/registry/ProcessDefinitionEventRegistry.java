@@ -105,8 +105,8 @@ public class ProcessDefinitionEventRegistry {
                 .map(node -> NodeDefinition.builder()
                         .setId(String.valueOf(node.getId()))
                         .setName(node.getName())
-                        .setType(node.getNodeType().name())
-                        .setUniqueId(node.getNodeUniqueId())
+                        .setType(node.getClass().getSimpleName())
+                        .setUniqueId(node.getUniqueId())
                         .setMetadata(node.getMetaData())
                         .build())
                 .collect(Collectors.toList());
