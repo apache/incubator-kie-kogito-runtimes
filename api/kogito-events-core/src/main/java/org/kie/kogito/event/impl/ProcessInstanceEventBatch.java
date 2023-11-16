@@ -492,13 +492,17 @@ public class ProcessInstanceEventBatch implements EventBatch {
                 .userTaskReferenceName(((HumanTaskWorkItem) event.getWorkItem()).getReferenceName())
                 .state(event.getNewStatus())
                 .actualOwner(((HumanTaskWorkItem) event.getWorkItem()).getActualOwner())
-                .eventType(event.getNewStatus())
+                .eventType(isTransition(event) ? event.getNewStatus() : "MODIFY")
                 .processInstanceId(event.getProcessInstance().getId());
 
         UserTaskInstanceStateEventBody body = builder.build();
         UserTaskInstanceStateDataEvent utEvent = new UserTaskInstanceStateDataEvent(buildSource(event.getProcessInstance().getProcessId()), addons.toString(), event.getEventUser(), metadata, body);
         utEvent.setKogitoBusinessKey(pi.getBusinessKey());
         processedEvents.add(utEvent);
+    }
+
+    private boolean isTransition(UserTaskStateEvent event) {
+        return !event.getOldStatus().equals(event.getNewStatus());
     }
 
     private void handleUserTaskVariableEvent(UserTaskVariableEvent event) {
