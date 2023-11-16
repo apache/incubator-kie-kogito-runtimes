@@ -114,8 +114,6 @@ public class EscalationEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Disabled("Escalation does not cancel work items yet.")
-    // TODO: make escalation interrupt tasks -- or look more closely at the spec to make sure that's the case? 
     public void testEscalationBoundaryEventInterruptsTask() throws Exception {
         kruntime = createKogitoProcessRuntime("escalation/BPMN2-EscalationBoundaryEventInterrupting.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();
