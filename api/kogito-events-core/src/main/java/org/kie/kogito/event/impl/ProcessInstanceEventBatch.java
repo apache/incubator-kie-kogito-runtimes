@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.event.process.ProcessEvent;
@@ -492,7 +493,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
                 .userTaskReferenceName(((HumanTaskWorkItem) event.getWorkItem()).getReferenceName())
                 .state(event.getNewStatus())
                 .actualOwner(((HumanTaskWorkItem) event.getWorkItem()).getActualOwner())
-                .eventType(isTransition(event) ? event.getNewStatus() : "MODIFY")
+                .eventType(isTransition(event) ? event.getNewStatus() : "Modify")
                 .processInstanceId(event.getProcessInstance().getId());
 
         UserTaskInstanceStateEventBody body = builder.build();
@@ -502,7 +503,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
     }
 
     private boolean isTransition(UserTaskStateEvent event) {
-        return !event.getOldStatus().equals(event.getNewStatus());
+        return !Objects.equals(event.getOldStatus(), event.getNewStatus());
     }
 
     private void handleUserTaskVariableEvent(UserTaskVariableEvent event) {
