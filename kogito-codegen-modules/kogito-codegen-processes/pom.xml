@@ -120,7 +120,6 @@
       <groupId>jakarta.validation</groupId>
       <artifactId>jakarta.validation-api</artifactId>
       <scope>test</scope>
-      <version>3.0.2.redhat-00005</version>
     </dependency>
   </dependencies>
 
