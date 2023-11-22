@@ -45,6 +45,16 @@ public class ProcessInstanceSLAEventBody {
 
     private String nodeType;
 
+    private Date slaDueDate;
+
+    public Date getSlaDueDate() {
+        return slaDueDate;
+    }
+
+    public void setSlaDueDate(Date slaDueDate) {
+        this.slaDueDate = slaDueDate;
+    }
+
     public Date getEventDate() {
         return eventDate;
     }
@@ -96,6 +106,11 @@ public class ProcessInstanceSLAEventBody {
 
         private Builder(ProcessInstanceSLAEventBody instance) {
             this.instance = instance;
+        }
+
+        public Builder slaDueDate(Date slaDueDate) {
+            this.instance.slaDueDate = slaDueDate;
+            return this;
         }
 
         public Builder eventDate(Date eventDate) {

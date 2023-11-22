@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.event.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -108,17 +109,17 @@ public class ProcessInstanceEventBatch implements EventBatch {
         } else if (event instanceof ProcessCompletedEvent) {
             handleProcessStateEvent((ProcessCompletedEvent) event);
         } else if (event instanceof ProcessNodeTriggeredEvent) {
-            handleProcesssNodeEvent((ProcessNodeTriggeredEvent) event);
+            handleProcessNodeEvent((ProcessNodeTriggeredEvent) event);
         } else if (event instanceof ProcessNodeLeftEvent) {
-            handleProcesssNodeEvent((ProcessNodeLeftEvent) event);
+            handleProcessNodeEvent((ProcessNodeLeftEvent) event);
         } else if (event instanceof SLAViolatedEvent) {
             handleProcesssNodeEvent((SLAViolatedEvent) event);
         } else if (event instanceof ProcessVariableChangedEvent) {
-            handleProcesssVariableEvent((ProcessVariableChangedEvent) event);
+            handleProcessVariableEvent((ProcessVariableChangedEvent) event);
         }
     }
 
-    private void handleProcesssVariableEvent(ProcessVariableChangedEvent event) {
+    private void handleProcessVariableEvent(ProcessVariableChangedEvent event) {
 
         Map<String, Object> metadata = buildProcessMetadata((KogitoWorkflowProcessInstance) event.getProcessInstance());
         KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
@@ -154,17 +155,21 @@ public class ProcessInstanceEventBatch implements EventBatch {
         KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
 
         ProcessInstanceSLAEventBody.Builder builder = ProcessInstanceSLAEventBody.create()
-                .eventDate(new Date())
+                .eventDate(Date.from(Instant.now()))
                 .eventUser(event.getEventIdentity())
                 .processId(event.getProcessInstance().getProcessId())
                 .processVersion(event.getProcessInstance().getProcessVersion())
                 .processInstanceId(event.getProcessInstance().getId());
 
-        if (event.getNodeInstance() != null) {
-            builder.nodeDefinitionId(event.getNodeInstance().getNode().getNodeUniqueId())
-                    .nodeInstanceId(event.getNodeInstance().getId())
-                    .nodeName(event.getNodeInstance().getNodeName())
-                    .nodeType(event.getNodeInstance().getNode().getClass().getSimpleName());
+        if (event.getNodeInstance() instanceof KogitoNodeInstance) {
+            KogitoNodeInstance ni = (KogitoNodeInstance) event.getNodeInstance();
+            builder.nodeDefinitionId(ni.getNode().getNodeUniqueId())
+                    .nodeInstanceId(ni.getId())
+                    .nodeName(ni.getNodeName())
+                    .nodeType(ni.getNode().getClass().getSimpleName())
+                    .slaDueDate(ni.getSlaDueDate());
+        } else {
+            builder.slaDueDate(pi.getSlaDueDate());
         }
 
         ProcessInstanceSLAEventBody body = builder.build();
@@ -173,7 +178,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
         processedEvents.add(piEvent);
     }
 
-    private void handleProcesssNodeEvent(ProcessNodeLeftEvent event) {
+    private void handleProcessNodeEvent(ProcessNodeLeftEvent event) {
         KogitoNodeInstance nodeInstance = (KogitoNodeInstance) event.getNodeInstance();
         int eventType = ProcessInstanceNodeEventBody.EVENT_TYPE_EXIT;
 
@@ -196,7 +201,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
         processedEvents.add(toProcessInstanceNodeEvent(event, eventType));
     }
 
-    private void handleProcesssNodeEvent(ProcessNodeTriggeredEvent event) {
+    private void handleProcessNodeEvent(ProcessNodeTriggeredEvent event) {
         processedEvents.add(toProcessInstanceNodeEvent(event, ProcessInstanceNodeEventBody.EVENT_TYPE_ENTER));
 
     }
