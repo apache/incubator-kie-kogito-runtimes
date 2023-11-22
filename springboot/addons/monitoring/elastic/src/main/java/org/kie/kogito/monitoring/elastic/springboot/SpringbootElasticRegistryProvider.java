@@ -18,8 +18,7 @@
  */
 package org.kie.kogito.monitoring.elastic.springboot;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.kie.kogito.monitoring.elastic.common.ElasticConfigFactory;
 import org.kie.kogito.monitoring.elastic.common.ElasticRegistry;
 import org.kie.kogito.monitoring.elastic.common.KogitoElasticConfig;

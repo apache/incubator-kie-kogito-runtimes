@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.events.mongodb;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.mongodb.transaction.AbstractTransactionManager;

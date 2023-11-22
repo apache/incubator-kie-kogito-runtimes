@@ -21,8 +21,8 @@ package org.kie.kogito.addons.quarkus.fabric8.k8s.service.catalog;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

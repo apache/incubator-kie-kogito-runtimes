@@ -21,7 +21,7 @@ package org.kie.kogito.quarkus.pmml;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;

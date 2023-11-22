@@ -21,7 +21,7 @@ package org.kie.kogito.quarkus.workflows;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

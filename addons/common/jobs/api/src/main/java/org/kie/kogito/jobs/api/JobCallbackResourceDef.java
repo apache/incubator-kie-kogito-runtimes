@@ -20,8 +20,8 @@ package org.kie.kogito.jobs.api;
 
 import java.time.temporal.ChronoUnit;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.service.api.TemporalUnit;

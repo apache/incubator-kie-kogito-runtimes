@@ -18,8 +18,7 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.event.cloudevents.extension.KogitoPredictionsExtension;
 import org.kie.kogito.event.cloudevents.extension.KogitoProcessExtension;

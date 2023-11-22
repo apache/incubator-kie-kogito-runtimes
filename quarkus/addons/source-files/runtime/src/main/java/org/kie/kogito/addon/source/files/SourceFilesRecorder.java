@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.addon.source.files;
 
-import javax.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.spi.CDI;
 
 import io.quarkus.runtime.annotations.Recorder;
 
