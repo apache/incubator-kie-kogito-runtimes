@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -86,7 +85,7 @@ public class SpringRestJobsService extends RestJobsService {
         ResponseEntity<String> result = restTemplate.postForEntity(getJobsServiceUri(),
                 request,
                 String.class);
-        if (result.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(200))) {
+        if (result.getStatusCode().ordinal() == 200) {
             LOGGER.debug("Creating of the job {} done with status code {} ", job, result.getStatusCode());
         }
         return job.getId();
