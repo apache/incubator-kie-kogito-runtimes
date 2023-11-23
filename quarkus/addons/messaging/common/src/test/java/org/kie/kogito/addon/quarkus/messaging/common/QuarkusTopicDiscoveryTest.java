@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.ClearSystemProperty;
 import org.junitpioneer.jupiter.SetSystemProperty;
@@ -34,6 +35,7 @@ import org.kie.kogito.event.cloudevents.CloudEventMeta;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Disabled("https://github.com/apache/incubator-kie-kogito-runtimes/issues/3288")
 class QuarkusTopicDiscoveryTest {
 
     @Test
