@@ -16,26 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addons.quarkus.kubernetes;
+package org.kie.kogito.event.impl;
 
-import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.EventBatch;
 
-@Path("/foo")
-@Produces(MediaType.TEXT_PLAIN)
-public class Foo {
+public class ProcessEventBatch implements EventBatch {
 
-    @Inject
-    @ConfigProperty(name = "my_service")
-    String service;
+    private List<DataEvent<?>> events = Collections.synchronizedList(new ArrayList<>());
 
-    @GET
-    public String getWorkflowType() {
-        return service;
+    @Override
+    public void append(Object rawEvent) {
+        if (!DataEvent.class.isInstance(rawEvent)) {
+            throw new IllegalArgumentException("The event is not a ProcessDataEvent");
+        }
+        events.add((DataEvent<?>) rawEvent);
+    }
+
+    @Override
+    public Collection<DataEvent<?>> events() {
+        return events;
     }
 }
