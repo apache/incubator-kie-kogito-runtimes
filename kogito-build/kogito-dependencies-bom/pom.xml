@@ -69,7 +69,7 @@
     <version.io.vertx>4.4.6</version.io.vertx>
     <version.io.grpc>1.57.2</version.io.grpc>
 
-    <version.io.quarkus.camel>2.15.0</version.io.quarkus.camel>
+    <version.io.quarkus.camel>3.0.0-M1</version.io.quarkus.camel>
 
     <version.io.swagger.parser.v3>2.1.16</version.io.swagger.parser.v3>
     <version.io.swagger.core.v3>2.2.14</version.io.swagger.core.v3>
