@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
+import jakarta.annotation.PostConstruct;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.event.cloudevents.extension.KogitoPredictionsExtension;
 import org.kie.kogito.event.cloudevents.extension.KogitoProcessExtension;
@@ -30,8 +31,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cloudevents.jackson.JsonFormat;
-
-import jakarta.annotation.PostConstruct;
 
 /**
  * The goal of this bean is to register the Kogito CloudEvent extension
