@@ -21,7 +21,7 @@ package org.kie.kogito.quarkus.workflows;
 import java.time.Duration;
 import java.util.UUID;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 

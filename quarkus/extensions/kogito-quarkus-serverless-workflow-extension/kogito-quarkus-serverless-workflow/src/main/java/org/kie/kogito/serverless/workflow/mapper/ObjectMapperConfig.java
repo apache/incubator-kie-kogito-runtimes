@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.serverless.workflow.mapper;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.kie.kogito.jackson.utils.JsonNodeFactoryListener;
 

@@ -21,7 +21,7 @@ package org.kie.kogito.integrationtests;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.kie.kogito.uow.events.UnitOfWorkAbortEvent;
 import org.kie.kogito.uow.events.UnitOfWorkEndEvent;

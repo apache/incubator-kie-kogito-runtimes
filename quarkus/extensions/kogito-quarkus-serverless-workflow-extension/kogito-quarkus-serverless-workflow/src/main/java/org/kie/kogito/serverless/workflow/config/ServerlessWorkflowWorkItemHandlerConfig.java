@@ -18,11 +18,11 @@
  */
 package org.kie.kogito.serverless.workflow.config;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
+import jakarta.annotation.PostConstruct;
 import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 import org.slf4j.Logger;

@@ -18,8 +18,7 @@
  */
 package org.kie.kogito.secret;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
 
 import io.quarkus.runtime.Startup;

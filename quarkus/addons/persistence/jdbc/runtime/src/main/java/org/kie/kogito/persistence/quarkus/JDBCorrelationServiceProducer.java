@@ -21,7 +21,7 @@ package org.kie.kogito.persistence.quarkus;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Produces;
 import javax.sql.DataSource;
 
 import org.kie.kogito.correlation.CorrelationService;

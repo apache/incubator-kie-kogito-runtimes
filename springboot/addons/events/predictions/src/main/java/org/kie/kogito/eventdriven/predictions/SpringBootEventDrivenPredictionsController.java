@@ -18,8 +18,7 @@
  */
 package org.kie.kogito.eventdriven.predictions;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.kie.kogito.config.ConfigBean;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;

@@ -21,8 +21,8 @@ package org.kie.kogito.addon.quarkus.messaging.common.message.http;
 import java.util.Collections;
 import java.util.Optional;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.junit.jupiter.api.Test;

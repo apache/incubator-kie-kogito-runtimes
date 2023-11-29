@@ -18,8 +18,8 @@
  */
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
 import org.kogito.workitem.rest.RestWorkItemHandlerUtils;

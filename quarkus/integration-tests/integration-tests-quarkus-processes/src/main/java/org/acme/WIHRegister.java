@@ -18,7 +18,7 @@
  */
 package org.acme;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 

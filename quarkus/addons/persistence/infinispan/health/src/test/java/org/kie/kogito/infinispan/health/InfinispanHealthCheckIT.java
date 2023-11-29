@@ -18,10 +18,10 @@
  */
 package org.kie.kogito.infinispan.health;
 
-import javax.annotation.Resource;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
+import jakarta.annotation.Resource;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.junit.jupiter.api.Test;

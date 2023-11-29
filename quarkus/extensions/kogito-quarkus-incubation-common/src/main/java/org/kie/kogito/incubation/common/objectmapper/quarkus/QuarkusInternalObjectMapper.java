@@ -20,7 +20,7 @@ package org.kie.kogito.incubation.common.objectmapper.quarkus;
 
 import java.util.Map;
 
-import javax.enterprise.inject.spi.CDI;
+import jakarta.enterprise.inject.spi.CDI;
 
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
