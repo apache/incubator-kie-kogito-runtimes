@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.core.decision.incubation.quarkus.support;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.kie.kogito.incubation.decisions.DecisionIds;
 

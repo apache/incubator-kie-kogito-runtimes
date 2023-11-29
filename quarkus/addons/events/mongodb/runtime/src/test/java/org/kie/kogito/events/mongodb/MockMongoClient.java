@@ -20,7 +20,7 @@ package org.kie.kogito.events.mongodb;
 
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;

@@ -20,8 +20,8 @@ package org.kie.kogito.tracing.decision;
 
 import java.util.function.BiFunction;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.config.ConfigBean;

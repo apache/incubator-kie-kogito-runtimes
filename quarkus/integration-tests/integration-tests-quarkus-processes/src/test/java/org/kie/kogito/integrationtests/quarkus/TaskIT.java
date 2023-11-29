@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.acme.travels.Traveller;
 import org.junit.jupiter.api.Test;
