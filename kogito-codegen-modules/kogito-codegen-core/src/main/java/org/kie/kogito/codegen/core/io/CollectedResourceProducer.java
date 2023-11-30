@@ -104,7 +104,7 @@ public class CollectedResourceProducer {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                InternalResource resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)));
+                InternalResource resource = new ByteArrayResource(readBytesFromInputStream(zipFile.getInputStream(entry)), StandardCharsets.UTF_8.name());
                 resource.setSourcePath(entry.getName());
                 resources.add(toCollectedResource(jarPath, entry.getName(), resource));
             }
