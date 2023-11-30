@@ -21,6 +21,7 @@ package org.kie.kogito.codegen.core.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -171,7 +172,7 @@ public class CollectedResourceProducer {
     }
 
     private static CollectedResource toCollectedResource(Path basePath, File file) {
-        Resource resource = new FileSystemResource(file);
+        Resource resource = new FileSystemResource(file, StandardCharsets.UTF_8.name());
         return toCollectedResource(basePath, file.getName(), resource);
     }
 
