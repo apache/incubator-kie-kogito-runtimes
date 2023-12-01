@@ -18,8 +18,8 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.common;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.slf4j.Logger;

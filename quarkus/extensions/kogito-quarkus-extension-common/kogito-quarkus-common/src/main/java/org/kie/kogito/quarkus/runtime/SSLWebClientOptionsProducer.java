@@ -18,8 +18,8 @@
  */
 package org.kie.kogito.quarkus.runtime;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
 
 import io.quarkus.arc.DefaultBean;
 import io.vertx.ext.web.client.WebClientOptions;

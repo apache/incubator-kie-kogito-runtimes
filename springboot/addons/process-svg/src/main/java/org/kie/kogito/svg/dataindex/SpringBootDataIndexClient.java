@@ -21,8 +21,7 @@ package org.kie.kogito.svg.dataindex;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.keycloak.KeycloakPrincipal;
 import org.kie.kogito.svg.ProcessSVGException;
 import org.slf4j.Logger;

@@ -18,8 +18,8 @@
  */
 package org.kie.kogito.eventdriven.decision;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.kie.kogito.config.ConfigBean;
 import org.kie.kogito.decision.DecisionModels;

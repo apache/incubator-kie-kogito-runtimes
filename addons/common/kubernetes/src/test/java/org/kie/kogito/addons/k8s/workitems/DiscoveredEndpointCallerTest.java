@@ -20,7 +20,7 @@ package org.kie.kogito.addons.k8s.workitems;
 
 import java.util.Map;
 
-import javax.ws.rs.HttpMethod;
+import jakarta.ws.rs.HttpMethod;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

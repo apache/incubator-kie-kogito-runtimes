@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.Priority;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
+import jakarta.annotation.Priority;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.addon.cloudevents.AbstractTopicDiscovery;
 import org.kie.kogito.event.ChannelType;

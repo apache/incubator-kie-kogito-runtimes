@@ -20,11 +20,11 @@ package org.kie.kogito.core.rules.incubation.quarkus.support;
 
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
+import jakarta.annotation.PostConstruct;
 import org.drools.ruleunits.api.RuleUnits;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.Id;

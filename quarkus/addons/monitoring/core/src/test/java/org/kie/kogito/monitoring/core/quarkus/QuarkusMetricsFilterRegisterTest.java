@@ -20,8 +20,8 @@ package org.kie.kogito.monitoring.core.quarkus;
 
 import java.util.List;
 
-import javax.enterprise.inject.Instance;
-import javax.ws.rs.core.FeatureContext;
+import jakarta.enterprise.inject.Instance;
+import jakarta.ws.rs.core.FeatureContext;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.mock.MockedConfigBean;

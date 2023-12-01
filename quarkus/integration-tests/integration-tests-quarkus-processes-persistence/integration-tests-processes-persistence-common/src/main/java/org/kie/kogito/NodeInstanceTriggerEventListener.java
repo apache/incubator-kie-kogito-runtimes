@@ -18,7 +18,7 @@
  */
 package org.kie.kogito;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;

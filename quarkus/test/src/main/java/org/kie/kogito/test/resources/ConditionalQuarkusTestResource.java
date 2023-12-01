@@ -23,8 +23,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.Resource;
-
+import jakarta.annotation.Resource;
 import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.testcontainers.containers.Container;
 

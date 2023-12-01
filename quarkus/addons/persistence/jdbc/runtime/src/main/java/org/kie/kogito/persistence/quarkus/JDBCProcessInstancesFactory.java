@@ -18,8 +18,8 @@
  */
 package org.kie.kogito.persistence.quarkus;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import javax.sql.DataSource;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;

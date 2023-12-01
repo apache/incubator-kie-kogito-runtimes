@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.jobs.management.quarkus;
 
-import javax.enterprise.inject.Instance;
+import jakarta.enterprise.inject.Instance;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

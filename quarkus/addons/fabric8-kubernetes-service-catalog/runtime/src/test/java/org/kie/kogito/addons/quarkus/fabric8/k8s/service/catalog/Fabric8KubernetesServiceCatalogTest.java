@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.addons.quarkus.fabric8.k8s.service.catalog;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogTest;

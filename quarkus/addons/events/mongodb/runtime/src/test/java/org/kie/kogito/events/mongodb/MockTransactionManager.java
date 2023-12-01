@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.events.mongodb;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.kie.kogito.mongodb.transaction.AbstractTransactionManager;
 

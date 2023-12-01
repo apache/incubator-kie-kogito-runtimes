@@ -20,7 +20,7 @@ package org.kie.kogito.addons.quarkus.k8s.config;
 
 import java.net.URI;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

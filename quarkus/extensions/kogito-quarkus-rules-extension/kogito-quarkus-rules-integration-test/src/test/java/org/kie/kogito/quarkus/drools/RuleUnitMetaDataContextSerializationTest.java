@@ -20,7 +20,7 @@ package org.kie.kogito.quarkus.drools;
 
 import java.util.Map;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.incubation.common.EmptyDataContext;

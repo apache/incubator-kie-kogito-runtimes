@@ -18,9 +18,9 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.common;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
+import jakarta.annotation.PostConstruct;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.event.cloudevents.extension.KogitoPredictionsExtension;
 import org.kie.kogito.event.cloudevents.extension.KogitoProcessExtension;

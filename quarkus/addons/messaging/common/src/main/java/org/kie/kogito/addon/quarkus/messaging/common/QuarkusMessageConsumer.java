@@ -21,7 +21,7 @@ package org.kie.kogito.addon.quarkus.messaging.common;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
@@ -49,7 +49,7 @@ public abstract class QuarkusMessageConsumer<M extends Model, D> extends Abstrac
         init(application, process, trigger, eventReceiver, objectClass, processService, executor, correlation);
     }
 
-    @javax.annotation.PreDestroy
+    @jakarta.annotation.PreDestroy
     public void close() {
         executor.shutdownNow();
     }

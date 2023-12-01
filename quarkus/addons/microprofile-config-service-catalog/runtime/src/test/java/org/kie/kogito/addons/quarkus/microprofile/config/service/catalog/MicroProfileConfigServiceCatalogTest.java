@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.addons.quarkus.microprofile.config.service.catalog;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogTest;
 

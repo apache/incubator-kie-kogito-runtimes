@@ -18,12 +18,12 @@
  */
 package org.kie.kogito.persistence.quarkus.rocksdb;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.kie.kogito.persistence.rocksdb.RocksDBProcessInstancesFactory;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.rocksdb.Options;

@@ -18,11 +18,11 @@
  */
 package org.kie.kogito.core.decision.incubation.quarkus.support;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
+import jakarta.annotation.PostConstruct;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;

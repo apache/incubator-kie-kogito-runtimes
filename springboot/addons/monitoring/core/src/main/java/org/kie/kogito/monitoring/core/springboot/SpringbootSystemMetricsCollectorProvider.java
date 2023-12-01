@@ -18,8 +18,7 @@
  */
 package org.kie.kogito.monitoring.core.springboot;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.config.ConfigBean;
 import org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector;
