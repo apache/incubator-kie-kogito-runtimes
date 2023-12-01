@@ -21,11 +21,11 @@ package org.kie.kogito.quarkus.workflows;
 import java.util.Collections;
 import java.util.Map;
 
-import jakarta.ws.rs.core.HttpHeaders;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+
+import jakarta.ws.rs.core.HttpHeaders;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;

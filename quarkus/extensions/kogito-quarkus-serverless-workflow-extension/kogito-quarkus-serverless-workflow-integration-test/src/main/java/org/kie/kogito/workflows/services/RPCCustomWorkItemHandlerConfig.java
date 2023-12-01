@@ -18,11 +18,11 @@
  */
 package org.kie.kogito.workflows.services;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
 
 import jakarta.annotation.PostConstruct;
-import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class RPCCustomWorkItemHandlerConfig extends CachedWorkItemHandlerConfig {
