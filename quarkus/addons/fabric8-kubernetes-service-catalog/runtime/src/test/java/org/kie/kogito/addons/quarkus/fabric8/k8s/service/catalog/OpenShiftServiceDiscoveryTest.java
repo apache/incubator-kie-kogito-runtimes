@@ -21,8 +21,6 @@ package org.kie.kogito.addons.quarkus.fabric8.k8s.service.catalog;
 import java.net.URI;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 
 import io.fabric8.kubernetes.api.model.Pod;
@@ -34,6 +32,8 @@ import io.fabric8.openshift.client.server.mock.OpenShiftServer;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.kubernetes.client.OpenShiftTestServer;
 import io.quarkus.test.kubernetes.client.WithOpenShiftTestServer;
+
+import jakarta.inject.Inject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

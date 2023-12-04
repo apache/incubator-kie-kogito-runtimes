@@ -18,16 +18,16 @@
  */
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
-import jakarta.annotation.PostConstruct;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.rules.data.DataId;
 import org.kie.kogito.incubation.rules.services.DataSourceService;
 import org.kie.kogito.rules.RuleUnits;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class QuarkusDataSourceService implements DataSourceService {

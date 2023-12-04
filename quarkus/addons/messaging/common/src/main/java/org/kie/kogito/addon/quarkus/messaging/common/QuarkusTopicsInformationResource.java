@@ -18,6 +18,11 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.common;
 
+import org.kie.kogito.addon.cloudevents.AbstractTopicsInformationResource;
+import org.kie.kogito.event.TopicDiscovery;
+import org.kie.kogito.event.cloudevents.CloudEventMeta;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
@@ -25,11 +30,6 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-
-import jakarta.annotation.PostConstruct;
-import org.kie.kogito.addon.cloudevents.AbstractTopicsInformationResource;
-import org.kie.kogito.event.TopicDiscovery;
-import org.kie.kogito.event.cloudevents.CloudEventMeta;
 
 @Path("/messaging/topics")
 @ApplicationScoped()

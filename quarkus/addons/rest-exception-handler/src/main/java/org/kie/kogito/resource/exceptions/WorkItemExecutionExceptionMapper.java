@@ -18,10 +18,10 @@
  */
 package org.kie.kogito.resource.exceptions;
 
+import org.kie.kogito.process.workitem.WorkItemExecutionException;
+
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
-
-import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 @Provider
 public class WorkItemExecutionExceptionMapper extends BaseExceptionMapper<WorkItemExecutionException> {

@@ -18,10 +18,10 @@
  */
 package org.kie.kogito.resource.exceptions;
 
+import org.kie.kogito.process.workitem.InvalidLifeCyclePhaseException;
+
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
-
-import org.kie.kogito.process.workitem.InvalidLifeCyclePhaseException;
 
 @Provider
 public class InvalidLifeCyclePhaseExceptionMapper extends BaseExceptionMapper<InvalidLifeCyclePhaseException> {

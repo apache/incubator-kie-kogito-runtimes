@@ -22,9 +22,6 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.core.Response;
-
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
@@ -55,6 +52,9 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import io.quarkiverse.openapi.generator.annotations.GeneratedClass;
 import io.quarkiverse.openapi.generator.annotations.GeneratedMethod;
 import io.quarkiverse.openapi.generator.annotations.GeneratedParam;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.core.Response;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 

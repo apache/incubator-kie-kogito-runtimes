@@ -18,17 +18,17 @@
  */
 package org.kie.kogito.quarkus.registry;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
 import org.kie.kogito.Application;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.quarkus.config.KogitoRuntimeConfig;
 import org.kie.kogito.services.registry.ProcessDefinitionEventRegistry;
 
 import io.quarkus.runtime.StartupEvent;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ProcessDefinitionRegistration {

@@ -18,6 +18,14 @@
  */
 package org.kie.kogito.jobs.quarkus.common;
 
+import org.kie.kogito.Application;
+import org.kie.kogito.jobs.api.JobCallbackPayload;
+import org.kie.kogito.process.Process;
+import org.kie.kogito.process.Processes;
+import org.kie.kogito.services.jobs.impl.TriggerJobCommand;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -29,14 +37,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-
-import org.kie.kogito.Application;
-import org.kie.kogito.jobs.api.JobCallbackPayload;
-import org.kie.kogito.process.Process;
-import org.kie.kogito.process.Processes;
-import org.kie.kogito.services.jobs.impl.TriggerJobCommand;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.JOBS_CALLBACK_POST_URI;
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.JOBS_CALLBACK_URI;

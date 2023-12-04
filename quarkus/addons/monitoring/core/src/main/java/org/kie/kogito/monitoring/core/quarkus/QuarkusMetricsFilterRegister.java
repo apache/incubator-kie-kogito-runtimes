@@ -18,13 +18,6 @@
  */
 package org.kie.kogito.monitoring.core.quarkus;
 
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.container.DynamicFeature;
-import jakarta.ws.rs.container.ResourceInfo;
-import jakarta.ws.rs.core.FeatureContext;
-import jakarta.ws.rs.ext.Provider;
-
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.config.ConfigBean;
@@ -33,6 +26,13 @@ import org.kie.kogito.monitoring.core.common.system.interceptor.MetricsIntercept
 import org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector;
 
 import io.micrometer.core.instrument.Metrics;
+
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class QuarkusMetricsFilterRegister implements DynamicFeature {

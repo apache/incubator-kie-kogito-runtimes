@@ -22,14 +22,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
+import org.kie.kogito.auth.IdentityProvider;
+
+import io.quarkus.security.identity.SecurityIdentity;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-
-import org.kie.kogito.auth.IdentityProvider;
-
-import io.quarkus.security.identity.SecurityIdentity;
 
 @ApplicationScoped
 public class QuarkusIdentityProvider implements IdentityProvider {
