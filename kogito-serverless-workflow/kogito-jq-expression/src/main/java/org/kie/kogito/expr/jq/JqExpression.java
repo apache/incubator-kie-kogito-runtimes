@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -89,24 +90,24 @@ public class JqExpression implements Expression {
         try {
             expression = ExpressionParser.compile(expr, version);
         } catch (JsonQueryException ex) {
-            expression = handleStringInterpolation(version, ex);
+            expression = handleStringInterpolation(version).orElseThrow(() -> ex);
         }
         checkFunctionCall(expression);
         return expression;
     }
 
-    private net.thisptr.jackson.jq.Expression handleStringInterpolation(Version version, JsonQueryException ex) throws JsonQueryException {
+    private Optional<net.thisptr.jackson.jq.Expression> handleStringInterpolation(Version version) {
         if (!expr.startsWith("\"")) {
             try {
                 net.thisptr.jackson.jq.Expression expression = ExpressionParser.compile("\"" + expr + "\"", version);
                 if (expression instanceof StringInterpolation) {
-                    return expression;
+                    return Optional.of(expression);
                 }
-            } catch (JsonQueryException withQuotes) {
+            } catch (JsonQueryException ex) {
                 // ignoring it
             }
         }
-        throw ex;
+        return Optional.empty();
     }
 
     private interface TypedOutput extends Output {
