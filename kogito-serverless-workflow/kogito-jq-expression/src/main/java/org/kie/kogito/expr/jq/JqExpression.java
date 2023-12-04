@@ -46,6 +46,7 @@ import net.thisptr.jackson.jq.Version;
 import net.thisptr.jackson.jq.exception.JsonQueryException;
 import net.thisptr.jackson.jq.internal.javacc.ExpressionParser;
 import net.thisptr.jackson.jq.internal.tree.FunctionCall;
+import net.thisptr.jackson.jq.internal.tree.StringInterpolation;
 import net.thisptr.jackson.jq.internal.tree.binaryop.BinaryOperatorExpression;
 
 public class JqExpression implements Expression {
@@ -76,11 +77,36 @@ public class JqExpression implements Expression {
         this.expr = expr;
         this.scope = scope;
         try {
-            this.internalExpr = ExpressionParser.compile(expr, version);
+            this.internalExpr = compile(version);
             checkFunctionCall(internalExpr);
         } catch (JsonQueryException ex) {
             validationError = ex;
         }
+    }
+
+    private net.thisptr.jackson.jq.Expression compile(Version version) throws JsonQueryException {
+        net.thisptr.jackson.jq.Expression expression;
+        try {
+            expression = ExpressionParser.compile(expr, version);
+        } catch (JsonQueryException ex) {
+            expression = handleStringInterpolation(version, ex);
+        }
+        checkFunctionCall(expression);
+        return expression;
+    }
+
+    private net.thisptr.jackson.jq.Expression handleStringInterpolation(Version version, JsonQueryException ex) throws JsonQueryException {
+        if (!expr.startsWith("\"")) {
+            try {
+                net.thisptr.jackson.jq.Expression expression = ExpressionParser.compile("\"" + expr + "\"", version);
+                if (expression instanceof StringInterpolation) {
+                    return expression;
+                }
+            } catch (JsonQueryException withQuotes) {
+                // ignoring it
+            }
+        }
+        throw ex;
     }
 
     private interface TypedOutput extends Output {
