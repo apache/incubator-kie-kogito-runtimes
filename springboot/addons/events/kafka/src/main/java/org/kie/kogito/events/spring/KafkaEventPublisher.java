@@ -20,6 +20,7 @@ package org.kie.kogito.events.spring;
 
 import java.util.Collection;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventPublisher;
 import org.slf4j.Logger;
@@ -29,8 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class KafkaEventPublisher implements EventPublisher {
@@ -75,9 +74,7 @@ public class KafkaEventPublisher implements EventPublisher {
                 publishToTopic(event, USER_TASK_INSTANCES_TOPIC_NAME);
                 break;
             case "ProcessDefinitionEvent":
-                if (processDefinitionEvents) {
-                    publishToTopic(event, PROCESS_DEFINITIONS_TOPIC_NAME);
-                }
+                publishToTopic(event, PROCESS_DEFINITIONS_TOPIC_NAME);
                 break;
             default:
                 logger.debug("Unknown type of event '{}', ignoring for this publisher", event.getType());
