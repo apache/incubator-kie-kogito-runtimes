@@ -21,12 +21,12 @@ package org.kie.kogito.addon.quarkus.common.reactive.messaging;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.reactive.messaging.Message;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-
-import jakarta.annotation.PostConstruct;
-import org.eclipse.microprofile.reactive.messaging.Message;
 
 /**
  * Provides a {@link MessageDecorator} instance. Ideally should not be used outside the {@link MessageFactory}.

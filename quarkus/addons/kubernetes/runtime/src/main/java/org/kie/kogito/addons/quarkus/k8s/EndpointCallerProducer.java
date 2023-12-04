@@ -18,16 +18,16 @@
  */
 package org.kie.kogito.addons.quarkus.k8s;
 
+import org.kie.kogito.addons.k8s.EndpointDiscovery;
+import org.kie.kogito.addons.quarkus.k8s.workitems.QuarkusDiscoveredEndpointCaller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-
-import org.kie.kogito.addons.k8s.EndpointDiscovery;
-import org.kie.kogito.addons.quarkus.k8s.workitems.QuarkusDiscoveredEndpointCaller;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ApplicationScoped
 public class EndpointCallerProducer {

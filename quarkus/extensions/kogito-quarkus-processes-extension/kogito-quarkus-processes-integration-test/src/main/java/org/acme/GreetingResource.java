@@ -20,6 +20,14 @@ package org.acme;
 
 import java.util.Map;
 
+import org.kie.kogito.Model;
+import org.kie.kogito.incubation.application.AppRoot;
+import org.kie.kogito.incubation.common.DataContext;
+import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.processes.ProcessIds;
+import org.kie.kogito.incubation.processes.services.StraightThroughProcessService;
+import org.kie.kogito.process.Process;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.ws.rs.Consumes;
@@ -29,14 +37,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import org.kie.kogito.Model;
-import org.kie.kogito.incubation.application.AppRoot;
-import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.common.MapDataContext;
-import org.kie.kogito.incubation.processes.ProcessIds;
-import org.kie.kogito.incubation.processes.services.StraightThroughProcessService;
-import org.kie.kogito.process.Process;
 
 @Path("/hello")
 @Consumes(MediaType.APPLICATION_JSON)

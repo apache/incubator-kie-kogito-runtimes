@@ -18,16 +18,16 @@
  */
 package org.kie.kogito.legacy.rules;
 
-import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
-
-import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
 
 import org.kie.api.runtime.KieRuntimeBuilder;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
 
 @Path("/test-tms")
 public class TmsEndpoint {

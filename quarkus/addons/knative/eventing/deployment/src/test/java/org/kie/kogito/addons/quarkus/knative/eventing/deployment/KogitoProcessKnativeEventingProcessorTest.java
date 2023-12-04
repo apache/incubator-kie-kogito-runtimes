@@ -109,7 +109,8 @@ class KogitoProcessKnativeEventingProcessorTest {
         final MockKogitoKnativeMetadataProducer metadata = new MockKogitoKnativeMetadataProducer();
         final KubernetesResourceMetadataBuildItem kubernetesResourceMetadataBuildItem = new KubernetesResourceMetadataBuildItem("kubernetes", "apps", "v1", "Deployment", "name");
         final List<KubernetesResourceMetadataBuildItem> kubernetesMetaBuildItems = singletonList(kubernetesResourceMetadataBuildItem);
-        final List<KubernetesDeploymentTargetBuildItem> deploymentTargets = singletonList(new KubernetesDeploymentTargetBuildItem("kubernetes", "Deployment", "apps", "v1", DeployStrategy.CreateOrUpdate));
+        final List<KubernetesDeploymentTargetBuildItem> deploymentTargets =
+                singletonList(new KubernetesDeploymentTargetBuildItem("kubernetes", "Deployment", "apps", "v1", DeployStrategy.CreateOrUpdate));
         final List<KogitoCloudEventsBuildItem> extendedCloudEventsBuildItems = singletonList(new KogitoCloudEventsBuildItem(Set.of(EXTENDED_CLOUD_EVENT1, EXTENDED_CLOUD_EVENT2)));
 
         doCallRealMethod().when(processor).buildMetadata(singletonList(containerGeneratorBuildItem), extendedCloudEventsBuildItems, deploymentTargets, kubernetesMetaBuildItems, metadata);

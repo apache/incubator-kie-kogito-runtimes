@@ -18,15 +18,15 @@
  */
 package org.kie.kogito.core.process.incubation.quarkus.support;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
-import jakarta.annotation.PostConstruct;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.Id;
 import org.kie.kogito.incubation.processes.services.StraightThroughProcessService;
 import org.kie.kogito.process.Processes;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class QuarkusStraightThroughProcessService implements StraightThroughProcessService {

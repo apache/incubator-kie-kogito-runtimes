@@ -18,6 +18,9 @@
  */
 package org.kie.kogito.process.management;
 
+import org.kie.kogito.Application;
+import org.kie.kogito.process.Processes;
+
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
@@ -29,9 +32,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-
-import org.kie.kogito.Application;
-import org.kie.kogito.process.Processes;
 
 @Path("/management/processes/")
 public class ProcessInstanceManagementResource extends BaseProcessInstanceManagementResource<Response> {

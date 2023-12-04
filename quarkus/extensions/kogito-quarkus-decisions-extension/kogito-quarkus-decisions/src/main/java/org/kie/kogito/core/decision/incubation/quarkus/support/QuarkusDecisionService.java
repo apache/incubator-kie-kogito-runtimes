@@ -18,16 +18,16 @@
  */
 package org.kie.kogito.core.decision.incubation.quarkus.support;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.decisions.services.DecisionService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class QuarkusDecisionService implements DecisionService {

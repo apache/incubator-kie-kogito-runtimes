@@ -22,14 +22,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.monitoring.core.common.system.interceptor.MetricsInterceptor;
+import org.mockito.ArgumentCaptor;
+
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.monitoring.core.common.system.interceptor.MetricsInterceptor;
-import org.mockito.ArgumentCaptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

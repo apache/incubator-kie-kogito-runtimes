@@ -18,10 +18,10 @@
  */
 package org.kie.kogito.resource.exceptions;
 
+import org.kie.kogito.process.VariableViolationException;
+
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
-
-import org.kie.kogito.process.VariableViolationException;
 
 @Provider
 public class VariableViolationExceptionMapper extends BaseExceptionMapper<VariableViolationException> {
