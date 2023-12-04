@@ -42,7 +42,7 @@
     <version.org.codehaus.groovy>2.4.16</version.org.codehaus.groovy>
     <version.org.spockframework>1.3-groovy-2.4</version.org.spockframework>
     <!-- Spring Boot Cloud aligned with Spring Boot Framework version. See: https://spring.io/projects/spring-cloud -->
-    <version.org.springframework.cloud.kubernetes.fabric8>3.0.2</version.org.springframework.cloud.kubernetes.fabric8>
+    <version.org.springframework.cloud.kubernetes>3.0.2</version.org.springframework.cloud.kubernetes>
     <!-- CVE-2022-25857: Upgrading snakeyaml until we upgrade to Spring Boot 3.x -->
     <!-- See: https://github.com/spring-projects/spring-boot/issues/32221 -->
     <version.org.springframework.security>1.0.2</version.org.springframework.security>
@@ -81,7 +81,7 @@
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-starter-kubernetes-fabric8</artifactId>
-        <version>${version.org.springframework.cloud.kubernetes.fabric8}</version>
+        <version>${version.org.springframework.cloud.kubernetes}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.security</groupId>
