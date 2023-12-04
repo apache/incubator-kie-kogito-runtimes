@@ -18,11 +18,11 @@
  */
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 
 import jakarta.annotation.PostConstruct;
-import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 final class KnativeWorkItemHandlerConfig extends DefaultWorkItemHandlerConfig {

@@ -18,9 +18,16 @@
  */
 package org.kie.kogito.task.management;
 
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 
+import org.kie.kogito.process.ProcessConfig;
+import org.kie.kogito.process.Processes;
+import org.kie.kogito.process.workitem.Policies;
+import org.kie.kogito.task.management.service.TaskInfo;
+import org.kie.kogito.task.management.service.TaskManagementOperations;
+import org.kie.kogito.task.management.service.TaskManagementService;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -32,13 +39,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import org.kie.kogito.process.ProcessConfig;
-import org.kie.kogito.process.Processes;
-import org.kie.kogito.process.workitem.Policies;
-import org.kie.kogito.task.management.service.TaskInfo;
-import org.kie.kogito.task.management.service.TaskManagementOperations;
-import org.kie.kogito.task.management.service.TaskManagementService;
 
 @Path("/management/processes")
 public class TaskManagementResource {

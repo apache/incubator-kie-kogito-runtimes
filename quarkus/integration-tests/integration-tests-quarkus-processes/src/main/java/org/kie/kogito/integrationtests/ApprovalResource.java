@@ -20,6 +20,9 @@ package org.kie.kogito.integrationtests;
 
 import java.util.Map;
 
+import org.kie.kogito.Model;
+import org.kie.kogito.process.Process;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.ws.rs.Consumes;
@@ -28,9 +31,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import org.kie.kogito.Model;
-import org.kie.kogito.process.Process;
 
 @Path("/approvalsdetails")
 @Consumes(MediaType.APPLICATION_JSON)

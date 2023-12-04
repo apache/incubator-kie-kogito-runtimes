@@ -18,12 +18,12 @@
  */
 package org.kie.kogito.incubation.application.quarkus;
 
+import org.kie.kogito.incubation.application.AppRoot;
+import org.kie.kogito.incubation.common.ComponentRoot;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-
-import org.kie.kogito.incubation.application.AppRoot;
-import org.kie.kogito.incubation.common.ComponentRoot;
 
 @ApplicationScoped
 public class QuarkusAppRoot extends AppRoot {

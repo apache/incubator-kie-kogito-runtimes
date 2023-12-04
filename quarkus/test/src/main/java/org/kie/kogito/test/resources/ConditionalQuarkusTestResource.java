@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.annotation.Resource;
 import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.testcontainers.containers.Container;
 
@@ -31,6 +30,8 @@ import com.google.common.base.Strings;
 
 import io.quarkus.test.common.DevServicesContext;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+
+import jakarta.annotation.Resource;
 
 /**
  * Quarkus resource to be run if and only if it was enabled.

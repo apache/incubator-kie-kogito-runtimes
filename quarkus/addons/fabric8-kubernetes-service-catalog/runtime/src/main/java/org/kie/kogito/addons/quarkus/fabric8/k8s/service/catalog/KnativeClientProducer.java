@@ -18,12 +18,12 @@
  */
 package org.kie.kogito.addons.quarkus.fabric8.k8s.service.catalog;
 
+import io.fabric8.knative.client.KnativeClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
-
-import io.fabric8.knative.client.KnativeClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
 
 final class KnativeClientProducer {
 

@@ -18,16 +18,16 @@
  */
 package org.kie.kogito.core.prediction.incubation.quarkus.support;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.predictions.services.PredictionService;
 import org.kie.kogito.prediction.PredictionModels;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class QuarkusPredictionService implements PredictionService {
