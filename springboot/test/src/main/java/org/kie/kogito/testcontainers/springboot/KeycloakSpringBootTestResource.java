@@ -24,8 +24,6 @@ import java.util.Map;
 import org.kie.kogito.test.resources.ConditionalSpringBootTestResource;
 import org.kie.kogito.testcontainers.KogitoKeycloakContainer;
 
-import static java.util.Collections.singletonMap;
-
 /**
  * Keycloak spring boot resource that works within the test lifecycle.
  *
