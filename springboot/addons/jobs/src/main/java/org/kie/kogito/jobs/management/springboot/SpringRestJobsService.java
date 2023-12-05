@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.jobs.management.springboot;
 
-import jakarta.annotation.PostConstruct;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.jobs.management.RestJobsService;
@@ -38,6 +37,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class SpringRestJobsService extends RestJobsService {
