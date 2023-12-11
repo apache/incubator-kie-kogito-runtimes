@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.quarkus.workflows;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 
@@ -49,6 +50,7 @@ class CallbackStateTimeoutsIT extends AbstractCallbackStateIT {
                 CALLBACK_STATE_TIMEOUTS_TOPIC);
     }
 
+    @Disabled("https://github.com/apache/incubator-kie-kogito-runtimes/issues/3320")
     @Test
     void callbackStateTimeoutsExceeded() {
         // start a new process instance by sending a query and collect the process instance id.
