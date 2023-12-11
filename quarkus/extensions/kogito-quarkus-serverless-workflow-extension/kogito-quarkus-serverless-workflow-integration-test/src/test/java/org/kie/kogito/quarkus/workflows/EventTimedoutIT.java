@@ -27,7 +27,6 @@ import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.Converter;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
@@ -76,13 +75,12 @@ public class EventTimedoutIT {
         }
     }
 
-    @Disabled("https://github.com/apache/incubator-kie-kogito-runtimes/issues/3320")
     @Test
     void testTimedout() throws InterruptedException {
         String id = startProcess("eventTimedout");
         Converter<byte[], CloudEvent> converter = new ByteArrayCloudEventUnmarshallerFactory(objectMapper).unmarshaller(Map.class).cloudEvent();
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        kafkaClient.consume("timeout", v -> {
+        kafkaClient.consume("timeoutError", v -> {
             try {
                 CloudEvent event = converter.convert(v);
                 if (id.equals(event.getExtension(CloudEventExtensionConstants.PROCESS_INSTANCE_ID))) {
