@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.Converter;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
@@ -64,7 +63,6 @@ class CallbackStateWithTimeoutsErrorHandlerIT extends AbstractCallbackStateIT {
         waitForFinalizedEvent(processInstanceId, "success");
     }
 
-    @Disabled("https://github.com/apache/incubator-kie-kogito-runtimes/issues/3320")
     @Test
     void callbackStateTimeoutsExceeded() throws Exception {
         String processInput = buildProcessInput(SUCCESSFUL_QUERY);
@@ -72,7 +70,7 @@ class CallbackStateWithTimeoutsErrorHandlerIT extends AbstractCallbackStateIT {
         assertProcessInstanceExists(CALLBACK_STATE_TIMEOUTS_GET_BY_ID_URL, processInstanceId);
 
         assertProcessInstanceHasFinished(CALLBACK_STATE_TIMEOUTS_GET_BY_ID_URL, processInstanceId, 1, 10);
-        waitForFinalizedEvent(processInstanceId, "timeout");
+        waitForFinalizedEvent(processInstanceId, "timeoutCallbackError");
     }
 
     @Test
