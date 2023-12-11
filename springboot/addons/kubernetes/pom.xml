@@ -32,23 +32,6 @@
   <artifactId>kogito-addons-springboot-kubernetes</artifactId>
   <name>Kogito :: Add-Ons :: Spring Boot :: Kubernetes</name>
 
-  <properties>
-    <!-- Fabric8 aligned with Spring Cloud. See: https://github.com/spring-cloud/spring-cloud-kubernetes/blob/main/spring-cloud-kubernetes-dependencies/pom.xml#L36 -->
-    <version.io.fabric8>6.2.0</version.io.fabric8>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>kubernetes-client-bom</artifactId>
-        <version>${version.io.fabric8}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -66,15 +49,14 @@
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
     </dependency>
+    <!-- Forcing here since Fabric8 BOM won't bring it -->
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>knative-client</artifactId>
-      <version>${version.io.fabric8}</version>
     </dependency>
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-client</artifactId>
-      <version>${version.io.fabric8}</version>
     </dependency>
     <dependency>
       <groupId>io.fabric8</groupId>
