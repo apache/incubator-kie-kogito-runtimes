@@ -174,7 +174,7 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
                 run();
             } finally {
                 if (removeAtExecution) {
-                    cancelJob(id, true);
+                    cancelJob(id, false);
                 }
             }
         }
