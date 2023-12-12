@@ -112,7 +112,7 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
 
     @Override
     public boolean cancelJob(String id) {
-        return cancelJob(id, true);
+        return cancelJob(id, false);
     }
 
     public boolean cancelJob(String id, boolean force) {
