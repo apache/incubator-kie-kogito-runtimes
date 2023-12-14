@@ -24,14 +24,14 @@ import javax.enterprise.inject.Produces;
 import io.quarkus.arc.DefaultBean;
 import io.vertx.ext.web.client.WebClientOptions;
 
-import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.sslWebClientOptions;
+import static org.kie.kogito.quarkus.runtime.SSLWebClientOptionsUtils.sslQuarkusWebClientOptions;
 
 @ApplicationScoped
 public class SSLWebClientOptionsProducer {
 
     @Produces
     @DefaultBean
-    public WebClientOptions webClientOptions() {
-        return sslWebClientOptions();
+    public WebClientOptions quarkusWebClientOptions() {
+        return sslQuarkusWebClientOptions();
     }
 }

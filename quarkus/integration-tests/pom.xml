@@ -61,6 +61,7 @@
         <module>integration-tests-quarkus-processes-persistence</module>
         <module>integration-tests-quarkus-source-files</module>
         <module>integration-tests-quarkus-gradle</module>
+        <module>integration-tests-quarkus-ssl-webclient-options</module>
       </modules>
     </profile>
   </profiles>
