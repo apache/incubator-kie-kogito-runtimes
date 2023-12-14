@@ -17,6 +17,9 @@ pipeline {
         ENABLE_SONARCLOUD = 'false'
         SONAR_PROJECT_KEY = 'apache_incubator-kie-kogito-runtimes'
         KOGITO_RUNTIMES_BUILD_MVN_OPTS = '-Dvalidate-formatting -Prun-code-coverage'
+
+        BUILD_JDK_TOOL = 'jdk_17_latest'
+        BUILD_MAVEN_TOOL = 'maven_3.9.5'
     }
     stages {
         stage('Initialize') {
