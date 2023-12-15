@@ -16,7 +16,7 @@
 
   <properties>
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>2.16.10.Final</version.io.quarkus>
+    <version.io.quarkus>2.16.12.Final</version.io.quarkus>
     <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>
     <version.org.springframework.boot>2.6.6</version.org.springframework.boot>
     <version.org.apache.kafka>3.4.0</version.org.apache.kafka>
@@ -29,7 +29,7 @@
     <version.net.minidev.jsonsmart>2.4.10</version.net.minidev.jsonsmart>
     <version.net.thisptr.jackson-jq>1.0.0-preview.20220705</version.net.thisptr.jackson-jq>
     <version.io.quarkiverse.jackson-jq>1.1.0</version.io.quarkiverse.jackson-jq>
-    <version.io.quarkiverse.openapi.generator>1.3.9</version.io.quarkiverse.openapi.generator>
+    <version.io.quarkiverse.openapi.generator>1.3.14</version.io.quarkiverse.openapi.generator>
     <version.io.quarkiverse.asyncapi>0.0.6</version.io.quarkiverse.asyncapi>
     <version.io.quarkiverse.reactivemessaging.http>1.1.5</version.io.quarkiverse.reactivemessaging.http>
     <version.io.quarkiverse.embedded.postgresql>0.0.9</version.io.quarkiverse.embedded.postgresql>
@@ -59,7 +59,7 @@
     <version.io.micrometer>1.10.2</version.io.micrometer>
     <version.org.flywaydb>9.8.3</version.org.flywaydb>
     <version.org.postgresql>42.5.1</version.org.postgresql>
-    <version.io.serverlessworkflow>4.0.4.Final</version.io.serverlessworkflow>
+    <version.io.serverlessworkflow>4.0.5.Final</version.io.serverlessworkflow>
     <!-- Aligned with Quarkus 2.7 (LTS) - see https://issues.redhat.com/browse/KOGITO-7971 -->
     <version.io.smallrye-open-api>3.1.1</version.io.smallrye-open-api>
     <version.org.awaitility>4.2.0</version.org.awaitility>
@@ -71,7 +71,8 @@
 
     <version.io.quarkus.camel>2.15.0</version.io.quarkus.camel>
 
-    <version.io.swagger.parser.v3>2.0.26</version.io.swagger.parser.v3>
+    <version.io.swagger.parser.v3>2.1.16</version.io.swagger.parser.v3>
+    <version.io.swagger.core.v3>2.2.14</version.io.swagger.core.v3>
 
     <version.org.apache.commons>3.12.0</version.org.apache.commons>
 
@@ -125,6 +126,7 @@
     <version.com.github.stephenc.jcip>1.0-1</version.com.github.stephenc.jcip>
     <version.black.ninia>4.1.1</version.black.ninia>
     <version.com.google.guava>32.0.1-jre</version.com.google.guava>
+    <version.apache.commons.commons-compress>1.24.0</version.apache.commons.commons-compress>
   </properties>
 
   <dependencyManagement>
@@ -135,6 +137,13 @@
         <artifactId>guava</artifactId>
         <version>${version.com.google.guava}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${version.apache.commons.commons-compress}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
@@ -611,6 +620,18 @@
         <groupId>io.swagger.parser.v3</groupId>
         <artifactId>swagger-parser</artifactId>
         <version>${version.io.swagger.parser.v3}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-model</artifactId>
+        <version>${version.io.swagger.core.v3}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-core</artifactId>
+        <version>${version.io.swagger.core.v3}</version>
       </dependency>
 
       <!-- fabric8 -->

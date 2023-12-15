@@ -35,10 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class KafkaEventPublisher implements EventPublisher {
 
-    private static final String PI_TOPIC_NAME = "kogito-processinstances-events";
-    private static final String UI_TOPIC_NAME = "kogito-usertaskinstances-events";
-    private static final String VI_TOPIC_NAME = "kogito-variables-events";
-
     private static final Logger logger = LoggerFactory.getLogger(KafkaEventPublisher.class);
 
     @Autowired
@@ -53,29 +49,33 @@ public class KafkaEventPublisher implements EventPublisher {
     @Value("${kogito.events.processinstances.enabled:true}")
     private boolean processInstancesEvents;
 
+    @Value("${kogito.events.processdefinitions.enabled:true}")
+    private boolean processDefinitionEvents;
+
     @Value("${kogito.events.usertasks.enabled:true}")
     private boolean userTasksEvents;
 
-    @Value("${kogito.events.variables.enabled:true}")
-    private boolean variablesEvents;
-
     @Override
     public void publish(DataEvent<?> event) {
+
         switch (event.getType()) {
-            case "ProcessInstanceEvent":
-                if (processInstancesEvents) {
-                    publishToTopic(event, PI_TOPIC_NAME);
-                }
+            case "ProcessInstanceErrorDataEvent":
+            case "ProcessInstanceNodeDataEvent":
+            case "ProcessInstanceSLADataEvent":
+            case "ProcessInstanceStateDataEvent":
+            case "ProcessInstanceVariableDataEvent":
+                publishToTopic(event, PROCESS_INSTANCES_TOPIC_NAME);
                 break;
-            case "UserTaskInstanceEvent":
-                if (userTasksEvents) {
-                    publishToTopic(event, UI_TOPIC_NAME);
-                }
+            case "UserTaskInstanceAssignmentDataEvent":
+            case "UserTaskInstanceAttachmentDataEvent":
+            case "UserTaskInstanceCommentDataEvent":
+            case "UserTaskInstanceDeadlineDataEvent":
+            case "UserTaskInstanceStateDataEvent":
+            case "UserTaskInstanceVariableDataEvent":
+                publishToTopic(event, USER_TASK_INSTANCES_TOPIC_NAME);
                 break;
-            case "VariableInstanceEvent":
-                if (variablesEvents) {
-                    publishToTopic(event, VI_TOPIC_NAME);
-                }
+            case "ProcessDefinitionEvent":
+                publishToTopic(event, PROCESS_DEFINITIONS_TOPIC_NAME);
                 break;
             default:
                 logger.debug("Unknown type of event '{}', ignoring for this publisher", event.getType());

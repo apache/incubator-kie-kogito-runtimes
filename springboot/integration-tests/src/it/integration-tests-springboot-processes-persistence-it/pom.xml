@@ -64,6 +64,10 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-processes-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-addons-springboot-process-management</artifactId>
     </dependency>
     <dependency>
@@ -170,7 +174,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>@version.failsafe.plugin@</version>
+        <version>@version.maven-surefire@</version>
         <configuration>
           <classesDirectory>${project.build.outputDirectory}</classesDirectory>
           <systemPropertyVariables>

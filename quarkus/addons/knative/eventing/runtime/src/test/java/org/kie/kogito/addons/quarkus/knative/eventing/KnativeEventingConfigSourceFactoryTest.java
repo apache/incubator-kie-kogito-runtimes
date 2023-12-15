@@ -89,11 +89,12 @@ class KnativeEventingConfigSourceFactoryTest {
         assertContainsProperty(eventingConfigSource, "mp.messaging.outgoing.kogito-processinstances-events.connector", "quarkus-http");
         assertContainsProperty(eventingConfigSource, "mp.messaging.outgoing.kogito-processinstances-events.url", DEFAULT_SINK_CONFIG);
 
+        assertContainsProperty(eventingConfigSource, "mp.messaging.outgoing.kogito-processdefinitions-events.connector", "quarkus-http");
+        assertContainsProperty(eventingConfigSource, "mp.messaging.outgoing.kogito-processdefinitions-events.url", DEFAULT_SINK_CONFIG);
+
         assertContainsProperty(eventingConfigSource, "mp.messaging.outgoing.kogito-usertaskinstances-events.connector", "quarkus-http");
         assertContainsProperty(eventingConfigSource, "mp.messaging.outgoing.kogito-usertaskinstances-events.url", DEFAULT_SINK_CONFIG);
 
-        assertContainsProperty(eventingConfigSource, "mp.messaging.outgoing.kogito-variables-events.connector", "quarkus-http");
-        assertContainsProperty(eventingConfigSource, "mp.messaging.outgoing.kogito-variables-events.url", DEFAULT_SINK_CONFIG);
     }
 
     private static void assertDefaultIncomingConnector(KnativeEventingConfigSource eventingConfigSource) {

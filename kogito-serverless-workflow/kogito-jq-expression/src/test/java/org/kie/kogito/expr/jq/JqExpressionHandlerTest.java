@@ -275,6 +275,12 @@ class JqExpressionHandlerTest {
         assertThat(parsedExpression.eval(getObjectNode(), String.class, context)).isEqualTo(expectedResult);
     }
 
+    @Test
+    void testHardcodedStringIsValidOrNot() {
+        assertThat(ExpressionHandlerFactory.get("jq", "kserve_payload = to_kserve(image)").isValid()).isFalse();
+        assertThat(ExpressionHandlerFactory.get("jq", "length .variable").isValid()).isTrue();
+    }
+
     private static Stream<Arguments> provideMagicWordExpressionsToTest() {
         return Stream.of(
                 Arguments.of("$WORKFLOW.instanceId", "1111-2222-3333", getContext()),
@@ -284,7 +290,7 @@ class JqExpressionHandlerTest {
                 Arguments.of("$SECRET.none", "null", getContext()),
                 Arguments.of("\"$SECRET.none\"", "$SECRET.none", getContext()),
                 Arguments.of("$SECRET.lettersonly", "secretlettersonly", getContext()),
-                Arguments.of("$SECRET.dot.secret", "null", getContext()),
+                Arguments.of("$SECRET.dot.secret", "secretdotsecret", getContext()),
                 Arguments.of("$SECRET.\"dot.secret\"", "secretdotsecret", getContext()),
                 Arguments.of("$SECRET.\"dash-secret\"", "secretdashsecret", getContext()),
                 Arguments.of("$CONST.someconstant", "value", getContext()),

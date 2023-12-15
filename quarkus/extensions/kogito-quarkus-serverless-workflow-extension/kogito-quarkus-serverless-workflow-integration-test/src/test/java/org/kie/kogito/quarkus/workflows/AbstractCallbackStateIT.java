@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.kie.kogito.event.process.ProcessInstanceVariableDataEvent;
 import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
@@ -72,7 +73,7 @@ abstract class AbstractCallbackStateIT {
         }
     }
 
-    void executeCallbackStateSuccessfulPath(String callbackProcessPostUrl,
+    String executeCallbackStateSuccessfulPath(String callbackProcessPostUrl,
             String callbackProcessGetByIdUrl,
             String answer,
             String callbackEventType,
@@ -81,9 +82,9 @@ abstract class AbstractCallbackStateIT {
         String processInput = buildProcessInput(SUCCESSFUL_QUERY);
         String processInstanceId = newProcessInstanceAndGetId(callbackProcessPostUrl, processInput);
 
-        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, true);
-        Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
-        assertThat(workflowDataMap).hasSize(1);
+        JsonPath processInstanceEventContent =
+                waitForKogitoProcessInstanceEvent(kafkaClient, ProcessInstanceVariableDataEvent.class, e -> "workflowdata".equals(e.get("data.variableName")), true);
+        Map<Object, Object> workflowDataMap = processInstanceEventContent.getMap("data.variableValue");
         assertThat(workflowDataMap).containsEntry("query", SUCCESSFUL_QUERY);
 
         // double check that the process instance is there.
@@ -103,26 +104,29 @@ abstract class AbstractCallbackStateIT {
 
         // give some time for the event to be processed and the process to finish.
         assertProcessInstanceHasFinished(callbackProcessGetByIdUrl, processInstanceId, 1, 180);
+        return processInstanceId;
     }
 
-    void executeCallbackStateWithErrorPath(String callbackProcessPostUrl, String callbackProcessGetByIdUrl) throws Exception {
+    String executeCallbackStateWithErrorPath(String callbackProcessPostUrl, String callbackProcessGetByIdUrl) throws Exception {
         // start a new process instance and collect the results.
         String processInput = buildProcessInput(GENERATE_ERROR_QUERY);
         JsonPath result = newProcessInstance(callbackProcessPostUrl, processInput);
         String processInstanceId = result.get("id");
         // ensure the process has failed as expected since GENERATE_ERROR_QUERY was used.
+
         String lastExecutedState = result.getString("workflowdata.lastExecutedState");
         assertThat(lastExecutedState).isEqualTo("FinalizeWithError");
 
-        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, true);
-        Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
-        assertThat(workflowDataMap)
-                .hasSize(2)
-                .containsEntry("query", GENERATE_ERROR_QUERY)
-                .containsEntry("lastExecutedState", "FinalizeWithError");
+        JsonPath variableLastExecutedStateEventContent =
+                waitForKogitoProcessInstanceEvent(kafkaClient, ProcessInstanceVariableDataEvent.class, e -> "workflowdata".equals(e.get("data.variableName")), true);
+        Map<Object, Object> lastExecutedStateDataMap = variableLastExecutedStateEventContent.getMap("data.variableValue");
+
+        assertThat(lastExecutedStateDataMap).containsEntry("lastExecutedState", "FinalizeWithError");
+        assertThat(lastExecutedStateDataMap).containsEntry("query", GENERATE_ERROR_QUERY);
 
         // the process instance should not be there since an end state was reached.
         assertProcessInstanceNotExists(callbackProcessGetByIdUrl, processInstanceId);
+        return processInstanceId;
     }
 
     protected static String buildProcessInput(String query) {
