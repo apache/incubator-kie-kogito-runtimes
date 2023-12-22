@@ -1,0 +1,42 @@
+name: Sync main-apache branch with upstream/main
+
+env:
+  USERNAME: kie-ci
+  USEREMAIL: kie-ci0@redhat.com
+  UPSTREAM_REMOTE: https://github.com/apache/incubator-kie-kogito-runtimes.git
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # every day at midnight
+  workflow_dispatch:
+
+jobs:
+  sync-main-apache:
+    name: Sync main-apache branch
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup git environment
+        run: |
+          git config --global user.name "$USERNAME"
+          git config --global user.email "$USEREMAIL"
+          git remote add upstream $UPSTREAM_REMOTE
+
+      - name: Fetch all
+        run: git fetch --all
+
+      - name: Checkout main-apache branch
+        run: git checkout --track origin/main-apache
+
+      - name: Pull main-apache branch
+        run: git pull
+
+      - name: Merge upstream/main branch
+        run: git merge --no-edit upstream/main
+
+      - name: Push changes
+        run: git push
+
