@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.process.instance.impl.humantask;
 
@@ -25,14 +28,13 @@ import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.process.workitem.Attachment;
 import org.kie.kogito.process.workitem.Comment;
-import org.kie.kogito.process.workitem.HumanTaskWorkItem;
 import org.kie.kogito.process.workitem.NotAuthorizedException;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HumanTaskWorkItemImpl extends KogitoWorkItemImpl implements HumanTaskWorkItem {
+public class HumanTaskWorkItemImpl extends KogitoWorkItemImpl implements InternalHumanTaskWorkItem {
 
     private static final long serialVersionUID = 6168927742199190604L;
     private static final Logger logger = LoggerFactory.getLogger(HumanTaskWorkItemImpl.class);
@@ -208,5 +210,25 @@ public class HumanTaskWorkItemImpl extends KogitoWorkItemImpl implements HumanTa
     @Override
     public Map<Object, Comment> getComments() {
         return comments;
+    }
+
+    @Override
+    public void setAttachment(String id, Attachment attachment) {
+        attachments.put(id, attachment);
+    }
+
+    @Override
+    public Attachment removeAttachment(String id) {
+        return attachments.remove(id);
+    }
+
+    @Override
+    public void setComment(String id, Comment comment) {
+        comments.put(id, comment);
+    }
+
+    @Override
+    public Comment removeComment(String id) {
+        return comments.remove(1);
     }
 }

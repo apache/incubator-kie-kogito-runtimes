@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.process;
 
@@ -22,6 +25,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.drools.io.FileSystemResource;
+import org.jbpm.compiler.canonical.ProcessMetaData;
+import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.definition.process.Process;
@@ -42,7 +47,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ProcessResourceGeneratorTest {
-
+    private static final String SIGNAL_METHOD = "signal_";
     private static final List<String> JAVA_AND_QUARKUS_REST_ANNOTATIONS = List.of("DELETE", "GET", "POST");
     private static final List<String> SPRING_BOOT_REST_ANNOTATIONS = List.of("DeleteMapping", "GetMapping", "PostMapping");
 
@@ -66,6 +71,87 @@ class ProcessResourceGeneratorTest {
         testOpenApiDocumentation(contextBuilder, fileName, expectedSummary, expectedDescription);
     }
 
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    void testGenerateBoundarySignalEventOnTask(KogitoBuildContext.Builder contextBuilder) {
+        String fileName = "src/test/resources/signalevent/BoundarySignalEventOnTask.bpmn2";
+
+        ClassOrInterfaceDeclaration classDeclaration = getResourceClassDeclaration(contextBuilder, fileName);
+
+        KogitoWorkflowProcess process = parseProcess(fileName);
+
+        String outputType = new ModelClassGenerator(contextBuilder.build(), process).simpleName() + "Output";
+
+        classDeclaration.getMethods().stream()
+                .filter(method -> isRestMethod(method) && method.getNameAsString().startsWith(SIGNAL_METHOD))
+                .forEach(method -> assertMethodOutputModelType(method, outputType));
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    void testGenerateStartSignalEventStringPayload(KogitoBuildContext.Builder contextBuilder) {
+        String fileName = "src/test/resources/startsignal/StartSignalEventStringPayload.bpmn2";
+        String signalName = "start";
+
+        ClassOrInterfaceDeclaration classDeclaration = getResourceClassDeclaration(contextBuilder, fileName);
+
+        KogitoWorkflowProcess process = parseProcess(fileName);
+
+        MethodDeclaration startSignalMethod = classDeclaration.getMethods().stream()
+                .filter(method -> isRestMethod(method) && method.getNameAsString().equals(SIGNAL_METHOD + signalName))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(startSignalMethod.isPublic()).isTrue();
+        assertThat(startSignalMethod.getParameters()).hasSize(4);
+        assertThat(startSignalMethod.getParameters().stream()
+                .filter(parameter -> parameter.getNameAsString().equals("data"))
+                .findFirst()
+                .get()).matches(parameter -> parameter.getTypeAsString().equals("java.lang.String"));
+
+        assertThat(startSignalMethod.getBody().get().getChildNodes()
+                .stream()
+                .anyMatch(child -> child.toString().equals("model.setMessage(data);"))).isTrue();
+
+        String outputType = new ModelClassGenerator(contextBuilder.build(), process).simpleName() + "Output";
+
+        classDeclaration.getMethods().stream()
+                .filter(method -> isRestMethod(method) && method.getNameAsString().startsWith(SIGNAL_METHOD + "0"))
+                .forEach(method -> assertMethodOutputModelType(method, outputType));
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    void testGenerateStartSignalEventNoPayload(KogitoBuildContext.Builder contextBuilder) {
+        String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
+        String signalName = "start";
+
+        ClassOrInterfaceDeclaration classDeclaration = getResourceClassDeclaration(contextBuilder, fileName);
+
+        KogitoWorkflowProcess process = parseProcess(fileName);
+
+        MethodDeclaration startSignalMethod = classDeclaration.getMethods().stream()
+                .filter(method -> isRestMethod(method) && method.getNameAsString().equals(SIGNAL_METHOD + signalName))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(startSignalMethod.isPublic()).isTrue();
+        assertThat(startSignalMethod.getParameters()).hasSize(3);
+        assertThat(startSignalMethod.getParameters()
+                .stream()
+                .anyMatch(parameter -> parameter.getNameAsString().equals("data"))).isFalse();
+
+        assertThat(startSignalMethod.getBody().get().getChildNodes()
+                .stream()
+                .anyMatch(child -> child.toString().equals("model.setMessage(data);"))).isFalse();
+
+        String outputType = new ModelClassGenerator(contextBuilder.build(), process).simpleName() + "Output";
+
+        classDeclaration.getMethods().stream()
+                .filter(method -> isRestMethod(method) && method.getNameAsString().startsWith(SIGNAL_METHOD + "0"))
+                .forEach(method -> assertMethodOutputModelType(method, outputType));
+    }
+
     void testOpenApiDocumentation(KogitoBuildContext.Builder contextBuilder, String fileName, String expectedSummary, String expectedDescription) {
         ClassOrInterfaceDeclaration classDeclaration = getResourceClassDeclaration(contextBuilder, fileName);
 
@@ -85,11 +171,23 @@ class ProcessResourceGeneratorTest {
     private CompilationUnit getCompilationUnit(KogitoBuildContext.Builder contextBuilder, KogitoWorkflowProcess process) {
         KogitoBuildContext context = createContext(contextBuilder);
 
-        String modelfqcn = "any.Model";
-        String processfqcn = "any.Process";
-        String appCanonicalName = "AnyApp";
+        ProcessExecutableModelGenerator execModelGen =
+                new ProcessExecutableModelGenerator(process, new ProcessToExecModelGenerator(context.getClassLoader()));
 
-        ProcessResourceGenerator processResourceGenerator = new ProcessResourceGenerator(context, process, modelfqcn, processfqcn, appCanonicalName);
+        KogitoWorkflowProcess workFlowProcess = execModelGen.process();
+
+        ProcessResourceGenerator processResourceGenerator = new ProcessResourceGenerator(
+                context,
+                workFlowProcess,
+                new ModelClassGenerator(context, workFlowProcess).className(),
+                execModelGen.className(),
+                context.getPackageName() + ".Application");
+
+        ProcessMetaData metaData = execModelGen.generate();
+
+        processResourceGenerator
+                .withSignals(metaData.getSignals())
+                .withTriggers(metaData.isStartable(), metaData.isDynamic(), metaData.getTriggers());
 
         return StaticJavaParser.parse(processResourceGenerator.generate());
     }
@@ -98,6 +196,11 @@ class ProcessResourceGeneratorTest {
         Optional<AnnotationExpr> annotation = method.getAnnotationByName("Operation");
         assertThat(annotation).isNotEmpty();
         assertThatAnnotationHasSummaryAndDescription(annotation.orElseThrow(), summary, description);
+    }
+
+    private void assertMethodOutputModelType(MethodDeclaration method, String outputType) {
+        assertThat(method.getType()).isNotNull();
+        assertThat(method.getType().asString()).isEqualTo(outputType);
     }
 
     private void assertThatAnnotationHasSummaryAndDescription(AnnotationExpr annotation, String summary, String description) {

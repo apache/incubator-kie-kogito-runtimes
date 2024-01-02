@@ -1,25 +1,25 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.serverless.workflow;
 
-import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.microprofile.openapi.models.tags.Tag;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Constraint;
@@ -221,11 +221,11 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         node = process.getNodes()[6];
         assertThat(node).isInstanceOf(CompositeContextNode.class);
         node = process.getNodes()[5];
-        assertThat(node).isInstanceOf(Join.class);
+        assertThat(node).isInstanceOf(ActionNode.class);
         node = process.getNodes()[1];
-        assertThat(node).isInstanceOf(StartNode.class);
+        assertThat(node).isInstanceOf(Join.class);
         node = process.getNodes()[3];
-        assertThat(node).isInstanceOf(StartNode.class);
+        assertThat(node).isInstanceOf(ActionNode.class);
 
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[6];
@@ -440,7 +440,7 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         assertThat(process.getPackageName()).isEqualTo("org.kie.kogito.serverless");
         assertThat(process.getVisibility()).isEqualTo(RuleFlowProcess.PUBLIC_VISIBILITY);
 
-        assertThat(process.getNodes()).hasSize(12);
+        assertThat(process.getNodes()).hasSize(15);
 
         Node node = process.getNodes()[0];
         assertThat(node).isInstanceOf(StartNode.class);
@@ -485,16 +485,16 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         assertThat(process.getPackageName()).isEqualTo("org.kie.kogito.serverless");
         assertThat(process.getVisibility()).isEqualTo(RuleFlowProcess.PUBLIC_VISIBILITY);
 
-        assertThat(process.getNodes()).hasSize(11);
+        assertThat(process.getNodes()).hasSize(13);
 
         Node node = process.getNodes()[5];
         assertThat(node).isInstanceOf(CompositeContextNode.class);
         node = process.getNodes()[4];
-        assertThat(node).isInstanceOf(Join.class);
+        assertThat(node).isInstanceOf(ActionNode.class);
         node = process.getNodes()[0];
-        assertThat(node).isInstanceOf(StartNode.class);
+        assertThat(node).isInstanceOf(Join.class);
         node = process.getNodes()[2];
-        assertThat(node).isInstanceOf(StartNode.class);
+        assertThat(node).isInstanceOf(ActionNode.class);
         node = process.getNodes()[6];
         assertThat(node).isInstanceOf(Split.class);
         node = process.getNodes()[7];
@@ -503,7 +503,7 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         assertThat(node).isInstanceOf(ActionNode.class);
         node = process.getNodes()[9];
         assertThat(node).isInstanceOf(EndNode.class);
-        node = process.getNodes()[10];
+        node = process.getNodes()[11];
         assertThat(node).isInstanceOf(EndNode.class);
 
         Split split = (Split) process.getNodes()[6];
@@ -614,7 +614,7 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
     @ParameterizedTest
     @ValueSource(strings = { "/examples/applicantworkflow.sw.json", "/exec/error.sw.json", "/exec/callback.sw.json", "/exec/compensation.sw.json", "/exec/compensation.end.sw.json",
             "/exec/foreach.sw.json" })
-    public void testSpecExamplesParsing(String workflowLocation) throws IOException {
+    public void testSpecExamplesParsing(String workflowLocation) throws Exception {
         Workflow workflow = Workflow.fromSource(WorkflowTestUtils.readWorkflowFile(workflowLocation));
 
         assertThat(workflow).isNotNull();
@@ -629,7 +629,7 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
 
     @ParameterizedTest
     @ValueSource(strings = { "/exec/expression.schema.sw.json" })
-    public void testSpecWithInputSchema(String workflowLocation) throws IOException {
+    public void testSpecWithInputSchema(String workflowLocation) throws Exception {
         Workflow workflow = Workflow.fromSource(WorkflowTestUtils.readWorkflowFile(workflowLocation));
 
         assertThat(workflow).isNotNull();
@@ -639,8 +639,6 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation);
         assertThat(process).isNotNull();
         assertThat(process.getId()).isNotNull();
-
-        assertThat(process.getMetaData(Metadata.DATA_INPUT_SCHEMA_REF)).isEqualTo(SWFConstants.INPUT_MODEL_REF);
     }
 
     @Test
@@ -681,16 +679,7 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow, JavaKogitoBuildContext.builder().build());
         Process process = parser.getProcessInfo().info();
 
-        // Simplify the following assertions when https://github.com/smallrye/smallrye-open-api/pull/1093 is merged and released
-
-        assertThat(process.getMetaData())
-                .containsKey(Metadata.TAGS)
-                .hasEntrySatisfying(Metadata.TAGS, tags -> assertThat(tags).isInstanceOf(Collection.class));
-
-        @SuppressWarnings("unchecked")
-        Collection<Tag> tags = (Collection<Tag>) process.getMetaData().get(Metadata.TAGS);
-
-        annotations.forEach(annotation -> assertThat(tags).anyMatch(tag -> tag.getName().equals(annotation)));
+        assertThat(process.getMetaData()).containsEntry(Metadata.TAGS, annotations);
     }
 
     @Test
@@ -716,15 +705,6 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow, JavaKogitoBuildContext.builder().build());
         Process process = parser.getProcessInfo().info();
 
-        // Simplify the following assertions when https://github.com/smallrye/smallrye-open-api/pull/1093 is merged and released
-
-        assertThat(process.getMetaData())
-                .containsKey(Metadata.TAGS)
-                .hasEntrySatisfying(Metadata.TAGS, tags -> assertThat(tags).isInstanceOf(Collection.class));
-
-        @SuppressWarnings("unchecked")
-        Collection<Tag> tags = (Collection<Tag>) process.getMetaData().get(Metadata.TAGS);
-
-        assertThat(tags).anyMatch(tag -> workflowId.equals(tag.getName()) && description.equals(tag.getDescription()));
+        assertThat(process.getMetaData()).containsEntry(Metadata.DESCRIPTION, description);
     }
 }

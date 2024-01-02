@@ -13,7 +13,12 @@
       "vasco": "txakurra"
     }
   },
-  "dataInputSchema" : "schema/expression.json",
+  "dataInputSchema" : "schema/expressionInput.json",
+  "extensions" : [ {
+      "extensionid": "workflow-output-schema",
+      "outputSchema": "schema/expressionOutput.json"
+     }
+  ],
   "start": "squareState",
   "functions": [
     {
@@ -24,12 +29,17 @@
     {
       "name": "secretMessage",
       "type": "expression",
-      "operation": ".message |= \"my name is \"+$SECRET.my_name"
+      "operation": ".message |= \"my name is \"+$SECRET.expression.my_name"
     },
     {
       "name": "constantMessage",
       "type": "expression",
       "operation": ".message |=.+\" and in my native language dog is translated to \"+$CONST.dog.castellano"
+    },
+    {
+      "name": "userMessage",
+      "type": "expression",
+      "operation": ".user |= $WORKFLOW.identity"
     },
     {
       "name": "contextMessage",
@@ -53,7 +63,7 @@
       "type": "operation",
       "actions": [
        {
-          "name": "maxAction",
+         "name": "maxAction",
           "functionRef": {
             "refName": "max"
           },
@@ -79,38 +89,45 @@
       },
       "actions": [
          {
+           "name" : "skippedAction",
+           "functionRef" : "discardedResult",
+           "sleep" : {
+             "before" : "PT0.001S",
+             "after" : "PT0.001S"
+           },
+           "condition": "false"
+         },
+         {
            "name": "costantMessageAction",
-           "functionRef" : {
-             "refName" : "constantMessage"
-            }
+           "functionRef" : "constantMessage"
+         },
+         {
+           "name": "userMessageAction",
+           "functionRef" : "userMessage"
          },
          {
            "name": "contextMessageAction",
-           "functionRef" : {
-             "refName" : "contextMessage"
-            }
+           "functionRef" : "contextMessage"
          },
          {
           "name": "printAction",
           "functionRef": {
             "refName": "printMessage",
             "arguments": {
-              "message": ".result"
+              "message": "\"Result is: \"+(.result|tostring)"
             }
           }
          },
          {
            "name": "discardedResultAction",
-           "functionRef" : {
-             "refName" : "discardedResult"
-            },
+           "functionRef" : "discardedResult",
             "actionDataFilter" : {
               "useResults" : false 
             }
-         }  
-      ],
+         }
+       ],
       "end": {
-        "terminate": "true"
+        "terminate": true
       }
     }
   ]

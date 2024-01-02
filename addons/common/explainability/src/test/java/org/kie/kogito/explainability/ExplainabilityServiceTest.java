@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.explainability;
 
@@ -20,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.StaticApplication;
@@ -31,6 +33,7 @@ import org.kie.kogito.explainability.model.PredictInput;
 import org.kie.kogito.explainability.model.PredictOutput;
 
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
 
 public class ExplainabilityServiceTest {
@@ -63,19 +66,18 @@ public class ExplainabilityServiceTest {
         ExplainabilityService explainabilityService = ExplainabilityService.INSTANCE;
         List<PredictOutput> predictOutputs = explainabilityService.processRequest(application, singletonList(predictInput));
 
-        Assertions.assertEquals(1, predictOutputs.size());
+        assertThat(predictOutputs).hasSize(1);
         PredictOutput predictOutput = predictOutputs.get(0);
 
-        Assertions.assertNotNull(predictOutput);
-        Assertions.assertNotNull(predictOutput.getResult());
+        assertThat(predictOutput).isNotNull();
+        assertThat(predictOutput.getResult()).isNotNull();
 
         Map<String, Object> perturbedResult = predictOutput.getResult();
-        Assertions.assertTrue(perturbedResult.containsKey("Should the driver be suspended?"));
-        Assertions.assertEquals("No", perturbedResult.get("Should the driver be suspended?"));
-        Assertions.assertTrue(perturbedResult.containsKey("Fine"));
-        Assertions.assertNull(perturbedResult.get("Fine"));
+        assertThat(perturbedResult).containsKey("Should the driver be suspended?")
+                .containsEntry("Should the driver be suspended?", "No")
+                .containsKey("Fine");
 
-        Assertions.assertTrue(decisionModel.getEvaluationSkipMonitoringHistory().stream().allMatch(x -> x.equals(true)));
+        assertThat(decisionModel.getEvaluationSkipMonitoringHistory().stream().allMatch(x -> x.equals(true))).isTrue();
     }
 
     private Map<String, Object> createRequest() {

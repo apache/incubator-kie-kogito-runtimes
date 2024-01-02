@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.process.impl;
 
@@ -24,6 +27,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jbpm.process.core.ProcessSupplier;
 import org.jbpm.process.core.timer.DateTimeUtils;
@@ -46,6 +50,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
@@ -54,7 +59,6 @@ import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.ProcessVersionResolver;
@@ -166,7 +170,9 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
 
     @Override
     public <S> void send(Signal<S> signal) {
-        instances().values(ProcessInstanceReadMode.MUTABLE).forEach(pi -> pi.send(signal));
+        try (Stream<ProcessInstance<T>> stream = instances.stream()) {
+            stream.forEach(pi -> pi.send(signal));
+        }
     }
 
     public Process<T> configure() {
@@ -280,8 +286,16 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         public void signalEvent(String type, Object event) {
             if (type.startsWith("processInstanceCompleted:")) {
                 KogitoProcessInstance pi = (KogitoProcessInstance) event;
-                if (!id().equals(pi.getProcessId()) && pi.getParentProcessInstanceId() != null) {
-                    instances().findById(pi.getParentProcessInstanceId()).ifPresent(p -> p.send(Sig.of(type, event)));
+                String parentProcessInstanceId = pi.getParentProcessInstanceId();
+                if (!id().equals(pi.getProcessId()) && ConversionUtils.isNotEmpty(parentProcessInstanceId)) {
+                    //checking if parent is present in ProcessInstanceManager (in-memory local transaction)
+                    KogitoProcessInstance parentKogitoProcessInstance = services.getProcessInstanceManager().getProcessInstance(parentProcessInstanceId);
+                    if (parentKogitoProcessInstance != null) {
+                        parentKogitoProcessInstance.signalEvent(type, event);
+                    } else {
+                        //if not present ProcessInstanceManager try to signal instance from repository
+                        instances().findById(pi.getParentProcessInstanceId()).ifPresent(p -> p.send(Sig.of(type, event)));
+                    }
                 }
             }
         }

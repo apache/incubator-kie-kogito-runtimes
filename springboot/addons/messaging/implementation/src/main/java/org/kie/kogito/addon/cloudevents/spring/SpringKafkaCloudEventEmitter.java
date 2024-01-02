@@ -1,25 +1,30 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
-import java.util.Optional;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
-import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.config.ConfigBean;
+import org.kie.kogito.event.CloudEventMarshaller;
+import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.KogitoEventStreams;
@@ -45,20 +50,24 @@ public class SpringKafkaCloudEventEmitter<M> implements EventEmitter {
     @Autowired
     EventMarshaller<M> marshaller;
     @Autowired
+    CloudEventMarshaller<M> ceMarshaller;
+    @Autowired
     ConfigBean configBean;
     @Autowired
     ObjectMapper mapper;
 
     @Override
-    public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
-        return emitter
-                .send(
-                        env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + type,
-                                defaultTopicName),
-                        marshaller.marshall(configBean.useCloudEvents() ? processDecorator.map(d -> d
-                                .apply(e)).orElse(e) : e))
-                .completable()
-                .thenApply(r -> null); // discard return to comply with the signature
+    public CompletionStage<Void> emit(DataEvent<?> event) {
+        try {
+            return emitter
+                    .send(
+                            env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + event.getType(),
+                                    defaultTopicName),
+                            configBean.useCloudEvents() ? ceMarshaller.marshall(event.asCloudEvent(ceMarshaller.cloudEventDataFactory())) : marshaller.marshall(event.getData()))
+                    .thenApply(r -> null);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
 }

@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2.xml;
 
@@ -442,17 +445,17 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                         }
 
                         if (type.startsWith("Escalation")) {
-                            linkBoundaryEscalationEvent(nodeContainer, node, attachedTo, attachedNode);
+                            linkBoundaryEscalationEvent(node, attachedTo, attachedNode);
                         } else if (type.startsWith("Error-")) {
-                            linkBoundaryErrorEvent(nodeContainer, node, attachedTo, attachedNode);
+                            linkBoundaryErrorEvent(node, attachedTo, attachedNode);
                         } else if (type.startsWith("Timer-")) {
-                            linkBoundaryTimerEvent(nodeContainer, node, attachedTo, attachedNode);
+                            linkBoundaryTimerEvent(node, attachedTo, attachedNode);
                         } else if (type.equals("Compensation")) {
-                            linkBoundaryCompensationEvent(nodeContainer, node, attachedTo, attachedNode);
+                            linkBoundaryCompensationEvent(node);
                         } else if (node.getMetaData().get("SignalName") != null || type.startsWith("Message-")) {
-                            linkBoundarySignalEvent(nodeContainer, node, attachedTo, attachedNode);
+                            linkBoundarySignalEvent(node, attachedTo);
                         } else if (type.startsWith("Condition-")) {
-                            linkBoundaryConditionEvent(nodeContainer, node, attachedTo, attachedNode);
+                            linkBoundaryConditionEvent(nodeContainer, node, attachedTo);
                         }
                     }
                 }
@@ -460,7 +463,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         }
     }
 
-    private static void linkBoundaryEscalationEvent(NodeContainer nodeContainer, Node node, String attachedTo, Node attachedNode) {
+    private static void linkBoundaryEscalationEvent(Node node, String attachedTo, Node attachedNode) {
         boolean cancelActivity = (Boolean) node.getMetaData().get("CancelActivity");
         String escalationCode = (String) node.getMetaData().get("EscalationEvent");
         String escalationStructureRef = (String) node.getMetaData().get("EscalationStructureRef");
@@ -496,7 +499,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         }
     }
 
-    private static void linkBoundaryErrorEvent(NodeContainer nodeContainer, Node node, String attachedTo, Node attachedNode) {
+    private static void linkBoundaryErrorEvent(Node node, String attachedTo, Node attachedNode) {
         ContextContainer compositeNode = (ContextContainer) attachedNode;
         ExceptionScope exceptionScope = (ExceptionScope) compositeNode.getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
         if (exceptionScope == null) {
@@ -529,7 +532,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         ((EventNode) node).setActions(ExtendedNodeImpl.EVENT_NODE_EXIT, actions);
     }
 
-    private static void linkBoundaryTimerEvent(NodeContainer nodeContainer, Node node, String attachedTo, Node attachedNode) {
+    private static void linkBoundaryTimerEvent(Node node, String attachedTo, Node attachedNode) {
         boolean cancelActivity = (Boolean) node.getMetaData().get("CancelActivity");
         StateBasedNode compositeNode = (StateBasedNode) attachedNode;
         String timeDuration = (String) node.getMetaData().get("TimeDuration");
@@ -577,7 +580,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         }
     }
 
-    private static void linkBoundaryCompensationEvent(NodeContainer nodeContainer, Node node, String attachedTo, Node attachedNode) {
+    private static void linkBoundaryCompensationEvent(Node node) {
         /**
          * BPMN2 Spec, p. 264:
          * "For an Intermediate event attached to the boundary of an activity:"
@@ -596,7 +599,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         // linkAssociations takes care of the rest
     }
 
-    private static void linkBoundarySignalEvent(NodeContainer nodeContainer, Node node, String attachedTo, Node attachedNode) {
+    private static void linkBoundarySignalEvent(Node node, String attachedTo) {
         boolean cancelActivity = (Boolean) node.getMetaData().get("CancelActivity");
         if (cancelActivity) {
             List<DroolsAction> actions = ((EventNode) node).getActions(ExtendedNodeImpl.EVENT_NODE_EXIT);
@@ -609,7 +612,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         }
     }
 
-    private static void linkBoundaryConditionEvent(NodeContainer nodeContainer, Node node, String attachedTo, Node attachedNode) {
+    private static void linkBoundaryConditionEvent(NodeContainer nodeContainer, Node node, String attachedTo) {
         String processId = ((RuleFlowProcess) nodeContainer).getId();
         String eventType = "RuleFlowStateEvent-" + processId + "-" + ((EventNode) node).getUniqueId() + "-" + attachedTo;
         ((EventTypeFilter) ((EventNode) node).getEventFilters().get(0)).setType(eventType);
@@ -934,7 +937,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                                 }
                             }
                         }
-                    } // for( Node subNode : nodes) 
+                    }
                 }
                 postProcessNodes(process, (NodeContainer) node);
             } else if (node instanceof EndNode) {
@@ -943,7 +946,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                 handleIntermediateOrEndThrowCompensationEvent((ActionNode) node);
             } else if (node instanceof EventNode) {
                 final EventNode eventNode = (EventNode) node;
-                if (!(eventNode instanceof BoundaryEventNode) && eventNode.getDefaultIncomingConnections().size() == 0) {
+                if (!(eventNode instanceof BoundaryEventNode) && eventNode.getDefaultIncomingConnections().isEmpty()) {
                     throw new ProcessParsingValidationException("Event node '" + node.getName() + "' [" + node.getId() + "] has no incoming connection");
                 }
             }

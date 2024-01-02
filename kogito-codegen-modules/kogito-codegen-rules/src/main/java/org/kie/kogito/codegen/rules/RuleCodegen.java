@@ -1,24 +1,26 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.rules;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +29,8 @@ import java.util.Optional;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.drools.drl.extensions.DecisionTableFactory;
+import org.drools.drl.parser.DroolsError;
 import org.drools.model.codegen.execmodel.PackageModelWriter;
-import org.drools.model.codegen.execmodel.QueryModel;
-import org.drools.model.codegen.execmodel.RuleUnitWriter;
 import org.drools.model.codegen.project.CodegenPackageSources;
 import org.drools.model.codegen.project.DroolsModelBuilder;
 import org.drools.model.codegen.project.KieSessionModelBuilder;
@@ -110,14 +111,7 @@ public class RuleCodegen extends AbstractGenerator {
     @Override
     protected Collection<GeneratedFile> internalGenerate() {
 
-        org.drools.model.codegen.project.DroolsModelBuilder droolsModelBuilder =
-                new DroolsModelBuilder(
-                        context(), resources, decisionTableSupported, model -> new PackageModelWriter(model) {
-                            @Override
-                            public List<RuleUnitWriter> getRuleUnitWriters() {
-                                return Collections.emptyList();
-                            }
-                        });
+        DroolsModelBuilder droolsModelBuilder = new DroolsModelBuilder(context(), resources, decisionTableSupported, PackageModelWriter::new);
 
         try {
             droolsModelBuilder.build();
@@ -131,7 +125,6 @@ public class RuleCodegen extends AbstractGenerator {
             for (RuleUnitDescription ruleUnit : ruleUnits) {
                 String canonicalName = ruleUnit.getCanonicalName();
                 String rulesFileName = pkgSources.getRulesFileName();
-                Collection<QueryModel> queryModels = pkgSources.getQueriesInRuleUnit(canonicalName);
                 this.ruleUnitGenerators.add(new RuleUnitGenerator(context(), ruleUnit, rulesFileName)
                         .withQueries(pkgSources.getQueriesInRuleUnit(canonicalName))
                         .mergeConfig(configs.get(canonicalName)));
@@ -148,9 +141,8 @@ public class RuleCodegen extends AbstractGenerator {
                     .flatMap(pkgSrc -> pkgSrc.getRuleUnits().stream())
                     .forEach(ru -> kieModuleModelWrapper.addRuleUnitConfig(ru, configs.get(ru.getCanonicalName())));
 
-            // main codegen procedure (rule units, rule unit instances, queries, generated pojos)
-            RuleUnitMainCodegen ruleUnitCodegen = new RuleUnitMainCodegen(context(), ruleUnitGenerators, hotReloadMode);
-            generatedFiles.addAll(ruleUnitCodegen.generate());
+            List<DroolsError> errors = new ArrayList<>();
+            List<QueryGenerator> validQueries = validateQueries(errors);
 
             // dashboard for rule unit
             RuleUnitDashboardCodegen dashboardCodegen = new RuleUnitDashboardCodegen(context(), ruleUnitGenerators);
@@ -158,13 +150,12 @@ public class RuleCodegen extends AbstractGenerator {
 
             // "extended" procedure: REST + Event handlers + query dashboards
             if (context().hasRESTForGenerator(this)) {
-                Collection<QueryGenerator> validQueries = ruleUnitCodegen.validQueries();
                 RuleUnitExtendedCodegen ruleUnitExtendedCodegen = new RuleUnitExtendedCodegen(context(), validQueries);
                 generatedFiles.addAll(ruleUnitExtendedCodegen.generate());
             }
 
-            if (!ruleUnitCodegen.errors().isEmpty()) {
-                throw new RuleCodegenError(ruleUnitCodegen.errors());
+            if (!errors.isEmpty()) {
+                throw new RuleCodegenError(errors);
             }
         } else {
             LOGGER.info("No rule unit is present: generate KieRuntimeBuilder implementation.");
@@ -174,6 +165,20 @@ public class RuleCodegen extends AbstractGenerator {
         }
 
         return generatedFiles;
+    }
+
+    private List<QueryGenerator> validateQueries(List<DroolsError> errors) {
+        List<QueryGenerator> validQueries = new ArrayList<>();
+        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
+            for (QueryGenerator queryGenerator : ruleUnit.queries()) {
+                if (queryGenerator.validate()) {
+                    validQueries.add(queryGenerator);
+                } else {
+                    errors.add(queryGenerator.getError());
+                }
+            }
+        }
+        return validQueries;
     }
 
     public RuleCodegen withHotReloadMode() { // fixme this is currently only used in test cases. Drop?

@@ -1,29 +1,33 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.svg.dataindex;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.KeycloakSecurityContext;
 import org.kie.kogito.svg.ProcessSVGException;
+import org.kie.kogito.svg.auth.SpringBootAuthHelper;
+import org.kie.kogito.svg.auth.impl.JwtPrincipalAuthTokenReader;
+import org.kie.kogito.svg.auth.impl.OIDCPrincipalAuthTokenReader;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
@@ -31,6 +35,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -78,7 +85,11 @@ public class SpringBootDataIndexClientTest {
 
     @BeforeEach
     void setUp() {
-        client = new SpringBootDataIndexClient("data-indexURL", restTemplate, objectMapper);
+        client = buildClient(Optional.empty());
+    }
+
+    private SpringBootDataIndexClient buildClient(Optional<SpringBootAuthHelper> authHelper) {
+        return new SpringBootDataIndexClient("data-indexURL", restTemplate, objectMapper, authHelper);
     }
 
     @Test
@@ -115,27 +126,43 @@ public class SpringBootDataIndexClientTest {
     }
 
     @Test
-    public void testAuthHeaderWithSecurityContext() {
+    public void testAuthHeaderWithSecurityContextOidcUserPrincipal() {
         String token = "testToken";
         SecurityContext securityContextMock = mock(SecurityContext.class);
         Authentication authenticationMock = mock(Authentication.class);
-        KeycloakPrincipal principalMock = mock(KeycloakPrincipal.class);
-        KeycloakSecurityContext keycloakSecurityContextMock = mock(KeycloakSecurityContext.class);
+        OidcUser principalMock = mock(OidcUser.class);
+        OidcIdToken tokenMock = mock(OidcIdToken.class);
 
         when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
         when(authenticationMock.getPrincipal()).thenReturn(principalMock);
-        when(principalMock.getKeycloakSecurityContext()).thenReturn(keycloakSecurityContextMock);
-        when(keycloakSecurityContextMock.getTokenString()).thenReturn(token);
+        when(principalMock.getIdToken()).thenReturn(tokenMock);
+        when(tokenMock.getTokenValue()).thenReturn(token);
 
         SecurityContextHolder.setContext(securityContextMock);
-        client.setKeycloakAdapterAvailable(true);
+        client = buildClient(Optional.of(new SpringBootAuthHelper(List.of(new OIDCPrincipalAuthTokenReader(), new JwtPrincipalAuthTokenReader()))));
         assertThat(client.getAuthHeader("")).isEqualTo("Bearer " + token);
     }
 
     @Test
-    public void testAuthHeaderWithoutKeycloakSecurityContext() {
+    public void testAuthHeaderWithSecurityContextJwtPrincipal() {
+        String token = "testToken";
+        SecurityContext securityContextMock = mock(SecurityContext.class);
+        Authentication authenticationMock = mock(Authentication.class);
+        Jwt principalMock = mock(Jwt.class);
+
+        when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        when(authenticationMock.getPrincipal()).thenReturn(principalMock);
+        when(principalMock.getTokenValue()).thenReturn(token);
+
+        SecurityContextHolder.setContext(securityContextMock);
+        client = buildClient(Optional.of(new SpringBootAuthHelper(List.of(new OIDCPrincipalAuthTokenReader(), new JwtPrincipalAuthTokenReader()))));
+        assertThat(client.getAuthHeader("")).isEqualTo("Bearer " + token);
+    }
+
+    @Test
+    public void testAuthHeaderWithoutSecurityContext() {
         String authHeader = "Bearer testToken";
-        client.setKeycloakAdapterAvailable(false);
+        client = buildClient(Optional.of(new SpringBootAuthHelper(List.of(new OIDCPrincipalAuthTokenReader(), new JwtPrincipalAuthTokenReader()))));
         assertThat(client.getAuthHeader(authHeader)).isEqualTo(authHeader);
     }
 }

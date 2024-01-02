@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.process;
 
@@ -32,7 +35,7 @@ import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.correlation.Correlation;
 import org.kie.kogito.event.DataEvent;
-import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.CompilationUnit;
@@ -57,6 +60,7 @@ import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 import static org.kie.kogito.codegen.core.CodegenUtils.isApplicationField;
 import static org.kie.kogito.codegen.core.CodegenUtils.isObjectMapperField;
 import static org.kie.kogito.codegen.core.CodegenUtils.isProcessField;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
 
 public class MessageConsumerGenerator {
 
@@ -86,8 +90,7 @@ public class MessageConsumerGenerator {
         this.processPackageName = process.getPackageName();
         this.processId = process.getId();
         this.processName = processId.substring(processId.lastIndexOf('.') + 1);
-        String capitalizedProcessName = StringUtils.ucFirst(processName);
-        this.resourceClazzName = capitalizedProcessName + "MessageConsumer_" + trigger.getOwnerId();
+        this.resourceClazzName = sanitizeClassName(processName) + "MessageConsumer_" + trigger.getOwnerId();
         this.dataClazzName = modelfqcn.substring(modelfqcn.lastIndexOf('.') + 1);
         this.processClazzName = processfqcn;
         this.appCanonicalName = appCanonicalName;
@@ -166,7 +169,7 @@ public class MessageConsumerGenerator {
                     .setType(parseClassOrInterfaceType(Function.class.getCanonicalName()).setTypeArguments(
                             NodeList.nodeList(parseClassOrInterfaceType(DataEvent.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(dataTypeClass)), dataTypeClass)))
                     .setBody(new BlockStmt().addStatement(new ReturnStmt(
-                            new MethodReferenceExpr(new NameExpr(ServerlessWorkflowUtils.class.getCanonicalName()), NodeList.nodeList(), "dataOnlyIsFalse"))));
+                            new MethodReferenceExpr(new NameExpr(CloudEventUtils.class.getCanonicalName()), NodeList.nodeList(), "fromValue"))));
         }
     }
 

@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.tests;
 
@@ -23,34 +26,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
+import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.codegen.AbstractCodegenIT;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventPublisher;
-import org.kie.kogito.event.process.MilestoneEventBody;
-import org.kie.kogito.event.process.ProcessInstanceDataEvent;
-import org.kie.kogito.event.process.ProcessInstanceEventBody;
-import org.kie.kogito.event.process.UserTaskInstanceDataEvent;
-import org.kie.kogito.event.process.UserTaskInstanceEventBody;
+import org.kie.kogito.event.process.ProcessInstanceErrorDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceNodeDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceNodeEventBody;
+import org.kie.kogito.event.process.ProcessInstanceStateDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceStateEventBody;
+import org.kie.kogito.event.process.ProcessInstanceVariableDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceStateEventBody;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.process.flexible.ItemDescription.Status;
-import org.kie.kogito.services.identity.StaticIdentityProvider;
 import org.kie.kogito.uow.UnitOfWork;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PublishEventIT extends AbstractCodegenIT {
 
@@ -76,11 +78,10 @@ public class PublishEventIT extends AbstractCodegenIT {
         uow.end();
 
         List<DataEvent<?>> events = publisher.extract();
-        assertThat(events).isNotNull().hasSize(1);
 
-        DataEvent<?> event = events.get(0);
-        assertThat(event).isInstanceOf(ProcessInstanceDataEvent.class);
-        ProcessInstanceDataEvent processDataEvent = (ProcessInstanceDataEvent) event;
+        DataEvent<?> event = findProcessInstanceEvent(events, ProcessInstance.STATE_COMPLETED).get();
+        assertThat(event).isInstanceOf(ProcessInstanceStateDataEvent.class);
+        ProcessInstanceStateDataEvent processDataEvent = (ProcessInstanceStateDataEvent) event;
         assertThat(processDataEvent.getKogitoProcessInstanceId()).isNotNull();
         assertThat(processDataEvent.getKogitoProcessInstanceVersion()).isEqualTo("1.0");
         assertThat(processDataEvent.getKogitoParentProcessInstanceId()).isNull();
@@ -89,12 +90,13 @@ public class PublishEventIT extends AbstractCodegenIT {
         assertThat(processDataEvent.getKogitoProcessInstanceState()).isEqualTo("2");
         assertThat(processDataEvent.getSource()).hasToString("http://myhost/SimpleMilestone");
 
-        Set<MilestoneEventBody> milestones = ((ProcessInstanceDataEvent) event).getData().getMilestones();
-        assertThat(milestones)
-                .hasSize(2)
-                .extracting(e -> e.getName(), e -> e.getStatus())
-                .containsExactlyInAnyOrder(tuple("AutoStartMilestone", Status.COMPLETED.name()),
-                        tuple("SimpleMilestone", Status.COMPLETED.name()));
+        List<ProcessInstanceNodeDataEvent> milestoneEvents = events.stream().filter(ProcessInstanceNodeDataEvent.class::isInstance).map(ProcessInstanceNodeDataEvent.class::cast)
+                .filter(e -> e.getData().getNodeType().equals("MilestoneNode") && e.getData().getEventType() == ProcessInstanceNodeEventBody.EVENT_TYPE_EXIT).collect(Collectors.toList());
+
+        assertThat(milestoneEvents)
+                .extracting(e -> e.getData().getNodeName(), e -> e.getData().getEventType())
+                .containsExactlyInAnyOrder(tuple("AutoStartMilestone", ProcessInstanceNodeEventBody.EVENT_TYPE_EXIT), tuple("SimpleMilestone", ProcessInstanceNodeEventBody.EVENT_TYPE_EXIT));
+
     }
 
     @Test
@@ -114,17 +116,17 @@ public class PublishEventIT extends AbstractCodegenIT {
 
         ProcessInstance<?> processInstance = p.createInstance(p.createModel());
         processInstance.start();
+        uow.end();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
         assertThat(result.toMap()).hasSize(2).containsKeys("counter", "counter2");
-        uow.end();
 
         List<DataEvent<?>> events = publisher.extract();
 
-        Optional<DataEvent<?>> event = events.stream().filter(ProcessInstanceDataEvent.class::isInstance).findFirst();
-        assertTrue(event.isPresent(), "There is no process instance event being published");
-        ProcessInstanceDataEvent processDataEvent = (ProcessInstanceDataEvent) event.orElseThrow();
+        Optional<DataEvent<?>> event = findProcessInstanceEvent(events, ProcessInstance.STATE_COMPLETED);
+        assertThat(event).as("There is no process instance event being published").isPresent();
+        ProcessInstanceStateDataEvent processDataEvent = (ProcessInstanceStateDataEvent) event.orElseThrow();
         assertThat(processDataEvent.getKogitoProcessInstanceId()).isNotNull();
         assertThat(processDataEvent.getKogitoProcessInstanceVersion()).isEqualTo("1.0");
         assertThat(processDataEvent.getKogitoParentProcessInstanceId()).isNull();
@@ -133,17 +135,24 @@ public class PublishEventIT extends AbstractCodegenIT {
         assertThat(processDataEvent.getKogitoProcessInstanceState()).isEqualTo("2");
         assertThat(processDataEvent.getSource()).hasToString("http://myhost/compensateAll");
 
-        ProcessInstanceEventBody body = assertProcessInstanceEvent(events.get(0), "compensateAll", "Compensate All", 2);
+        assertProcessInstanceEvent(event.get(), "compensateAll", "Compensate All", ProcessInstanceStateEventBody.EVENT_TYPE_ENDED);
 
-        assertThat(body.getNodeInstances()).hasSize(9).extractingResultOf("getNodeType").contains("StartNode", "ActionNode", "BoundaryEventNode", "EndNode");
+        List<ProcessInstanceNodeEventBody> nodes = findNodeInstanceEvents(events, ProcessInstanceNodeEventBody.EVENT_TYPE_EXIT);
+        assertThat(nodes).hasSize(9).extractingResultOf("getNodeType").contains("StartNode", "ActionNode", "BoundaryEventNode", "EndNode");
 
-        assertThat(body.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(body.getNodeInstances()).extractingResultOf("getLeaveTime").allMatch(v -> v != null);
+    }
 
-        assertThat(body.getVariables())
-                .hasSize(2)
-                .containsEntry("counter", 2)
-                .containsEntry("counter2", 2);
+    private Optional<UserTaskInstanceStateDataEvent> findUserTaskInstanceEvent(List<DataEvent<?>> events, String status) {
+        return events.stream().filter(UserTaskInstanceStateDataEvent.class::isInstance).map(e -> (UserTaskInstanceStateDataEvent) e).filter(e -> status.equals(e.getData().getState())).findAny();
+    }
+
+    private Optional<DataEvent<?>> findProcessInstanceEvent(List<DataEvent<?>> events, int state) {
+        return events.stream().filter(ProcessInstanceStateDataEvent.class::isInstance).filter(e -> ((ProcessInstanceStateEventBody) e.getData()).getState() == state).findAny();
+    }
+
+    private List<ProcessInstanceNodeEventBody> findNodeInstanceEvents(List<DataEvent<?>> events, int eventType) {
+        return events.stream().filter(ProcessInstanceNodeDataEvent.class::isInstance).map(e -> (ProcessInstanceNodeEventBody) e.getData()).filter(e -> e.getEventType() == eventType)
+                .collect(Collectors.toList());
     }
 
     @Test
@@ -169,48 +178,62 @@ public class PublishEventIT extends AbstractCodegenIT {
         uow.end();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         List<DataEvent<?>> events = publisher.extract();
-        assertThat(events).isNotNull().hasSize(2);
-        ProcessInstanceEventBody body = assertProcessInstanceEvent(events.get(0), "UserTasksProcess", "UserTasksProcess", 1);
-        assertThat(body.getNodeInstances()).hasSize(2).extractingResultOf("getNodeType").contains("StartNode", "HumanTaskNode");
-        assertThat(body.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(body.getNodeInstances()).extractingResultOf("getLeaveTime").containsNull();// human task is active thus null for leave time
 
-        assertUserTaskInstanceEvent(events.get(1), "FirstTask", null, "1", "Ready", "UserTasksProcess", "First Task");
+        Optional<DataEvent<?>> processEvent = findProcessInstanceEvent(events, ProcessInstance.STATE_ACTIVE);
+        assertProcessInstanceEvent(processEvent.get(), "UserTasksProcess", "UserTasksProcess", 1);
 
-        List<WorkItem> workItems = processInstance.workItems(SecurityPolicy.of(new StaticIdentityProvider("john")));
-        assertEquals(1, workItems.size());
-        assertEquals("FirstTask", workItems.get(0).getName());
+        List<ProcessInstanceNodeEventBody> triggered = findNodeInstanceEvents(events, 1);
+        assertThat(triggered).hasSize(2).extractingResultOf("getNodeType").containsOnly("StartNode", "HumanTaskNode");
+
+        List<ProcessInstanceNodeEventBody> left = findNodeInstanceEvents(events, 2);
+        assertThat(left).hasSize(1).extractingResultOf("getNodeType").containsOnly("StartNode");
+
+        Optional<UserTaskInstanceStateDataEvent> userFirstTask = findUserTaskInstanceEvent(events, "Ready");
+        assertThat(userFirstTask).isPresent();
+        assertUserTaskInstanceEvent(userFirstTask.get(), "FirstTask", null, "1", "Ready", "UserTasksProcess", "First Task");
+
+        List<WorkItem> workItems = processInstance.workItems(SecurityPolicy.of(IdentityProviders.of("john")));
+        assertThat(workItems).hasSize(1);
+        assertThat(workItems.get(0).getName()).isEqualTo("FirstTask");
 
         uow = app.unitOfWorkManager().newUnitOfWork();
         uow.start();
-        processInstance.completeWorkItem(workItems.get(0).getId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
+        processInstance.completeWorkItem(workItems.get(0).getId(), null, SecurityPolicy.of(IdentityProviders.of("john")));
         uow.end();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         events = publisher.extract();
-        assertThat(events).isNotNull().hasSize(3);
-        body = assertProcessInstanceEvent(events.get(0), "UserTasksProcess", "UserTasksProcess", 1);
-        assertThat(body.getNodeInstances()).hasSize(2).extractingResultOf("getNodeType").contains("HumanTaskNode", "HumanTaskNode");
-        assertThat(body.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(body.getNodeInstances()).extractingResultOf("getLeaveTime").containsNull();// human task is active thus null for leave time
 
-        assertUserTaskInstanceEvent(events.get(1), "SecondTask", null, "1", "Ready", "UserTasksProcess", "Second Task");
-        assertUserTaskInstanceEvent(events.get(2), "FirstTask", null, "1", "Completed", "UserTasksProcess", "First Task");
+        triggered = findNodeInstanceEvents(events, 1);
+        assertThat(triggered).hasSize(1).extractingResultOf("getNodeType").containsOnly("HumanTaskNode");
 
-        workItems = processInstance.workItems(SecurityPolicy.of(new StaticIdentityProvider("john")));
-        assertEquals(1, workItems.size());
-        assertEquals("SecondTask", workItems.get(0).getName());
+        left = findNodeInstanceEvents(events, 1);
+        assertThat(left).hasSize(1).extractingResultOf("getNodeType").containsOnly("HumanTaskNode");
+
+        Optional<UserTaskInstanceStateDataEvent> firstUserTaskInstance = findUserTaskInstanceEvent(events, "Ready");
+        Optional<UserTaskInstanceStateDataEvent> secondUserTaskInstance = findUserTaskInstanceEvent(events, "Completed");
+
+        assertUserTaskInstanceEvent(firstUserTaskInstance.get(), "SecondTask", null, "1", "Ready", "UserTasksProcess", "Second Task");
+        assertUserTaskInstanceEvent(secondUserTaskInstance.get(), "FirstTask", null, "1", "Completed", "UserTasksProcess", "First Task");
+
+        workItems = processInstance.workItems(SecurityPolicy.of(IdentityProviders.of("john")));
+        assertThat(workItems).hasSize(1);
+        assertThat(workItems.get(0).getName()).isEqualTo("SecondTask");
 
         uow = app.unitOfWorkManager().newUnitOfWork();
         uow.start();
-        processInstance.completeWorkItem(workItems.get(0).getId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
+        processInstance.completeWorkItem(workItems.get(0).getId(), null, SecurityPolicy.of(IdentityProviders.of("john")));
         uow.end();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         events = publisher.extract();
-        assertThat(events).isNotNull().hasSize(2);
-        body = assertProcessInstanceEvent(events.get(0), "UserTasksProcess", "UserTasksProcess", 2);
-        assertThat(body.getNodeInstances()).hasSize(2).extractingResultOf("getNodeType").contains("HumanTaskNode", "EndNode");
-        assertThat(body.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(body.getNodeInstances()).extractingResultOf("getLeaveTime").allMatch(v -> v != null);
+        List<ProcessInstanceStateDataEvent> userTaskEvents =
+                events.stream().filter(ProcessInstanceStateDataEvent.class::isInstance).map(ProcessInstanceStateDataEvent.class::cast).collect(Collectors.toList());
+        assertProcessInstanceEvent(userTaskEvents.get(0), "UserTasksProcess", "UserTasksProcess", 2);
+
+        triggered = findNodeInstanceEvents(events, 1);
+        assertThat(triggered).hasSize(1).extractingResultOf("getNodeType").containsOnly("EndNode");
+
+        left = findNodeInstanceEvents(events, 2);
+        assertThat(left).hasSize(2).extractingResultOf("getNodeType").containsOnly("HumanTaskNode", "EndNode");
 
         assertUserTaskInstanceEvent(events.get(1), "SecondTask", null, "1", "Completed", "UserTasksProcess", "Second Task");
     }
@@ -238,17 +261,20 @@ public class PublishEventIT extends AbstractCodegenIT {
         uow.end();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         List<DataEvent<?>> events = publisher.extract();
-        assertThat(events).isNotNull().hasSize(2);
-        ProcessInstanceEventBody body = assertProcessInstanceEvent(events.get(0), "UserTasksProcess", "UserTasksProcess", 1);
-        assertThat(body.getNodeInstances()).hasSize(2).extractingResultOf("getNodeType").contains("StartNode", "HumanTaskNode");
-        assertThat(body.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(body.getNodeInstances()).extractingResultOf("getLeaveTime").containsNull();// human task is active thus null for leave time
 
-        assertUserTaskInstanceEvent(events.get(1), "FirstTask", null, "1", "Ready", "UserTasksProcess", "First Task");
+        Optional<DataEvent<?>> active = findProcessInstanceEvent(events, ProcessInstance.STATE_ACTIVE);
+        assertProcessInstanceEvent(active.get(), "UserTasksProcess", "UserTasksProcess", ProcessInstance.STATE_ACTIVE);
 
-        List<WorkItem> workItems = processInstance.workItems(SecurityPolicy.of(new StaticIdentityProvider("john")));
-        assertEquals(1, workItems.size());
-        assertEquals("FirstTask", workItems.get(0).getName());
+        List<ProcessInstanceNodeEventBody> triggered = findNodeInstanceEvents(events, 1);
+        assertThat(triggered).hasSize(2).extractingResultOf("getNodeName").containsOnly("StartProcess", "First Task");
+
+        Optional<UserTaskInstanceStateDataEvent> event = findUserTaskInstanceEvent(events, "Ready");
+        assertThat(event).isPresent();
+        assertUserTaskInstanceEvent(event.get(), "FirstTask", null, "1", "Ready", "UserTasksProcess", "First Task");
+
+        List<WorkItem> workItems = processInstance.workItems(SecurityPolicy.of(IdentityProviders.of("john")));
+        assertThat(workItems).hasSize(1);
+        assertThat(workItems.get(0).getName()).isEqualTo("FirstTask");
 
         uow = app.unitOfWorkManager().newUnitOfWork();
         uow.start();
@@ -256,12 +282,13 @@ public class PublishEventIT extends AbstractCodegenIT {
         uow.end();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ABORTED);
         events = publisher.extract();
-        assertThat(events).isNotNull().hasSize(2);
-        body = assertProcessInstanceEvent(events.get(0), "UserTasksProcess", "UserTasksProcess", ProcessInstance.STATE_ABORTED);
-        assertThat(body.getNodeInstances()).hasSize(1).extractingResultOf("getNodeType").contains("HumanTaskNode");
-        assertThat(body.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(body.getNodeInstances()).extractingResultOf("getLeaveTime").allMatch(v -> v != null);
-        assertUserTaskInstanceEvent(events.get(1), "FirstTask", null, "1", "Aborted", "UserTasksProcess", "First Task");
+        assertThat(events).hasSize(4);
+
+        triggered = findNodeInstanceEvents(events, ProcessInstanceNodeEventBody.EVENT_TYPE_ABORTED);
+        assertThat(triggered).hasSize(1).extractingResultOf("getNodeName").containsOnly("First Task");
+
+        assertProcessInstanceEvent(events.get(3), "UserTasksProcess", "UserTasksProcess", ProcessInstance.STATE_ABORTED);
+
     }
 
     @Test
@@ -288,14 +315,20 @@ public class PublishEventIT extends AbstractCodegenIT {
         uow.end();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         List<DataEvent<?>> events = publisher.extract();
-        assertThat(events).isNotNull().hasSize(2);
-        ProcessInstanceEventBody body = assertProcessInstanceEvent(events.get(0), "UserTasksProcess", "UserTasksProcess", 1);
-        assertThat(body.getRoles()).hasSize(2).contains("employees", "managers");
-        assertThat(body.getNodeInstances()).hasSize(2).extractingResultOf("getNodeType").contains("StartNode", "HumanTaskNode");
-        assertThat(body.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(body.getNodeInstances()).extractingResultOf("getLeaveTime").containsNull();// human task is active thus null for leave time
 
-        assertUserTaskInstanceEvent(events.get(1), "FirstTask", null, "1", "Ready", "UserTasksProcess", "First Task");
+        Optional<DataEvent<?>> completed = findProcessInstanceEvent(events, ProcessInstanceStateEventBody.EVENT_TYPE_STARTED);
+        ProcessInstanceStateEventBody body = assertProcessInstanceEvent(completed.get(), "UserTasksProcess", "UserTasksProcess", 1);
+        assertThat(body.getRoles()).hasSize(2).contains("employees", "managers");
+
+        List<ProcessInstanceNodeEventBody> triggered = findNodeInstanceEvents(events, 1);
+        assertThat(triggered).hasSize(2).extractingResultOf("getNodeType").containsOnly("StartNode", "HumanTaskNode");
+
+        List<ProcessInstanceNodeEventBody> left = findNodeInstanceEvents(events, 2);
+        assertThat(left).hasSize(1).extractingResultOf("getNodeType").containsOnly("StartNode");
+
+        Optional<UserTaskInstanceStateDataEvent> userTask = findUserTaskInstanceEvent(events, "Ready");
+        assertThat(userTask).isPresent();
+        assertUserTaskInstanceEvent(userTask.get(), "FirstTask", null, "1", "Ready", "UserTasksProcess", "First Task");
     }
 
     @Test
@@ -326,47 +359,25 @@ public class PublishEventIT extends AbstractCodegenIT {
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(2).containsKeys("x", "y");
-        assertThat(result.toMap().get("y")).isNotNull().isEqualTo("new value");
-        assertThat(result.toMap().get("x")).isNotNull().isEqualTo("a");
+        assertThat(result.toMap()).hasSize(2).containsKeys("x", "y")
+                .isNotNull().containsEntry("y", "new value")
+                .isNotNull().containsEntry("x", "a");
 
-        List<DataEvent<?>> events = publisher.extract().stream().filter(ProcessInstanceDataEvent.class::isInstance).collect(Collectors.toList());
-        assertThat(events).isNotNull().hasSize(2);
+        List<DataEvent<?>> events = publisher.extract();
 
-        DataEvent<?> parent = null;
-        DataEvent<?> child = null;
+        List<DataEvent<?>> parentEvents = events.stream().filter(e -> e.getKogitoProcessId().equals("ParentProcess")).collect(Collectors.toList());
+        List<DataEvent<?>> childEvents = events.stream().filter(e -> e.getKogitoProcessId().equals("SubProcess")).collect(Collectors.toList());
 
-        for (DataEvent<?> e : events) {
-            ProcessInstanceDataEvent processDataEvent = (ProcessInstanceDataEvent) e;
-            if (processDataEvent.getKogitoProcessId().equals("ParentProcess")) {
-                parent = e;
-                assertThat(processDataEvent.getKogitoProcessInstanceId()).isNotNull();
-                assertThat(processDataEvent.getKogitoProcessInstanceVersion()).isEqualTo("1.0");
-                assertThat(processDataEvent.getKogitoParentProcessInstanceId()).isNull();
-                assertThat(processDataEvent.getKogitoRootProcessInstanceId()).isNull();
-                assertThat(processDataEvent.getKogitoRootProcessId()).isNull();
-                assertThat(processDataEvent.getKogitoProcessId()).isEqualTo("ParentProcess");
-                assertThat(processDataEvent.getKogitoProcessInstanceState()).isEqualTo("2");
-            } else {
-                child = e;
-                assertThat(processDataEvent.getKogitoProcessInstanceId()).isNotNull();
-                assertThat(processDataEvent.getKogitoProcessInstanceVersion()).isEqualTo("1");
-                assertThat(processDataEvent.getKogitoParentProcessInstanceId()).isNotNull();
-                assertThat(processDataEvent.getKogitoRootProcessInstanceId()).isNotNull();
-                assertThat(processDataEvent.getKogitoProcessId()).isEqualTo("SubProcess");
-                assertThat(processDataEvent.getKogitoRootProcessId()).isEqualTo("ParentProcess");
-                assertThat(processDataEvent.getKogitoProcessInstanceState()).isEqualTo("2");
-            }
-        }
-        ProcessInstanceEventBody parentBody = assertProcessInstanceEvent(parent, "ParentProcess", "Parent Process", 2);
-        assertThat(parentBody.getNodeInstances()).hasSize(3).extractingResultOf("getNodeType").contains("StartNode", "SubProcessNode", "EndNode");
-        assertThat(parentBody.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(parentBody.getNodeInstances()).extractingResultOf("getLeaveTime").allMatch(v -> v != null);
+        DataEvent<?> parentBody = findProcessInstanceEvent(parentEvents, ProcessInstanceStateEventBody.EVENT_TYPE_ENDED).get();
+        DataEvent<?> childBody = findProcessInstanceEvent(childEvents, ProcessInstanceStateEventBody.EVENT_TYPE_ENDED).get();
 
-        ProcessInstanceEventBody childBody = assertProcessInstanceEventWithParentId(child, "SubProcess", "Sub Process", 2);
-        assertThat(childBody.getNodeInstances()).hasSize(3).extractingResultOf("getNodeType").contains("StartNode", "ActionNode", "EndNode");
-        assertThat(childBody.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(childBody.getNodeInstances()).extractingResultOf("getLeaveTime").allMatch(v -> v != null);
+        assertProcessInstanceEvent(parentBody, "ParentProcess", "Parent Process", ProcessInstanceStateEventBody.EVENT_TYPE_ENDED);
+        assertThat(findNodeInstanceEvents(parentEvents, ProcessInstanceStateEventBody.EVENT_TYPE_ENDED)).hasSize(3).extractingResultOf("getNodeType").containsOnly("StartNode", "SubProcessNode",
+                "EndNode");
+
+        assertProcessInstanceEventWithParentId(childBody, "SubProcess", "Sub Process", ProcessInstanceStateEventBody.EVENT_TYPE_ENDED);
+        assertThat(findNodeInstanceEvents(childEvents, ProcessInstanceStateEventBody.EVENT_TYPE_ENDED)).hasSize(3).extractingResultOf("getNodeType").containsOnly("StartNode", "ActionNode", "EndNode");
+
     }
 
     @Test
@@ -397,7 +408,10 @@ public class PublishEventIT extends AbstractCodegenIT {
         assertThat(result.toMap()).hasSize(2).containsKeys("x", "y");
         uow.end();
 
-        ProcessInstanceDataEvent processDataEvent = publisher.extract().stream().filter(ProcessInstanceDataEvent.class::isInstance).map(ProcessInstanceDataEvent.class::cast).findFirst().orElseThrow();
+        List<DataEvent<?>> events = publisher.extract();
+
+        ProcessInstanceStateDataEvent processDataEvent =
+                events.stream().filter(ProcessInstanceStateDataEvent.class::isInstance).map(ProcessInstanceStateDataEvent.class::cast).findFirst().orElseThrow();
         assertThat(processDataEvent.getKogitoProcessInstanceId()).isNotNull();
         assertThat(processDataEvent.getKogitoProcessInstanceVersion()).isEqualTo("1.0");
         assertThat(processDataEvent.getKogitoParentProcessInstanceId()).isNull();
@@ -405,12 +419,11 @@ public class PublishEventIT extends AbstractCodegenIT {
         assertThat(processDataEvent.getKogitoProcessId()).isEqualTo("ExclusiveSplit");
         assertThat(processDataEvent.getKogitoProcessInstanceState()).isEqualTo("2");
 
-        ProcessInstanceEventBody body = assertProcessInstanceEvent(processDataEvent, "ExclusiveSplit", "Test", 2);
+        assertProcessInstanceEvent(processDataEvent, "ExclusiveSplit", "Test", 2);
 
-        assertThat(body.getNodeInstances()).hasSize(6).extractingResultOf("getNodeType").contains("StartNode", "ActionNode", "Split", "Join", "EndNode", "WorkItemNode");
+        List<ProcessInstanceNodeEventBody> nodes = findNodeInstanceEvents(events, 2);
+        assertThat(nodes).hasSize(6).extractingResultOf("getNodeType").contains("StartNode", "ActionNode", "Split", "Join", "EndNode", "WorkItemNode");
 
-        assertThat(body.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(body.getNodeInstances()).extractingResultOf("getLeaveTime").allMatch(v -> v != null);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -438,17 +451,17 @@ public class PublishEventIT extends AbstractCodegenIT {
         uow.end();
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ERROR);
-        List<DataEvent<?>> events = publisher.extract().stream().filter(ProcessInstanceDataEvent.class::isInstance).collect(Collectors.toList());
-        assertThat(events).isNotNull().hasSize(1);
+        List<DataEvent<?>> rawEvents = publisher.extract();
+        List<DataEvent<?>> events = rawEvents.stream().filter(ProcessInstanceStateDataEvent.class::isInstance).collect(Collectors.toList());
+        assertThat(events).hasSize(1);
 
-        ProcessInstanceEventBody body = assertProcessInstanceEvent(events.get(0), "ServiceProcessDifferentOperations", "Service Process", 5);
-        assertThat(body.getNodeInstances()).hasSize(2).extractingResultOf("getNodeType").contains("StartNode", "WorkItemNode");
-        assertThat(body.getNodeInstances()).extractingResultOf("getTriggerTime").allMatch(v -> v != null);
-        assertThat(body.getNodeInstances()).extractingResultOf("getLeaveTime").containsNull();// human task is active thus null for leave time
+        assertProcessInstanceEvent(events.get(0), "ServiceProcessDifferentOperations", "Service Process", 5);
 
-        assertThat(body.getError()).isNotNull();
-        assertThat(body.getError().getErrorMessage()).contains("java.lang.NullPointerException");
-        assertThat(body.getError().getNodeDefinitionId()).isEqualTo("_38E04E27-3CCA-47F9-927B-E37DC4B8CE25");
+        List<ProcessInstanceErrorDataEvent> errorEvents =
+                rawEvents.stream().filter(ProcessInstanceErrorDataEvent.class::isInstance).map(ProcessInstanceErrorDataEvent.class::cast).collect(Collectors.toList());
+        assertThat(errorEvents).hasSize(1);
+        assertThat(errorEvents.get(0).getData().getErrorMessage()).contains("java.lang.NullPointerException");
+        assertThat(errorEvents.get(0).getData().getNodeDefinitionId()).isEqualTo("_38E04E27-3CCA-47F9-927B-E37DC4B8CE25");
 
         parameters.put("s", "john");
         m.fromMap(parameters);
@@ -457,12 +470,9 @@ public class PublishEventIT extends AbstractCodegenIT {
         processInstance.updateVariables(m);
         uow.end();
 
-        events = publisher.extract().stream().filter(ProcessInstanceDataEvent.class::isInstance).collect(Collectors.toList());
-        assertThat(events).isNotNull().hasSize(1);
-        body = assertProcessInstanceEvent(events.get(0), "ServiceProcessDifferentOperations", "Service Process", 5);
-        assertThat(body.getError()).isNotNull();
-        assertThat(body.getError().getErrorMessage()).contains("java.lang.NullPointerException");
-        assertThat(body.getError().getNodeDefinitionId()).isEqualTo("_38E04E27-3CCA-47F9-927B-E37DC4B8CE25");
+        events = publisher.extract();
+        assertThat(events).hasSize(1);
+        assertThat(events.get(0)).isInstanceOf(ProcessInstanceVariableDataEvent.class);
 
         uow = app.unitOfWorkManager().newUnitOfWork();
         uow.start();
@@ -471,37 +481,44 @@ public class PublishEventIT extends AbstractCodegenIT {
         }
         uow.end();
 
-        events = publisher.extract().stream().filter(ProcessInstanceDataEvent.class::isInstance).collect(Collectors.toList());
-        assertThat(events).isNotNull().hasSize(1);
+        events = publisher.extract().stream().filter(ProcessInstanceStateDataEvent.class::isInstance).collect(Collectors.toList());
+        assertThat(events).hasSize(1);
 
-        body = assertProcessInstanceEvent(events.get(0), "ServiceProcessDifferentOperations", "Service Process", 2);
-        assertThat(body.getError()).isNull();
+        assertProcessInstanceEvent(events.get(0), "ServiceProcessDifferentOperations", "Service Process", 2);
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(1).containsKeys("s");
-        assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Goodbye Hello john!!");
+        assertThat(result.toMap()).hasSize(1).containsKeys("s")
+                .isNotNull().containsEntry("s", "Goodbye Hello john!!");
     }
 
     /*
      * Helper methods
      */
 
-    protected ProcessInstanceEventBody assertProcessInstanceEvent(DataEvent<?> event, String processId, String processName, Integer state) {
+    protected ProcessInstanceNodeEventBody assertNodeInstanceEvent(DataEvent<?> event, String processInstanceId, String nodeName, Integer eventType) {
 
-        assertThat(event).isInstanceOf(ProcessInstanceDataEvent.class);
-        ProcessInstanceEventBody body = ((ProcessInstanceDataEvent) event).getData();
+        assertThat(event).isInstanceOf(ProcessInstanceNodeDataEvent.class);
+        ProcessInstanceNodeEventBody body = ((ProcessInstanceNodeDataEvent) event).getData();
         assertThat(body).isNotNull();
-        assertThat(body.getId()).isNotNull();
-        assertThat(body.getVersion()).isNotNull();
-        assertThat(body.getStartDate()).isNotNull();
-        if (state == ProcessInstance.STATE_ACTIVE || state == ProcessInstance.STATE_ERROR) {
-            assertThat(body.getEndDate()).isNull();
-        } else {
-            assertThat(body.getEndDate()).isNotNull();
-        }
+        assertThat(body.getProcessInstanceId()).isNotNull();
+        assertThat(body.getProcessInstanceId()).isEqualTo(processInstanceId);
+        assertThat(body.getEventType()).isEqualTo(eventType);
+        assertThat(body.getNodeName()).isEqualTo(nodeName);
+
+        return body;
+    }
+
+    protected ProcessInstanceStateEventBody assertProcessInstanceEvent(DataEvent<?> event, String processId, String processName, Integer state) {
+
+        assertThat(event).isInstanceOf(ProcessInstanceStateDataEvent.class);
+        ProcessInstanceStateEventBody body = ((ProcessInstanceStateDataEvent) event).getData();
+        assertThat(body).isNotNull();
+        assertThat(body.getProcessInstanceId()).isNotNull();
+        assertThat(body.getProcessVersion()).isNotNull();
+        assertThat(body.getEventDate()).isNotNull();
         assertThat(body.getParentInstanceId()).isNull();
-        assertThat(body.getRootInstanceId()).isNull();
+        assertThat(body.getRootProcessInstanceId()).isNull();
         assertThat(body.getProcessId()).isEqualTo(processId);
         assertThat(body.getProcessName()).isEqualTo(processName);
         assertThat(body.getState()).isEqualTo(state);
@@ -509,55 +526,44 @@ public class PublishEventIT extends AbstractCodegenIT {
         assertThat(event.getSource()).hasToString("http://myhost/" + processId);
         assertThat(event.getTime()).isBeforeOrEqualTo(ZonedDateTime.now().toOffsetDateTime());
 
-        assertThat(((ProcessInstanceDataEvent) event).getKogitoAddons()).isEqualTo("test");
+        assertThat(((ProcessInstanceStateDataEvent) event).getKogitoAddons()).isEqualTo("test");
 
         return body;
     }
 
-    protected UserTaskInstanceEventBody assertUserTaskInstanceEvent(DataEvent<?> event, String taskName, String taskDescription, String taskPriority, String taskState, String processId,
+    protected UserTaskInstanceStateEventBody assertUserTaskInstanceEvent(DataEvent<?> event, String taskName, String taskDescription, String taskPriority, String taskState, String processId,
             String nodeName) {
-        assertThat(event).isInstanceOf(UserTaskInstanceDataEvent.class);
-        UserTaskInstanceEventBody body = ((UserTaskInstanceDataEvent) event).getData();
+        assertThat(event).isInstanceOf(UserTaskInstanceStateDataEvent.class);
+        UserTaskInstanceStateEventBody body = ((UserTaskInstanceStateDataEvent) event).getData();
         assertThat(body).isNotNull();
-        assertThat(body.getId()).isNotNull();
-        assertThat(body.getTaskName()).isEqualTo(taskName);
-        assertThat(body.getTaskDescription()).isEqualTo(taskDescription);
-        assertThat(body.getReferenceName()).isEqualTo(nodeName);
-        assertThat(body.getTaskPriority()).isEqualTo(taskPriority);
-        assertThat(body.getStartDate()).isNotNull();
+        assertThat(body.getUserTaskInstanceId()).isNotNull();
+        assertThat(body.getUserTaskName()).isEqualTo(taskName);
+        assertThat(body.getUserTaskDescription()).isEqualTo(taskDescription);
+        assertThat(body.getUserTaskReferenceName()).isEqualTo(nodeName);
+        assertThat(body.getUserTaskPriority()).isEqualTo(taskPriority);
+        assertThat(body.getEventDate()).isNotNull();
         assertThat(body.getState()).isEqualTo(taskState);
-        if (taskState.equals("Completed") || taskState.equals("Aborted")) {
-            assertThat(body.getCompleteDate()).isNotNull();
-        } else {
-            assertThat(body.getCompleteDate()).isNull();
-        }
-
         assertThat(event.getSource()).hasToString("http://myhost/" + processId);
         assertThat(event.getTime()).isBeforeOrEqualTo(ZonedDateTime.now().toOffsetDateTime());
 
-        assertThat(((UserTaskInstanceDataEvent) event).getKogitoAddons()).isEqualTo("test");
+        assertThat(((UserTaskInstanceStateDataEvent) event).getKogitoAddons()).isEqualTo("test");
 
         return body;
     }
 
-    protected ProcessInstanceEventBody assertProcessInstanceEventWithParentId(DataEvent<?> event, String processId, String processName, Integer state) {
+    protected ProcessInstanceStateEventBody assertProcessInstanceEventWithParentId(DataEvent<?> event, String processId, String processName, Integer state) {
 
-        assertThat(event).isInstanceOf(ProcessInstanceDataEvent.class);
-        ProcessInstanceEventBody body = ((ProcessInstanceDataEvent) event).getData();
+        assertThat(event).isInstanceOf(ProcessInstanceStateDataEvent.class);
+        ProcessInstanceStateEventBody body = ((ProcessInstanceStateDataEvent) event).getData();
         assertThat(body).isNotNull();
-        assertThat(body.getId()).isNotNull();
-        assertThat(body.getVersion()).isNotNull();
-        assertThat(body.getStartDate()).isNotNull();
-        if (state == ProcessInstance.STATE_ACTIVE) {
-            assertThat(body.getEndDate()).isNull();
-        } else {
-            assertThat(body.getEndDate()).isNotNull();
-        }
+        assertThat(body.getProcessInstanceId()).isNotNull();
+        assertThat(body.getProcessVersion()).isNotNull();
+        assertThat(body.getEventDate()).isNotNull();
         assertThat(body.getParentInstanceId()).isNotNull();
-        assertThat(body.getRootInstanceId()).isNotNull();
+        assertThat(body.getRootProcessInstanceId()).isNotNull();
         assertThat(body.getProcessId()).isEqualTo(processId);
         assertThat(body.getProcessName()).isEqualTo(processName);
-        assertThat(body.getState()).isEqualTo(state);
+        assertThat(body.getEventType()).isEqualTo(state);
 
         return body;
     }

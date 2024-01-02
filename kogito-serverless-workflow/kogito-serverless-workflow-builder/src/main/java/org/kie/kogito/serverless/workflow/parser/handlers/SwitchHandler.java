@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
@@ -19,14 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.jbpm.compiler.canonical.descriptors.ExpressionReturnValueSupplier;
-import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.ruleflow.core.factory.EndNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
-import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.defaultdef.DefaultConditionDefinition;
@@ -36,7 +35,6 @@ import io.serverlessworkflow.api.switchconditions.DataCondition;
 import io.serverlessworkflow.api.switchconditions.EventCondition;
 import io.serverlessworkflow.api.transitions.Transition;
 
-import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR;
 import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.eventBasedExclusiveSplitNode;
 import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.exclusiveSplitNode;
 import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.timerNode;
@@ -45,8 +43,6 @@ import static org.kie.kogito.serverless.workflow.parser.handlers.validation.Swit
 import static org.kie.kogito.serverless.workflow.utils.TimeoutsConfigResolver.resolveEventTimeout;
 
 public class SwitchHandler extends StateHandler<SwitchState> {
-
-    private static final String XORSPLITDEFAULT = "Default";
 
     private List<Runnable> targetHandlers = new ArrayList<>();
 
@@ -70,8 +66,8 @@ public class SwitchHandler extends StateHandler<SwitchState> {
     @Override
     protected void handleTransitions(RuleFlowNodeContainerFactory<?, ?> factory,
             Transition transition,
-            long sourceId) {
-        super.handleTransitions(factory, transition, sourceId);
+            NodeFactory<?, ?> sourceNode) {
+        super.handleTransitions(factory, transition, sourceNode);
         if (isDataBased()) {
             finalizeDataBasedSwitchState(factory);
         } else {
@@ -91,7 +87,7 @@ public class SwitchHandler extends StateHandler<SwitchState> {
             validateDefaultCondition(defaultCondition, state, workflow, parserContext);
             // Create the timer for controlling the eventTimeout and connect it with the exclusive split.
             NodeFactory<?, ?> eventTimeoutTimerNode = connect(splitNode, timerNode(factory.timerNode(parserContext.newId()), resolveEventTimeout(state, workflow)));
-            handleTransition(factory, defaultCondition.getTransition(), eventTimeoutTimerNode.getNode().getId(), Optional.of(new StateHandler.HandleTransitionCallBack() {
+            handleTransition(factory, defaultCondition.getTransition(), eventTimeoutTimerNode, Optional.of(new StateHandler.HandleTransitionCallBack() {
                 @Override
                 public void onEmptyTarget() {
                     // Connect the timer with a process finalization sequence that might produce events.
@@ -103,7 +99,13 @@ public class SwitchHandler extends StateHandler<SwitchState> {
         for (EventCondition eventCondition : conditions) {
             NodeFactory<?, ?> outNode = connect(splitNode,
                     filterAndMergeNode(factory, eventCondition.getEventDataFilter(), (f, inputVar, outputVar) -> consumeEventNode(f, eventCondition.getEventRef(), inputVar, outputVar)));
-            handleTransition(factory, eventCondition.getTransition(), outNode.getNode().getId(), Optional.empty());
+            handleTransition(factory, eventCondition.getTransition(), outNode, Optional.of(new StateHandler.HandleTransitionCallBack() {
+                @Override
+                public void onEmptyTarget() {
+                    // Connect the timer with a process finalization sequence that might produce events.
+                    endIt(outNode.getNode().getId(), factory, eventCondition.getEnd());
+                }
+            }));
         }
     }
 
@@ -115,7 +117,7 @@ public class SwitchHandler extends StateHandler<SwitchState> {
         // set default connection
         if (defaultCondition != null) {
             validateDefaultCondition(defaultCondition, state, workflow, parserContext);
-            handleTransition(factory, defaultCondition.getTransition(), splitId, Optional.of(new StateHandler.HandleTransitionCallBack() {
+            handleTransition(factory, defaultCondition.getTransition(), startNode, Optional.of(new StateHandler.HandleTransitionCallBack() {
                 @Override
                 public void onStateTarget(StateHandler<?> targetState) {
                     targetHandlers.add(() -> startNode.metaData(XORSPLITDEFAULT, concatId(splitId, targetState.getIncomingNode(factory).getNode().getId())));
@@ -128,7 +130,7 @@ public class SwitchHandler extends StateHandler<SwitchState> {
 
                 @Override
                 public void onEmptyTarget() {
-                    EndNodeFactory<?> endNodeFactory = endIt(splitId, factory, defaultCondition.getEnd());
+                    NodeFactory<?, ?> endNodeFactory = endIt(splitId, factory, defaultCondition.getEnd());
                     startNode.metaData(XORSPLITDEFAULT, concatId(splitId, endNodeFactory.getNode().getId()));
                 }
             }));
@@ -136,7 +138,7 @@ public class SwitchHandler extends StateHandler<SwitchState> {
 
         List<DataCondition> conditions = state.getDataConditions();
         for (DataCondition condition : conditions) {
-            handleTransition(factory, condition.getTransition(), splitId, Optional.of(new StateHandler.HandleTransitionCallBack() {
+            handleTransition(factory, condition.getTransition(), startNode, Optional.of(new StateHandler.HandleTransitionCallBack() {
                 @Override
                 public void onStateTarget(StateHandler<?> targetState) {
                     targetHandlers.add(() -> addConstraint(factory, startNode, targetState, condition));
@@ -149,15 +151,15 @@ public class SwitchHandler extends StateHandler<SwitchState> {
 
                 @Override
                 public void onEmptyTarget() {
-                    EndNodeFactory<?> endNodeFactory = endIt(splitId, factory, condition.getEnd());
+                    NodeFactory<?, ?> endNodeFactory = endIt(splitId, factory, condition.getEnd());
                     addConstraint(startNode, endNodeFactory.getNode().getId(), condition);
                 }
             }));
         }
     }
 
-    private EndNodeFactory<?> endIt(long sourceNodeId, RuleFlowNodeContainerFactory<?, ?> factory, End end) {
-        EndNodeFactory<?> endNodeFactory = endNodeFactory(factory, end);
+    private NodeFactory<?, ?> endIt(long sourceNodeId, RuleFlowNodeContainerFactory<?, ?> factory, End end) {
+        NodeFactory<?, ?> endNodeFactory = endNodeFactory(factory, end);
         endNodeFactory.done().connection(sourceNodeId, endNodeFactory.getNode().getId());
         return endNodeFactory;
     }
@@ -167,15 +169,7 @@ public class SwitchHandler extends StateHandler<SwitchState> {
     }
 
     private void addConstraint(NodeFactory<?, ?> startNode, long targetId, DataCondition condition) {
-        ((SplitFactory<?>) startNode).constraint(targetId, concatId(startNode.getNode().getId(), targetId),
-                "DROOLS_DEFAULT", workflow.getExpressionLang(),
-                new ExpressionReturnValueSupplier(workflow.getExpressionLang(), ExpressionHandlerUtils.replaceExpr(workflow, condition.getCondition()), DEFAULT_WORKFLOW_VAR), 0,
-                isDefaultCondition(state, condition))
-                .metaData(Metadata.VARIABLE, DEFAULT_WORKFLOW_VAR);
-    }
-
-    private static String concatId(long start, long end) {
-        return start + "_" + end;
+        addCondition((SplitFactory<?>) startNode, targetId, condition.getCondition(), isDefaultCondition(state, condition));
     }
 
     private static boolean isDefaultCondition(SwitchState switchState, DataCondition condition) {
@@ -188,12 +182,8 @@ public class SwitchHandler extends StateHandler<SwitchState> {
     }
 
     @Override
-    public void connect(RuleFlowNodeContainerFactory<?, ?> factory, long sourceId) {
-        factory.connection(sourceId, getNode().getNode().getId());
-    }
-
-    @Override
     public void handleConnections() {
+        super.handleConnections();
         targetHandlers.forEach(Runnable::run);
     }
 }

@@ -1,33 +1,32 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.process.instance.context.variable;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.datatype.impl.coverter.CloneHelper;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.InternalProcessRuntime;
-import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.context.AbstractContextInstance;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.instance.node.CompositeContextNodeInstance;
@@ -89,40 +88,37 @@ public class VariableScopeInstance extends AbstractContextInstance {
     public void setVariable(KogitoNodeInstance nodeInstance, String name, Object value) {
         Objects.requireNonNull(name, "The name of a variable may not be null!");
         // check if variable that is being set is readonly and has already been set
-        VariableScope scope = getVariableScope();
-        ProcessInstance pi = getProcessInstance();
         Object oldValue = getVariable(name);
-        if (oldValue != null && scope.isReadOnly(name)) {
-            throw new VariableViolationException(pi.getStringId(), name, "Variable '" + name + "' is already set and is marked as read only");
+        if (oldValue != null && getVariableScope().isReadOnly(name)) {
+            throw new VariableViolationException(getProcessInstance().getStringId(), name, "Variable '" + name + "' is already set and is marked as read only");
         }
         // ignore similar value
         if (ignoreChange(oldValue, value)) {
             return;
         }
-        List<String> tags = scope.tags(name);
-        Object newValue = value;
-        InternalKnowledgeRuntime runtime = pi.getKnowledgeRuntime();
-
-        if (runtime != null) {
-            if (!tags.contains(Variable.INTERNAL_TAG)) {
-                newValue = CloneHelper.get().clone(value);
-            }
+        final Object clonedValue = getProcessInstance().getKnowledgeRuntime() != null ? clone(name, value) : null;
+        if (clonedValue != null) {
             getProcessEventSupport().fireBeforeVariableChanged(
                     (variableIdPrefix == null ? "" : variableIdPrefix + ":") + name,
                     (variableInstanceIdPrefix == null ? "" : variableInstanceIdPrefix + ":") + name,
-                    oldValue, newValue, tags, pi,
+                    oldValue, clonedValue, getVariableScope().tags(name), getProcessInstance(),
                     nodeInstance,
-                    runtime);
+                    getProcessInstance().getKnowledgeRuntime());
         }
         internalSetVariable(name, value);
-        if (runtime != null) {
+        if (clonedValue != null) {
             getProcessEventSupport().fireAfterVariableChanged(
                     (variableIdPrefix == null ? "" : variableIdPrefix + ":") + name,
                     (variableInstanceIdPrefix == null ? "" : variableInstanceIdPrefix + ":") + name,
-                    oldValue, newValue, tags, pi,
+                    oldValue, clonedValue, getVariableScope().tags(name), getProcessInstance(),
                     nodeInstance,
-                    runtime);
+                    getProcessInstance().getKnowledgeRuntime());
         }
+    }
+
+    private Object clone(String name, Object newValue) {
+        Variable variable = getVariableScope().findVariable(name);
+        return variable != null ? variable.getType().clone(newValue) : newValue;
     }
 
     private boolean ignoreChange(Object oldValue, Object newValue) {

@@ -5,22 +5,18 @@
   <parent>
     <artifactId>kogito-quarkus-serverless-workflow-extension</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>999-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kogito-quarkus-serverless-workflow</artifactId>
   <name>Kogito :: Quarkus Serverless Workflow Extension :: Runtime</name>
-  <description>Add Kogito Serverless Workflows (SW) capabilities - Includes the Process engine and Knative Eventing capabilities</description>
+  <description>Add Kogito Serverless Workflows (SW) capabilities - Includes the Process engine capability</description>
 
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-quarkus-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-quarkus-processes</artifactId>
+      <artifactId>kogito-quarkus-workflow-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -87,6 +83,14 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-serverless-workflow-grpc-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-serverless-workflow-rest-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-jsonpath-expression</artifactId>
     </dependency>
     <dependency>
@@ -101,11 +105,9 @@
       <groupId>io.quarkiverse.openapi.generator</groupId>
       <artifactId>quarkus-openapi-generator</artifactId>
     </dependency>
-
-    <!-- Service Discovery -->
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-quarkus-kubernetes</artifactId>
+      <groupId>io.quarkiverse.asyncapi</groupId>
+      <artifactId>quarkus-asyncapi</artifactId>
     </dependency>
   </dependencies>
 
@@ -141,7 +143,7 @@
       </plugin>
       <plugin>
         <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
+        <artifactId>quarkus-extension-maven-plugin</artifactId>
         <version>${version.io.quarkus}</version>
         <executions>
           <execution>

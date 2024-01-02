@@ -1,26 +1,27 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.expr.jsonpath;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -33,8 +34,8 @@ import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.process.expr.Expression;
 import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 import org.kie.kogito.serverless.workflow.test.MockBuilder;
-import org.kie.kogito.serverless.workflow.utils.ConfigResolver;
 import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
+import org.kie.kogito.serverless.workflow.utils.MapConfigResolver;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,17 +51,9 @@ class JsonPathExpressionHandlerTest {
 
     @BeforeAll
     public static void setConfigResolver() {
-        Map<String, Object> configMap = new HashMap<>();
-        configMap.put("lettersonly", "secretlettersonly");
-        configMap.put("dot.secret", "secretdotsecret");
-        configMap.put("dash-secret", "secretdashsecret");
-
-        ConfigResolverHolder.setConfigResolver(new ConfigResolver() {
-            @Override
-            public <T> Optional<T> getConfigProperty(String name, Class<T> clazz) {
-                return Optional.ofNullable((T) configMap.get(name));
-            }
-        });
+        ConfigResolverHolder.setConfigResolver(new MapConfigResolver(Map.of("lettersonly", "secretlettersonly",
+                "dot.secret", "secretdotsecret",
+                "dash-secret", "secretdashsecret")));
     }
 
     @Test
@@ -245,8 +238,8 @@ class JsonPathExpressionHandlerTest {
         return Stream.of(
                 Arguments.of("$WORKFLOW.instanceId", "1111-2222-3333", getContext()),
                 Arguments.of("$SECRET.lettersonly", "secretlettersonly", getContext()),
-                Arguments.of("$SECRET.none", "null", getContext()),
-                //                Arguments.of("$SECRET.dot.secret", "null", getContext()), // exception due to missing object at path .dot
+                Arguments.of("$SECRET.none", "", getContext()),
+                Arguments.of("$SECRET.dot.secret", "secretdotsecret", getContext()),
                 Arguments.of("$SECRET[\"dot.secret\"]", "secretdotsecret", getContext()),
                 Arguments.of("$SECRET[\"dash-secret\"]", "secretdashsecret", getContext()),
                 Arguments.of("$CONST.someconstant", "value", getContext()),

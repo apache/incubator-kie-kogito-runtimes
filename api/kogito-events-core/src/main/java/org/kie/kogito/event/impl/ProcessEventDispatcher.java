@@ -1,20 +1,28 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.event.impl;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -23,13 +31,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.kie.kogito.Model;
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.correlation.CorrelationInstance;
 import org.kie.kogito.correlation.SimpleCorrelation;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventDispatcher;
+import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;
@@ -68,7 +76,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
         }
 
         final String kogitoReferenceId = resolveCorrelationId(event);
-        if (StringUtils.isNotEmpty(kogitoReferenceId)) {
+        if (!ConversionUtils.isEmpty(kogitoReferenceId)) {
             return CompletableFuture.supplyAsync(() -> handleMessageWithReference(trigger, event, kogitoReferenceId), executor);
         }
 
@@ -128,9 +136,29 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
     private ProcessInstance<M> startNewInstance(String trigger, DataEvent<D> event) {
         return modelConverter.map(m -> {
             LOGGER.info("Starting new process instance with signal '{}'", trigger);
-            return processService.createProcessInstance(process, event.getKogitoBusinessKey(), m.apply(dataResolver.apply(event)), event.getKogitoStartFromNode(), trigger,
+            return processService.createProcessInstance(process, event.getKogitoBusinessKey(), m.apply(dataResolver.apply(event)),
+                    headersFromEvent(event), event.getKogitoStartFromNode(), trigger,
                     event.getKogitoProcessInstanceId(), compositeCorrelation(event).orElse(null));
         }).orElse(null);
+    }
+
+    protected Map<String, List<String>> headersFromEvent(DataEvent<D> event) {
+        Map<String, List<String>> headers = new HashMap<>();
+        for (String name : event.getAttributeNames()) {
+            headers.put(name, toList(event.getAttribute(name)));
+        }
+        for (String name : event.getExtensionNames()) {
+            headers.put(name, toList(event.getExtension(name)));
+        }
+        return headers;
+    }
+
+    private List<String> toList(Object object) {
+        if (object instanceof Collection) {
+            return ((Collection<Object>) object).stream().map(Object::toString).collect(Collectors.toList());
+        } else {
+            return Arrays.asList(object.toString());
+        }
     }
 
     private boolean isEventTypeNotMatched(String trigger, DataEvent<?> event) {

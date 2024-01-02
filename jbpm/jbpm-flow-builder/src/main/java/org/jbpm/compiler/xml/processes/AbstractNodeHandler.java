@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.xml.processes;
 
@@ -157,8 +160,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         String actionType = xmlNode.getAttribute("type");
         if ("expression".equals(actionType)) {
             String consequence = xmlNode.getTextContent();
-            DroolsConsequenceAction action = new DroolsConsequenceAction(xmlNode.getAttribute("dialect"), consequence);
-            return action;
+            return new DroolsConsequenceAction(xmlNode.getAttribute("dialect"), consequence);
         } else {
             throw new IllegalArgumentException(
                     "Unknown action type " + actionType);
@@ -229,7 +231,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     protected void writeActions(final String type, List<DroolsAction> actions, final StringBuilder xmlDump) {
-        if (actions != null && actions.size() > 0) {
+        if (actions != null && !actions.isEmpty()) {
             xmlDump.append("      <" + type + ">" + EOL);
             for (DroolsAction action : actions) {
                 writeAction(action, xmlDump);
@@ -266,11 +268,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         if (timers != null && !timers.isEmpty()) {
             xmlDump.append("      <timers>" + EOL);
             List<Timer> timerList = new ArrayList<>(timers.keySet());
-            Collections.sort(timerList, new Comparator<Timer>() {
-                public int compare(Timer o1, Timer o2) {
-                    return (int) (o2.getId() - o1.getId());
-                }
-            });
+            Collections.sort(timerList, Comparator.comparing(Timer::getId));
             for (Timer timer : timerList) {
                 xmlDump.append("        <timer id=\"" + timer.getId() + "\" ");
                 if (timer.getDelay() != null) {

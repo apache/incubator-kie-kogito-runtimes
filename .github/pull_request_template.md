@@ -3,7 +3,7 @@ Many thanks for submitting your Pull Request :heart:!
 Please make sure that your PR meets the following requirements:
 
 - [ ] You have read the [contributors guide](CONTRIBUTING.md)
-- [ ] Your code is properly formatted according to [this configuration](https://github.com/kiegroup/kogito-runtimes/tree/main/kogito-build/kogito-ide-config)
+- [ ] Your code is properly formatted according to [this configuration](https://github.com/apache/incubator-kie-kogito-runtimes/tree/main/kogito-build/kogito-ide-config)
 - [ ] Pull Request title is properly formatted: `KOGITO-XYZ Subject`
 - [ ] Pull Request title contains the target branch if not targeting main: `[0.9.x] KOGITO-XYZ Subject`
 - [ ] Pull Request contains link to the JIRA issue
@@ -64,23 +64,43 @@ How to retest this PR or trigger a specific build:
   Run native checks 
   Please add comment: <b>Jenkins (re)run [kogito-runtimes|kogito-apps|kogito-examples] native</b>
 
-- for <b>mandrel checks</b>  
-  Run native checks against Mandrel image
-  Please add comment: <b>Jenkins run mandrel</b>
+- for <b>native lts checks</b>  
+  Run native checks against quarkus lts branch
+  Please add comment: <b>Jenkins run native-lts</b>
 
-- for a <b>specific mandrel check</b>  
-  Run native checks against Mandrel image  
-  Please add comment: <b>Jenkins (re)run [kogito-runtimes|kogito-apps|kogito-examples] mandrel</b>
+- for a <b>specific native lts check</b>  
+  Run native checks against quarkus lts branch
+  Please add comment: <b>Jenkins (re)run [kogito-runtimes|kogito-apps|kogito-examples] native-lts</b>
+</details>
 
-- for <b>mandrel lts checks</b>  
-  Run native checks against Mandrel image and quarkus lts branch
-  Please add comment: <b>Jenkins run mandrel-lts</b>
+<details>
+<summary>
+How to backport a pull request to a different branch?
+</summary>
 
-- for a <b>specific mandrel lts check</b>  
-  Run native checks against Mandrel image and quarkus lts branch
-  Please add comment: <b>Jenkins (re)run [kogito-runtimes|kogito-apps|kogito-examples] mandrel-lts</b>
- 
-- <b>Full Kogito testing</b> (with cloud images and operator BDD testing)  
-  Please add comment: <b>Jenkins run BDD</b>  
-  <b>This check should be used only if a big change is done as it takes time to run, need resources and one full BDD tests check can be done at a time ...</b>
+In order to automatically create a **backporting pull request** please add one or more labels having the following format `backport-<branch-name>`, where `<branch-name>` is the name of the branch where the pull request must be backported to (e.g., `backport-7.67.x` to backport the original PR to the `7.67.x` branch).
+
+> **NOTE**: **backporting** is an action aiming to move a change (usually a commit) from a branch (usually the main one) to another one, which is generally referring to a still maintained release branch. Keeping it simple: it is about to move a specific change or a set of them from one branch to another.
+
+Once the original pull request is successfully merged, the automated action will create one backporting pull request per each label (with the previous format) that has been added.
+
+If something goes wrong, the author will be notified and at this point a manual backporting is needed.
+
+> **NOTE**: this automated backporting is triggered whenever a pull request on `main` branch is labeled or closed, but both conditions must be satisfied to get the new PR created.
+</details>
+
+<details>
+<summary>
+Quarkus-3 PR check is failing ... what to do ?
+</summary>
+The Quarkus 3 check is applying patches from the `.ci/environments/quarkus-3/patches`.
+
+The first patch, called `0001_before_sh.patch`, is generated from Openrewrite `.ci/environments/quarkus-3/quarkus3.yml` recipe. The patch is created to speed up the check. But it may be that some changes in the PR broke this patch.  
+No panic, there is an easy way to regenerate it. You just need to comment on the PR:
+```
+jenkins rewrite quarkus-3
+```
+and it should, after some minutes (~20/30min) apply a commit on the PR with the patch regenerated.
+
+Other patches were generated manually. If any of it fails, you will need to manually update it... and push your changes.
 </details>

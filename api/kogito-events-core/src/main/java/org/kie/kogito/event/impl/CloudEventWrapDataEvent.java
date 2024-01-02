@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.event.impl;
 
@@ -19,8 +22,10 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import org.kie.kogito.event.Converter;
 import org.kie.kogito.event.DataEvent;
@@ -37,6 +42,7 @@ public class CloudEventWrapDataEvent<T> implements DataEvent<T> {
     private final AtomicReference<T> data;
 
     public CloudEventWrapDataEvent(CloudEvent cloudEvent, Converter<CloudEventData, T> unmarshaller) {
+        Objects.requireNonNull(unmarshaller, "A cloudevent data wrapper should be associated to an unmarshaller");
         this.cloudEvent = cloudEvent;
         this.unmarshaller = unmarshaller;
         data = new AtomicReference<>();
@@ -107,10 +113,10 @@ public class CloudEventWrapDataEvent<T> implements DataEvent<T> {
         if (result == null) {
             try {
                 result = unmarshaller.convert(cloudEventData);
+                data.set(result);
             } catch (IOException io) {
                 throw new UncheckedIOException(io);
             }
-            data.set(result);
         }
         return result;
     }
@@ -176,7 +182,12 @@ public class CloudEventWrapDataEvent<T> implements DataEvent<T> {
     }
 
     @Override
-    public CloudEvent asCloudEvent() {
+    public String getKogitoIdentity() {
+        return (String) getExtension(CloudEventExtensionConstants.IDENTITY);
+    }
+
+    @Override
+    public CloudEvent asCloudEvent(Function<T, CloudEventData> factory) {
         return cloudEvent;
     }
 

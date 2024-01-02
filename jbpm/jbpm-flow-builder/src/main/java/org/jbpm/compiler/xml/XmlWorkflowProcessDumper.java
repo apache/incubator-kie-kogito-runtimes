@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.xml;
 
@@ -114,7 +117,7 @@ public class XmlWorkflowProcessDumper {
     }
 
     private void visitImports(Collection<String> imports, StringBuilder xmlDump) {
-        if (imports != null && imports.size() > 0) {
+        if (imports != null && !imports.isEmpty()) {
             xmlDump.append("    <imports>" + EOL);
             for (String importString : imports) {
                 xmlDump.append("      <import name=\"" + importString + "\" />" + EOL);
@@ -124,7 +127,7 @@ public class XmlWorkflowProcessDumper {
     }
 
     private void visitFunctionImports(List<String> imports, StringBuilder xmlDump) {
-        if (imports != null && imports.size() > 0) {
+        if (imports != null && !imports.isEmpty()) {
             xmlDump.append("    <functionImports>" + EOL);
             for (String importString : imports) {
                 xmlDump.append("      <functionImport name=\"" + importString + "\" />" + EOL);
@@ -144,7 +147,7 @@ public class XmlWorkflowProcessDumper {
     }
 
     public static void visitVariables(List<Variable> variables, StringBuilder xmlDump) {
-        if (variables != null && variables.size() > 0) {
+        if (variables != null && !variables.isEmpty()) {
             xmlDump.append("    <variables>" + EOL);
             for (Variable variable : variables) {
                 xmlDump.append("      <variable name=\"" + variable.getName() + "\" >" + EOL);
@@ -160,7 +163,7 @@ public class XmlWorkflowProcessDumper {
     }
 
     private void visitSwimlanes(Collection<Swimlane> swimlanes, StringBuilder xmlDump) {
-        if (swimlanes != null && swimlanes.size() > 0) {
+        if (swimlanes != null && !swimlanes.isEmpty()) {
             xmlDump.append("    <swimlanes>" + EOL);
             for (Swimlane swimlane : swimlanes) {
                 xmlDump.append("      <swimlane name=\"" + swimlane.getName() + "\" />" + EOL);

@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.process;
 
@@ -21,7 +24,6 @@ import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.test.util.AbstractBaseTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.DurationExpirationTime;
@@ -34,8 +36,8 @@ import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.timer.TimerInstance;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
 
 public class TimerTest extends AbstractBaseTest {
 
@@ -50,7 +52,6 @@ public class TimerTest extends AbstractBaseTest {
     }
 
     @Test
-    @Disabled
     public void testTimer() {
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
@@ -58,7 +59,7 @@ public class TimerTest extends AbstractBaseTest {
             private static final long serialVersionUID = 510l;
 
             public void signalEvent(String type, Object event) {
-                if ("timerTriggered".equals(type)) {
+                if (TIMER_TRIGGERED_EVENT.equals(type)) {
                     TimerInstance timer = (TimerInstance) event;
                     logger.info("Timer {} triggered", timer.getId());
                     counter++;
@@ -73,37 +74,55 @@ public class TimerTest extends AbstractBaseTest {
         new Thread(() -> kruntime.getKieSession().fireUntilHalt()).start();
         JobsService jobService = new LegacyInMemoryJobService(kruntime, new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()));
 
-        ProcessInstanceJobDescription desc = ProcessInstanceJobDescription.of(ExactExpirationTime.now(), processInstance.getStringId(), "test");
+        ProcessInstanceJobDescription desc = ProcessInstanceJobDescription.builder()
+                .expirationTime(ExactExpirationTime.now())
+                .processInstanceId(processInstance.getStringId())
+                .processId("test")
+                .id("job1")
+                .timerId("timer1")
+                .build();
+        jobService.scheduleProcessInstanceJob(desc);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // do nothing
+        }
+        assertThat(counter).isEqualTo(1);
+
+        counter = 0;
+        desc = ProcessInstanceJobDescription.builder()
+                .expirationTime(DurationExpirationTime.after(500))
+                .processInstanceId(processInstance.getStringId())
+                .processId("test")
+                .id("job2")
+                .timerId("timer2")
+                .build();
+        jobService.scheduleProcessInstanceJob(desc);
+        assertThat(counter).isZero();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // do nothing
+        }
+        assertThat(counter).isEqualTo(1);
+
+        counter = 0;
+        desc = ProcessInstanceJobDescription.builder()
+                .expirationTime(DurationExpirationTime.repeat(500, 300L))
+                .processInstanceId(processInstance.getStringId())
+                .processId("test")
+                .id("job3")
+                .timerId("timer3")
+                .build();
         String jobId = jobService.scheduleProcessInstanceJob(desc);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            // do nothing
-        }
-        assertEquals(1, counter);
-
-        counter = 0;
-        desc = ProcessInstanceJobDescription.of(DurationExpirationTime.after(500), processInstance.getStringId(), "test");
-        jobId = jobService.scheduleProcessInstanceJob(desc);
-        assertEquals(0, counter);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            // do nothing
-        }
-        assertEquals(1, counter);
-
-        counter = 0;
-        desc = ProcessInstanceJobDescription.of(DurationExpirationTime.repeat(500, 300L), processInstance.getStringId(), "test");
-        jobId = jobService.scheduleProcessInstanceJob(desc);
-        assertEquals(0, counter);
+        assertThat(counter).isZero();
         try {
             Thread.sleep(700);
         } catch (InterruptedException e) {
             // do nothing
         }
-        assertEquals(1, counter);
+        assertThat(counter).isEqualTo(1);
 
         try {
             Thread.sleep(1000);
@@ -111,7 +130,7 @@ public class TimerTest extends AbstractBaseTest {
             // do nothing
         }
         // we can't know exactly how many times this will fire as timers are not precise, but should be at least 4
-        assertTrue(counter >= 4);
+        assertThat(counter >= 4).isTrue();
 
         jobService.cancelJob(jobId);
         int lastCount = counter;
@@ -120,7 +139,7 @@ public class TimerTest extends AbstractBaseTest {
         } catch (InterruptedException e) {
             // do nothing
         }
-        assertEquals(lastCount, counter);
+        assertThat(counter).isEqualTo(lastCount);
     }
 
 }

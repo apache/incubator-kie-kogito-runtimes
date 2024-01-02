@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2;
 
@@ -36,7 +39,7 @@ import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
-import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
+import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
 import org.junit.jupiter.api.Disabled;
@@ -169,7 +172,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("ActorId")).isEqualTo("john");
         Map<String, Object> results = new HashMap<>();
-        ((HumanTaskWorkItemImpl) workItem).setActualOwner("mary");
+        ((InternalHumanTaskWorkItem) workItem).setActualOwner("mary");
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), results);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         workItem = workItemHandler.getWorkItem();
@@ -515,7 +518,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         kruntime.getKieSession().fireAllRules();
         workItem = workItemHandler.getWorkItem();
-        assertThat(workItem).isNotNull().withFailMessage("KogitoWorkItem should not be null.");
+        assertThat(workItem).withFailMessage("KogitoWorkItem should not be null.").isNotNull();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
@@ -760,7 +763,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         assertThat(workItem).isNotNull();
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         // Check that event was passed to Event SubProcess (and grabbed by WorkItemHandler);
-        assertThat(caughtEventObjectHolder[0] != null && caughtEventObjectHolder[0] instanceof KogitoWorkItem).isTrue().withFailMessage("Event was not passed to Event Subprocess.");
+        assertThat(caughtEventObjectHolder[0] != null && caughtEventObjectHolder[0] instanceof KogitoWorkItem).withFailMessage("Event was not passed to Event Subprocess.").isTrue();
         workItem = (KogitoWorkItem) caughtEventObjectHolder[0];
         Object throwObj = workItem.getParameter(ExceptionService.exceptionParameterName);
         assertThat(throwObj).withFailMessage("KogitoWorkItem doesn't contain Throwable.").isInstanceOf(Throwable.class);
@@ -768,7 +771,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
 
         // Complete process
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
-        assertThat(processInstance == null || processInstance.getState() == KogitoProcessInstance.STATE_ABORTED).isTrue().withFailMessage("Process instance has not been aborted.");
+        assertThat(processInstance == null || processInstance.getState() == KogitoProcessInstance.STATE_ABORTED).withFailMessage("Process instance has not been aborted.").isTrue();
 
     }
 
@@ -851,18 +854,18 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("ServiceProcess", params);
 
         // Check that event was passed to Event SubProcess (and grabbed by WorkItemHandler);
-        assertThat(caughtEventObjectHolder[0] != null && caughtEventObjectHolder[0] instanceof KogitoWorkItem).isTrue().withFailMessage("Event was not passed to Event Subprocess.");
+        assertThat(caughtEventObjectHolder[0] != null && caughtEventObjectHolder[0] instanceof KogitoWorkItem).withFailMessage("Event was not passed to Event Subprocess.").isTrue();
         KogitoWorkItem workItem = (KogitoWorkItem) caughtEventObjectHolder[0];
         Object throwObj = workItem.getParameter(ExceptionService.exceptionParameterName);
         assertThat(throwObj).withFailMessage("KogitoWorkItem doesn't contain Throwable.").isInstanceOf(Throwable.class);
         assertThat(((Throwable) throwObj).getMessage()).withFailMessage("Exception message does not match service input.").endsWith(input);
 
         // Complete process
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE).withFailMessage("Process instance is not active.");
+        assertThat(processInstance.getState()).withFailMessage("Process instance is not active.").isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         if (processInstance != null) {
-            assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED).withFailMessage("Process instance is not completed.");
+            assertThat(processInstance.getState()).withFailMessage("Process instance is not completed.").isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         } // otherwise, persistence use => processInstance == null => process is completed
     }
 

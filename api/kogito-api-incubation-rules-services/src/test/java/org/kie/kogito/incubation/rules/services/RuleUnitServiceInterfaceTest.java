@@ -1,19 +1,21 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.incubation.rules.services;
 
 import java.util.stream.Stream;
@@ -29,7 +31,7 @@ import org.kie.kogito.incubation.rules.QueryId;
 import org.kie.kogito.incubation.rules.RuleUnitIds;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RuleUnitServiceInterfaceTest {
     public static class MyRuleUnitDefinition {
@@ -67,10 +69,9 @@ public class RuleUnitServiceInterfaceTest {
         // bind the data in the result to a typed bean
         Stream<MyDataContext> mdcs = result.map(r -> r.as(MyDataContext.class));
 
-        assertEquals("/rule-units" +
+        assertThat(someQuery.toLocalId().asLocalUri().path()).isEqualTo("/rule-units" +
                 "/" + MyRuleUnitDefinition.class.getCanonicalName() +
-                "/queries/someQuery",
-                someQuery.toLocalId().asLocalUri().path());
+                "/queries/someQuery");
 
     }
 
@@ -78,13 +79,13 @@ public class RuleUnitServiceInterfaceTest {
     public void ruleUnitInstances() {
         ReflectiveAppRoot appRoot = new ReflectiveAppRoot();
         RuleUnitInstanceId instance = appRoot.get(RuleUnitIds.class).get("my-rule-unit").instances().get("my-instance-id");
-        assertEquals("/rule-units/my-rule-unit/instances/my-instance-id", instance.asLocalUri().path());
+        assertThat(instance.asLocalUri().path()).isEqualTo("/rule-units/my-rule-unit/instances/my-instance-id");
     }
 
     @Test
     public void ruleUnitInstanceQuery() {
         ReflectiveAppRoot appRoot = new ReflectiveAppRoot();
         InstanceQueryId query = appRoot.get(RuleUnitIds.class).get("my-rule-unit").instances().get("my-instance-id").queries().get("my-query");
-        assertEquals("/rule-units/my-rule-unit/instances/my-instance-id/queries/my-query", query.asLocalUri().path());
+        assertThat(query.asLocalUri().path()).isEqualTo("/rule-units/my-rule-unit/instances/my-instance-id/queries/my-query");
     }
 }

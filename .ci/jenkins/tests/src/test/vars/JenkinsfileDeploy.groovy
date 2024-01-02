@@ -35,7 +35,7 @@ class JenkinsfileDeploy extends JenkinsPipelineSpecification {
         output == 'AUTHOR'
     }
 
-    def '[Jenkinsfile.deploy] getBuildBranch()' () {
+    def '[Jenkinsfile.deploy] getBuildBranch' () {
         setup:
         Jenkinsfile.getBinding().setVariable('params', ['BUILD_BRANCH_NAME' : 'BRANCH'])
         when:
@@ -53,32 +53,13 @@ class JenkinsfileDeploy extends JenkinsPipelineSpecification {
         output == 'VERSION'
     }
 
-    def '[Jenkinsfile.deploy] getBotBranch with version param' () {
+    def '[Jenkinsfile.deploy] getPRBranch with pr branch param' () {
         setup:
-        Jenkinsfile.getBinding().setVariable('env', ['BOT_BRANCH_HASH' : 'HASH'])
-        Jenkinsfile.getBinding().setVariable('params', ['PROJECT_VERSION' : 'VERSION'])
+        Jenkinsfile.getBinding().setVariable('params', ['KOGITO_PR_BRANCH' : 'PR_BRANCH'])
         when:
-        def output = Jenkinsfile.getBotBranch()
+        def output = Jenkinsfile.getPRBranch()
         then:
-        output == 'VERSION-HASH'
-    }
-
-    def '[Jenkinsfile.deploy] getBotAuthor with env' () {
-        setup:
-        Jenkinsfile.getBinding().setVariable('env', ['GIT_AUTHOR_BOT' : 'AUTHOR_BOT'])
-        when:
-        def output = Jenkinsfile.getBotAuthor()
-        then:
-        output == 'AUTHOR_BOT'
-    }
-
-    def '[Jenkinsfile.deploy] getBotAuthorCredsID with env' () {
-        setup:
-        Jenkinsfile.getBinding().setVariable('env', ['BOT_CREDENTIALS_ID' : 'CREDS_BOT_ID'])
-        when:
-        def output = Jenkinsfile.getBotAuthorCredsID()
-        then:
-        output == 'CREDS_BOT_ID'
+        output == 'PR_BRANCH'
     }
 
 }

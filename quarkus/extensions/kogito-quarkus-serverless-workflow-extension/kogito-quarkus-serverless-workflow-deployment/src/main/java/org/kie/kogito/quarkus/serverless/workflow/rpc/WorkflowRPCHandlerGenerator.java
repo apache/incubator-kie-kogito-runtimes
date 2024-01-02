@@ -1,26 +1,26 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.quarkus.serverless.workflow.rpc;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.jandex.IndexView;
@@ -30,7 +30,7 @@ import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGeneratedFile;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGenerator;
 import org.kie.kogito.serverless.workflow.rpc.FileDescriptorHolder;
 import org.kie.kogito.serverless.workflow.rpc.RPCWorkItemHandler;
-import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
+import org.kie.kogito.serverless.workflow.utils.RPCWorkflowUtils;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -46,6 +46,9 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import io.grpc.Channel;
 import io.quarkus.grpc.GrpcClient;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 
 public class WorkflowRPCHandlerGenerator implements WorkflowHandlerGenerator {
@@ -57,7 +60,7 @@ public class WorkflowRPCHandlerGenerator implements WorkflowHandlerGenerator {
 
     private WorkflowHandlerGeneratedFile generateHandler(KogitoBuildContext context, String serviceName) {
         final String packageName = context.getPackageName();
-        final String className = ServerlessWorkflowUtils.getRPCClassName(serviceName);
+        final String className = RPCWorkflowUtils.getRPCClassName(serviceName);
         CompilationUnit unit = new CompilationUnit(packageName);
         ClassOrInterfaceDeclaration clazz = unit.addClass(className);
         clazz.addExtendedType(parseClassOrInterfaceType(RPCWorkItemHandler.class.getCanonicalName()));

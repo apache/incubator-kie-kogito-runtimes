@@ -1,57 +1,52 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.addon.source.files.deployment;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
-import org.kie.kogito.addon.source.files.SourceFile;
 import org.kie.kogito.addon.source.files.SourceFilesProviderProducer;
 import org.kie.kogito.addon.source.files.SourceFilesRecorder;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.io.CollectedResource;
-import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
+import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
-import org.kie.kogito.quarkus.addons.common.deployment.RequireCapabilityKogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.OneOfCapabilityKogitoAddOnProcessor;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
-import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
-class KogitoAddOnSourceFilesProcessor extends RequireCapabilityKogitoAddOnProcessor {
+class KogitoAddOnSourceFilesProcessor extends OneOfCapabilityKogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-source-files-extension";
 
-    private static final Collection<String> SOURCE_FILE_EXTENSIONS = List.of(".bpmn", ".bpmn2", ".json", ".yaml", ".yml");
-
     KogitoAddOnSourceFilesProcessor() {
-        super(KogitoCapability.PROCESSES);
+        super(KogitoCapability.PROCESSES, KogitoCapability.SERVERLESS_WORKFLOW);
     }
 
     @BuildStep
@@ -83,70 +78,27 @@ class KogitoAddOnSourceFilesProcessor extends RequireCapabilityKogitoAddOnProces
     }
 
     @BuildStep
-    void produceSourceFiles(
-            KogitoBuildContextBuildItem ctxBuildItem,
-            BuildProducer<GeneratedResourceBuildItem> generatedResourceProducer,
-            BuildProducer<AdditionalStaticResourceBuildItem> additionalStaticResourceProducer,
-            BuildProducer<NativeImageResourceBuildItem> nativeImageResourceProducer) {
-        Path sourcesDestinationPath = ctxBuildItem.getKogitoBuildContext().getAppPaths().getOutputTarget().resolve(
-                Path.of("classes/META-INF/resources" + SourceFile.SOURCES_HTTP_PATH));
-
-        Collection<CollectedResource> collectedResources = CollectedResourceProducer.fromPaths(
-                ctxBuildItem.getKogitoBuildContext().getAppPaths().getPaths());
-
-        collectedResources.stream()
-                .filter(this::isSourceFile)
-                .forEach(resource -> generateStaticResource(
-                        sourcesDestinationPath,
-                        generatedResourceProducer,
-                        additionalStaticResourceProducer,
-                        nativeImageResourceProducer,
-                        resource));
+    NativeImageResourceBuildItem nativeImageResourceBuildItem(KogitoBuildContextBuildItem ctxBuildItem) throws IOException {
+        return new NativeImageResourceBuildItem(getSourceFiles(ctxBuildItem.getKogitoBuildContext().getAppPaths().getResourceFiles()));
     }
 
-    private static void generateStaticResource(
-            Path sourcesDestinationPath,
-            BuildProducer<GeneratedResourceBuildItem> generatedResourceProducer,
-            BuildProducer<AdditionalStaticResourceBuildItem> additionalStaticResourceProducer,
-            BuildProducer<NativeImageResourceBuildItem> nativeImageResourceProducer,
-            CollectedResource resource) {
-        Path sourceFile = Paths.get(resource.resource().getSourcePath());
+    private List<String> getSourceFiles(File[] resourcePaths) throws IOException {
+        List<String> sourceFiles = new ArrayList<>();
 
-        Path relativeDestinationFilePath = sourceFile.startsWith(resource.basePath())
-                ? sourceFile.subpath(resource.basePath().getNameCount(), sourceFile.getNameCount())
-                : sourceFile;
-
-        byte[] contents;
-
-        try {
-            contents = resource.resource().getInputStream().readAllBytes();
-            Path absoluteDestinationFilePath = sourcesDestinationPath.resolve(relativeDestinationFilePath);
-            createDirectories(absoluteDestinationFilePath.getParent());
-            Files.write(absoluteDestinationFilePath, contents, StandardOpenOption.CREATE);
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to move source file to static resources directory.", e);
+        for (File resourceFile : resourcePaths) {
+            Path resourcePath = resourceFile.toPath();
+            try (Stream<Path> walkedPaths = Files.walk(resourcePath)) {
+                walkedPaths.filter(this::isSourceFile)
+                        .map(resourcePath::relativize)
+                        .map(Path::toString)
+                        .forEach(sourceFiles::add);
+            }
         }
 
-        String sourcesDestinationDirectory = "META-INF/resources" + SourceFile.SOURCES_HTTP_PATH;
-
-        generatedResourceProducer.produce(new GeneratedResourceBuildItem(
-                sourcesDestinationDirectory + relativeDestinationFilePath, contents, true));
-
-        nativeImageResourceProducer.produce(new NativeImageResourceBuildItem(
-                sourcesDestinationDirectory + relativeDestinationFilePath));
-
-        additionalStaticResourceProducer.produce(new AdditionalStaticResourceBuildItem(
-                SourceFile.SOURCES_HTTP_PATH + relativeDestinationFilePath, false));
+        return sourceFiles;
     }
 
-    private static void createDirectories(Path path) throws IOException {
-        if (!Files.exists(path.getParent())) {
-            createDirectories(path.getParent());
-        }
-        Files.createDirectories(path);
-    }
-
-    private boolean isSourceFile(CollectedResource resource) {
-        return SOURCE_FILE_EXTENSIONS.stream().anyMatch(ext -> resource.resource().getSourcePath().endsWith(ext));
+    private boolean isSourceFile(Path file) {
+        return SupportedExtensions.isSourceFile(file);
     }
 }

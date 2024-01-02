@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.rules;
 
@@ -44,10 +47,10 @@ import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.Type;
 
 import static com.github.javaparser.StaticJavaParser.parseStatement;
+import static org.drools.model.codegen.execmodel.util.RuleCodegenUtils.setGeneric;
+import static org.drools.model.codegen.execmodel.util.RuleCodegenUtils.toKebabCase;
+import static org.drools.model.codegen.execmodel.util.RuleCodegenUtils.toNonPrimitiveType;
 import static org.kie.kogito.codegen.api.Generator.REST_TYPE;
-import static org.kie.kogito.codegen.rules.RuleCodegenUtils.setGeneric;
-import static org.kie.kogito.codegen.rules.RuleCodegenUtils.toKebabCase;
-import static org.kie.kogito.codegen.rules.RuleCodegenUtils.toNonPrimitiveType;
 
 public class QueryEndpointGenerator extends AbstractQueryEntrypointGenerator {
 
@@ -75,7 +78,7 @@ public class QueryEndpointGenerator extends AbstractQueryEntrypointGenerator {
                 .orElseThrow(() -> new NoSuchElementException("ClassOrInterfaceDeclaration doesn't contain a field named ruleUnit!"));
         setUnitGeneric(ruleUnitDeclaration.getElementType());
 
-        String returnType = getReturnType(clazz);
+        String returnType = getReturnType();
         generateConstructors(clazz);
         generateQueryMethods(cu, clazz, returnType);
         clazz.getMembers().sort(new BodyDeclarationComparator());
@@ -182,7 +185,7 @@ public class QueryEndpointGenerator extends AbstractQueryEntrypointGenerator {
         return new BlockStmt(new NodeList<>(ts));
     }
 
-    private String getReturnType(ClassOrInterfaceDeclaration clazz) {
+    private String getReturnType() {
         if (query.model().getBindings().size() == 1) {
             Map.Entry<String, Class<?>> binding = query.model().getBindings().entrySet().iterator().next();
             return binding.getValue().getCanonicalName();

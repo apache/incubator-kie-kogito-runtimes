@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.process.persistence.proto;
 
@@ -45,6 +48,8 @@ import static java.lang.String.format;
 
 public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionProtoGenerator.class);
+
     private ReflectionProtoGenerator(Collection<Class<?>> modelClasses, Collection<Class<?>> dataClasses) {
         super(modelClasses, dataClasses);
     }
@@ -69,7 +74,15 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
                 continue;
             }
 
-            Field propertyField = getFieldFromClass(clazz, pd.getName());
+            Field propertyField;
+            try {
+                propertyField = getFieldFromClass(clazz, pd.getName());
+            } catch (IllegalArgumentException ex) {
+                LOGGER.warn(ex.getMessage());
+                // a method starting with get or set without a corresponding backing field makes java beans to
+                // still generate a property descriptor, it should be ignored
+                continue;
+            }
             // ignore static and/or transient fields
             int mod = propertyField.getModifiers();
             if (Modifier.isStatic(mod) || Modifier.isTransient(mod)) {
@@ -88,11 +101,11 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
             Class<?> fieldType = pd.getPropertyType();
             String protoType;
             if (pd.getPropertyType().isArray() && !pd.getPropertyType().getComponentType().isPrimitive()) {
-                fieldTypeString = "Array";
+                fieldTypeString = ARRAY;
                 fieldType = pd.getPropertyType().getComponentType();
                 protoType = protoType(fieldType.getCanonicalName());
             } else if (Collection.class.isAssignableFrom(pd.getPropertyType())) {
-                fieldTypeString = "Collection";
+                fieldTypeString = COLLECTION;
                 Type type = propertyField.getGenericType();
                 if (type instanceof ParameterizedType) {
                     ParameterizedType ptype = (ParameterizedType) type;
@@ -119,7 +132,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
             ProtoField protoField = message.addField(applicabilityByType(fieldTypeString), protoType, pd.getName());
             protoField.setComment(completeFieldComment);
             if (KOGITO_SERIALIZABLE.equals(protoType)) {
-                protoField.setOption(format("[(%s) = \"%s\"]", KOGITO_JAVA_CLASS_OPTION, fieldTypeString));
+                protoField.setOption(format("[(%s) = \"%s\"]", KOGITO_JAVA_CLASS_OPTION, pd.getPropertyType().getCanonicalName()));
             }
         }
         message.setComment(messageComment);

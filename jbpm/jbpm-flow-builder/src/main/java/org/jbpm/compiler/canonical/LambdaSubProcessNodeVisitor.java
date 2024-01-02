@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.canonical;
 
@@ -100,11 +103,11 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
                     .forEach(t -> t.setName(subProcessModelClassName));
 
             retValueExpression.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("bind"))
-                    .ifPresent(m -> m.setBody(bind(variableScope, node, subProcessModel)));
+                    .ifPresent(m -> m.setBody(bind(subProcessModel)));
             retValueExpression.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("createInstance"))
                     .ifPresent(m -> m.setBody(createInstance(node, metadata)));
             retValueExpression.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unbind"))
-                    .ifPresent(m -> m.setBody(unbind(variableScope, node)));
+                    .ifPresent(m -> m.setBody(unbind(node)));
             body.addStatement(getFactoryMethod(getNodeId(node), getNodeKey(), retValueExpression));
         }, () -> body.addStatement(getFactoryMethod(getNodeId(node), getNodeKey())));
 
@@ -113,7 +116,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         body.addStatement(getDoneMethod(getNodeId(node)));
     }
 
-    private BlockStmt bind(VariableScope variableScope, SubProcessNode subProcessNode, ModelMetaData subProcessModel) {
+    private BlockStmt bind(ModelMetaData subProcessModel) {
         BlockStmt actionBody = new BlockStmt();
         actionBody.addStatement(subProcessModel.newInstance("model"));
 
@@ -135,23 +138,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         AssignExpr inputs = new AssignExpr(expr, processInputsExpr, AssignExpr.Operator.ASSIGN);
         actionBody.addStatement(inputs);
 
-        // do the actual assignments
-        for (DataDefinition inputDefinition : subProcessNode.getIoSpecification().getDataInput().values()) {
-            // remove multiinstance data. It does not belong to this model it is just for calculations with
-            // data associations
-            String collectionInput = (String) subProcessNode.getMetaData().get("MICollectionInput");
-            if (collectionInput != null && collectionInput.equals(inputDefinition.getLabel())) {
-                continue;
-            }
-            DataDefinition multiInstance = subProcessNode.getMultiInstanceSpecification().getInputDataItem();
-            if (multiInstance != null && multiInstance.getLabel().equals(inputDefinition.getLabel())) {
-                continue;
-            }
-
-            Expression getValueExpr = new MethodCallExpr(new NameExpr("inputs"), "get", nodeList(new StringLiteralExpr(inputDefinition.getLabel())));
-            actionBody.addStatement(subProcessModel.callSetter("model", inputDefinition.getLabel(), getValueExpr));
-        }
-
+        actionBody.addStatement(subProcessModel.callUpdateFromMap("model", "inputs"));
         actionBody.addStatement(new ReturnStmt(new NameExpr("model")));
         return actionBody;
     }
@@ -168,7 +155,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         return new BlockStmt().addStatement(new ReturnStmt(processInstanceSupplier));
     }
 
-    private BlockStmt unbind(VariableScope variableScope, SubProcessNode subProcessNode) {
+    private BlockStmt unbind(SubProcessNode subProcessNode) {
         BlockStmt actionBody = new BlockStmt();
 
         // process the outputs of the task

@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.quarkus.workflows;
 
@@ -24,12 +27,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -40,9 +45,9 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 import static org.awaitility.Awaitility.await;
-import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.assertProcessInstanceExists;
-import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.assertProcessInstanceHasFinished;
-import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.getProcessInstance;
+import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProcessInstanceExists;
+import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProcessInstanceHasFinished;
+import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.getProcessInstance;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
@@ -81,18 +86,29 @@ public class CorrelationIT {
     }
 
     @Test
-    void correlationEventTest() throws Exception {
+    void correlationEventTestDefault() throws Exception {
+        correlationEventTest(null);
+    }
+
+    private void correlationEventTest(String startNode) throws JsonProcessingException {
         final String userId = UUID.randomUUID().toString();
 
         // start a new process instance by sending and event
         LOGGER.debug("Sending create correlation workflow event");
-        String request = objectMapper.writeValueAsString(CloudEventBuilder.v1()
+        io.cloudevents.core.v1.CloudEventBuilder cloudEventBuilder = CloudEventBuilder.v1()
                 .withId(UUID.randomUUID().toString())
                 .withSource(URI.create(""))
                 .withType(START_EVENT_TYPE)
                 .withTime(OffsetDateTime.now())
                 .withExtension(USER_ID, userId)
-                .withData(JsonCloudEventData.wrap(objectMapper.createObjectNode().put("message", "Starting workflow using correlation")))
+                .withData(JsonCloudEventData.wrap(objectMapper.createObjectNode().put("message", "Starting workflow using correlation")));
+
+        //setting start node if present
+        if (startNode != null) {
+            cloudEventBuilder.withExtension(CloudEventExtensionConstants.PROCESS_START_FROM_NODE, startNode);
+        }
+
+        String request = objectMapper.writeValueAsString(cloudEventBuilder
                 .build());
         kafkaClient.produce(request, START_EVENT_TOPIC);
 
@@ -121,5 +137,10 @@ public class CorrelationIT {
         // give some time for the event to be processed and the process to finish.
         assertProcessInstanceHasFinished(PROCESS_GET_BY_ID_URL, processInstanceId.get(), 1, 180);
         LOGGER.debug("Workflow {} completed", processInstanceId.get());
+    }
+
+    @Test
+    void correlationEventStartFromNodeTest() throws Exception {
+        correlationEventTest("printWaitMessage");//printWaitMessage node
     }
 }

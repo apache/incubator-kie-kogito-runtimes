@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.grafana;
 
@@ -21,6 +24,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -28,9 +32,9 @@ import org.kie.kogito.grafana.model.panel.PanelType;
 import org.kie.kogito.grafana.model.panel.common.YAxis;
 import org.kie.kogito.grafana.model.panel.graph.GraphPanel;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 public class JGrafanaTest {
 
@@ -54,7 +58,7 @@ public class JGrafanaTest {
         JGrafana grafanaObj = new JGrafana("My Dashboard");
 
         // Assert
-        assertEquals(0, grafanaObj.getDashboard().panels.size());
+        assertThat(grafanaObj.getDashboard().panels).isEmpty();
     }
 
     @Test
@@ -70,20 +74,20 @@ public class JGrafanaTest {
         grafanaObj.addPanel(PanelType.GRAPH, "My Graph 5", "api_http_response_code{handler=\"world\"}");
 
         // Assert
-        assertEquals(0, grafanaObj.getDashboard().panels.get(0).gridPos.x);
-        assertEquals(0, grafanaObj.getDashboard().panels.get(0).gridPos.y);
+        assertThat(grafanaObj.getDashboard().panels.get(0).gridPos.x).isZero();
+        assertThat(grafanaObj.getDashboard().panels.get(0).gridPos.y).isZero();
 
-        assertEquals(12, grafanaObj.getDashboard().panels.get(1).gridPos.x);
-        assertEquals(0, grafanaObj.getDashboard().panels.get(1).gridPos.y);
+        assertThat(grafanaObj.getDashboard().panels.get(1).gridPos.x).isEqualTo(12);
+        assertThat(grafanaObj.getDashboard().panels.get(1).gridPos.y).isZero();
 
-        assertEquals(0, grafanaObj.getDashboard().panels.get(2).gridPos.x);
-        assertEquals(8, grafanaObj.getDashboard().panels.get(2).gridPos.y);
+        assertThat(grafanaObj.getDashboard().panels.get(2).gridPos.x).isZero();
+        assertThat(grafanaObj.getDashboard().panels.get(2).gridPos.y).isEqualTo(8);
 
-        assertEquals(12, grafanaObj.getDashboard().panels.get(3).gridPos.x);
-        assertEquals(8, grafanaObj.getDashboard().panels.get(3).gridPos.y);
+        assertThat(grafanaObj.getDashboard().panels.get(3).gridPos.x).isEqualTo(12);
+        assertThat(grafanaObj.getDashboard().panels.get(3).gridPos.y).isEqualTo(8);
 
-        assertEquals(0, grafanaObj.getDashboard().panels.get(4).gridPos.x);
-        assertEquals(16, grafanaObj.getDashboard().panels.get(4).gridPos.y);
+        assertThat(grafanaObj.getDashboard().panels.get(4).gridPos.x).isZero();
+        assertThat(grafanaObj.getDashboard().panels.get(4).gridPos.y).isEqualTo(16);
     }
 
     @Test
@@ -96,7 +100,7 @@ public class JGrafanaTest {
         grafanaObj.removePanelByTitle("My Graph 1");
 
         // Assert
-        assertEquals(0, grafanaObj.getDashboard().panels.size());
+        assertThat(grafanaObj.getDashboard().panels).isEmpty();
     }
 
     @Test
@@ -114,11 +118,11 @@ public class JGrafanaTest {
         grafanaObj.removePanelByTitle("My Graph 5");
 
         // Assert
-        assertEquals(3, grafanaObj.getDashboard().panels.size());
-        assertEquals(true, grafanaObj.getDashboard().panels.stream().anyMatch(x -> x.title == "My Graph 1"));
-        assertEquals(true, grafanaObj.getDashboard().panels.stream().anyMatch(x -> x.title == "My Graph 2"));
-        assertEquals(true, grafanaObj.getDashboard().panels.stream().anyMatch(x -> x.title == "My Graph 4"));
-        assertEquals(false, grafanaObj.getDashboard().panels.stream().anyMatch(x -> x.title == "My Graph 3"));
+        assertThat(grafanaObj.getDashboard().panels).hasSize(3);
+        assertThat(grafanaObj.getDashboard().panels.stream().anyMatch(x -> Objects.equals(x.title, "My Graph 1"))).isTrue();
+        assertThat(grafanaObj.getDashboard().panels.stream().anyMatch(x -> Objects.equals(x.title, "My Graph 2"))).isTrue();
+        assertThat(grafanaObj.getDashboard().panels.stream().anyMatch(x -> Objects.equals(x.title, "My Graph 4"))).isTrue();
+        assertThat(grafanaObj.getDashboard().panels.stream().anyMatch(x -> Objects.equals(x.title, "My Graph 3"))).isFalse();
     }
 
     @Test
@@ -134,9 +138,9 @@ public class JGrafanaTest {
         grafanaObj.removePanelByTitle("My Graph 2");
 
         // Assert
-        assertEquals(2, grafanaObj.getDashboard().panels.size());
-        assertEquals(true, grafanaObj.getDashboard().panels.stream().anyMatch(x -> x.title == "My Graph 1"));
-        assertEquals(false, grafanaObj.getDashboard().panels.stream().anyMatch(x -> x.title == "My Graph 2"));
+        assertThat(grafanaObj.getDashboard().panels).hasSize(2);
+        assertThat(grafanaObj.getDashboard().panels.stream().anyMatch(x -> x.title == "My Graph 1")).isTrue();
+        assertThat(grafanaObj.getDashboard().panels.stream().anyMatch(x -> x.title == "My Graph 2")).isFalse();
     }
 
     @Test
@@ -148,7 +152,7 @@ public class JGrafanaTest {
         grafanaObj.addPanel(PanelType.HEATMAP, "My Graph 2", "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"hello\"}[1m])) by (le)");
 
         // Assert
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> {
             grafanaObj.getPanelByTitle("Hello");
         });
     }
@@ -164,19 +168,19 @@ public class JGrafanaTest {
         grafanaObj.addPanel(PanelType.GRAPH, "My Graph 1", "api_http_response_code{handler=\"world\"}", yaxes);
 
         // Assert
-        assertEquals(2, ((GraphPanel) grafanaObj.getPanelByTitle("My Graph 1")).yaxes.size());
+        assertThat(((GraphPanel) grafanaObj.getPanelByTitle("My Graph 1")).yaxes).hasSize(2);
     }
 
     @Test
     public void givenAnExistingStandardDashboardWhenParseMethodIsCalledThenTheDashboardIsImported() {
-        assertDoesNotThrow(() -> {
+        assertThatNoException().isThrownBy(() -> {
             JGrafana dash = JGrafana.parse(readStandardDashboard());
         });
     }
 
     @Test
     public void givenAnExistingProcessOperationalDashboardWhenParseMethodIsCalledThenTheDashboardIsImported() {
-        assertDoesNotThrow(() -> {
+        assertThatNoException().isThrownBy(() -> {
             JGrafana dash = JGrafana.parse(readProcessOperationalDashboard());
         });
     }

@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.canonical;
 
@@ -30,7 +33,6 @@ import org.kie.kogito.codegen.VariableInfo;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
@@ -41,7 +43,6 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.CastExpr;
-import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
@@ -61,6 +62,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.drools.util.StringUtils.ucFirst;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
 
 public class ModelMetaData {
 
@@ -146,6 +148,10 @@ public class ModelMetaData {
         return callSetter(targetVar, destField, new NameExpr(value));
     }
 
+    public MethodCallExpr callUpdateFromMap(String targetVar, String mapVar) {
+        return new MethodCallExpr(new NameExpr(targetVar), "update").addArgument(new NameExpr(mapVar));
+    }
+
     public MethodCallExpr callSetter(String targetVar, String destField, Expression value) {
         String name = variableScope.getTypes().get(destField).getSanitizedName();
         String type = variableScope.getType(destField);
@@ -174,7 +180,7 @@ public class ModelMetaData {
         if (!KogitoWorkflowProcess.PRIVATE_VISIBILITY.equals(visibility)) {
             modelClass.addAnnotation(new NormalAnnotationExpr(new Name(Generated.class.getCanonicalName()), NodeList.nodeList(new MemberValuePair("value", new StringLiteralExpr("kogito-codegen")),
                     new MemberValuePair("reference", new StringLiteralExpr(processId)),
-                    new MemberValuePair("name", new StringLiteralExpr(ucFirst(ProcessToExecModelGenerator.extractProcessId(processId)))),
+                    new MemberValuePair("name", new StringLiteralExpr(sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(processId)))),
                     new MemberValuePair("hidden", new BooleanLiteralExpr(hidden)))));
         }
         modelClass.setName(modelClassSimpleName);
@@ -211,7 +217,6 @@ public class ModelMetaData {
                             new StringLiteralExpr(varName)))));
 
             applyValidation(fd, tags);
-            applyOpenApiSchemaForJsonNodeModel(fd);
             applyOpenApiSchemaAnnotation(fd);
 
             fd.createGetter();
@@ -230,28 +235,11 @@ public class ModelMetaData {
     private void applyValidation(FieldDeclaration fd, List<String> tags) {
 
         if (supportsValidation) {
-            fd.addAnnotation("javax.validation.Valid");
+            fd.addAnnotation("jakarta.validation.Valid");
 
             if (tags != null && tags.contains(Variable.REQUIRED_TAG)) {
-                fd.addAnnotation("javax.validation.constraints.NotNull");
+                fd.addAnnotation("jakarta.validation.constraints.NotNull");
             }
-        }
-    }
-
-    /**
-     * The JsonNode class can't be parsed by the OpenApi parser.
-     * In essence, JsonNode should be represented by a generic JSON node: `{}`.
-     * The Swagger parser will handle a Java Object class as this generic Json node.
-     * This method will apply the `Schema(class=Object.class)` annotation if the model type os a JsonNode type.
-     *
-     * @see <a href="https://github.com/smallrye/smallrye-open-api/issues/1048">Jackson's JsonNode class is being incorrectly rendered in the spec file</a>
-     */
-    private void applyOpenApiSchemaForJsonNodeModel(final FieldDeclaration modelFieldDeclaration) {
-        if (this.modelSchemaRef == null &&
-                this.supportsOpenApiGeneration &&
-                JsonNode.class.getCanonicalName().equals(modelFieldDeclaration.getElementType().asString())) {
-            modelFieldDeclaration.addAndGetAnnotation(Schema.class).addPair("implementation",
-                    new ClassExpr().setType(Object.class.getCanonicalName()));
         }
     }
 

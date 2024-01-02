@@ -1,21 +1,25 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.workflow.instance.node;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +35,7 @@ import org.jbpm.process.instance.impl.humantask.DeadlineHelper;
 import org.jbpm.process.instance.impl.humantask.DeadlineInfo;
 import org.jbpm.process.instance.impl.humantask.HumanTaskHelper;
 import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
+import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.process.instance.impl.humantask.Reassignment;
 import org.jbpm.process.instance.impl.humantask.ScheduleInfo;
 import org.jbpm.workflow.core.node.HumanTaskNode;
@@ -38,10 +43,11 @@ import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
-import org.kie.kogito.jobs.TimerJobId;
 import org.kie.kogito.process.workitem.HumanTaskWorkItem;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.timer.TimerInstance;
+
+import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
 
 public class HumanTaskNodeInstance extends WorkItemNodeInstance {
 
@@ -57,7 +63,6 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
     private static final String BUSINESSADMINISTRATOR_ID = "BusinessAdministratorId";
     private static final String BUSINESSADMINISTRATOR_GROUP_ID = "BusinessAdministratorGroupId";
     private static final String EXCLUDED_OWNER_ID = "ExcludedOwnerId";
-    private static final String TIMER_TRIGGERED = "timerTriggered";
     private static final String WORK_ITEM_TRANSITION = "workItemTransition";
 
     private transient SwimlaneContextInstance swimlaneContextInstance;
@@ -72,8 +77,18 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
     }
 
     @Override
+    public InternalHumanTaskWorkItem getWorkItem() {
+        return (InternalHumanTaskWorkItem) super.getWorkItem();
+    }
+
+    protected InternalKogitoWorkItem decorate(InternalKogitoWorkItem kogitoWorkItem) {
+        this.getKogitoProcessInstance();
+        return HumanTaskHelper.decorate(this, (InternalHumanTaskWorkItem) kogitoWorkItem);
+    }
+
+    @Override
     protected InternalKogitoWorkItem newWorkItem() {
-        return new HumanTaskWorkItemImpl();
+        return HumanTaskHelper.decorate(this, new HumanTaskWorkItemImpl());
     }
 
     /*
@@ -104,7 +119,7 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
 
     @Override
     protected InternalKogitoWorkItem createWorkItem(WorkItemNode workItemNode) {
-        HumanTaskWorkItemImpl workItem = (HumanTaskWorkItemImpl) super.createWorkItem(workItemNode);
+        InternalHumanTaskWorkItem workItem = (InternalHumanTaskWorkItem) super.createWorkItem(workItemNode);
         String actorId = assignWorkItem(workItem);
         if (actorId != null) {
             workItem.setParameter(ACTOR_ID, actorId);
@@ -128,14 +143,15 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
             ProcessInstance pi = getProcessInstance();
             for (DeadlineInfo<T> deadline : deadlines) {
                 for (ScheduleInfo info : deadline.getScheduleInfo()) {
-                    timers.put(getJobsService().scheduleProcessInstanceJob(ProcessInstanceJobDescription.of(
-                            new TimerJobId(-1L),
-                            DeadlineHelper.getExpirationTime(info),
-                            pi.getStringId(),
-                            pi.getRootProcessInstanceId(),
-                            pi.getProcessId(),
-                            pi.getRootProcessId(),
-                            getStringId())), deadline.getNotification());
+                    timers.put(getJobsService().scheduleProcessInstanceJob(ProcessInstanceJobDescription.builder()
+                            .generateId()
+                            .timerId("-1")
+                            .expirationTime(DeadlineHelper.getExpirationTime(info))
+                            .processInstanceId(pi.getStringId())
+                            .rootProcessInstanceId(pi.getRootProcessInstanceId())
+                            .processId(pi.getProcessId())
+                            .rootProcessId(pi.getRootProcessId())
+                            .nodeInstanceId(getStringId()).build()), deadline.getNotification());
                 }
             }
         }
@@ -148,7 +164,7 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
                 cancelTimers(notStartedDeadlines);
                 cancelTimers(notStartedReassignments);
                 break;
-            case TIMER_TRIGGERED:
+            case TIMER_TRIGGERED_EVENT:
                 if (!sendNotification((TimerInstance) event)) {
                     super.signalEvent(type, event);
                 }
@@ -178,7 +194,7 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
         Map<String, Object> notification = timers.get(timerInstance.getId());
         boolean result = notification != null;
         if (result) {
-            if (timerInstance.getRepeatLimit() == 0) {
+            if (timerInstance.getRepeatLimit() <= 0) {
                 timers.remove(timerInstance.getId());
             }
             publisher.accept(notification);
@@ -199,14 +215,14 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
     @Override
     protected void addWorkItemListener() {
         super.addWorkItemListener();
-        getProcessInstance().addEventListener(TIMER_TRIGGERED, this, false);
+        getProcessInstance().addEventListener(TIMER_TRIGGERED_EVENT, this, false);
         getProcessInstance().addEventListener(WORK_ITEM_TRANSITION, this, false);
     }
 
     @Override
     protected void removeWorkItemListener() {
         super.removeWorkItemListener();
-        getProcessInstance().removeEventListener(TIMER_TRIGGERED, this, false);
+        getProcessInstance().removeEventListener(TIMER_TRIGGERED_EVENT, this, false);
         getProcessInstance().removeEventListener(WORK_ITEM_TRANSITION, this, false);
     }
 
@@ -221,18 +237,18 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
     }
 
     private void startNotification(Map<String, Object> notification) {
-        getEventSupport().fireOnTaskNotStartedDeadline(getProcessInstance(), (HumanTaskWorkItem) getWorkItem(),
+        getEventSupport().fireOnUserTaskNotStartedDeadline(getProcessInstance(), this, (HumanTaskWorkItem) getWorkItem(),
                 notification, getProcessInstance().getKnowledgeRuntime());
     }
 
     private void endNotification(Map<String, Object> notification) {
-        getEventSupport().fireOnTaskNotCompletedDeadline(getProcessInstance(), (HumanTaskWorkItem) getWorkItem(),
+        getEventSupport().fireOnUserTaskNotCompletedDeadline(getProcessInstance(), this, (HumanTaskWorkItem) getWorkItem(),
                 notification,
                 getProcessInstance().getKnowledgeRuntime());
     }
 
     private void reassign(Reassignment reassignment) {
-        HumanTaskWorkItemImpl humanTask = HumanTaskHelper.asHumanTask(getWorkItem());
+        InternalHumanTaskWorkItem humanTask = HumanTaskHelper.asHumanTask(getWorkItem());
         boolean modified = false;
         if (!reassignment.getPotentialUsers().isEmpty()) {
             humanTask.setPotentialUsers(reassignment.getPotentialUsers());
@@ -267,11 +283,27 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
             }
         }
 
-        processAssigment(ACTOR_ID, workItem, ((HumanTaskWorkItemImpl) workItem).getPotentialUsers());
-        processAssigment(GROUP_ID, workItem, ((HumanTaskWorkItemImpl) workItem).getPotentialGroups());
-        processAssigment(EXCLUDED_OWNER_ID, workItem, ((HumanTaskWorkItemImpl) workItem).getExcludedUsers());
-        processAssigment(BUSINESSADMINISTRATOR_ID, workItem, ((HumanTaskWorkItemImpl) workItem).getAdminUsers());
-        processAssigment(BUSINESSADMINISTRATOR_GROUP_ID, workItem, ((HumanTaskWorkItemImpl) workItem).getAdminGroups());
+        InternalHumanTaskWorkItem hunanWorkItem = (InternalHumanTaskWorkItem) workItem;
+
+        Set<String> newPUValue = new HashSet<>(hunanWorkItem.getPotentialUsers());
+        processAssigment(ACTOR_ID, workItem, newPUValue);
+        hunanWorkItem.setPotentialUsers(newPUValue);
+
+        Set<String> newPGValue = new HashSet<>(hunanWorkItem.getPotentialGroups());
+        processAssigment(GROUP_ID, workItem, newPGValue);
+        hunanWorkItem.setPotentialGroups(newPGValue);
+
+        Set<String> newEUValue = new HashSet<>(hunanWorkItem.getExcludedUsers());
+        processAssigment(EXCLUDED_OWNER_ID, workItem, newEUValue);
+        hunanWorkItem.setExcludedUsers(newEUValue);
+
+        Set<String> newAUValue = new HashSet<>(hunanWorkItem.getAdminUsers());
+        processAssigment(BUSINESSADMINISTRATOR_ID, workItem, newAUValue);
+        hunanWorkItem.setAdminGroups(newAUValue);
+
+        Set<String> newAGValue = new HashSet<>(hunanWorkItem.getAdminGroups());
+        processAssigment(BUSINESSADMINISTRATOR_GROUP_ID, workItem, newAGValue);
+        hunanWorkItem.setAdminGroups(newAGValue);
 
         // always return ActorId from workitem as SwimlaneActorId is kept as separate parameter
         return (String) workItem.getParameter(ACTOR_ID);

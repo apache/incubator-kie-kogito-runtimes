@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.integrationtests.quarkus;
 
@@ -27,7 +30,7 @@ import org.acme.travels.Traveller;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.event.process.ProcessDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceDataEvent;
 import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
@@ -52,7 +55,6 @@ class ProcessEventIT {
 
     public static final String KOGITO_PROCESSINSTANCES_EVENTS = "kogito-processinstances-events";
     public static final String KOGITO_USERTASKINSTANCES_EVENTS = "kogito-usertaskinstances-events";
-    public static final String KOGITO_VARIABLE_EVENTS = "kogito-variables-events";
 
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessEventIT.class);
 
@@ -82,34 +84,40 @@ class ProcessEventIT {
     void testSaveTask() throws Exception {
         Traveller traveller = new Traveller("pepe", "rubiales", "pepe.rubiales@gmail.com", "Spanish");
         final CountDownLatch countDownLatch = new CountDownLatch(6);
-        final CompletableFuture future = new CompletableFuture();
+        final CompletableFuture<Void> future = new CompletableFuture<>();
 
-        kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS, KOGITO_USERTASKINSTANCES_EVENTS, KOGITO_VARIABLE_EVENTS), s -> {
+        String username = "buddy";
+        String password = "buddy";
+
+        kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS, KOGITO_USERTASKINSTANCES_EVENTS), s -> {
             LOGGER.info("Received from kafka: {}", s);
             try {
-                ProcessDataEvent event = mapper.readValue(s, ProcessDataEvent.class);
+                ProcessInstanceDataEvent<?> event = mapper.readValue(s, ProcessInstanceDataEvent.class);
                 LinkedHashMap data = (LinkedHashMap) event.getData();
                 if ("handleApprovals".equals(data.get("processId"))) {
                     switch (event.getType()) {
-                        case "ProcessInstanceEvent":
+                        case "ProcessInstanceStateEvent":
                             assertEquals("ProcessInstanceEvent", event.getType());
                             assertEquals("/handleApprovals", event.getSource().toString());
                             assertEquals("handleApprovals", data.get("processId"));
                             assertEquals("1.0", event.getKogitoProcessInstanceVersion());
                             assertEquals("BPMN", data.get("processType"));
                             assertEquals("BPMN", event.getKogitoProcessType());
+                            assertEquals(username, event.getKogitoIdentity());
                             break;
-                        case "UserTaskInstanceEvent":
+                        case "UserTaskInstanceStateEvent":
                             assertEquals("UserTaskInstanceEvent", event.getType());
                             assertEquals("/handleApprovals", event.getSource().toString());
                             assertEquals("handleApprovals", data.get("processId"));
                             assertEquals("1.0", event.getKogitoProcessInstanceVersion());
+                            assertEquals(username, event.getKogitoIdentity());
                             break;
-                        case "VariableInstanceEvent":
+                        case "ProcessInstanceVariableEvent":
                             assertEquals("VariableInstanceEvent", event.getType());
                             assertEquals("/handleApprovals", event.getSource().toString());
                             assertEquals("handleApprovals", data.get("processId"));
                             assertEquals("1.0", event.getKogitoProcessInstanceVersion());
+                            assertEquals(username, event.getKogitoIdentity());
                             break;
                     }
                 }
@@ -124,6 +132,7 @@ class ProcessEventIT {
 
         String processId = given()
                 .contentType(ContentType.JSON)
+                .auth().basic(username, password)
                 .when()
                 .body(Collections.singletonMap("traveller", traveller))
                 .post("/handleApprovals")
@@ -133,6 +142,7 @@ class ProcessEventIT {
                 .path("id");
         String taskId = given()
                 .contentType(ContentType.JSON)
+                .auth().basic(username, password)
                 .queryParam("user", "admin")
                 .queryParam("group", "managers")
                 .pathParam("processId", processId)
@@ -145,7 +155,9 @@ class ProcessEventIT {
 
         Map<String, Object> model = Collections.singletonMap("approved", true);
 
-        assertEquals(model, given().contentType(ContentType.JSON)
+        assertEquals(model, given()
+                .contentType(ContentType.JSON)
+                .auth().basic(username, password)
                 .when()
                 .queryParam("user", "admin")
                 .queryParam("group", "managers")
@@ -158,7 +170,9 @@ class ProcessEventIT {
                 .extract()
                 .as(Map.class));
 
-        assertEquals(true, given().contentType(ContentType.JSON)
+        assertEquals(true, given()
+                .contentType(ContentType.JSON)
+                .auth().basic(username, password)
                 .when()
                 .queryParam("user", "admin")
                 .queryParam("group", "managers")
@@ -170,8 +184,9 @@ class ProcessEventIT {
                 .extract()
                 .path("results.approved"));
 
-        String humanTaskId = given()
+        given()
                 .contentType(ContentType.JSON)
+                .auth().basic(username, password)
                 .queryParam("user", "admin")
                 .queryParam("group", "managers")
                 .pathParam("processId", processId)

@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.process.impl;
 
@@ -99,8 +102,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     private Optional<CorrelationInstance> correlationInstance = Optional.empty();
 
-    private CompositeCorrelation correlation;
-
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt) {
         this(process, variables, null, rt);
     }
@@ -120,14 +121,13 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
         org.kie.api.definition.process.Process processDefinition = process.get();
         if (processDefinition instanceof WorkflowProcess) {
-            ((WorkflowProcess) processDefinition).getValidator().ifPresent(v -> v.validate(map));
+            ((WorkflowProcess) processDefinition).getInputValidator().ifPresent(v -> v.validate(map));
         }
         String processId = processDefinition.getId();
         syncProcessInstance((WorkflowProcessInstance) ((CorrelationAwareProcessRuntime) rt).createProcessInstance(processId, correlationKey, map));
         processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
 
         if (Objects.nonNull(correlation)) {
-            this.correlation = correlation;
             this.correlationInstance = Optional.of(process.correlations().create(correlation, id()));
         }
     }
@@ -267,7 +267,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         start(trigger, referenceId, Collections.emptyMap());
     }
 
-    private void start(String trigger, String referenceId, Map<String, List<String>> headers) {
+    @Override
+    public void start(String trigger, String referenceId, Map<String, List<String>> headers) {
         if (this.status != KogitoProcessInstance.STATE_PENDING) {
             throw new IllegalStateException("Impossible to start process instance that already has started");
         }
@@ -285,7 +286,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
         this.id = processInstance.getStringId();
         addCompletionEventListener();
-        ((MutableProcessInstances<T>) process.instances()).create(id, this);
+        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).create(id, this));
         KogitoProcessInstance kogitoProcessInstance = getProcessRuntime().getKogitoProcessRuntime().startProcessInstance(this.id, trigger);
         if (kogitoProcessInstance.getState() != STATE_ABORTED && kogitoProcessInstance.getState() != STATE_COMPLETED) {
             addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
@@ -412,10 +413,13 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         startFrom(nodeId, referenceId, Collections.emptyMap());
     }
 
-    private void startFrom(String nodeId, String referenceId, Map<String, List<String>> headers) {
+    @Override
+    public void startFrom(String nodeId, String referenceId, Map<String, List<String>> headers) {
         processInstance.setStartDate(new Date());
         processInstance.setState(STATE_ACTIVE);
         getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
+        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).create(id, this));
+
         this.id = processInstance.getStringId();
         addCompletionEventListener();
         if (referenceId != null) {
@@ -424,6 +428,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         if (headers != null) {
             this.processInstance.setHeaders(headers);
         }
+
         triggerNode(nodeId);
         unbind(variables, processInstance.getVariables());
         if (processInstance != null) {
@@ -438,7 +443,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
         org.kie.api.definition.process.Node node = rfp.getNodesRecursively()
                 .stream()
-                .filter(ni -> nodeId.equals(ni.getMetaData().get("UniqueId"))).findFirst().orElseThrow(() -> new NodeNotFoundException(this.id, nodeId));
+                .filter(ni -> Objects.equals(nodeId, ni.getNodeUniqueId()) || Objects.equals(nodeId, ni.getName()) || Objects.equals(nodeId, String.valueOf(ni.getId())))
+                .findFirst()
+                .orElseThrow(() -> new NodeNotFoundException(this.id, nodeId));
 
         org.kie.api.definition.process.Node parentNode = rfp.getParentNode(node.getId());
 
@@ -718,6 +725,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
         @Override
         public void signalEvent(String type, Object event) {
+            ((WorkflowProcess) process.get()).getOutputValidator().ifPresent(v -> v.validate(processInstance.getVariables()));
             removeOnFinish();
         }
 

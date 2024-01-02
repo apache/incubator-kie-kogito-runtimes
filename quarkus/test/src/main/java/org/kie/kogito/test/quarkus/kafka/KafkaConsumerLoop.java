@@ -1,24 +1,27 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.test.quarkus.kafka;
 
 import java.time.Duration;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -31,18 +34,18 @@ import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KafkaConsumerLoop implements Runnable {
+public class KafkaConsumerLoop<T> implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerLoop.class);
 
-    private final KafkaConsumer<String, String> consumer;
+    private final KafkaConsumer<String, T> consumer;
     private final Collection<String> topics;
-    private final Consumer<String> callback;
+    private final Consumer<T> callback;
     private final UnaryOperator<Void> onSubscribe;
     private final CountDownLatch shutdownLatch;
     private final AtomicBoolean running = new AtomicBoolean(true);
 
-    public KafkaConsumerLoop(KafkaConsumer<String, String> consumer, Collection<String> topics, Consumer<String> callback, UnaryOperator<Void> onSubscribe) {
+    public KafkaConsumerLoop(KafkaConsumer<String, T> consumer, Collection<String> topics, Consumer<T> callback, UnaryOperator<Void> onSubscribe) {
         this.consumer = consumer;
         this.topics = topics;
         this.callback = callback;
@@ -60,6 +63,7 @@ public class KafkaConsumerLoop implements Runnable {
         }
     }
 
+    @Override
     public void run() {
         try {
             consumer.subscribe(topics, new ConsumerRebalanceListener() {
@@ -78,7 +82,7 @@ public class KafkaConsumerLoop implements Runnable {
             onSubscribe.apply(null);
 
             while (running.get()) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+                ConsumerRecords<String, T> records = consumer.poll(Duration.ofSeconds(1));
                 LOGGER.debug("Kafka consumer received records: {}", records);
                 if (doCommitSync()) {
                     records.forEach(record -> callback.accept(record.value()));
@@ -102,7 +106,7 @@ public class KafkaConsumerLoop implements Runnable {
     public void shutdown() {
         running.set(false);
         try {
-            shutdownLatch.await();
+            shutdownLatch.await(1, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

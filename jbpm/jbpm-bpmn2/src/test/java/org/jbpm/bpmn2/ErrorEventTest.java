@@ -1,17 +1,20 @@
 /*
- * Copyright 2013 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2;
 
@@ -42,9 +45,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ErrorEventTest extends JbpmBpmn2TestCase {
 
@@ -72,12 +73,12 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         kruntime.getProcessEventManager().addEventListener(listener);
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
-        assertNotNull(workItem);
+        assertThat(workItem).isNotNull();
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "end", "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
-        assertEquals(1, executednodes.size());
+        assertThat(executednodes).hasSize(1);
 
     }
 
@@ -118,7 +119,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceAborted(processInstance);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
-        assertEquals(1, executednodes.size());
+        assertThat(executednodes).hasSize(1);
 
     }
 
@@ -144,7 +145,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "Script1", "starterror", "Script2", "end2", "eventsubprocess");
         assertProcessVarValue(processInstance, "CapturedException", "java.lang.RuntimeException: XXX");
-        assertEquals(1, executednodes.size());
+        assertThat(executednodes).hasSize(1);
 
     }
 
@@ -170,7 +171,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "Script1", "starterror", "Script2", "end2", "eventsubprocess");
         assertProcessVarValue(processInstance, "CapturedException", "java.lang.RuntimeException: XXX");
-        assertEquals(1, executednodes.size());
+        assertThat(executednodes).hasSize(1);
 
     }
 
@@ -194,7 +195,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-ErrorBoundaryEventOnTask");
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertEquals(2, workItems.size());
+        assertThat(workItems).hasSize(2);
 
         KogitoWorkItem workItem = workItems.get(0);
         if (!"john".equalsIgnoreCase((String) workItem.getParameter("ActorId"))) {
@@ -220,7 +221,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-ErrorBoundaryEventOnServiceTask", params);
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertEquals(1, workItems.size());
+        assertThat(workItems).hasSize(1);
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItems.get(0).getStringId(), null);
 
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -320,7 +321,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("com.sample.process");
 
         assertProcessInstanceAborted(processInstance);
-        assertEquals("90277", ((WorkflowProcessInstance) processInstance).getOutcome());
+        assertThat(((WorkflowProcessInstance) processInstance).getOutcome()).isEqualTo("90277");
 
     }
 
@@ -334,7 +335,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("BoundaryErrorEventOnEntry");
 
         assertProcessInstanceActive(processInstance.getStringId(), kruntime);
-        assertEquals(1, handler.getWorkItems().size());
+        assertThat(handler.getWorkItems()).hasSize(1);
     }
 
     @Test
@@ -349,7 +350,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance.getStringId(), kruntime);
         KogitoWorkItem workItem = handler.getWorkItem();
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
-        assertEquals(1, handler.getWorkItems().size());
+        assertThat(handler.getWorkItems()).hasSize(1);
     }
 
     @Test
@@ -359,7 +360,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
         KogitoProcessInstance processInstance = kruntime.startProcess("com.sample.bpmn.hello");
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -369,7 +370,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
         KogitoProcessInstance processInstance = kruntime.startProcess("com.sample.bpmn.hello");
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -379,7 +380,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
         KogitoProcessInstance processInstance = kruntime.startProcess("com.sample.bpmn.hello");
-        assertEquals(KogitoProcessInstance.STATE_ERROR, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ERROR);
     }
 
     @Test
@@ -412,7 +413,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 
         KogitoProcessInstance processInstance = kruntime.startProcess("com.sample.bpmn.hello");
 
-        assertEquals("java.lang.RuntimeException", getProcessVarValue(processInstance, "var1"));
+        assertThat(getProcessVarValue(processInstance, "var1")).isEqualTo("java.lang.RuntimeException");
     }
 
     @Test
@@ -434,7 +435,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 
         assertNodeTriggered(processInstance.getStringId(), "start", "task", "subprocess-task");
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -445,7 +446,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 
         assertNodeTriggered(processInstance.getStringId(), "start", "task");
 
-        assertEquals(KogitoProcessInstance.STATE_ABORTED, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ABORTED);
     }
 
     @Test
@@ -454,7 +455,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Service Task", new WorkItemExecutionErrorWorkItemHandler("MY_ERROR"));
         KogitoProcessInstance processInstance = kruntime.startProcess("ErrorVariable");
         Object theException = processInstance.getVariables().get("theException");
-        assertTrue(theException instanceof WorkItemExecutionException);
+        assertThat(theException).isInstanceOf(WorkItemExecutionException.class);
     }
 
     class ExceptionWorkItemHandler implements KogitoWorkItemHandler {

@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2.xml;
 
@@ -283,8 +286,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                 Element subXmlNode = (Element) subNodeList.item(j);
                 if ("script".equals(subXmlNode.getNodeName())) {
                     String consequence = subXmlNode.getTextContent();
-                    DroolsConsequenceAction action = new DroolsConsequenceAction(dialect, consequence);
-                    return action;
+                    return new DroolsConsequenceAction(dialect, consequence);
                 }
             }
         }
@@ -322,7 +324,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     protected void writeScripts(final String type, List<DroolsAction> actions, final StringBuilder xmlDump) {
-        if (actions != null && actions.size() > 0) {
+        if (!actions.isEmpty()) {
             for (DroolsAction action : actions) {
                 writeScript(action, type, xmlDump);
             }
@@ -443,7 +445,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         while (xmlNode != null) {
             String nodeName = xmlNode.getNodeName();
             if ("dataOutputAssociation".equals(nodeName)) {
-                readDataAssociation(parser, (Element) xmlNode, id -> ioSpec.getDataOutput().get(id), id -> getVariableDataSpec(parser, id)).ifPresent(e -> ioSpec.getDataOutputAssociation().add(e));
+                readDataAssociation((Element) xmlNode, id -> ioSpec.getDataOutput().get(id), id -> getVariableDataSpec(parser, id)).ifPresent(e -> ioSpec.getDataOutputAssociation().add(e));
             }
             xmlNode = xmlNode.getNextSibling();
         }
@@ -458,7 +460,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         while (xmlNode != null) {
             String nodeName = xmlNode.getNodeName();
             if ("dataInputAssociation".equals(nodeName)) {
-                readDataAssociation(parser, (Element) xmlNode, id -> getVariableDataSpec(parser, id), id -> ioSpec.getDataInput().get(id)).ifPresent(e -> ioSpec.getDataInputAssociation().add(e));
+                readDataAssociation((Element) xmlNode, id -> getVariableDataSpec(parser, id), id -> ioSpec.getDataInput().get(id)).ifPresent(e -> ioSpec.getDataInputAssociation().add(e));
             }
             xmlNode = xmlNode.getNextSibling();
         }
@@ -475,9 +477,9 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                 ioSpec.getDataInputs().addAll(readDataInput(parser, xmlNode));
                 ioSpec.getDataOutputs().addAll(readDataOutput(parser, xmlNode));
             } else if ("dataInputAssociation".equals(nodeName)) {
-                readDataAssociation(parser, (Element) xmlNode, id -> getVariableDataSpec(parser, id), id -> ioSpec.getDataInput().get(id)).ifPresent(e -> ioSpec.getDataInputAssociation().add(e));
+                readDataAssociation((Element) xmlNode, id -> getVariableDataSpec(parser, id), id -> ioSpec.getDataInput().get(id)).ifPresent(e -> ioSpec.getDataInputAssociation().add(e));
             } else if ("dataOutputAssociation".equals(nodeName)) {
-                readDataAssociation(parser, (Element) xmlNode, id -> ioSpec.getDataOutput().get(id), id -> getVariableDataSpec(parser, id)).ifPresent(e -> ioSpec.getDataOutputAssociation().add(e));
+                readDataAssociation((Element) xmlNode, id -> ioSpec.getDataOutput().get(id), id -> getVariableDataSpec(parser, id)).ifPresent(e -> ioSpec.getDataOutputAssociation().add(e));
             }
             xmlNode = xmlNode.getNextSibling();
         }
@@ -543,11 +545,11 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return !elements.isEmpty() ? Optional.of(elements.get(0)) : Optional.empty();
     }
 
-    protected Optional<DataAssociation> readDataAssociation(Parser parser, org.w3c.dom.Element element, Function<String, DataDefinition> sourceResolver,
+    protected Optional<DataAssociation> readDataAssociation(Element element, Function<String, DataDefinition> sourceResolver,
             Function<String, DataDefinition> targetResolver) {
         List<DataDefinition> sources = readSources(element, sourceResolver);
         DataDefinition target = readTarget(element, targetResolver);
-        List<Assignment> assignments = readAssignments(element, target,
+        List<Assignment> assignments = readAssignments(element,
                 src -> {
                     if (".".equals(src)) {
                         return sources.get(0);
@@ -607,7 +609,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
     }
 
-    private List<Assignment> readAssignments(Element parent, DataDefinition dst, Function<String, DataDefinition> sourceResolver, Function<String, DataDefinition> targetResolver) {
+    private List<Assignment> readAssignments(Element parent, Function<String, DataDefinition> sourceResolver, Function<String, DataDefinition> targetResolver) {
         List<Assignment> assignments = new ArrayList<>();
         readChildrenElementsByTag(parent, "assignment").forEach(element -> {
             Optional<Element> from = readSingleChildElementByTag(element, "from");
@@ -660,7 +662,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
 
     protected NodeImpl decorateMultiInstanceSpecificationSubProcess(CompositeContextNode nodeTarget, MultiInstanceSpecification multiInstanceSpecification) {
         ForEachNode forEachNode = decorateMultiInstanceSpecification(nodeTarget, multiInstanceSpecification);
-        forEachNode.setMetaData("UniqueId", (String) nodeTarget.getMetaData().get("UniqueId"));
+        forEachNode.setMetaData("UniqueId", nodeTarget.getMetaData().get("UniqueId"));
         forEachNode.setMetaData(ProcessHandler.CONNECTIONS, nodeTarget.getMetaData(ProcessHandler.CONNECTIONS));
         forEachNode.setAutoComplete(nodeTarget.isAutoComplete());
         // nodeTarget/subprocess is invalidated by this. we get all the content and added to the for each nodes 

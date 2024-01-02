@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.event.cloudevents.extension;
 
@@ -24,9 +27,7 @@ import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.provider.ExtensionProvider;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class KogitoExtensionTest {
 
@@ -173,13 +174,13 @@ public class KogitoExtensionTest {
     }
 
     private void assertCloudEvent(CloudEvent event, String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
-        assertNotNull(event);
-        assertEquals(TEST_DMN_MODEL_NAME, event.getExtension(KogitoExtension.KOGITO_DMN_MODEL_NAME));
-        assertEquals(TEST_DMN_MODEL_NAMESPACE, event.getExtension(KogitoExtension.KOGITO_DMN_MODEL_NAMESPACE));
-        assertEquals(dmnEvaluateDecision, event.getExtension(KogitoExtension.KOGITO_DMN_EVALUATE_DECISION));
-        assertEquals(executionId, event.getExtension(KogitoExtension.KOGITO_EXECUTION_ID));
-        assertEquals(dmnFullResult, event.getExtension(KogitoExtension.KOGITO_DMN_FULL_RESULT));
-        assertEquals(dmnFilteredCtx, event.getExtension(KogitoExtension.KOGITO_DMN_FILTERED_CTX));
+        assertThat(event).isNotNull();
+        assertThat(event.getExtension(KogitoExtension.KOGITO_DMN_MODEL_NAME)).isEqualTo(TEST_DMN_MODEL_NAME);
+        assertThat(event.getExtension(KogitoExtension.KOGITO_DMN_MODEL_NAMESPACE)).isEqualTo(TEST_DMN_MODEL_NAMESPACE);
+        assertThat(event.getExtension(KogitoExtension.KOGITO_DMN_EVALUATE_DECISION)).isEqualTo(dmnEvaluateDecision);
+        assertThat(event.getExtension(KogitoExtension.KOGITO_EXECUTION_ID)).isEqualTo(executionId);
+        assertThat(event.getExtension(KogitoExtension.KOGITO_DMN_FULL_RESULT)).isEqualTo(dmnFullResult);
+        assertThat(event.getExtension(KogitoExtension.KOGITO_DMN_FILTERED_CTX)).isEqualTo(dmnFilteredCtx);
     }
 
     private KogitoExtension extensionObjectFromCloudEvent(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
@@ -211,12 +212,12 @@ public class KogitoExtensionTest {
     }
 
     private void assertExtension(KogitoExtension kogitoExtension, String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
-        assertNotNull(kogitoExtension);
-        assertEquals(TEST_DMN_MODEL_NAME, kogitoExtension.getDmnModelName());
-        assertEquals(TEST_DMN_MODEL_NAMESPACE, kogitoExtension.getDmnModelNamespace());
-        assertEquals(dmnEvaluateDecision, kogitoExtension.getDmnEvaluateDecision());
-        assertEquals(executionId, kogitoExtension.getExecutionId());
-        assertSame(dmnFullResult, kogitoExtension.isDmnFullResult());
-        assertSame(dmnFilteredCtx, kogitoExtension.isDmnFilteredCtx());
+        assertThat(kogitoExtension).isNotNull();
+        assertThat(kogitoExtension.getDmnModelName()).isEqualTo(TEST_DMN_MODEL_NAME);
+        assertThat(kogitoExtension.getDmnModelNamespace()).isEqualTo(TEST_DMN_MODEL_NAMESPACE);
+        assertThat(kogitoExtension.getDmnEvaluateDecision()).isEqualTo(dmnEvaluateDecision);
+        assertThat(kogitoExtension.getExecutionId()).isEqualTo(executionId);
+        assertThat(kogitoExtension.isDmnFullResult()).isSameAs(dmnFullResult);
+        assertThat(kogitoExtension.isDmnFilteredCtx()).isSameAs(dmnFilteredCtx);
     }
 }

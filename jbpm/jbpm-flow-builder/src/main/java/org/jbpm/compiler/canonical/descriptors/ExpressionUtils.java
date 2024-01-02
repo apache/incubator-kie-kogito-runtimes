@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.canonical.descriptors;
 
@@ -25,10 +28,12 @@ import java.util.function.Supplier;
 import org.drools.mvel.parser.ast.expr.BigDecimalLiteralExpr;
 import org.drools.mvel.parser.ast.expr.BigIntegerLiteralExpr;
 import org.jbpm.process.core.datatype.impl.coverter.TypeConverterRegistry;
+import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.CharLiteralExpr;
 import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
@@ -49,6 +54,13 @@ import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 public class ExpressionUtils {
 
     private ExpressionUtils() {
+    }
+
+    public static void checkValid(String lang, String expr) {
+        org.kie.kogito.process.expr.Expression exprObj = ExpressionHandlerFactory.get(lang, expr);
+        if (!exprObj.isValid()) {
+            throw new IllegalArgumentException(String.format("Expression %s for language %s is not a valid one", expr, lang), exprObj.validationError());
+        }
     }
 
     public static ObjectCreationExpr getObjectCreationExpr(Class<?> runtimeClass, Object... args) {
@@ -96,7 +108,7 @@ public class ExpressionUtils {
         } else if (object instanceof Character) {
             return new CharLiteralExpr(((Character) object));
         } else if (object instanceof Long) {
-            return new LongLiteralExpr(object.toString());
+            return new LongLiteralExpr(object + "L");
         } else if (object instanceof Integer || object instanceof Short) {
             return new IntegerLiteralExpr(object.toString());
         } else if (object instanceof BigInteger) {
@@ -128,10 +140,11 @@ public class ExpressionUtils {
             objectClass = objectClass.getSuperclass();
         }
         if (objectClass != null) {
-            // will generate TypeConverterRegistry.get().forType("JsonNode.class").apply("{\"dog\":\"perro\"}"));
-            return new MethodCallExpr(new MethodCallExpr(new MethodCallExpr(new TypeExpr(StaticJavaParser.parseClassOrInterfaceType(TypeConverterRegistry.class.getName())), "get"), "forType",
-                    NodeList.nodeList(new StringLiteralExpr(objectClass.getName()))), "apply",
-                    NodeList.nodeList(new StringLiteralExpr().setString(TypeConverterRegistry.get().forTypeReverse(object).apply((object)))));
+            // will generate TypeConverterRegistry.get().forType("JsonNode.class").apply("{\"dog\":\"perro\"}"))
+            return new CastExpr(StaticJavaParser.parseClassOrInterfaceType(object.getClass().getName()),
+                    new MethodCallExpr(new MethodCallExpr(new MethodCallExpr(new TypeExpr(StaticJavaParser.parseClassOrInterfaceType(TypeConverterRegistry.class.getName())), "get"), "forType",
+                            NodeList.nodeList(new StringLiteralExpr(objectClass.getName()))), "apply",
+                            NodeList.nodeList(new StringLiteralExpr().setString(TypeConverterRegistry.get().forTypeReverse(object).apply((object))))));
         } else {
             return new StringLiteralExpr().setString(object.toString());
         }
