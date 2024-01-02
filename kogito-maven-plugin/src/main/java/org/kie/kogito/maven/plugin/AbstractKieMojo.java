@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.maven.plugin;
 
@@ -32,6 +35,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.drools.codegen.common.AppPaths;
+import org.drools.codegen.common.DroolsModelBuildContext;
 import org.drools.codegen.common.GeneratedFile;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.Generator;
@@ -118,7 +122,7 @@ public abstract class AbstractKieMojo extends AbstractMojo {
             URLClassLoader classLoader = (URLClassLoader) projectClassLoader();
             ConfigurationBuilder builder = new ConfigurationBuilder();
             builder.addUrls(classLoader.getURLs());
-            builder.addClassLoader(classLoader);
+            builder.addClassLoaders(classLoader);
             reflections = new Reflections(builder);
         }
         return reflections;
@@ -143,7 +147,7 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     }
 
     protected String appPackageName() {
-        return KogitoBuildContext.DEFAULT_PACKAGE_NAME;
+        return DroolsModelBuildContext.DEFAULT_PACKAGE_NAME;
     }
 
     private void additionalProperties(KogitoBuildContext context) {
@@ -151,13 +155,13 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         classToCheckForREST().ifPresent(restClass -> {
             if (!context.hasClassAvailable(restClass)) {
                 getLog().info("Disabling REST generation because class '" + restClass + "' is not available");
-                context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "false");
+                context.setApplicationProperty(DroolsModelBuildContext.KOGITO_GENERATE_REST, "false");
             }
         });
         classToCheckForDI().ifPresent(diClass -> {
             if (!context.hasClassAvailable(diClass)) {
                 getLog().info("Disabling dependency injection generation because class '" + diClass + "' is not available");
-                context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_DI, "false");
+                context.setApplicationProperty(DroolsModelBuildContext.KOGITO_GENERATE_DI, "false");
             }
         });
 

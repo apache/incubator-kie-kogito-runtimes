@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2.xml;
 
@@ -53,6 +56,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
         return BoundaryEventNode.class;
     }
 
+    @Override
     public Object end(final String uri, final String localName,
             final Parser parser) throws SAXException {
         final Element element = parser.endElementBuilder();
@@ -146,7 +150,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                     if (escalation == null) {
                         throw new ProcessParsingValidationException("Could not find escalation " + escalationRef);
                     }
-                    List<EventFilter> eventFilters = new ArrayList<EventFilter>();
+                    List<EventFilter> eventFilters = new ArrayList<>();
                     EventTypeFilter eventFilter = new EventTypeFilter();
                     String type = escalation.getEscalationCode();
                     eventFilter.setType("Escalation-" + attachedTo + "-" + type);
@@ -203,7 +207,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                         }
                     }
 
-                    List<EventFilter> eventFilters = new ArrayList<EventFilter>();
+                    List<EventFilter> eventFilters = new ArrayList<>();
                     EventTypeFilter eventFilter = new EventTypeFilter();
                     eventFilter.setType("Error-" + attachedTo + "-" + type);
                     eventFilters.add(eventFilter);
@@ -250,14 +254,14 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                     subNode = subNode.getNextSibling();
                 }
                 if (timeDuration != null && timeDuration.trim().length() > 0) {
-                    List<EventFilter> eventFilters = new ArrayList<EventFilter>();
+                    List<EventFilter> eventFilters = new ArrayList<>();
                     EventTypeFilter eventFilter = new EventTypeFilter();
                     eventFilter.setType("Timer-" + attachedTo + "-" + timeDuration + "-" + eventNode.getId());
                     eventFilters.add(eventFilter);
                     eventNode.setEventFilters(eventFilters);
                     eventNode.setMetaData("TimeDuration", timeDuration);
                 } else if (timeCycle != null && timeCycle.trim().length() > 0) {
-                    List<EventFilter> eventFilters = new ArrayList<EventFilter>();
+                    List<EventFilter> eventFilters = new ArrayList<>();
                     EventTypeFilter eventFilter = new EventTypeFilter();
                     eventFilter.setType("Timer-" + attachedTo + "-" + timeCycle + "-" + eventNode.getId());
                     eventFilters.add(eventFilter);
@@ -265,7 +269,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                     eventNode.setMetaData("TimeCycle", timeCycle);
                     eventNode.setMetaData("Language", language);
                 } else if (timeDate != null && timeDate.trim().length() > 0) {
-                    List<EventFilter> eventFilters = new ArrayList<EventFilter>();
+                    List<EventFilter> eventFilters = new ArrayList<>();
                     EventTypeFilter eventFilter = new EventTypeFilter();
                     eventFilter.setType("Timer-" + attachedTo + "-" + timeDate + "-" + eventNode.getId());
                     eventFilters.add(eventFilter);
@@ -306,7 +310,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
         // 2. Add the event filter (never fires, purely for dumping purposes)
         EventTypeFilter eventFilter = new NonAcceptingEventTypeFilter();
         eventFilter.setType("Compensation");
-        List<EventFilter> eventFilters = new ArrayList<EventFilter>();
+        List<EventFilter> eventFilters = new ArrayList<>();
         eventNode.setEventFilters(eventFilters);
         eventFilters.add(eventFilter);
 
@@ -332,7 +336,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
 
                     type = checkSignalAndConvertToRealSignalNam(parser, type);
 
-                    List<EventFilter> eventFilters = new ArrayList<EventFilter>();
+                    List<EventFilter> eventFilters = new ArrayList<>();
                     EventTypeFilter eventFilter = new EventTypeFilter();
                     eventFilter.setType(type);
                     eventFilters.add(eventFilter);
@@ -363,7 +367,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                     String subnodeName = subNode.getNodeName();
                     if ("condition".equals(subnodeName)) {
                         eventNode.setMetaData("Condition", xmlNode.getTextContent());
-                        List<EventFilter> eventFilters = new ArrayList<EventFilter>();
+                        List<EventFilter> eventFilters = new ArrayList<>();
                         EventTypeFilter eventFilter = new EventTypeFilter();
                         eventFilter.setType("Condition-" + attachedTo);
                         eventFilters.add(eventFilter);
@@ -404,7 +408,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                 eventNode.setMetaData("MessageType", message.getType());
                 eventNode.setMetaData("TriggerType", "ConsumeMessage");
                 eventNode.setMetaData("TriggerRef", message.getName());
-                List<EventFilter> eventFilters = new ArrayList<EventFilter>();
+                List<EventFilter> eventFilters = new ArrayList<>();
                 EventTypeFilter eventFilter = new EventTypeFilter();
                 eventFilter.setCorrelationManager(((RuleFlowProcess) parser.getMetaData().get("CurrentProcessDefinition")).getCorrelationManager());
                 eventFilter.setType("Message-" + message.getName());

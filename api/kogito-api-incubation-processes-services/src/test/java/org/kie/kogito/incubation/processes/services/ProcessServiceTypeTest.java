@@ -1,19 +1,21 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.incubation.processes.services;
 
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,7 @@ import org.kie.kogito.incubation.processes.LocalProcessId;
 import org.kie.kogito.incubation.processes.ProcessInstanceId;
 import org.kie.kogito.incubation.processes.TaskId;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProcessServiceTypeTest {
     public static class MyDataContext implements DataContext, DefaultCastable {
@@ -55,11 +57,10 @@ public class ProcessServiceTypeTest {
 
         MapLikeDataContext map = mdc.as(MapLikeDataContext.class);
 
-        assertEquals(1, mdc.someParam); // get the typed value from the POJO
-        assertEquals(1, map.get("someParam")); // get the object value from map-like
+        assertThat(mdc.someParam).isOne(); // get the typed value from the POJO
+        assertThat(map.get("someParam")).isEqualTo(1); // get the object value from map-like
 
-        assertEquals("/processes/some.process",
-                someProcessId.toLocalId().asLocalUri().path());
+        assertThat(someProcessId.toLocalId().asLocalUri().path()).isEqualTo("/processes/some.process");
 
     }
 
@@ -106,13 +107,11 @@ public class ProcessServiceTypeTest {
 
         ProcessInstanceId processInstanceId = someProcessId.instances().get("some.instance.id");
 
-        assertEquals("/processes/some.process/instances/some.instance.id",
-                processInstanceId.toLocalId().asLocalUri().path());
+        assertThat(processInstanceId.toLocalId().asLocalUri().path()).isEqualTo("/processes/some.process/instances/some.instance.id");
 
         TaskId taskId = processInstanceId.tasks().get("some.task.id");
 
-        assertEquals("/processes/some.process/instances/some.instance.id/tasks/some.task.id",
-                taskId.toLocalId().asLocalUri().path());
+        assertThat(taskId.toLocalId().asLocalUri().path()).isEqualTo("/processes/some.process/instances/some.instance.id/tasks/some.task.id");
 
     }
 }

@@ -1,31 +1,37 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.dmn.kogito.quarkus.example;
 
+import java.io.InputStream;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 
+import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
 import org.kie.kogito.Application;
 import org.kie.kogito.dmn.rest.DMNEvaluationErrorException;
 import org.kie.kogito.dmn.rest.DMNJSONUtils;
@@ -67,10 +73,9 @@ public class DMNRestResourceTemplate {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     public String dmn() throws java.io.IOException {
-        return new String(org.drools.util.IoUtils.
-                          readBytesFromInputStream(this.getClass()
-                                                   .getResourceAsStream(org.kie.dmn.feel.codegen.feel11.CodegenStringUtil.escapeIdentifier("$modelName$") + 
-                                                                        ".dmn_nologic")));
+        try (InputStream is = this.getClass().getResourceAsStream(CodegenStringUtil.escapeIdentifier("$modelName$") + ".dmn_nologic")) {
+            return new String(org.drools.util.IoUtils.readBytesFromInputStream(Objects.requireNonNull(is)));
+        }
     }
 
     private ResponseBuilder extractContextIfSucceded(KogitoDMNResult result){
@@ -82,7 +87,7 @@ public class DMNRestResourceTemplate {
     }
 
     private ResponseBuilder buildFailedEvaluationResponse(KogitoDMNResult result){
-        return Response.status(javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR).entity(result);
+        return Response.status(jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR).entity(result);
     }
 
     private ResponseBuilder extractStronglyTypedContextIfSucceded(KogitoDMNResult result) {

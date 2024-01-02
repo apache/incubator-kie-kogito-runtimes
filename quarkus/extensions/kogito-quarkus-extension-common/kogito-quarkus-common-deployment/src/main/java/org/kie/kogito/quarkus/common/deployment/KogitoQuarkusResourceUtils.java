@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.quarkus.common.deployment;
 
@@ -28,8 +31,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.drools.codegen.common.AppPaths;
+import org.drools.codegen.common.DroolsModelBuildContext;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
+import org.drools.quarkus.util.deployment.QuarkusAppPaths;
 import org.drools.util.PortablePath;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.jandex.CompositeIndex;
@@ -70,7 +75,7 @@ public class KogitoQuarkusResourceUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoQuarkusResourceUtils.class);
 
     // since quarkus-maven-plugin is later phase of maven-resources-plugin,
-    // need to manually late-provide the resource in the expected location for quarkus:dev phase --so not: writeGeneratedFile( f, resourcePath );
+    // need to manually late-provide the resource in the expected location for quarkus:dev phase --so not: writeGeneratedFile( f, resourcePath )
     private static final GeneratedFileWriter.Builder generatedFileWriterBuilder =
             new GeneratedFileWriter.Builder(
                     "target/classes",
@@ -80,13 +85,7 @@ public class KogitoQuarkusResourceUtils {
 
     public static KogitoBuildContext kogitoBuildContext(Path outputTarget, Iterable<Path> paths, IndexView index, Dependency appArtifact) {
         // scan and parse paths
-        AppPaths.BuildTool buildTool;
-        if (System.getProperty("org.gradle.appname") == null) {
-            buildTool = AppPaths.BuildTool.MAVEN;
-        } else {
-            buildTool = AppPaths.BuildTool.GRADLE;
-        }
-        AppPaths appPaths = AppPaths.fromQuarkus(outputTarget, paths, buildTool);
+        AppPaths appPaths = QuarkusAppPaths.from(outputTarget, paths, AppPaths.BuildTool.findBuildTool());
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
                 .withApplicationPropertyProvider(new KogitoQuarkusApplicationPropertiesProvider())
@@ -100,11 +99,11 @@ public class KogitoQuarkusResourceUtils {
 
         if (!context.hasClassAvailable(QuarkusKogitoBuildContext.QUARKUS_REST)) {
             LOGGER.info("Disabling REST generation because class '" + QuarkusKogitoBuildContext.QUARKUS_REST + "' is not available");
-            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "false");
+            context.setApplicationProperty(DroolsModelBuildContext.KOGITO_GENERATE_REST, "false");
         }
         if (!context.hasClassAvailable(QuarkusKogitoBuildContext.QUARKUS_DI)) {
             LOGGER.info("Disabling dependency injection generation because class '" + QuarkusKogitoBuildContext.QUARKUS_DI + "' is not available");
-            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_DI, "false");
+            context.setApplicationProperty(DroolsModelBuildContext.KOGITO_GENERATE_DI, "false");
         }
         return context;
     }
@@ -166,13 +165,16 @@ public class KogitoQuarkusResourceUtils {
     }
 
     public static IndexView generateAggregatedIndex(IndexView baseIndex, List<KogitoGeneratedClassesBuildItem> generatedKogitoClasses) {
-        List<IndexView> indexes = new ArrayList<>();
-        indexes.add(baseIndex);
-
-        indexes.addAll(generatedKogitoClasses.stream()
+        return generateAggregatedIndexNew(baseIndex, generatedKogitoClasses.stream()
                 .map(KogitoGeneratedClassesBuildItem::getIndexedClasses)
                 .collect(Collectors.toList()));
-        return CompositeIndex.create(indexes.toArray(new IndexView[0]));
+    }
+
+    public static IndexView generateAggregatedIndexNew(IndexView baseIndex, List<IndexView> newIndexViews) {
+        List<IndexView> indexes = new ArrayList<>();
+        indexes.add(baseIndex);
+        indexes.addAll(newIndexViews);
+        return CompositeIndex.create(indexes);
     }
 
     public static Path getTargetClassesPath(AppPaths appPaths) {

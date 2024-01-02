@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.process.core.impl;
 
@@ -30,8 +33,8 @@ public class WorkDefinitionImpl implements WorkDefinition, Serializable {
     private static final long serialVersionUID = 510l;
 
     private String name;
-    private Map<String, ParameterDefinition> parameters = new HashMap<String, ParameterDefinition>();
-    private Map<String, ParameterDefinition> results = new HashMap<String, ParameterDefinition>();
+    private Map<String, ParameterDefinition> parameters = new HashMap<>();
+    private Map<String, ParameterDefinition> results = new HashMap<>();
 
     public String getName() {
         return name;
@@ -42,7 +45,7 @@ public class WorkDefinitionImpl implements WorkDefinition, Serializable {
     }
 
     public Set<ParameterDefinition> getParameters() {
-        return new HashSet<ParameterDefinition>(parameters.values());
+        return new HashSet<>(parameters.values());
     }
 
     public void setParameters(Set<ParameterDefinition> parameters) {
@@ -70,7 +73,7 @@ public class WorkDefinitionImpl implements WorkDefinition, Serializable {
     }
 
     public Set<ParameterDefinition> getResults() {
-        return new HashSet<ParameterDefinition>(results.values());
+        return new HashSet<>(results.values());
     }
 
     public void setResults(Set<ParameterDefinition> results) {

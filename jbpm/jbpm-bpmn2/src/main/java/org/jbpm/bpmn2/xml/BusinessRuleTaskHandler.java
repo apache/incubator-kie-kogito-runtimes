@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2.xml;
 
@@ -23,11 +26,13 @@ import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.DataAssociation;
 import org.jbpm.workflow.core.node.Assignment;
 import org.jbpm.workflow.core.node.RuleSetNode;
+import org.jbpm.workflow.instance.rule.RuleType;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import static org.jbpm.workflow.core.node.RuleSetNode.DMN_LANG;
+import static org.jbpm.workflow.instance.rule.RuleType.DMN_LANG;
+import static org.jbpm.workflow.instance.rule.RuleType.DRL_LANG;
 
 public class BusinessRuleTaskHandler extends AbstractNodeHandler {
 
@@ -43,6 +48,7 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
         return RuleSetNode.class;
     }
 
+    @Override
     protected Node handleNode(final Node node, final Element element, final String uri,
             final String localName, final Parser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
@@ -52,12 +58,11 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
 
         String language = element.getAttribute("implementation");
         if (language == null || language.equalsIgnoreCase("##unspecified") || language.isEmpty()) {
-            language = RuleSetNode.DRL_LANG;
+            language = DRL_LANG;
         }
         ruleSetNode.setLanguage(language);
 
-        String ruleFlowGroup = element.getAttribute("ruleFlowGroup");
-        if (language.equals(DMN_LANG)) {
+        if (DMN_LANG.equals(language)) {
             Map<String, String> parameters = new HashMap<>();
             for (DataAssociation dataAssociation : ruleSetNode.getIoSpecification().getDataInputAssociation()) {
                 for (Assignment assignment : dataAssociation.getAssignments()) {
@@ -65,15 +70,16 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
                 }
             }
 
-            String namespace = (String) parameters.get(NAMESPACE_PROP);
-            String model = (String) parameters.get(MODEL_PROP);
-            String decision = (String) parameters.get(DECISION_PROP);
-            ruleSetNode.setRuleType(RuleSetNode.RuleType.decision(
+            String namespace = parameters.get(NAMESPACE_PROP);
+            String model = parameters.get(MODEL_PROP);
+            String decision = parameters.get(DECISION_PROP);
+            ruleSetNode.setRuleType(RuleType.decision(
                     namespace,
                     model,
                     decision));
         } else {
-            ruleSetNode.setRuleType(RuleSetNode.RuleType.of(ruleFlowGroup, language));
+            String ruleFlowGroup = element.getAttribute("ruleFlowGroup");
+            ruleSetNode.setRuleType(RuleType.of(ruleFlowGroup, language));
         }
 
         handleScript(ruleSetNode, element, "onEntry");
@@ -85,7 +91,7 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
     public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
         RuleSetNode ruleSetNode = (RuleSetNode) node;
         writeNode("businessRuleTask", ruleSetNode, xmlDump, metaDataType);
-        RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
+        RuleType ruleType = ruleSetNode.getRuleType();
         if (ruleType != null) {
             xmlDump.append("g:ruleFlowGroup=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(ruleType.getName()) + "\" " + EOL);
             // else DMN

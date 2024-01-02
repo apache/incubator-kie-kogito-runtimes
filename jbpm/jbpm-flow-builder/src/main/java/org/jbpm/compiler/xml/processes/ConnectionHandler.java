@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.xml.processes;
 
@@ -23,9 +26,7 @@ import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.workflow.core.Connection;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
-import org.jbpm.workflow.core.impl.NodeImpl;
 import org.kie.api.definition.process.Node;
-import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -57,11 +58,11 @@ public class ConnectionHandler extends BaseAbstractHandler implements Handler {
 
         String fromType = attrs.getValue("fromType");
         if (fromType == null || fromType.trim().length() == 0) {
-            fromType = NodeImpl.CONNECTION_DEFAULT_TYPE;
+            fromType = org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
         }
         String toType = attrs.getValue("toType");
         if (toType == null || toType.trim().length() == 0) {
-            toType = NodeImpl.CONNECTION_DEFAULT_TYPE;
+            toType = org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
         }
 
         NodeContainer nodeContainer = (NodeContainer) parser.getParent();
@@ -85,7 +86,7 @@ public class ConnectionHandler extends BaseAbstractHandler implements Handler {
 
     public Object end(final String uri, final String localName,
             final Parser parser) throws SAXException {
-        final Element element = parser.endElementBuilder();
+        parser.endElementBuilder();
         return parser.getCurrent();
     }
 

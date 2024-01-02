@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.integrationtests;
 
@@ -34,8 +37,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProcessWorkItemTest extends AbstractBaseTest {
 
@@ -117,14 +119,14 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
         person.setName("John Doe");
         parameters.put("Person", person);
         WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kruntime.startProcess("org.drools.actions", parameters);
-        assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
         KogitoWorkItem workItem = handler.getWorkItem();
-        assertNotNull(workItem);
-        assertEquals("John Doe", workItem.getParameter("ActorId"));
-        assertEquals("John Doe", workItem.getParameter("Content"));
-        assertEquals("John Doe", workItem.getParameter("Comment"));
+        assertThat(workItem).isNotNull();
+        assertThat(workItem.getParameter("ActorId")).isEqualTo("John Doe");
+        assertThat(workItem.getParameter("Content")).isEqualTo("John Doe");
+        assertThat(workItem.getParameter("Comment")).isEqualTo("John Doe");
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), Collections.singletonMap("Result", ""));
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         parameters = new HashMap<String, Object>();
         parameters.put("UserName", "Jane Doe");
         parameters.put("MyObject", "SomeString");
@@ -132,19 +134,19 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
         person.setName("Jane Doe");
         parameters.put("Person", person);
         processInstance = (WorkflowProcessInstance) kruntime.startProcess("org.drools.actions", parameters);
-        assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
         workItem = handler.getWorkItem();
-        assertNotNull(workItem);
-        assertEquals("Jane Doe", workItem.getParameter("ActorId"));
-        assertEquals("SomeString", workItem.getParameter("Attachment"));
-        assertEquals("Jane Doe", workItem.getParameter("Content"));
-        assertEquals("Jane Doe", workItem.getParameter("Comment"));
+        assertThat(workItem).isNotNull();
+        assertThat(workItem.getParameter("ActorId")).isEqualTo("Jane Doe");
+        assertThat(workItem.getParameter("Attachment")).isEqualTo("SomeString");
+        assertThat(workItem.getParameter("Content")).isEqualTo("Jane Doe");
+        assertThat(workItem.getParameter("Comment")).isEqualTo("Jane Doe");
         Map<String, Object> results = new HashMap<String, Object>();
         results.put("Result", "SomeOtherString");
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), results);
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
-        assertEquals("SomeOtherString", processInstance.getVariable("MyObject"));
-        assertEquals(15, processInstance.getVariable("Number"));
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.getVariable("MyObject")).isEqualTo("SomeOtherString");
+        assertThat(processInstance.getVariable("Number")).isEqualTo(15);
     }
 
     @Test
@@ -227,7 +229,7 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
         person.setName("John Doe");
         parameters.put("Person", person);
         WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kruntime.startProcess("org.drools.actions", parameters);
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
     private static class ImmediateTestWorkItemHandler implements KogitoWorkItemHandler {

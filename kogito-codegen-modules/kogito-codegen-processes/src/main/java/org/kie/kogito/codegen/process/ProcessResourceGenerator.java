@@ -1,20 +1,25 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.process;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +31,11 @@ import java.util.stream.Collectors;
 
 import org.drools.util.StringUtils;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
+import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
+import org.jbpm.ruleflow.core.Metadata;
+import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.workflow.core.node.StartNode;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
@@ -34,6 +43,7 @@ import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.codegen.core.GeneratorConfig;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.internal.utils.ConversionUtils;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -42,6 +52,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
@@ -53,8 +64,9 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 
 import static com.github.javaparser.StaticJavaParser.parse;
-import static org.drools.util.StringUtils.ucFirst;
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeJavaName;
 
 /**
  * ProcessResourceGenerator
@@ -66,13 +78,14 @@ public class ProcessResourceGenerator {
     private static final String REST_USER_TASK_TEMPLATE_NAME = "RestResourceUserTask";
     private static final String REST_SIGNAL_TEMPLATE_NAME = "RestResourceSignal";
 
+    private static final String SIGNAL_METHOD_PREFFIX = "signal_";
+
     private final String relativePath;
 
     private final KogitoBuildContext context;
     private final String resourceClazzName;
     private final String processClazzName;
     private final String processName;
-    private final String appCanonicalName;
     private KogitoWorkflowProcess process;
     private String processId;
     private String dataClazzName;
@@ -80,6 +93,8 @@ public class ProcessResourceGenerator {
 
     private boolean startable;
     private boolean dynamic;
+    private List<TriggerMetaData> triggers;
+
     private List<UserTaskModelMetaData> userTasks;
     private Map<String, String> signals;
     private CompilationUnit taskModelFactoryUnit;
@@ -94,12 +109,10 @@ public class ProcessResourceGenerator {
         this.context = context;
         this.process = process;
         this.processId = process.getId();
-        this.processName = processId.substring(processId.lastIndexOf('.') + 1);
-        this.appCanonicalName = appCanonicalName;
-        String classPrefix = StringUtils.ucFirst(processName);
-        this.resourceClazzName = classPrefix + "Resource";
+        this.processName = ConversionUtils.sanitizeToSimpleName(processId);
+        this.resourceClazzName = sanitizeClassName(processName + "Resource");
         this.relativePath = process.getPackageName().replace(".", "/") + "/" + resourceClazzName + ".java";
-        this.modelfqcn = modelfqcn + "Output";
+        this.modelfqcn = modelfqcn;
         this.dataClazzName = modelfqcn.substring(modelfqcn.lastIndexOf('.') + 1);
         this.processClazzName = processfqcn;
     }
@@ -114,9 +127,10 @@ public class ProcessResourceGenerator {
         return this;
     }
 
-    public ProcessResourceGenerator withTriggers(boolean startable, boolean dynamic) {
+    public ProcessResourceGenerator withTriggers(boolean startable, boolean dynamic, List<TriggerMetaData> triggers) {
         this.startable = startable;
         this.dynamic = dynamic;
+        this.triggers = triggers;
         return this;
     }
 
@@ -147,7 +161,8 @@ public class ProcessResourceGenerator {
                 .compilationUnitOrThrow();
         clazz.setPackageDeclaration(process.getPackageName());
         clazz.addImport(modelfqcn);
-
+        clazz.addImport(modelfqcn + "Output");
+        clazz.addImport(modelfqcn + "Input");
         ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
@@ -165,29 +180,75 @@ public class ProcessResourceGenerator {
                             .findFirst(ClassOrInterfaceDeclaration.class)
                             .orElseThrow(() -> new NoSuchElementException("SignalResourceTemplate class not found!"));
 
+                    MethodDeclaration signalProcessDeclaration = signalTemplate
+                            .findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("signalProcess"))
+                            .orElseThrow(() -> new NoSuchElementException("signalProcess method not found in SignalResourceTemplate"));
+
+                    MethodDeclaration signalInstanceDeclaration = signalTemplate
+                            .findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("signalInstance"))
+                            .orElseThrow(() -> new NoSuchElementException("signalInstance method not found in SignalResourceTemplate"));
+
+                    Collection<TriggerMetaData> startSignalTriggers = getStartSignalTriggers();
+
                     signalsMap.entrySet()
                             .stream()
                             .filter(e -> Objects.nonNull(e.getKey()))
                             .forEach(entry -> {
-                                String methodName = "signal_" + index.getAndIncrement();
-                                String outputType = modelfqcn;
                                 String signalName = entry.getKey();
                                 String signalType = entry.getValue();
 
-                                signalTemplate.findAll(MethodDeclaration.class)
-                                        .forEach(md -> {
-                                            MethodDeclaration cloned = md.clone();
-                                            BlockStmt body = cloned.getBody().get();
-                                            if (signalType == null) {
-                                                body.findAll(NameExpr.class, nameExpr -> "data".equals(nameExpr.getNameAsString())).forEach(name -> name.replace(new NullLiteralExpr()));
-                                            }
-                                            template.addMethod(methodName, Keyword.PUBLIC)
-                                                    .setType(outputType)
-                                                    // Remove data parameter ( payload ) if signalType is null 
-                                                    .setParameters(signalType == null ? NodeList.nodeList(cloned.getParameter(0)) : cloned.getParameters())
-                                                    .setBody(body)
-                                                    .setAnnotations(cloned.getAnnotations());
-                                        });
+                                // Looking if the Process starts with the current signal
+                                Optional<TriggerMetaData> startTrigger = startSignalTriggers.stream()
+                                        .filter(trigger -> trigger.getName().equals(signalName))
+                                        .findAny();
+
+                                startTrigger.ifPresent(trigger -> {
+                                    // Create endpoint to signal the process container to start new instances
+                                    MethodDeclaration signalProcessDeclarationClone = signalProcessDeclaration.clone();
+
+                                    BlockStmt signalProcessBody = signalProcessDeclarationClone.getBody()
+                                            .orElseThrow(() -> new RuntimeException("signalProcessDeclaration doesn't have body"));
+
+                                    MethodCallExpr setterMethod = signalProcessBody.findAll(MethodCallExpr.class, m -> m.getName().getIdentifier().contains("$SetModelMethodName$"))
+                                            .stream()
+                                            .findFirst()
+                                            .orElseThrow(() -> new RuntimeException("signalProcessDeclaration doesn't have model setter"));
+
+                                    if (signalType == null) {
+                                        // if there's no type we should remove the payload references form the method declaration and body
+                                        signalProcessDeclarationClone.getParameters()
+                                                .stream()
+                                                .filter(parameter -> parameter.getNameAsString().equals("data"))
+                                                .findFirst()
+                                                .ifPresent(Parameter::removeForced);
+                                        setterMethod.removeForced();
+                                    } else {
+                                        String name = Optional.ofNullable((String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE)).orElseGet(trigger::getModelRef);
+                                        setterMethod.setName(setterMethod.getNameAsString().replace("$SetModelMethodName$", StringUtils.ucFirst(name)));
+                                    }
+
+                                    template.addMethod(SIGNAL_METHOD_PREFFIX + signalName, Keyword.PUBLIC)
+                                            .setType(signalProcessDeclarationClone.getType())
+                                            .setParameters(signalProcessDeclarationClone.getParameters())
+                                            .setBody(signalProcessBody)
+                                            .setAnnotations(signalProcessDeclarationClone.getAnnotations());
+                                });
+
+                                // Create endpoint to signal process instances
+                                MethodDeclaration signalInstanceDeclarationClone = signalInstanceDeclaration.clone();
+                                BlockStmt signalInstanceBody = signalInstanceDeclarationClone.getBody()
+                                        .orElseThrow(() -> new RuntimeException("signalInstanceDeclaration doesn't have body"));
+
+                                if (signalType == null) {
+                                    signalInstanceBody.findAll(NameExpr.class, nameExpr -> "data".equals(nameExpr.getNameAsString())).forEach(name -> name.replace(new NullLiteralExpr()));
+                                }
+
+                                template.addMethod(SIGNAL_METHOD_PREFFIX + index.getAndIncrement(), Keyword.PUBLIC)
+                                        .setType(signalInstanceDeclarationClone.getType())
+                                        // Remove data parameter ( payload ) if signalType is null
+                                        .setParameters(signalType == null ? NodeList.nodeList(signalInstanceDeclarationClone.getParameter(0)) : signalInstanceDeclaration.getParameters())
+                                        .setBody(signalInstanceBody)
+                                        .setAnnotations(signalInstanceDeclarationClone.getAnnotations());
 
                                 if (signalType != null) {
                                     template.findAll(ClassOrInterfaceType.class).forEach(name -> {
@@ -211,7 +272,7 @@ public class ProcessResourceGenerator {
 
         Map<String, String> typeInterpolations = new HashMap<>();
         taskModelFactoryUnit = parse(this.getClass().getResourceAsStream("/class-templates/TaskModelFactoryTemplate.java"));
-        String taskModelFactorySimpleClassName = ucFirst(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + "TaskModelFactory");
+        String taskModelFactorySimpleClassName = sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + "TaskModelFactory");
         taskModelFactoryUnit.setPackageDeclaration(process.getPackageName());
         taskModelFactoryClassName = process.getPackageName() + "." + taskModelFactorySimpleClassName;
         ClassOrInterfaceDeclaration taskModelFactoryClass = taskModelFactoryUnit.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(IllegalStateException::new);
@@ -248,7 +309,7 @@ public class ProcessResourceGenerator {
                 if (!userTask.isAdHoc()) {
                     template.findAll(MethodDeclaration.class)
                             .stream()
-                            .filter(md -> md.getNameAsString().equals("signal_" + methodSuffix))
+                            .filter(md -> md.getNameAsString().equals(SIGNAL_METHOD_PREFFIX + methodSuffix))
                             .collect(Collectors.toList()).forEach(template::remove);
                 }
                 switchExpr.getEntries().add(0, userTask.getModelSwitchEntry());
@@ -261,7 +322,7 @@ public class ProcessResourceGenerator {
         template.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
         template.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, typeInterpolations));
 
-        TagResourceGenerator.addTags(clazz, process);
+        TagResourceGenerator.addTags(clazz, process, context);
 
         template.findAll(MethodDeclaration.class).forEach(this::interpolateMethods);
 
@@ -307,8 +368,8 @@ public class ProcessResourceGenerator {
     }
 
     private void insertValidationAnnotations(Parameter param) {
-        param.addAnnotation("javax.validation.Valid");
-        param.addAnnotation("javax.validation.constraints.NotNull");
+        param.addAnnotation("jakarta.validation.Valid");
+        param.addAnnotation("jakarta.validation.constraints.NotNull");
     }
 
     private void initializeProcessField(FieldDeclaration fd) {
@@ -345,7 +406,7 @@ public class ProcessResourceGenerator {
     private void interpolateMethods(MethodDeclaration m) {
         SimpleName methodName = m.getName();
         String interpolated =
-                methodName.asString().replace("$name$", processName);
+                methodName.asString().replace("$name$", sanitizeJavaName(processName));
         m.setName(interpolated);
     }
 
@@ -370,6 +431,34 @@ public class ProcessResourceGenerator {
 
     private String sanitizeName(String name) {
         return name.replaceAll("\\s", "_");
+    }
+
+    private Collection<TriggerMetaData> getStartSignalTriggers() {
+        return Optional.ofNullable(this.triggers).orElse(Collections.emptyList())
+                .stream()
+                .filter(this::isStartSignalTriggerFilter)
+                .collect(Collectors.toList());
+    }
+
+    private boolean isStartSignalTriggerFilter(TriggerMetaData trigger) {
+
+        // Checking trigger type is Signal
+        if (!trigger.getType().equals(TriggerMetaData.TriggerType.Signal)) {
+            return false;
+        }
+
+        // Checking if the trigger belongs to a StartNode
+        if (!(trigger.getNode() instanceof StartNode)) {
+            return false;
+        }
+
+        // Checking if the StartNode belongs to the parent process (not in a subprocess)
+        if (!(((StartNode) trigger.getNode()).getParentContainer() instanceof RuleFlowProcess)) {
+            return false;
+        }
+
+        // Checking if the node is a "Start Error" node.
+        return !trigger.getNode().getMetaData().containsKey("FaultCode");
     }
 
     public String generatedFilePath() {

@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2.canonical;
 
@@ -69,10 +72,7 @@ import org.kie.memorycompiler.JavaCompilerFactory;
 import org.kie.memorycompiler.JavaConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ABORTED;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
@@ -98,14 +98,17 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         processInstance.start();
 
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
     }
 
     @Test
     public void testProcessEmptyScript() throws Exception {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-ProcessEmptyScript.bpmn2")).get(0);
 
-        assertThrows(IllegalStateException.class, () -> ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get()));
+        WorkflowProcess workflowProcess = (WorkflowProcess) process.get();
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> {
+            ProcessToExecModelGenerator.INSTANCE.generate(workflowProcess);
+        });
 
     }
 
@@ -143,13 +146,13 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         ProcessInstance<BpmnVariables> processInstance = processes.get("UserTask").createInstance();
 
         processInstance.start();
-        assertEquals(STATE_ACTIVE, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
-        assertNotNull(workItem);
-        assertEquals("john", workItem.getParameter("ActorId"));
+        assertThat(workItem).isNotNull();
+        assertThat(workItem.getParameter("ActorId")).isEqualTo("john");
         processInstance.completeWorkItem(workItem.getStringId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
     }
 
     @Test
@@ -170,13 +173,12 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         ProcessInstance<BpmnVariables> processInstance = processes.get("UserTask").createInstance();
 
         processInstance.start();
-        assertEquals(STATE_ACTIVE, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
-        assertNotNull(workItem);
-        assertEquals("Executing task of process instance " + processInstance.id() + " as work item with Hello",
-                workItem.getParameter("Description").toString().trim());
+        assertThat(workItem).isNotNull();
+        assertThat(workItem.getParameter("Description").toString().trim()).isEqualTo("Executing task of process instance " + processInstance.id() + " as work item with Hello");
         processInstance.completeWorkItem(workItem.getStringId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
     }
 
     @Test
@@ -196,7 +198,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         processInstance.start();
 
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
     }
 
     @Test
@@ -221,7 +223,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         processInstance.start();
 
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
 
     }
 
@@ -247,7 +249,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         processInstance.start();
 
-        assertEquals(KogitoProcessInstance.STATE_ERROR, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_ERROR);
 
         Optional<ProcessError> errorOptional = processInstance.error();
         assertThat(errorOptional).isPresent();
@@ -260,7 +262,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         processInstance.updateVariables(BpmnVariables.create(params));
 
         error.retrigger();
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
     }
 
     @Test
@@ -282,7 +284,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         processInstance.start();
 
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
 
     }
 
@@ -305,7 +307,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         processInstance.start();
 
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
 
     }
 
@@ -327,7 +329,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         processInstance.start();
 
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
 
     }
 
@@ -349,23 +351,23 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         ProcessInstance<BpmnVariables> processInstance = processes.get("com.sample.test").createInstance(BpmnVariables.create(params));
 
         processInstance.start();
-        assertEquals(STATE_ACTIVE, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
 
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
-        assertEquals(2, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(2);
 
         for (KogitoWorkItem wi : activeWorkItems) {
             processInstance.completeWorkItem(wi.getStringId(), null);
         }
 
         activeWorkItems = workItemHandler.getWorkItems();
-        assertEquals(2, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(2);
 
         for (KogitoWorkItem wi : activeWorkItems) {
             processInstance.completeWorkItem(wi.getStringId(), null);
         }
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
 
     }
 
@@ -389,7 +391,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         ProcessInstance<BpmnVariables> processInstance = processes.get("com.sample.test").createInstance(businessKey, BpmnVariables.create(params));
 
         processInstance.start();
-        assertEquals(STATE_ACTIVE, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
 
         ProcessInstance<BpmnVariables> loadedProcessInstance = processes.get("com.sample.test").instances().findById(processInstance.id()).orElse(null);
         assertThat(loadedProcessInstance).isNotNull();
@@ -397,7 +399,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         loadedProcessInstance.abort();
 
-        assertEquals(STATE_ABORTED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_ABORTED);
 
     }
 
@@ -420,16 +422,16 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         ProcessInstance<BpmnVariables> processInstance = processes.get("ServiceProcess").createInstance(BpmnVariables.create(params));
 
         processInstance.start();
-        assertEquals(STATE_ACTIVE, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
-        assertNotNull(workItem);
+        assertThat(workItem).isNotNull();
 
-        assertEquals("john", workItem.getParameter("Parameter"));
+        assertThat(workItem.getParameter("Parameter")).isEqualTo("john");
 
         processInstance.completeWorkItem(workItem.getStringId(), Collections.singletonMap("Result", "john doe"));
 
-        assertEquals(STATE_COMPLETED, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
     }
 
     @Test
@@ -504,17 +506,17 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         ProcessInstance i = UnitOfWorkExecutor.executeInUnitOfWork(process.getApplication().unitOfWorkManager(), () -> {
             ProcessInstance<BpmnVariables> processInstance = processes.get("AsyncProcess").createInstance(BpmnVariables.create(Collections.singletonMap("name", "Tiago")));
             processInstance.start();
-            assertEquals(STATE_ACTIVE, processInstance.status());
+            assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
             return processInstance;
         });
 
         //since the tasks as async, possibly executed in different threads.
         latch.await(5, TimeUnit.SECONDS);
 
-        assertEquals(STATE_COMPLETED, i.status());
+        assertThat(i.status()).isEqualTo(STATE_COMPLETED);
         BpmnVariables variables = (BpmnVariables) i.variables();
-        assertEquals(variables.get("greeting"), "hello Tiago");
-        assertNotEquals(mainThread, workItemThread.get());
+        assertThat(variables.get("greeting")).isEqualTo("hello Tiago");
+        assertThat(workItemThread.get()).isNotEqualTo(mainThread);
     }
 
     /*
@@ -540,7 +542,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         CompilationResult result = JAVA_COMPILER.compile(sources, srcMfs, trgMfs, this.getClass().getClassLoader());
         assertThat(result).isNotNull();
-        assertThat(result.getErrors()).hasSize(0);
+        assertThat(result.getErrors()).isEmpty();
 
         CachedWorkItemHandlerConfig wiConfig = new CachedWorkItemHandlerConfig();
         for (Entry<String, KogitoWorkItemHandler> entry : handlers.entrySet()) {

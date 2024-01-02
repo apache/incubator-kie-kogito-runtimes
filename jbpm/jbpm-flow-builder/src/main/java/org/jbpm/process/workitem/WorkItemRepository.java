@@ -1,17 +1,20 @@
 /*
- * Copyright 2011 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.process.workitem;
 
@@ -34,6 +37,10 @@ import org.slf4j.LoggerFactory;
 
 public class WorkItemRepository {
 
+    private WorkItemRepository() {
+
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(WorkItemRepository.class);
 
     public static Map<String, WorkDefinitionImpl> getWorkDefinitions(String path) {
@@ -45,7 +52,7 @@ public class WorkItemRepository {
     }
 
     public static Map<String, WorkDefinitionImpl> getWorkDefinitions(String path, String[] definitionNames, String widName) {
-        Map<String, WorkDefinitionImpl> workDefinitions = new HashMap<String, WorkDefinitionImpl>();
+        Map<String, WorkDefinitionImpl> workDefinitions = new HashMap<>();
         List<Map<String, Object>> workDefinitionsMaps = getAllWorkDefinitionsMap(path, widName);
         for (Map<String, Object> workDefinitionMap : workDefinitionsMaps) {
             if (workDefinitionMap != null) {
@@ -58,7 +65,7 @@ public class WorkItemRepository {
                 workDefinition.setPath((String) workDefinitionMap.get("path"));
                 workDefinition.setFile((String) workDefinitionMap.get("file"));
                 workDefinition.setDocumentation((String) workDefinitionMap.get("documentation"));
-                Set<ParameterDefinition> parameters = new HashSet<ParameterDefinition>();
+                Set<ParameterDefinition> parameters = new HashSet<>();
                 Map<String, DataType> parameterMap = (Map<String, DataType>) workDefinitionMap.get("parameters");
                 if (parameterMap != null) {
                     for (Map.Entry<String, DataType> entry : parameterMap.entrySet()) {
@@ -71,7 +78,7 @@ public class WorkItemRepository {
                     workDefinition.setParameterValues((Map<String, Object>) workDefinitionMap.get("parameterValues"));
                 }
 
-                Set<ParameterDefinition> results = new HashSet<ParameterDefinition>();
+                Set<ParameterDefinition> results = new HashSet<>();
                 Map<String, DataType> resultMap = (Map<String, DataType>) workDefinitionMap.get("results");
                 if (resultMap != null) {
                     for (Map.Entry<String, DataType> entry : resultMap.entrySet()) {
@@ -118,14 +125,14 @@ public class WorkItemRepository {
     }
 
     private static List<Map<String, Object>> getAllWorkDefinitionsMap(String directory, String widName) {
-        List<Map<String, Object>> workDefinitions = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> workDefinitions = new ArrayList<>();
         if (widName != null) {
             workDefinitions.addAll(getWorkDefinitionsMapForSingleDir(directory, widName));
         } else {
             for (String s : getDirectories(directory)) {
                 try {
                     workDefinitions.addAll(getAllWorkDefinitionsMap(directory + "/" + s, null));
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     logger.error("Error retrieving work definitions: " + t.getMessage());
                 }
                 workDefinitions.addAll(getWorkDefinitionsMap(directory, s));
@@ -176,7 +183,7 @@ public class WorkItemRepository {
                 wid.put("widType", "mvel");
             }
             return result;
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new RuntimeException("Could not parse work definition as mvel.", t);
         }
     }

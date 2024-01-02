@@ -1,28 +1,26 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.events.mongodb.codec;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.bson.BsonReader;
 import org.bson.BsonString;
@@ -33,17 +31,18 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.event.process.AttachmentEventBody;
-import org.kie.kogito.event.process.CommentEventBody;
-import org.kie.kogito.event.process.ProcessInstanceEventBody;
-import org.kie.kogito.event.process.UserTaskInstanceDataEvent;
-import org.kie.kogito.event.process.UserTaskInstanceEventBody;
+import org.kie.kogito.event.process.ProcessInstanceEventMetadata;
+import org.kie.kogito.event.usertask.UserTaskInstanceDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceEventMetadata;
+import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceStateEventBody;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -56,7 +55,7 @@ class UserTaskInstanceDataEventCodecTest {
 
     private UserTaskInstanceDataEventCodec codec;
 
-    private UserTaskInstanceDataEvent event;
+    private UserTaskInstanceStateDataEvent event;
 
     @BeforeEach
     void setUp() {
@@ -64,79 +63,51 @@ class UserTaskInstanceDataEventCodecTest {
 
         String source = "testSource";
         String kogitoAddons = "testKogitoAddons";
+        String identity = "testIdentity";
 
-        CommentEventBody comment = CommentEventBody.create()
-                .id("testCommentId")
-                .updatedBy("testCommentUpdatedBy")
-                .content("testCommentContent")
-                .updatedAt(new Date())
-                .build();
-        Set<CommentEventBody> comments = Collections.singleton(comment);
-        AttachmentEventBody attachment = AttachmentEventBody.create()
-                .id("testAttachmentId")
-                .updatedBy("testAttachmentUpdatedBy")
-                .content(URI.create("test.attachment.test"))
-                .name("testAttachmentName")
-                .updatedAt(new Date())
-                .build();
-        Set<AttachmentEventBody> attachments = Collections.singleton(attachment);
+        Map<String, Object> metaData = new HashMap<>();
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA, "testKogitoProcessInstanceId");
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA, "testKogitoProcessInstanceVersion");
+        metaData.put(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA, "testKogitoRootProcessInstanceId");
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA, "testKogitoProcessId");
+        metaData.put(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA, "testKogitoRootProcessId");
+        metaData.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_STATE_META_DATA, "testKogitoUserTaskInstanceState");
+        metaData.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_ID_META_DATA, "testKogitoUserTaskInstanceId");
 
-        Map<String, String> metaData = new HashMap<>();
-        metaData.put(ProcessInstanceEventBody.ID_META_DATA, "testKogitoProcessInstanceId");
-        metaData.put(ProcessInstanceEventBody.VERSION_META_DATA, "testKogitoProcessInstanceVersion");
-        metaData.put(ProcessInstanceEventBody.ROOT_ID_META_DATA, "testKogitoRootProcessInstanceId");
-        metaData.put(ProcessInstanceEventBody.PROCESS_ID_META_DATA, "testKogitoProcessId");
-        metaData.put(ProcessInstanceEventBody.ROOT_PROCESS_ID_META_DATA, "testKogitoRootProcessId");
-        metaData.put(UserTaskInstanceEventBody.UT_STATE_META_DATA, "testKogitoUserTaskInstanceState");
-        metaData.put(UserTaskInstanceEventBody.UT_ID_META_DATA, "testKogitoUserTaskInstanceId");
-
-        UserTaskInstanceEventBody body = UserTaskInstanceEventBody.create()
-                .id("testId")
-                .taskName("testTaskName")
-                .taskDescription("testTaskDescription")
-                .taskPriority("testTaskPriority")
-                .referenceName("testReferenceName")
-                .startDate(new Date())
-                .completeDate(new Date())
+        UserTaskInstanceStateEventBody body = UserTaskInstanceStateEventBody.create()
+                .userTaskInstanceId("testId")
+                .userTaskName("testTaskName")
+                .userTaskDescription("testTaskDescription")
+                .userTaskPriority("testTaskPriority")
+                .userTaskReferenceName("testReferenceName")
+                .eventDate(new Date())
                 .state("testState")
                 .actualOwner("testActualOwner")
-                .potentialUsers(Collections.singleton("testPotentialUsers"))
-                .potentialGroups(Collections.singleton("testPotentialGroups"))
-                .excludedUsers(Collections.singleton("testExcludedUsers"))
-                .adminUsers(Collections.singleton("testAdminUsers"))
-                .adminGroups(Collections.singleton("testAdminGroups"))
-                .inputs(Collections.singletonMap("testInputsKey", "testInputsValue"))
-                .outputs(Collections.singletonMap("testOutputsKey", "testOutputsValue"))
                 .processInstanceId("testKogitoProcessInstanceId")
-                .processInstanceVersion("testKogitoProcessInstanceVersion")
-                .rootProcessInstanceId("testKogitoRootProcessInstanceId")
-                .processId("testKogitoProcessId")
-                .rootProcessId("testKogitoRootProcessId")
-                .comments(comments)
-                .attachments(attachments)
+                .eventUser(identity)
                 .build();
 
-        event = new UserTaskInstanceDataEvent(source, kogitoAddons, metaData, body);
+        event = new UserTaskInstanceStateDataEvent(source, kogitoAddons, identity, metaData, body);
     }
 
     @Test
     void generateIdIfAbsentFromDocument() {
-        assertEquals(event, codec.generateIdIfAbsentFromDocument(event));
+        assertThat(codec.generateIdIfAbsentFromDocument(event)).isEqualTo(event);
     }
 
     @Test
     void documentHasId() {
-        assertTrue(codec.documentHasId(event));
+        assertThat(codec.documentHasId(event)).isTrue();
     }
 
     @Test
     void getDocumentId() {
-        assertEquals(new BsonString(event.getId()), codec.getDocumentId(event));
+        assertThat(codec.getDocumentId(event)).isEqualTo(new BsonString(event.getId()));
     }
 
     @Test
     void decode() {
-        assertNull(codec.decode(mock(BsonReader.class), DecoderContext.builder().build()));
+        assertThat(codec.decode(mock(BsonReader.class), DecoderContext.builder().build())).isNull();
     }
 
     @Test
@@ -154,61 +125,40 @@ class UserTaskInstanceDataEventCodecTest {
             verify(mockCodec, times(1)).encode(eq(writer), captor.capture(), eq(context));
             Document doc = captor.getValue();
 
-            assertEquals(event.getId(), doc.get(ID));
-            assertEquals(event.getSpecVersion().toString(), doc.get("specversion"));
-            assertEquals(event.getSource().toString(), doc.get("source"));
-            assertEquals(event.getType(), doc.get("type"));
-            assertEquals(event.getTime(), doc.get("time"));
-            assertEquals(event.getSubject(), doc.get("subject"));
-            assertEquals(event.getDataContentType(), doc.get("dataContentType"));
-            assertEquals(event.getDataSchema(), doc.get("dataSchema"));
-            assertEquals(event.getKogitoProcessInstanceId(), doc.get("kogitoProcessinstanceId"));
-            assertEquals(event.getKogitoRootProcessInstanceId(), doc.get("kogitoRootProcessinstanceId"));
-            assertEquals(event.getKogitoProcessId(), doc.get("kogitoProcessId"));
-            assertEquals(event.getKogitoRootProcessId(), doc.get("kogitoRootProcessId"));
-            assertEquals(event.getKogitoAddons(), doc.get("kogitoAddons"));
-            assertEquals(event.getKogitoUserTaskinstanceId(), doc.get("kogitoUserTaskinstanceId"));
-            assertEquals(event.getKogitoUserTaskinstanceState(), doc.get("kogitoUserTaskinstanceState"));
+            Map<String, Object> node = new ObjectMapper().readValue(doc.toJson(), Map.class);
 
-            assertEquals(event.getData().getId(), ((Document) doc.get("data")).get("id"));
-            assertEquals(event.getData().getTaskName(), ((Document) doc.get("data")).get("taskName"));
-            assertEquals(event.getData().getTaskDescription(), ((Document) doc.get("data")).get("taskDescription"));
-            assertEquals(event.getData().getTaskPriority(), ((Document) doc.get("data")).get("taskPriority"));
-            assertEquals(event.getData().getReferenceName(), ((Document) doc.get("data")).get("referenceName"));
-            assertEquals(event.getData().getStartDate(), ((Document) doc.get("data")).get("startDate"));
-            assertEquals(event.getData().getCompleteDate(), ((Document) doc.get("data")).get("completeDate"));
-            assertEquals(event.getData().getState(), ((Document) doc.get("data")).get("state"));
-            assertEquals(event.getData().getActualOwner(), ((Document) doc.get("data")).get("actualOwner"));
-            assertEquals(event.getData().getPotentialUsers(), ((Document) doc.get("data")).get("potentialUsers"));
-            assertEquals(event.getData().getPotentialGroups(), ((Document) doc.get("data")).get("potentialGroups"));
-            assertEquals(event.getData().getExcludedUsers(), ((Document) doc.get("data")).get("excludedUsers"));
-            assertEquals(event.getData().getAdminUsers(), ((Document) doc.get("data")).get("adminUsers"));
-            assertEquals(event.getData().getAdminGroups(), ((Document) doc.get("data")).get("adminGroups"));
-            assertEquals(new Document(event.getData().getInputs()), ((Document) doc.get("data")).get("inputs"));
-            assertEquals(new Document(event.getData().getOutputs()), ((Document) doc.get("data")).get("outputs"));
-            assertEquals(event.getData().getProcessInstanceId(), ((Document) doc.get("data")).get("processInstanceId"));
-            assertEquals(event.getData().getRootProcessInstanceId(), ((Document) doc.get("data")).get("rootProcessInstanceId"));
-            assertEquals(event.getData().getProcessId(), ((Document) doc.get("data")).get("processId"));
-            assertEquals(event.getData().getRootProcessId(), ((Document) doc.get("data")).get("rootProcessId"));
+            assertThat(doc).containsEntry(ID, event.getId())
+                    .containsEntry("specversion", event.getSpecVersion().toString())
+                    .containsEntry("source", event.getSource().toString())
+                    .containsEntry("type", event.getType())
+                    .containsEntry("datacontenttype", event.getDataContentType())
+                    .containsEntry("kogitoprocinstanceid", event.getKogitoProcessInstanceId())
+                    .containsEntry("kogitoprocversion", event.getKogitoProcessInstanceVersion())
+                    .containsEntry("kogitorootprociid", event.getKogitoRootProcessInstanceId())
+                    .containsEntry("kogitoprocid", event.getKogitoProcessId())
+                    .containsEntry("kogitorootprocid", event.getKogitoRootProcessId())
+                    .containsEntry("kogitoaddons", event.getKogitoAddons())
+                    .containsEntry("kogitoidentity", event.getKogitoIdentity())
+                    .containsEntry("kogitousertaskiid", event.getKogitoUserTaskInstanceId())
+                    .containsEntry("kogitousertaskist", event.getKogitoUserTaskInstanceState());
 
-            CommentEventBody c = event.getData().getComments().iterator().next();
-            Document comment = new Document().append("id", c.getId()).append("content", c.getContent())
-                    .append("updatedAt", c.getUpdatedAt()).append("updatedBy", c.getUpdatedBy());
-            Set<Document> comments = new HashSet<>();
-            comments.add(comment);
-            assertEquals(comments, ((Document) doc.get("data")).get("comments"));
+            assertThat(((Document) doc.get("data")))
+                    .containsEntry("userTaskName", event.getData().getUserTaskName())
+                    .containsEntry("userTaskDescription", event.getData().getUserTaskDescription())
+                    .containsEntry("userTaskPriority", event.getData().getUserTaskPriority())
+                    .containsEntry("userTaskReferenceName", event.getData().getUserTaskReferenceName())
+                    .containsEntry("state", event.getData().getState())
+                    .containsEntry("actualOwner", event.getData().getActualOwner())
+                    .containsEntry("processInstanceId", event.getData().getProcessInstanceId())
+                    .containsEntry("eventUser", event.getData().getEventUser());
 
-            AttachmentEventBody a = event.getData().getAttachments().iterator().next();
-            Document attachment = new Document().append("id", a.getId()).append("content", a.getContent())
-                    .append("updatedAt", a.getUpdatedAt()).append("updatedBy", a.getUpdatedBy()).append("name", a.getName());
-            Set<Document> attachments = new HashSet<>();
-            attachments.add(attachment);
-            assertEquals(attachments, ((Document) doc.get("data")).get("attachments"));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
     }
 
     @Test
     void getEncoderClass() {
-        assertEquals(UserTaskInstanceDataEvent.class, codec.getEncoderClass());
+        assertThat(codec.getEncoderClass()).isEqualTo(UserTaskInstanceDataEvent.class);
     }
 }

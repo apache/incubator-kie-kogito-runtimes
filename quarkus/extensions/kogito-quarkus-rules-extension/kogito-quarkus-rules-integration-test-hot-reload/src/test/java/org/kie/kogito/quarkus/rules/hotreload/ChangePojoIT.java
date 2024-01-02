@@ -1,23 +1,27 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.quarkus.rules.hotreload;
 
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
@@ -40,7 +44,6 @@ public class ChangePojoIT {
 
     private static final String PACKAGE = "org.kie.kogito.quarkus.rules.hotreload";
     private static final String RESOURCE_FILE = PACKAGE.replace('.', '/') + "/adult.drl";
-    private static final String HTTP_TEST_PORT = "65535";
 
     @RegisterExtension
     final static QuarkusDevModeTest test = new QuarkusDevModeTest().setArchiveProducer(
@@ -62,8 +65,10 @@ public class ChangePojoIT {
         String personsPayload1 = "{\"persons\":[{\"name\":\"Mario\",\"age\":45,\"adult\":false},{\"name\":\"Sofia\",\"age\":17,\"adult\":false}]}";
         String personsPayload2 = "{\"persons\":[{\"name\":\"Mario\",\"surname\":\"Fusco\",\"age\":45,\"adult\":false},{\"name\":\"Sofia\",\"surname\":\"Fusco\",\"age\":17,\"adult\":false}]}";
 
+        String httpPort = ConfigProvider.getConfig().getValue("quarkus.http.port", String.class);
+
         List<Map> persons = given()
-                .baseUri("http://localhost:" + HTTP_TEST_PORT)
+                .baseUri("http://localhost:" + httpPort)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(personsPayload1)
@@ -81,7 +86,7 @@ public class ChangePojoIT {
 
         if (!allChangesAtOnce) {
             persons = given()
-                    .baseUri("http://localhost:" + HTTP_TEST_PORT)
+                    .baseUri("http://localhost:" + httpPort)
                     .contentType(ContentType.JSON)
                     .accept(ContentType.JSON)
                     .body(personsPayload2)
@@ -99,7 +104,7 @@ public class ChangePojoIT {
         test.modifyResourceFile(RESOURCE_FILE, s -> DRL2);
 
         persons = given()
-                .baseUri("http://localhost:" + HTTP_TEST_PORT)
+                .baseUri("http://localhost:" + httpPort)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(personsPayload2).when()
@@ -167,8 +172,8 @@ public class ChangePojoIT {
                     "\n" +
                     "import org.kie.kogito.quarkus.rules.hotreload.newunit.Person;\n" +
                     "\n" +
-                    "import org.kie.kogito.rules.DataStore;\n" +
-                    "import org.kie.kogito.rules.RuleUnitData;\n" +
+                    "import org.drools.ruleunits.api.DataStore;\n" +
+                    "import org.drools.ruleunits.api.RuleUnitData;\n" +
                     "\n" +
                     "declare AdultUnit extends RuleUnitData\n" +
                     "   persons: DataStore<Person>\n" +

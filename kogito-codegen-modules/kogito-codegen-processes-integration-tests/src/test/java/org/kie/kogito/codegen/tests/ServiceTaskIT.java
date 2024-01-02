@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.tests;
 
@@ -31,8 +34,7 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 public class ServiceTaskIT extends AbstractCodegenIT {
 
@@ -55,8 +57,8 @@ public class ServiceTaskIT extends AbstractCodegenIT {
         assertThat(processInstance.startDate()).isNotNull();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(1).containsKeys("s");
-        assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Hello john!");
+        assertThat(result.toMap()).hasSize(1).containsKeys("s")
+                .isNotNull().containsEntry("s", "Hello john!");
     }
 
     @Test
@@ -78,8 +80,8 @@ public class ServiceTaskIT extends AbstractCodegenIT {
         assertThat(processInstance.startDate()).isNotNull();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(1).containsKeys("s");
-        assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Goodbye Hello john!!");
+        assertThat(result.toMap()).hasSize(1).containsKeys("s")
+                .isNotNull().containsEntry("s", "Goodbye Hello john!!");
     }
 
     @Test
@@ -101,8 +103,8 @@ public class ServiceTaskIT extends AbstractCodegenIT {
         assertThat(processInstance.startDate()).isNotNull();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(1).containsKeys("s");
-        assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Goodbye john!");
+        assertThat(result.toMap()).hasSize(1).containsKeys("s")
+                .isNotNull().containsEntry("s", "Goodbye john!");
     }
 
     @Test
@@ -123,8 +125,8 @@ public class ServiceTaskIT extends AbstractCodegenIT {
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(1).containsKeys("s");
-        assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Hello Hello john!!");
+        assertThat(result.toMap()).hasSize(1).containsKeys("s")
+                .isNotNull().containsEntry("s", "Hello Hello john!!");
     }
 
     @Test
@@ -152,12 +154,12 @@ public class ServiceTaskIT extends AbstractCodegenIT {
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
         assertThat(result.toMap()).hasSize(3).containsKeys("list", "s", "listOut");
-        assertThat((List<String>) result.toMap().get("listOut")).isNotNull().hasSize(2).contains("Hello first!", "Hello second!");
+        assertThat((List<String>) result.toMap().get("listOut")).hasSize(2).contains("Hello first!", "Hello second!");
     }
 
     @Test
     public void malformedShouldThrowException() {
-        assertThrows(ProcessCodegenException.class, () -> {
+        assertThatExceptionOfType(ProcessCodegenException.class).isThrownBy(() -> {
             generateCodeProcessesOnly("servicetask/ServiceProcessMalformed.bpmn2");
         });
     }
@@ -165,7 +167,7 @@ public class ServiceTaskIT extends AbstractCodegenIT {
     @Test
     public void shouldInferMethodSignatureFromClass() throws Exception {
         // should no throw
-        assertNotNull(generateCodeProcessesOnly("servicetask/ServiceProcessInferMethod.bpmn2"));
+        assertThat(generateCodeProcessesOnly("servicetask/ServiceProcessInferMethod.bpmn2")).isNotNull();
     }
 
     @Test
@@ -188,8 +190,8 @@ public class ServiceTaskIT extends AbstractCodegenIT {
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(3).containsKeys("s", "x", "l");
-        assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Hello (first and lastname) john doe!");
+        assertThat(result.toMap()).hasSize(3).containsKeys("s", "x", "l")
+                .isNotNull().containsEntry("s", "Hello (first and lastname) john doe!");
     }
 
     @Test
@@ -211,8 +213,8 @@ public class ServiceTaskIT extends AbstractCodegenIT {
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(2).containsKeys("s", "x");
-        assertThat(result.toMap().get("s")).isNotNull().isEqualTo("Hello (first and lastname) john Test!");
+        assertThat(result.toMap()).hasSize(2).containsKeys("s", "x")
+                .isNotNull().containsEntry("s", "Hello (first and lastname) john Test!");
     }
 
     @Test
@@ -257,10 +259,8 @@ public class ServiceTaskIT extends AbstractCodegenIT {
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(3).containsKeys("name", "age");
-
-        assertThat(result.toMap().get("result")).isNotNull().isEqualTo("Hello john 35!");
-
+        assertThat(result.toMap()).hasSize(3).containsKeys("name", "age")
+                .isNotNull().containsEntry("result", "Hello john 35!");
     }
 
     @Test

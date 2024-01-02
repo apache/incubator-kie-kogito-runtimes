@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.integrationtests;
 
@@ -26,7 +29,6 @@ import org.drools.io.ByteArrayResource;
 import org.drools.io.ReaderResource;
 import org.drools.kiesession.rulebase.InternalKnowledgeBase;
 import org.drools.kiesession.rulebase.KnowledgeBaseFactory;
-import org.jbpm.compiler.xml.compiler.SemanticKnowledgeBuilderConfigurationImpl;
 import org.jbpm.integrationtests.handler.TestWorkItemHandler;
 import org.jbpm.integrationtests.test.Person;
 import org.jbpm.process.instance.InternalProcessRuntime;
@@ -39,7 +41,7 @@ import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProcessUpgradeTest extends AbstractBaseTest {
 
@@ -56,7 +58,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         rule += "    list.add( $p );\n";
         rule += "end";
 
-        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder(new SemanticKnowledgeBuilderConfigurationImpl());
+        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder(KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration());
         builder.add(new ReaderResource(new StringReader(rule)), ResourceType.DRL);
 
         String process =
@@ -96,7 +98,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         kruntime.getKieSession().insert(p);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.test.ruleflow");
 
-        assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
+        assertThat(kruntime.getKieSession().getProcessInstances()).hasSize(1);
 
         String process2 =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -127,17 +129,17 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
                         "    <connection from=\"4\" to=\"3\"/>\n" +
                         "  </connections>\n" +
                         "</process>";
-        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder(new SemanticKnowledgeBuilderConfigurationImpl());
+        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder(KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration());
         builder.add(new ReaderResource(new StringReader(process2)), ResourceType.DRF);
         kbase.addPackages(builder.getKnowledgePackages());
         WorkflowProcessInstanceUpgrader.upgradeProcessInstance(
                 kruntime, processInstance.getStringId(), "org.test.ruleflow2", new HashMap<>());
-        assertEquals("org.test.ruleflow2", processInstance.getProcessId());
+        assertThat(processInstance.getProcessId()).isEqualTo("org.test.ruleflow2");
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(ProcessInstance.STATE_COMPLETED);
 
-        assertEquals(1, list.size());
+        assertThat(list).hasSize(1);
     }
 
     @Test
@@ -153,7 +155,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         rule += "    list.add( $p );\n";
         rule += "end";
 
-        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder(new SemanticKnowledgeBuilderConfigurationImpl());
+        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder(KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration());
         builder.add(new ReaderResource(new StringReader(rule)), ResourceType.DRL);
 
         String process =
@@ -193,7 +195,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         kruntime.getKieSession().insert(p);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.test.ruleflow");
 
-        assertEquals(1, kruntime.getKogitoProcessInstances().size());
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
 
         String process2 =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -224,7 +226,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
                         "    <connection from=\"4\" to=\"3\"/>\n" +
                         "  </connections>\n" +
                         "</process>";
-        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder(new SemanticKnowledgeBuilderConfigurationImpl());
+        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder(KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration());
         builder.add(new ReaderResource(new StringReader(process2)), ResourceType.DRF);
         kbase.addPackages(builder.getKnowledgePackages());
         Map<String, Long> mapping = new HashMap<String, Long>();
@@ -232,11 +234,11 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
 
         WorkflowProcessInstanceUpgrader.upgradeProcessInstance(
                 kruntime, processInstance.getStringId(), "org.test.ruleflow2", mapping);
-        assertEquals("org.test.ruleflow2", processInstance.getProcessId());
+        assertThat(processInstance.getProcessId()).isEqualTo("org.test.ruleflow2");
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        assertEquals(1, list.size());
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertThat(list).hasSize(1);
+        assertThat(processInstance.getState()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -252,7 +254,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         rule += "    list.add( $p );\n";
         rule += "end";
 
-        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder(new SemanticKnowledgeBuilderConfigurationImpl());
+        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder(KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration());
         builder.add(new ByteArrayResource(rule.getBytes()), ResourceType.DRL);
 
         String process =
@@ -304,7 +306,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         kruntime.getKieSession().insert(p);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.test.ruleflow");
 
-        assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
+        assertThat(kruntime.getKieSession().getProcessInstances()).hasSize(1);
 
         String process2 =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -354,11 +356,11 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
 
         WorkflowProcessInstanceUpgrader.upgradeProcessInstance(
                 kruntime, processInstance.getStringId(), "org.test.ruleflow2", mapping);
-        assertEquals("org.test.ruleflow2", processInstance.getProcessId());
+        assertThat(processInstance.getProcessId()).isEqualTo("org.test.ruleflow2");
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        assertEquals(1, list.size());
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertThat(list).hasSize(1);
+        assertThat(processInstance.getState()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
 }

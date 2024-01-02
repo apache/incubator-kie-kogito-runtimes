@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.rules;
 
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.drl.extensions.DecisionTableFactory;
 import org.drools.drl.extensions.DecisionTableProvider;
+import org.drools.model.codegen.project.MissingDecisionTableDependencyError;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -68,7 +72,7 @@ public class RuleCodegenTest {
         assertThat(emptyCodeGenerator.isEnabled()).isFalse();
 
         Collection<GeneratedFile> emptyGeneratedFiles = emptyCodeGenerator.generate();
-        assertThat(emptyGeneratedFiles.size()).isEqualTo(0);
+        assertThat(emptyGeneratedFiles).isEmpty();
 
         RuleCodegen codeGenerator = getIncrementalRuleCodegenFromFiles(
                 contextBuilder,
@@ -78,7 +82,7 @@ public class RuleCodegenTest {
         assertThat(codeGenerator.isEnabled()).isTrue();
 
         Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(1);
+        assertThat(generatedFiles).hasSizeGreaterThan(0);
     }
 
     @ParameterizedTest
@@ -282,10 +286,10 @@ public class RuleCodegenTest {
 
         Collection<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         assertThat(generatedFiles).hasSizeGreaterThan(0);
-        if (contextBuilder.build().hasRESTGloballyAvailable()) {
-            assertThat(generatedFiles.stream()).anyMatch(f -> f.relativePath().endsWith("KogitoObjectMapper.java"));
+        if (contextBuilder.build().hasRest()) {
+            assertThat(generatedFiles.stream()).anyMatch(f -> f.relativePath().endsWith("ObjectMapper.java"));
         } else {
-            assertThat(generatedFiles.stream()).noneMatch(f -> f.relativePath().endsWith("KogitoObjectMapper.java"));
+            assertThat(generatedFiles.stream()).noneMatch(f -> f.relativePath().endsWith("ObjectMapper.java"));
         }
     }
 

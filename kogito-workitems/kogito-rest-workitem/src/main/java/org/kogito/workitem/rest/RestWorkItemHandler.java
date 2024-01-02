@@ -1,39 +1,42 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kogito.workitem.rest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.jbpm.process.core.Process;
+import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.node.WorkItemNode;
+import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
@@ -60,6 +63,7 @@ import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
+import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getClassListParam;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getClassParam;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
@@ -67,6 +71,7 @@ import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
 public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
     public static final String REST_TASK_TYPE = "Rest";
+    public static final String PROTOCOL = "Protocol";
     public static final String URL = "Url";
     public static final String METHOD = "Method";
     public static final String CONTENT_DATA = "ContentData";
@@ -81,6 +86,11 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     public static final String PATH_PARAM_RESOLVER = "PathParamResolver";
     public static final String AUTH_METHOD = "AuthMethod";
 
+    public static final String REQUEST_TIMEOUT_IN_MILLIS = "RequestTimeout";
+
+    public static final int DEFAULT_PORT = 80;
+    public static final int DEFAULT_SSL_PORT = 443;
+
     private static final Logger logger = LoggerFactory.getLogger(RestWorkItemHandler.class);
     private static final RestWorkItemHandlerResult DEFAULT_RESULT_HANDLER = new DefaultRestWorkItemHandlerResult();
     private static final RestWorkItemHandlerBodyBuilder DEFAULT_BODY_BUILDER = new DefaultWorkItemHandlerBodyBuilder();
@@ -93,11 +103,13 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     private static final Map<String, AuthDecorator> authDecoratorsMap = new ConcurrentHashMap<>();
     private static final Collection<AuthDecorator> DEFAULT_AUTH_DECORATORS = Arrays.asList(new ApiKeyAuthDecorator(), new BasicAuthDecorator(), new BearerTokenAuthDecorator());
 
-    private WebClient client;
+    protected final WebClient httpClient;
+    protected final WebClient httpsClient;
     private Collection<RequestDecorator> requestDecorators;
 
-    public RestWorkItemHandler(WebClient client) {
-        this.client = client;
+    public RestWorkItemHandler(WebClient httpClient, WebClient httpsClient) {
+        this.httpClient = httpClient;
+        this.httpsClient = httpsClient;
         this.requestDecorators = StreamSupport.stream(ServiceLoader.load(RequestDecorator.class).spliterator(), false).collect(Collectors.toList());
     }
 
@@ -113,9 +125,8 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         if (endPoint == null) {
             throw new IllegalArgumentException("Missing required parameter " + URL);
         }
+
         HttpMethod method = getParam(parameters, METHOD, HttpMethod.class, HttpMethod.GET);
-        String hostProp = getParam(parameters, HOST, String.class, "localhost");
-        int portProp = getParam(parameters, PORT, Integer.class, 80);
         RestWorkItemHandlerResult resultHandler = getClassParam(parameters, RESULT_HANDLER, RestWorkItemHandlerResult.class, DEFAULT_RESULT_HANDLER, resultHandlers);
         RestWorkItemHandlerBodyBuilder bodyBuilder = getClassParam(parameters, BODY_BUILDER, RestWorkItemHandlerBodyBuilder.class, DEFAULT_BODY_BUILDER, bodyBuilders);
         ParamsDecorator paramsDecorator = getClassParam(parameters, PARAMS_DECORATOR, ParamsDecorator.class, DEFAULT_PARAMS_DECORATOR, paramsDecorators);
@@ -125,63 +136,105 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         logger.debug("Filtered parameters are {}", parameters);
         // create request
         endPoint = pathParamResolver.apply(endPoint, parameters);
-        Optional<URL> url = getUrl(endPoint);
-        String host = url.map(java.net.URL::getHost).orElse(hostProp);
-        if (host == null) {
-            host = hostProp;
+
+        String protocol = null;
+        String host = null;
+        int port = -1;
+        String path = null;
+        try {
+            URL uri = new URL(endPoint);
+            protocol = uri.getProtocol();
+            host = uri.getHost();
+            port = uri.getPort();
+            path = uri.getPath();
+            String query = uri.getQuery();
+            if (!isEmpty(path) && !isEmpty(query)) {
+                path += "?" + query;
+            }
+        } catch (MalformedURLException ex) {
+            logger.info("Parameter endpoint {} is not valid uri {}", endPoint, ex.getMessage());
         }
-        int port = url.map(java.net.URL::getPort).orElse(portProp);
-        if (port < 0) {
-            port = portProp;
+
+        if (isEmpty(protocol)) {
+            protocol = getParam(parameters, PROTOCOL, String.class, "http");
+            logger.info("Protocol not specified, using {}", protocol);
         }
-        String path = url.map(java.net.URL::getPath).orElse(endPoint).replace(" ", "%20");//fix issue with spaces in the path
+
+        boolean isSsl = protocol.equalsIgnoreCase("https");
+
+        if (isEmpty(host)) {
+            host = getParam(parameters, HOST, String.class, "localhost");
+            logger.info("Host not specified, using {}", host);
+        }
+        if (port == -1) {
+            port = getParam(parameters, PORT, Integer.class, isSsl ? DEFAULT_SSL_PORT : DEFAULT_PORT);
+            logger.info("Port not specified, using {}", port);
+        }
+        if (isEmpty(path)) {
+            path = endPoint;
+            logger.info("Path is empty, using whole endpoint {}", endPoint);
+        }
+        logger.debug("Invoking request with protocol {} host {} port {} and endpoint {}", protocol, host, port, path);
+        WebClient client = isSsl ? httpsClient : httpClient;
         HttpRequest<Buffer> request = client.request(method, port, host, path);
         requestDecorators.forEach(d -> d.decorate(workItem, parameters, request));
         authDecorators.forEach(d -> d.decorate(workItem, parameters, request));
         paramsDecorator.decorate(workItem, parameters, request);
-        HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) ? request.sendJsonAndAwait(bodyBuilder.apply(parameters)) : request.sendAndAwait();
+        Duration requestTimeout = getRequestTimeout(parameters);
+        HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT)
+                ? sendJson(request, bodyBuilder.apply(parameters), requestTimeout)
+                : send(request, requestTimeout);
         int statusCode = response.statusCode();
         if (statusCode < 200 || statusCode >= 300) {
-            throw new WorkItemExecutionException(Integer.toString(statusCode), response.statusMessage());
+            throw new WorkItemExecutionException(Integer.toString(statusCode), "Request for endpoint " + endPoint + " failed with message: " + response.statusMessage());
         }
         manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo)));
     }
 
-    private Optional<URL> getUrl(String endPoint) {
-        return Optional.ofNullable(endPoint)
-                .map(spec -> {
-                    try {
-                        return new URL(spec);
-                    } catch (MalformedURLException e) {
-                        return null;
-                    }
-                });
+    private static HttpResponse<Buffer> sendJson(HttpRequest<Buffer> request, Object body, Duration requestTimeout) {
+        if (requestTimeout == null) {
+            return request.sendJsonAndAwait(body);
+        } else {
+            return request.sendJson(body).await().atMost(requestTimeout);
+        }
+    }
+
+    private static HttpResponse<Buffer> send(HttpRequest<Buffer> request, Duration requestTimeout) {
+        if (requestTimeout == null) {
+            return request.sendAndAwait();
+        } else {
+            return request.send().await().atMost(requestTimeout);
+        }
+    }
+
+    private static Duration getRequestTimeout(Map<String, Object> parameters) {
+        Long requestTimeoutInMillis = getParam(parameters, REQUEST_TIMEOUT_IN_MILLIS, Long.class, null);
+        return requestTimeoutInMillis == null ? null : Duration.ofMillis(requestTimeoutInMillis);
     }
 
     private Class<?> getTargetInfo(KogitoWorkItem workItem) {
         String varName = ((WorkItemNode) ((WorkItemNodeInstance) workItem.getNodeInstance()).getNode()).getIoSpecification().getOutputMappingBySources().get(RESULT);
         if (varName != null) {
-            return getType(workItem.getProcessInstance(), varName);
+            return getType(workItem, varName);
         }
         logger.warn("no out mapping for {}", RESULT);
         return null;
     }
 
-    private Class<?> getType(KogitoProcessInstance pi, String varName) {
-        VariableScope variableScope = (VariableScope) ((Process) pi.getProcess()).getDefaultContext(
-                VariableScope.VARIABLE_SCOPE);
-        Variable variable = variableScope.findVariable(varName);
-        if (variable != null) {
-            return variable.getType().getObjectClass();
-        } else {
-            logger.warn("Cannot find definition for variable {}", varName);
-            return null;
+    private Class<?> getType(KogitoWorkItem workItem, String varName) {
+        VariableScope variableScope = (VariableScope) ((ContextResolver) ((NodeInstance) workItem.getNodeInstance()).getNode()).resolveContext(VariableScope.VARIABLE_SCOPE, varName);
+        if (variableScope != null) {
+            Variable variable = variableScope.findVariable(varName);
+            if (variable != null) {
+                return variable.getType().getObjectClass();
+            }
         }
+        logger.info("Cannot find definition for variable {}", varName);
+        return null;
     }
 
     @Override
     public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         // rest item handler does not support abort
     }
-
 }

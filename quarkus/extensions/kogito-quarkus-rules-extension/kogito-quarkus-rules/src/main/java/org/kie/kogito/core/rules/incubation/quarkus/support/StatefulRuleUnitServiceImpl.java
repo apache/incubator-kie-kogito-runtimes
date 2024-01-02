@@ -1,19 +1,21 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
 import java.util.List;
@@ -21,15 +23,21 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.kie.kogito.incubation.common.*;
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitData;
+import org.drools.ruleunits.api.RuleUnitInstance;
+import org.drools.ruleunits.api.RuleUnits;
+import org.kie.kogito.incubation.common.EmptyMetaDataContext;
+import org.kie.kogito.incubation.common.ExtendedDataContext;
+import org.kie.kogito.incubation.common.ExtendedReferenceContext;
+import org.kie.kogito.incubation.common.LocalId;
+import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.common.MetaDataContext;
+import org.kie.kogito.incubation.common.ReferenceContext;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
-import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.RuleUnitInstance;
-import org.kie.kogito.rules.RuleUnits;
 
 class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
 
@@ -80,7 +88,7 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
         if (instance == null)
             throw new IllegalArgumentException("Unknown instance " + localId);
-        instance.dispose();
+        instance.close();
         return EmptyMetaDataContext.Instance;
     }
 
@@ -105,7 +113,6 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
             queryId = (InstanceQueryId) localId;
             ruleUnitInstanceId = queryId.ruleUnitInstanceId();
         } else {
-            // LocalDecisionId.parse(decisionId);
             throw new IllegalArgumentException(
                     "Not a valid instance query id " + localId);
         }
@@ -113,7 +120,7 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
         if (instance == null)
             throw new IllegalArgumentException("Unknown instance " + localId);
-        List<Map<String, Object>> results = instance.executeQuery(queryId.queryId());
+        List<Map<String, Object>> results = instance.executeQuery(queryId.queryId()).toList();
 
         return results.stream().map(r -> ExtendedDataContext.of(EmptyMetaDataContext.Instance, MapDataContext.of(r)));
 

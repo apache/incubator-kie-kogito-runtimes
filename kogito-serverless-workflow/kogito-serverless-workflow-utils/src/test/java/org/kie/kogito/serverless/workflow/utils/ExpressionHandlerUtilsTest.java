@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.serverless.workflow.utils;
 
@@ -27,7 +30,7 @@ import org.kie.kogito.serverless.workflow.test.MockBuilder;
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils.trimExpr;
 import static org.mockito.Mockito.when;
 
@@ -35,15 +38,16 @@ public class ExpressionHandlerUtilsTest {
 
     @Test
     void testTrimExpression() {
-        assertEquals(".pepe", trimExpr("${ .pepe }"));
-        assertEquals("{name:.pepe}", trimExpr("${ {name:.pepe} }"));
+        assertThat(trimExpr("${.pepe}")).isEqualTo(".pepe");
+        assertThat(trimExpr("${ {name:.pepe} }")).isEqualTo("{name:.pepe}");
     }
 
     @ParameterizedTest(name = "{index} \"{0}\" is resolved to \"{1}\"")
     @MethodSource("provideExpressionsToTestWithWorkflow")
     public void testPrepareExpressionFromContextAndWorkflow(String expr, String result, Workflow workflow) {
         String resolvedExpr = ExpressionHandlerUtils.replaceExpr(workflow, expr);
-        assertEquals(result, resolvedExpr);
+
+        assertThat(resolvedExpr).isEqualTo(result);
     }
 
     private static Stream<Arguments> provideExpressionsToTestWithWorkflow() {

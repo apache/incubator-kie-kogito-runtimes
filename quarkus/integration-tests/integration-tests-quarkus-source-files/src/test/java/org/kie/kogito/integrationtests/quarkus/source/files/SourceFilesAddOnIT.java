@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.integrationtests.quarkus.source.files;
 
@@ -22,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.addon.source.files.SourceFile;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
@@ -59,7 +61,7 @@ class SourceFilesAddOnIT {
                 .then()
                 .statusCode(200)
                 .body("size()", is(1))
-                .body("", hasItems(hasEntry("uri", SourceFile.SOURCES_HTTP_PATH + "org/kie/kogito/examples/ymlgreet.sw.yml")));
+                .body("", hasItems(hasEntry("uri", "org/kie/kogito/examples/ymlgreet.sw.yml")));
     }
 
     @Test
@@ -97,10 +99,10 @@ class SourceFilesAddOnIT {
         given()
                 .header("Authorization", "Basic c2NvdHQ6amIwc3M=")
                 .when()
-                .get("/sources/petstore.json")
+                .get("/management/processes/sources?uri=petstore_root.sw.json")
                 .then()
                 .statusCode(200)
-                .header("Content-Length", "5189");
+                .header("Content-Length", "556");
     }
 
     @Test
@@ -108,7 +110,7 @@ class SourceFilesAddOnIT {
         given()
                 .header("Authorization", "Basic c2NvdHQ6amIwc3M=")
                 .when()
-                .get("/sources/org/kie/kogito/examples/ymlgreet.sw.yml")
+                .get("/management/processes/sources?uri=org/kie/kogito/examples/ymlgreet.sw.yml")
                 .then()
                 .statusCode(200)
                 .header("Content-Length", "1012");
@@ -118,7 +120,7 @@ class SourceFilesAddOnIT {
     void testGetSourceFileNonAuthenticated() {
         given()
                 .when()
-                .get("/sources/petstore.json")
+                .get("/management/processes/sources?uri=petstore.json")
                 .then()
                 .statusCode(401);
     }

@@ -1,31 +1,33 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.process.builder;
 
 import java.io.StringReader;
 
+import org.drools.base.definitions.InternalKnowledgePackage;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.compiler.compiler.DialectCompiletimeRegistry;
 import org.drools.core.common.InternalKnowledgeRuntime;
-import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.reteoo.CoreComponentFactory;
 import org.drools.drl.ast.descr.ProcessDescr;
 import org.drools.drl.ast.descr.ReturnValueDescr;
 import org.drools.mvel.java.JavaDialect;
-import org.jbpm.compiler.xml.compiler.SemanticKnowledgeBuilderConfigurationImpl;
 import org.jbpm.process.builder.dialect.ProcessDialectRegistry;
 import org.jbpm.process.builder.dialect.java.JavaReturnValueEvaluatorBuilder;
 import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
@@ -34,11 +36,10 @@ import org.jbpm.test.util.AbstractBaseTest;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.instance.node.SplitInstance;
 import org.junit.jupiter.api.Test;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaReturnValueConstraintEvaluatorBuilderTest extends AbstractBaseTest {
 
@@ -57,7 +58,7 @@ public class JavaReturnValueConstraintEvaluatorBuilderTest extends AbstractBaseT
         ReturnValueDescr descr = new ReturnValueDescr();
         descr.setText("return value;");
 
-        builder = new KnowledgeBuilderImpl(pkg, new SemanticKnowledgeBuilderConfigurationImpl());
+        builder = new KnowledgeBuilderImpl(pkg, KnowledgeBuilderFactory.newKnowledgeBuilderConfiguration());
         DialectCompiletimeRegistry dialectRegistry = builder.getPackageRegistry(pkg.getName()).getDialectCompiletimeRegistry();
         JavaDialect javaDialect = (JavaDialect) dialectRegistry.getDialect("java");
 
@@ -80,7 +81,7 @@ public class JavaReturnValueConstraintEvaluatorBuilderTest extends AbstractBaseT
 
         ProcessDialectRegistry.getDialect(JavaDialect.ID).addProcess(context);
         javaDialect.compileAll();
-        assertEquals(0, javaDialect.getResults().size());
+        assertThat(javaDialect.getResults()).isEmpty();
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
@@ -92,16 +93,16 @@ public class JavaReturnValueConstraintEvaluatorBuilderTest extends AbstractBaseT
         SplitInstance splitInstance = new SplitInstance();
         splitInstance.setProcessInstance(processInstance);
 
-        assertTrue(node.evaluate(splitInstance,
+        assertThat(node.evaluate(splitInstance,
                 null,
-                null));
+                null)).isTrue();
 
         kruntime.getKieSession().setGlobal("value",
                 false);
 
-        assertFalse(node.evaluate(splitInstance,
+        assertThat(node.evaluate(splitInstance,
                 null,
-                null));
+                null)).isFalse();
     }
 
 }

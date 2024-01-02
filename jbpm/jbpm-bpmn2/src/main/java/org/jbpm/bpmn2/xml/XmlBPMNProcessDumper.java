@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2.xml;
 
@@ -90,7 +93,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
 
     private static final Logger logger = LoggerFactory.getLogger(XmlBPMNProcessDumper.class);
 
-    private final static String EOL = System.getProperty("line.separator");
+    private static final String EOL = System.getProperty("line.separator");
 
     private SemanticModule semanticModule;
     private int metaDataType = META_DATA_USING_DI;
@@ -145,9 +148,9 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
                         "             xmlns:tns=\"http://www.jboss.org/drools\">" + EOL + EOL);
 
         // item definitions
-        this.visitedVariables = new HashSet<String>();
+        this.visitedVariables = new HashSet<>();
         VariableScope variableScope = (VariableScope) ((org.jbpm.process.core.Process) process).getDefaultContext(VariableScope.VARIABLE_SCOPE);
-        Set<String> dumpedItemDefs = new HashSet<String>();
+        Set<String> dumpedItemDefs = new HashSet<>();
         Map<String, ItemDefinition> itemDefs = (Map<String, ItemDefinition>) process.getMetaData().get("ItemDefinitions");
 
         if (itemDefs != null) {
@@ -167,7 +170,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
 
         visitInterfaces(process.getNodes(), xmlDump);
 
-        visitEscalations(process.getNodes(), xmlDump, new ArrayList<String>());
+        visitEscalations(process.getNodes(), xmlDump, new ArrayList<>());
         Definitions def = (Definitions) process.getMetaData().get("Definitions");
         visitErrors(def, xmlDump);
 
@@ -202,7 +205,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         xmlDump.append(">" + EOL + EOL);
         visitHeader(process, xmlDump, metaDataType);
 
-        List<Node> processNodes = new ArrayList<Node>();
+        List<Node> processNodes = new ArrayList<>();
         for (org.kie.api.definition.process.Node procNode : process.getNodes()) {
             processNodes.add((Node) procNode);
         }
@@ -402,7 +405,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
     }
 
     public static Map<String, Object> getMetaData(Map<String, Object> input) {
-        Map<String, Object> metaData = new HashMap<String, Object>();
+        Map<String, Object> metaData = new HashMap<>();
         for (Map.Entry<String, Object> entry : input.entrySet()) {
             String name = entry.getKey();
             if (entry.getKey().startsWith("custom")
@@ -505,7 +508,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
                 }
             } else if (node instanceof EventNode) {
                 List<EventFilter> filters = ((EventNode) node).getEventFilters();
-                if (filters.size() > 0) {
+                if (!filters.isEmpty()) {
                     String messageRef = ((EventTypeFilter) filters.get(0)).getType();
                     if (messageRef.startsWith("Message-")) {
                         messageRef = messageRef.substring(8);
@@ -669,17 +672,17 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
                 height = 48;
             }
             if (node instanceof StartNode || node instanceof EndNode || node instanceof EventNode || node instanceof FaultNode) {
-                int offsetX = (int) ((width - 48) / 2);
+                int offsetX = ((width - 48) / 2);
                 width = 48;
                 x = x + offsetX;
-                int offsetY = (int) ((height - 48) / 2);
+                int offsetY = ((height - 48) / 2);
                 y = y + offsetY;
                 height = 48;
             } else if (node instanceof Join || node instanceof Split) {
-                int offsetX = (int) ((width - 48) / 2);
+                int offsetX = ((width - 48) / 2);
                 width = 48;
                 x = x + offsetX;
-                int offsetY = (int) ((height - 48) / 2);
+                int offsetY = ((height - 48) / 2);
                 y = y + offsetY;
                 height = 48;
             }
@@ -714,7 +717,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
 
     private void visitConnections(org.kie.api.definition.process.Node[] nodes, StringBuilder xmlDump, int metaDataType) {
         xmlDump.append("    <!-- connections -->" + EOL);
-        List<Connection> connections = new ArrayList<Connection>();
+        List<Connection> connections = new ArrayList<>();
         for (org.kie.api.definition.process.Node node : nodes) {
             for (List<Connection> connectionList : node.getIncomingConnections().values()) {
                 connections.addAll(connectionList);
@@ -727,8 +730,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
     }
 
     private boolean isConnectionRepresentingLinkEvent(Connection connection) {
-        boolean bValue = connection.getMetaData().get("linkNodeHidden") != null;
-        return bValue;
+        return connection.getMetaData().get("linkNodeHidden") != null;
     }
 
     public void visitConnection(Connection connection, StringBuilder xmlDump, int metaDataType) {
@@ -798,7 +800,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
     }
 
     private void visitConnectionsDi(org.kie.api.definition.process.Node[] nodes, StringBuilder xmlDump) {
-        List<Connection> connections = new ArrayList<Connection>();
+        List<Connection> connections = new ArrayList<>();
         for (org.kie.api.definition.process.Node node : nodes) {
             for (List<Connection> connectionList : node.getIncomingConnections().values()) {
                 connections.addAll(connectionList);
@@ -924,8 +926,8 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         try {
             List<Process> processes = xmlReader.read(new StringReader(processXml));
             return processes.get(0);
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Exception t) {
+            logger.warn("processXml is empty", t);
             return null;
         }
     }

@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.infinispan;
 
@@ -44,10 +47,13 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ERROR;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abortFirst;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirst;
 
 @Testcontainers
 class CacheProcessInstancesIT {
@@ -101,7 +107,7 @@ class CacheProcessInstancesIT {
         assertThat(mutablePi.variables().toMap()).containsExactly(entry("var", "value"));
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        assertThat(instances.size()).isOne();
+        assertOne(instances);
         ProcessInstance<BpmnVariables> pi = instances.findById(mutablePi.id(), ProcessInstanceReadMode.READ_ONLY).get();
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
 
@@ -115,7 +121,7 @@ class CacheProcessInstancesIT {
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> readOnlyPi.abort());
 
         instances.findById(mutablePi.id()).get().abort();
-        assertThat(instances.size()).isZero();
+        assertEmpty(instances);
     }
 
     @Test
@@ -129,11 +135,10 @@ class CacheProcessInstancesIT {
         processInstance.start();
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        assertThat(instances.size()).isOne();
-        ProcessInstance<BpmnVariables> pi = instances.values().stream().findFirst().get();
+        ProcessInstance<BpmnVariables> pi = getFirst(instances);
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
-        instances.values(ProcessInstanceReadMode.MUTABLE).stream().findFirst().get().abort();
-        assertThat(instances.size()).isZero();
+        abortFirst(instances);
+        assertEmpty(instances);
     }
 
     @Test
@@ -145,21 +150,21 @@ class CacheProcessInstancesIT {
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
         processInstance.start();
-        assertEquals(STATE_ACTIVE, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
 
-        assertThat(process.instances().size()).isOne();
+        assertOne(process.instances());
 
         SecurityPolicy asJohn = SecurityPolicy.of(new StaticIdentityProvider("john"));
 
-        assertThat(process.instances().values().iterator().next().workItems(asJohn)).hasSize(1);
+        assertThat(getFirst(process.instances()).workItems(asJohn)).hasSize(1);
 
         List<WorkItem> workItems = processInstance.workItems(asJohn);
         assertThat(workItems).hasSize(1);
         WorkItem workItem = workItems.get(0);
-        assertEquals("john", workItem.getParameters().get("ActorId"));
+        assertThat(workItem.getParameters()).containsEntry("ActorId", "john");
         processInstance.completeWorkItem(workItem.getId(), null, asJohn);
-        assertEquals(STATE_COMPLETED, processInstance.status());
-        assertThat(process.instances().size()).isZero();
+        assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
+        assertEmpty(process.instances());
     }
 
     private class CacheProcessInstancesFactory extends AbstractProcessInstancesFactory {

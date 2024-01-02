@@ -1,21 +1,26 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.canonical;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,11 +52,14 @@ public class ProcessMetaData {
 
     private List<TriggerMetaData> triggers = new ArrayList<>();
 
-    private Map<String, CompilationUnit> consumers = new HashMap<>();
-    private Map<String, CompilationUnit> producers = new HashMap<>();
+    private Map<String, Collection<CompilationUnit>> consumers = new HashMap<>();
+    private Map<String, Collection<CompilationUnit>> producers = new HashMap<>();
 
     private boolean startable;
     private boolean dynamic;
+
+    private String modelPackageName;
+    private String modelClassName;
 
     private Map<String, CompilationUnit> generatedHandlers = new HashMap<>();
     private Set<CompilationUnit> generatedListeners = new HashSet<>();
@@ -157,12 +165,20 @@ public class ProcessMetaData {
         this.generatedListeners = generatedListeners;
     }
 
-    public Map<String, CompilationUnit> getConsumers() {
-        return consumers;
+    public Map<String, Collection<CompilationUnit>> getConsumers() {
+        return Collections.unmodifiableMap(consumers);
     }
 
-    public Map<String, CompilationUnit> getProducers() {
-        return producers;
+    public void addConsumer(String triggerName, CompilationUnit unit) {
+        consumers.computeIfAbsent(triggerName, k -> new ArrayList<>()).add(unit);
+    }
+
+    public Map<String, Collection<CompilationUnit>> getProducers() {
+        return Collections.unmodifiableMap(producers);
+    }
+
+    public void addProducer(String triggerName, CompilationUnit unit) {
+        producers.computeIfAbsent(triggerName, k -> new ArrayList<>()).add(unit);
     }
 
     public Map<String, String> getSignals() {
@@ -205,6 +221,22 @@ public class ProcessMetaData {
                 ", processId=" + processId + ", extractedProcessId=" + extractedProcessId +
                 ", processName=" + processName + ", processVersion=" + processVersion +
                 ", workItems=" + workItems + "]";
+    }
+
+    public String getModelPackageName() {
+        return modelPackageName;
+    }
+
+    public void setModelPackageName(String modelPackageName) {
+        this.modelPackageName = modelPackageName;
+    }
+
+    public String getModelClassName() {
+        return modelClassName;
+    }
+
+    public void setModelClassName(String modelClassName) {
+        this.modelClassName = modelClassName;
     }
 
 }

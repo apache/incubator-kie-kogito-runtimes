@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.canonical;
 
@@ -146,7 +149,14 @@ public class ProcessVisitor extends AbstractVisitor {
         visitVariableScope(FACTORY_FIELD_NAME, variableScope, body, visitedVariables, metadata.getProcessClassName());
         visitSubVariableScopes(process.getNodes(), body, visitedVariables);
 
-        visitInterfaces(process.getNodes(), body);
+        if (process instanceof org.jbpm.workflow.core.WorkflowProcess) {
+            org.jbpm.workflow.core.WorkflowProcess processImpl = (org.jbpm.workflow.core.WorkflowProcess) process;
+            if (processImpl.getExpressionLanguage() != null) {
+                body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, "expressionLanguage", new StringLiteralExpr(processImpl.getExpressionLanguage())));
+            }
+        }
+
+        visitInterfaces(process.getNodes());
 
         metadata.setDynamic(((org.jbpm.workflow.core.WorkflowProcess) process).isDynamic());
         // the process itself
@@ -158,8 +168,10 @@ public class ProcessVisitor extends AbstractVisitor {
                 .addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VISIBILITY,
                         new StringLiteralExpr(getOrDefault(((KogitoWorkflowProcess) process).getVisibility(), KogitoWorkflowProcess.PUBLIC_VISIBILITY))));
 
-        ((org.jbpm.workflow.core.WorkflowProcess) process).getValidator().ifPresent(
-                v -> body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, "validator", ExpressionUtils.getLiteralExpr(v))));
+        ((org.jbpm.workflow.core.WorkflowProcess) process).getInputValidator().ifPresent(
+                v -> body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, "inputValidator", ExpressionUtils.getLiteralExpr(v))));
+        ((org.jbpm.workflow.core.WorkflowProcess) process).getOutputValidator().ifPresent(
+                v -> body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, "outputValidator", ExpressionUtils.getLiteralExpr(v))));
 
         visitCompensationScope(process, body);
         visitMetaData(process.getMetaData(), body, FACTORY_FIELD_NAME);
@@ -233,7 +245,7 @@ public class ProcessVisitor extends AbstractVisitor {
     }
 
     // KOGITO-1882 Finish implementation or delete completely
-    private void visitInterfaces(org.kie.api.definition.process.Node[] nodes, BlockStmt body) {
+    private void visitInterfaces(org.kie.api.definition.process.Node[] nodes) {
         for (org.kie.api.definition.process.Node node : nodes) {
             if (node instanceof WorkItemNode) {
                 Work work = ((WorkItemNode) node).getWork();

@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.core;
 
@@ -35,8 +38,6 @@ import org.drools.util.StringUtils;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.core.events.CloudEventsResourceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,8 +88,6 @@ public class ApplicationGenerator {
 
         DashboardGeneratedFileUtils.list(generatedFiles).ifPresent(generatedFiles::add);
 
-        generateCloudEventsResource().ifPresent(generatedFiles::add);
-
         logGeneratedFiles(generatedFiles);
 
         return generatedFiles;
@@ -131,15 +130,6 @@ public class ApplicationGenerator {
                         getFilePath(section.sectionClassName()),
                         section.compilationUnit().toString()))
                 .collect(Collectors.toList());
-    }
-
-    private Optional<GeneratedFile> generateCloudEventsResource() {
-        // Generic CloudEvents HTTP Endpoint will be handled by https://issues.redhat.com/browse/KOGITO-2956
-        if (context.getAddonsConfig().useCloudEvents() && context.hasRESTGloballyAvailable() && QuarkusKogitoBuildContext.CONTEXT_NAME.equals(context.name())) {
-            final CloudEventsResourceGenerator ceGenerator = new CloudEventsResourceGenerator(context);
-            return Optional.of(new GeneratedFile(REST_TYPE, ceGenerator.generatedFilePath(), ceGenerator.generate()));
-        }
-        return Optional.empty();
     }
 
     /**

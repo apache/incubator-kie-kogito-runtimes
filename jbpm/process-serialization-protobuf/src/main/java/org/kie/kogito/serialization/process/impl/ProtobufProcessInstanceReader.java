@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.serialization.process.impl;
 
@@ -25,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,6 +39,7 @@ import org.jbpm.process.instance.context.exclusive.ExclusiveGroupInstance;
 import org.jbpm.process.instance.context.swimlane.SwimlaneContextInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
+import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.process.instance.impl.humantask.Reassignment;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.workflow.core.node.AsyncEventNodeInstance;
@@ -58,6 +63,7 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.process.workitem.Attachment;
 import org.kie.kogito.process.workitem.Comment;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.kie.kogito.serialization.process.MarshallerContextName;
 import org.kie.kogito.serialization.process.MarshallerReaderContext;
@@ -142,6 +148,8 @@ public class ProtobufProcessInstanceReader {
         processInstance.internalSetSlaTimerId(slaContext.getSlaTimerId());
         processInstance.internalSetSlaCompliance(slaContext.getSlaCompliance());
 
+        processInstance.internalSetCancelTimerId(processInstanceProtobuf.getCancelTimerId());
+
         processInstance.setParentProcessInstanceId(processInstanceProtobuf.getParentProcessInstanceId());
         processInstance.setRootProcessInstanceId(processInstanceProtobuf.getRootProcessInstanceId());
         processInstance.setRootProcessId(processInstanceProtobuf.getRootProcessId());
@@ -161,10 +169,7 @@ public class ProtobufProcessInstanceReader {
         WorkflowContext workflowContext = processInstanceProtobuf.getContext();
 
         for (KogitoTypesProtobuf.NodeInstance nodeInstanceProtobuf : workflowContext.getNodeInstanceList()) {
-            NodeInstanceImpl nodeInstanceImpl = buildNodeInstance(nodeInstanceProtobuf, processInstance);
-            if (nodeInstanceProtobuf.hasTriggerDate()) {
-                nodeInstanceImpl.internalSetTriggerTime(new Date(nodeInstanceProtobuf.getTriggerDate()));
-            }
+            buildNodeInstance(nodeInstanceProtobuf, processInstance);
         }
 
         for (KogitoTypesProtobuf.NodeInstanceGroup group : workflowContext.getExclusiveGroupList()) {
@@ -237,7 +242,7 @@ public class ProtobufProcessInstanceReader {
                 result = buildMilestoneNodeInstance(content);
             } else if (nodeContentProtobuf.is(DynamicNodeInstanceContent.class)) {
                 DynamicNodeInstanceContent content = nodeContentProtobuf.unpack(DynamicNodeInstanceContent.class);
-                result = buildDynamicNodeInstance(content);
+                result = buildDynamicNodeInstance(content, nodeInstance, parent);
             } else if (nodeContentProtobuf.is(EventSubProcessNodeInstanceContent.class)) {
                 EventSubProcessNodeInstanceContent content = nodeContentProtobuf.unpack(EventSubProcessNodeInstanceContent.class);
                 result = buildEventSubProcessNodeInstance(content);
@@ -264,6 +269,9 @@ public class ProtobufProcessInstanceReader {
                 result.internalSetSlaDueDate(new Date(slaNodeInstanceContext.getSlaDueDate()));
             }
             result.internalSetSlaTimerId(slaNodeInstanceContext.getSlaTimerId());
+            if (nodeInstance.hasTriggerDate()) {
+                result.internalSetTriggerTime(new Date(nodeInstance.getTriggerDate()));
+            }
 
             return result;
         } catch (IOException e) {
@@ -288,6 +296,9 @@ public class ProtobufProcessInstanceReader {
             }
             nodeInstance.internalSetTimerInstances(timerInstances);
         }
+        if (!content.getTimerInstanceReferenceMap().isEmpty()) {
+            nodeInstance.internalSetTimerInstancesReference(new HashMap<>(content.getTimerInstanceReferenceMap()));
+        }
 
         setCommonNodeInstanceData(ruleFlowProcessInstance, parentContainer, protoNodeInstance, nodeInstance);
 
@@ -305,11 +316,15 @@ public class ProtobufProcessInstanceReader {
             }
             nodeInstance.internalSetTimerInstances(timerInstances);
         }
+        if (!content.getTimerInstanceReferenceMap().isEmpty()) {
+            nodeInstance.internalSetTimerInstancesReference(new HashMap<>(content.getTimerInstanceReferenceMap()));
+        }
         buildWorkflowContext(nodeInstance, content.getContext());
         return nodeInstance;
     }
 
-    private NodeInstanceImpl buildDynamicNodeInstance(DynamicNodeInstanceContent content) {
+    private NodeInstanceImpl buildDynamicNodeInstance(DynamicNodeInstanceContent content, KogitoTypesProtobuf.NodeInstance protoNodeInstance,
+            KogitoNodeInstanceContainer parentContainer) {
         DynamicNodeInstance nodeInstance = new DynamicNodeInstance();
         if (content.getTimerInstanceIdCount() > 0) {
             List<String> timerInstances = new ArrayList<>();
@@ -318,7 +333,11 @@ public class ProtobufProcessInstanceReader {
             }
             nodeInstance.internalSetTimerInstances(timerInstances);
         }
+        if (!content.getTimerInstanceReferenceMap().isEmpty()) {
+            nodeInstance.internalSetTimerInstancesReference(new HashMap<>(content.getTimerInstanceReferenceMap()));
+        }
 
+        setCommonNodeInstanceData(ruleFlowProcessInstance, parentContainer, protoNodeInstance, nodeInstance);
         buildWorkflowContext(nodeInstance, content.getContext());
 
         return nodeInstance;
@@ -333,6 +352,9 @@ public class ProtobufProcessInstanceReader {
                 timerInstances.add(_timerId);
             }
             nodeInstance.internalSetTimerInstances(timerInstances);
+        }
+        if (!content.getTimerInstanceReferenceMap().isEmpty()) {
+            nodeInstance.internalSetTimerInstancesReference(new HashMap<>(content.getTimerInstanceReferenceMap()));
         }
         return nodeInstance;
     }
@@ -368,6 +390,9 @@ public class ProtobufProcessInstanceReader {
             }
             nodeInstance.internalSetTimerInstances(timerInstances);
         }
+        if (!content.getTimerInstanceReferenceMap().isEmpty()) {
+            nodeInstance.internalSetTimerInstancesReference(new HashMap<>(content.getTimerInstanceReferenceMap()));
+        }
         return nodeInstance;
     }
 
@@ -381,6 +406,9 @@ public class ProtobufProcessInstanceReader {
             }
             nodeInstance.internalSetTimerInstances(timerInstances);
         }
+        if (!content.getTimerInstanceReferenceMap().isEmpty()) {
+            nodeInstance.internalSetTimerInstancesReference(new HashMap<>(content.getTimerInstanceReferenceMap()));
+        }
 
         return nodeInstance;
     }
@@ -390,6 +418,9 @@ public class ProtobufProcessInstanceReader {
         nodeInstance.internalSetProcessInstanceId(content.getProcessInstanceId());
         if (content.getTimerInstanceIdCount() > 0) {
             nodeInstance.internalSetTimerInstances(new ArrayList<>(content.getTimerInstanceIdList()));
+        }
+        if (!content.getTimerInstanceReferenceMap().isEmpty()) {
+            nodeInstance.internalSetTimerInstancesReference(new HashMap<>(content.getTimerInstanceReferenceMap()));
         }
         return nodeInstance;
     }
@@ -411,6 +442,9 @@ public class ProtobufProcessInstanceReader {
         if (content.getTimerInstanceIdCount() > 0) {
             nodeInstance.internalSetTimerInstances(new ArrayList<>(content.getTimerInstanceIdList()));
         }
+        if (!content.getTimerInstanceReferenceMap().isEmpty()) {
+            nodeInstance.internalSetTimerInstancesReference(new HashMap<>(content.getTimerInstanceReferenceMap()));
+        }
 
         return nodeInstance;
     }
@@ -420,7 +454,7 @@ public class ProtobufProcessInstanceReader {
             WorkItemNodeInstance nodeInstance = instanceWorkItem(content);
             if (nodeInstance instanceof HumanTaskNodeInstance) {
                 HumanTaskNodeInstance humanTaskNodeInstance = (HumanTaskNodeInstance) nodeInstance;
-                HumanTaskWorkItemImpl workItem = (HumanTaskWorkItemImpl) nodeInstance.getWorkItem();
+                InternalHumanTaskWorkItem workItem = humanTaskNodeInstance.getWorkItem();
                 Any workItemDataMessage = content.getWorkItemData();
                 if (workItemDataMessage.is(HumanTaskWorkItemData.class)) {
                     HumanTaskWorkItemData workItemData = workItemDataMessage.unpack(HumanTaskWorkItemData.class);
@@ -457,7 +491,7 @@ public class ProtobufProcessInstanceReader {
             }
 
             nodeInstance.internalSetWorkItemId(content.getWorkItemId());
-            KogitoWorkItemImpl workItem = (KogitoWorkItemImpl) nodeInstance.getWorkItem();
+            InternalKogitoWorkItem workItem = (InternalKogitoWorkItem) nodeInstance.getWorkItem();
             workItem.setId(content.getWorkItemId());
             workItem.setProcessInstanceId(ruleFlowProcessInstance.getStringId());
             workItem.setName(content.getName());
@@ -473,6 +507,9 @@ public class ProtobufProcessInstanceReader {
 
             if (content.getTimerInstanceIdCount() > 0) {
                 nodeInstance.internalSetTimerInstances(new ArrayList<>(content.getTimerInstanceIdList()));
+            }
+            if (!content.getTimerInstanceReferenceMap().isEmpty()) {
+                nodeInstance.internalSetTimerInstancesReference(new HashMap<>(content.getTimerInstanceReferenceMap()));
             }
             nodeInstance.internalSetProcessInstanceId(content.getErrorHandlingProcessInstanceId());
             varReader.buildVariables(content.getVariableList()).forEach(var -> nodeInstance.getWorkItem().getParameters().put(var.getName(), var.getValue()));
@@ -497,6 +534,7 @@ public class ProtobufProcessInstanceReader {
         } else {
             WorkItemNodeInstance nodeInstance = new WorkItemNodeInstance();
             KogitoWorkItemImpl workItem = new KogitoWorkItemImpl();
+            workItem.setId(UUID.randomUUID().toString());
             nodeInstance.internalSetWorkItem(workItem);
             return nodeInstance;
         }

@@ -1,22 +1,27 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.ruleflow.core.factory;
 
+import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.datatype.DataType;
 import org.jbpm.process.instance.impl.Action;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.DataDefinition;
@@ -58,19 +63,13 @@ public class ForEachNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> ex
 
     public ForEachNodeFactory<T> variable(String varRef, String variableName, DataType dataType) {
         getForEachNode().setInputRef(variableName);
-        getForEachNode().addContextVariable(varRef, variableName, dataType);
         getForEachNode().getMultiInstanceSpecification().setInputDataItem(new DataDefinition(varRef, variableName, dataType.getStringType()));
-        return this;
+        return addVariable(varRef, variableName, dataType, true);
     }
 
     public ForEachNodeFactory<T> outputCollectionExpression(String collectionExpression) {
         getForEachNode().setOutputCollectionExpression(collectionExpression);
         getForEachNode().getMultiInstanceSpecification().setLoopDataOutputRef(DataDefinition.toExpression(collectionExpression));
-        return this;
-    }
-
-    public ForEachNodeFactory<T> expressionLanguage(String exprLanguage) {
-        getForEachNode().setExpressionLanguage(exprLanguage);
         return this;
     }
 
@@ -83,20 +82,24 @@ public class ForEachNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> ex
         return outputVariable(variableName, variableName, dataType);
     }
 
+    public ForEachNodeFactory<T> outputVariable(String varRef, String variableName, DataType dataType) {
+        getForEachNode().setOutputRef(variableName);
+        getForEachNode().getMultiInstanceSpecification().setOutputDataItem(new DataDefinition(varRef, variableName, dataType.getStringType()));
+        return addVariable(varRef, variableName, dataType, true);
+    }
+
     public ForEachNodeFactory<T> tempVariable(String variableName, DataType dataType) {
-        getForEachNode().addContextVariable(variableName, variableName, dataType);
-        return this;
+        return tempVariable(variableName, variableName, dataType);
     }
 
     public ForEachNodeFactory<T> tempVariable(String varRef, String variableName, DataType dataType) {
-        getForEachNode().addContextVariable(varRef, variableName, dataType);
-        return this;
+        return addVariable(varRef, variableName, dataType, false);
     }
 
-    public ForEachNodeFactory<T> outputVariable(String varRef, String variableName, DataType dataType) {
-        getForEachNode().setOutputRef(variableName);
-        getForEachNode().addContextVariable(varRef, variableName, dataType);
-        getForEachNode().getMultiInstanceSpecification().setOutputDataItem(new DataDefinition(varRef, variableName, dataType.getStringType()));
+    private ForEachNodeFactory<T> addVariable(String varRef, String variableName, DataType dataType, boolean eval) {
+        Variable variable = getForEachNode().addContextVariable(varRef, variableName, dataType);
+        variable.setMetaData(Metadata.EVAL_VARIABLE, eval);
+        variable.setMetaData(Variable.VARIABLE_TAGS, Variable.INTERNAL_TAG);
         return this;
     }
 

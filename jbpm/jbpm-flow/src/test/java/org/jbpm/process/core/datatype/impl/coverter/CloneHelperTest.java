@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.process.core.datatype.impl.coverter;
 
@@ -21,12 +24,15 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class CloneHelperTest {
 
@@ -40,6 +46,23 @@ public class CloneHelperTest {
 
         public CollectionHolder(Collection<T> collection) {
             this.collection = collection;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(collection);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            CollectionHolder other = (CollectionHolder) obj;
+            return Objects.equals(collection, other.collection);
         }
     }
 
@@ -55,6 +78,7 @@ public class CloneHelperTest {
     }
 
     private static class DumbCloneableCollectionHolder<T> extends CollectionHolder<T> implements Cloneable {
+
         public DumbCloneableCollectionHolder(Collection<T> collection) {
             super(collection);
         }
@@ -119,53 +143,89 @@ public class CloneHelperTest {
         }
     }
 
+    @BeforeAll
+    static void init() {
+        CloneHelperRegister.get().registerCloner(CustomCloneable.class, o -> new CustomCloneable(o.getName() + "_" + o.getName()));
+    }
+
     @Test
     void testCloneable() {
-        CollectionHolder<Integer> toClone = new CloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) TypeConverterRegistry.get().forTypeCloner(toClone.getClass()).apply(toClone);
-        assertNotSame(toClone.getCollection(), cloned.getCollection());
-        assertEquals(toClone.getCollection(), cloned.getCollection());
+        assertCloned(new CloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testCopyConstructor() {
-        CollectionHolder<Integer> toClone = new CopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) TypeConverterRegistry.get().forTypeCloner(toClone.getClass()).apply(toClone);
-        assertNotSame(toClone.getCollection(), cloned.getCollection());
-        assertEquals(toClone.getCollection(), cloned.getCollection());
+        assertCloned(new CopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testDefault() {
-        CollectionHolder<Integer> toClone = new CollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) TypeConverterRegistry.get().forTypeCloner(toClone.getClass()).apply(toClone);
-        assertSame(toClone.getCollection(), cloned.getCollection());
+        assertNotCloned(new CollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testCloneableError() {
-        CollectionHolder<Integer> toClone = new DumbCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        UnaryOperator<Object> cloner = TypeConverterRegistry.get().forTypeCloner(toClone.getClass());
-        assertThrows(IllegalStateException.class, () -> cloner.apply(toClone));
+        assertCloneError(new DumbCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testCopyError() {
-        CollectionHolder<Integer> toClone = new DumbCopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        UnaryOperator<Object> cloner = TypeConverterRegistry.get().forTypeCloner(toClone.getClass());
-        assertThrows(IllegalStateException.class, () -> cloner.apply(toClone));
+        assertCloneError(new DumbCopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
-    void NoCloneableError() {
-        CollectionHolder<Integer> toClone = new LierCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        assertSame(toClone, TypeConverterRegistry.get().forTypeCloner(toClone.getClass()).apply(toClone));
+    void testNoCloneable() {
+        assertNotCloned(new LierCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testCloneRegister() {
-        TypeConverterRegistry.get().registerCloner(CustomCloneable.class, o -> new CustomCloneable(o.getName() + "_" + o.getName()));
-        CustomCloneable toClone = new CustomCloneable("Javierito");
-        assertEquals(new CustomCloneable("Javierito_Javierito"), TypeConverterRegistry.get().forTypeCloner(toClone.getClass()).apply(toClone));
+        assertThat(CloneHelper.get().clone(new CustomCloneable("Javierito"))).isEqualTo(new CustomCloneable("Javierito_Javierito"));
+    }
+
+    @Test
+    void testCloneIntPrimitive() {
+        assertNotCloned(1);
+    }
+
+    @Test
+    void testCloneBoolPrimitive() {
+        assertNotCloned(true);
+    }
+
+    @Test
+    void testCloneStringPrimitive() {
+        assertCloned("pepe");
+    }
+
+    @Test
+    void testCloneNull() {
+        Object clode = CloneHelper.get().clone(null);
+        assertThat(clode).isNull();
+    }
+
+    @Test
+    void testListClone() {
+        assertCloned(new ArrayList<>(Arrays.asList(1, 2, 3)));
+    }
+
+    @Test
+    void testObjectNodeClone() {
+        assertThat(CloneHelper.get().getCloner(ObjectNode.class)).isSameAs(CloneHelper.get().getCloner(JsonNode.class));
+        assertCloned(ObjectMapperFactory.get().createObjectNode().put("name", "Javierito"));
+    }
+
+    private void assertNotCloned(Object toClone) {
+        assertThat(CloneHelper.get().clone(toClone)).isSameAs(toClone);
+    }
+
+    private void assertCloned(Object toClone) {
+        Object cloned = CloneHelper.get().clone(toClone);
+        assertThat(cloned).isEqualTo(toClone).isNotSameAs(toClone);
+    }
+
+    private <T> void assertCloneError(T toClone) {
+        UnaryOperator<T> cloner = (UnaryOperator<T>) CloneHelper.get().getCloner(toClone.getClass());
+        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> cloner.apply(toClone));
     }
 }

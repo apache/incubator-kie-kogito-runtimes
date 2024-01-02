@@ -1,27 +1,26 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.events.mongodb.codec;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.bson.BsonReader;
 import org.bson.BsonString;
@@ -32,17 +31,17 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.event.process.MilestoneEventBody;
-import org.kie.kogito.event.process.NodeInstanceEventBody;
-import org.kie.kogito.event.process.ProcessErrorEventBody;
 import org.kie.kogito.event.process.ProcessInstanceDataEvent;
-import org.kie.kogito.event.process.ProcessInstanceEventBody;
+import org.kie.kogito.event.process.ProcessInstanceEventMetadata;
+import org.kie.kogito.event.process.ProcessInstanceStateDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceStateEventBody;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -55,7 +54,7 @@ class ProcessInstanceDataEventCodecTest {
 
     private ProcessInstanceDataEventCodec codec;
 
-    private ProcessInstanceDataEvent event;
+    private ProcessInstanceStateDataEvent event;
 
     @BeforeEach
     void setUp() {
@@ -63,74 +62,55 @@ class ProcessInstanceDataEventCodecTest {
 
         String source = "testSource";
         String kogitoAddons = "testKogitoAddons";
+        String identity = "testIdentity";
 
-        Map<String, String> metaData = new HashMap<>();
-        metaData.put(ProcessInstanceEventBody.ID_META_DATA, "testKogitoProcessInstanceId");
-        metaData.put(ProcessInstanceEventBody.VERSION_META_DATA, "testKogitoProcessInstanceVersion");
-        metaData.put(ProcessInstanceEventBody.ROOT_ID_META_DATA, "testKogitoRootProcessInstanceId");
-        metaData.put(ProcessInstanceEventBody.PROCESS_ID_META_DATA, "testKogitoProcessId");
-        metaData.put(ProcessInstanceEventBody.PROCESS_TYPE_META_DATA, "testKogitoProcessType");
-        metaData.put(ProcessInstanceEventBody.ROOT_PROCESS_ID_META_DATA, "testKogitoRootProcessId");
-        metaData.put(ProcessInstanceEventBody.PARENT_ID_META_DATA, "testKogitoParentProcessInstanceId");
-        metaData.put(ProcessInstanceEventBody.STATE_META_DATA, "testKogitoProcessInstanceState");
+        Map<String, Object> metaData = new HashMap<>();
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA, "testKogitoProcessInstanceId");
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA, "testKogitoProcessInstanceVersion");
+        metaData.put(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA, "testKogitoRootProcessInstanceId");
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA, "testKogitoProcessId");
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA, "testKogitoProcessType");
+        metaData.put(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA, "testKogitoRootProcessId");
+        metaData.put(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA, "testKogitoParentProcessInstanceId");
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA, "testKogitoProcessInstanceState");
 
-        ProcessInstanceEventBody body = ProcessInstanceEventBody.create()
-                .id("testId")
-                .version("testVersion")
+        ProcessInstanceStateEventBody body = ProcessInstanceStateEventBody.create()
+                .processInstanceId("testId")
+                .processVersion("testVersion")
                 .parentInstanceId("testKogitoParentProcessInstanceId")
-                .rootInstanceId("testKogitoRootProcessInstanceId")
+                .rootProcessInstanceId("testKogitoRootProcessInstanceId")
                 .processId("testKogitoProcessId")
                 .processType("testKogitoProcessType")
                 .rootProcessId("testKogitoRootProcessId")
                 .processName("testProcessName")
-                .startDate(new Date())
-                .endDate(new Date())
+                .eventUser(identity)
+                .eventDate(new Date())
                 .state(1)
                 .businessKey("testBusinessKey")
-                .error(ProcessErrorEventBody.create()
-                        .errorMessage("testErrorMessage")
-                        .nodeDefinitionId("testNodeDefinitionId")
-                        .build())
-                .nodeInstance(NodeInstanceEventBody.create()
-                        .id("testId")
-                        .nodeId("testNodeId")
-                        .nodeDefinitionId("testNodeDefinitionId")
-                        .nodeName("testNodeName")
-                        .nodeType("testNodeType")
-                        .triggerTime(new Date())
-                        .leaveTime(new Date())
-                        .build())
-                .variables(Collections.singletonMap("testVariableKey", "testVariableValue"))
                 .roles("testRole")
-                .milestones(Collections.singleton(
-                        MilestoneEventBody.create()
-                                .id("testId")
-                                .name("testName")
-                                .status("testStatus")
-                                .build()))
                 .build();
 
-        event = new ProcessInstanceDataEvent(source, kogitoAddons, metaData, body);
+        event = new ProcessInstanceStateDataEvent(source, kogitoAddons, identity, metaData, body);
     }
 
     @Test
     void generateIdIfAbsentFromDocument() {
-        assertEquals(event, codec.generateIdIfAbsentFromDocument(event));
+        assertThat(codec.generateIdIfAbsentFromDocument(event)).isEqualTo(event);
     }
 
     @Test
     void documentHasId() {
-        assertTrue(codec.documentHasId(event));
+        assertThat(codec.documentHasId(event)).isTrue();
     }
 
     @Test
     void getDocumentId() {
-        assertEquals(new BsonString(event.getId()), codec.getDocumentId(event));
+        assertThat(codec.getDocumentId(event)).isEqualTo(new BsonString(event.getId()));
     }
 
     @Test
     void decode() {
-        assertNull(codec.decode(mock(BsonReader.class), DecoderContext.builder().build()));
+        assertThat(codec.decode(mock(BsonReader.class), DecoderContext.builder().build())).isNull();
     }
 
     @Test
@@ -147,61 +127,41 @@ class ProcessInstanceDataEventCodecTest {
             ArgumentCaptor<Document> captor = ArgumentCaptor.forClass(Document.class);
             verify(mockCodec, times(1)).encode(eq(writer), captor.capture(), eq(context));
             Document doc = captor.getValue();
+            Map<String, Object> node = new ObjectMapper().readValue(doc.toJson(), Map.class);
 
-            assertEquals(event.getId(), doc.get(ID));
-            assertEquals(event.getSpecVersion().toString(), doc.get("specversion"));
-            assertEquals(event.getSource().toString(), doc.get("source"));
-            assertEquals(event.getType(), doc.get("type"));
-            assertEquals(event.getTime(), doc.get("time"));
-            assertEquals(event.getSubject(), doc.get("subject"));
-            assertEquals(event.getDataContentType(), doc.get("dataContentType"));
-            assertEquals(event.getDataSchema(), doc.get("dataSchema"));
-            assertEquals(event.getKogitoProcessInstanceId(), doc.get("kogitoProcessinstanceId"));
-            assertEquals(event.getKogitoProcessInstanceVersion(), doc.get("kogitoProcessInstanceVersion"));
-            assertEquals(event.getKogitoRootProcessInstanceId(), doc.get("kogitoRootProcessinstanceId"));
-            assertEquals(event.getKogitoProcessId(), doc.get("kogitoProcessId"));
-            assertEquals(event.getKogitoProcessType(), doc.get("kogitoProcessType"));
-            assertEquals(event.getKogitoRootProcessId(), doc.get("kogitoRootProcessId"));
-            assertEquals(event.getKogitoAddons(), doc.get("kogitoAddons"));
-            assertEquals(event.getKogitoParentProcessInstanceId(), doc.get("kogitoParentProcessinstanceId"));
-            assertEquals(event.getKogitoProcessInstanceState(), doc.get("kogitoProcessinstanceState"));
-            assertEquals(event.getKogitoReferenceId(), doc.get("kogitoReferenceId"));
-            assertEquals(event.getKogitoStartFromNode(), doc.get("kogitoStartFromNode"));
+            assertThat(node).containsEntry(ID, event.getId())
+                    .containsEntry("specversion", event.getSpecVersion().toString())
+                    .containsEntry("source", event.getSource().toString())
+                    .containsEntry("type", event.getType())
+                    .containsEntry("datacontenttype", event.getDataContentType())
+                    .containsEntry("kogitoprocinstanceid", event.getKogitoProcessInstanceId())
+                    .containsEntry("kogitoprocversion", event.getKogitoProcessInstanceVersion())
+                    .containsEntry("kogitorootprociid", event.getKogitoRootProcessInstanceId())
+                    .containsEntry("kogitoprocid", event.getKogitoProcessId())
+                    .containsEntry("kogitoproctype", event.getKogitoProcessType())
+                    .containsEntry("kogitorootprocid", event.getKogitoRootProcessId())
+                    .containsEntry("kogitoaddons", event.getKogitoAddons())
+                    .containsEntry("kogitoparentprociid", event.getKogitoParentProcessInstanceId())
+                    .containsEntry("kogitoprocist", event.getKogitoProcessInstanceState())
+                    .containsEntry("kogitoidentity", event.getKogitoIdentity());
 
-            assertEquals(event.getData().getId(), ((Document) doc.get("data")).get("id"));
-            assertEquals(event.getData().getVersion(), ((Document) doc.get("data")).get("version"));
-            assertEquals(event.getData().getParentInstanceId(), ((Document) doc.get("data")).get("parentInstanceId"));
-            assertEquals(event.getData().getRootInstanceId(), ((Document) doc.get("data")).get("rootInstanceId"));
-            assertEquals(event.getData().getProcessId(), ((Document) doc.get("data")).get("processId"));
-            assertEquals(event.getData().getRootProcessId(), ((Document) doc.get("data")).get("rootProcessId"));
-            assertEquals(event.getData().getProcessName(), ((Document) doc.get("data")).get("processName"));
-            assertEquals(event.getData().getStartDate(), ((Document) doc.get("data")).get("startDate"));
-            assertEquals(event.getData().getEndDate(), ((Document) doc.get("data")).get("endDate"));
-            assertEquals(event.getData().getState(), ((Document) doc.get("data")).get("state"));
-            assertEquals(event.getData().getBusinessKey(), ((Document) doc.get("data")).get("businessKey"));
-            assertEquals(event.getData().getRoles(), ((Document) doc.get("data")).get("roles"));
-            assertEquals(new Document(event.getData().getVariables()), ((Document) doc.get("data")).get("variables"));
-            Document error = new Document().append("errorMessage", event.getData().getError().getErrorMessage())
-                    .append("nodeDefinitionId", event.getData().getError().getNodeDefinitionId());
-            assertEquals(error, ((Document) doc.get("data")).get("error"));
-            NodeInstanceEventBody ni = event.getData().getNodeInstances().iterator().next();
-            Document nodeInstance = new Document().append("id", ni.getId()).append("nodeId", ni.getNodeId())
-                    .append("nodeDefinitionId", ni.getNodeDefinitionId()).append("nodeName", ni.getNodeName())
-                    .append("nodeType", ni.getNodeType()).append("triggerTime", ni.getTriggerTime())
-                    .append("leaveTime", ni.getLeaveTime());
-            Set<Document> nodeInstances = new HashSet<>();
-            nodeInstances.add(nodeInstance);
-            assertEquals(nodeInstances, ((Document) doc.get("data")).get("nodeInstances"));
-            MilestoneEventBody mi = event.getData().getMilestones().iterator().next();
-            Document milestone = new Document().append("id", mi.getId()).append("name", mi.getName()).append("status", mi.getStatus());
-            Set<Document> milestones = new HashSet<>();
-            milestones.add(milestone);
-            assertEquals(milestones, ((Document) doc.get("data")).get("milestones"));
+            assertThat(((Document) doc.get("data")))
+                    .containsEntry("processVersion", event.getData().getProcessVersion())
+                    .containsEntry("rootProcessInstanceId", event.getData().getRootProcessInstanceId())
+                    .containsEntry("processId", event.getData().getProcessId())
+                    .containsEntry("rootProcessId", event.getData().getRootProcessId())
+                    .containsEntry("processName", event.getData().getProcessName())
+                    .containsEntry("eventUser", event.getData().getEventUser())
+                    .containsEntry("state", event.getData().getState())
+                    .containsEntry("businessKey", event.getData().getBusinessKey());
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
     }
 
     @Test
     void getEncoderClass() {
-        assertEquals(ProcessInstanceDataEvent.class, codec.getEncoderClass());
+        assertThat(codec.getEncoderClass()).isEqualTo(ProcessInstanceDataEvent.class);
     }
 }

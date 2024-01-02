@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.workflow.core.node;
 
@@ -47,7 +50,7 @@ public class ForEachNode extends CompositeContextNode {
     private String collectionExpression;
     private String outputCollectionExpression;
     private String completionConditionExpression;
-    private String exprLanguage;
+
     private Action finishAction;
     private boolean waitForCompletion = true;
     private Expression evaluateExpression;
@@ -105,14 +108,6 @@ public class ForEachNode extends CompositeContextNode {
         return null;
     }
 
-    public void setExpressionLanguage(String exprLanguage) {
-        this.exprLanguage = exprLanguage;
-    }
-
-    public String getExpressionLanguage() {
-        return exprLanguage;
-    }
-
     public Action getCompletionAction() {
         return finishAction;
     }
@@ -122,6 +117,7 @@ public class ForEachNode extends CompositeContextNode {
     }
 
     public Expression getEvaluateExpression() {
+        String exprLanguage = getProcess().getExpressionLanguage();
         if (evaluateExpression == null && ExpressionHandlerFactory.isSupported(exprLanguage)) {
             evaluateExpression = ExpressionHandlerFactory.get(exprLanguage, collectionExpression);
         }
@@ -234,15 +230,15 @@ public class ForEachNode extends CompositeContextNode {
         this.outputVariableName = varRef;
     }
 
-    public void addContextVariable(String varRef, String variableName, DataType type) {
-        this.addVariableToContext(getCompositeNode(), varRef, variableName, type);
+    public Variable addContextVariable(String varRef, String variableName, DataType type) {
+        return addVariableToContext(getCompositeNode(), varRef, variableName, type);
     }
 
-    private void addVariableToContext(CompositeContextNode compositeContextNode, String varRef, String variableName, DataType type) {
+    private Variable addVariableToContext(CompositeContextNode compositeContextNode, String varRef, String variableName, DataType type) {
         VariableScope variableScope = (VariableScope) compositeContextNode.getDefaultContext(VariableScope.VARIABLE_SCOPE);
         List<Variable> variables = variableScope.getVariables();
         if (variables == null) {
-            variables = new ArrayList<Variable>();
+            variables = new ArrayList<>();
             variableScope.setVariables(variables);
         }
         Variable variable = new Variable();
@@ -250,6 +246,7 @@ public class ForEachNode extends CompositeContextNode {
         variable.setName(variableName);
         variable.setType(type);
         variables.add(variable);
+        return variable;
     }
 
     public String getCollectionExpression() {

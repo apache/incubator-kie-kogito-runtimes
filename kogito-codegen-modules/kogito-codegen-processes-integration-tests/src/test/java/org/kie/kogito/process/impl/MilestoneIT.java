@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.process.impl;
 
@@ -38,9 +41,6 @@ import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.flexible.Milestone;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.process.flexible.ItemDescription.Status.AVAILABLE;
 import static org.kie.kogito.process.flexible.ItemDescription.Status.COMPLETED;
 import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
@@ -74,7 +74,7 @@ class MilestoneIT extends AbstractCodegenIT {
                 .filter(node -> node.getName().equals("SimpleMilestone"))
                 .map(n -> (String) n.getMetaData().get(Metadata.UNIQUE_ID))
                 .findFirst();
-        assertTrue(milestoneId.isPresent());
+        assertThat(milestoneId).isPresent();
         assertThat(legacyProcessInstance.getCompletedNodeIds()).contains(milestoneId.get());
     }
 
@@ -111,9 +111,8 @@ class MilestoneIT extends AbstractCodegenIT {
 
     private void assertMilestones(Collection<Milestone> expected, Collection<Milestone> milestones) {
         if (expected == null) {
-            assertNull(milestones);
+            assertThat(milestones).isNull();
         }
-        assertNotNull(milestones);
         assertThat(milestones).hasSameSizeAs(expected);
         expected.forEach(e -> assertThat(milestones.stream().anyMatch(c -> Objects.equals(c.getName(), e.getName()) &&
                 Objects.equals(c.getStatus(), e.getStatus()))).withFailMessage("Expected: " + e + " - Not present in: " + milestones).isTrue());

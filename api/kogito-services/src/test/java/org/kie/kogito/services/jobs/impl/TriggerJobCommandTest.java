@@ -1,19 +1,21 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.services.jobs.impl;
 
 import java.util.Optional;
@@ -29,8 +31,7 @@ import org.kie.kogito.uow.UnitOfWorkManager;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -39,7 +40,8 @@ import static org.mockito.Mockito.verify;
 class TriggerJobCommandTest {
 
     private static final String PROCESS_INSTANCE_ID = "PROCESS_INSTANCE_ID";
-    private static final String TIMER_ID = "TIMER:1:8be48533-beed-4c7b-ad85-bd7b543e7925";
+    private static final String JOB_ID = "JOB_ID";
+    private static final String TIMER_ID = "TIMER_ID";
     private static final int LIMIT = 1;
 
     @Mock
@@ -61,7 +63,7 @@ class TriggerJobCommandTest {
 
     @BeforeEach
     void setUp() {
-        command = new TriggerJobCommand(PROCESS_INSTANCE_ID, TIMER_ID, LIMIT, process, unitOfWorkManager);
+        command = new TriggerJobCommand(PROCESS_INSTANCE_ID, JOB_ID, TIMER_ID, LIMIT, process, unitOfWorkManager);
     }
 
     @Test
@@ -69,7 +71,7 @@ class TriggerJobCommandTest {
         doReturn(unitOfWork).when(unitOfWorkManager).newUnitOfWork();
         doReturn(instances).when(process).instances();
         doReturn(Optional.empty()).when(instances).findById(PROCESS_INSTANCE_ID);
-        assertFalse(command.execute());
+        assertThat(command.execute()).isFalse();
     }
 
     @Test
@@ -77,7 +79,7 @@ class TriggerJobCommandTest {
         doReturn(unitOfWork).when(unitOfWorkManager).newUnitOfWork();
         doReturn(instances).when(process).instances();
         doReturn(Optional.of(processInstance)).when(instances).findById(PROCESS_INSTANCE_ID);
-        assertTrue(command.execute());
+        assertThat(command.execute()).isTrue();
         verify(processInstance).send(any());
     }
 }

@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.ruleflow.core.validation;
 
@@ -23,15 +26,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 
-import org.drools.core.time.impl.CronExpression;
-import org.jbpm.process.core.ContextContainer;
+import org.drools.core.time.impl.KieCronExpression;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.DataType;
 import org.jbpm.process.core.datatype.DataTypeResolver;
 import org.jbpm.process.core.event.EventFilter;
@@ -74,34 +74,16 @@ import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.core.node.ThrowLinkNode;
 import org.jbpm.workflow.core.node.TimerNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
+import org.jbpm.workflow.instance.rule.DecisionRuleType;
+import org.jbpm.workflow.instance.rule.RuleType;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.Process;
 import org.kie.api.io.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseResult;
-import com.github.javaparser.ParserConfiguration;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.BinaryExpr;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.printer.DefaultPrettyPrinterVisitor;
-import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
-import com.github.javaparser.resolution.UnsolvedSymbolException;
-import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toSet;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_MESSAGE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
@@ -116,11 +98,10 @@ import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
 public class RuleFlowProcessValidator implements ProcessValidator {
 
     public static final String ASSOCIATIONS = "BPMN.Associations";
-    private static final Logger LOGGER = LoggerFactory.getLogger(RuleFlowProcessValidator.class);
-    private static final String KCONTEXT = "kcontext";
+
     private static RuleFlowProcessValidator INSTANCE;
 
-    private RuleFlowProcessValidator() {
+    protected RuleFlowProcessValidator() {
     }
 
     public static RuleFlowProcessValidator getInstance() {
@@ -217,8 +198,8 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 }
                 final String language = ruleSetNode.getLanguage();
 
-                RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
-                if (RuleSetNode.DRL_LANG.equals(language)) {
+                RuleType ruleType = ruleSetNode.getRuleType();
+                if (ruleType.isRuleFlowGroup()) {
                     final String ruleFlowGroup = ruleType.getName();
                     if (ruleFlowGroup == null || "".equals(ruleFlowGroup)) {
                         addErrorMessage(process,
@@ -226,7 +207,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                                 errors,
                                 "RuleSet (DRL) has no ruleflow-group.");
                     }
-                } else if (RuleSetNode.RULE_UNIT_LANG.equals(language)) {
+                } else if (ruleType.isRuleUnit()) {
                     final String unit = ruleType.getName();
                     if (unit == null || "".equals(unit)) {
                         addErrorMessage(process,
@@ -234,8 +215,8 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                                 errors,
                                 "RuleSet (Rule Unit) has no ruleflow-group.");
                     }
-                } else if (RuleSetNode.DMN_LANG.equals(language)) {
-                    RuleSetNode.RuleType.Decision decision = (RuleSetNode.RuleType.Decision) ruleType;
+                } else if (ruleType.isDecision()) {
+                    DecisionRuleType decision = (DecisionRuleType) ruleType;
                     final String namespace = decision.getNamespace();
                     if (namespace == null || "".equals(namespace)) {
                         addErrorMessage(process,
@@ -438,59 +419,6 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                                 errors,
                                 droolsAction.getDialect() + " script language is not supported in Kogito.");
                     }
-
-                    TypeSolver typeSolver = new ReflectionTypeSolver();
-                    JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
-                    JavaParser parser = new JavaParser(new ParserConfiguration().setSymbolResolver(symbolSolver));
-
-                    ParseResult<CompilationUnit> parse = parser.parse("import org.kie.kogito.internal.process.runtime.KogitoProcessContext;\n" +
-                            "import org.jbpm.process.instance.impl.Action;\n" +
-                            " class Test {\n" +
-                            "    Action action = kcontext -> {" + actionString + "};\n" +
-                            "}");
-
-                    if (parse.isSuccessful()) {
-                        CompilationUnit unit = parse.getResult().get();
-
-                        //Check local variables declaration
-                        Set<String> knownVariables =
-                                unit.findAll(VariableDeclarationExpr.class).stream().flatMap(v -> v.getVariables().stream()).map(NodeWithSimpleName::getNameAsString).collect(toSet());
-
-                        knownVariables.add(KCONTEXT);
-                        knownVariables.addAll(Arrays.stream(process.getVariableScope().getVariableNames()).collect(toSet()));
-                        knownVariables.addAll(Arrays.asList(process.getGlobalNames()));
-
-                        if (actionNode.getParentContainer() instanceof ContextContainer) {
-                            ContextContainer contextContainer = (ContextContainer) actionNode.getParentContainer();
-                            VariableScope variableScope = (VariableScope) contextContainer.getDefaultContext(VariableScope.VARIABLE_SCOPE);
-                            if (variableScope != null) {
-                                knownVariables.addAll(Arrays.stream(variableScope.getVariableNames()).collect(toSet()));
-                            }
-                        }
-
-                        BlockStmt blockStmt = unit.findFirst(BlockStmt.class).get();
-                        try {
-                            resolveVariablesType(unit, knownVariables);
-                        } catch (UnsolvedSymbolException ex) {
-                            DefaultPrettyPrinterVisitor v1 = new DefaultPrettyPrinterVisitor(new DefaultPrinterConfiguration());
-                            blockStmt.accept(v1, null);
-                            LOGGER.error("\n" + v1);
-                            //Small hack to extract the variable name causing the issue
-                            //Name comes as "Solving x" where x is the variable name
-                            final String[] solving = ex.getName().split(" ");
-                            final String var = solving.length == 2 ? solving[1] : solving[0];
-                            addErrorMessage(process,
-                                    node,
-                                    errors,
-                                    format("uses unknown variable in the script: %s", var));
-                        }
-                    } else {
-                        addErrorMessage(process,
-                                node,
-                                errors,
-                                format("unable to parse Java content: %s", parse.getProblems().get(0).getMessage()));
-                    }
-
                     validateCompensationIntermediateOrEndEvent(actionNode,
                             process,
                             errors);
@@ -836,55 +764,6 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         }
     }
 
-    private void resolveVariablesType(com.github.javaparser.ast.Node node, Set<String> knownVariables) {
-        node.findAll(MethodCallExpr.class).stream()
-                .filter(m -> m.getScope().isPresent())
-                .forEach(m -> {
-                    Expression expression = m.getScope().get();
-                    if (expression.isNameExpr() && !knownVariables.contains(expression.asNameExpr().getNameAsString())) {
-                        expression.calculateResolvedType();
-                    }
-                });
-        node.findAll(AssignExpr.class).stream()
-                .forEach(m -> {
-                    Expression expression = m.getTarget();
-                    if (expression.isNameExpr() && !knownVariables.contains(expression.asNameExpr().getNameAsString())) {
-                        expression.calculateResolvedType();
-                    }
-                });
-        resolveVariablesTypes(node, knownVariables);
-    }
-
-    private void resolveVariablesTypes(com.github.javaparser.ast.Node node, Set<String> knownVariables) {
-        node.findAll(MethodCallExpr.class).stream()
-                .flatMap(m -> m.getArguments().stream())
-                .forEach(arg -> {
-                    if (arg.isMethodCallExpr() || arg.isBinaryExpr()) {
-                        resolveVariablesTypes(arg, knownVariables);
-                    } else {
-                        arg.findAll(NameExpr.class).stream().filter(ex -> !knownVariables.contains(ex.getNameAsString())).forEach(Expression::calculateResolvedType);
-                    }
-                });
-        node.findAll(BinaryExpr.class).stream()
-                .map(BinaryExpr::asBinaryExpr)
-                .forEach(bex -> {
-                    if (bex.getLeft().isNameExpr()) {
-                        if (!knownVariables.contains(bex.getLeft().asNameExpr().getNameAsString())) {
-                            bex.getLeft().calculateResolvedType();
-                        }
-                    } else {
-                        resolveVariablesTypes(bex.getLeft(), knownVariables);
-                    }
-                    if (bex.getRight().isNameExpr()) {
-                        if (!knownVariables.contains(bex.getRight().asNameExpr().getNameAsString())) {
-                            bex.getRight().calculateResolvedType();
-                        }
-                    } else {
-                        resolveVariablesTypes(bex.getRight(), knownVariables);
-                    }
-                });
-    }
-
     private void checkAllNodesConnectedToStart(final NodeContainer container,
             boolean isDynamic,
             final List<ProcessValidationError> errors,
@@ -977,6 +856,11 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 (nodeContainer instanceof WorkflowProcess && ((WorkflowProcess) nodeContainer).isDynamic());
     }
 
+    private boolean isExpression(RuleFlowProcess process, String expression) {
+        String lang = process.getExpressionLanguage();
+        return lang != null && ExpressionHandlerFactory.get(lang, expression).isValid();
+    }
+
     private void validateTimer(final Timer timer,
             final org.kie.api.definition.process.Node node,
             final RuleFlowProcess process,
@@ -991,7 +875,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 try {
                     switch (timer.getTimeType()) {
                         case Timer.TIME_CYCLE:
-                            if (!CronExpression.isValidExpression(timer.getDelay())) {
+                            if (!KieCronExpression.isValidExpression(timer.getDelay())) {
                                 // when using ISO date/time period is not set
                                 DateTimeUtils.parseRepeatableDateTime(timer.getDelay());
                             }
@@ -1006,24 +890,28 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                             break;
                     }
                 } catch (RuntimeException e) {
-                    addErrorMessage(process,
-                            node,
-                            errors,
-                            "Could not parse delay '" + timer.getDelay() + "': " + e.getMessage());
+                    if (!isExpression(process, timer.getDelay())) {
+                        addErrorMessage(process,
+                                node,
+                                errors,
+                                "Could not parse delay '" + timer.getDelay() + "': " + e.getMessage());
+                    }
                 }
             }
         }
         if (timer.getPeriod() != null && !timer.getPeriod().contains("#{")) {
             try {
-                if (!CronExpression.isValidExpression(timer.getPeriod())) {
+                if (!KieCronExpression.isValidExpression(timer.getPeriod())) {
                     // when using ISO date/time period is not set
                     DateTimeUtils.parseRepeatableDateTime(timer.getPeriod());
                 }
             } catch (RuntimeException e) {
-                addErrorMessage(process,
-                        node,
-                        errors,
-                        "Could not parse period '" + timer.getPeriod() + "': " + e.getMessage());
+                if (!isExpression(process, timer.getPeriod())) {
+                    addErrorMessage(process,
+                            node,
+                            errors,
+                            "Could not parse period '" + timer.getPeriod() + "': " + e.getMessage());
+                }
             }
         }
 
@@ -1031,10 +919,12 @@ public class RuleFlowProcessValidator implements ProcessValidator {
             try {
                 DateTimeUtils.parseDateAsDuration(timer.getDate());
             } catch (RuntimeException e) {
-                addErrorMessage(process,
-                        node,
-                        errors,
-                        "Could not parse date '" + timer.getDate() + "': " + e.getMessage());
+                if (!isExpression(process, timer.getDate())) {
+                    addErrorMessage(process,
+                            node,
+                            errors,
+                            "Could not parse date '" + timer.getDate() + "': " + e.getMessage());
+                }
             }
         }
     }
@@ -1152,7 +1042,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
 
     @Override
     public boolean accept(Process process, Resource resource) {
-        return RuleFlowProcess.BPMN_TYPE.equals(process.getType()) || RuleFlowProcess.RULEFLOW_TYPE.equals(process.getType());
+        return KogitoWorkflowProcess.BPMN_TYPE.equals(process.getType()) || KogitoWorkflowProcess.RULEFLOW_TYPE.equals(process.getType());
     }
 
     protected void validateCompensationIntermediateOrEndEvent(org.kie.api.definition.process.Node node,

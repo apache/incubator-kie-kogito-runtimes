@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.workflow.core.impl;
 
@@ -28,7 +31,7 @@ import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.core.Node;
-import org.jbpm.workflow.core.WorkflowInputModelValidator;
+import org.jbpm.workflow.core.WorkflowModelValidator;
 import org.jbpm.workflow.core.WorkflowProcess;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
@@ -49,13 +52,15 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
 
     private boolean autoComplete = false;
     private boolean dynamic = false;
-    private WorkflowInputModelValidator validator;
+    private WorkflowModelValidator inputValidator;
+    private WorkflowModelValidator outputValidator;
     private org.jbpm.workflow.core.NodeContainer nodeContainer;
+    private String exprLanguage;
 
     private transient BiFunction<String, ProcessInstance, String> expressionEvaluator = (expression, p) -> {
 
         String evaluatedValue = expression;
-        Map<String, String> replacements = new HashMap<String, String>();
+        Map<String, String> replacements = new HashMap<>();
         Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(evaluatedValue);
         while (matcher.find()) {
             String paramName = matcher.group(1);
@@ -64,7 +69,7 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
                     String value = (String) MVELProcessHelper.evaluator()
                             .eval(paramName, new ProcessInstanceResolverFactory(((WorkflowProcessInstance) p)));
                     replacements.put(paramName, value);
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     logger.error("Could not resolve, parameter {} while evaluating expression {}", paramName, expression, t);
                 }
             }
@@ -196,7 +201,7 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
     public List<StartNode> getTimerStart() {
         org.kie.api.definition.process.Node[] nodes = getNodes();
 
-        List<StartNode> timerStartNodes = new ArrayList<StartNode>();
+        List<StartNode> timerStartNodes = new ArrayList<>();
         for (int i = 0; i < nodes.length; i++) {
             if (nodes[i] instanceof StartNode && ((StartNode) nodes[i]).getTimer() != null) {
                 timerStartNodes.add((StartNode) nodes[i]);
@@ -217,12 +222,30 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
     }
 
     @Override
-    public Optional<WorkflowInputModelValidator> getValidator() {
-        return Optional.ofNullable(validator);
+    public Optional<WorkflowModelValidator> getInputValidator() {
+        return Optional.ofNullable(inputValidator);
     }
 
     @Override
-    public void setValidator(WorkflowInputModelValidator validator) {
-        this.validator = validator;
+    public void setInputValidator(WorkflowModelValidator inputValidator) {
+        this.inputValidator = inputValidator;
+    }
+
+    @Override
+    public Optional<WorkflowModelValidator> getOutputValidator() {
+        return Optional.ofNullable(outputValidator);
+    }
+
+    @Override
+    public void setOutputValidator(WorkflowModelValidator outputValidator) {
+        this.outputValidator = outputValidator;
+    }
+
+    public void setExpressionLanguage(String exprLanguage) {
+        this.exprLanguage = exprLanguage;
+    }
+
+    public String getExpressionLanguage() {
+        return exprLanguage;
     }
 }

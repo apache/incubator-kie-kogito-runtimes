@@ -1,17 +1,20 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.process.core.timer;
 
@@ -23,8 +26,7 @@ import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DateTimeUtilsTest extends AbstractBaseTest {
 
@@ -42,28 +44,28 @@ public class DateTimeUtilsTest extends AbstractBaseTest {
 
         long parsedMilliseconds = DateTimeUtils.parseDateTime(hourAfterEpoch.format(DateTimeFormatter.ISO_DATE_TIME));
 
-        assertEquals(HOUR_IN_MILLISECONDS, parsedMilliseconds);
+        assertThat(parsedMilliseconds).isEqualTo(HOUR_IN_MILLISECONDS);
     }
 
     @Test
     public void testParseDuration() {
         long parsedMilliseconds = DateTimeUtils.parseDuration("1h");
 
-        assertEquals(HOUR_IN_MILLISECONDS, parsedMilliseconds);
+        assertThat(parsedMilliseconds).isEqualTo(HOUR_IN_MILLISECONDS);
     }
 
     @Test
     public void testParseDurationPeriodFormat() {
         long parsedMilliseconds = DateTimeUtils.parseDuration("PT1H");
 
-        assertEquals(HOUR_IN_MILLISECONDS, parsedMilliseconds);
+        assertThat(parsedMilliseconds).isEqualTo(HOUR_IN_MILLISECONDS);
     }
 
     @Test
     public void testParseDurationDefaultMilliseconds() {
         long parsedMilliseconds = DateTimeUtils.parseDuration(Long.toString(HOUR_IN_MILLISECONDS));
 
-        assertEquals(HOUR_IN_MILLISECONDS, parsedMilliseconds);
+        assertThat(parsedMilliseconds).isEqualTo(HOUR_IN_MILLISECONDS);
     }
 
     @Test
@@ -72,10 +74,10 @@ public class DateTimeUtilsTest extends AbstractBaseTest {
 
         long parsedMilliseconds = DateTimeUtils.parseDateAsDuration(oneMinuteFromNow.format(DateTimeFormatter.ISO_DATE_TIME));
 
-        assertTrue(parsedMilliseconds <= MINUTE_IN_MILLISECONDS,
-                "Parsed date as duration is bigger than " + MINUTE_IN_MILLISECONDS);
-        assertTrue(parsedMilliseconds > FIFTY_NINE_SECONDS_IN_MILLISECONDS,
-                "Parsed date as duration is too low! Expected value is between " + MINUTE_IN_MILLISECONDS + " and " + FIFTY_NINE_SECONDS_IN_MILLISECONDS + " but is " + parsedMilliseconds);
+        assertThat(parsedMilliseconds <= MINUTE_IN_MILLISECONDS).as("Parsed date as duration is bigger than " + MINUTE_IN_MILLISECONDS).isTrue();
+        assertThat(parsedMilliseconds > FIFTY_NINE_SECONDS_IN_MILLISECONDS)
+                .as("Parsed date as duration is too low! Expected value is between " + MINUTE_IN_MILLISECONDS + " and " + FIFTY_NINE_SECONDS_IN_MILLISECONDS + " but is " + parsedMilliseconds)
+                .isTrue();
     }
 
     @Test
@@ -88,13 +90,11 @@ public class DateTimeUtilsTest extends AbstractBaseTest {
 
         long[] parsedRepeatable = DateTimeUtils.parseRepeatableDateTime(isoString);
 
-        assertEquals(5L, parsedRepeatable[0]);
-        assertTrue(parsedRepeatable[1] <= MINUTE_IN_MILLISECONDS,
-                "Parsed delay is bigger than " + MINUTE_IN_MILLISECONDS);
-        assertTrue(parsedRepeatable[1] > FIFTY_NINE_SECONDS_IN_MILLISECONDS,
-                "Parsed delay is too low! Expected value is between " + MINUTE_IN_MILLISECONDS + " and " + FIFTY_NINE_SECONDS_IN_MILLISECONDS + " but is " + parsedRepeatable[1]);
-        assertEquals(MINUTE_IN_MILLISECONDS, parsedRepeatable[2],
-                "Parsed period should be one minute in milliseconds but is " + parsedRepeatable[2]);
+        assertThat(parsedRepeatable[0]).isEqualTo(5L);
+        assertThat(parsedRepeatable[1] <= MINUTE_IN_MILLISECONDS).as("Parsed delay is bigger than " + MINUTE_IN_MILLISECONDS).isTrue();
+        assertThat(parsedRepeatable[1] > FIFTY_NINE_SECONDS_IN_MILLISECONDS)
+                .as("Parsed delay is too low! Expected value is between " + MINUTE_IN_MILLISECONDS + " and " + FIFTY_NINE_SECONDS_IN_MILLISECONDS + " but is " + parsedRepeatable[1]).isTrue();
+        assertThat(parsedRepeatable[2]).as("Parsed period should be one minute in milliseconds but is " + parsedRepeatable[2]).isEqualTo(MINUTE_IN_MILLISECONDS);
     }
 
     @Test
@@ -105,13 +105,11 @@ public class DateTimeUtilsTest extends AbstractBaseTest {
 
         long[] parsedRepeatable = DateTimeUtils.parseRepeatableDateTime(isoString);
 
-        assertEquals(5L, parsedRepeatable[0]);
-        assertTrue(parsedRepeatable[1] <= MINUTE_IN_MILLISECONDS,
-                "Parsed delay is bigger than " + MINUTE_IN_MILLISECONDS);
-        assertTrue(parsedRepeatable[1] > FIFTY_NINE_SECONDS_IN_MILLISECONDS,
-                "Parsed delay is too low! Expected value is between " + MINUTE_IN_MILLISECONDS + " and " + FIFTY_NINE_SECONDS_IN_MILLISECONDS + " but is " + parsedRepeatable[1]);
-        assertEquals(MINUTE_IN_MILLISECONDS, parsedRepeatable[2],
-                "Parsed period should be one minute in milliseconds but is " + parsedRepeatable[2]);
+        assertThat(parsedRepeatable[0]).isEqualTo(5L);
+        assertThat(parsedRepeatable[1] <= MINUTE_IN_MILLISECONDS).as("Parsed delay is bigger than " + MINUTE_IN_MILLISECONDS).isTrue();
+        assertThat(parsedRepeatable[1] > FIFTY_NINE_SECONDS_IN_MILLISECONDS)
+                .as("Parsed delay is too low! Expected value is between " + MINUTE_IN_MILLISECONDS + " and " + FIFTY_NINE_SECONDS_IN_MILLISECONDS + " but is " + parsedRepeatable[1]).isTrue();
+        assertThat(parsedRepeatable[2]).as("Parsed period should be one minute in milliseconds but is " + parsedRepeatable[2]).isEqualTo(MINUTE_IN_MILLISECONDS);
     }
 
     @Test
@@ -122,13 +120,11 @@ public class DateTimeUtilsTest extends AbstractBaseTest {
 
         long[] parsedRepeatable = DateTimeUtils.parseRepeatableDateTime(isoString);
 
-        assertEquals(5L, parsedRepeatable[0]);
-        assertTrue(parsedRepeatable[1] <= MINUTE_IN_MILLISECONDS,
-                "Parsed delay is bigger than " + MINUTE_IN_MILLISECONDS);
-        assertTrue(parsedRepeatable[1] > FIFTY_NINE_SECONDS_IN_MILLISECONDS,
-                "Parsed delay is too low! Expected value is between " + MINUTE_IN_MILLISECONDS + " and " + FIFTY_NINE_SECONDS_IN_MILLISECONDS + " but is " + parsedRepeatable[1]);
-        assertEquals(MINUTE_IN_MILLISECONDS, parsedRepeatable[2],
-                "Parsed period should be one minute in milliseconds but is " + parsedRepeatable[2]);
+        assertThat(parsedRepeatable[0]).isEqualTo(5L);
+        assertThat(parsedRepeatable[1] <= MINUTE_IN_MILLISECONDS).as("Parsed delay is bigger than " + MINUTE_IN_MILLISECONDS).isTrue();
+        assertThat(parsedRepeatable[1] > FIFTY_NINE_SECONDS_IN_MILLISECONDS)
+                .as("Parsed delay is too low! Expected value is between " + MINUTE_IN_MILLISECONDS + " and " + FIFTY_NINE_SECONDS_IN_MILLISECONDS + " but is " + parsedRepeatable[1]).isTrue();
+        assertThat(parsedRepeatable[2]).as("Parsed period should be one minute in milliseconds but is " + parsedRepeatable[2]).isEqualTo(MINUTE_IN_MILLISECONDS);
     }
 
     @Test
@@ -137,10 +133,9 @@ public class DateTimeUtilsTest extends AbstractBaseTest {
 
         long[] parsedRepeatable = DateTimeUtils.parseRepeatableDateTime(isoString);
 
-        assertEquals(-1L, parsedRepeatable[0]);
+        assertThat(parsedRepeatable[0]).isEqualTo(-1L);
         // Default delay time is 1000ms
-        assertEquals(1000L, parsedRepeatable[1]);
-        assertEquals(MINUTE_IN_MILLISECONDS, parsedRepeatable[2],
-                "Parsed period should be one minute in milliseconds but is " + parsedRepeatable[2]);
+        assertThat(parsedRepeatable[1]).isEqualTo(1000L);
+        assertThat(parsedRepeatable[2]).as("Parsed period should be one minute in milliseconds but is " + parsedRepeatable[2]).isEqualTo(MINUTE_IN_MILLISECONDS);
     }
 }

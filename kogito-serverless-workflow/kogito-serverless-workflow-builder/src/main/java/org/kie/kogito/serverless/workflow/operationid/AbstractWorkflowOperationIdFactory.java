@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.serverless.workflow.operationid;
 
@@ -34,6 +37,7 @@ import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
 import static java.lang.String.format;
+import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readBytes;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.onlyChars;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.removeExt;
 
@@ -52,11 +56,15 @@ public abstract class AbstractWorkflowOperationIdFactory implements WorkflowOper
             uri = URI.create(actionResource.getUri());
             fileName = getFileName(workflow, function, context, uri, actionResource.getOperation(), actionResource.getService());
         }
-        String packageName = onlyChars(removeExt(fileName.toLowerCase()));
-        if (packageName == null || packageName.isBlank()) {
+        if (fileName == null || fileName.isBlank()) {
             throw new IllegalArgumentException(
-                    format("Unable to define a package name for function named '%s', please consider using a different strategy defined in the kogito.sw.operationIdStrategy property.",
-                            function.getName()));
+                    format("Empty file name for function '%s', please review uri '%s' or consider using a different strategy defined in the kogito.sw.operationIdStrategy property",
+                            function.getName(), uri));
+        }
+        String packageName = onlyChars(removeExt(fileName.toLowerCase()));
+        if (packageName.isBlank()) {
+            throw new IllegalArgumentException(
+                    format("Empty package for file '%s'. A file name should contain at least one letter which is not part of the extension", fileName));
         }
         return new WorkflowOperationId(uri, actionResource.getOperation(), actionResource.getService(), fileName, packageName);
     }
@@ -70,13 +78,11 @@ public abstract class AbstractWorkflowOperationIdFactory implements WorkflowOper
         JsonNode definitions = uriDefinitions.getDefinitions();
         if (definitions == null || definitions.isNull()) {
             String uri = uriDefinitions.getURI();
-            definitions = uri == null ? NullNode.instance : ServerlessWorkflowUtils.loadResourceFile(uri, Optional.of(workflow), context, null).map(bytes -> {
-                try {
-                    return ObjectMapperFactory.get().readTree(bytes);
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            }).orElse(NullNode.instance);
+            try {
+                definitions = uri == null ? NullNode.instance : ObjectMapperFactory.get().readTree(readBytes(uri, workflow, context));
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
             uriDefinitions.setDefinitions(definitions);
         }
         return definitions;

@@ -1,33 +1,36 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.persistence.jdbc.correlation;
 
 import java.util.Collections;
 import java.util.Optional;
 
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.correlation.CorrelationInstance;
 import org.kie.kogito.correlation.SimpleCorrelation;
-import org.kie.kogito.persistence.jdbc.DDLRunner;
-import org.kie.kogito.persistence.jdbc.GenericRepository;
 import org.kie.kogito.persistence.jdbc.correlation.JDBCCorrelationService;
 import org.kie.kogito.testcontainers.KogitoPostgreSqlContainer;
 import org.postgresql.ds.PGSimpleDataSource;
+import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -49,7 +52,16 @@ public class JDBCCorrelationServiceIT {
         dataSource.setPassword(PG_CONTAINER.getPassword());
         correlationService = new JDBCCorrelationService(dataSource);
         //create table
-        DDLRunner.init(new GenericRepository(dataSource), true);
+        //        DDLRunner.init(new GenericRepository(dataSource), true);
+        initMigration(PG_CONTAINER, "postgresql");
+    }
+
+    public static void initMigration(JdbcDatabaseContainer container, String dbKind) {
+        Flyway flyway = Flyway.configure().dataSource(container.getJdbcUrl(),
+                container.getUsername(),
+                container.getPassword())
+                .locations("classpath:db/" + dbKind).load();
+        flyway.migrate();
     }
 
     @Test

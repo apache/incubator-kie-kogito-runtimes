@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.workflow.instance.node;
 
@@ -49,7 +52,7 @@ public class JoinInstance extends NodeInstanceImpl {
 
     private static final long serialVersionUID = 510l;
 
-    private Map<Long, Integer> triggers = new HashMap<Long, Integer>();
+    private Map<Long, Integer> triggers = new HashMap<>();
 
     protected Join getJoin() {
         return (Join) getNode();
@@ -84,7 +87,7 @@ public class JoinInstance extends NodeInstanceImpl {
                 break;
             case Join.TYPE_DISCRIMINATOR:
                 boolean triggerCompleted = triggers.isEmpty();
-                triggers.put(from.getNodeId(), new Integer(1));
+                triggers.put(from.getNodeId(), 1);
                 if (checkAllActivated()) {
                     resetAllTriggers();
                 }
@@ -177,7 +180,7 @@ public class JoinInstance extends NodeInstanceImpl {
     private boolean existsActiveDirectFlow(NodeInstanceContainer nodeInstanceContainer, final org.kie.api.definition.process.Node lookFor) {
 
         Collection<NodeInstance> activeNodeInstancesOrig = nodeInstanceContainer.getNodeInstances();
-        List<NodeInstance> activeNodeInstances = new ArrayList<NodeInstance>(activeNodeInstancesOrig);
+        List<NodeInstance> activeNodeInstances = new ArrayList<>(activeNodeInstancesOrig);
         // sort active instances in the way that lookFor nodeInstance will be last to not finish too early
         Collections.sort(activeNodeInstances, new Comparator<NodeInstance>() {
 
@@ -198,7 +201,7 @@ public class JoinInstance extends NodeInstanceImpl {
                 continue;
             }
             org.kie.api.definition.process.Node node = nodeInstance.getNode();
-            Set<Long> vistedNodes = new HashSet<Long>();
+            Set<Long> vistedNodes = new HashSet<>();
             checkNodes(vistedNodes, node, node, lookFor);
             if (vistedNodes.contains(lookFor.getId()) && !vistedNodes.contains(node.getId())) {
                 return true;
@@ -225,7 +228,7 @@ public class JoinInstance extends NodeInstanceImpl {
                 return false;
             }
             for (Connection conn : connections) {
-                Set<Long> xorCopy = new HashSet<Long>(vistedNodes);
+                Set<Long> xorCopy = new HashSet<>(vistedNodes);
 
                 org.kie.api.definition.process.Node nextNode = conn.getTo();
                 if (nextNode == null) {

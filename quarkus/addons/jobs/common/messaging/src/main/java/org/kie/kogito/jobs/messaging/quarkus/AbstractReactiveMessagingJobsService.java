@@ -1,19 +1,21 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.jobs.messaging.quarkus;
 
 import java.net.URI;
@@ -25,11 +27,12 @@ import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.JobsServiceException;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
-import org.kie.kogito.jobs.api.Job;
-import org.kie.kogito.jobs.api.event.CancelJobRequestEvent;
-import org.kie.kogito.jobs.api.event.CreateProcessInstanceJobRequestEvent;
-import org.kie.kogito.jobs.api.event.JobCloudEvent;
-import org.kie.kogito.jobs.api.event.serialization.JobCloudEventSerializer;
+import org.kie.kogito.jobs.service.api.Job;
+import org.kie.kogito.jobs.service.api.JobLookupId;
+import org.kie.kogito.jobs.service.api.event.CreateJobEvent;
+import org.kie.kogito.jobs.service.api.event.DeleteJobEvent;
+import org.kie.kogito.jobs.service.api.event.JobCloudEvent;
+import org.kie.kogito.jobs.service.api.event.serialization.JobCloudEventSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,14 +52,15 @@ public abstract class AbstractReactiveMessagingJobsService implements JobsServic
 
     public static final String KOGITO_JOB_SERVICE_JOB_REQUEST_EVENTS_CHANNEL = "kogito-job-service-job-request-events";
 
-    private final JobCloudEventSerializer serializer;
+    private JobCloudEventSerializer serializer;
 
-    private final URI serviceUrl;
+    private URI serviceUrl;
 
-    private final Emitter<String> eventsEmitter;
+    private Emitter<String> eventsEmitter;
+
+    private ObjectMapper objectMapper;
 
     protected AbstractReactiveMessagingJobsService() {
-        this(null, null, null);
     }
 
     protected AbstractReactiveMessagingJobsService(URI serviceUrl,
@@ -64,6 +68,7 @@ public abstract class AbstractReactiveMessagingJobsService implements JobsServic
             Emitter<String> eventsEmitter) {
         this.serviceUrl = serviceUrl;
         this.eventsEmitter = eventsEmitter;
+        this.objectMapper = objectMapper;
         this.serializer = new JobCloudEventSerializer(objectMapper);
     }
 
@@ -74,16 +79,11 @@ public abstract class AbstractReactiveMessagingJobsService implements JobsServic
 
     @Override
     public String scheduleProcessInstanceJob(ProcessInstanceJobDescription description) {
-        Job job = buildCallbackPatternJob(description, buildCallbackURI(description, serviceUrl.toString()));
+        Job job = buildCallbackPatternJob(description, buildCallbackURI(description, serviceUrl.toString()), objectMapper);
         LOGGER.debug("scheduleProcessInstanceJob job: {}", job);
-        CreateProcessInstanceJobRequestEvent event = CreateProcessInstanceJobRequestEvent.builder()
+        CreateJobEvent event = CreateJobEvent.builder()
                 .source(serviceUrl)
                 .job(job)
-                .processInstanceId(description.processInstanceId())
-                .processId(description.processId())
-                .rootProcessInstanceId(description.rootProcessInstanceId())
-                .rootProcessId(description.rootProcessId())
-                .kogitoAddons(getAddonName())
                 .build();
         emitEvent(event);
         return job.getId();
@@ -92,10 +92,9 @@ public abstract class AbstractReactiveMessagingJobsService implements JobsServic
     @Override
     public boolean cancelJob(String id) {
         LOGGER.debug("cancelJob, id: {}", id);
-        CancelJobRequestEvent event = CancelJobRequestEvent.builder()
+        DeleteJobEvent event = DeleteJobEvent.builder()
                 .source(serviceUrl)
-                .jobId(id)
-                .kogitoAddons(getAddonName())
+                .lookupId(JobLookupId.fromId(id))
                 .build();
         emitEvent(event);
         return true;

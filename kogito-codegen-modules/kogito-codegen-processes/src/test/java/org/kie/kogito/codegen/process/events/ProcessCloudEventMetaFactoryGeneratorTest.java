@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.process.events;
 
@@ -43,9 +46,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 import static org.kie.kogito.codegen.core.events.AbstractCloudEventMetaFactoryGenerator.buildTemplatedGenerator;
 import static org.kie.kogito.codegen.core.events.AbstractCloudEventMetaFactoryGenerator.getBuilderMethodName;
 import static org.kie.kogito.codegen.core.events.AbstractCloudEventMetaFactoryGenerator.toValidJavaIdentifier;
@@ -87,8 +88,8 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
                         && ocExpr.getArguments().get(1).toString().equals("$source$")
                         && ocExpr.getArguments().get(2).toString().equals("$kind$"));
 
-        if (!optObjectCreationExprExpr.isPresent()) {
-            fail("Templated build method declaration return statement must be an ObjectCreationExpr of type CloudEventMeta" +
+        if (optObjectCreationExprExpr.isEmpty()) {
+            org.assertj.core.api.Assertions.fail("", "Templated build method declaration return statement must be an ObjectCreationExpr of type CloudEventMeta" +
                     " with three placeholder arguments ($type$, $source$, $kind$)");
         }
     }
@@ -110,18 +111,15 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
 
         String templatedBuildMethodName = "buildCloudEventMeta_$methodName$";
 
-        assertEquals("buildCloudEventMeta_PRODUCED_first",
-                getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "PRODUCED_first"));
-        assertEquals("buildCloudEventMeta_CONSUMED_first_1",
-                getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "CONSUMED_first"));
-        assertEquals("buildCloudEventMeta_CONSUMED_third",
-                getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "CONSUMED_third"));
+        assertThat(getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "PRODUCED_first")).isEqualTo("buildCloudEventMeta_PRODUCED_first");
+        assertThat(getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "CONSUMED_first")).isEqualTo("buildCloudEventMeta_CONSUMED_first_1");
+        assertThat(getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "CONSUMED_third")).isEqualTo("buildCloudEventMeta_CONSUMED_third");
     }
 
     @Test
     void testToValidJavaIdentifier() {
-        assertEquals("simpleName", toValidJavaIdentifier("simpleName"));
-        assertEquals("more_37Com__plex_47Name_33", toValidJavaIdentifier("more%Com_plex/Name!"));
+        assertThat(toValidJavaIdentifier("simpleName")).isEqualTo("simpleName");
+        assertThat(toValidJavaIdentifier("more%Com_plex/Name!")).isEqualTo("more_37Com__plex_47Name_33");
     }
 
     @Test
@@ -129,7 +127,7 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
         final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateCatchEventMessage.bpmn2", 1, true);
 
         assertThat(clazz).isNotNull();
-        assertEquals(1, clazz.getMethods().size());
+        assertThat(clazz.getMethods()).hasSize(1);
         assertReturnExpressionContains(clazz.getMethods().get(0), "customers", EventKind.CONSUMED);
     }
 
@@ -137,7 +135,7 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
     void verifyProcessWithStartAndEndMessageEvent() {
         final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messagestartevent/MessageStartAndEndEvent.bpmn2", 2, true);
         assertThat(clazz).isNotNull();
-        assertEquals(2, clazz.getMethods().size());
+        assertThat(clazz.getMethods()).hasSize(2);
         List<MethodDeclaration> methods = clazz.getMethods().stream().sorted(Comparator.comparing(MethodDeclaration::getNameAsString)).collect(Collectors.toList());
         assertReturnExpressionContains(methods.get(0), "customers", EventKind.CONSUMED);
         assertReturnExpressionContains(methods.get(1), "process.messagestartevent.processedcustomers", EventKind.PRODUCED);
@@ -148,7 +146,7 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
         final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateThrowEventMessage.bpmn2", 1, true);
 
         assertThat(clazz).isNotNull();
-        assertEquals(1, clazz.getMethods().size());
+        assertThat(clazz.getMethods()).hasSize(1);
         assertReturnExpressionContains(clazz.getMethods().get(0), "process.messageintermediateevent.customers", EventKind.PRODUCED);
     }
 
@@ -157,7 +155,7 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
         final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/BoundaryMessageEventOnTask.bpmn2", 1, true);
 
         assertThat(clazz).isNotNull();
-        assertEquals(1, clazz.getMethods().size());
+        assertThat(clazz.getMethods()).hasSize(1);
         assertReturnExpressionContains(clazz.getMethods().get(0), "customers", EventKind.CONSUMED);
     }
 
@@ -166,7 +164,7 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
         final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/usertask/approval.bpmn2", 0, true);
 
         assertThat(clazz).isNotNull();
-        assertTrue(clazz.getMethods().isEmpty());
+        assertThat(clazz.getMethods()).isEmpty();
     }
 
     private void assertReturnExpressionContains(MethodDeclaration method, String expectedType, EventKind expectedKind) {
@@ -179,12 +177,10 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
                 .flatMap(ReturnStmt::getExpression)
                 .map(Expression::toString);
 
-        assertTrue(
-                optExpr.filter(str -> str.contains(String.format("\"%s\"", expectedType))).isPresent(),
-                () -> String.format("Method %s doesn't contain \"%s\" as event type", method.getName(), expectedType));
-        assertTrue(
-                optExpr.filter(str -> str.contains(String.format("%s.%s", EventKind.class.getName(), expectedKind.name()))).isPresent(),
-                () -> String.format("Method %s doesn't contain %s as event kind", method.getName(), expectedKind.name()));
+        assertThat(optExpr.filter(str -> str.contains(String.format("\"%s\"", expectedType))))
+                .withFailMessage(() -> String.format("Method %s doesn't contain \"%s\" as event type", method.getName(), expectedType)).isPresent();
+        assertThat(optExpr.filter(str -> str.contains(String.format("%s.%s", EventKind.class.getName(), expectedKind.name()))))
+                .withFailMessage(() -> String.format("Method %s doesn't contain %s as event kind", method.getName(), expectedKind.name())).isPresent();
     }
 
     private ClassOrInterfaceDeclaration generateAndParseClass(String bpmnFile, int expectedTriggers, boolean withInjection) {
@@ -198,8 +194,7 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
 
         Collection<ProcessCloudEventMeta> ces = generator.getCloudEventMetaBuilder().build(execModelGenerators);
         if (expectedTriggers > 0) {
-            assertThat(ces).isNotEmpty();
-            assertThat(ces.size()).isEqualTo(expectedTriggers);
+            assertThat(ces).hasSize(expectedTriggers);
         } else {
             assertThat(ces).isEmpty();
         }

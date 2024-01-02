@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2;
 
@@ -32,9 +35,7 @@ import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ABORTED;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 
@@ -45,7 +46,7 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
         kruntime = createKogitoProcessRuntime("variable-tags/approval-with-required-variable-tags.bpmn2");
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
-        assertThrows(VariableViolationException.class, () -> kruntime.startProcess("approvals"));
+        assertThatExceptionOfType(VariableViolationException.class).isThrownBy(() -> kruntime.startProcess("approvals"));
     }
 
     @Test
@@ -58,12 +59,12 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
         parameters.put("approver", "john");
 
         KogitoProcessInstance processInstance = kruntime.startProcess("approvals", parameters);
-        assertEquals(STATE_ACTIVE, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(STATE_ACTIVE);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
-        assertNotNull(workItem);
+        assertThat(workItem).isNotNull();
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         workItem = workItemHandler.getWorkItem();
-        assertNotNull(workItem);
+        assertThat(workItem).isNotNull();
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertProcessInstanceFinished(processInstance, kruntime);
     }
@@ -78,11 +79,12 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
         parameters.put("approver", "john");
 
         KogitoProcessInstance processInstance = kruntime.startProcess("approvals", parameters);
-        assertEquals(STATE_ACTIVE, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(STATE_ACTIVE);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
-        assertNotNull(workItem);
+        assertThat(workItem).isNotNull();
 
-        assertThrows(VariableViolationException.class, () -> kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), Collections.singletonMap("ActorId", "john")));
+        assertThatExceptionOfType(VariableViolationException.class)
+                .isThrownBy(() -> kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), Collections.singletonMap("ActorId", "john")));
 
         kruntime.abortProcessInstance(processInstance.getStringId());
 
@@ -108,7 +110,7 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("approver", "john");
 
-        assertThrows(VariableViolationException.class, () -> kruntime.startProcess("approvals", parameters));
+        assertThatExceptionOfType(VariableViolationException.class).isThrownBy(() -> kruntime.startProcess("approvals", parameters));
     }
 
     @Test
@@ -121,16 +123,16 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
         org.kie.kogito.process.ProcessInstance<BpmnVariables> instance = process.createInstance(BpmnVariables.create(params));
         instance.start();
 
-        assertEquals(STATE_ACTIVE, instance.status());
+        assertThat(instance.status()).isEqualTo(STATE_ACTIVE);
 
         assertThat(instance.variables().toMap()).hasSize(1);
-        assertThat(instance.variables().toMap(BpmnVariables.OUTPUTS_ONLY)).hasSize(0);
-        assertThat(instance.variables().toMap(BpmnVariables.INPUTS_ONLY)).hasSize(0);
-        assertThat(instance.variables().toMap(BpmnVariables.INTERNAL_ONLY)).hasSize(0);
+        assertThat(instance.variables().toMap(BpmnVariables.OUTPUTS_ONLY)).isEmpty();
+        assertThat(instance.variables().toMap(BpmnVariables.INPUTS_ONLY)).isEmpty();
+        assertThat(instance.variables().toMap(BpmnVariables.INTERNAL_ONLY)).isEmpty();
         assertThat(instance.variables().toMap(v -> v.hasTag("onlyAdmin"))).hasSize(1).containsEntry("approver", "john");
 
         instance.abort();
 
-        assertEquals(STATE_ABORTED, instance.status());
+        assertThat(instance.status()).isEqualTo(STATE_ABORTED);
     }
 }

@@ -1,20 +1,24 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.jackson.utils;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -53,7 +57,7 @@ public class JsonObjectUtils {
         } else if (value instanceof Boolean) {
             return BooleanNode.valueOf((Boolean) value);
         } else if (value instanceof String) {
-            return new TextNode((String) value);
+            return fromString((String) value);
         } else if (value instanceof Short) {
             return new ShortNode((Short) value);
         } else if (value instanceof Integer) {
@@ -70,8 +74,8 @@ public class JsonObjectUtils {
             return BigIntegerNode.valueOf((BigInteger) value);
         } else if (value instanceof byte[]) {
             return BinaryNode.valueOf((byte[]) value);
-        } else if (value instanceof Iterable) {
-            return mapToArray((Iterable<?>) value);
+        } else if (value instanceof Collection) {
+            return mapToArray((Collection<?>) value);
         } else if (value instanceof Map) {
             return mapToNode((Map<String, Object>) value);
         } else {
@@ -79,12 +83,34 @@ public class JsonObjectUtils {
         }
     }
 
+    public static JsonNode fromString(String value) {
+        String trimmedValue = value.trim();
+        if (trimmedValue.startsWith("{") && trimmedValue.endsWith("}")) {
+            try {
+                return ObjectMapperFactory.listenerAware().readTree(trimmedValue);
+            } catch (IOException ex) {
+                // ignore and return test node
+            }
+        }
+        return new TextNode(value);
+    }
+
+    private static Object toJavaValue(ObjectNode node) {
+        Map<String, Object> result = new HashMap<>();
+        node.fields().forEachRemaining(iter -> result.put(iter.getKey(), toJavaValue(iter.getValue())));
+        return result;
+    }
+
+    private static Collection toJavaValue(ArrayNode node) {
+        Collection result = new ArrayList<>();
+        for (JsonNode item : node) {
+            result.add(internalToJavaValue(item, JsonObjectUtils::toJavaValue, JsonObjectUtils::toJavaValue));
+        }
+        return result;
+    }
+
     public static Object toJavaValue(JsonNode jsonNode) {
-        return internalToJavaValue(jsonNode, node -> {
-            Map<String, Object> result = new HashMap<>();
-            node.fields().forEachRemaining(iter -> result.put(iter.getKey(), toJavaValue(iter.getValue())));
-            return result;
-        });
+        return internalToJavaValue(jsonNode, JsonObjectUtils::toJavaValue, JsonObjectUtils::toJavaValue);
     }
 
     public static <T> T convertValue(Object obj, Class<T> returnType) {
@@ -116,10 +142,10 @@ public class JsonObjectUtils {
     }
 
     public static Object simpleToJavaValue(JsonNode jsonNode) {
-        return internalToJavaValue(jsonNode, node -> node);
+        return internalToJavaValue(jsonNode, node -> node, node -> node);
     }
 
-    private static Object internalToJavaValue(JsonNode jsonNode, Function<JsonNode, Object> function) {
+    private static Object internalToJavaValue(JsonNode jsonNode, Function<ObjectNode, Object> objectFunction, Function<ArrayNode, Object> arrayFunction) {
         if (jsonNode.isNull()) {
             return null;
         } else if (jsonNode.isTextual()) {
@@ -133,13 +159,9 @@ public class JsonObjectUtils {
         } else if (jsonNode.isNumber()) {
             return jsonNode.numberValue();
         } else if (jsonNode.isArray()) {
-            Collection result = new ArrayList<>();
-            for (JsonNode item : ((ArrayNode) jsonNode)) {
-                result.add(internalToJavaValue(item, function));
-            }
-            return result;
+            return arrayFunction.apply((ArrayNode) jsonNode);
         } else if (jsonNode.isObject()) {
-            return function.apply(jsonNode);
+            return objectFunction.apply((ObjectNode) jsonNode);
         } else {
             return ObjectMapperFactory.get().convertValue(jsonNode, Object.class);
         }
@@ -161,12 +183,12 @@ public class JsonObjectUtils {
         return objectNode;
     }
 
-    private static ArrayNode mapToArray(Iterable<?> iterable) {
-        return mapToArray(iterable, ObjectMapperFactory.listenerAware().createArrayNode());
+    private static ArrayNode mapToArray(Collection<?> collection) {
+        return mapToArray(collection, ObjectMapperFactory.listenerAware().createArrayNode());
     }
 
-    private static ArrayNode mapToArray(Iterable<?> iterable, ArrayNode arrayNode) {
-        for (Object item : iterable) {
+    private static ArrayNode mapToArray(Collection<?> collection, ArrayNode arrayNode) {
+        for (Object item : collection) {
             arrayNode.add(fromValue(item));
         }
         return arrayNode;

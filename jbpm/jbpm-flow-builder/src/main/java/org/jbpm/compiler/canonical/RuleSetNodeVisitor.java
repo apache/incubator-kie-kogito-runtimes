@@ -1,22 +1,27 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.canonical;
 
 import java.text.MessageFormat;
 
+import org.drools.ruleunits.api.RuleUnitData;
+import org.drools.ruleunits.api.SingletonStore;
 import org.drools.ruleunits.impl.AssignableChecker;
 import org.drools.ruleunits.impl.GeneratedRuleUnitDescription;
 import org.drools.ruleunits.impl.ReflectiveRuleUnitDescription;
@@ -25,13 +30,13 @@ import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
 import org.jbpm.workflow.core.node.RuleSetNode;
+import org.jbpm.workflow.instance.rule.DecisionRuleType;
+import org.jbpm.workflow.instance.rule.RuleType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.rules.RuleConfig;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.SingletonStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +85,7 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
         body.addStatement(getAssignedFactoryMethod(factoryField, RuleSetNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Rule"));
 
-        RuleSetNode.RuleType ruleType = node.getRuleType();
+        RuleType ruleType = node.getRuleType();
         if (ruleType.getName().isEmpty()) {
             throw new IllegalArgumentException(
                     MessageFormat.format(
@@ -96,7 +101,7 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
         } else if (ruleType.isRuleUnit()) {
             m = handleRuleUnit(variableScope, metadata, node, nodeName, ruleType);
         } else if (ruleType.isDecision()) {
-            m = handleDecision((RuleSetNode.RuleType.Decision) ruleType);
+            m = handleDecision((DecisionRuleType) ruleType);
         } else {
             throw new IllegalArgumentException("Rule task " + nodeName + "is invalid: unsupported rule language " + node.getLanguage());
         }
@@ -112,7 +117,7 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
                 .forEach((k, v) -> body.addStatement(getFactoryMethod(nodeId, METHOD_PARAMETER, new StringLiteralExpr(k), new StringLiteralExpr(v.toString()))));
     }
 
-    private MethodCallExpr handleDecision(RuleSetNode.RuleType.Decision ruleType) {
+    private MethodCallExpr handleDecision(DecisionRuleType ruleType) {
 
         StringLiteralExpr namespace = new StringLiteralExpr(ruleType.getNamespace());
         StringLiteralExpr model = new StringLiteralExpr(ruleType.getModel());
@@ -138,14 +143,14 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
                 .addArgument(lambda);
     }
 
-    private MethodCallExpr handleRuleUnit(VariableScope variableScope, ProcessMetaData metadata, RuleSetNode ruleSetNode, String nodeName, RuleSetNode.RuleType ruleType) {
+    private MethodCallExpr handleRuleUnit(VariableScope variableScope, ProcessMetaData metadata, RuleSetNode ruleSetNode, String nodeName, RuleType ruleType) {
         String unitName = ruleType.getName();
         ProcessContextMetaModel processContext = new ProcessContextMetaModel(variableScope, contextClassLoader);
         RuleUnitDescription description;
 
         try {
             Class<?> unitClass = loadUnitClass(unitName, metadata.getPackageName());
-            description = new ReflectiveRuleUnitDescription(null, (Class<? extends RuleUnitData>) unitClass);
+            description = new ReflectiveRuleUnitDescription((Class<? extends RuleUnitData>) unitClass);
         } catch (ClassNotFoundException e) {
             logger.warn("Rule task \"{}\": cannot load class {}. " +
                     "The unit data object will be generated.", nodeName, unitName);
@@ -176,7 +181,7 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
         return d;
     }
 
-    private MethodCallExpr handleRuleFlowGroup(RuleSetNode.RuleType ruleType) {
+    private MethodCallExpr handleRuleFlowGroup(RuleType ruleType) {
         // build supplier for rule runtime
         BlockStmt actionBody = new BlockStmt();
         LambdaExpr lambda = new LambdaExpr(new Parameter(new UnknownType(), "()"), actionBody);

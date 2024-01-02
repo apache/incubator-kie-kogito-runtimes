@@ -1,26 +1,30 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.json;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.kie.kogito.rules.DataStore;
-import org.kie.kogito.rules.DataStream;
-import org.kie.kogito.rules.SingletonStore;
+import org.drools.ruleunits.api.DataSource;
+import org.drools.ruleunits.api.DataStore;
+import org.drools.ruleunits.api.DataStream;
+import org.drools.ruleunits.api.SingletonStore;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.BeanProperty;
@@ -54,7 +58,7 @@ public class KogitoModule extends SimpleModule {
 
         @Override
         public DataStream deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-            DataStream stream = org.kie.kogito.rules.DataSource.createStream();
+            DataStream stream = DataSource.createBufferedStream(16);
             List list = ctxt.readValue(jp, collectionType);
             list.forEach(stream::append);
             return stream;
@@ -75,7 +79,7 @@ public class KogitoModule extends SimpleModule {
 
         @Override
         public DataStore deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-            DataStore store = org.kie.kogito.rules.DataSource.createStore();
+            DataStore store = DataSource.createStore();
             List list = ctxt.readValue(jp, collectionType);
             list.forEach(store::add);
             return store;
@@ -96,7 +100,7 @@ public class KogitoModule extends SimpleModule {
 
         @Override
         public SingletonStore deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-            SingletonStore store = org.kie.kogito.rules.DataSource.createSingleton();
+            SingletonStore store = DataSource.createSingleton();
             store.set(ctxt.readValue(jp, javaType));
             return store;
         }

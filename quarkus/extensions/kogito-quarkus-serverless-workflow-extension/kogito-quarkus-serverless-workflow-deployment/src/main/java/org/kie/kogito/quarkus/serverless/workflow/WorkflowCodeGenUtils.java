@@ -1,37 +1,43 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.quarkus.serverless.workflow;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
+import java.util.WeakHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.process.ProcessCodegen;
+import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationId;
 import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationIdFactory;
 import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationIdFactoryProvider;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.ast.CompilationUnit;
 
@@ -40,6 +46,9 @@ import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
 public class WorkflowCodeGenUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowCodeGenUtils.class);
+    private static Map<Path, Optional<Workflow>> workflowCache = new WeakHashMap<>();
 
     private WorkflowCodeGenUtils() {
     }
@@ -80,19 +89,20 @@ public class WorkflowCodeGenUtils {
     private static WorkflowOperationResource getResource(Workflow workflow, FunctionDefinition function, WorkflowOperationIdFactory factory) {
         WorkflowOperationId operationId = factory.from(workflow, function, Optional.empty());
         return new WorkflowOperationResource(operationId,
-                URIContentLoaderFactory.buildLoader(operationId.getUri(), Thread.currentThread().getContextClassLoader(), workflow, function.getAuthRef()));
+                URIContentLoaderFactory.buildLoader(operationId.getUri(), workflow, Optional.empty(), function.getAuthRef()));
     }
 
-    private static Optional<Workflow> getWorkflow(Path p) {
-        return ProcessCodegen.SUPPORTED_SW_EXTENSIONS.entrySet()
-                .stream()
-                .filter(e -> p.getFileName().toString().endsWith(e.getKey()))
-                .map(e -> {
-                    try (Reader r = Files.newBufferedReader(p)) {
-                        return ServerlessWorkflowUtils.getWorkflow(r, e.getValue());
-                    } catch (IOException ex) {
-                        throw new IllegalStateException(ex);
-                    }
-                }).findFirst();
+    private static Optional<Workflow> getWorkflow(Path path) {
+        if (SupportedExtensions.getSWFExtensions().stream().anyMatch(ext -> path.toString().endsWith(ext))) {
+            return workflowCache.computeIfAbsent(path, p -> {
+                try {
+                    return Optional.of(ServerlessWorkflowUtils.getWorkflow(p));
+                } catch (IOException ex) {
+                    logger.info("Error reading workflow file {}. Ignoring exception {}", p, ex);
+                    return Optional.<Workflow> empty();
+                }
+            });
+        }
+        return Optional.empty();
     }
 }

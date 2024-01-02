@@ -1,23 +1,25 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.explainability;
 
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -30,6 +32,7 @@ import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -57,9 +60,9 @@ public class DecisionExplainabilityResourceExecutorTest {
 
         ModelIdentifier modelIdentifier = new ModelIdentifier("dmn", String.format("%s%s%s", namespace, RESOURCE_ID_SEPARATOR, name));
         DecisionModel decisionModelResponse = executor.getDecisionModel(decisionModels, modelIdentifier);
-        Assertions.assertNotNull(decisionModelResponse);
-        Assertions.assertEquals(namespace, decisionModelResponse.getDMNModel().getNamespace());
-        Assertions.assertEquals(name, decisionModelResponse.getDMNModel().getName());
+        assertThat(decisionModelResponse).isNotNull();
+        assertThat(decisionModelResponse.getDMNModel().getNamespace()).isEqualTo(namespace);
+        assertThat(decisionModelResponse.getDMNModel().getName()).isEqualTo(name);
     }
 
     @Test
@@ -70,8 +73,8 @@ public class DecisionExplainabilityResourceExecutorTest {
 
         PredictInput notADMNModelPredictInput = new PredictInput(notADMNModelIdentifier, null);
         PredictInput DMNModelPredictInput = new PredictInput(DMNModelIdentifier, null);
-        Assertions.assertFalse(executor.acceptRequest(notADMNModelPredictInput));
-        Assertions.assertTrue(executor.acceptRequest(DMNModelPredictInput));
+        assertThat(executor.acceptRequest(notADMNModelPredictInput)).isFalse();
+        assertThat(executor.acceptRequest(DMNModelPredictInput)).isTrue();
     }
 
     private DMNRuntime generateDMNRuntime(String namespace, String name) {

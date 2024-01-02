@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2.xml;
 
@@ -30,6 +33,7 @@ import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
+import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.impl.IOSpecification;
 import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.core.node.EndNode;
@@ -164,9 +168,9 @@ public class EndEventHandler extends AbstractNodeHandler {
                 DroolsConsequenceAction action = createJavaAction(
                         new SignalProcessInstanceAction(signalName, variable, inputVariable, (String) endNode.getMetaData("customScope")));
 
-                List<DroolsAction> actions = new ArrayList<DroolsAction>();
+                List<DroolsAction> actions = new ArrayList<>();
                 actions.add(action);
-                endNode.setActions(EndNode.EVENT_NODE_ENTER, actions);
+                endNode.setActions(ExtendedNodeImpl.EVENT_NODE_ENTER, actions);
             }
             xmlNode = xmlNode.getNextSibling();
         }
@@ -199,7 +203,7 @@ public class EndEventHandler extends AbstractNodeHandler {
                 DroolsConsequenceAction action = createJavaAction(new HandleMessageAction(message.getType(), variable));
 
                 actions.add(action);
-                endNode.setActions(EndNode.EVENT_NODE_ENTER, actions);
+                endNode.setActions(ExtendedNodeImpl.EVENT_NODE_ENTER, actions);
             }
             xmlNode = xmlNode.getNextSibling();
         }

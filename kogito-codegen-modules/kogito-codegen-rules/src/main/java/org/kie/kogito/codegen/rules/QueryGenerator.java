@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.rules;
 
@@ -34,11 +37,11 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.MethodReferenceExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -47,10 +50,10 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
 import static org.drools.model.codegen.execmodel.generator.DrlxParseUtil.classToReferenceType;
+import static org.drools.model.codegen.execmodel.util.RuleCodegenUtils.setGeneric;
+import static org.drools.model.codegen.execmodel.util.RuleCodegenUtils.toCamelCase;
 import static org.drools.util.StringUtils.ucFirst;
 import static org.kie.kogito.codegen.rules.RuleCodegen.TEMPLATE_RULE_FOLDER;
-import static org.kie.kogito.codegen.rules.RuleCodegenUtils.setGeneric;
-import static org.kie.kogito.codegen.rules.RuleCodegenUtils.toCamelCase;
 
 public class QueryGenerator implements RuleFileGenerator {
 
@@ -128,15 +131,8 @@ public class QueryGenerator implements RuleFileGenerator {
 
         cu.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
 
-        FieldDeclaration ruleUnitDeclaration = clazz
-                .getFieldByName("instance")
-                .orElseThrow(() -> new NoSuchElementException("ClassOrInterfaceDeclaration doesn't contain a field named ruleUnit!"));
-        setGeneric(ruleUnitDeclaration.getElementType(), ruleUnit);
-
         String returnType = getReturnType(clazz);
-        setGeneric(clazz.getImplementedTypes(0).getTypeArguments().get().get(0), returnType);
-        generateConstructors(clazz);
-        generateQueryMethod(cu, clazz, returnType);
+        generateQueryMethod(clazz, returnType);
         clazz.getMembers().sort(new BodyDeclarationComparator());
 
         return new GeneratedFile(QUERY_TYPE,
@@ -144,18 +140,11 @@ public class QueryGenerator implements RuleFileGenerator {
                 cu.toString());
     }
 
-    private void generateConstructors(ClassOrInterfaceDeclaration clazz) {
-        for (ConstructorDeclaration c : clazz.getConstructors()) {
-            c.setName(targetClassName);
-            if (!c.getParameters().isEmpty()) {
-                setGeneric(c.getParameter(0).getType(), ruleUnit);
-            }
-        }
-    }
-
-    private void generateQueryMethod(CompilationUnit cu, ClassOrInterfaceDeclaration clazz, String returnType) {
+    private void generateQueryMethod(ClassOrInterfaceDeclaration clazz, String returnType) {
         MethodDeclaration queryMethod = clazz.getMethodsByName("execute").get(0);
         setGeneric(queryMethod.getType(), returnType);
+        setGeneric(queryMethod.getParameter(0).getType(), ruleUnit);
+        queryMethod.findAll(MethodReferenceExpr.class).forEach(mr -> mr.setScope(new NameExpr(targetClassName)));
     }
 
     private String getReturnType(ClassOrInterfaceDeclaration clazz) {
@@ -183,7 +172,7 @@ public class QueryGenerator implements RuleFileGenerator {
     }
 
     private void generateResultClass(ClassOrInterfaceDeclaration clazz, MethodDeclaration toResultMethod) {
-        ClassOrInterfaceDeclaration resultClass = new ClassOrInterfaceDeclaration(new NodeList<Modifier>(Modifier.publicModifier(), Modifier.staticModifier()), false, "Result");
+        ClassOrInterfaceDeclaration resultClass = new ClassOrInterfaceDeclaration(new NodeList<>(Modifier.publicModifier(), Modifier.staticModifier()), false, "Result");
         clazz.addMember(resultClass);
 
         ConstructorDeclaration constructor = resultClass.addConstructor(Modifier.Keyword.PUBLIC);

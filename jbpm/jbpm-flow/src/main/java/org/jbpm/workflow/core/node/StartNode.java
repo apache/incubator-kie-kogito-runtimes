@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.workflow.core.node;
 
@@ -41,7 +44,7 @@ public class StartNode extends ExtendedNodeImpl {
 
     public void addTrigger(Trigger trigger) {
         if (triggers == null) {
-            triggers = new ArrayList<Trigger>();
+            triggers = new ArrayList<>();
         }
         triggers.add(trigger);
     }
@@ -60,20 +63,24 @@ public class StartNode extends ExtendedNodeImpl {
         this.triggers = triggers;
     }
 
+    @Override
     public String[] getActionTypes() {
         return EVENT_TYPES;
     }
 
+    @Override
     public void validateAddIncomingConnection(final String type, final Connection connection) {
         throw new UnsupportedOperationException(
                 "A start node [" + this.getMetaData("UniqueId") + ", " + this.getName() + "] may not have an incoming connection!");
     }
 
+    @Override
     public void validateRemoveIncomingConnection(final String type, final Connection connection) {
         throw new UnsupportedOperationException(
                 "A start node [" + this.getMetaData("UniqueId") + ", " + this.getName() + "] may not have an incoming connection!");
     }
 
+    @Override
     public void validateAddOutgoingConnection(final String type, final Connection connection) {
         super.validateAddOutgoingConnection(type, connection);
         if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {

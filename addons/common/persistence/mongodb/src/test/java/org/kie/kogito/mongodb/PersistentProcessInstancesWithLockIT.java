@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.mongodb;
 
@@ -26,8 +29,9 @@ import org.kie.kogito.process.bpmn2.BpmnProcessInstance;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
 
 class PersistentProcessInstancesWithLockIT extends TestHelper {
 
@@ -46,13 +50,13 @@ class PersistentProcessInstancesWithLockIT extends TestHelper {
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
         MongoDBProcessInstances<?> processInstances = new MongoDBProcessInstances<>(getMongoClient(), process, DB_NAME, getDisabledMongoDBTransactionManager(), true);
-        assertThat(processInstances.size()).isOne();
+        assertOne(processInstances);
         Optional<?> foundOne = processInstances.findById(processInstance.id());
         BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
         foundOne = processInstances.findById(processInstance.id());
         BpmnProcessInstance instanceTwo = (BpmnProcessInstance) foundOne.get();
-        assertEquals(1L, instanceOne.version());
-        assertEquals(1L, instanceTwo.version());
+        assertThat(instanceOne.version()).isOne();
+        assertThat(instanceTwo.version()).isOne();
         instanceOne.updateVariables(BpmnVariables.create(Collections.singletonMap("s", "test")));
         try {
             BpmnVariables testvar = BpmnVariables.create(Collections.singletonMap("ss", "test"));
@@ -63,11 +67,10 @@ class PersistentProcessInstancesWithLockIT extends TestHelper {
         }
         foundOne = processInstances.findById(processInstance.id());
         instanceOne = (BpmnProcessInstance) foundOne.get();
-        assertEquals(2L, instanceOne.version());
+        assertThat(instanceOne.version()).isEqualTo(2L);
 
         processInstances.remove(processInstance.id());
-        assertThat(processInstances.size()).isZero();
-        assertThat(process.instances().values()).isEmpty();
+        assertEmpty(processInstances);
     }
 
     @Test
@@ -81,13 +84,12 @@ class PersistentProcessInstancesWithLockIT extends TestHelper {
         processInstance.start();
 
         MongoDBProcessInstances<?> processInstances = new MongoDBProcessInstances<>(getMongoClient(), process, DB_NAME, getDisabledMongoDBTransactionManager(), true);
-        assertThat(processInstances.size()).isOne();
         Optional<?> foundOne = processInstances.findById(processInstance.id());
         BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
         foundOne = processInstances.findById(processInstance.id());
         BpmnProcessInstance instanceTwo = (BpmnProcessInstance) foundOne.get();
-        assertEquals(1L, instanceOne.version());
-        assertEquals(1L, instanceTwo.version());
+        assertThat(instanceOne.version()).isOne();
+        assertThat(instanceTwo.version()).isOne();
 
         processInstances.remove(instanceOne.id());
         try {

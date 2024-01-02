@@ -5,18 +5,19 @@
   <parent>
     <artifactId>kogito-quarkus-serverless-workflow-extension</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>999-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kogito-quarkus-serverless-workflow-integration-test</artifactId>
-  <name>Kogito :: Quarkus Workflows Extension :: Integration Tests</name>
+  <name>Kogito :: Quarkus Serverless Workflow Extension :: Integration Tests</name>
 
   <properties>
     <quarkus.test.list.include>true</quarkus.test.list.include>
     <!-- base path for serverless workflow files that are being used for testing the parsing specific unit tests, and
     that we also want to use for testing them executing. -->
     <shared.test.resources.dir>${project.root.dir}/kogito-serverless-workflow/kogito-serverless-workflow-builder/src/test/resources</shared.test.resources.dir>
+    <callback.test.resources.dir>${project.root.dir}/kogito-serverless-workflow/kogito-serverless-workflow-openapi-parser/src/test/resources</callback.test.resources.dir>
   </properties>
 
   <dependencies>
@@ -37,10 +38,6 @@
       <artifactId>quarkus-oidc-client-filter</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-quarkus-messaging</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
     </dependency>
@@ -57,11 +54,32 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jdbc-postgresql</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-grpc-codegen</artifactId>
+    </dependency>
 
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-addons-quarkus-events-process</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-elytron-security-properties-file</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-addons-quarkus-process-management</artifactId>
+    </dependency>
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-test-utils</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -94,6 +112,11 @@
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.swagger.parser.v3</groupId>
+      <artifactId>swagger-parser</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
     <dependency>
@@ -112,6 +135,32 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-addons-quarkus-persistence-jdbc-deployment</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-addons-quarkus-events-process-deployment</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-addons-quarkus-process-management-deployment</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>test</scope>
@@ -154,6 +203,28 @@
               <goal>compile</goal>
               <goal>compile-custom</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Based on https://github.com/quarkusio/quarkus/pull/31115 -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>post-process-grpc</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <skip>false</skip>
+              <includeProjectDependencies>true</includeProjectDependencies>
+              <arguments>
+                <argument>${project.build.directory}/generated-sources/grpc</argument>
+              </arguments>
+              <mainClass>io.quarkus.grpc.deployment.GrpcPostProcessing</mainClass>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -206,13 +277,19 @@
                 <resource>
                   <directory>${shared.test.resources.dir}/exec</directory>
                   <includes>
-                    <include>callback-state.sw.json</include>
-                    <include>callback-state-timeouts.sw.json</include>
                     <include>switch-state-data-condition-transition.sw.json</include>
                     <include>switch-state-data-condition-end.sw.json</include>
                     <include>switch-state-event-condition-timeouts-transition.sw.json</include>
                     <include>switch-state-event-condition-timeouts-transition2.sw.json</include>
                     <include>switch-state-event-condition-timeouts-end.sw.json</include>
+                    <include>multiple-timer-instances-event-state-timeouts.sw.json</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>${callback.test.resources.dir}/exec</directory>
+                  <includes>
+                    <include>callback-state.sw.json</include>
+                    <include>callback-state-timeouts.sw.json</include>
                   </includes>
                 </resource>
               </resources>

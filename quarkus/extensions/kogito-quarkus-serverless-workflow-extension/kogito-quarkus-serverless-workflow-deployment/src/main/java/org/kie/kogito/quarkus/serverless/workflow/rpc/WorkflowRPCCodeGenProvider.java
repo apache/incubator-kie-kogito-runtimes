@@ -1,23 +1,24 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.quarkus.serverless.workflow.rpc;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -27,8 +28,6 @@ import java.util.stream.Stream;
 
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowOperationResource;
-import org.kie.kogito.serverless.workflow.io.ClassPathContentLoader;
-import org.kie.kogito.serverless.workflow.io.FileContentLoader;
 import org.kie.kogito.serverless.workflow.io.URIContentLoader;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.slf4j.Logger;
@@ -79,32 +78,18 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
     }
 
     public Optional<Path> getPath(WorkflowOperationResource resource, Path outputPath) {
+        logger.debug("Checking if resource {} should be written to {}", resource, outputPath);
         URIContentLoader contentLoader = resource.getContentLoader();
-        logger.debug("Checking if resource {} should be writen to {}", resource, outputPath);
-        switch (contentLoader.type()) {
-            case FILE:
-                return Optional.of(((FileContentLoader) contentLoader).getPath());
-            case CLASSPATH:
-                return ((ClassPathContentLoader) contentLoader).getResource().map(this::fromURL);
-            case HTTP:
-                try {
-                    Path tempPath = outputPath.resolve(resource.getOperationId().getFileName());
-                    Files.write(tempPath, URIContentLoaderFactory.readAllBytes(contentLoader));
-                    return Optional.of(tempPath);
-                } catch (IOException io) {
-                    throw new IllegalStateException(io);
-                }
-            default:
-                logger.warn("Unsupported content loader {}", contentLoader);
-                return Optional.empty();
+        Optional<Path> path = contentLoader.getPath();
+        if (path.isPresent()) {
+            return path;
         }
-    }
-
-    private Path fromURL(URL url) {
         try {
-            return Path.of(url.toURI().getPath());
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Invalid URI " + url, e);
+            Path tempPath = outputPath.resolve(resource.getOperationId().getFileName());
+            Files.write(tempPath, URIContentLoaderFactory.readAllBytes(contentLoader));
+            return Optional.of(tempPath);
+        } catch (IOException io) {
+            throw new IllegalStateException(io);
         }
     }
 
