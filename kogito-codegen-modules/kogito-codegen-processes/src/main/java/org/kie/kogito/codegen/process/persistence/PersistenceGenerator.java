@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.process.persistence;
 
@@ -24,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.io.IOUtils;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.infinispan.protostream.FileDescriptorSource;
@@ -162,7 +164,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             String typesURI = "META-INF/kogito-types.proto";
             protoFiles.add(new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE,
                     typesURI,
-                    IOUtils.toString(context().getClassLoader().getResourceAsStream(typesURI), StandardCharsets.UTF_8)));
+                    new String(context().getClassLoader().getResourceAsStream(typesURI).readAllBytes(), StandardCharsets.UTF_8)));
         } catch (IOException e) {
             throw new UncheckedIOException("Cannot find kogito types protobuf!", e);
         }
@@ -248,7 +250,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             try {
                 //try to find an existing ObjectMarshallerStrategy descriptor in the classpath to be appended to the ProtoStream generated one
                 objectMarshallerStrategyServiceDescriptor =
-                        IOUtils.toString(getClass().getResourceAsStream("/META-INF/services/org.kie.kogito.serialization.process.ObjectMarshallerStrategy"), StandardCharsets.UTF_8);
+                        new String(getClass().getResourceAsStream("/META-INF/services/org.kie.kogito.serialization.process.ObjectMarshallerStrategy").readAllBytes(), StandardCharsets.UTF_8);
             } catch (Exception e) {
                 LOGGER.warn("No existing ObjectMarshallerStrategy found the the classpath to be included with the ProtoS generated one for SPI.");
             }

@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.serverless.workflow.parser;
 
@@ -29,17 +32,27 @@ public class FunctionTypeHandlerFactory {
     }
 
     private static final FunctionTypeHandlerFactory INSTANCE = new FunctionTypeHandlerFactory();
-    private static final String CUSTOM_TYPE_SEPARATOR = ":";
+    public static final String CUSTOM_TYPE_SEPARATOR = ":";
 
+    // we need two maps to avoid clashing
     private final Map<String, FunctionTypeHandler> typeMap = new HashMap<>();
     private final Map<String, FunctionTypeHandler> customMap = new HashMap<>();
 
     public Optional<FunctionTypeHandler> getTypeHandler(FunctionDefinition functionDef) {
         final boolean isCustom = functionDef.getType() == FunctionDefinition.Type.CUSTOM;
-        return Optional.ofNullable(getMap(isCustom).get(isCustom ? getTypeFromOperation(functionDef) : functionDef.getType().toString()));
+        Map<String, FunctionTypeHandler> map;
+        String key;
+        if (isCustom) {
+            map = customMap;
+            key = getTypeFromOperation(functionDef);
+        } else {
+            map = typeMap;
+            key = functionDef.getType().toString();
+        }
+        return Optional.ofNullable(map.get(key));
     }
 
-    private static String getTypeFromOperation(FunctionDefinition functionDef) {
+    public static String getTypeFromOperation(FunctionDefinition functionDef) {
         String operation = functionDef.getOperation();
         int indexOf = operation.indexOf(CUSTOM_TYPE_SEPARATOR);
         return indexOf == -1 ? operation : operation.substring(0, indexOf);
@@ -48,14 +61,10 @@ public class FunctionTypeHandlerFactory {
     public static String trimCustomOperation(FunctionDefinition functionDef) {
         String operation = functionDef.getOperation();
         int indexOf = operation.indexOf(CUSTOM_TYPE_SEPARATOR);
-        return indexOf == -1 ? operation : operation.substring(indexOf + 1);
-    }
-
-    private Map<String, FunctionTypeHandler> getMap(boolean isCustom) {
-        return isCustom ? customMap : typeMap;
+        return indexOf == -1 ? "" : operation.substring(indexOf + 1);
     }
 
     private FunctionTypeHandlerFactory() {
-        ServiceLoader.load(FunctionTypeHandler.class).forEach(handler -> getMap(handler.isCustom()).put(handler.type(), handler));
+        ServiceLoader.load(FunctionTypeHandler.class).forEach(handler -> (handler.isCustom() ? customMap : typeMap).put(handler.type(), handler));
     }
 }

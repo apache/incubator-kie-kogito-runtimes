@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2.handler;
 
@@ -78,7 +81,7 @@ public class ServiceTaskHandler implements KogitoWorkItemHandler {
             Map<String, Object> results = new HashMap<>();
             results.put(resultVarName, result);
             manager.completeWorkItem(workItem.getStringId(), results);
-        } catch (Throwable cnfe) {
+        } catch (Exception cnfe) {
             handleException(cnfe, service, interfaceImplementationRef, operation, parameterType, parameter);
         }
     }
@@ -86,23 +89,18 @@ public class ServiceTaskHandler implements KogitoWorkItemHandler {
     private void handleException(Throwable cause, String service, String interfaceImplementationRef, String operation, String paramType, Object param) {
         logger.debug("Handling exception {} inside service {} or {} and operation {} with param type {} and value {}",
                 cause.getMessage(), service, interfaceImplementationRef, operation, paramType, param);
-        WorkItemHandlerRuntimeException wihRe;
-        if (cause instanceof InvocationTargetException) {
-            Throwable realCause = cause.getCause();
-            wihRe = new WorkItemHandlerRuntimeException(realCause);
-            wihRe.setStackTrace(realCause.getStackTrace());
-        } else {
-            wihRe = new WorkItemHandlerRuntimeException(cause);
-            wihRe.setStackTrace(cause.getStackTrace());
-        }
-        wihRe.setInformation("Interface", service);
-        wihRe.setInformation("InterfaceImplementationRef", interfaceImplementationRef);
-        wihRe.setInformation("Operation", operation);
-        wihRe.setInformation("ParameterType", paramType);
-        wihRe.setInformation("Parameter", param);
-        wihRe.setInformation(WorkItemHandlerRuntimeException.WORKITEMHANDLERTYPE, this.getClass().getSimpleName());
+        Throwable realCause = cause instanceof InvocationTargetException ? cause.getCause() : cause;
+        // Map.of does not accept null values, therefore we need to use the legacy way to build the map 
+        Map<String, Object> info = new HashMap<>();
+        info.put("Interface", service);
+        info.put("InterfaceImplementationRef", interfaceImplementationRef);
+        info.put("Operation", operation);
+        info.put("ParameterType", paramType);
+        info.put("Parameter", param);
+        info.put(WorkItemHandlerRuntimeException.WORKITEMHANDLERTYPE, this.getClass().getSimpleName());
+        WorkItemHandlerRuntimeException wihRe = new WorkItemHandlerRuntimeException(realCause, info);
+        wihRe.setStackTrace(realCause.getStackTrace());
         throw wihRe;
-
     }
 
     public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {

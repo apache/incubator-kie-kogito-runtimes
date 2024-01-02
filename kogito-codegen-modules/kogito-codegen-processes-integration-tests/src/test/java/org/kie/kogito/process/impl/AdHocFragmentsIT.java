@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.process.impl;
 
@@ -37,8 +40,6 @@ import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.flexible.AdHocFragment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AdHocFragmentsIT extends AbstractCodegenIT {
 
@@ -73,7 +74,7 @@ class AdHocFragmentsIT extends AbstractCodegenIT {
 
         processInstance.send(Sig.of(taskName, p.createModel()));
 
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         workItem = processInstance.workItems().stream().filter(wi -> wi.getParameters().get("NodeName").equals(taskName)).findFirst();
         assertThat(workItem).isPresent();
         assertThat(workItem.get().getId()).isNotBlank();
@@ -93,9 +94,9 @@ class AdHocFragmentsIT extends AbstractCodegenIT {
         processInstance.send(Sig.of("Service Task", params));
 
         Model result = processInstance.variables();
-        assertEquals("Hello Juan 5!", result.toMap().get("var1"));
+        assertThat(result.toMap()).containsEntry("var1", "Hello Juan 5!");
 
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
 
     @Test
@@ -114,21 +115,19 @@ class AdHocFragmentsIT extends AbstractCodegenIT {
         processInstance.start();
 
         Model result = processInstance.variables();
-        assertEquals("Hello Pablo! Script", result.toMap().get("var1"));
-        assertEquals("Luis Script 2", result.toMap().get("var2"));
+        assertThat(result.toMap()).containsEntry("var1", "Hello Pablo! Script")
+                .containsEntry("var2", "Luis Script 2");
 
-        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.status());
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
 
     private static void assertAdHocFragments(Collection<AdHocFragment> expected, Collection<AdHocFragment> current) {
         if (expected == null) {
             assertThat(current).isNull();
         }
-        assertThat(current).isNotNull();
-        assertThat(current.size()).isEqualTo(expected.size());
-        expected.forEach(e -> assertTrue(
-                current.stream().anyMatch(c -> c.getName().equals(e.getName()) && c.getType().equals(e.getType()) && c.isAutoStart() == e.isAutoStart()),
-                "Expected: " + e.toString() + ", Got: " + current.toString()));
+        assertThat(current).hasSameSizeAs(expected);
+        expected.forEach(e -> assertThat(current.stream().anyMatch(c -> c.getName().equals(e.getName()) && c.getType().equals(e.getType()) && c.isAutoStart() == e.isAutoStart()))
+                .as("Expected: " + e.toString() + ", Got: " + current.toString()).isTrue());
     }
 
 }

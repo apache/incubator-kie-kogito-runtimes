@@ -1,17 +1,20 @@
 /*
- * Copyright 2013 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2;
 
@@ -31,8 +34,7 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EscalationEventTest extends JbpmBpmn2TestCase {
 
@@ -86,12 +88,12 @@ public class EscalationEventTest extends JbpmBpmn2TestCase {
         kruntime.getProcessEventManager().addEventListener(listener);
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
-        assertNotNull(workItem);
+        assertThat(workItem).isNotNull();
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "end", "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
-        assertEquals(1, executednodes.size());
+        assertThat(executednodes).hasSize(1);
 
     }
 
@@ -122,7 +124,7 @@ public class EscalationEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance);
 
         // Check for cancellation of task
-        assertEquals(KogitoWorkItem.ABORTED, handler.getWorkItem().getState(), "WorkItem was not cancelled!");
+        assertThat(handler.getWorkItem().getState()).as("WorkItem was not cancelled!").isEqualTo(KogitoWorkItem.ABORTED);
     }
 
     @Test
@@ -161,7 +163,7 @@ public class EscalationEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-EscalationBoundaryEventOnTask");
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertEquals(2, workItems.size());
+        assertThat(workItems).hasSize(2);
 
         KogitoWorkItem workItem = workItems.get(0);
         if (!"john".equalsIgnoreCase((String) workItem.getParameter("ActorId"))) {
@@ -183,7 +185,7 @@ public class EscalationEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("non-interrupting-escalation");
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertEquals(2, workItems.size());
+        assertThat(workItems).hasSize(2);
 
         KogitoWorkItem johnsWork = workItems.get(0);
         KogitoWorkItem marysWork = workItems.get(1);

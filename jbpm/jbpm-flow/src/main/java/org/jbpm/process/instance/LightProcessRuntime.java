@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.process.instance;
 
@@ -20,12 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.drools.base.definitions.rule.impl.RuleImpl;
+import org.drools.base.time.TimeUtils;
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.ReteEvaluator;
 import org.drools.core.common.WorkingMemoryAction;
-import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.phreak.PropagationEntry;
-import org.drools.core.time.TimeUtils;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.timer.BusinessCalendar;
@@ -60,13 +63,10 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.services.jobs.impl.InMemoryJobService;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING_INPUT;
 
 public class LightProcessRuntime extends AbstractProcessRuntime {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightProcessRuntime.class);
     private ProcessRuntimeContext runtimeContext;
     private final InternalKnowledgeRuntime knowledgeRuntime;
 
@@ -178,8 +178,8 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
             runtimeContext.startOperation();
             org.jbpm.process.instance.ProcessInstance pi = runtimeContext.createProcessInstance(process, correlationKey);
             pi.setKnowledgeRuntime(knowledgeRuntime);
-            runtimeContext.setupParameters(pi, parameters);
             processInstanceManager.addProcessInstance(pi);
+            runtimeContext.setupParameters(pi, parameters);
             return pi;
         } finally {
             runtimeContext.endOperation();
@@ -286,7 +286,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
 
         @Override
         public String[] getEventTypes() {
-            return null;
+            return new String[0];
         }
 
         @Override
@@ -316,7 +316,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
             }
 
             Map<String, Object> parameters = NodeIoHelper.processOutputs(trigger.getInAssociations(), key -> outputSet.get(key));
-            startProcessWithParamsAndTrigger(processId, parameters, type, false);
+            startProcessWithParamsAndTrigger(processId, parameters, type);
         }
     }
 
@@ -350,7 +350,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
                     if (ruleName.startsWith("RuleFlow-Start-")) {
                         String processId = ruleName.replace("RuleFlow-Start-", "");
 
-                        startProcessWithParamsAndTrigger(processId, null, "conditional", true);
+                        startProcessWithParamsAndTrigger(processId, null, "conditional");
                     }
                 }
             }
@@ -370,7 +370,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         });
     }
 
-    private void startProcessWithParamsAndTrigger(String processId, Map<String, Object> params, String type, boolean dispose) {
+    private void startProcessWithParamsAndTrigger(String processId, Map<String, Object> params, String type) {
 
         startProcess(processId, params, type);
     }
@@ -423,7 +423,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
     }
 
     public boolean isActive() {
-        // originally: kruntime.getEnvironment().get("Active");
+        // originally: kruntime.getEnvironment().get("Active")
         return runtimeContext.isActive();
     }
 
@@ -453,10 +453,6 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
                 // when using ISO date/time period is not set
                 long[] repeatValues = DateTimeUtils.parseRepeatableDateTime(timer.getDelay());
                 if (repeatValues.length == 3) {
-                    int parsedReapedCount = (int) repeatValues[0];
-                    if (parsedReapedCount > -1) {
-                        parsedReapedCount = Integer.MAX_VALUE;
-                    }
                     return DurationExpirationTime.repeat(repeatValues[1], repeatValues[2]);
                 } else {
                     long delay = repeatValues[0];
@@ -497,7 +493,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         }
 
         @Override
-        public void execute(ReteEvaluator reteEvaluator) {
+        public void internalExecute(ReteEvaluator reteEvaluator) {
             signalEvent(type, event);
         }
     }

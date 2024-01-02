@@ -1,25 +1,26 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.incubation.common;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ExtendedDataContextTest {
 
@@ -36,8 +37,7 @@ public class ExtendedDataContextTest {
 
         ExtendedDataContext ctx = ExtendedDataContext.of(meta, data);
 
-        assertEquals(ctx.data().as(MapDataContext.class), ctx.as(MapDataContext.class),
-                "Converting an ExtendedContext should be equivalent to converting its data section");
+        assertThat(ctx.as(MapDataContext.class)).as("Converting an ExtendedContext should be equivalent to converting its data section").isEqualTo(ctx.data().as(MapDataContext.class));
 
     }
 
@@ -54,11 +54,10 @@ public class ExtendedDataContextTest {
 
         ExtendedDataContext ctx = ExtendedDataContext.of(meta, data);
 
-        assertSame(ctx, ctx.as(DataContext.class));
-        assertSame(ctx, ctx.as(ExtendedDataContext.class));
+        assertThat(ctx.as(DataContext.class)).isSameAs(ctx);
+        assertThat(ctx.as(ExtendedDataContext.class)).isSameAs(ctx);
 
-        assertEquals(ctx.data().as(MapDataContext.class), ctx.as(MapDataContext.class),
-                "Converting an ExtendedContext should be equivalent to converting its data section");
+        assertThat(ctx.as(MapDataContext.class)).as("Converting an ExtendedContext should be equivalent to converting its data section").isEqualTo(ctx.data().as(MapDataContext.class));
 
     }
 
@@ -71,7 +70,7 @@ public class ExtendedDataContextTest {
         data.addr.street = "Abbey Rd.";
 
         ExtendedDataContext edc = data.as(ExtendedDataContext.class);
-        assertEquals(data, edc.data());
+        assertThat(edc.data()).isEqualTo(data);
     }
 
     @Test
@@ -84,7 +83,7 @@ public class ExtendedDataContextTest {
 
         MapDataContext mapData = data.as(MapDataContext.class);
         ExtendedDataContext edc = mapData.as(ExtendedDataContext.class);
-        assertEquals(mapData, edc.data());
+        assertThat(edc.data()).isEqualTo(mapData);
     }
 
     @Test
@@ -100,10 +99,10 @@ public class ExtendedDataContextTest {
 
         ExtendedDataContext ctx = ExtendedDataContext.of(meta, data);
 
-        assertEquals(meta, ctx.meta());
+        assertThat(ctx.meta()).isEqualTo(meta);
 
         MapDataContext fromMeta = MapDataContext.from(ctx.meta());
-        assertEquals(meta, fromMeta);
+        assertThat(fromMeta).isEqualTo(meta);
 
     }
 
@@ -120,10 +119,10 @@ public class ExtendedDataContextTest {
 
         ExtendedDataContext ctx = ExtendedDataContext.of(meta, data);
 
-        assertEquals(meta, ctx.meta());
+        assertThat(ctx.meta()).isEqualTo(meta);
 
         MapDataContext fromMeta = MapDataContext.from(ctx.meta());
-        assertEquals(meta.value, fromMeta.get("value"));
+        assertThat(fromMeta.get("value")).isEqualTo(meta.value);
     }
 
 }

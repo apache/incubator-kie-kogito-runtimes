@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.workflow.core.node;
 
@@ -21,25 +24,23 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
-import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.node.EventNodeInstance;
 import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.jobs.AsyncJobId;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.services.uow.BaseWorkUnit;
+import org.kie.kogito.timer.TimerInstance;
 import org.kie.kogito.uow.WorkUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.jbpm.ruleflow.core.Metadata.ASYNC_WAITING;
+import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
 
 /**
  * Runtime counterpart of an event node.
@@ -48,7 +49,6 @@ import static org.jbpm.ruleflow.core.Metadata.ASYNC_WAITING;
 public class AsyncEventNodeInstance extends EventNodeInstance {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(AsyncEventNodeInstance.class);
     private final KogitoEventListener listener = new AsyncExternalEventListener();
     private String jobId = "";
 
@@ -60,9 +60,13 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
         }
 
         @Override
-        public void signalEvent(String type,
-                Object event) {
-            triggerCompleted();
+        public void signalEvent(String type, Object event) {
+            if (event instanceof TimerInstance) {
+                TimerInstance timerInstance = (TimerInstance) event;
+                if (Objects.equals(getJobId(), timerInstance.getId())) {
+                    triggerCompleted();
+                }
+            }
         }
 
         @Override
@@ -89,18 +93,22 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
         addAsyncStatus();
 
         final InternalProcessRuntime processRuntime = (InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime();
+        setJobId(getStringId());
         //Deffer the timer scheduling to the end of current UnitOfWork execution chain
         processRuntime.getUnitOfWorkManager().currentUnitOfWork().intercept(
                 new BaseWorkUnit<>(this, instance -> {
                     ExpirationTime expirationTime = ExactExpirationTime.of(ZonedDateTime.now().plus(1, ChronoUnit.MILLIS));
                     ProcessInstanceJobDescription jobDescription =
-                            ProcessInstanceJobDescription.of(new AsyncJobId(instance.getStringId()),
-                                    expirationTime,
-                                    instance.getProcessInstance().getStringId(),
-                                    instance.getProcessInstance().getRootProcessInstanceId(),
-                                    instance.getProcessInstance().getProcessId(),
-                                    instance.getProcessInstance().getRootProcessId(),
-                                    Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null));
+                            ProcessInstanceJobDescription.builder()
+                                    .id(getJobId())
+                                    .timerId("-1")
+                                    .expirationTime(expirationTime)
+                                    .processInstanceId(instance.getProcessInstance().getStringId())
+                                    .rootProcessInstanceId(instance.getProcessInstance().getRootProcessInstanceId())
+                                    .processId(instance.getProcessInstance().getProcessId())
+                                    .rootProcessId(instance.getProcessInstance().getRootProcessId())
+                                    .nodeInstanceId(Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null))
+                                    .build();
                     JobsService jobService = processRuntime.getJobsService();
                     String jobId = jobService.scheduleProcessInstanceJob(jobDescription);
                     setJobId(jobId);
@@ -123,7 +131,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
     @Override
     public String getEventType() {
-        return new AsyncJobId(getStringId()).signal();
+        return TIMER_TRIGGERED_EVENT;
     }
 
     @Override
@@ -141,9 +149,9 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
     }
 
     @Override
-    public void cancel() {
+    public void cancel(CancelType cancelType) {
         ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getJobsService().cancelJob(getJobId());
-        super.cancel();
+        super.cancel(cancelType);
     }
 
     public String getJobId() {
@@ -164,7 +172,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
         NodeInstance actualInstance = instanceContainer.getNodeInstance(getNode());
         //trigger the actual node
-        triggerNodeInstance((org.jbpm.workflow.instance.NodeInstance) actualInstance, NodeImpl.CONNECTION_DEFAULT_TYPE);
+        triggerNodeInstance((org.jbpm.workflow.instance.NodeInstance) actualInstance, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
         clearAsyncStatus();
     }
 }

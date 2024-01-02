@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.ruleflow.core;
 
@@ -39,7 +42,7 @@ import org.jbpm.process.instance.impl.actions.CancelNodeInstanceAction;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.workflow.core.DroolsAction;
-import org.jbpm.workflow.core.WorkflowInputModelValidator;
+import org.jbpm.workflow.core.WorkflowModelValidator;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.jbpm.workflow.core.node.EventNode;
@@ -102,6 +105,11 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         getRuleFlowProcess().setId((String) id);
     }
 
+    public RuleFlowProcessFactory expressionLanguage(String exprLanguage) {
+        getRuleFlowProcess().setExpressionLanguage(exprLanguage);
+        return this;
+    }
+
     protected RuleFlowProcess getRuleFlowProcess() {
         return (RuleFlowProcess) node;
     }
@@ -136,8 +144,13 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         return this;
     }
 
-    public RuleFlowProcessFactory validator(WorkflowInputModelValidator validator) {
-        getRuleFlowProcess().setValidator(validator);
+    public RuleFlowProcessFactory outputValidator(WorkflowModelValidator validator) {
+        getRuleFlowProcess().setOutputValidator(validator);
+        return this;
+    }
+
+    public RuleFlowProcessFactory inputValidator(WorkflowModelValidator validator) {
+        getRuleFlowProcess().setInputValidator(validator);
         return this;
     }
 
@@ -177,7 +190,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
     }
 
     public RuleFlowProcessFactory variable(String name, Class<?> clazz) {
-        return variable(name, DataTypeResolver.fromType(clazz.getName(), clazz.getClassLoader()), null);
+        return variable(name, DataTypeResolver.fromClass(clazz), null);
     }
 
     @Override

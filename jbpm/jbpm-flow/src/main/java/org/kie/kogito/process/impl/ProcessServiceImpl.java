@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.process.impl;
 
@@ -22,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jbpm.process.instance.impl.humantask.HumanTaskHelper;
 import org.jbpm.process.instance.impl.humantask.HumanTaskTransition;
@@ -33,6 +37,7 @@ import org.kie.kogito.MapOutput;
 import org.kie.kogito.MappableToModel;
 import org.kie.kogito.Model;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.config.ConfigBean;
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.process.Process;
@@ -51,9 +56,11 @@ import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 public class ProcessServiceImpl implements ProcessService {
 
     private final Application application;
+    private final short processInstanceLimit;
 
     public ProcessServiceImpl(Application application) {
         this.application = application;
+        this.processInstanceLimit = application.config().get(ConfigBean.class).processInstanceLimit();
     }
 
     @Override
@@ -74,17 +81,17 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public <T extends Model> ProcessInstance<T> createProcessInstance(Process<T> process, String businessKey,
             T model,
+            Map<String, List<String>> headers,
             String startFromNodeId,
             String trigger,
             String kogitoReferenceId,
             CompositeCorrelation correlation) {
-
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
             ProcessInstance<T> pi = process.createInstance(businessKey, correlation, model);
             if (startFromNodeId != null) {
-                pi.startFrom(startFromNodeId, kogitoReferenceId);
+                pi.startFrom(startFromNodeId, kogitoReferenceId, headers);
             } else {
-                pi.start(trigger, kogitoReferenceId);
+                pi.start(trigger, kogitoReferenceId, headers);
             }
             return pi;
         });
@@ -92,10 +99,11 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Override
     public <T extends MappableToModel<R>, R> List<R> getProcessInstanceOutput(Process<T> process) {
-        return process.instances().values().stream()
-                .map(ProcessInstance::variables)
-                .map(MappableToModel::toModel)
-                .collect(Collectors.toList());
+        try (Stream<ProcessInstance<T>> stream = process.instances().stream().limit(processInstanceLimit)) {
+            return stream.map(ProcessInstance::variables)
+                    .map(MappableToModel::toModel)
+                    .collect(Collectors.toList());
+        }
     }
 
     @Override
@@ -103,8 +111,7 @@ public class ProcessServiceImpl implements ProcessService {
         Optional<ProcessInstance<T>> instance = process.instances()
                 .findById(id, ProcessInstanceReadMode.READ_ONLY);
         Optional<T> mappable = instance.map(ProcessInstance::variables);
-        Optional<R> data = mappable.map(MappableToModel::toModel);
-        return data;
+        return mappable.map(MappableToModel::toModel);
     }
 
     @Override
@@ -393,5 +400,4 @@ public class ProcessServiceImpl implements ProcessService {
                 new Policy<?>[] { policy },
                 JsonSchemaUtil.load(Thread.currentThread().getContextClassLoader(), process.id(), taskName));
     }
-
 }

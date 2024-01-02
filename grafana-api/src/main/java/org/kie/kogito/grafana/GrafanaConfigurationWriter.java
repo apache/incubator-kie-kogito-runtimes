@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.grafana;
 
@@ -20,11 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,6 +51,8 @@ public class GrafanaConfigurationWriter {
 
     private static final String AUDIT_LINK_NAME = "Audit UI";
     private static final String AUDIT_LINK_URL_PLACEHOLDER = "${{urlPlaceholder}}";
+
+    private static final SecureRandom randomGenerator = new SecureRandom();
 
     private GrafanaConfigurationWriter() {
         // Intentionally left blank.
@@ -198,7 +203,7 @@ public class GrafanaConfigurationWriter {
 
     private static String customizeTemplate(String template, String handlerName, String artifactId, String version) {
         template = template.replaceAll("\\$handlerName\\$", handlerName);
-        template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
+        template = template.replaceAll("\\$id\\$", String.valueOf(randomGenerator.nextInt()));
         template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
         template = template.replaceAll("\\$gavArtifactId\\$", artifactId);
         template = template.replaceAll("\\$gavVersion\\$", version);

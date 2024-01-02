@@ -1,17 +1,20 @@
 /*
- * Copyright 2013 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.bpmn2;
 
@@ -28,10 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EndEventTest extends JbpmBpmn2TestCase {
 
@@ -49,7 +49,7 @@ public class EndEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("ErrorEndEvent");
         assertProcessInstanceAborted(processInstance);
-        assertEquals("error", ((org.jbpm.process.instance.ProcessInstance) processInstance).getOutcome());
+        assertThat(((org.jbpm.process.instance.ProcessInstance) processInstance).getOutcome()).isEqualTo("error");
 
     }
 
@@ -97,16 +97,15 @@ public class EndEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance);
 
         InternalKogitoWorkItem workItem = (InternalKogitoWorkItem) handler.getWorkItem();
-        assertNotNull(workItem);
+        assertThat(workItem).isNotNull();
 
         String nodeInstanceId = workItem.getNodeInstanceStringId();
         long nodeId = workItem.getNodeId();
         String deploymentId = workItem.getDeploymentId();
 
-        assertNotNull(nodeId);
-        assertTrue(nodeId > 0);
-        assertNotNull(nodeInstanceId);
-        assertNull(deploymentId);
+        assertThat(nodeId).isPositive();
+        assertThat(nodeInstanceId).isNotNull();
+        assertThat(deploymentId).isNull();
 
         // now set deployment id as part of kruntime's env
         kruntime.getKieRuntime().getEnvironment().set("deploymentId", "testDeploymentId");
@@ -115,14 +114,13 @@ public class EndEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance);
 
         workItem = (InternalKogitoWorkItem) handler.getWorkItem();
-        assertNotNull(workItem);
+        assertThat(workItem).isNotNull();
 
         nodeInstanceId = workItem.getNodeInstanceStringId();
         nodeId = workItem.getNodeId();
 
-        assertNotNull(nodeId);
-        assertTrue(nodeId > 0);
-        assertNotNull(nodeInstanceId);
+        assertThat(nodeId).isPositive();
+        assertThat(nodeInstanceId).isNotNull();
     }
 
     @Test
@@ -136,7 +134,7 @@ public class EndEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("OnEntryExitScriptProcess");
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(4, myList.size());
+        assertThat(myList).hasSize(4);
 
     }
 
@@ -151,7 +149,7 @@ public class EndEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("OnEntryExitScriptProcess");
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(4, myList.size());
+        assertThat(myList).hasSize(4);
 
     }
 
@@ -166,7 +164,7 @@ public class EndEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("OnEntryExitScriptProcess");
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(4, myList.size());
+        assertThat(myList).hasSize(4);
 
     }
 
@@ -181,7 +179,7 @@ public class EndEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("OnEntryExitScriptProcess");
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(4, myList.size());
+        assertThat(myList).hasSize(4);
 
     }
 

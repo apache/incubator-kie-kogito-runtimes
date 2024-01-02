@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.integrationtests;
 
@@ -30,7 +33,6 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
-import org.kie.internal.io.ResourceFactory;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
@@ -39,69 +41,14 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProcessMarshallingTest extends AbstractBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessMarshallingTest.class);
 
     @Test
-    public void testMarshallingProcessInstancesAndGlobals() throws Exception {
-        String rule = "package org.test;\n";
-        rule += "import org.jbpm.integrationtests.test.Person\n";
-        rule += "global java.util.List list\n";
-        rule += "rule \"Rule 1\"\n";
-        rule += "  ruleflow-group \"hello\"\n";
-        rule += "when\n";
-        rule += "    $p : Person( ) \n";
-        rule += "then\n";
-        rule += "    list.add( $p );\n";
-        rule += "end";
-
-        String process =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-                        "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                        "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-                        "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow\" package-name=\"org.test\" >\n" +
-                        "  <header>\n" +
-                        "  </header>\n" +
-                        "  <nodes>\n" +
-                        "    <start id=\"1\" name=\"Start\" />\n" +
-                        "    <ruleSet id=\"2\" name=\"Hello\" ruleFlowGroup=\"hello\" />\n" +
-                        "    <end id=\"3\" name=\"End\" />\n" +
-                        "  </nodes>\n" +
-                        "  <connections>\n" +
-                        "    <connection from=\"1\" to=\"2\"/>\n" +
-                        "    <connection from=\"2\" to=\"3\"/>\n" +
-                        "  </connections>\n" +
-                        "</process>";
-
-        builder.add(ResourceFactory.newReaderResource(new StringReader(rule)), ResourceType.DRL);
-        builder.add(ResourceFactory.newReaderResource(new StringReader(process)), ResourceType.DRF);
-
-        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
-        kruntime.getKieRuntime().getEnvironment().set("org.jbpm.rule.task.waitstate", true);
-
-        List<Object> list = new ArrayList<Object>();
-        kruntime.getKieSession().setGlobal("list", list);
-
-        Person p = new Person("bobba fet", 32);
-        kruntime.getKieSession().insert(p);
-        kruntime.startProcess("org.test.ruleflow");
-
-        assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
-
-        kruntime.getKieSession().fireAllRules();
-
-        assertEquals(1, ((List<Object>) kruntime.getKieSession().getGlobal("list")).size());
-        assertEquals(p, ((List<Object>) kruntime.getKieSession().getGlobal("list")).get(0));
-        assertEquals(0, kruntime.getKieSession().getProcessInstances().size());
-    }
-
-    @Test
-    public void testMarshallingProcessInstanceWithWorkItem() throws Exception {
+    public void testMarshallingProcessInstanceWithWorkItem() {
         String process =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
@@ -155,20 +102,20 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         variables.put("myVariable", "ThisIsMyValue");
         kruntime.startProcess("org.test.ruleflow", variables);
 
-        assertEquals(1, kruntime.getKogitoProcessInstances().size());
-        assertNotNull(handler.getWorkItem());
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
+        assertThat(handler.getWorkItem()).isNotNull();
 
-        assertEquals(1, kruntime.getKogitoProcessInstances().size());
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
         VariableScopeInstance variableScopeInstance =
                 (VariableScopeInstance) ((ProcessInstance) kruntime.getKogitoProcessInstances().iterator().next()).getContextInstance(VariableScope.VARIABLE_SCOPE);
-        assertEquals("ThisIsMyValue", variableScopeInstance.getVariable("myVariable"));
+        assertThat(variableScopeInstance.getVariable("myVariable")).isEqualTo("ThisIsMyValue");
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        assertEquals(0, kruntime.getKogitoProcessInstances().size());
+        assertThat(kruntime.getKogitoProcessInstances()).isEmpty();
     }
 
     @Test
-    public void testMarshallingWithMultipleHumanTasks() throws Exception {
+    public void testMarshallingWithMultipleHumanTasks() {
         String process =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
@@ -256,13 +203,13 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         parameters.put("list", list);
         KogitoProcessInstance kogitoProcessInstance = kruntime.startProcess("com.sample.ruleflow", parameters);
 
-        assertEquals(1, kruntime.getKogitoProcessInstances().size());
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
         //complete all user tasks instances
         for (int i = 0; i < list.size() * 2; i++) {
             completeWorkItems(kruntime, handler);
         }
-        assertEquals(0, kruntime.getKogitoProcessInstances().size());
-        assertEquals(ProcessInstance.STATE_COMPLETED, kogitoProcessInstance.getState());
+        assertThat(kruntime.getKogitoProcessInstances()).isEmpty();
+        assertThat(kogitoProcessInstance.getState()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     public void completeWorkItems(KogitoProcessRuntime kruntime, TestListWorkItemHandler handler) {
@@ -293,7 +240,7 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
     }
 
     @Test
-    public void testVariablePersistenceMarshallingStrategies() throws Exception {
+    public void testVariablePersistenceMarshallingStrategies() {
         String process =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
@@ -344,16 +291,16 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         variables.put("myPerson", myPerson);
         kruntime.startProcess("org.test.ruleflow", variables);
 
-        assertEquals(1, kruntime.getKogitoProcessInstances().size());
-        assertNotNull(handler.getWorkItem());
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
+        assertThat(handler.getWorkItem()).isNotNull();
 
-        assertEquals(1, kruntime.getKogitoProcessInstances().size());
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
         VariableScopeInstance variableScopeInstance =
                 (VariableScopeInstance) ((ProcessInstance) kruntime.getKogitoProcessInstances().iterator().next()).getContextInstance(VariableScope.VARIABLE_SCOPE);
-        assertEquals("ThisIsMyValue", variableScopeInstance.getVariable("myVariable"));
-        assertEquals(myPerson, variableScopeInstance.getVariable("myPerson"));
+        assertThat(variableScopeInstance.getVariable("myVariable")).isEqualTo("ThisIsMyValue");
+        assertThat(variableScopeInstance.getVariable("myPerson")).isEqualTo(myPerson);
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        assertEquals(0, kruntime.getKogitoProcessInstances().size());
+        assertThat(kruntime.getKogitoProcessInstances()).isEmpty();
     }
 }

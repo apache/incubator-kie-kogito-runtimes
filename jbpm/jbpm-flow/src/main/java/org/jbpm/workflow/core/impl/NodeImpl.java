@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.workflow.core.impl;
 
@@ -25,8 +28,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.context.variable.Mappable;
+import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.WorkflowProcess;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.NodeContainer;
@@ -77,63 +82,84 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         return ioSpecification;
     }
 
+    @Override
     public Map<String, String> getInMappings() {
         return getIoSpecification().getInputMapping();
     }
 
+    @Override
     public Map<String, String> getOutMappings() {
         return getIoSpecification().getOutputMappingBySources();
     }
 
+    @Override
     public String getInMapping(String key) {
         return getIoSpecification().getInputMapping().get(key);
     }
 
+    @Override
     public String getOutMapping(String key) {
         return getIoSpecification().getOutputMappingBySources().get(key);
     }
 
+    @Override
     public void addInMapping(String from, String to) {
         getIoSpecification().addInputMapping(from, to);
     }
 
+    @Override
     public void addOutMapping(String from, String to) {
         getIoSpecification().addOutputMapping(from, to);
     }
 
+    @Override
     public void addInAssociation(DataAssociation dataAssociation) {
         getIoSpecification().getDataInputs().add(dataAssociation.getTarget());
         getIoSpecification().getDataInputAssociation().add(dataAssociation);
     }
 
+    @Override
     public List<DataAssociation> getInAssociations() {
         return getIoSpecification().getDataInputAssociation();
     }
 
+    @Override
     public void addOutAssociation(DataAssociation dataAssociation) {
         dataAssociation.getSources().forEach(s -> getIoSpecification().getDataOutputs().add(s));
         getIoSpecification().getDataOutputAssociation().add(dataAssociation);
     }
 
+    public WorkflowProcess getProcess() {
+        NodeContainer container = parentContainer;
+        while (!(container instanceof RuleFlowProcess)) {
+            container = ((NodeImpl) container).parentContainer;
+        }
+        return (WorkflowProcess) container;
+    }
+
+    @Override
     public List<DataAssociation> getOutAssociations() {
         return getIoSpecification().getDataOutputAssociation();
     }
 
+    @Override
     public long getId() {
         return this.id;
     }
 
+    @Override
     public String getUniqueId() {
-        String result = id + "";
+        StringBuilder result = new StringBuilder(id + "");
         NodeContainer nodeContainer = getParentContainer();
         while (nodeContainer instanceof CompositeNode) {
             CompositeNode composite = (CompositeNode) nodeContainer;
-            result = composite.getId() + ":" + result;
+            result.insert(0, composite.getId() + ":");
             nodeContainer = composite.getParentContainer();
         }
-        return result;
+        return result.toString();
     }
 
+    @Override
     public void setId(final long id) {
         this.id = id;
         String uniqueId = (String) getMetaData("UniqueId");
@@ -142,24 +168,29 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         }
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
 
+    @Override
     public void setName(final String name) {
         this.name = name;
     }
 
+    @Override
     public Map<String, List<Connection>> getIncomingConnections() {
         // TODO: users can still modify the lists inside this Map
         return Collections.unmodifiableMap(this.incomingConnections);
     }
 
+    @Override
     public Map<String, List<Connection>> getOutgoingConnections() {
         // TODO: users can still modify the lists inside this Map
         return Collections.unmodifiableMap(this.outgoingConnections);
     }
 
+    @Override
     public void addIncomingConnection(final String type, final Connection connection) {
         validateAddIncomingConnection(type, connection);
         List<Connection> connections = this.incomingConnections.get(type);
@@ -179,6 +210,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         }
     }
 
+    @Override
     public List<Connection> getIncomingConnections(String type) {
         List<Connection> result = incomingConnections.get(type);
         if (result == null) {
@@ -187,6 +219,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         return result;
     }
 
+    @Override
     public void addOutgoingConnection(final String type, final Connection connection) {
         validateAddOutgoingConnection(type, connection);
         List<Connection> connections = this.outgoingConnections.get(type);
@@ -206,6 +239,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         }
     }
 
+    @Override
     public List<Connection> getOutgoingConnections(String type) {
         List<Connection> result = outgoingConnections.get(type);
         if (result == null) {
@@ -214,6 +248,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         return result;
     }
 
+    @Override
     public void removeIncomingConnection(final String type, final Connection connection) {
         validateRemoveIncomingConnection(type, connection);
         this.incomingConnections.get(type).remove(connection);
@@ -240,6 +275,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         }
     }
 
+    @Override
     public void removeOutgoingConnection(final String type, final Connection connection) {
         validateRemoveOutgoingConnection(type, connection);
         this.outgoingConnections.get(type).remove(connection);
@@ -264,7 +300,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     public Connection getFrom() {
         final List<Connection> list =
                 getIncomingConnections(Node.CONNECTION_DEFAULT_TYPE);
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return null;
         }
         if (list.size() == 1) {
@@ -284,7 +320,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     public Connection getTo() {
         final List<Connection> list =
                 getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE);
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return null;
         }
         if (list.size() == 1) {
@@ -312,22 +348,27 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         return getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE);
     }
 
+    @Override
     public NodeContainer getParentContainer() {
         return parentContainer;
     }
 
+    @Override
     public void setParentContainer(NodeContainer nodeContainer) {
         this.parentContainer = nodeContainer;
     }
 
+    @Override
     public void setContext(String contextId, Context context) {
         this.contexts.put(contextId, context);
     }
 
+    @Override
     public Context getContext(String contextId) {
         return this.contexts.get(contextId);
     }
 
+    @Override
     public Context resolveContext(String contextId, Object param) {
         Context context = getContext(contextId);
         if (context != null) {
@@ -339,6 +380,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         return ((org.jbpm.workflow.core.NodeContainer) parentContainer).resolveContext(contextId, param);
     }
 
+    @Override
     public void setMetaData(String name, Object value) {
         this.metaData.put(name, value);
     }
@@ -347,6 +389,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         return this.metaData.get(name);
     }
 
+    @Override
     public Map<String, Object> getMetaData() {
         return this.metaData;
     }
@@ -397,7 +440,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
 
     @Override
     public String getNodeUniqueId() {
-        throw new UnsupportedOperationException();
+        return (String) getMetaData("UniqueId");
     }
 
     @Override

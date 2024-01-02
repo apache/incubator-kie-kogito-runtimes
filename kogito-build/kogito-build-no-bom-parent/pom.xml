@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -8,7 +28,7 @@
     <groupId>org.kie.kogito</groupId>
     <!-- The Kogito Dependencies BOM is inherited here to reuse all the version properties defined there and used across our internal modules. -->
     <artifactId>kogito-dependencies-bom</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>999-SNAPSHOT</version>
     <relativePath>../kogito-dependencies-bom/pom.xml</relativePath>
   </parent>
 
@@ -24,22 +44,25 @@
       - properties must be sorted alphabetically (other form of sorting were found to be unclear and ambiguous).
   -->
   <properties>
-    <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
+    <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
     <checkstyle.header.template><![CDATA[
 ^\/\*$\n^
-\* Copyright \d\d\d\d Red Hat, Inc\. and\/or its affiliates\.$\n^
+\* Licensed to the Apache Software Foundation \(ASF\) under one$\n^
+\* or more contributor license agreements\.  See the NOTICE file$\n^
+\* distributed with this work for additional information$\n^
+\* regarding copyright ownership\.  The ASF licenses this file$\n^
+\* to you under the Apache License, Version 2\.0 \(the$\n^
+\* &quot;License&quot;\); you may not use this file except in compliance$\n^
+\* with the License\.  You may obtain a copy of the License at$\n^
 \*$\n^
-\* Licensed under the Apache License, Version 2\.0 \(the &quot;License&quot;\);$\n^
-\* you may not use this file except in compliance with the License\.$\n^
-\* You may obtain a copy of the License at$\n^
+\*   http:\/\/www\.apache\.org\/licenses\/LICENSE-2\.0$\n^
 \*$\n^
-\*       http:\/\/www\.apache\.org\/licenses\/LICENSE-2\.0$\n^
-\*$\n^
-\* Unless required by applicable law or agreed to in writing, software$\n^
-\* distributed under the License is distributed on an &quot;AS IS&quot; BASIS,$\n^
-\* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied\.$\n^
-\* See the License for the specific language governing permissions and$\n^
-\* limitations under the License\.$\n^
+\* Unless required by applicable law or agreed to in writing,$\n^
+\* software distributed under the License is distributed on an$\n^
+\* &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY$\n^
+\* KIND, either express or implied\.  See the License for the$\n^
+\* specific language governing permissions and limitations$\n^
+\* under the License\.$\n^
 \*\/$
 ]]>
     </checkstyle.header.template>
@@ -48,15 +71,16 @@
 
     <!-- container images for testing -->
     <container.image.infinispan>infinispan/server:${version.org.infinispan}</container.image.infinispan>
-    <container.image.keycloak>quay.io/keycloak/keycloak:${version.org.keycloak}-legacy</container.image.keycloak>
+    <container.image.keycloak>quay.io/keycloak/keycloak:${version.org.keycloak}</container.image.keycloak>
     <container.image.kafka>vectorized/redpanda:v21.11.8</container.image.kafka>
     <container.image.wurstmeister.kafka>wurstmeister/kafka:${version.wurstmeister.kafka}</container.image.wurstmeister.kafka>
     <container.image.mongodb>library/mongo:${version.org.mongo-image}</container.image.mongodb>
     <container.image.redis>redislabs/redisearch:${version.org.redis}</container.image.redis>
+    <container.image.postgres>postgres:${version.org.postgres}</container.image.postgres>
 
-    <maven.compiler.release>11</maven.compiler.release>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <jacoco.agent.argLine/>
     <!--
       JaCoCo coverage data file location. Using a single file for appending in the project's root directory makes it
@@ -70,7 +94,7 @@
     <formatter.skip>false</formatter.skip>
     <formatter.goal>format</formatter.goal>
     <impsort.goal>sort</impsort.goal>
-    <version.jdk>11</version.jdk>
+    <version.jdk>17</version.jdk>
     <!-- Properties also affecting test execution. -->
     <invoker.skip>false</invoker.skip>
     <archetype.test.skip>false</archetype.test.skip>
@@ -84,7 +108,7 @@
     <version.clean.plugin>3.1.0</version.clean.plugin>
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
     <version.copyrename.plugin>1.0</version.copyrename.plugin>
-    <version.dependency.plugin>2.8</version.dependency.plugin>
+    <version.dependency.plugin>3.5.0</version.dependency.plugin>
     <version.de.skuzzle.enforcer>1.1.0</version.de.skuzzle.enforcer>
     <version.deploy.plugin>2.8.2</version.deploy.plugin>
     <version.enforcer.plugin>3.0.0-M2</version.enforcer.plugin>
@@ -92,19 +116,19 @@
     <version.findbugs.plugin>3.0.5</version.findbugs.plugin>
     <version.install.plugin>2.5.2</version.install.plugin>
     <version.invoker.plugin>3.2.2</version.invoker.plugin>
-    <version.jacoco.plugin>0.8.5</version.jacoco.plugin>
-    <version.jandex.plugin>1.2.3</version.jandex.plugin>
+    <version.jacoco.plugin>0.8.11</version.jacoco.plugin>
+    <jandex-maven-plugin.group-id>io.smallrye</jandex-maven-plugin.group-id>
+    <version.jandex.plugin>3.0.5</version.jandex.plugin>
     <version.jar.plugin>3.1.0</version.jar.plugin>
-    <version.javadoc.plugin>3.0.1</version.javadoc.plugin>
     <version.javancss.plugin>2.0</version.javancss.plugin>
     <version.jdocbook.plugin>2.3.9</version.jdocbook.plugin>
     <version.formatter.plugin>2.13.0</version.formatter.plugin>
-    <version.impsort.plugin>1.5.0</version.impsort.plugin>
+    <version.impsort.plugin>1.8.0</version.impsort.plugin>
     <version.kr.motd.maven.os>1.6.0</version.kr.motd.maven.os>
     <version.license.plugin>4.0.rc2</version.license.plugin>
     <version.native2ascii.plugin>1.0-beta-1</version.native2ascii.plugin>
     <version.org.xolstice.maven.protobuf>0.6.1</version.org.xolstice.maven.protobuf>
-    <version.plugin.plugin>3.6.0</version.plugin.plugin>
+    <version.plugin.plugin>3.10.2</version.plugin.plugin>
     <version.project.sources.plugin>0.3</version.project.sources.plugin>
     <version.rpkgtests.maven.plugin>1.0.0</version.rpkgtests.maven.plugin>
     <version.resources.plugin>3.1.0</version.resources.plugin>
@@ -112,52 +136,55 @@
     <version.shade.plugin>3.0.0</version.shade.plugin>
     <version.sonar.plugin>3.6.1.1688</version.sonar.plugin>
     <version.source.plugin>3.0.1</version.source.plugin>
-    <version.surefire.plugin>3.0.0-M5</version.surefire.plugin> <!-- minimum required by JUnit 5 -->
-    <version.surefire.report.plugin>3.0.0-M5</version.surefire.report.plugin>
+    <version.surefire.plugin>3.1.2</version.surefire.plugin> <!-- minimum required by JUnit 5 -->
+    <version.surefire.report.plugin>3.1.2</version.surefire.report.plugin>
     <version.taglist.plugin>2.4</version.taglist.plugin>
     <!-- Versions plugin should stay on version 2.5
       until https://github.com/mojohaus/versions-maven-plugin/issues/312 is fixed -->
     <version.versions.plugin>2.5</version.versions.plugin>
     <version.org.jsonschema2pojo-maven-plugin>1.0.1</version.org.jsonschema2pojo-maven-plugin>
     <version.org.codehaus.gmavenplus.plugin>1.5</version.org.codehaus.gmavenplus.plugin>
+
+    <!-- These are added as part of the migration from JBoss to Apache parent pom.xml. They may be extracted to a KIE parent bom. -->
+    <version.maven-checkstyle>3.3.0</version.maven-checkstyle>
   </properties>
 
   <build>
     <extensions>
-        <extension>
-            <groupId>kr.motd.maven</groupId>
-            <artifactId>os-maven-plugin</artifactId>
-            <version>${version.kr.motd.maven.os}</version>
-        </extension>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>${version.kr.motd.maven.os}</version>
+      </extension>
     </extensions>
     <pluginManagement>
       <plugins>
         <plugin>
-            <groupId>org.xolstice.maven.plugins</groupId>
-            <artifactId>protobuf-maven-plugin</artifactId>
-            <version>${version.org.xolstice.maven.protobuf}</version>
-            <configuration>
-              <protocArtifact>com.google.protobuf:protoc:${version.com.google.protobuf}:exe:${os.detected.classifier}</protocArtifact>
-              <protoSourceRoot>${basedir}/src/main/resources/</protoSourceRoot>
-              <excludes>
-                <exclude>META-INF/**</exclude>
-              </excludes>
-              <clearOutputDirectory>false</clearOutputDirectory>
-              <outputDirectory>${basedir}/src/main/java</outputDirectory>
-             </configuration>
-            <executions>
-              <execution>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>compile</goal>
-                </goals>
-              </execution>
-            </executions>
+          <groupId>org.xolstice.maven.plugins</groupId>
+          <artifactId>protobuf-maven-plugin</artifactId>
+          <version>${version.org.xolstice.maven.protobuf}</version>
+          <configuration>
+            <protocArtifact>com.google.protobuf:protoc:${version.com.google.protobuf}:exe:${os.detected.classifier}</protocArtifact>
+            <protoSourceRoot>${basedir}/src/main/resources/</protoSourceRoot>
+            <excludes>
+              <exclude>META-INF/**</exclude>
+            </excludes>
+            <clearOutputDirectory>false</clearOutputDirectory>
+            <outputDirectory>${basedir}/src/main/java</outputDirectory>
+          </configuration>
+          <executions>
+            <execution>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>compile</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>${version.checkstyle.plugin}</version>
+          <version>${version.maven-checkstyle}</version>
           <configuration>
             <checkstyleRules>
               <module name="Checker">
@@ -308,7 +335,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${version.failsafe.plugin}</version>
+          <version>${version.maven-surefire}</version>
           <executions>
             <execution>
               <id>integration-test</id>
@@ -325,13 +352,13 @@
             </includes>
             <excludes>
               <exclude>${tests.surefire.include}</exclude>
-              <exclude>**/Native*</exclude>
             </excludes>
-            <argLine>-Xmx2048m -Xmx4g</argLine>
+            <argLine>-Xms2048m -Xmx4g  -XX:-TieredCompilation -XX:TieredStopAtLevel=1</argLine>
             <systemPropertyVariables>
               <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
               <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
             </systemPropertyVariables>
+            <parallel>all</parallel>
           </configuration>
         </plugin>
         <plugin>
@@ -345,7 +372,7 @@
             <excludes>
               <exclude>${tests.failsafe.include}</exclude>
             </excludes>
-            <argLine>-Xmx2048m -Dfile.encoding=UTF-8</argLine>
+            <argLine>-Xms2048m -Xmx4g -XX:-TieredCompilation -XX:TieredStopAtLevel=1 -Dfile.encoding=UTF-8</argLine>
             <systemPropertyVariables>
               <apple.awt.UIElement>true</apple.awt.UIElement>
               <org.uberfire.nio.git.daemon.enabled>false</org.uberfire.nio.git.daemon.enabled>
@@ -353,7 +380,9 @@
               <org.uberfire.sys.repo.monitor.disabled>true</org.uberfire.sys.repo.monitor.disabled>
               <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
               <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
+              <forkedProcessTimeoutInSeconds>1800</forkedProcessTimeoutInSeconds>
             </systemPropertyVariables>
+            <parallel>all</parallel>
           </configuration>
         </plugin>
         <plugin>
@@ -442,6 +471,7 @@
             <skipInvocation>${skipTests}</skipInvocation>
             <failIfNoProjects>true</failIfNoProjects>
             <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+            <writeJunitReport>true</writeJunitReport>
           </configuration>
         </plugin>
         <plugin>
@@ -465,29 +495,22 @@
           <configuration>
             <licenseSets>
               <licenseSet>
-                <inlineHeader>
-Copyright ${license.git.copyrightCreationYear} Red Hat, Inc. and/or its affiliates.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-                </inlineHeader>
+                <header>kogito-build/kogito-build-no-bom-parent/license-header.txt</header>
                 <includes>
                   <include>**/*.java</include>
+                  <include>**/*.sh</include>
+                  <include>**/*.properties</include>
+                  <include>**/*.groovy</include>
+                  <include>**/*.yaml</include>
+                  <include>**/*.yml</include>
+                  <include>**/*.xml</include>
                   <include>**/*.drl</include>
                 </includes>
                 <excludes>
                   <exclude>**/target/**</exclude>
                   <exclude>.mvn/**</exclude>
                   <exclude>**/node_modules/**</exclude>
+                  <exclude>license-header.txt</exclude>
                 </excludes>
                 <useDefaultExcludes>false</useDefaultExcludes>
                 <properties>
@@ -553,22 +576,6 @@ limitations under the License.
           </executions>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>${version.javadoc.plugin}</version>
-          <configuration>
-            <links>
-              <link>http://docs.oracle.com/javase/8/docs/api</link>
-            </links>
-            <minmemory>128m</minmemory>
-            <maxmemory>512m</maxmemory>
-            <author>false</author>
-            <breakiterator>true</breakiterator>
-            <quiet>true</quiet>
-            <additionalparam>${javadoc.additional.params}</additionalparam>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>findbugs-maven-plugin</artifactId>
           <version>${version.findbugs.plugin}</version>
@@ -586,7 +593,7 @@ limitations under the License.
           <version>${version.plugin.plugin}</version>
         </plugin>
         <plugin>
-          <groupId>org.jboss.jandex</groupId>
+          <groupId>${jandex-maven-plugin.group-id}</groupId>
           <artifactId>jandex-maven-plugin</artifactId>
           <version>${version.jandex.plugin}</version>
           <executions>
@@ -632,7 +639,7 @@ limitations under the License.
         </plugin>
         <plugin>
           <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
+          <artifactId>quarkus-extension-maven-plugin</artifactId>
           <version>${version.io.quarkus}</version>
         </plugin>
         <plugin>
@@ -734,6 +741,18 @@ limitations under the License.
 
   <profiles>
     <profile>
+      <id>productized</id>
+      <activation>
+        <property>
+          <name>productized</name>
+        </property>
+      </activation>
+      <properties>
+        <jandex-maven-plugin.group-id>org.jboss.jandex</jandex-maven-plugin.group-id>
+        <version.jandex.plugin>1.2.3</version.jandex.plugin>
+      </properties>
+    </profile>
+    <profile>
       <id>run-code-coverage</id>
       <build>
         <plugins>
@@ -742,7 +761,7 @@ limitations under the License.
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <!-- Append jacoco.agent.argLine property populated by JaCoCo's prepare-agent goal. -->
-              <argLine>@{jacoco.agent.argLine} -Xms1024m -Xmx4g -Dfile.encoding=UTF-8</argLine>
+              <argLine>@{jacoco.agent.argLine} -Xms1024m -Xmx4g  -XX:-TieredCompilation -XX:TieredStopAtLevel=1 -Dfile.encoding=UTF-8</argLine>
             </configuration>
           </plugin>
           <plugin>
@@ -903,8 +922,8 @@ limitations under the License.
                 </goals>
                 <configuration>
                   <target>
-                    <property environment="env" />
-                    <echoproperties />
+                    <property environment="env"/>
+                    <echoproperties/>
                   </target>
                 </configuration>
               </execution>
@@ -1059,6 +1078,49 @@ limitations under the License.
         <sonar.pullrequest.github.repository>${env.ghprbPullLink}</sonar.pullrequest.github.repository>
         <sonar.pullrequest.provider>GitHub</sonar.pullrequest.provider>
       </properties>
+    </profile>
+    <profile>
+      <id>test-with-custom-binaries</id>
+      <activation>
+        <property>
+          <name>unpackbuild.version</name>
+        </property>
+        <file>
+          <exists>src/main/java</exists>
+        </file>
+      </activation>
+      <properties>
+        <maven.main.skip>true</maven.main.skip>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>${project.artifactId}</artifactId>
+                  <version>${unpackbuild.version}</version>
+                  <type>${project.packaging}</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>target/classes</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+            <executions>
+              <execution>
+                <id>unpack-jar</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>

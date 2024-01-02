@@ -1,23 +1,24 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.quarkus.it.openapi.client.mocks;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +62,14 @@ public abstract class MockServiceConfigurer implements QuarkusTestResourceLifecy
                 this.doStub(server);
             }
         });
-        return Collections.emptyMap();
+        final Map<String, String> properties = new HashMap<>();
+        properties.put("quarkus.rest-client.swagger2_0_security_yaml.url", "http://localhost:" + AuthSecurityMockService.SEC_20.getPort() + "/iq9MzY");
+        properties.put("quarkus.rest-client.swagger2_0_security_no_auth_yaml.url", "http://localhost:" + AuthSecurityMockService.SEC_20_NO_AUTH.getPort());
+
+        properties.put("quarkus.rest-client.openapi3_0_security_yaml.url", "http://localhost:" + AuthSecurityMockService.SEC_30.getPort());
+        properties.put("quarkus.oidc-client.oauth.auth-server-url", "http://localhost:" + AuthSecurityMockService.SEC_30.getPort());
+        properties.put("quarkus.rest-client.openapi3_0_security_no_auth_yaml.url", "http://localhost:" + AuthSecurityMockService.SEC_30_NO_AUTH.getPort());
+        return properties;
     }
 
     @Override

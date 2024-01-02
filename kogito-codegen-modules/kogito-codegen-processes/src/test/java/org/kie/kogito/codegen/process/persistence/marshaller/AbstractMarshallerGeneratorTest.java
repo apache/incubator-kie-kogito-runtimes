@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.codegen.process.persistence.marshaller;
 
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
@@ -36,6 +40,10 @@ import org.kie.kogito.codegen.data.QuestionWithAnnotatedEnum;
 import org.kie.kogito.codegen.process.persistence.proto.AbstractProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
+import org.kie.memorycompiler.CompilationResult;
+import org.kie.memorycompiler.JavaCompiler;
+import org.kie.memorycompiler.JavaCompilerFactory;
+import org.kie.memorycompiler.JavaConfiguration;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -47,6 +55,8 @@ import static org.assertj.core.api.Assertions.fail;
 public abstract class AbstractMarshallerGeneratorTest<T> {
 
     KogitoBuildContext context = JavaKogitoBuildContext.builder().build();
+
+    private static final JavaCompiler JAVA_COMPILER = JavaCompilerFactory.loadCompiler(JavaConfiguration.CompilerType.NATIVE, "1.8");
 
     protected abstract MarshallerGenerator generator(KogitoBuildContext context, Collection<T> rawDataClasses);
 
@@ -73,11 +83,12 @@ public abstract class AbstractMarshallerGeneratorTest<T> {
         MarshallerGenerator marshallerGenerator = withGenerator(Person.class);
 
         List<CompilationUnit> classes = marshallerGenerator.generate(proto.serialize());
-        assertThat(classes).isNotNull();
-        assertThat(classes).hasSize(1);
+        assertThat(classes).isNotNull().hasSize(1);
 
         Optional<ClassOrInterfaceDeclaration> marshallerClass = classes.get(0).getClassByName("PersonMessageMarshaller");
         assertThat(marshallerClass).isPresent();
+
+        assertThat(compile(classes).getErrors()).isEmpty();
     }
 
     @Test
@@ -91,11 +102,12 @@ public abstract class AbstractMarshallerGeneratorTest<T> {
         MarshallerGenerator marshallerGenerator = withGenerator(PersonWithList.class);
 
         List<CompilationUnit> classes = marshallerGenerator.generate(proto.serialize());
-        assertThat(classes).isNotNull();
-        assertThat(classes).hasSize(1);
+        assertThat(classes).isNotNull().hasSize(1);
 
         Optional<ClassOrInterfaceDeclaration> marshallerClass = classes.get(0).getClassByName("PersonWithListMessageMarshaller");
         assertThat(marshallerClass).isPresent();
+
+        assertThat(compile(classes).getErrors()).isEmpty();
     }
 
     @Test
@@ -109,13 +121,14 @@ public abstract class AbstractMarshallerGeneratorTest<T> {
         MarshallerGenerator marshallerGenerator = withGenerator(PersonWithAddresses.class);
 
         List<CompilationUnit> classes = marshallerGenerator.generate(proto.serialize());
-        assertThat(classes).isNotNull();
-        assertThat(classes).hasSize(2);
+        assertThat(classes).isNotNull().hasSize(2);
 
         Optional<ClassOrInterfaceDeclaration> marshallerClass = classes.get(0).getClassByName("AddressMessageMarshaller");
         assertThat(marshallerClass).isPresent();
         marshallerClass = classes.get(1).getClassByName("PersonWithAddressMessageMarshaller");
         assertThat(marshallerClass).isPresent();
+
+        assertThat(compile(classes).getErrors()).isEmpty();
     }
 
     @Test
@@ -129,13 +142,14 @@ public abstract class AbstractMarshallerGeneratorTest<T> {
         MarshallerGenerator marshallerGenerator = withGenerator(PersonWithAddresses.class);
 
         List<CompilationUnit> classes = marshallerGenerator.generate(proto.serialize());
-        assertThat(classes).isNotNull();
-        assertThat(classes).hasSize(2);
+        assertThat(classes).isNotNull().hasSize(2);
 
         Optional<ClassOrInterfaceDeclaration> marshallerClass = classes.get(0).getClassByName("AddressMessageMarshaller");
         assertThat(marshallerClass).isPresent();
         marshallerClass = classes.get(1).getClassByName("PersonWithAddressesMessageMarshaller");
         assertThat(marshallerClass).isPresent();
+
+        assertThat(compile(classes).getErrors()).isEmpty();
     }
 
     @Test
@@ -168,6 +182,8 @@ public abstract class AbstractMarshallerGeneratorTest<T> {
             }
             marshallerClass = classes.get(1).getClassByName(answerType + "EnumMarshaller");
             assertThat(marshallerClass).isPresent();
+
+            assertThat(compile(classes).getErrors()).isEmpty();
         });
     }
 
@@ -193,6 +209,28 @@ public abstract class AbstractMarshallerGeneratorTest<T> {
 
             Optional<ClassOrInterfaceDeclaration> marshallerClass = classes.get(0).getClassByName(e.getSimpleName() + "EnumMarshaller");
             assertThat(marshallerClass).isPresent();
+
+            assertThat(compile(classes).getErrors()).isEmpty();
         });
+    }
+
+    private CompilationResult compile(List<CompilationUnit> classes) {
+        MemoryFileSystem srcMfs = new MemoryFileSystem();
+        MemoryFileSystem trgMfs = new MemoryFileSystem();
+
+        String[] sources = new String[classes.size()];
+        int index = 0;
+        for (CompilationUnit clazz : classes) {
+            String fileName = className(clazz).replaceAll("\\.", "/") + ".java";
+            sources[index++] = fileName;
+
+            srcMfs.write(fileName, clazz.toString().getBytes());
+        }
+
+        return JAVA_COMPILER.compile(sources, srcMfs, trgMfs, this.getClass().getClassLoader());
+    }
+
+    private String className(CompilationUnit clazz) {
+        return clazz.getType(0).getFullyQualifiedName().get();
     }
 }

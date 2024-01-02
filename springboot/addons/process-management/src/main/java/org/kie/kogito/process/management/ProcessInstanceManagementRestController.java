@@ -1,23 +1,27 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.process.management;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.process.Processes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +38,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class ProcessInstanceManagementRestController extends BaseProcessInstanceManagementResource<ResponseEntity> {
 
     @Autowired
+    @Lazy
     public ProcessInstanceManagementRestController(Processes processes, Application application) {
         super(processes, application);
     }
@@ -51,6 +56,18 @@ public class ProcessInstanceManagementRestController extends BaseProcessInstance
     @Override
     public ResponseEntity notFoundResponse(String message) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+    }
+
+    @Override
+    @GetMapping(value = "{processId}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity getProcessInfo(@PathVariable("processId") String processId) {
+        return doGetProcessInfo(processId);
+    }
+
+    @Override
+    @GetMapping(value = "/", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity getProcesses() {
+        return doGetProcesses();
     }
 
     @Override

@@ -1,22 +1,22 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.jobs;
-
-import java.util.Optional;
-import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,18 +25,17 @@ public class ProcessInstanceJobDescription implements JobDescription {
     public static final Integer DEFAULT_PRIORITY = 5;
 
     private final String id;
-
+    private final String timerId;
     private final ExpirationTime expirationTime;
-
     private final Integer priority;
-
     private final String processInstanceId;
     private final String rootProcessInstanceId;
     private final String processId;
     private final String rootProcessId;
     private final String nodeInstanceId;
 
-    private ProcessInstanceJobDescription(JobId timerId,
+    public ProcessInstanceJobDescription(String id,
+            String timerId,
             ExpirationTime expirationTime,
             Integer priority,
             String processInstanceId,
@@ -44,10 +43,8 @@ public class ProcessInstanceJobDescription implements JobDescription {
             String processId,
             String rootProcessId,
             String nodeInstanceId) {
-        this.id = Optional.ofNullable(timerId)
-                .map(JobId::encode)
-                .orElse(UUID.randomUUID().toString());
-
+        this.id = requireNonNull(id);
+        this.timerId = requireNonNull(timerId);
         this.expirationTime = requireNonNull(expirationTime);
         this.priority = requireNonNull(priority);
         this.processInstanceId = requireNonNull(processInstanceId);
@@ -57,47 +54,13 @@ public class ProcessInstanceJobDescription implements JobDescription {
         this.nodeInstanceId = nodeInstanceId;
     }
 
-    public static ProcessInstanceJobDescription of(ExpirationTime expirationTime,
-            String processInstanceId,
-            String processId) {
-        return of(null, expirationTime, processInstanceId, processId);
-    }
-
-    public static ProcessInstanceJobDescription of(JobId timerId,
-            ExpirationTime expirationTime,
-            String processInstanceId,
-            String processId) {
-        return of(timerId, expirationTime, processInstanceId, null, processId, null, null);
-    }
-
-    //timer
-    public static ProcessInstanceJobDescription of(JobId timerId,
-            ExpirationTime expirationTime,
-            String processInstanceId,
-            String rootProcessInstanceId,
-            String processId,
-            String rootProcessId,
-            String nodeInstanceId) {
-        return of(timerId, expirationTime, DEFAULT_PRIORITY, processInstanceId, rootProcessInstanceId, processId,
-                rootProcessId, nodeInstanceId);
-    }
-
-    public static ProcessInstanceJobDescription of(JobId timerId,
-            ExpirationTime expirationTime,
-            Integer priority,
-            String processInstanceId,
-            String rootProcessInstanceId,
-            String processId,
-            String rootProcessId,
-            String nodeInstanceId) {
-
-        return new ProcessInstanceJobDescription(timerId, expirationTime, priority, processInstanceId,
-                rootProcessInstanceId, processId, rootProcessId, nodeInstanceId);
-    }
-
     @Override
     public String id() {
         return id;
+    }
+
+    public String timerId() {
+        return timerId;
     }
 
     @Override
@@ -130,10 +93,15 @@ public class ProcessInstanceJobDescription implements JobDescription {
         return nodeInstanceId;
     }
 
+    public static ProcessInstanceJobDescriptionBuilder builder() {
+        return new ProcessInstanceJobDescriptionBuilder();
+    }
+
     @Override
     public String toString() {
         return "ProcessInstanceJobDescription{" +
                 "id='" + id + '\'' +
+                ", timerId=" + timerId + '\'' +
                 ", expirationTime=" + expirationTime +
                 ", priority=" + priority +
                 ", processInstanceId='" + processInstanceId + '\'' +

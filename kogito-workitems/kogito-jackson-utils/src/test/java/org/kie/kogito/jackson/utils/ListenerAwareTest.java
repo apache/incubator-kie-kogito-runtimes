@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.jackson.utils;
 
@@ -25,9 +28,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -38,6 +39,15 @@ public class ListenerAwareTest {
     @BeforeEach
     void setup() {
         listener = mock(KogitoObjectListener.class);
+    }
+
+    @Test
+    void selfAssignment() {
+        ObjectNodeListenerAware node = (ObjectNodeListenerAware) ObjectMapperFactory.listenerAware().createObjectNode();
+        node.addKogitoObjectListener(listener);
+        node.set("name", node);
+        verify(listener).beforeValueChanged(node, "name", NullNode.instance, node);
+        verify(listener).afterValueChanged(node, "name", NullNode.instance, node);
     }
 
     @Test
@@ -89,20 +99,20 @@ public class ListenerAwareTest {
     @Test
     void testObjectClone() {
         ObjectNode node = ObjectMapperFactory.listenerAware().createObjectNode().put("name", "Javierito");
-        assertTrue(node instanceof ObjectNodeListenerAware);
+        assertThat(node).isInstanceOf(ObjectNodeListenerAware.class);
         ObjectNode cloned = node.deepCopy();
-        assertTrue(cloned instanceof ObjectNodeListenerAware);
-        assertNotSame(node, cloned);
-        assertEquals(node, cloned);
+        assertThat(cloned).isInstanceOf(ObjectNodeListenerAware.class)
+                .isNotSameAs(node)
+                .isEqualTo(node);
     }
 
     @Test
     void testArrayClone() {
         ArrayNode node = ObjectMapperFactory.listenerAware().getNodeFactory().arrayNode(2).add("Javierito");
-        assertTrue(node instanceof ArrayNodeListenerAware);
+        assertThat(node).isInstanceOf(ArrayNodeListenerAware.class);
         ArrayNode cloned = node.deepCopy();
-        assertTrue(cloned instanceof ArrayNodeListenerAware);
-        assertNotSame(node, cloned);
-        assertEquals(node, cloned);
+        assertThat(cloned).isInstanceOf(ArrayNodeListenerAware.class)
+                .isNotSameAs(node)
+                .isEqualTo(node);
     }
 }

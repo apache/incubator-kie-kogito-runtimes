@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.xml.core;
 
@@ -91,8 +94,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     /** Locator for errors. */
     private Locator locator;
 
-    // private Map repo;
-
     /** Stack of configurations. */
     private LinkedList configurationStack;
 
@@ -100,8 +101,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     private StringBuilder characters;
 
     private SemanticModules modules;
-
-    private boolean lastWasEndElement;
 
     private LinkedList parents;
 
@@ -269,6 +268,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
             try {
                 factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
                 factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
             } catch (ParserConfigurationException e) {
                 logger.warn("Unable to set parser features due to {}", e.getMessage());
@@ -366,7 +366,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
         this.isValidating = true;
         this.current = null;
         this.peer = null;
-        this.lastWasEndElement = false;
         this.parents.clear();
         this.characters = null;
         this.configurationStack.clear();
@@ -438,7 +437,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
                 localName);
 
         if (handler == null) {
-            if (this.configurationStack.size() >= 1) {
+            if (!this.configurationStack.isEmpty()) {
                 endElementBuilder();
             }
             return;
@@ -452,6 +451,10 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     }
 
     public static class Null {
+        private Null() {
+
+        }
+
         public static final Null instance = new Null();
     }
 
@@ -544,8 +547,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
         final Element element = this.document.createElement(tagName);
 
-        //final DefaultConfiguration config = new DefaultConfiguration( tagName );
-
         final int numAttrs = attrs.getLength();
 
         for (int i = 0; i < numAttrs; ++i) {
@@ -607,7 +608,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
     public Object getParent() {
         try {
-            return this.parents.size() > 0 ? this.parents.getLast() : null;
+            return !this.parents.isEmpty() ? this.parents.getLast() : null;
         } catch (NoSuchElementException e) {
             return null;
         }
@@ -628,8 +629,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     }
 
     public Object removeParent() {
-        Object parent = this.parents.removeLast();
-        return parent;
+        return this.parents.removeLast();
     }
 
     public Collection getParents() {

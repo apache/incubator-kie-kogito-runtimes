@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler;
 
@@ -25,14 +28,14 @@ import java.util.Set;
 
 import javax.xml.parsers.FactoryConfigurationError;
 
+import org.drools.base.definitions.InternalKnowledgePackage;
+import org.drools.base.definitions.ProcessPackage;
+import org.drools.base.definitions.ResourceTypePackageRegistry;
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.compiler.compiler.Dialect;
 import org.drools.compiler.compiler.DialectCompiletimeRegistry;
 import org.drools.compiler.compiler.PackageRegistry;
-import org.drools.core.definitions.InternalKnowledgePackage;
-import org.drools.core.definitions.ProcessPackage;
-import org.drools.core.definitions.ResourceTypePackageRegistry;
 import org.drools.drl.ast.descr.ActionDescr;
 import org.drools.drl.ast.descr.PackageDescr;
 import org.drools.drl.ast.descr.ProcessDescr;
@@ -432,11 +435,11 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
     }
 
     private String createStateRules(Process process, StateNode state) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (Map.Entry<ConnectionRef, Constraint> entry : state.getConstraints().entrySet()) {
-            result += createStateRule(process, state, entry.getKey(), entry.getValue());
+            result.append(createStateRule(process, state, entry.getKey(), entry.getValue()));
         }
-        return result;
+        return result.toString();
     }
 
     private String createStartConstraintRule(Process process, NodeContainer nodeContainer,
@@ -445,24 +448,24 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
             return createEventSubprocessStateRule(process, (EventSubProcessNode) nodeContainer, trigger);
         }
 
-        String result =
-                "rule \"RuleFlow-Start-" + process.getId() + "\" @Propagation(EAGER) \n" +
+        StringBuilder result =
+                new StringBuilder("rule \"RuleFlow-Start-" + process.getId() + "\" @Propagation(EAGER) \n" +
                         (trigger.getHeader() == null ? "" : "        " + trigger.getHeader() + " \n") +
                         "    when\n" +
                         "        " + trigger.getConstraint() + "\n" +
-                        "    then\n";
+                        "    then\n");
         Map<String, String> inMappings = trigger.getInMappings();
         if (inMappings != null && !inMappings.isEmpty()) {
-            result += "        java.util.Map params = new java.util.HashMap();\n";
+            result.append("        java.util.Map params = new java.util.HashMap();\n");
             for (Map.Entry<String, String> entry : inMappings.entrySet()) {
-                result += "        params.put(\"" + entry.getValue() + "\", " + entry.getKey() + ");\n";
+                result.append("        params.put(\"").append(entry.getValue()).append("\", ").append(entry.getKey()).append(");\n");
             }
-            result += "        ((org.jbpm.process.instance.ProcessRuntimeImpl)((org.drools.core.common.InternalWorkingMemory)kcontext.getKieRuntime()).getProcessRuntime()).startProcess(\""
-                    + process.getId() + "\", params, \"conditional\");\n" + "end\n\n";
+            result.append("        ((org.jbpm.process.instance.ProcessRuntimeImpl)((org.drools.core.common.InternalWorkingMemory)kcontext.getKieRuntime()).getProcessRuntime()).startProcess(\"")
+                    .append(process.getId()).append("\", params, \"conditional\");\n").append("end\n\n");
         } else {
-            result += "        ((org.jbpm.process.instance.ProcessRuntimeImpl)((org.drools.core.common.InternalWorkingMemory)kcontext.getKieRuntime()).getProcessRuntime()).startProcess(\""
-                    + process.getId() + "\", null, \"conditional\");\n" + "end\n\n";
+            result.append("        ((org.jbpm.process.instance.ProcessRuntimeImpl)((org.drools.core.common.InternalWorkingMemory)kcontext.getKieRuntime()).getProcessRuntime()).startProcess(\"")
+                    .append(process.getId()).append("\", null, \"conditional\");\n").append("end\n\n");
         }
-        return result;
+        return result.toString();
     }
 }

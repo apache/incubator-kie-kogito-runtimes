@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.workflow.instance.impl;
 
@@ -36,7 +39,6 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.InternalProcessRuntime;
-import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.process.instance.context.exclusive.ExclusiveGroupInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
@@ -56,6 +58,7 @@ import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,11 +84,13 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     private Map<String, Object> metaData = new HashMap<>();
     private int level;
 
-    protected int slaCompliance = ProcessInstance.SLA_NA;
+    protected int slaCompliance = KogitoProcessInstance.SLA_NA;
     protected Date slaDueDate;
     protected String slaTimerId;
     protected Date triggerTime;
     protected Date leaveTime;
+
+    protected transient CancelType cancelType;
 
     protected transient Map<String, Object> dynamicParameters;
 
@@ -171,7 +176,22 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     }
 
     @Override
-    public void cancel() {
+    public CancelType getCancelType() {
+        return cancelType;
+    }
+
+    public final void cancel() {
+        cancel(CancelType.ABORTED);
+    }
+
+    @Override
+    public void cancel(CancelType cancelType) {
+        this.cancelType = cancelType;
+
+        if (triggerTime == null) {
+            triggerTime = new Date();
+        }
+
         leaveTime = new Date();
         boolean hidden = false;
         org.kie.api.definition.process.Node node = getNode();
@@ -258,7 +278,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
             }
             context.getContextData().put("Exception", e);
             exceptionScopeInstance.handleException(e, context);
-            cancel();
+            cancel(CancelType.ERROR);
         }
     }
 
@@ -392,7 +412,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
                     if (groupInstance.containsNodeInstance(this)) {
                         for (KogitoNodeInstance nodeInstance : groupInstance.getNodeInstances()) {
                             if (nodeInstance != this) {
-                                ((org.jbpm.workflow.instance.NodeInstance) nodeInstance).cancel();
+                                ((org.jbpm.workflow.instance.NodeInstance) nodeInstance).cancel(CancelType.OBSOLETE);
                             }
                         }
                         ((ContextInstanceContainer) parent).removeContextInstance(ExclusiveGroup.EXCLUSIVE_GROUP, contextInstance);
@@ -535,16 +555,17 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     }
 
     public String getUniqueId() {
-        String result = "" + getStringId();
+        StringBuilder result = new StringBuilder("" + getStringId());
         NodeInstanceContainer parent = getNodeInstanceContainer();
         while (parent instanceof CompositeNodeInstance) {
             CompositeNodeInstance nodeInstance = (CompositeNodeInstance) parent;
-            result = nodeInstance.getStringId() + ":" + result;
+            result.insert(0, nodeInstance.getStringId() + ":");
             parent = nodeInstance.getNodeInstanceContainer();
         }
-        return result;
+        return result.toString();
     }
 
+    @Override
     public Map<String, Object> getMetaData() {
         return this.metaData;
     }
@@ -633,22 +654,18 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         return expression != null && PatternConstants.PARAMETER_MATCHER.matcher(expression).find();
     }
 
-    protected String resolveExpression(String expression) {
+    public String resolveExpression(String expression) {
         return isExpression(expression) ? (String) resolveValue(expression) : expression;
     }
 
     protected Object resolveValue(String expression) {
-        return resolveValue(expression, replacements -> {
+        return resolveValue(expression, (replacements) -> {
             String expr = expression;
             for (Map.Entry<String, Object> replacement : replacements.entrySet()) {
                 expr = expr.replace("#{" + replacement.getKey() + "}", replacement.getValue() != null ? replacement.getValue().toString() : "");
             }
             return expr;
         });
-    }
-
-    protected Object resolveFirstValue(String expression) {
-        return resolveValue(expression, replacements -> replacements.isEmpty() ? null : replacements.values().iterator().next());
     }
 
     // resolve expression based on variables or mvel expressions
@@ -673,7 +690,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
                         try {
                             Object variableValue = MVELProcessHelper.evaluator().eval(paramName, new NodeInstanceResolverFactory(this));
                             replacements.put(paramName, variableValue);
-                        } catch (Throwable t) {
+                        } catch (Exception t) {
                             logger.error("Could not find variable scope for variable {}", paramName);
                             logger.error("when trying to replace variable in processId for node {}", getNodeName());
                             logger.error("Continuing without setting process id.");

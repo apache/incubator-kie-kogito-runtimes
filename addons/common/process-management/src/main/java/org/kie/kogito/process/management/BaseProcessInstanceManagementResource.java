@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.process.management;
 
@@ -20,9 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -35,7 +41,7 @@ import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public abstract class BaseProcessInstanceManagementResource<T> implements ProcessInstanceManagement<T> {
 
@@ -45,13 +51,49 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
     private static final String PROCESS_INSTANCE_NOT_FOUND = "Process instance with id %s not found";
     private static final String PROCESS_INSTANCE_NOT_IN_ERROR = "Process instance with id %s is not in error state";
 
-    private Processes processes;
+    private Supplier<Processes> processes;
 
     private Application application;
 
     public BaseProcessInstanceManagementResource(Processes processes, Application application) {
+        this(() -> processes, application);
+    }
+
+    public BaseProcessInstanceManagementResource(Supplier<Processes> processes, Application application) {
         this.processes = processes;
         this.application = application;
+    }
+
+    public T doGetProcesses() {
+        return buildOkResponse(processes.get().processIds());
+    }
+
+    public T doGetProcessInfo(String processId) {
+        return executeOnProcess(processId, process -> {
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", process.id());
+            data.put("name", process.name());
+            data.put("type", process.type());
+            data.put("version", process.version());
+            if (process instanceof Supplier) {
+                org.kie.api.definition.process.Process processDefinition = ((Supplier<org.kie.api.definition.process.Process>) process).get();
+                Map<String, Object> metadata = processDefinition.getMetaData();
+                String description = (String) metadata.get(Metadata.DESCRIPTION);
+                if (description != null) {
+                    data.put("description", description);
+                }
+                List<String> annotations = (List<String>) metadata.get(Metadata.ANNOTATIONS);
+                if (annotations != null) {
+                    data.put("annotations", annotations);
+                }
+                if (processDefinition instanceof WorkflowProcess) {
+                    WorkflowProcess workflowProcess = (WorkflowProcess) processDefinition;
+                    workflowProcess.getInputValidator().flatMap(v -> v.schema(JsonNode.class)).ifPresent(s -> data.put("inputSchema", s));
+                    workflowProcess.getOutputValidator().flatMap(v -> v.schema(JsonNode.class)).ifPresent(s -> data.put("outputSchema", s));
+                }
+            }
+            return buildOkResponse(data);
+        });
     }
 
     public T doGetProcessNodes(String processId) {
@@ -61,7 +103,8 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
                 Map<String, Object> data = new HashMap<>();
                 data.put("id", n.getId());
                 data.put("uniqueId", ((Node) n).getUniqueId());
-                data.put("nodeDefinitionId", n.getMetaData().get(UNIQUE_ID));
+                data.put("nodeDefinitionId", n.getMetaData().get(Metadata.UNIQUE_ID));
+                data.put("metadata", n.getMetaData());
                 data.put("type", n.getClass().getSimpleName());
                 data.put("name", n.getName());
                 return data;
@@ -181,7 +224,7 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             return badRequestResponse(PROCESS_AND_INSTANCE_REQUIRED);
         }
 
-        Process<?> process = processes.processById(processId);
+        Process<?> process = processes.get().processById(processId);
         if (process == null) {
             return notFoundResponse(String.format(PROCESS_NOT_FOUND, processId));
         }
@@ -207,7 +250,7 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             return badRequestResponse(PROCESS_AND_INSTANCE_REQUIRED);
         }
 
-        Process<?> process = processes.processById(processId);
+        Process<?> process = processes.get().processById(processId);
         if (process == null) {
             return notFoundResponse(String.format(PROCESS_NOT_FOUND, processId));
         }
@@ -228,7 +271,7 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             return badRequestResponse(PROCESS_REQUIRED);
         }
 
-        Process<?> process = processes.processById(processId);
+        Process<?> process = processes.get().processById(processId);
         if (process == null) {
             return notFoundResponse(String.format(PROCESS_NOT_FOUND, processId));
         }

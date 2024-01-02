@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.compiler.canonical;
 
@@ -21,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.jbpm.process.core.context.variable.Variable;
@@ -64,8 +66,8 @@ import com.github.javaparser.ast.type.Type;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
-import static org.drools.util.StringUtils.ucFirst;
 import static org.jbpm.ruleflow.core.Metadata.CUSTOM_AUTO_START;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
 
 public class UserTaskModelMetaData {
 
@@ -102,13 +104,13 @@ public class UserTaskModelMetaData {
         this.humanTaskNode = humanTaskNode;
         this.processId = processId;
 
-        this.inputModelClassSimpleName = ucFirst(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + humanTaskNode.getId() + "_" + TASK_INTPUT_CLASS_SUFFIX);
+        this.inputModelClassSimpleName = sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + humanTaskNode.getId() + "_" + TASK_INTPUT_CLASS_SUFFIX);
         this.inputModelClassName = packageName + '.' + inputModelClassSimpleName;
 
-        this.outputModelClassSimpleName = ucFirst(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + humanTaskNode.getId() + "_" + TASK_OUTTPUT_CLASS_SUFFIX);
+        this.outputModelClassSimpleName = sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + humanTaskNode.getId() + "_" + TASK_OUTTPUT_CLASS_SUFFIX);
         this.outputModelClassName = packageName + '.' + outputModelClassSimpleName;
 
-        this.taskModelClassSimpleName = ucFirst(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + humanTaskNode.getId() + "_" + TASK_MODEL_CLASS_SUFFIX);
+        this.taskModelClassSimpleName = sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + humanTaskNode.getId() + "_" + TASK_MODEL_CLASS_SUFFIX);
         this.taskModelClassName = packageName + '.' + taskModelClassSimpleName;
 
     }
@@ -233,11 +235,9 @@ public class UserTaskModelMetaData {
                     AssignExpr.Operator.ASSIGN));
         }
 
-        Set<String> metaParameters = humanTaskNode.getWork().getMetaParameters();
         for (Entry<String, Object> entry : humanTaskNode.getWork().getParameters().entrySet()) {
 
-            if (entry.getValue() == null || INTERNAL_FIELDS.contains(entry.getKey()) || metaParameters.contains(entry
-                    .getKey())) {
+            if (entry.getValue() == null || INTERNAL_FIELDS.contains(entry.getKey())) {
                 continue;
             }
 

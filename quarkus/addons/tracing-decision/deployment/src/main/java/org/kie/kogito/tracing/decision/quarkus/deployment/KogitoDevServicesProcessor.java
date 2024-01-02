@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.tracing.decision.quarkus.deployment;
 
@@ -23,7 +26,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.kie.kogito.quarkus.addons.common.deployment.TrustyServiceAvailableBuildItem;
+import org.kie.kogito.quarkus.extensions.spi.deployment.TrustyServiceAvailableBuildItem;
 import org.kie.kogito.tracing.decision.quarkus.devservices.TrustyServiceInMemoryContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,7 +140,7 @@ public class KogitoDevServicesProcessor {
                 closeable = trustyService.getCloseable();
             }
             compressor.close();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             compressor.closeAndDumpCaptured();
             throw new RuntimeException("Failed to start Kogito TrustyService DevServices", t);
         }
@@ -205,7 +208,7 @@ public class KogitoDevServicesProcessor {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LOGGER.error("Failed to stop Kogito Data Index", e);
             } finally {
                 closeable = null;
@@ -239,7 +242,8 @@ public class KogitoDevServicesProcessor {
                         DockerImageName.parse(config.imageName),
                         config.fixedExposedPort,
                         launchMode.getLaunchMode() == LaunchMode.DEVELOPMENT ? config.serviceName : null,
-                        useSharedNetwork);
+                        useSharedNetwork,
+                        config.portUsedByTest);
 
                 LOGGER.debug(String.format("TrustyService DataSource Kind: %s", devServicesConfig.getDataSourceKind()));
                 LOGGER.debug(String.format("TrustyService DataSource Username: %s", devServicesConfig.getDataSourceUserName()));
@@ -309,12 +313,18 @@ public class KogitoDevServicesProcessor {
         private final boolean shared;
         private final String serviceName;
 
+        /**
+         * In test mode, pick a random port
+         */
+        private final int portUsedByTest;
+
         public TrustyServiceDevServiceConfig(final KogitoDevServicesBuildTimeConfig config) {
             this.devServicesEnabled = config.enabled.orElse(true);
             this.imageName = config.imageName;
             this.fixedExposedPort = config.port.orElse(0);
             this.shared = config.shared;
             this.serviceName = config.serviceName;
+            this.portUsedByTest = config.portUsedByTest;
         }
 
         @Override

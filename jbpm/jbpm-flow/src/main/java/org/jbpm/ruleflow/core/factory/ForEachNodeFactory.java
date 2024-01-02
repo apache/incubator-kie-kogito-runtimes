@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.ruleflow.core.factory;
 
@@ -60,21 +63,13 @@ public class ForEachNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> ex
 
     public ForEachNodeFactory<T> variable(String varRef, String variableName, DataType dataType) {
         getForEachNode().setInputRef(variableName);
-        Variable variable = getForEachNode().addContextVariable(varRef, variableName, dataType);
-        variable.setMetaData(Metadata.EVAL_VARIABLE, true);
-        variable.setMetaData(Variable.VARIABLE_TAGS, Variable.INTERNAL_TAG);
         getForEachNode().getMultiInstanceSpecification().setInputDataItem(new DataDefinition(varRef, variableName, dataType.getStringType()));
-        return this;
+        return addVariable(varRef, variableName, dataType, true);
     }
 
     public ForEachNodeFactory<T> outputCollectionExpression(String collectionExpression) {
         getForEachNode().setOutputCollectionExpression(collectionExpression);
         getForEachNode().getMultiInstanceSpecification().setLoopDataOutputRef(DataDefinition.toExpression(collectionExpression));
-        return this;
-    }
-
-    public ForEachNodeFactory<T> expressionLanguage(String exprLanguage) {
-        getForEachNode().setExpressionLanguage(exprLanguage);
         return this;
     }
 
@@ -90,17 +85,21 @@ public class ForEachNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> ex
     public ForEachNodeFactory<T> outputVariable(String varRef, String variableName, DataType dataType) {
         getForEachNode().setOutputRef(variableName);
         getForEachNode().getMultiInstanceSpecification().setOutputDataItem(new DataDefinition(varRef, variableName, dataType.getStringType()));
-        return this;
+        return addVariable(varRef, variableName, dataType, true);
     }
 
     public ForEachNodeFactory<T> tempVariable(String variableName, DataType dataType) {
-        Variable variable = getForEachNode().addContextVariable(variableName, variableName, dataType);
-        variable.setMetaData(Variable.VARIABLE_TAGS, Variable.INTERNAL_TAG);
-        return this;
+        return tempVariable(variableName, variableName, dataType);
     }
 
     public ForEachNodeFactory<T> tempVariable(String varRef, String variableName, DataType dataType) {
-        getForEachNode().addContextVariable(varRef, variableName, dataType);
+        return addVariable(varRef, variableName, dataType, false);
+    }
+
+    private ForEachNodeFactory<T> addVariable(String varRef, String variableName, DataType dataType, boolean eval) {
+        Variable variable = getForEachNode().addContextVariable(varRef, variableName, dataType);
+        variable.setMetaData(Metadata.EVAL_VARIABLE, eval);
+        variable.setMetaData(Variable.VARIABLE_TAGS, Variable.INTERNAL_TAG);
         return this;
     }
 

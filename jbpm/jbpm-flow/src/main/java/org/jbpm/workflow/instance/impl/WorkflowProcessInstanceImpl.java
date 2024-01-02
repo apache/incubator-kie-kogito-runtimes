@@ -1,20 +1,24 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.workflow.instance.impl;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -79,8 +83,8 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.jobs.DurationExpirationTime;
+import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
-import org.kie.kogito.jobs.TimerJobId;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
@@ -102,6 +106,7 @@ import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
+import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
 import static org.kie.kogito.process.flexible.ItemDescription.Status.ACTIVE;
 import static org.kie.kogito.process.flexible.ItemDescription.Status.AVAILABLE;
 import static org.kie.kogito.process.flexible.ItemDescription.Status.COMPLETED;
@@ -135,12 +140,14 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     private Date endDate;
 
     private String nodeIdInError;
+    private String nodeInstanceIdInError;
     private String errorMessage;
     private transient Optional<Throwable> errorCause = Optional.empty();
 
     private int slaCompliance = KogitoProcessInstance.SLA_NA;
     private Date slaDueDate;
     private String slaTimerId;
+    private String cancelTimerId;
 
     private String referenceId;
 
@@ -291,7 +298,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     @Override
     public String getBusinessKey() {
-        return correlationKey;
+        return getCorrelationKey();
     }
 
     @Override
@@ -354,7 +361,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         if (getKnowledgeRuntime() == null) {
             List<ContextInstance> variableScopeInstances = getContextInstances(VariableScope.VARIABLE_SCOPE);
             if (variableScopeInstances == null) {
-                return null;
+                return Collections.emptyMap();
             }
             Map<String, Object> result = new HashMap<>();
             for (ContextInstance contextInstance : variableScopeInstances) {
@@ -366,7 +373,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         // else retrieve the variable scope
         VariableScopeInstance variableScopeInstance = (VariableScopeInstance) getContextInstance(VariableScope.VARIABLE_SCOPE);
         if (variableScopeInstance == null) {
-            return null;
+            return Collections.emptyMap();
         }
         return variableScopeInstance.getVariables();
     }
@@ -414,10 +421,9 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 NodeInstance nodeInstance = nodeInstances.get(0);
                 nodeInstance.cancel();
             }
-            if (this.slaTimerId != null && !slaTimerId.trim().isEmpty()) {
-                processRuntime.getJobsService().cancelJob(this.slaTimerId);
-                logger.debug("SLA Timer {} has been canceled", this.slaTimerId);
-            }
+            cancelTimer(processRuntime, slaTimerId);
+            cancelTimer(processRuntime, cancelTimerId);
+
             removeEventListeners();
             processRuntime.getProcessInstanceManager().removeProcessInstance(this);
             processRuntime.getProcessEventSupport().fireAfterProcessCompleted(this, kruntime);
@@ -435,6 +441,13 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             }
         } else {
             super.setState(state, outcome);
+        }
+    }
+
+    private static void cancelTimer(InternalProcessRuntime processRuntime, String timerId) {
+        if (timerId != null && !timerId.isBlank()) {
+            processRuntime.getJobsService().cancelJob(timerId);
+            logger.debug("Timer {} has been canceled", timerId);
         }
     }
 
@@ -506,8 +519,9 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     @Override
-    public void configureSLA() {
-        String slaDueDateExpression = (String) getProcess().getMetaData().get(CUSTOM_SLA_DUE_DATE);
+    public void configureTimers() {
+        Map<String, Object> metadata = getProcess().getMetaData();
+        String slaDueDateExpression = (String) metadata.get(CUSTOM_SLA_DUE_DATE);
         if (slaDueDateExpression != null) {
             TimerInstance timer = configureSLATimer(slaDueDateExpression);
             if (timer != null) {
@@ -516,6 +530,10 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 this.slaCompliance = KogitoProcessInstance.SLA_PENDING;
                 logger.debug("SLA for process instance {} is PENDING with due date {}", this.getStringId(), this.slaDueDate);
             }
+        }
+        String processDuration = (String) metadata.get(Metadata.PROCESS_DURATION);
+        if (processDuration != null) {
+            this.cancelTimerId = registerTimer(createDurationTimer(Duration.parse(processDuration).toMillis())).getId();
         }
     }
 
@@ -536,14 +554,33 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             duration = DateTimeUtils.parseDuration(slaDueDateExpression);
         }
 
+        TimerInstance timerInstance = createDurationTimer(duration);
+        if (useTimerSLATracking()) {
+            registerTimer(timerInstance);
+        }
+        return timerInstance;
+    }
+
+    private TimerInstance createDurationTimer(long duration) {
         TimerInstance timerInstance = new TimerInstance();
-        timerInstance.setTimerId(-1);
+        timerInstance.setId(UUID.randomUUID().toString());
+        timerInstance.setTimerId("-1");
         timerInstance.setDelay(duration);
         timerInstance.setPeriod(0);
-        if (useTimerSLATracking()) {
-            ProcessInstanceJobDescription description = ProcessInstanceJobDescription.of(new TimerJobId(-1L), DurationExpirationTime.after(duration), getStringId(), getProcessId());
-            timerInstance.setId((InternalProcessRuntime.asKogitoProcessRuntime(kruntime.getProcessRuntime()).getJobsService().scheduleProcessInstanceJob(description)));
-        }
+        return timerInstance;
+    }
+
+    private TimerInstance registerTimer(TimerInstance timerInstance) {
+        ProcessInstanceJobDescription description =
+                ProcessInstanceJobDescription.builder()
+                        .id(timerInstance.getId())
+                        .timerId(timerInstance.getTimerId())
+                        .expirationTime(DurationExpirationTime.after(timerInstance.getDelay()))
+                        .processInstanceId(getStringId())
+                        .processId(getProcessId())
+                        .build();
+        JobsService jobsService = InternalProcessRuntime.asKogitoProcessRuntime(getKnowledgeRuntime().getProcessRuntime()).getJobsService();
+        jobsService.scheduleProcessInstanceJob(description);
         return timerInstance;
     }
 
@@ -596,11 +633,19 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 return;
             }
 
-            if ("timerTriggered".equals(type)) {
+            if (TIMER_TRIGGERED_EVENT.equals(type)) {
                 TimerInstance timer = (TimerInstance) event;
                 if (timer.getId().equals(slaTimerId)) {
                     handleSLAViolation();
                     // no need to pass the event along as it was purely for SLA tracking
+                    return;
+                }
+                if (timer.getId().equals(cancelTimerId)) {
+                    logger.debug("Cancelling process instance id  {} because timer {} expires ", getStringId(), cancelTimerId);
+                    // The cancelTimer is being executed, so this id is not valid anymore. Avoid an invalid job canceling
+                    // for it as part of the process aborting sequence.
+                    this.cancelTimerId = null;
+                    setState(KogitoProcessInstance.STATE_ABORTED);
                     return;
                 }
             }
@@ -723,7 +768,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                         variableValue = mvelEvaluator.eval(paramName, factory);
                         String variableValueString = variableValue == null ? "" : variableValue.toString();
                         replacements.put(paramName, variableValueString);
-                    } catch (Throwable t) {
+                    } catch (Exception t) {
                         logger.error("Could not find variable scope for variable {}", paramName);
                     }
                 }
@@ -820,7 +865,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                     if (timerProperties != null) {
                         properties.putAll(timerProperties);
                         eventType = "timer";
-                        eventName = "timerTriggered";
+                        eventName = TIMER_TRIGGERED_EVENT;
                     }
 
                     eventDesciptions.add(new BaseEventDescription(eventName, (String) n.getMetaData().get(UNIQUE_ID), n.getName(), eventType, null, getStringId(), dataType, properties));
@@ -837,7 +882,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                         Map<String, String> timerProperties = ((StateBasedNodeInstance) ni).extractTimerEventInformation();
                         if (timerProperties != null) {
 
-                            eventDesciptions.add(new BaseEventDescription("timerTriggered", (String) startNode.getMetaData().get("UniqueId"), startNode.getName(), "timer", ni.getStringId(),
+                            eventDesciptions.add(new BaseEventDescription(TIMER_TRIGGERED_EVENT, (String) startNode.getMetaData().get("UniqueId"), startNode.getName(), "timer", ni.getStringId(),
                                     getStringId(), null, timerProperties));
 
                         }
@@ -1049,9 +1094,22 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         this.slaTimerId = slaTimerId;
     }
 
+    public String getCancelTimerId() {
+        return cancelTimerId;
+    }
+
+    public void internalSetCancelTimerId(String cancelTimerId) {
+        this.cancelTimerId = cancelTimerId;
+    }
+
     @Override
     public String getNodeIdInError() {
         return nodeIdInError;
+    }
+
+    @Override
+    public String getNodeInstanceIdInError() {
+        return nodeInstanceIdInError;
     }
 
     @Override
@@ -1085,6 +1143,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     @Override
     public void setErrorState(NodeInstance nodeInstanceInError, Exception e) {
         this.nodeIdInError = nodeInstanceInError.getNodeDefinitionId();
+        this.nodeInstanceIdInError = nodeInstanceInError.getId();
         this.errorCause = Optional.of(e);
         Throwable rootException = getRootException(e);
         this.errorMessage = rootException.getClass().getCanonicalName() + " - " + rootException.getMessage();

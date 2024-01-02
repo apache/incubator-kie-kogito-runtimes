@@ -1,31 +1,37 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.process.management;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.WorkflowModelValidator;
+import org.jbpm.workflow.core.WorkflowProcess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.SecurityPolicy;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstances;
@@ -36,6 +42,9 @@ import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
@@ -80,7 +89,10 @@ class BaseProcessInstanceManagementResourceTest {
     private AbstractProcess process;
 
     @Mock
-    private KogitoWorkflowProcess wp;
+    private WorkflowProcess workflowProcess;
+
+    @Mock
+    private WorkflowModelValidator workflowValidator;
 
     @Mock
     private Node node;
@@ -94,10 +106,20 @@ class BaseProcessInstanceManagementResourceTest {
         lenient().when(node.getName()).thenReturn("node");
         lenient().when(node.getUniqueId()).thenReturn(NODE_ID);
         lenient().when(node.getMetaData()).thenReturn(singletonMap(UNIQUE_ID, NODE_UNIQUE_ID));
-        lenient().when(wp.getNodesRecursively()).thenReturn(singletonList(node));
-        lenient().when(process.get()).thenReturn(wp);
+        lenient().when(workflowProcess.getNodesRecursively()).thenReturn(singletonList(node));
+        lenient().when(process.get()).thenReturn(workflowProcess);
+        lenient().when(process.id()).thenReturn(PROCESS_ID);
+        lenient().when(processes.processIds()).thenReturn(Arrays.asList(PROCESS_ID));
         lenient().when(processes.processById(anyString())).thenReturn(process);
         lenient().when(process.instances()).thenReturn(instances);
+        lenient().when(process.name()).thenReturn("Javierito");
+        lenient().when(process.version()).thenReturn("1_0");
+        lenient().when(process.type()).thenReturn("BPMN");
+
+        lenient().when(workflowProcess.getMetaData()).thenReturn(Map.of(Metadata.DESCRIPTION, "cool", Metadata.ANNOTATIONS, Arrays.asList("good")));
+        lenient().when(workflowValidator.schema(JsonNode.class)).thenReturn(Optional.of(NullNode.instance));
+        lenient().when(workflowProcess.getInputValidator()).thenReturn(Optional.of(workflowValidator));
+        lenient().when(workflowProcess.getOutputValidator()).thenReturn(Optional.empty());
         lenient().when(instances.findById(anyString())).thenReturn(Optional.of(processInstance));
         lenient().when(processInstance.error()).thenReturn(Optional.of(error));
         lenient().when(processInstance.variables()).thenReturn(variables);
@@ -168,7 +190,32 @@ class BaseProcessInstanceManagementResourceTest {
             public Object cancelProcessInstanceId(String processId, String processInstanceId) {
                 return null;
             }
+
+            @Override
+            public Object getProcesses() {
+                return null;
+            }
+
+            @Override
+            public Object getProcessInfo(String processId) {
+                return null;
+            }
         });
+    }
+
+    @Test
+    void testDoGetProcessess() {
+        assertThat(tested.doGetProcesses()).isInstanceOf(List.class).asList().hasSize(1);
+    }
+
+    @Test
+    void testDoGetProcessInfo() {
+        Object response = tested.doGetProcessInfo(PROCESS_ID);
+        assertThat(response).isInstanceOf(Map.class);
+        Map<String, Object> data = (Map<String, Object>) response;
+        assertThat(data).containsKey("type").containsKey("id").containsKey("version").containsKey("description").containsKey("annotations").containsEntry("inputSchema", NullNode.instance)
+                .containsKey("name")
+                .doesNotContainKey("outputSchema");
     }
 
     @Test
@@ -177,13 +224,13 @@ class BaseProcessInstanceManagementResourceTest {
 
         verify(processes).processById(PROCESS_ID);
         verify(process).get();
-        verify(wp).getNodesRecursively();
+        verify(workflowProcess).getNodesRecursively();
 
         assertThat(response).isInstanceOf(List.class).asList().hasSize(1).element(0)
                 .hasFieldOrPropertyWithValue("id", node.getId())
                 .hasFieldOrPropertyWithValue("name", node.getName())
                 .hasFieldOrPropertyWithValue("uniqueId", node.getUniqueId())
-                .hasFieldOrPropertyWithValue("nodeDefinitionId", NODE_UNIQUE_ID)
+                .hasFieldOrProperty("metadata")
                 .hasFieldOrPropertyWithValue("type", node.getClass().getSimpleName());
     }
 

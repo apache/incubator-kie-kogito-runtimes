@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.integrationtests;
 
@@ -38,7 +41,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProcessSplitTest extends AbstractBaseTest {
 
@@ -115,10 +118,10 @@ public class ProcessSplitTest extends AbstractBaseTest {
         params.put("name", julie.getName());
         KogitoProcessInstance processInstance3 = kruntime.startProcess("org.jbpm.process-split", params);
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance1.getState());
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance2.getState());
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance3.getState());
-        assertEquals(2, list.size());
+        assertThat(processInstance1.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance2.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance3.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(list).hasSize(2);
     }
 
     @Test
@@ -195,10 +198,10 @@ public class ProcessSplitTest extends AbstractBaseTest {
         params.put("name", julie.getName());
         KogitoProcessInstance processInstance3 = kruntime.startProcess("org.jbpm.process-split", params);
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance1.getState());
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance2.getState());
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance3.getState());
-        assertEquals(2, list.size());
+        assertThat(processInstance1.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance2.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance3.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(list).hasSize(2);
     }
 
     @Test
@@ -262,8 +265,8 @@ public class ProcessSplitTest extends AbstractBaseTest {
         params.put("person", new Person("John Doe"));
         KogitoProcessInstance processInstance = kruntime.startProcess("org.jbpm.process-split", params);
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
-        assertEquals(1, list.size());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(list).hasSize(1);
     }
 
     @Test
@@ -326,8 +329,8 @@ public class ProcessSplitTest extends AbstractBaseTest {
         params.put("name", "John Doe");
         KogitoProcessInstance processInstance = kruntime.startProcess("org.jbpm.process-split", params);
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
-        assertEquals(1, list.size());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(list).hasSize(1);
     }
 
     @Test
@@ -391,8 +394,8 @@ public class ProcessSplitTest extends AbstractBaseTest {
         params.put("person", new Person("John Doe"));
         KogitoProcessInstance processInstance = kruntime.startProcess("org.jbpm.process-split", params);
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
-        assertEquals(1, list.size());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(list).hasSize(1);
     }
 
     @Test
@@ -455,8 +458,8 @@ public class ProcessSplitTest extends AbstractBaseTest {
         params.put("name", "John Doe");
         KogitoProcessInstance processInstance = kruntime.startProcess("org.jbpm.process-split", params);
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
-        assertEquals(1, list.size());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(list).hasSize(1);
     }
 
     @Test
@@ -519,8 +522,8 @@ public class ProcessSplitTest extends AbstractBaseTest {
         params.put("name", "John Doe");
         KogitoProcessInstance processInstance = kruntime.startProcess("org.jbpm.process-split", params);
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
-        assertEquals(1, list.size());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(list).hasSize(1);
     }
 
     @Test
@@ -582,8 +585,8 @@ public class ProcessSplitTest extends AbstractBaseTest {
         params.put("name", "John Doe");
         KogitoProcessInstance processInstance = kruntime.startProcess("org.jbpm.process-split", params);
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
-        assertEquals(1, list.size());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(list).hasSize(1);
     }
 
     @Test
@@ -646,8 +649,8 @@ public class ProcessSplitTest extends AbstractBaseTest {
         params.put("name", "John Doe");
         KogitoProcessInstance processInstance = kruntime.startProcess("org.jbpm.process-split", params);
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
-        assertEquals(1, list.size());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(list).hasSize(1);
     }
 
     @Test
@@ -702,8 +705,8 @@ public class ProcessSplitTest extends AbstractBaseTest {
 
         KogitoProcessInstance processInstance = kruntime.startProcess("org.jbpm.process-split");
 
-        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
-        assertEquals(1, list.size());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(list).hasSize(1);
     }
 
     public static class ProcessUtils {

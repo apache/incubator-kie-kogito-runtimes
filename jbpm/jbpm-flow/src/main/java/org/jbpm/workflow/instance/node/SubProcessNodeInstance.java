@@ -1,17 +1,20 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.workflow.instance.node;
 
@@ -44,6 +47,7 @@ import org.kie.internal.process.CorrelationAwareProcessRuntime;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.process.CorrelationKeyFactory;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +62,6 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
     private static final Logger logger = LoggerFactory.getLogger(SubProcessNodeInstance.class);
 
     // NOTE: ContextInstances are not persisted as current functionality (exception scope) does not require it
-    private Map<String, ContextInstance> contextInstances = new HashMap<>();
     private Map<String, List<ContextInstance>> subContextInstances = new HashMap<>();
 
     private String processInstanceId;
@@ -104,7 +107,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         if (process == null) {
             logger.error("Could not find process {}", processId);
             logger.error("Aborting process");
-            getProcessInstance().setState(ProcessInstance.STATE_ABORTED);
+            getProcessInstance().setState(KogitoProcessInstance.STATE_ABORTED);
             throw new RuntimeException("Could not find process " + processId);
         } else {
             KogitoProcessRuntime kruntime = InternalProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime());
@@ -141,8 +144,8 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
             kruntime.startProcessInstance(processInstance.getStringId());
             if (!getSubProcessNode().isWaitForCompletion()) {
                 triggerCompleted();
-            } else if (processInstance.getState() == ProcessInstance.STATE_COMPLETED
-                    || processInstance.getState() == ProcessInstance.STATE_ABORTED) {
+            } else if (processInstance.getState() == KogitoProcessInstance.STATE_COMPLETED
+                    || processInstance.getState() == KogitoProcessInstance.STATE_ABORTED) {
                 processInstanceCompleted(processInstance);
             } else {
                 addProcessListener();
@@ -151,15 +154,15 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
     }
 
     @Override
-    public void cancel() {
-        super.cancel();
+    public void cancel(CancelType cancelType) {
+        super.cancel(cancelType);
         if (getSubProcessNode() == null || !getSubProcessNode().isIndependent()) {
             KogitoProcessRuntime kruntime = InternalProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime());
 
             ProcessInstance processInstance = (ProcessInstance) kruntime.getProcessInstance(processInstanceId);
 
             if (processInstance != null) {
-                processInstance.setState(ProcessInstance.STATE_ABORTED);
+                processInstance.setState(KogitoProcessInstance.STATE_ABORTED);
             }
         }
     }
@@ -208,7 +211,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         Map<String, Object> outputSet = processInstance.getVariables();
         NodeIoHelper.processOutputs(this, varRef -> outputSet.get(varRef), varName -> this.getVariable(varName));
 
-        if (processInstance.getState() == ProcessInstance.STATE_ABORTED) {
+        if (processInstance.getState() == KogitoProcessInstance.STATE_ABORTED) {
             String faultName = processInstance.getOutcome() == null ? "" : processInstance.getOutcome();
             // handle exception as sub process failed with error code
             ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, faultName);
@@ -225,7 +228,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                 }
                 return;
             } else if (getSubProcessNode() != null && !getSubProcessNode().isIndependent() && getSubProcessNode().isAbortParent()) {
-                getProcessInstance().setState(ProcessInstance.STATE_ABORTED, faultName);
+                getProcessInstance().setState(KogitoProcessInstance.STATE_ABORTED, faultName);
                 return;
             }
         }
@@ -288,7 +291,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         if (conf == null) {
             throw new IllegalArgumentException("Illegal context type (registry not found): " + context.getClass());
         }
-        ContextInstance contextInstance = (ContextInstance) conf.getContextInstance(context, this, (ProcessInstance) getProcessInstance());
+        ContextInstance contextInstance = conf.getContextInstance(context, this, getProcessInstance());
         if (contextInstance == null) {
             throw new IllegalArgumentException("Illegal context type (instance not found): " + context.getClass());
         }

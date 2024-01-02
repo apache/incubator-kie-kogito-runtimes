@@ -1,27 +1,24 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.kie.kogito.process.management;
 
 import java.util.Optional;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
-import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +38,13 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+
+import jakarta.enterprise.inject.Instance;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -95,7 +99,9 @@ public class ProcessInstanceManagementResourceTest {
         processInstance = mock(ProcessInstance.class);
         error = mock(ProcessError.class);
 
+        Instance<Processes> processesInstance = mock(Instance.class);
         lenient().when(processes.processById(anyString())).thenReturn(process);
+        lenient().when(processesInstance.get()).thenReturn(processes);
         lenient().when(process.instances()).thenReturn(instances);
         lenient().when(instances.findById(anyString())).thenReturn(Optional.of(processInstance));
         lenient().when(processInstance.error()).thenReturn(Optional.of(error));
@@ -106,7 +112,7 @@ public class ProcessInstanceManagementResourceTest {
         lenient().when(process.get()).thenReturn(mock(KogitoWorkflowProcess.class));
 
         lenient().when(application.unitOfWorkManager()).thenReturn(new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()));
-        resource = spy(new ProcessInstanceManagementResource(processes, application));
+        resource = spy(new ProcessInstanceManagementResource(processesInstance, application));
     }
 
     @Test
@@ -148,6 +154,18 @@ public class ProcessInstanceManagementResourceTest {
         verify(error, times(0)).skip();
 
         verify(resource).doRetriggerInstanceInError(PROCESS_ID, PROCESS_INSTANCE_ID);
+    }
+
+    @Test
+    public void testGetProcesses() {
+        resource.getProcesses();
+        verify(resource).doGetProcesses();
+    }
+
+    @Test
+    public void testGetProcessInfo() {
+        resource.getProcessInfo(PROCESS_ID);
+        verify(resource).doGetProcessInfo(PROCESS_ID);
     }
 
     @Test

@@ -1,21 +1,25 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jbpm.process.core.timer;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 
@@ -64,25 +68,15 @@ public class Timer implements Serializable {
         this.date = date;
     }
 
+    @Override
     public String toString() {
-        String result = "Timer";
-        if (delay != null || period != null) {
-            result += "[";
-            if (delay != null) {
-                result += "delay=" + delay;
-                if (period != null) {
-                    result += ", ";
-                }
-            }
-            if (period != null) {
-                result += "period=" + period;
-            }
-            if (date != null) {
-                result += "date=" + date;
-            }
-            result += "]";
-        }
-        return result;
+        return "Timer{" +
+                "id='" + id + '\'' +
+                ", delay='" + delay + '\'' +
+                ", period='" + period + '\'' +
+                ", date='" + date + '\'' +
+                ", timeType=" + timeType +
+                '}';
     }
 
     public int getTimeType() {
@@ -104,4 +98,21 @@ public class Timer implements Serializable {
         this.timeType = timeType;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Timer)) {
+            return false;
+        }
+        Timer timer = (Timer) o;
+        return timeType == timer.timeType && id == timer.id && Objects.equals(delay, timer.delay) && Objects.equals(period,
+                timer.period) && Objects.equals(date, timer.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, delay, period, date, timeType);
+    }
 }

@@ -1,19 +1,21 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
 package org.kie.kogito.quarkus.workflows;
 
 import java.net.URI;
@@ -23,6 +25,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.kie.kogito.event.process.ProcessInstanceVariableDataEvent;
 import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
@@ -38,12 +41,12 @@ import io.restassured.path.json.JsonPath;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.quarkus.workflows.ExternalServiceMock.GENERATE_ERROR_QUERY;
 import static org.kie.kogito.quarkus.workflows.ExternalServiceMock.SUCCESSFUL_QUERY;
-import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.assertProcessInstanceExists;
-import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.assertProcessInstanceHasFinished;
-import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.assertProcessInstanceNotExists;
-import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.newProcessInstance;
-import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.newProcessInstanceAndGetId;
 import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.waitForKogitoProcessInstanceEvent;
+import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProcessInstanceExists;
+import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProcessInstanceHasFinished;
+import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProcessInstanceNotExists;
+import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcessInstance;
+import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcessInstanceAndGetId;
 
 abstract class AbstractCallbackStateIT {
 
@@ -70,7 +73,7 @@ abstract class AbstractCallbackStateIT {
         }
     }
 
-    void executeCallbackStateSuccessfulPath(String callbackProcessPostUrl,
+    String executeCallbackStateSuccessfulPath(String callbackProcessPostUrl,
             String callbackProcessGetByIdUrl,
             String answer,
             String callbackEventType,
@@ -79,9 +82,9 @@ abstract class AbstractCallbackStateIT {
         String processInput = buildProcessInput(SUCCESSFUL_QUERY);
         String processInstanceId = newProcessInstanceAndGetId(callbackProcessPostUrl, processInput);
 
-        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, true);
-        Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
-        assertThat(workflowDataMap).hasSize(1);
+        JsonPath processInstanceEventContent =
+                waitForKogitoProcessInstanceEvent(kafkaClient, ProcessInstanceVariableDataEvent.class, e -> "workflowdata".equals(e.get("data.variableName")), true);
+        Map<Object, Object> workflowDataMap = processInstanceEventContent.getMap("data.variableValue");
         assertThat(workflowDataMap).containsEntry("query", SUCCESSFUL_QUERY);
 
         // double check that the process instance is there.
@@ -101,26 +104,29 @@ abstract class AbstractCallbackStateIT {
 
         // give some time for the event to be processed and the process to finish.
         assertProcessInstanceHasFinished(callbackProcessGetByIdUrl, processInstanceId, 1, 180);
+        return processInstanceId;
     }
 
-    void executeCallbackStateWithErrorPath(String callbackProcessPostUrl, String callbackProcessGetByIdUrl) throws Exception {
+    String executeCallbackStateWithErrorPath(String callbackProcessPostUrl, String callbackProcessGetByIdUrl) throws Exception {
         // start a new process instance and collect the results.
         String processInput = buildProcessInput(GENERATE_ERROR_QUERY);
         JsonPath result = newProcessInstance(callbackProcessPostUrl, processInput);
         String processInstanceId = result.get("id");
         // ensure the process has failed as expected since GENERATE_ERROR_QUERY was used.
+
         String lastExecutedState = result.getString("workflowdata.lastExecutedState");
         assertThat(lastExecutedState).isEqualTo("FinalizeWithError");
 
-        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, true);
-        Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
-        assertThat(workflowDataMap)
-                .hasSize(2)
-                .containsEntry("query", GENERATE_ERROR_QUERY)
-                .containsEntry("lastExecutedState", "FinalizeWithError");
+        JsonPath variableLastExecutedStateEventContent =
+                waitForKogitoProcessInstanceEvent(kafkaClient, ProcessInstanceVariableDataEvent.class, e -> "workflowdata".equals(e.get("data.variableName")), true);
+        Map<Object, Object> lastExecutedStateDataMap = variableLastExecutedStateEventContent.getMap("data.variableValue");
+
+        assertThat(lastExecutedStateDataMap).containsEntry("lastExecutedState", "FinalizeWithError");
+        assertThat(lastExecutedStateDataMap).containsEntry("query", GENERATE_ERROR_QUERY);
 
         // the process instance should not be there since an end state was reached.
         assertProcessInstanceNotExists(callbackProcessGetByIdUrl, processInstanceId);
+        return processInstanceId;
     }
 
     protected static String buildProcessInput(String query) {
