@@ -4,7 +4,7 @@ env:
   USERNAME: kie-ci
   USEREMAIL: kie-ci0@redhat.com
   UPSTREAM_REMOTE: https://github.com/apache/incubator-kie-kogito-runtimes.git
-  GITHUB_TOKEN: ${{ secrets.UPSTREAM_SYNC_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.APACHE_SYNC_MIDSTREAM_TOKEN }}
 
 on:
   schedule:
