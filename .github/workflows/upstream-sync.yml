@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.APACHE_SYNC_MIDSTREAM_TOKEN }}
 
       - name: Setup git environment
         run: |
