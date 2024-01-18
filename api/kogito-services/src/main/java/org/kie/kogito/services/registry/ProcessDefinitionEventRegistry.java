@@ -38,6 +38,7 @@ import org.kie.kogito.event.process.ProcessDefinitionEventBody.ProcessDefinition
 import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
+import org.kie.kogito.source.files.SourceFile;
 import org.kie.kogito.source.files.SourceFilesProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,16 +100,19 @@ public class ProcessDefinitionEventRegistry {
                     .setAnnotations(annotations)
                     .setDescription(description)
                     .setMetadata(metadata);
-            sourceFilesProvider.flatMap(provider -> provider.getProcessSourceFile(p.id())).map(s -> {
-                try {
-                    return new String(s.readContents());
-                } catch (IOException e) {
-                    LOGGER.warn("Error reading source for process {}", p.id(), e);
-                    return null;
-                }
-            }).ifPresentOrElse(s -> builder.setSource(s), () -> LOGGER.warn("Not source found for process id {}", p.id()));
+            sourceFilesProvider.flatMap(provider -> provider.getProcessSourceFile(p.id())).map(this::readSourceFile).ifPresentOrElse(builder::setSource,
+                    () -> LOGGER.warn("Not source found for process id {}", p.id()));
             return new ProcessDefinitionDataEvent(builder.build());
         };
+    }
+
+    private String readSourceFile(SourceFile s) {
+        try {
+            return new String(s.readContents());
+        } catch (IOException e) {
+            LOGGER.warn("Error reading content for source file {}", s, e);
+            return null;
+        }
     }
 
     private static String getEndpoint(String endpoint, Process<?> p) {
