@@ -20,9 +20,6 @@ package org.kie.kogito.jobs.api;
 
 import java.time.temporal.ChronoUnit;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.service.api.TemporalUnit;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipient;
@@ -31,6 +28,9 @@ import org.kie.kogito.jobs.service.api.schedule.timer.TimerSchedule;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * Common definitions for add-ons implementations based on the Jobs Service to Runtime rest callback pattern.
@@ -99,7 +99,7 @@ public class JobCallbackResourceDef {
         return objectMapper.valueToTree(new JobCallbackPayload(description.id()));
     }
 
-    private static TimerSchedule buildSchedule(ProcessInstanceJobDescription description) {
+    public static TimerSchedule buildSchedule(ProcessInstanceJobDescription description) {
         return TimerSchedule.builder()
                 .startTime(description.expirationTime().get().toOffsetDateTime().truncatedTo(ChronoUnit.MILLIS))
                 .repeatCount(translateLimit(description.expirationTime().repeatLimit()))

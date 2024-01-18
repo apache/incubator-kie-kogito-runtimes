@@ -23,7 +23,7 @@
     <parent>
         <artifactId>kogito-quarkus-decisions-extension</artifactId>
         <groupId>org.kie.kogito</groupId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>999-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -90,7 +90,7 @@
             </plugin>
             <plugin>
                 <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
+                <artifactId>quarkus-extension-maven-plugin</artifactId>
                 <version>${version.io.quarkus}</version>
                 <executions>
                     <execution>
@@ -121,7 +121,7 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>${jandex-maven-plugin.group-id}</groupId>
+                <groupId>io.smallrye</groupId>
                 <artifactId>jandex-maven-plugin</artifactId>
             </plugin>
         </plugins>

@@ -20,14 +20,17 @@ package org.kie.kogito.quarkus.config;
 
 import java.util.Optional;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.config.StaticConfigBean;
 
+import io.quarkus.runtime.Startup;
+
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+
 @Singleton
+@Startup
 public class ConfigBean extends StaticConfigBean {
 
     @Inject

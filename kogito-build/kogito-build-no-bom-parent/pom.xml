@@ -28,7 +28,7 @@
     <groupId>org.kie.kogito</groupId>
     <!-- The Kogito Dependencies BOM is inherited here to reuse all the version properties defined there and used across our internal modules. -->
     <artifactId>kogito-dependencies-bom</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>999-SNAPSHOT</version>
     <relativePath>../kogito-dependencies-bom/pom.xml</relativePath>
   </parent>
 
@@ -78,9 +78,9 @@
     <container.image.redis>redislabs/redisearch:${version.org.redis}</container.image.redis>
     <container.image.postgres>postgres:${version.org.postgres}</container.image.postgres>
 
-    <maven.compiler.release>11</maven.compiler.release>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <jacoco.agent.argLine/>
     <!--
       JaCoCo coverage data file location. Using a single file for appending in the project's root directory makes it
@@ -94,7 +94,7 @@
     <formatter.skip>false</formatter.skip>
     <formatter.goal>format</formatter.goal>
     <impsort.goal>sort</impsort.goal>
-    <version.jdk>11</version.jdk>
+    <version.jdk>17</version.jdk>
     <!-- Properties also affecting test execution. -->
     <invoker.skip>false</invoker.skip>
     <archetype.test.skip>false</archetype.test.skip>
@@ -117,7 +117,6 @@
     <version.install.plugin>2.5.2</version.install.plugin>
     <version.invoker.plugin>3.2.2</version.invoker.plugin>
     <version.jacoco.plugin>0.8.11</version.jacoco.plugin>
-    <jandex-maven-plugin.group-id>io.smallrye</jandex-maven-plugin.group-id>
     <version.jandex.plugin>3.0.5</version.jandex.plugin>
     <version.jar.plugin>3.1.0</version.jar.plugin>
     <version.javancss.plugin>2.0</version.javancss.plugin>
@@ -128,7 +127,7 @@
     <version.license.plugin>4.0.rc2</version.license.plugin>
     <version.native2ascii.plugin>1.0-beta-1</version.native2ascii.plugin>
     <version.org.xolstice.maven.protobuf>0.6.1</version.org.xolstice.maven.protobuf>
-    <version.plugin.plugin>3.6.0</version.plugin.plugin>
+    <version.plugin.plugin>3.10.2</version.plugin.plugin>
     <version.project.sources.plugin>0.3</version.project.sources.plugin>
     <version.rpkgtests.maven.plugin>1.0.0</version.rpkgtests.maven.plugin>
     <version.resources.plugin>3.1.0</version.resources.plugin>
@@ -353,7 +352,7 @@
             <excludes>
               <exclude>${tests.surefire.include}</exclude>
             </excludes>
-            <argLine>-Xms2048m -Xmx4g -XX:-TieredCompilation -XX:TieredStopAtLevel=1 -Xverify:none</argLine>
+            <argLine>-Xms2048m -Xmx4g  -XX:-TieredCompilation -XX:TieredStopAtLevel=1</argLine>
             <systemPropertyVariables>
               <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
               <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
@@ -372,7 +371,7 @@
             <excludes>
               <exclude>${tests.failsafe.include}</exclude>
             </excludes>
-            <argLine>-Xms2048m -Xmx4g -XX:-TieredCompilation -XX:TieredStopAtLevel=1 -Xverify:none -Dfile.encoding=UTF-8</argLine>
+            <argLine>-Xms2048m -Xmx4g -XX:-TieredCompilation -XX:TieredStopAtLevel=1 -Dfile.encoding=UTF-8</argLine>
             <systemPropertyVariables>
               <apple.awt.UIElement>true</apple.awt.UIElement>
               <org.uberfire.nio.git.daemon.enabled>false</org.uberfire.nio.git.daemon.enabled>
@@ -593,7 +592,7 @@
           <version>${version.plugin.plugin}</version>
         </plugin>
         <plugin>
-          <groupId>${jandex-maven-plugin.group-id}</groupId>
+          <groupId>io.smallrye</groupId>
           <artifactId>jandex-maven-plugin</artifactId>
           <version>${version.jandex.plugin}</version>
           <executions>
@@ -639,7 +638,7 @@
         </plugin>
         <plugin>
           <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
+          <artifactId>quarkus-extension-maven-plugin</artifactId>
           <version>${version.io.quarkus}</version>
         </plugin>
         <plugin>
@@ -741,18 +740,6 @@
 
   <profiles>
     <profile>
-      <id>productized</id>
-      <activation>
-        <property>
-          <name>productized</name>
-        </property>
-      </activation>
-      <properties>
-        <jandex-maven-plugin.group-id>org.jboss.jandex</jandex-maven-plugin.group-id>
-        <version.jandex.plugin>1.2.3</version.jandex.plugin>
-      </properties>
-    </profile>
-    <profile>
       <id>run-code-coverage</id>
       <build>
         <plugins>
@@ -761,7 +748,7 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <!-- Append jacoco.agent.argLine property populated by JaCoCo's prepare-agent goal. -->
-              <argLine>@{jacoco.agent.argLine} -Xms1024m -Xmx4g -XX:-TieredCompilation -XX:TieredStopAtLevel=1 -Xverify:none -Dfile.encoding=UTF-8</argLine>
+              <argLine>@{jacoco.agent.argLine} -Xms1024m -Xmx4g  -XX:-TieredCompilation -XX:TieredStopAtLevel=1 -Dfile.encoding=UTF-8</argLine>
             </configuration>
           </plugin>
           <plugin>
