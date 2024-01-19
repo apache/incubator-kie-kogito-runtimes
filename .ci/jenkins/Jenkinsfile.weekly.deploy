@@ -44,6 +44,8 @@ pipeline {
                     dir(getRepoName()) {
                         checkoutRepo()
                     }
+
+                    env.PROJECT_VERSION = maven.mvnGetVersionProperty(getMavenCommand(), 'project.version')
                 }
             }
             post {
@@ -73,7 +75,7 @@ pipeline {
                     maven.mvnSetVersionProperty(
                         getMavenCommand(),
                         'version.org.kie',
-                        getProjectVersion()
+                        getDroolsVersion()
                     )
                 }
             }
@@ -103,7 +105,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: env.MAVEN_REPO_CREDS_ID, usernameVariable: 'REPOSITORY_USER', passwordVariable: 'REPOSITORY_TOKEN')]) {
                         configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]) {
-                            new getMavenCommand()
+                            getMavenCommand()
                                 .withSettingsXmlFile(MAVEN_SETTINGS_FILE)
                                 .withProperty('wagon.source', "file://${getLocalDeploymentFolder()}")
                                 .withProperty('wagon.target', env.MAVEN_DEPLOY_REPOSITORY)
@@ -238,14 +240,18 @@ String getCheckoutDatetime() {
 }
 
 String getProjectVersionDate() {
-    date = (getCheckoutDatetime() =~ /(\d{4}-\d{2}-\d{2})/)[0][0]
-    return date.replace('-', '')
+    def projectVersionDate = (getCheckoutDatetime() =~ /(\d{4}-\d{2}-\d{2})/)[0][0]
+    return projectVersionDate.replace('-', '')
 }
 
 String getProjectVersion(boolean keepSnapshotSuffix = true) {
-    version = maven.mvnGetVersionProperty(getMavenCommand(), 'project.version')
+    def projectVersion = env.PROJECT_VERSION
     if (keepSnapshotSuffix) {
-        return version.replace("-SNAPSHOT", "-${getProjectVersionDate()}-SNAPSHOT")
+        return projectVersion.replace("-SNAPSHOT", "-${getProjectVersionDate()}-SNAPSHOT")
     }
-    return version.replace("-SNAPSHOT", "-${getProjectVersionDate()}")
+    return projectVersion.replace("-SNAPSHOT", "-${getProjectVersionDate()}")
+}
+
+String getDroolsVersion() {
+    return getProjectVersion()
 }
