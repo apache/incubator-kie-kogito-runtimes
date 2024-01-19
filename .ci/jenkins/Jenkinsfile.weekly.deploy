@@ -225,7 +225,7 @@ void runMavenLocalDeploy(boolean skipTests = true) {
         mvnCmd.withProperty('maven.test.failure.ignore', true)
             .withOptions(env.BUILD_MVN_OPTS_CURRENT ? [ env.BUILD_MVN_OPTS_CURRENT ] : [])
             .withOptions(env.KOGITO_RUNTIMES_BUILD_MVN_OPTS ? [ env.KOGITO_RUNTIMES_BUILD_MVN_OPTS ] : [])
-            .skipTests(skipTests)
+            //.skipTests(skipTests) // Conflict somehow with Python testing. If `skipTests={anyvalue}` is set, then exec plugin is not executed ...
             .withSettingsXmlFile(MAVEN_SETTINGS_FILE)
             .run('clean deploy')
     }
