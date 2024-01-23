@@ -32,6 +32,10 @@
   <artifactId>integration-tests-processes-persistence-common</artifactId>
   <name>Kogito :: Integration Tests :: Processes :: Persistence :: Common</name>
 
+  <properties>
+      <java.module.name>org.kie.kogito.test.persistence.common</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -93,7 +97,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>${jandex-maven-plugin.group-id}</groupId>
+        <groupId>io.smallrye</groupId>
         <artifactId>jandex-maven-plugin</artifactId>
         <executions>
           <execution>

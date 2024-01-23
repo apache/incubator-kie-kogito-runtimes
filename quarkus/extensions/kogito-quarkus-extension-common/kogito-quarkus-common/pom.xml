@@ -32,6 +32,10 @@
     <artifactId>kogito-quarkus-common</artifactId>
     <name>Kogito :: Quarkus Extension Common :: Runtime</name>
 
+  <properties>
+    <java.module.name>org.kie.kogito.quarkus.common</java.module.name>
+  </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.graalvm.nativeimage</groupId>
@@ -112,7 +116,7 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>${jandex-maven-plugin.group-id}</groupId>
+                <groupId>io.smallrye</groupId>
                 <artifactId>jandex-maven-plugin</artifactId>
             </plugin>
         </plugins>

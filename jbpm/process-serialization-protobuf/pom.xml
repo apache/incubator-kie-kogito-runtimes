@@ -36,6 +36,7 @@
   <description>Kogito Process Protobuf Serialization</description>
   <properties>
     <sonar.exclusions>**/org/kie/kogito/serialization/process/protobuf/*</sonar.exclusions>
+    <java.module.name>org.kie.kogito.serialization.process</java.module.name>
   </properties>
 
   <dependencyManagement>
@@ -109,7 +110,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>${jandex-maven-plugin.group-id}</groupId>
+        <groupId>io.smallrye</groupId>
         <artifactId>jandex-maven-plugin</artifactId>
         <executions>
           <execution>

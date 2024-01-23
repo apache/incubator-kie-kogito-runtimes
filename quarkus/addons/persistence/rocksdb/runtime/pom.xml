@@ -34,6 +34,10 @@
 
   <description>Rocksdb Persistence support for Quarkus</description>
 
+    <properties>
+       <java.module.name>org.kie.kogito.persistence.quarkus.rocksdb</java.module.name>
+    </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -48,7 +52,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>${jandex-maven-plugin.group-id}</groupId>
+        <groupId>io.smallrye</groupId>
         <artifactId>jandex-maven-plugin</artifactId>
         <executions>
           <execution>

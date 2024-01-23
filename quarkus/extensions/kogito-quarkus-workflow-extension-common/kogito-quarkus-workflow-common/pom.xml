@@ -32,6 +32,10 @@
   <artifactId>kogito-quarkus-workflow-common</artifactId>
   <name>Kogito :: Quarkus Workflow Extension Common :: Runtime</name>
 
+  <properties>
+    <java.module.name>org.kie.kogito.quarkus.workflow</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -54,7 +58,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>${jandex-maven-plugin.group-id}</groupId>
+        <groupId>io.smallrye</groupId>
         <artifactId>jandex-maven-plugin</artifactId>
       </plugin>
     </plugins>
