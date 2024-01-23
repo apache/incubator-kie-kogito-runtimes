@@ -111,7 +111,6 @@ public class ProcessInstanceMarshallTest {
         when(process.get()).thenReturn(workflow);
     }
 
-
     public static class MarshableObject implements Serializable {
 
         private static final long serialVersionUID = 1481370154514125687L;
@@ -142,7 +141,6 @@ public class ProcessInstanceMarshallTest {
         }
     }
 
-
     private static Stream<Arguments> testProcessInstanceMarshalling() {
         return Stream.of(Arguments.of(buildInstance(false)),
                 (Arguments.of(buildInstance(true))));
@@ -154,7 +152,7 @@ public class ProcessInstanceMarshallTest {
         instance.setStartDate(new Date());
         instance.setDescription(PROCESS_DESCRIPTION);
 
-        if(!orphan) {
+        if (!orphan) {
             instance.setRootProcessInstanceId(ROOT_PROCESS_INSTANCE_ID);
             instance.setRootProcessId(ROOT_PROCESS_ID);
             instance.setParentProcessInstanceId(PARENT_PROCESS_ID);
@@ -165,7 +163,6 @@ public class ProcessInstanceMarshallTest {
 
         return instance;
     }
-
 
     private static Stream<Arguments> testRoundTrip() throws Exception {
         return Stream.of(
