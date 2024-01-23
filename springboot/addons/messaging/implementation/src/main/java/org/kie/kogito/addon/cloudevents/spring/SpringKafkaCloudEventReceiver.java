@@ -31,7 +31,6 @@ import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.EventUnmarshaller;
-import org.kie.kogito.event.KogitoEventStreams;
 import org.kie.kogito.event.Subscription;
 import org.kie.kogito.event.impl.CloudEventConverter;
 import org.kie.kogito.event.impl.DataEventConverter;
@@ -67,13 +66,12 @@ public class SpringKafkaCloudEventReceiver implements EventReceiver {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> clazz) {
-
         consumers.add(
                 new Subscription(consumer, configBean.useCloudEvents() ? new CloudEventConverter<>(clazz, cloudEventUnmarshaller)
                         : new DataEventConverter<>(clazz, eventDataUnmarshaller)));
     }
 
-    @KafkaListener(topics = "${kogito.addon.cloudevents.kafka." + KogitoEventStreams.INCOMING + ":" + KogitoEventStreams.INCOMING + "}")
+    @KafkaListener(topics = { "#{springTopics.getIncomingTopics}" })
     public void receive(@Payload Collection<String> messages) throws InterruptedException {
         log.debug("Received {} events", messages.size());
         Collection<CompletionStage<?>> futures = new ArrayList<>();
