@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 public enum DatabaseType {
     ANSI("ansi", "process_instances"),
-    ORACLE("Oracle", "PROCESS_INSTANCES"),
     POSTGRES("PostgreSQL", "process_instances");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseType.class);
@@ -48,9 +47,7 @@ public enum DatabaseType {
     }
 
     public static DatabaseType create(final String dbIdentifier) {
-        if (ORACLE.getDbIdentifier().equals(dbIdentifier)) {
-            return ORACLE;
-        } else if (POSTGRES.getDbIdentifier().equals(dbIdentifier)) {
+        if (POSTGRES.getDbIdentifier().equals(dbIdentifier)) {
             return POSTGRES;
         } else {
             var msg = String.format("Unrecognized DB (%s), defaulting to ansi", dbIdentifier);

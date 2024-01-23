@@ -42,7 +42,6 @@
     <!-- We don't use gson directly. This is just to align versions of transitive dependencies -->
     <version.com.google.gson>2.10.1</version.com.google.gson>
     <!-- currently required for integration test only -->
-    <version.com.oracle.database.jdbc>21.5.0.0</version.com.oracle.database.jdbc>
     <version.com.sun.xml.bind.core>2.3.0.1</version.com.sun.xml.bind.core>
     <version.com.sun.xml.bind.impl>2.3.5</version.com.sun.xml.bind.impl>
     <version.com.sun.activation>2.0.1</version.com.sun.activation>
