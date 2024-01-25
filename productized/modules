@@ -7,7 +7,7 @@ kogito-codegen-modules/pom.xml;kogito-codegen-rules,kogito-codegen-decisions,kog
 kogito-serverless-workflow/pom.xml;kogito-serverless-workflow-executor,kogito-serverless-workflow-executor-tests
 quarkus/addons/pom.xml;explainability,mail,monitoring,process-svg,task-notification,tracing-decision,task-management,marshallers,process-definitions
 quarkus/addons/events/pom.xml;decisions,predictions,rules,mongodb
-quarkus/addons/jobs/pom.xml;messaging,knative-eventing
+quarkus/addons/jobs/pom.xml;messaging
 quarkus/addons/persistence/pom.xml;infinispan,kafka,filesystem,mongodb,postgresql,rocksdb
 quarkus/extensions/pom.xml;kogito-quarkus-extension,kogito-quarkus-incubation-common,kogito-quarkus-processes-extension,kogito-quarkus-rules-extension,kogito-quarkus-decisions-extension,kogito-quarkus-predictions-extension
 quarkus/extensions/kogito-quarkus-extension/pom.xml;kogito-quarkus-integration-test,kogito-quarkus-integration-test-maven-devmode
