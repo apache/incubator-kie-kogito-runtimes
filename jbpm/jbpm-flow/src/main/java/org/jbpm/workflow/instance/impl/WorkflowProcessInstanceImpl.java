@@ -399,7 +399,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     public void setState(final int state, String outcome) {
         // TODO move most of this to ProcessInstanceImpl
         if (state == KogitoProcessInstance.STATE_COMPLETED
-                || state == KogitoProcessInstance.STATE_ABORTED) {
+                || state == KogitoProcessInstance.STATE_ABORTED
+                || state == KogitoProcessInstance.STATE_ERROR) {
             this.endDate = new Date();
             if (this.slaCompliance == KogitoProcessInstance.SLA_PENDING) {
                 if (System.currentTimeMillis() > slaDueDate.getTime()) {

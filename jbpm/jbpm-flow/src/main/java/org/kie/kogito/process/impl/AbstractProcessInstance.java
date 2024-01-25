@@ -288,7 +288,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         addCompletionEventListener();
         addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).create(id, this));
         KogitoProcessInstance kogitoProcessInstance = getProcessRuntime().getKogitoProcessRuntime().startProcessInstance(this.id, trigger);
-        if (kogitoProcessInstance.getState() != STATE_ABORTED && kogitoProcessInstance.getState() != STATE_COMPLETED) {
+        if (kogitoProcessInstance.getState() != STATE_ABORTED && kogitoProcessInstance.getState() != STATE_COMPLETED && kogitoProcessInstance.getState() != STATE_ERROR) {
             addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
         }
         unbind(variables, kogitoProcessInstance.getVariables());
@@ -585,7 +585,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     protected void removeOnFinish() {
-        if (processInstance.getState() != KogitoProcessInstance.STATE_ACTIVE && processInstance.getState() != KogitoProcessInstance.STATE_ERROR) {
+        if (processInstance.getState() != KogitoProcessInstance.STATE_ACTIVE) {
             removeCompletionListener();
             syncProcessInstance(processInstance);
             remove();
