@@ -64,7 +64,14 @@ public abstract class AbstractAvailabilityHealthCheck implements HealthCheck {
         this.checkType = checkType;
         this.vertx = vertx;
         this.requestTimeout = requestTimeout != null ? requestTimeout : DEFAULT_TIMEOUT;
-        this.webClient = WebClient.create(vertx);
+        this.webClient = createClient();
+    }
+
+    /**
+     * facilitates tests.
+     */
+    protected WebClient createClient() {
+        return WebClient.create(vertx);
     }
 
     @Override
