@@ -18,29 +18,24 @@
  */
 package org.kie.kogito.testcontainers;
 
-import java.text.MessageFormat;
 import java.util.function.Consumer;
 
 import org.kie.kogito.test.resources.TestResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.OracleContainer;
+import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.output.OutputFrame;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.utility.DockerImageName;
 
 /**
- * OracleXE Container for Kogito examples.
+ * Placeholder for OracleXE Container (cleaned for Legal restrictions related to oracle license).
  */
-public class KogitoOracleSqlContainer extends OracleContainer implements TestResource {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(KogitoOracleSqlContainer.class);
-
-    public static final String ORACLE_CONNECTION_URI = "kogito.persistence.oracle.connection.uri";
+public class KogitoOracleSqlContainer extends JdbcDatabaseContainer<KogitoOracleSqlContainer> implements TestResource {
 
     public KogitoOracleSqlContainer() {
-        withLogConsumer(getLogger());
-        withLogConsumer(new Slf4jLogConsumer(LOGGER));
-        withStartupTimeout(Constants.CONTAINER_START_TIMEOUT);
+        this(null);
+    }
+
+    public KogitoOracleSqlContainer(DockerImageName dockerImageName) {
+        super(dockerImageName);
     }
 
     private Consumer<OutputFrame> getLogger() {
@@ -48,34 +43,37 @@ public class KogitoOracleSqlContainer extends OracleContainer implements TestRes
     }
 
     @Override
-    public void start() {
-        super.start();
-        LOGGER.info("Oracle server: {}", this.getContainerIpAddress() + ":" + this.getOraclePort());
+    public String getResourceName() {
+        return null;
     }
 
     @Override
     public int getMappedPort() {
-        return getOraclePort();
+        return 0;
     }
 
     @Override
-    public String getResourceName() {
-        return "oracle";
-    }
-
-    public String getReactiveUrl() {
-        final String connectionTemplate = "oracle://{0}:{1}@{2}:{3}/{4}?search_path={5}";
-        final String user = getUsername();
-        final String server = getHost();
-        final String secret = getPassword();
-        final String port = String.valueOf(getMappedPort());
-        final String database = getDatabaseName();
-        final String schema = "public";
-        return MessageFormat.format(connectionTemplate, user, secret, server, port, database, schema);
+    public String getDriverClassName() {
+        return null;
     }
 
     @Override
-    public void stop() {
-        super.stop();
+    public String getJdbcUrl() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    protected String getTestQueryString() {
+        return null;
     }
 }
