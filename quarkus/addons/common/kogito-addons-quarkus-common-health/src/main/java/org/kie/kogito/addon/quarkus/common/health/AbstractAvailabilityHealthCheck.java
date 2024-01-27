@@ -37,6 +37,7 @@ import io.vertx.mutiny.ext.web.client.WebClient;
 public abstract class AbstractAvailabilityHealthCheck implements HealthCheck {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofMillis(500);
+    private static final int DEFAULT_PORT = 80;
 
     protected String serviceName;
 
@@ -83,7 +84,10 @@ public abstract class AbstractAvailabilityHealthCheck implements HealthCheck {
             URL url;
             try {
                 url = new URL(serviceUrl);
-                HttpResponse<Buffer> response = webClient.request(HttpMethod.GET, url.getPort(), url.getHost(), healthPath)
+                HttpResponse<Buffer> response = webClient.request(HttpMethod.GET,
+                        url.getPort() > 0 ? url.getPort() : DEFAULT_PORT,
+                        url.getHost(),
+                        healthPath)
                         .send()
                         .await()
                         .atMost(requestTimeout);
