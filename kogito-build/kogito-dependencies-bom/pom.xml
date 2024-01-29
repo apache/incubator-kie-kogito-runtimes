@@ -133,6 +133,7 @@
     <version.black.ninia>4.2.0</version.black.ninia>
     <version.com.google.guava>32.0.0-jre</version.com.google.guava>
     <version.apache.commons.commons-compress>1.26.0</version.apache.commons.commons-compress>
+    <version.yaml.mapper.common>0.4</version.yaml.mapper.common>
   </properties>
 
   <dependencyManagement>

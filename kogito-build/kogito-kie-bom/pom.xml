@@ -187,6 +187,11 @@
       </dependency>
       <dependency>
         <groupId>org.drools</groupId>
+        <artifactId>drools-ruleunits-dsl</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
         <artifactId>drools-ruleunits-impl</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
@@ -233,6 +238,17 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-dmn-openapi</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-yard-api</artifactId>
+        <version>${version.org.kie}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-yard-core</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
 

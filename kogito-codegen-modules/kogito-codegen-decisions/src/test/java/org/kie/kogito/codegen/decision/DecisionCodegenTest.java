@@ -19,14 +19,7 @@
 package org.kie.kogito.codegen.decision;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.AbstractStringAssert;
@@ -104,6 +97,12 @@ public class DecisionCodegenTest {
         assertThat(fileNames(generatedFiles)).containsAll(expectedResources);
 
         assertNotEmptySectionCompilationUnit(codeGenerator);
+
+        Iterator<GeneratedFile> iterator = generatedFiles.iterator();
+        while (iterator.hasNext()) {
+            System.out.println(new String(iterator.next().contents()));
+            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        }
 
         // the DMN namespace is "decision":	
         Collection<String> expectedStronglyTypeClassesForReflection = Arrays.asList("decision.InputSet", "decision.TEmployee", "decision.OutputSet", "decision.TAddress", "decision.TPayroll");

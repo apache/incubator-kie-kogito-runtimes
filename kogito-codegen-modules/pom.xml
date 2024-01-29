@@ -42,6 +42,7 @@
     <module>kogito-codegen-processes-integration-tests</module>
     <module>kogito-codegen-rules</module>
     <module>kogito-codegen-decisions</module>
+    <module>kogito-codegen-yard</module>
     <module>kogito-codegen-predictions</module>
     <module>kogito-codegen-integration-tests</module>
     <module>kogito-codegen-sample</module>

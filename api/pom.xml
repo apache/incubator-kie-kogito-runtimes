@@ -54,6 +54,8 @@
     <module>kogito-api-incubation-decisions-services</module>
     <module>kogito-api-incubation-rules</module>
     <module>kogito-api-incubation-rules-services</module>
+    <module>kogito-api-incubation-yard</module>
+    <module>kogito-api-incubation-yard-services</module>
   </modules>
 
 </project>

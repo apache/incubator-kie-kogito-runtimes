@@ -1,0 +1,20 @@
+specVersion: alpha
+kind: YaRD
+name: "Hello"
+expressionLang: jshell
+inputs:
+  - name: "Name"
+    type: String
+elements:
+  - name: Message
+    type: Decision
+    logic:
+      type: DecisionTable
+      # First matching result will be picked
+      hitPolicy: FIRST
+      inputs: [ "Name" ]
+      rules:
+        - when: [ 'World' ]
+          then: 'Hello World'
+        - when: [ '-' ]
+          then: 'Hello'

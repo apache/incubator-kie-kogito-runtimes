@@ -58,6 +58,7 @@
     <module>kogito-quarkus-rules-extension</module>
     <module>kogito-quarkus-decisions-extension</module>
     <module>kogito-quarkus-predictions-extension</module>
+    <module>kogito-quarkus-yard-extension</module>
   </modules>
 
   <profiles>
