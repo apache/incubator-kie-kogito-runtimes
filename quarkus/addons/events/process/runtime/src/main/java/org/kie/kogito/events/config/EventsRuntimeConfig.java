@@ -46,7 +46,7 @@ public class EventsRuntimeConfig {
     /**
      * Propagate errors for process definition emitter
      */
-    @ConfigItem(name = "processdefinition.errors.propagate", defaultValue = "false")
+    @ConfigItem(name = "processdefinitions.errors.propagate", defaultValue = "false")
     boolean processDefinitionPropagate;
 
     /**

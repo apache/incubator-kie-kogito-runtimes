@@ -137,7 +137,7 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
     }
 
     protected CompletionStage<Void> onAck(Message<String> message) {
-        logger.debug("Successfully published message {}", message);
+        logger.debug("Successfully published message {}", message.getPayload());
         return CompletableFuture.completedFuture(null);
     }
 
@@ -154,6 +154,7 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
         @Override
         public void accept(MutinyEmitter<String> emitter, Message<String> message) {
             emitter.sendMessageAndAwait(message);
+            logger.debug("Successfully published message {}", message.getPayload());
         }
     }
 
