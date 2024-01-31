@@ -24,7 +24,6 @@ import java.util.TimeZone;
 
 import jakarta.inject.Inject;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
@@ -45,6 +44,5 @@ public class GlobalObjectMapper implements ObjectMapperCustomizer {
         }
         mapper.setDateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getDefault()));
         mapper.registerModule(new JavaTimeModule()).registerModule(JsonFormat.getCloudEventJacksonModule());
-        mapper.setSerializationInclusion(Include.NON_NULL);
     }
 }
