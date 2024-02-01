@@ -1,4 +1,4 @@
-Many thanks for submitting your Pull Request :heart:! 
+This is MIDSTREAM if you want to send your PR to UPSTREAM use https://github.com/apache/incubator-kie-kogito-runtimes 
 
 Please make sure that your PR meets the following requirements:
 
@@ -52,10 +52,6 @@ How to retest this PR or trigger a specific build:
   Run checks against Quarkus lts branch  
   Please add comment: <b>Jenkins run quarkus-lts</b>
 
-- for a <b>specific quarkus lts check</b>  
-  Run checks against Quarkus lts branch  
-  Please add comment: <b>Jenkins (re)run [kogito-runtimes|kogito-apps|kogito-examples] quarkus-lts</b>
-
 - for <b>native checks</b>  
   Run native checks  
   Please add comment: <b>Jenkins run native</b>
@@ -64,13 +60,6 @@ How to retest this PR or trigger a specific build:
   Run native checks 
   Please add comment: <b>Jenkins (re)run [kogito-runtimes|kogito-apps|kogito-examples] native</b>
 
-- for <b>native lts checks</b>  
-  Run native checks against quarkus lts branch
-  Please add comment: <b>Jenkins run native-lts</b>
-
-- for a <b>specific native lts check</b>  
-  Run native checks against quarkus lts branch
-  Please add comment: <b>Jenkins (re)run [kogito-runtimes|kogito-apps|kogito-examples] native-lts</b>
 </details>
 
 <details>
@@ -87,20 +76,4 @@ Once the original pull request is successfully merged, the automated action will
 If something goes wrong, the author will be notified and at this point a manual backporting is needed.
 
 > **NOTE**: this automated backporting is triggered whenever a pull request on `main` branch is labeled or closed, but both conditions must be satisfied to get the new PR created.
-</details>
-
-<details>
-<summary>
-Quarkus-3 PR check is failing ... what to do ?
-</summary>
-The Quarkus 3 check is applying patches from the `.ci/environments/quarkus-3/patches`.
-
-The first patch, called `0001_before_sh.patch`, is generated from Openrewrite `.ci/environments/quarkus-3/quarkus3.yml` recipe. The patch is created to speed up the check. But it may be that some changes in the PR broke this patch.  
-No panic, there is an easy way to regenerate it. You just need to comment on the PR:
-```
-jenkins rewrite quarkus-3
-```
-and it should, after some minutes (~20/30min) apply a commit on the PR with the patch regenerated.
-
-Other patches were generated manually. If any of it fails, you will need to manually update it... and push your changes.
 </details>
