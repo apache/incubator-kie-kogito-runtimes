@@ -4,15 +4,6 @@ updates:
   directory: "/"
   schedule:
     interval: daily
-    time: '03:00'
-  open-pull-requests-limit: 0
-  target-branch: "main"
-  commit-message:
-    prefix: "[bot][main]"
-- package-ecosystem: maven
-  directory: "/"
-  schedule:
-    interval: daily
     time: '04:00'
   open-pull-requests-limit: 0
   target-branch: "1.13.x"
