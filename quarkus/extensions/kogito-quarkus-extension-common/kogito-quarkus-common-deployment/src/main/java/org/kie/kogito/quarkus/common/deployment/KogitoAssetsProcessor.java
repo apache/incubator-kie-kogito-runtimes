@@ -18,7 +18,9 @@
  */
 package org.kie.kogito.quarkus.common.deployment;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,6 +66,8 @@ import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
 import io.quarkus.maven.dependency.Dependency;
 import io.quarkus.maven.dependency.ResolvedDependency;
+import io.quarkus.paths.PathCollection;
+import io.quarkus.paths.PathList;
 import io.quarkus.resteasy.reactive.spi.GeneratedJaxRsResourceBuildItem;
 import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
@@ -102,9 +106,17 @@ public class KogitoAssetsProcessor {
     @BuildStep
     public KogitoBuildContextBuildItem generateKogitoBuildContext(List<KogitoBuildContextAttributeBuildItem> attributes) {
         // configure the application generator
+        PathCollection rootPaths = root.getResolvedPaths();
+        if (rootPaths.stream().noneMatch(path -> path.endsWith(File.separator + "generated-resources"))) {
+            Path classesPath = root.getRootDirectories().getSinglePath();
+            Path toAdd = Path.of(classesPath.toString().replace(File.separator + "classes", File.separator + "generated-resources"));
+            List<Path> prevPaths = rootPaths.stream().collect(Collectors.toList());
+            prevPaths.add(toAdd);
+            rootPaths = PathList.from(prevPaths);
+        }
         KogitoBuildContext context =
                 kogitoBuildContext(outputTargetBuildItem.getOutputDirectory(),
-                        root.getResolvedPaths(),
+                        rootPaths,
                         combinedIndexBuildItem.getIndex(),
                         curateOutcomeBuildItem.getApplicationModel().getAppArtifact());
         attributes.forEach(attribute -> context.addContextAttribute(attribute.getName(), attribute.getValue()));
