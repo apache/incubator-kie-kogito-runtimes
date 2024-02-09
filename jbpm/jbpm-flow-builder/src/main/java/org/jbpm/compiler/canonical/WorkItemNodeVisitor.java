@@ -18,7 +18,6 @@
  */
 package org.jbpm.compiler.canonical;
 
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 
@@ -118,9 +117,7 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
     }
 
     protected void addWorkItemParameters(Work work, BlockStmt body, String variableName) {
-        // This is to ensure that each run of the generator produces the same code.
-        final List<Entry<String, Object>> sortedParameters = work.getParameters().entrySet().stream().sorted(Entry.comparingByKey()).toList();
-        for (Entry<String, Object> entry : sortedParameters) {
+        for (Entry<String, Object> entry : work.getParameters().entrySet()) {
             if (entry.getValue() == null) {
                 continue; // interfaceImplementationRef ?
             }
