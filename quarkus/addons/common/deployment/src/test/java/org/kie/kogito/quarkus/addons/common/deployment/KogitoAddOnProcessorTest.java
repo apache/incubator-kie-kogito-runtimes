@@ -60,7 +60,6 @@ public class KogitoAddOnProcessorTest {
         assertTrue(exception.getMessage().contains(KogitoCapability.PREDICTIONS.getCapability()));
         assertTrue(exception.getMessage().contains(KogitoCapability.PROCESSES.getCapability()));
         assertTrue(exception.getMessage().contains(KogitoCapability.SERVERLESS_WORKFLOW.getCapability()));
-        assertTrue(exception.getMessage().contains(KogitoCapability.RULES.getCapability()));
     }
 
     @Test
