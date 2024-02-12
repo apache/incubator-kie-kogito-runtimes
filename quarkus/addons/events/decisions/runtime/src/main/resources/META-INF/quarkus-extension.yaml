@@ -28,3 +28,4 @@ metadata:
   guide: https://quarkus.io/guides/kogito-dmn
   categories:
     - "business-automation"
+  status: "stable"

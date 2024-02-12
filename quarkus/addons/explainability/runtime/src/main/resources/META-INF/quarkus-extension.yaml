@@ -23,9 +23,9 @@ metadata:
   keywords:
     - kogito
     - decisions
-    - dmn
+    - DMN
     - explainability
   guide: https://quarkus.io/guides/kogito-dmn
   categories:
     - "business-automation"
-  unlisted: true
+  status: "stable"

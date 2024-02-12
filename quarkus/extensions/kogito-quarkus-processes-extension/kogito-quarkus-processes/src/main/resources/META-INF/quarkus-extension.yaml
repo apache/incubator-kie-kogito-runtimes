@@ -18,15 +18,16 @@
 #
 
 ---
-name: "Kogito - Process (jBPM)"
+name: "Kogito - processes (jBPM)"
 metadata:
   keywords:
-  - "kogito"
-  - "jbpm"
-  - "processes"
-  - "bpm"
-  - "bpmn"
-  - "BPMN2"
+    - "kogito"
+    - "jbpm"
+    - "processes"
+    - "BPM"
+    - "BPMN"
+    - "BPMN2"
   guide: "https://quarkus.io/guides/kogito"
   categories:
-  - "business-automation"
+    - "business-automation"
+  status: "stable"

@@ -28,3 +28,4 @@ metadata:
   guide: https://quarkus.io/guides/kogito-pmml
   categories:
     - "business-automation"
+  status: "stable"

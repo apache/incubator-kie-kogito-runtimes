@@ -24,7 +24,11 @@ metadata:
     - kogito
     - persistence
     - postgresql
-    - process
+    - processes
+    - BPMN
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"
+  status: "stable"
+  config:
+    - "kogito.persistence."

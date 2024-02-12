@@ -27,3 +27,6 @@ metadata:
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"
+  status: "stable"
+  config:
+    - "kogito.monitoring."

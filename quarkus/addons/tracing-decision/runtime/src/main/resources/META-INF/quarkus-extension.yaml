@@ -23,8 +23,11 @@ metadata:
   keywords:
     - kogito
     - decisions
-    - dmn
+    - DMN
     - tracing
   guide: https://quarkus.io/guides/kogito-dmn
   categories:
     - "business-automation"
+  status: "stable"
+  config:
+    - "kogito.addon.tracing.decision."

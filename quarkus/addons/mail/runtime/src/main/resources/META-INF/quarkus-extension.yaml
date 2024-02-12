@@ -27,7 +27,9 @@ metadata:
     - e-mail
     - tasks
     - notification
+    - BPMN
   # TODO: add processes guide
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"
+  status: "stable"

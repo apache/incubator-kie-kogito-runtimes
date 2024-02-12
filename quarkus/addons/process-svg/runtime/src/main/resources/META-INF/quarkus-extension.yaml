@@ -22,8 +22,12 @@ description: Kogito Add-On for SVG process generation
 metadata:
   keywords:
     - kogito
-    - process
+    - processes
     - svg
+    - BPMN
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"
+  status: stable
+  config:
+    - "kogito.svg."

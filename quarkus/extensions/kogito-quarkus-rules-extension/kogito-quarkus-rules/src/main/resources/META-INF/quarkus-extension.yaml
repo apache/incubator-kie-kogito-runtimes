@@ -21,10 +21,11 @@
 name: "Kogito - Rules (DRL)"
 metadata:
   keywords:
-  - "kogito"
-  - "drools"
-  - "rules"
-  - "DRL"
+    - "kogito"
+    - "drools"
+    - "rules"
+    - "DRL"
   guide: "https://quarkus.io/guides/kogito-drl"
   categories:
-  - "business-automation"
+    - "business-automation"
+  status: "stable"

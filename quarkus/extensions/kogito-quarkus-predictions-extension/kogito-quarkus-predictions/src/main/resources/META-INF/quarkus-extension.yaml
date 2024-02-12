@@ -21,10 +21,11 @@
 name: "Kogito - Predictions (PMML)"
 metadata:
   keywords:
-  - "kogito"
-  - "drools"
-  - "predictions"
-  - "PMML"
+    - "kogito"
+    - "drools"
+    - "predictions"
+    - "PMML"
   guide: "https://quarkus.io/guides/kogito-pmml"
   categories:
-  - "business-automation"
+    - "business-automation"
+  status: "stable"

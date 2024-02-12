@@ -25,9 +25,9 @@ metadata:
     - processes
     - decisions
     - rules
-    - bpmn
+    - BPMN
     - drl
-    - dmn
+    - DMN
     - knative
     - eventing
     - cloudevents
@@ -35,3 +35,6 @@ metadata:
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"
+  status: "stable"
+  config:
+    - "org.kie.kogito.addons.knative.eventing"

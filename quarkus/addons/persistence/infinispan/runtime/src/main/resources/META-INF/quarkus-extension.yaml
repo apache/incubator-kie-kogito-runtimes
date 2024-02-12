@@ -24,7 +24,11 @@ metadata:
     - kogito
     - persistence
     - infinispan
-    - process
+    - processes
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"
+  status: "stable"
+  config:
+    - "kogito.persistence."
+    - "kogito.persistence.infinispan."

@@ -22,8 +22,11 @@ description: Kogito Add-On Task Management REST API
 metadata:
   keywords:
     - kogito
-    - process
+    - processes
     - task
+    - management
+    - BPMN
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"
+  status: "stable"

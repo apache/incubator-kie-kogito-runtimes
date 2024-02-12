@@ -11,6 +11,8 @@ metadata:
   categories:
     - "business-automation"
   status: "preview"
+  config:
+    - "kogito."
   codestart:
     name: "kogito-serverless-workflow-codestart"
     languages:
