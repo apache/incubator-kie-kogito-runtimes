@@ -24,6 +24,7 @@ metadata:
     - kogito
     - processes
     - BPMN
+    - workflows
     - jobs
   # TODO: add processes guide
   guide: https://quarkus.io/guides/kogito

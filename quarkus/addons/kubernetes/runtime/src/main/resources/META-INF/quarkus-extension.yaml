@@ -24,6 +24,7 @@ metadata:
     - kogito
     - kubernetes
     - knative
+      - workflows
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"

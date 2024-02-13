@@ -25,6 +25,7 @@ metadata:
     - processes
     - management
     - BPMN
+    - workflows
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"

@@ -31,6 +31,7 @@ metadata:
     - knative
     - eventing
     - cloudevents
+    - workflows
   # TODO: add processes guide
   guide: https://quarkus.io/guides/kogito
   categories:

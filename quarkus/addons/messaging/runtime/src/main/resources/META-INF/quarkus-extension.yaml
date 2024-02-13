@@ -26,6 +26,7 @@ metadata:
     - messaging
     - cloudevents
     - BPMN
+    - workflows
   # TODO: add processes guide
   guide: https://quarkus.io/guides/kogito
   categories:
