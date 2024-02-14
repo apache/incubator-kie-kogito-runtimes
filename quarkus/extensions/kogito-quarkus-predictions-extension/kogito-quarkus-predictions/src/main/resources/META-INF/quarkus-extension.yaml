@@ -18,14 +18,14 @@
 #
 
 ---
-name: "Kogito - Predictions (PMML)"
+name: "KIE - Predictions (PMML)"
 metadata:
   keywords:
-    - "kogito"
+    - "KIE"
     - "drools"
     - "predictions"
     - "PMML"
-  guide: "https://quarkus.io/guides/kogito-pmml"
+  guide: "https://quarkus.io/guides/kie-pmml"
   categories:
     - "business-automation"
   status: "stable"

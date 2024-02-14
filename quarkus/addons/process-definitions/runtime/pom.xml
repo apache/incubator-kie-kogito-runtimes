@@ -85,7 +85,7 @@
             <configuration>
               <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
               <capabilities>
-                <provides>org.kie.kogito.addons.process.definitions</provides>
+                <provides>org.kie.addons.process.definitions</provides>
               </capabilities>
             </configuration>
           </execution>

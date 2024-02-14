@@ -17,17 +17,17 @@
 # under the License.
 #
 
-name: Kogito Add-On Persistence PostgreSQL
-description: Kogito Add-On support for persistence on PostgreSQL
+name: KIE Persistence PostgreSQL Add-On
+description: KIE Add-On support for persistence on PostgreSQL
 metadata:
   keywords:
-    - kogito
+    - KIE
     - persistence
     - postgresql
     - processes
     - BPMN
     - workflows
-  guide: https://quarkus.io/guides/kogito
+  guide: https://quarkus.io/guides/kie
   categories:
     - "business-automation"
   status: "stable"

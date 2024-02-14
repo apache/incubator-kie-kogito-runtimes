@@ -18,16 +18,16 @@
 #
 
 ---
-name: "Kogito - processes (jBPM)"
+name: jBPM Processes Quarkus Extension
+description: Quarkus Extension to include jBPM Runtime
 metadata:
   keywords:
-    - "kogito"
     - "jbpm"
     - "processes"
     - "BPM"
     - "BPMN"
     - "BPMN2"
-  guide: "https://quarkus.io/guides/kogito"
+  guide: "https://quarkus.io/guides/jbpm"
   categories:
     - "business-automation"
   status: "stable"

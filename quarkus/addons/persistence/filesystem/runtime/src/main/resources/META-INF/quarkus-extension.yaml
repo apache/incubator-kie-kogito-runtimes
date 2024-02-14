@@ -17,15 +17,15 @@
 # under the License.
 #
 
-name: Kogito Add-On Persistence FileSystem
-description: Kogito Add-On support for persistence on FileSystem
+name: KIE Persistence FileSystem Add-On
+description: KIE Add-On support for persistence on FileSystem
 metadata:
   keywords:
-    - kogito
+    - KIE
     - persistence
     - filesystem
     - processes
-  guide: https://quarkus.io/guides/kogito
+  guide: https://quarkus.io/guides/kie
   categories:
     - "business-automation"
   status: "stable"

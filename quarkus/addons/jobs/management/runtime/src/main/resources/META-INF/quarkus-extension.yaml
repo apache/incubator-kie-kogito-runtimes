@@ -17,7 +17,7 @@
 # under the License.
 #
 
-name: Kogito Add-On Jobs Service
+name: Kogito Jobs Service Add-On
 description: Kogito Add-On to interact with Kogito Jobs Service
 metadata:
   keywords:

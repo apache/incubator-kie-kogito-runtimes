@@ -17,16 +17,16 @@
 # under the License.
 #
 
-name: Kogito Add-On Source Files
-description: Kogito Add-On to Provide access to source files for Quarkus
+name: KIE Source Files Add-On
+description: KIE Add-On to Provide access to source files for Quarkus
 metadata:
   keywords:
-    - kogito
+    - KIE
     - processes
     - BPMN
     - workflows
     - source-files
-  guide: https://quarkus.io/guides/kogito
+  guide: https://quarkus.io/guides/kie
   categories:
     - "business-automation"
   status: stable

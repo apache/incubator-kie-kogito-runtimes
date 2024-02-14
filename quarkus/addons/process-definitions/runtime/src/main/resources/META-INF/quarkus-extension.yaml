@@ -17,15 +17,17 @@
 # under the License.
 #
 
-name: Kogito Add-On Process Definitions
+name: KIE Process Definitions Add-On
+description: KIE Process Definitions REST API
 metadata:
   keywords:
-    - kogito
+    - KIE
     - processes
     - processes definitions
     - management
     - BPMN
-  guide: https://quarkus.io/guides/kogito
+    - workflows
+  guide: https://quarkus.io/guides/kie
   categories:
     - "business-automation"
   status: "stable"
