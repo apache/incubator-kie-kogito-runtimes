@@ -55,6 +55,7 @@ import org.jbpm.workflow.instance.node.StateNodeInstance;
 import org.jbpm.workflow.instance.node.SubProcessNodeInstance;
 import org.jbpm.workflow.instance.node.TimerNodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
+import org.kie.api.definition.process.WorkflowElementIdentifier;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
@@ -82,6 +83,8 @@ import org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf;
 import org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext;
 import org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf;
 import org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.util.JsonFormat;
@@ -91,7 +94,7 @@ import static org.kie.kogito.serialization.process.MarshallerContextName.MARSHAL
 import static org.kie.kogito.serialization.process.protobuf.ProtobufTypeRegistryFactory.protobufTypeRegistryFactoryInstance;
 
 public class ProtobufProcessInstanceWriter {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtobufProcessInstanceWriter.class);
     private MarshallerWriterContext context;
     private ProtobufVariableWriter varWriter;
 
@@ -101,6 +104,7 @@ public class ProtobufProcessInstanceWriter {
     }
 
     public void writeProcessInstance(WorkflowProcessInstanceImpl workFlow, OutputStream os) throws IOException {
+        LOGGER.info("write process");
 
         KogitoProcessInstanceProtobuf.ProcessInstance.Builder instance = KogitoProcessInstanceProtobuf.ProcessInstance.newBuilder()
                 .setId(workFlow.getStringId())
@@ -218,7 +222,7 @@ public class ProtobufProcessInstanceWriter {
         for (NodeInstance nodeInstance : nodeInstances) {
             KogitoTypesProtobuf.NodeInstance.Builder node = KogitoTypesProtobuf.NodeInstance.newBuilder()
                     .setId(((KogitoNodeInstance) nodeInstance).getStringId())
-                    .setNodeId(nodeInstance.getNodeId())
+                    .setNodeId(nodeInstance.getNodeId().toExternalFormat())
                     .setLevel(((org.jbpm.workflow.instance.NodeInstance) nodeInstance).getLevel());
 
             Date triggerDate = ((org.jbpm.workflow.instance.NodeInstance) nodeInstance).getTriggerTime();
@@ -357,14 +361,14 @@ public class ProtobufProcessInstanceWriter {
 
     private Any buildJoinInstance(JoinInstance nodeInstance) {
         JoinNodeInstanceContent.Builder joinBuilder = JoinNodeInstanceContent.newBuilder();
-        Map<Long, Integer> triggers = nodeInstance.getTriggers();
-        List<Long> keys = new ArrayList<>(triggers.keySet());
-        Comparator<Long> comparator = (o1, o2) -> o1.compareTo(o2);
-        Collections.sort(keys, comparator);
+        Map<WorkflowElementIdentifier, Integer> triggers = nodeInstance.getTriggers();
+        List<WorkflowElementIdentifier> keys = new ArrayList<>(triggers.keySet());
+        Collections.sort(keys);
 
-        for (Long key : keys) {
+        for (WorkflowElementIdentifier key : keys) {
+            LOGGER.info("marshalling join {}", key.toExternalFormat());
             joinBuilder.addTrigger(JoinTrigger.newBuilder()
-                    .setNodeId(key)
+                    .setNodeId(key.toExternalFormat())
                     .setCounter(triggers.get(key))
                     .build());
         }

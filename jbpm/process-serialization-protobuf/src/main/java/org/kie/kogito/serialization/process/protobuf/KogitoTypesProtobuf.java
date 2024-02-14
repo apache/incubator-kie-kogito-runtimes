@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.kie.kogito.serialization.process.protobuf;
 
 public final class KogitoTypesProtobuf {
@@ -68,54 +69,6 @@ public final class KogitoTypesProtobuf {
       return new JsonNode();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private JsonNode(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              content_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_JsonNode_descriptor;
@@ -130,7 +83,8 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int CONTENT_FIELD_NUMBER = 1;
-    private volatile java.lang.Object content_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object content_ = "";
     /**
      * <code>string content = 1;</code>
      * @return The content.
@@ -184,7 +138,7 @@ public final class KogitoTypesProtobuf {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(content_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, content_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -196,7 +150,7 @@ public final class KogitoTypesProtobuf {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(content_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, content_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -213,7 +167,7 @@ public final class KogitoTypesProtobuf {
 
       if (!getContent()
           .equals(other.getContent())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -226,7 +180,7 @@ public final class KogitoTypesProtobuf {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + CONTENT_FIELD_NUMBER;
       hash = (53 * hash) + getContent().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -343,24 +297,19 @@ public final class KogitoTypesProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.JsonNode.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         content_ = "";
-
         return this;
       }
 
@@ -387,43 +336,18 @@ public final class KogitoTypesProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.JsonNode buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.JsonNode result = new org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.JsonNode(this);
-        result.content_ = content_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.JsonNode result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.content_ = content_;
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.JsonNode) {
@@ -438,9 +362,10 @@ public final class KogitoTypesProtobuf {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.JsonNode.getDefaultInstance()) return this;
         if (!other.getContent().isEmpty()) {
           content_ = other.content_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -455,19 +380,38 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.JsonNode parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                content_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.JsonNode) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object content_ = "";
       /**
@@ -510,11 +454,9 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setContent(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         content_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -523,8 +465,8 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearContent() {
-        
         content_ = getDefaultInstance().getContent();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -535,12 +477,10 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setContentBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         content_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -577,7 +517,18 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new JsonNode(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -664,74 +615,6 @@ public final class KogitoTypesProtobuf {
       return new Variable();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Variable(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              name_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              dataType_ = s;
-              break;
-            }
-            case 26: {
-              com.google.protobuf.Any.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000001) != 0)) {
-                subBuilder = value_.toBuilder();
-              }
-              value_ = input.readMessage(com.google.protobuf.Any.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(value_);
-                value_ = subBuilder.buildPartial();
-              }
-              bitField0_ |= 0x00000001;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_Variable_descriptor;
@@ -747,7 +630,8 @@ public final class KogitoTypesProtobuf {
 
     private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <code>string name = 1;</code>
      * @return The name.
@@ -785,7 +669,8 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int DATA_TYPE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object dataType_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object dataType_ = "";
     /**
      * <code>string data_type = 2;</code>
      * @return The dataType.
@@ -871,7 +756,7 @@ public final class KogitoTypesProtobuf {
       if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(3, getValue());
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -890,7 +775,7 @@ public final class KogitoTypesProtobuf {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, getValue());
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -914,7 +799,7 @@ public final class KogitoTypesProtobuf {
         if (!getValue()
             .equals(other.getValue())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -933,7 +818,7 @@ public final class KogitoTypesProtobuf {
         hash = (37 * hash) + VALUE_FIELD_NUMBER;
         hash = (53 * hash) + getValue().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -1067,16 +952,14 @@ public final class KogitoTypesProtobuf {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-
         dataType_ = "";
-
-        if (valueBuilder_ == null) {
-          value_ = null;
-        } else {
-          valueBuilder_.clear();
+        value_ = null;
+        if (valueBuilder_ != null) {
+          valueBuilder_.dispose();
+          valueBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -1103,55 +986,29 @@ public final class KogitoTypesProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable result = new org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        result.name_ = name_;
-        result.dataType_ = dataType_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          if (valueBuilder_ == null) {
-            result.value_ = value_;
-          } else {
-            result.value_ = valueBuilder_.build();
-          }
-          to_bitField0_ |= 0x00000001;
-        }
-        result.bitField0_ = to_bitField0_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.dataType_ = dataType_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.value_ = valueBuilder_ == null
+              ? value_
+              : valueBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable) {
@@ -1166,16 +1023,18 @@ public final class KogitoTypesProtobuf {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.getDefaultInstance()) return this;
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getDataType().isEmpty()) {
           dataType_ = other.dataType_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.hasValue()) {
           mergeValue(other.getValue());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -1190,17 +1049,47 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                name_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                dataType_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                input.readMessage(
+                    getValueFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -1246,11 +1135,9 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1259,8 +1146,8 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -1271,12 +1158,10 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1322,11 +1207,9 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setDataType(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         dataType_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1335,8 +1218,8 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearDataType() {
-        
         dataType_ = getDefaultInstance().getDataType();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -1347,12 +1230,10 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setDataTypeBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         dataType_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1365,7 +1246,7 @@ public final class KogitoTypesProtobuf {
        * @return Whether the value field is set.
        */
       public boolean hasValue() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <code>optional .google.protobuf.Any value = 3;</code>
@@ -1387,11 +1268,11 @@ public final class KogitoTypesProtobuf {
             throw new NullPointerException();
           }
           value_ = value;
-          onChanged();
         } else {
           valueBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -1401,11 +1282,11 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.Any.Builder builderForValue) {
         if (valueBuilder_ == null) {
           value_ = builderForValue.build();
-          onChanged();
         } else {
           valueBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -1413,39 +1294,38 @@ public final class KogitoTypesProtobuf {
        */
       public Builder mergeValue(com.google.protobuf.Any value) {
         if (valueBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0) &&
-              value_ != null &&
-              value_ != com.google.protobuf.Any.getDefaultInstance()) {
-            value_ =
-              com.google.protobuf.Any.newBuilder(value_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000004) != 0) &&
+            value_ != null &&
+            value_ != com.google.protobuf.Any.getDefaultInstance()) {
+            getValueBuilder().mergeFrom(value);
           } else {
             value_ = value;
           }
-          onChanged();
         } else {
           valueBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
        * <code>optional .google.protobuf.Any value = 3;</code>
        */
       public Builder clearValue() {
-        if (valueBuilder_ == null) {
-          value_ = null;
-          onChanged();
-        } else {
-          valueBuilder_.clear();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        value_ = null;
+        if (valueBuilder_ != null) {
+          valueBuilder_.dispose();
+          valueBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
         return this;
       }
       /**
        * <code>optional .google.protobuf.Any value = 3;</code>
        */
       public com.google.protobuf.Any.Builder getValueBuilder() {
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000004;
         onChanged();
         return getValueFieldBuilder().getBuilder();
       }
@@ -1509,7 +1389,18 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Variable(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -1546,10 +1437,16 @@ public final class KogitoTypesProtobuf {
         getIdBytes();
 
     /**
-     * <code>int64 node_id = 2;</code>
+     * <code>string node_id = 2;</code>
      * @return The nodeId.
      */
-    long getNodeId();
+    java.lang.String getNodeId();
+    /**
+     * <code>string node_id = 2;</code>
+     * @return The bytes for nodeId.
+     */
+    com.google.protobuf.ByteString
+        getNodeIdBytes();
 
     /**
      * <code>.google.protobuf.Any content = 3;</code>
@@ -1617,6 +1514,7 @@ public final class KogitoTypesProtobuf {
     }
     private NodeInstance() {
       id_ = "";
+      nodeId_ = "";
     }
 
     @java.lang.Override
@@ -1626,96 +1524,6 @@ public final class KogitoTypesProtobuf {
       return new NodeInstance();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private NodeInstance(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              id_ = s;
-              break;
-            }
-            case 16: {
-
-              nodeId_ = input.readInt64();
-              break;
-            }
-            case 26: {
-              com.google.protobuf.Any.Builder subBuilder = null;
-              if (content_ != null) {
-                subBuilder = content_.toBuilder();
-              }
-              content_ = input.readMessage(com.google.protobuf.Any.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(content_);
-                content_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 32: {
-              bitField0_ |= 0x00000001;
-              level_ = input.readInt32();
-              break;
-            }
-            case 40: {
-              bitField0_ |= 0x00000002;
-              triggerDate_ = input.readInt64();
-              break;
-            }
-            case 50: {
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000004) != 0)) {
-                subBuilder = sla_.toBuilder();
-              }
-              sla_ = input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(sla_);
-                sla_ = subBuilder.buildPartial();
-              }
-              bitField0_ |= 0x00000004;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_NodeInstance_descriptor;
@@ -1731,7 +1539,8 @@ public final class KogitoTypesProtobuf {
 
     private int bitField0_;
     public static final int ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object id_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object id_ = "";
     /**
      * <code>string id = 1;</code>
      * @return The id.
@@ -1769,14 +1578,42 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int NODE_ID_FIELD_NUMBER = 2;
-    private long nodeId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object nodeId_ = "";
     /**
-     * <code>int64 node_id = 2;</code>
+     * <code>string node_id = 2;</code>
      * @return The nodeId.
      */
     @java.lang.Override
-    public long getNodeId() {
-      return nodeId_;
+    public java.lang.String getNodeId() {
+      java.lang.Object ref = nodeId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        nodeId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string node_id = 2;</code>
+     * @return The bytes for nodeId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getNodeIdBytes() {
+      java.lang.Object ref = nodeId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        nodeId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int CONTENT_FIELD_NUMBER = 3;
@@ -1802,11 +1639,11 @@ public final class KogitoTypesProtobuf {
      */
     @java.lang.Override
     public com.google.protobuf.AnyOrBuilder getContentOrBuilder() {
-      return getContent();
+      return content_ == null ? com.google.protobuf.Any.getDefaultInstance() : content_;
     }
 
     public static final int LEVEL_FIELD_NUMBER = 4;
-    private int level_;
+    private int level_ = 0;
     /**
      * <code>optional int32 level = 4;</code>
      * @return Whether the level field is set.
@@ -1825,7 +1662,7 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int TRIGGER_DATE_FIELD_NUMBER = 5;
-    private long triggerDate_;
+    private long triggerDate_ = 0L;
     /**
      * <code>optional int64 trigger_date = 5;</code>
      * @return Whether the triggerDate field is set.
@@ -1886,8 +1723,8 @@ public final class KogitoTypesProtobuf {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
       }
-      if (nodeId_ != 0L) {
-        output.writeInt64(2, nodeId_);
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(nodeId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, nodeId_);
       }
       if (content_ != null) {
         output.writeMessage(3, getContent());
@@ -1901,7 +1738,7 @@ public final class KogitoTypesProtobuf {
       if (((bitField0_ & 0x00000004) != 0)) {
         output.writeMessage(6, getSla());
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -1913,9 +1750,8 @@ public final class KogitoTypesProtobuf {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
       }
-      if (nodeId_ != 0L) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, nodeId_);
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(nodeId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, nodeId_);
       }
       if (content_ != null) {
         size += com.google.protobuf.CodedOutputStream
@@ -1933,7 +1769,7 @@ public final class KogitoTypesProtobuf {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, getSla());
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -1950,8 +1786,8 @@ public final class KogitoTypesProtobuf {
 
       if (!getId()
           .equals(other.getId())) return false;
-      if (getNodeId()
-          != other.getNodeId()) return false;
+      if (!getNodeId()
+          .equals(other.getNodeId())) return false;
       if (hasContent() != other.hasContent()) return false;
       if (hasContent()) {
         if (!getContent()
@@ -1972,7 +1808,7 @@ public final class KogitoTypesProtobuf {
         if (!getSla()
             .equals(other.getSla())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -1986,8 +1822,7 @@ public final class KogitoTypesProtobuf {
       hash = (37 * hash) + ID_FIELD_NUMBER;
       hash = (53 * hash) + getId().hashCode();
       hash = (37 * hash) + NODE_ID_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          getNodeId());
+      hash = (53 * hash) + getNodeId().hashCode();
       if (hasContent()) {
         hash = (37 * hash) + CONTENT_FIELD_NUMBER;
         hash = (53 * hash) + getContent().hashCode();
@@ -2005,7 +1840,7 @@ public final class KogitoTypesProtobuf {
         hash = (37 * hash) + SLA_FIELD_NUMBER;
         hash = (53 * hash) + getSla().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -2133,32 +1968,28 @@ public final class KogitoTypesProtobuf {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getContentFieldBuilder();
           getSlaFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         id_ = "";
-
-        nodeId_ = 0L;
-
-        if (contentBuilder_ == null) {
-          content_ = null;
-        } else {
-          content_ = null;
+        nodeId_ = "";
+        content_ = null;
+        if (contentBuilder_ != null) {
+          contentBuilder_.dispose();
           contentBuilder_ = null;
         }
         level_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
         triggerDate_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        if (slaBuilder_ == null) {
-          sla_ = null;
-        } else {
-          slaBuilder_.clear();
+        sla_ = null;
+        if (slaBuilder_ != null) {
+          slaBuilder_.dispose();
+          slaBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -2185,68 +2016,42 @@ public final class KogitoTypesProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance result = new org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        result.id_ = id_;
-        result.nodeId_ = nodeId_;
-        if (contentBuilder_ == null) {
-          result.content_ = content_;
-        } else {
-          result.content_ = contentBuilder_.build();
-        }
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.level_ = level_;
-          to_bitField0_ |= 0x00000001;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.triggerDate_ = triggerDate_;
-          to_bitField0_ |= 0x00000002;
-        }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          if (slaBuilder_ == null) {
-            result.sla_ = sla_;
-          } else {
-            result.sla_ = slaBuilder_.build();
-          }
-          to_bitField0_ |= 0x00000004;
-        }
-        result.bitField0_ = to_bitField0_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.id_ = id_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.nodeId_ = nodeId_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.content_ = contentBuilder_ == null
+              ? content_
+              : contentBuilder_.build();
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.level_ = level_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.triggerDate_ = triggerDate_;
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.sla_ = slaBuilder_ == null
+              ? sla_
+              : slaBuilder_.build();
+          to_bitField0_ |= 0x00000004;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance) {
@@ -2261,10 +2066,13 @@ public final class KogitoTypesProtobuf {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance.getDefaultInstance()) return this;
         if (!other.getId().isEmpty()) {
           id_ = other.id_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
-        if (other.getNodeId() != 0L) {
-          setNodeId(other.getNodeId());
+        if (!other.getNodeId().isEmpty()) {
+          nodeId_ = other.nodeId_;
+          bitField0_ |= 0x00000002;
+          onChanged();
         }
         if (other.hasContent()) {
           mergeContent(other.getContent());
@@ -2278,7 +2086,7 @@ public final class KogitoTypesProtobuf {
         if (other.hasSla()) {
           mergeSla(other.getSla());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -2293,17 +2101,64 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                id_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                nodeId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                input.readMessage(
+                    getContentFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 32: {
+                level_ = input.readInt32();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
+              case 40: {
+                triggerDate_ = input.readInt64();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 40
+              case 50: {
+                input.readMessage(
+                    getSlaFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 50
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -2349,11 +2204,9 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2362,8 +2215,8 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearId() {
-        
         id_ = getDefaultInstance().getId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -2374,43 +2227,82 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private long nodeId_ ;
+      private java.lang.Object nodeId_ = "";
       /**
-       * <code>int64 node_id = 2;</code>
+       * <code>string node_id = 2;</code>
        * @return The nodeId.
        */
-      @java.lang.Override
-      public long getNodeId() {
-        return nodeId_;
+      public java.lang.String getNodeId() {
+        java.lang.Object ref = nodeId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          nodeId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>int64 node_id = 2;</code>
+       * <code>string node_id = 2;</code>
+       * @return The bytes for nodeId.
+       */
+      public com.google.protobuf.ByteString
+          getNodeIdBytes() {
+        java.lang.Object ref = nodeId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          nodeId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string node_id = 2;</code>
        * @param value The nodeId to set.
        * @return This builder for chaining.
        */
-      public Builder setNodeId(long value) {
-        
+      public Builder setNodeId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         nodeId_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>int64 node_id = 2;</code>
+       * <code>string node_id = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearNodeId() {
-        
-        nodeId_ = 0L;
+        nodeId_ = getDefaultInstance().getNodeId();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string node_id = 2;</code>
+       * @param value The bytes for nodeId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setNodeIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        nodeId_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2423,7 +2315,7 @@ public final class KogitoTypesProtobuf {
        * @return Whether the content field is set.
        */
       public boolean hasContent() {
-        return contentBuilder_ != null || content_ != null;
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <code>.google.protobuf.Any content = 3;</code>
@@ -2445,11 +2337,11 @@ public final class KogitoTypesProtobuf {
             throw new NullPointerException();
           }
           content_ = value;
-          onChanged();
         } else {
           contentBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -2459,11 +2351,11 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.Any.Builder builderForValue) {
         if (contentBuilder_ == null) {
           content_ = builderForValue.build();
-          onChanged();
         } else {
           contentBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -2471,38 +2363,38 @@ public final class KogitoTypesProtobuf {
        */
       public Builder mergeContent(com.google.protobuf.Any value) {
         if (contentBuilder_ == null) {
-          if (content_ != null) {
-            content_ =
-              com.google.protobuf.Any.newBuilder(content_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000004) != 0) &&
+            content_ != null &&
+            content_ != com.google.protobuf.Any.getDefaultInstance()) {
+            getContentBuilder().mergeFrom(value);
           } else {
             content_ = value;
           }
-          onChanged();
         } else {
           contentBuilder_.mergeFrom(value);
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
        * <code>.google.protobuf.Any content = 3;</code>
        */
       public Builder clearContent() {
-        if (contentBuilder_ == null) {
-          content_ = null;
-          onChanged();
-        } else {
-          content_ = null;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        content_ = null;
+        if (contentBuilder_ != null) {
+          contentBuilder_.dispose();
           contentBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.google.protobuf.Any content = 3;</code>
        */
       public com.google.protobuf.Any.Builder getContentBuilder() {
-        
+        bitField0_ |= 0x00000004;
         onChanged();
         return getContentFieldBuilder().getBuilder();
       }
@@ -2541,7 +2433,7 @@ public final class KogitoTypesProtobuf {
        */
       @java.lang.Override
       public boolean hasLevel() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000008) != 0);
       }
       /**
        * <code>optional int32 level = 4;</code>
@@ -2557,8 +2449,9 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder setLevel(int value) {
-        bitField0_ |= 0x00000001;
+
         level_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2567,7 +2460,7 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearLevel() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000008);
         level_ = 0;
         onChanged();
         return this;
@@ -2580,7 +2473,7 @@ public final class KogitoTypesProtobuf {
        */
       @java.lang.Override
       public boolean hasTriggerDate() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000010) != 0);
       }
       /**
        * <code>optional int64 trigger_date = 5;</code>
@@ -2596,8 +2489,9 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder setTriggerDate(long value) {
-        bitField0_ |= 0x00000002;
+
         triggerDate_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2606,7 +2500,7 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTriggerDate() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000010);
         triggerDate_ = 0L;
         onChanged();
         return this;
@@ -2620,7 +2514,7 @@ public final class KogitoTypesProtobuf {
        * @return Whether the sla field is set.
        */
       public boolean hasSla() {
-        return ((bitField0_ & 0x00000004) != 0);
+        return ((bitField0_ & 0x00000020) != 0);
       }
       /**
        * <code>optional .org.kie.kogito.serialization.process.protobuf.SLAContext sla = 6;</code>
@@ -2642,11 +2536,11 @@ public final class KogitoTypesProtobuf {
             throw new NullPointerException();
           }
           sla_ = value;
-          onChanged();
         } else {
           slaBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000020;
+        onChanged();
         return this;
       }
       /**
@@ -2656,11 +2550,11 @@ public final class KogitoTypesProtobuf {
           org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.Builder builderForValue) {
         if (slaBuilder_ == null) {
           sla_ = builderForValue.build();
-          onChanged();
         } else {
           slaBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000020;
+        onChanged();
         return this;
       }
       /**
@@ -2668,39 +2562,38 @@ public final class KogitoTypesProtobuf {
        */
       public Builder mergeSla(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext value) {
         if (slaBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) != 0) &&
-              sla_ != null &&
-              sla_ != org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.getDefaultInstance()) {
-            sla_ =
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.newBuilder(sla_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000020) != 0) &&
+            sla_ != null &&
+            sla_ != org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.getDefaultInstance()) {
+            getSlaBuilder().mergeFrom(value);
           } else {
             sla_ = value;
           }
-          onChanged();
         } else {
           slaBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000020;
+        onChanged();
         return this;
       }
       /**
        * <code>optional .org.kie.kogito.serialization.process.protobuf.SLAContext sla = 6;</code>
        */
       public Builder clearSla() {
-        if (slaBuilder_ == null) {
-          sla_ = null;
-          onChanged();
-        } else {
-          slaBuilder_.clear();
+        bitField0_ = (bitField0_ & ~0x00000020);
+        sla_ = null;
+        if (slaBuilder_ != null) {
+          slaBuilder_.dispose();
+          slaBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
         return this;
       }
       /**
        * <code>optional .org.kie.kogito.serialization.process.protobuf.SLAContext sla = 6;</code>
        */
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.Builder getSlaBuilder() {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000020;
         onChanged();
         return getSlaFieldBuilder().getBuilder();
       }
@@ -2764,7 +2657,18 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new NodeInstance(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -2910,97 +2814,6 @@ public final class KogitoTypesProtobuf {
       return new WorkflowContext();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private WorkflowContext(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                variable_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              variable_.add(
-                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.parser(), extensionRegistry));
-              break;
-            }
-            case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                nodeInstance_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance>();
-                mutable_bitField0_ |= 0x00000002;
-              }
-              nodeInstance_.add(
-                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance.parser(), extensionRegistry));
-              break;
-            }
-            case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
-                exclusiveGroup_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup>();
-                mutable_bitField0_ |= 0x00000004;
-              }
-              exclusiveGroup_.add(
-                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup.parser(), extensionRegistry));
-              break;
-            }
-            case 34: {
-              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
-                iterationLevels_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel>();
-                mutable_bitField0_ |= 0x00000008;
-              }
-              iterationLevels_.add(
-                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          variable_ = java.util.Collections.unmodifiableList(variable_);
-        }
-        if (((mutable_bitField0_ & 0x00000002) != 0)) {
-          nodeInstance_ = java.util.Collections.unmodifiableList(nodeInstance_);
-        }
-        if (((mutable_bitField0_ & 0x00000004) != 0)) {
-          exclusiveGroup_ = java.util.Collections.unmodifiableList(exclusiveGroup_);
-        }
-        if (((mutable_bitField0_ & 0x00000008) != 0)) {
-          iterationLevels_ = java.util.Collections.unmodifiableList(iterationLevels_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_WorkflowContext_descriptor;
@@ -3015,6 +2828,7 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int VARIABLE_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> variable_;
     /**
      * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable variable = 1;</code>
@@ -3055,6 +2869,7 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int NODE_INSTANCE_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
     private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance> nodeInstance_;
     /**
      * <code>repeated .org.kie.kogito.serialization.process.protobuf.NodeInstance node_instance = 2;</code>
@@ -3095,6 +2910,7 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int EXCLUSIVE_GROUP_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
     private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup> exclusiveGroup_;
     /**
      * <code>repeated .org.kie.kogito.serialization.process.protobuf.NodeInstanceGroup exclusive_group = 3;</code>
@@ -3135,6 +2951,7 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int ITERATIONLEVELS_FIELD_NUMBER = 4;
+    @SuppressWarnings("serial")
     private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel> iterationLevels_;
     /**
      * <code>repeated .org.kie.kogito.serialization.process.protobuf.IterationLevel iterationLevels = 4;</code>
@@ -3200,7 +3017,7 @@ public final class KogitoTypesProtobuf {
       for (int i = 0; i < iterationLevels_.size(); i++) {
         output.writeMessage(4, iterationLevels_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -3225,7 +3042,7 @@ public final class KogitoTypesProtobuf {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, iterationLevels_.get(i));
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -3248,7 +3065,7 @@ public final class KogitoTypesProtobuf {
           .equals(other.getExclusiveGroupList())) return false;
       if (!getIterationLevelsList()
           .equals(other.getIterationLevelsList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -3275,7 +3092,7 @@ public final class KogitoTypesProtobuf {
         hash = (37 * hash) + ITERATIONLEVELS_FIELD_NUMBER;
         hash = (53 * hash) + getIterationLevelsList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -3392,50 +3209,46 @@ public final class KogitoTypesProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getVariableFieldBuilder();
-          getNodeInstanceFieldBuilder();
-          getExclusiveGroupFieldBuilder();
-          getIterationLevelsFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (variableBuilder_ == null) {
           variable_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
+          variable_ = null;
           variableBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         if (nodeInstanceBuilder_ == null) {
           nodeInstance_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
         } else {
+          nodeInstance_ = null;
           nodeInstanceBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000002);
         if (exclusiveGroupBuilder_ == null) {
           exclusiveGroup_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
         } else {
+          exclusiveGroup_ = null;
           exclusiveGroupBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (iterationLevelsBuilder_ == null) {
           iterationLevels_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
+          iterationLevels_ = null;
           iterationLevelsBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -3462,7 +3275,13 @@ public final class KogitoTypesProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext result = new org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext result) {
         if (variableBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             variable_ = java.util.Collections.unmodifiableList(variable_);
@@ -3499,42 +3318,12 @@ public final class KogitoTypesProtobuf {
         } else {
           result.iterationLevels_ = iterationLevelsBuilder_.build();
         }
-        onBuilt();
-        return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext result) {
+        int from_bitField0_ = bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext) {
@@ -3651,7 +3440,7 @@ public final class KogitoTypesProtobuf {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -3666,17 +3455,82 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable m =
+                    input.readMessage(
+                        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.parser(),
+                        extensionRegistry);
+                if (variableBuilder_ == null) {
+                  ensureVariableIsMutable();
+                  variable_.add(m);
+                } else {
+                  variableBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              case 18: {
+                org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance m =
+                    input.readMessage(
+                        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstance.parser(),
+                        extensionRegistry);
+                if (nodeInstanceBuilder_ == null) {
+                  ensureNodeInstanceIsMutable();
+                  nodeInstance_.add(m);
+                } else {
+                  nodeInstanceBuilder_.addMessage(m);
+                }
+                break;
+              } // case 18
+              case 26: {
+                org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup m =
+                    input.readMessage(
+                        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup.parser(),
+                        extensionRegistry);
+                if (exclusiveGroupBuilder_ == null) {
+                  ensureExclusiveGroupIsMutable();
+                  exclusiveGroup_.add(m);
+                } else {
+                  exclusiveGroupBuilder_.addMessage(m);
+                }
+                break;
+              } // case 26
+              case 34: {
+                org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel m =
+                    input.readMessage(
+                        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel.parser(),
+                        extensionRegistry);
+                if (iterationLevelsBuilder_ == null) {
+                  ensureIterationLevelsIsMutable();
+                  iterationLevels_.add(m);
+                } else {
+                  iterationLevelsBuilder_.addMessage(m);
+                }
+                break;
+              } // case 34
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -4673,7 +4527,18 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new WorkflowContext(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -4755,61 +4620,6 @@ public final class KogitoTypesProtobuf {
       return new SwimlaneContext();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private SwimlaneContext(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              swimlane_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000002;
-              actorId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_SwimlaneContext_descriptor;
@@ -4825,7 +4635,8 @@ public final class KogitoTypesProtobuf {
 
     private int bitField0_;
     public static final int SWIMLANE_FIELD_NUMBER = 1;
-    private volatile java.lang.Object swimlane_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object swimlane_ = "";
     /**
      * <code>optional string swimlane = 1;</code>
      * @return Whether the swimlane field is set.
@@ -4871,7 +4682,8 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int ACTOR_ID_FIELD_NUMBER = 2;
-    private volatile java.lang.Object actorId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object actorId_ = "";
     /**
      * <code>optional string actor_id = 2;</code>
      * @return Whether the actorId field is set.
@@ -4936,7 +4748,7 @@ public final class KogitoTypesProtobuf {
       if (((bitField0_ & 0x00000002) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, actorId_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -4951,7 +4763,7 @@ public final class KogitoTypesProtobuf {
       if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, actorId_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -4976,7 +4788,7 @@ public final class KogitoTypesProtobuf {
         if (!getActorId()
             .equals(other.getActorId())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -4995,7 +4807,7 @@ public final class KogitoTypesProtobuf {
         hash = (37 * hash) + ACTOR_ID_FIELD_NUMBER;
         hash = (53 * hash) + getActorId().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -5112,26 +4924,20 @@ public final class KogitoTypesProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         swimlane_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         actorId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -5158,53 +4964,25 @@ public final class KogitoTypesProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext result = new org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.swimlane_ = swimlane_;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.actorId_ = actorId_;
-        result.bitField0_ = to_bitField0_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.swimlane_ = swimlane_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.actorId_ = actorId_;
+          to_bitField0_ |= 0x00000002;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext) {
@@ -5218,16 +4996,16 @@ public final class KogitoTypesProtobuf {
       public Builder mergeFrom(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext other) {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext.getDefaultInstance()) return this;
         if (other.hasSwimlane()) {
-          bitField0_ |= 0x00000001;
           swimlane_ = other.swimlane_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasActorId()) {
-          bitField0_ |= 0x00000002;
           actorId_ = other.actorId_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -5242,17 +5020,40 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                swimlane_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                actorId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -5305,11 +5106,9 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setSwimlane(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         swimlane_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5318,8 +5117,8 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearSwimlane() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         swimlane_ = getDefaultInstance().getSwimlane();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -5330,12 +5129,10 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setSwimlaneBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         swimlane_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5388,11 +5185,9 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setActorId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         actorId_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5401,8 +5196,8 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearActorId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
         actorId_ = getDefaultInstance().getActorId();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -5413,12 +5208,10 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setActorIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         actorId_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5455,7 +5248,18 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SwimlaneContext(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -5541,65 +5345,6 @@ public final class KogitoTypesProtobuf {
       return new SLAContext();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private SLAContext(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              slaTimerId_ = s;
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              slaDueDate_ = input.readInt64();
-              break;
-            }
-            case 24: {
-              bitField0_ |= 0x00000004;
-              slaCompliance_ = input.readInt32();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_SLAContext_descriptor;
@@ -5615,7 +5360,8 @@ public final class KogitoTypesProtobuf {
 
     private int bitField0_;
     public static final int SLA_TIMER_ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object slaTimerId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object slaTimerId_ = "";
     /**
      * <code>optional string sla_timer_id = 1;</code>
      * @return Whether the slaTimerId field is set.
@@ -5661,7 +5407,7 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int SLA_DUE_DATE_FIELD_NUMBER = 2;
-    private long slaDueDate_;
+    private long slaDueDate_ = 0L;
     /**
      * <code>optional int64 sla_due_date = 2;</code>
      * @return Whether the slaDueDate field is set.
@@ -5680,7 +5426,7 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int SLA_COMPLIANCE_FIELD_NUMBER = 3;
-    private int slaCompliance_;
+    private int slaCompliance_ = 0;
     /**
      * <code>optional int32 sla_compliance = 3;</code>
      * @return Whether the slaCompliance field is set.
@@ -5721,7 +5467,7 @@ public final class KogitoTypesProtobuf {
       if (((bitField0_ & 0x00000004) != 0)) {
         output.writeInt32(3, slaCompliance_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -5741,7 +5487,7 @@ public final class KogitoTypesProtobuf {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(3, slaCompliance_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -5771,7 +5517,7 @@ public final class KogitoTypesProtobuf {
         if (getSlaCompliance()
             != other.getSlaCompliance()) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -5795,7 +5541,7 @@ public final class KogitoTypesProtobuf {
         hash = (37 * hash) + SLA_COMPLIANCE_FIELD_NUMBER;
         hash = (53 * hash) + getSlaCompliance();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -5912,28 +5658,21 @@ public final class KogitoTypesProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         slaTimerId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         slaDueDate_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         slaCompliance_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -5960,12 +5699,18 @@ public final class KogitoTypesProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext result = new org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.slaTimerId_ = slaTimerId_;
           to_bitField0_ |= 0x00000001;
         }
-        result.slaTimerId_ = slaTimerId_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.slaDueDate_ = slaDueDate_;
           to_bitField0_ |= 0x00000002;
@@ -5974,43 +5719,9 @@ public final class KogitoTypesProtobuf {
           result.slaCompliance_ = slaCompliance_;
           to_bitField0_ |= 0x00000004;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext) {
@@ -6024,8 +5735,8 @@ public final class KogitoTypesProtobuf {
       public Builder mergeFrom(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext other) {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.getDefaultInstance()) return this;
         if (other.hasSlaTimerId()) {
-          bitField0_ |= 0x00000001;
           slaTimerId_ = other.slaTimerId_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasSlaDueDate()) {
@@ -6034,7 +5745,7 @@ public final class KogitoTypesProtobuf {
         if (other.hasSlaCompliance()) {
           setSlaCompliance(other.getSlaCompliance());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -6049,17 +5760,45 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                slaTimerId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 16: {
+                slaDueDate_ = input.readInt64();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              case 24: {
+                slaCompliance_ = input.readInt32();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -6112,11 +5851,9 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setSlaTimerId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         slaTimerId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -6125,8 +5862,8 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearSlaTimerId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         slaTimerId_ = getDefaultInstance().getSlaTimerId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -6137,12 +5874,10 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setSlaTimerIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         slaTimerId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -6170,8 +5905,9 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder setSlaDueDate(long value) {
-        bitField0_ |= 0x00000002;
+
         slaDueDate_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6209,8 +5945,9 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder setSlaCompliance(int value) {
-        bitField0_ |= 0x00000004;
+
         slaCompliance_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -6257,7 +5994,18 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SLAContext(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -6332,60 +6080,6 @@ public final class KogitoTypesProtobuf {
       return new IterationLevel();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private IterationLevel(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              id_ = s;
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              level_ = input.readInt32();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_IterationLevel_descriptor;
@@ -6401,7 +6095,8 @@ public final class KogitoTypesProtobuf {
 
     private int bitField0_;
     public static final int ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object id_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object id_ = "";
     /**
      * <code>optional string id = 1;</code>
      * @return Whether the id field is set.
@@ -6447,7 +6142,7 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int LEVEL_FIELD_NUMBER = 2;
-    private int level_;
+    private int level_ = 0;
     /**
      * <code>optional int32 level = 2;</code>
      * @return Whether the level field is set.
@@ -6485,7 +6180,7 @@ public final class KogitoTypesProtobuf {
       if (((bitField0_ & 0x00000002) != 0)) {
         output.writeInt32(2, level_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -6501,7 +6196,7 @@ public final class KogitoTypesProtobuf {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, level_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -6526,7 +6221,7 @@ public final class KogitoTypesProtobuf {
         if (getLevel()
             != other.getLevel()) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -6545,7 +6240,7 @@ public final class KogitoTypesProtobuf {
         hash = (37 * hash) + LEVEL_FIELD_NUMBER;
         hash = (53 * hash) + getLevel();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -6662,26 +6357,20 @@ public final class KogitoTypesProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         id_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         level_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -6708,53 +6397,25 @@ public final class KogitoTypesProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel result = new org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.id_ = id_;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.level_ = level_;
-          to_bitField0_ |= 0x00000002;
-        }
-        result.bitField0_ = to_bitField0_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.id_ = id_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.level_ = level_;
+          to_bitField0_ |= 0x00000002;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel) {
@@ -6768,14 +6429,14 @@ public final class KogitoTypesProtobuf {
       public Builder mergeFrom(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel other) {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel.getDefaultInstance()) return this;
         if (other.hasId()) {
-          bitField0_ |= 0x00000001;
           id_ = other.id_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasLevel()) {
           setLevel(other.getLevel());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -6790,17 +6451,40 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                id_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 16: {
+                level_ = input.readInt32();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -6853,11 +6537,9 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -6866,8 +6548,8 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         id_ = getDefaultInstance().getId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -6878,12 +6560,10 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -6911,8 +6591,9 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder setLevel(int value) {
-        bitField0_ |= 0x00000002;
+
         level_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6959,7 +6640,18 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new IterationLevel(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -7021,7 +6713,8 @@ public final class KogitoTypesProtobuf {
       super(builder);
     }
     private NodeInstanceGroup() {
-      groupNodeInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      groupNodeInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -7031,61 +6724,6 @@ public final class KogitoTypesProtobuf {
       return new NodeInstanceGroup();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private NodeInstanceGroup(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                groupNodeInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              groupNodeInstanceId_.add(s);
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          groupNodeInstanceId_ = groupNodeInstanceId_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_NodeInstanceGroup_descriptor;
@@ -7100,7 +6738,9 @@ public final class KogitoTypesProtobuf {
     }
 
     public static final int GROUP_NODE_INSTANCE_ID_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList groupNodeInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList groupNodeInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string group_node_instance_id = 1;</code>
      * @return A list containing the groupNodeInstanceId.
@@ -7151,7 +6791,7 @@ public final class KogitoTypesProtobuf {
       for (int i = 0; i < groupNodeInstanceId_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, groupNodeInstanceId_.getRaw(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -7168,7 +6808,7 @@ public final class KogitoTypesProtobuf {
         size += dataSize;
         size += 1 * getGroupNodeInstanceIdList().size();
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -7185,7 +6825,7 @@ public final class KogitoTypesProtobuf {
 
       if (!getGroupNodeInstanceIdList()
           .equals(other.getGroupNodeInstanceIdList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -7200,7 +6840,7 @@ public final class KogitoTypesProtobuf {
         hash = (37 * hash) + GROUP_NODE_INSTANCE_ID_FIELD_NUMBER;
         hash = (53 * hash) + getGroupNodeInstanceIdList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -7317,24 +6957,20 @@ public final class KogitoTypesProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        groupNodeInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = 0;
+        groupNodeInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         return this;
       }
 
@@ -7361,48 +6997,19 @@ public final class KogitoTypesProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup result = new org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          groupNodeInstanceId_ = groupNodeInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.groupNodeInstanceId_ = groupNodeInstanceId_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          groupNodeInstanceId_.makeImmutable();
+          result.groupNodeInstanceId_ = groupNodeInstanceId_;
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup) {
@@ -7418,14 +7025,14 @@ public final class KogitoTypesProtobuf {
         if (!other.groupNodeInstanceId_.isEmpty()) {
           if (groupNodeInstanceId_.isEmpty()) {
             groupNodeInstanceId_ = other.groupNodeInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureGroupNodeInstanceIdIsMutable();
             groupNodeInstanceId_.addAll(other.groupNodeInstanceId_);
           }
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -7440,27 +7047,47 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureGroupNodeInstanceIdIsMutable();
+                groupNodeInstanceId_.add(s);
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.NodeInstanceGroup) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList groupNodeInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList groupNodeInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureGroupNodeInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!groupNodeInstanceId_.isModifiable()) {
           groupNodeInstanceId_ = new com.google.protobuf.LazyStringArrayList(groupNodeInstanceId_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <code>repeated string group_node_instance_id = 1;</code>
@@ -7468,7 +7095,8 @@ public final class KogitoTypesProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getGroupNodeInstanceIdList() {
-        return groupNodeInstanceId_.getUnmodifiableView();
+        groupNodeInstanceId_.makeImmutable();
+        return groupNodeInstanceId_;
       }
       /**
        * <code>repeated string group_node_instance_id = 1;</code>
@@ -7502,11 +7130,10 @@ public final class KogitoTypesProtobuf {
        */
       public Builder setGroupNodeInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureGroupNodeInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureGroupNodeInstanceIdIsMutable();
         groupNodeInstanceId_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7517,11 +7144,10 @@ public final class KogitoTypesProtobuf {
        */
       public Builder addGroupNodeInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureGroupNodeInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureGroupNodeInstanceIdIsMutable();
         groupNodeInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7535,6 +7161,7 @@ public final class KogitoTypesProtobuf {
         ensureGroupNodeInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, groupNodeInstanceId_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7543,8 +7170,9 @@ public final class KogitoTypesProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearGroupNodeInstanceId() {
-        groupNodeInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        groupNodeInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -7555,12 +7183,11 @@ public final class KogitoTypesProtobuf {
        */
       public Builder addGroupNodeInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureGroupNodeInstanceIdIsMutable();
         groupNodeInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7597,7 +7224,18 @@ public final class KogitoTypesProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new NodeInstanceGroup(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -7673,7 +7311,7 @@ public final class KogitoTypesProtobuf {
       "ent\030\001 \001(\t\"_\n\010Variable\022\014\n\004name\030\001 \001(\t\022\021\n\td" +
       "ata_type\030\002 \001(\t\022(\n\005value\030\003 \001(\0132\024.google.p" +
       "rotobuf.AnyH\000\210\001\001B\010\n\006_value\"\361\001\n\014NodeInsta" +
-      "nce\022\n\n\002id\030\001 \001(\t\022\017\n\007node_id\030\002 \001(\003\022%\n\007cont" +
+      "nce\022\n\n\002id\030\001 \001(\t\022\017\n\007node_id\030\002 \001(\t\022%\n\007cont" +
       "ent\030\003 \001(\0132\024.google.protobuf.Any\022\022\n\005level" +
       "\030\004 \001(\005H\000\210\001\001\022\031\n\014trigger_date\030\005 \001(\003H\001\210\001\001\022K" +
       "\n\003sla\030\006 \001(\01329.org.kie.kogito.serializati" +

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.kie.kogito.serialization.process.protobuf;
 
 public final class KogitoWorkItemsProtobuf {
@@ -314,14 +315,14 @@ public final class KogitoWorkItemsProtobuf {
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
      */
-
-    org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrDefault(
+    /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrDefault(
         java.lang.String key,
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue);
+        /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue);
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
      */
-
     org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrThrow(
         java.lang.String key);
 
@@ -348,14 +349,14 @@ public final class KogitoWorkItemsProtobuf {
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
      */
-
-    org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrDefault(
+    /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrDefault(
         java.lang.String key,
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue);
+        /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue);
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
      */
-
     org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrThrow(
         java.lang.String key);
 
@@ -382,14 +383,14 @@ public final class KogitoWorkItemsProtobuf {
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
      */
-
-    org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrDefault(
+    /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrDefault(
         java.lang.String key,
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue);
+        /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue);
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
      */
-
     org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrThrow(
         java.lang.String key);
 
@@ -416,14 +417,14 @@ public final class KogitoWorkItemsProtobuf {
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
      */
-
-    org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrDefault(
+    /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrDefault(
         java.lang.String key,
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue);
+        /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue);
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
      */
-
     org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrThrow(
         java.lang.String key);
   }
@@ -444,11 +445,16 @@ public final class KogitoWorkItemsProtobuf {
       taskDescription_ = "";
       taskPriority_ = "";
       actualOwner_ = "";
-      potUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      potGroups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      excludedUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      adminUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      adminGroups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      potUsers_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+      potGroups_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+      excludedUsers_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+      adminUsers_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+      adminGroups_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       taskReferenceName_ = "";
       comments_ = java.util.Collections.emptyList();
       attachments_ = java.util.Collections.emptyList();
@@ -461,215 +467,6 @@ public final class KogitoWorkItemsProtobuf {
       return new HumanTaskWorkItemData();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private HumanTaskWorkItemData(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              taskName_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000002;
-              taskDescription_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000004;
-              taskPriority_ = s;
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000008;
-              actualOwner_ = s;
-              break;
-            }
-            case 42: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000010) != 0)) {
-                potUsers_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000010;
-              }
-              potUsers_.add(s);
-              break;
-            }
-            case 50: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000020) != 0)) {
-                potGroups_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000020;
-              }
-              potGroups_.add(s);
-              break;
-            }
-            case 58: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000040) != 0)) {
-                excludedUsers_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000040;
-              }
-              excludedUsers_.add(s);
-              break;
-            }
-            case 66: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000080) != 0)) {
-                adminUsers_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000080;
-              }
-              adminUsers_.add(s);
-              break;
-            }
-            case 74: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000100) != 0)) {
-                adminGroups_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000100;
-              }
-              adminGroups_.add(s);
-              break;
-            }
-            case 82: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000010;
-              taskReferenceName_ = s;
-              break;
-            }
-            case 90: {
-              if (!((mutable_bitField0_ & 0x00000400) != 0)) {
-                comments_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment>();
-                mutable_bitField0_ |= 0x00000400;
-              }
-              comments_.add(
-                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment.parser(), extensionRegistry));
-              break;
-            }
-            case 98: {
-              if (!((mutable_bitField0_ & 0x00000800) != 0)) {
-                attachments_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment>();
-                mutable_bitField0_ |= 0x00000800;
-              }
-              attachments_.add(
-                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment.parser(), extensionRegistry));
-              break;
-            }
-            case 106: {
-              if (!((mutable_bitField0_ & 0x00001000) != 0)) {
-                startDeadlines_ = com.google.protobuf.MapField.newMapField(
-                    StartDeadlinesDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00001000;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
-              startDeadlines__ = input.readMessage(
-                  StartDeadlinesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              startDeadlines_.getMutableMap().put(
-                  startDeadlines__.getKey(), startDeadlines__.getValue());
-              break;
-            }
-            case 114: {
-              if (!((mutable_bitField0_ & 0x00002000) != 0)) {
-                completedDeadlines_ = com.google.protobuf.MapField.newMapField(
-                    CompletedDeadlinesDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00002000;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
-              completedDeadlines__ = input.readMessage(
-                  CompletedDeadlinesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              completedDeadlines_.getMutableMap().put(
-                  completedDeadlines__.getKey(), completedDeadlines__.getValue());
-              break;
-            }
-            case 122: {
-              if (!((mutable_bitField0_ & 0x00004000) != 0)) {
-                startReassigments_ = com.google.protobuf.MapField.newMapField(
-                    StartReassigmentsDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00004000;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
-              startReassigments__ = input.readMessage(
-                  StartReassigmentsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              startReassigments_.getMutableMap().put(
-                  startReassigments__.getKey(), startReassigments__.getValue());
-              break;
-            }
-            case 130: {
-              if (!((mutable_bitField0_ & 0x00008000) != 0)) {
-                completedReassigments_ = com.google.protobuf.MapField.newMapField(
-                    CompletedReassigmentsDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00008000;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
-              completedReassigments__ = input.readMessage(
-                  CompletedReassigmentsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              completedReassigments_.getMutableMap().put(
-                  completedReassigments__.getKey(), completedReassigments__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000010) != 0)) {
-          potUsers_ = potUsers_.getUnmodifiableView();
-        }
-        if (((mutable_bitField0_ & 0x00000020) != 0)) {
-          potGroups_ = potGroups_.getUnmodifiableView();
-        }
-        if (((mutable_bitField0_ & 0x00000040) != 0)) {
-          excludedUsers_ = excludedUsers_.getUnmodifiableView();
-        }
-        if (((mutable_bitField0_ & 0x00000080) != 0)) {
-          adminUsers_ = adminUsers_.getUnmodifiableView();
-        }
-        if (((mutable_bitField0_ & 0x00000100) != 0)) {
-          adminGroups_ = adminGroups_.getUnmodifiableView();
-        }
-        if (((mutable_bitField0_ & 0x00000400) != 0)) {
-          comments_ = java.util.Collections.unmodifiableList(comments_);
-        }
-        if (((mutable_bitField0_ & 0x00000800) != 0)) {
-          attachments_ = java.util.Collections.unmodifiableList(attachments_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_HumanTaskWorkItemData_descriptor;
@@ -703,7 +500,8 @@ public final class KogitoWorkItemsProtobuf {
 
     private int bitField0_;
     public static final int TASK_NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object taskName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object taskName_ = "";
     /**
      * <code>optional string task_name = 1;</code>
      * @return Whether the taskName field is set.
@@ -749,7 +547,8 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int TASK_DESCRIPTION_FIELD_NUMBER = 2;
-    private volatile java.lang.Object taskDescription_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object taskDescription_ = "";
     /**
      * <code>optional string task_description = 2;</code>
      * @return Whether the taskDescription field is set.
@@ -795,7 +594,8 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int TASK_PRIORITY_FIELD_NUMBER = 3;
-    private volatile java.lang.Object taskPriority_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object taskPriority_ = "";
     /**
      * <code>optional string task_priority = 3;</code>
      * @return Whether the taskPriority field is set.
@@ -841,7 +641,8 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int ACTUAL_OWNER_FIELD_NUMBER = 4;
-    private volatile java.lang.Object actualOwner_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object actualOwner_ = "";
     /**
      * <code>optional string actual_owner = 4;</code>
      * @return Whether the actualOwner field is set.
@@ -887,7 +688,9 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int POT_USERS_FIELD_NUMBER = 5;
-    private com.google.protobuf.LazyStringList potUsers_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList potUsers_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string pot_users = 5;</code>
      * @return A list containing the potUsers.
@@ -922,7 +725,9 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int POT_GROUPS_FIELD_NUMBER = 6;
-    private com.google.protobuf.LazyStringList potGroups_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList potGroups_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string pot_groups = 6;</code>
      * @return A list containing the potGroups.
@@ -957,7 +762,9 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int EXCLUDED_USERS_FIELD_NUMBER = 7;
-    private com.google.protobuf.LazyStringList excludedUsers_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList excludedUsers_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string excluded_users = 7;</code>
      * @return A list containing the excludedUsers.
@@ -992,7 +799,9 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int ADMIN_USERS_FIELD_NUMBER = 8;
-    private com.google.protobuf.LazyStringList adminUsers_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList adminUsers_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string admin_users = 8;</code>
      * @return A list containing the adminUsers.
@@ -1027,7 +836,9 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int ADMIN_GROUPS_FIELD_NUMBER = 9;
-    private com.google.protobuf.LazyStringList adminGroups_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList adminGroups_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string admin_groups = 9;</code>
      * @return A list containing the adminGroups.
@@ -1062,7 +873,8 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int TASK_REFERENCE_NAME_FIELD_NUMBER = 10;
-    private volatile java.lang.Object taskReferenceName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object taskReferenceName_ = "";
     /**
      * <code>optional string task_reference_name = 10;</code>
      * @return Whether the taskReferenceName field is set.
@@ -1108,6 +920,7 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int COMMENTS_FIELD_NUMBER = 11;
+    @SuppressWarnings("serial")
     private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment> comments_;
     /**
      * <code>repeated .org.kie.kogito.serialization.process.protobuf.Comment comments = 11;</code>
@@ -1148,6 +961,7 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int ATTACHMENTS_FIELD_NUMBER = 12;
+    @SuppressWarnings("serial")
     private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment> attachments_;
     /**
      * <code>repeated .org.kie.kogito.serialization.process.protobuf.Attachment attachments = 12;</code>
@@ -1199,6 +1013,7 @@ public final class KogitoWorkItemsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.MESSAGE,
                   org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline.getDefaultInstance());
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> startDeadlines_;
     private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
@@ -1209,14 +1024,12 @@ public final class KogitoWorkItemsProtobuf {
       }
       return startDeadlines_;
     }
-
     public int getStartDeadlinesCount() {
       return internalGetStartDeadlines().getMap().size();
     }
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
      */
-
     @java.lang.Override
     public boolean containsStartDeadlines(
         java.lang.String key) {
@@ -1235,7 +1048,6 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> getStartDeadlinesMap() {
       return internalGetStartDeadlines().getMap();
     }
@@ -1243,10 +1055,11 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
      */
     @java.lang.Override
-
-    public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrDefault(
+    public /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrDefault(
         java.lang.String key,
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue) {
+        /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> map =
           internalGetStartDeadlines().getMap();
@@ -1256,7 +1069,6 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
      */
     @java.lang.Override
-
     public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -1280,6 +1092,7 @@ public final class KogitoWorkItemsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.MESSAGE,
                   org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline.getDefaultInstance());
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> completedDeadlines_;
     private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
@@ -1290,14 +1103,12 @@ public final class KogitoWorkItemsProtobuf {
       }
       return completedDeadlines_;
     }
-
     public int getCompletedDeadlinesCount() {
       return internalGetCompletedDeadlines().getMap().size();
     }
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
      */
-
     @java.lang.Override
     public boolean containsCompletedDeadlines(
         java.lang.String key) {
@@ -1316,7 +1127,6 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> getCompletedDeadlinesMap() {
       return internalGetCompletedDeadlines().getMap();
     }
@@ -1324,10 +1134,11 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
      */
     @java.lang.Override
-
-    public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrDefault(
+    public /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrDefault(
         java.lang.String key,
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue) {
+        /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> map =
           internalGetCompletedDeadlines().getMap();
@@ -1337,7 +1148,6 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
      */
     @java.lang.Override
-
     public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -1361,6 +1171,7 @@ public final class KogitoWorkItemsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.MESSAGE,
                   org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment.getDefaultInstance());
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> startReassigments_;
     private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
@@ -1371,14 +1182,12 @@ public final class KogitoWorkItemsProtobuf {
       }
       return startReassigments_;
     }
-
     public int getStartReassigmentsCount() {
       return internalGetStartReassigments().getMap().size();
     }
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
      */
-
     @java.lang.Override
     public boolean containsStartReassigments(
         java.lang.String key) {
@@ -1397,7 +1206,6 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> getStartReassigmentsMap() {
       return internalGetStartReassigments().getMap();
     }
@@ -1405,10 +1213,11 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
      */
     @java.lang.Override
-
-    public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrDefault(
+    public /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrDefault(
         java.lang.String key,
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue) {
+        /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> map =
           internalGetStartReassigments().getMap();
@@ -1418,7 +1227,6 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
      */
     @java.lang.Override
-
     public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -1442,6 +1250,7 @@ public final class KogitoWorkItemsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.MESSAGE,
                   org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment.getDefaultInstance());
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> completedReassigments_;
     private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
@@ -1452,14 +1261,12 @@ public final class KogitoWorkItemsProtobuf {
       }
       return completedReassigments_;
     }
-
     public int getCompletedReassigmentsCount() {
       return internalGetCompletedReassigments().getMap().size();
     }
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
      */
-
     @java.lang.Override
     public boolean containsCompletedReassigments(
         java.lang.String key) {
@@ -1478,7 +1285,6 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> getCompletedReassigmentsMap() {
       return internalGetCompletedReassigments().getMap();
     }
@@ -1486,10 +1292,11 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
      */
     @java.lang.Override
-
-    public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrDefault(
+    public /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrDefault(
         java.lang.String key,
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue) {
+        /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> map =
           internalGetCompletedReassigments().getMap();
@@ -1499,7 +1306,6 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
      */
     @java.lang.Override
-
     public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -1585,7 +1391,7 @@ public final class KogitoWorkItemsProtobuf {
           internalGetCompletedReassigments(),
           CompletedReassigmentsDefaultEntryHolder.defaultEntry,
           16);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -1697,7 +1503,7 @@ public final class KogitoWorkItemsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(16, completedReassigments__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -1759,7 +1565,7 @@ public final class KogitoWorkItemsProtobuf {
           other.internalGetStartReassigments())) return false;
       if (!internalGetCompletedReassigments().equals(
           other.internalGetCompletedReassigments())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -1834,7 +1640,7 @@ public final class KogitoWorkItemsProtobuf {
         hash = (37 * hash) + COMPLETED_REASSIGMENTS_FIELD_NUMBER;
         hash = (53 * hash) + internalGetCompletedReassigments().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -1985,56 +1791,47 @@ public final class KogitoWorkItemsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getCommentsFieldBuilder();
-          getAttachmentsFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         taskName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         taskDescription_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         taskPriority_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
         actualOwner_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
-        potUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
-        potGroups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000020);
-        excludedUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000040);
-        adminUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
-        adminGroups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000100);
+        potUsers_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
+        potGroups_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
+        excludedUsers_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
+        adminUsers_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
+        adminGroups_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         taskReferenceName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000200);
         if (commentsBuilder_ == null) {
           comments_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000400);
         } else {
+          comments_ = null;
           commentsBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000400);
         if (attachmentsBuilder_ == null) {
           attachments_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000800);
         } else {
+          attachments_ = null;
           attachmentsBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000800);
         internalGetMutableStartDeadlines().clear();
         internalGetMutableCompletedDeadlines().clear();
         internalGetMutableStartReassigments().clear();
@@ -2065,53 +1862,13 @@ public final class KogitoWorkItemsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData result = new org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.taskName_ = taskName_;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.taskDescription_ = taskDescription_;
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.taskPriority_ = taskPriority_;
-        if (((from_bitField0_ & 0x00000008) != 0)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.actualOwner_ = actualOwner_;
-        if (((bitField0_ & 0x00000010) != 0)) {
-          potUsers_ = potUsers_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000010);
-        }
-        result.potUsers_ = potUsers_;
-        if (((bitField0_ & 0x00000020) != 0)) {
-          potGroups_ = potGroups_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000020);
-        }
-        result.potGroups_ = potGroups_;
-        if (((bitField0_ & 0x00000040) != 0)) {
-          excludedUsers_ = excludedUsers_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000040);
-        }
-        result.excludedUsers_ = excludedUsers_;
-        if (((bitField0_ & 0x00000080) != 0)) {
-          adminUsers_ = adminUsers_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000080);
-        }
-        result.adminUsers_ = adminUsers_;
-        if (((bitField0_ & 0x00000100) != 0)) {
-          adminGroups_ = adminGroups_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000100);
-        }
-        result.adminGroups_ = adminGroups_;
-        if (((from_bitField0_ & 0x00000200) != 0)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.taskReferenceName_ = taskReferenceName_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData result) {
         if (commentsBuilder_ == null) {
           if (((bitField0_ & 0x00000400) != 0)) {
             comments_ = java.util.Collections.unmodifiableList(comments_);
@@ -2130,51 +1887,70 @@ public final class KogitoWorkItemsProtobuf {
         } else {
           result.attachments_ = attachmentsBuilder_.build();
         }
-        result.startDeadlines_ = internalGetStartDeadlines();
-        result.startDeadlines_.makeImmutable();
-        result.completedDeadlines_ = internalGetCompletedDeadlines();
-        result.completedDeadlines_.makeImmutable();
-        result.startReassigments_ = internalGetStartReassigments();
-        result.startReassigments_.makeImmutable();
-        result.completedReassigments_ = internalGetCompletedReassigments();
-        result.completedReassigments_.makeImmutable();
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.taskName_ = taskName_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.taskDescription_ = taskDescription_;
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.taskPriority_ = taskPriority_;
+          to_bitField0_ |= 0x00000004;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.actualOwner_ = actualOwner_;
+          to_bitField0_ |= 0x00000008;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          potUsers_.makeImmutable();
+          result.potUsers_ = potUsers_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          potGroups_.makeImmutable();
+          result.potGroups_ = potGroups_;
+        }
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          excludedUsers_.makeImmutable();
+          result.excludedUsers_ = excludedUsers_;
+        }
+        if (((from_bitField0_ & 0x00000080) != 0)) {
+          adminUsers_.makeImmutable();
+          result.adminUsers_ = adminUsers_;
+        }
+        if (((from_bitField0_ & 0x00000100) != 0)) {
+          adminGroups_.makeImmutable();
+          result.adminGroups_ = adminGroups_;
+        }
+        if (((from_bitField0_ & 0x00000200) != 0)) {
+          result.taskReferenceName_ = taskReferenceName_;
+          to_bitField0_ |= 0x00000010;
+        }
+        if (((from_bitField0_ & 0x00001000) != 0)) {
+          result.startDeadlines_ = internalGetStartDeadlines();
+          result.startDeadlines_.makeImmutable();
+        }
+        if (((from_bitField0_ & 0x00002000) != 0)) {
+          result.completedDeadlines_ = internalGetCompletedDeadlines();
+          result.completedDeadlines_.makeImmutable();
+        }
+        if (((from_bitField0_ & 0x00004000) != 0)) {
+          result.startReassigments_ = internalGetStartReassigments();
+          result.startReassigments_.makeImmutable();
+        }
+        if (((from_bitField0_ & 0x00008000) != 0)) {
+          result.completedReassigments_ = internalGetCompletedReassigments();
+          result.completedReassigments_.makeImmutable();
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData) {
@@ -2188,29 +1964,29 @@ public final class KogitoWorkItemsProtobuf {
       public Builder mergeFrom(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData other) {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData.getDefaultInstance()) return this;
         if (other.hasTaskName()) {
-          bitField0_ |= 0x00000001;
           taskName_ = other.taskName_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasTaskDescription()) {
-          bitField0_ |= 0x00000002;
           taskDescription_ = other.taskDescription_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.hasTaskPriority()) {
-          bitField0_ |= 0x00000004;
           taskPriority_ = other.taskPriority_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (other.hasActualOwner()) {
-          bitField0_ |= 0x00000008;
           actualOwner_ = other.actualOwner_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         if (!other.potUsers_.isEmpty()) {
           if (potUsers_.isEmpty()) {
             potUsers_ = other.potUsers_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ |= 0x00000010;
           } else {
             ensurePotUsersIsMutable();
             potUsers_.addAll(other.potUsers_);
@@ -2220,7 +1996,7 @@ public final class KogitoWorkItemsProtobuf {
         if (!other.potGroups_.isEmpty()) {
           if (potGroups_.isEmpty()) {
             potGroups_ = other.potGroups_;
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ |= 0x00000020;
           } else {
             ensurePotGroupsIsMutable();
             potGroups_.addAll(other.potGroups_);
@@ -2230,7 +2006,7 @@ public final class KogitoWorkItemsProtobuf {
         if (!other.excludedUsers_.isEmpty()) {
           if (excludedUsers_.isEmpty()) {
             excludedUsers_ = other.excludedUsers_;
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ |= 0x00000040;
           } else {
             ensureExcludedUsersIsMutable();
             excludedUsers_.addAll(other.excludedUsers_);
@@ -2240,7 +2016,7 @@ public final class KogitoWorkItemsProtobuf {
         if (!other.adminUsers_.isEmpty()) {
           if (adminUsers_.isEmpty()) {
             adminUsers_ = other.adminUsers_;
-            bitField0_ = (bitField0_ & ~0x00000080);
+            bitField0_ |= 0x00000080;
           } else {
             ensureAdminUsersIsMutable();
             adminUsers_.addAll(other.adminUsers_);
@@ -2250,7 +2026,7 @@ public final class KogitoWorkItemsProtobuf {
         if (!other.adminGroups_.isEmpty()) {
           if (adminGroups_.isEmpty()) {
             adminGroups_ = other.adminGroups_;
-            bitField0_ = (bitField0_ & ~0x00000100);
+            bitField0_ |= 0x00000100;
           } else {
             ensureAdminGroupsIsMutable();
             adminGroups_.addAll(other.adminGroups_);
@@ -2258,8 +2034,8 @@ public final class KogitoWorkItemsProtobuf {
           onChanged();
         }
         if (other.hasTaskReferenceName()) {
-          bitField0_ |= 0x00000200;
           taskReferenceName_ = other.taskReferenceName_;
+          bitField0_ |= 0x00000200;
           onChanged();
         }
         if (commentsBuilder_ == null) {
@@ -2316,13 +2092,17 @@ public final class KogitoWorkItemsProtobuf {
         }
         internalGetMutableStartDeadlines().mergeFrom(
             other.internalGetStartDeadlines());
+        bitField0_ |= 0x00001000;
         internalGetMutableCompletedDeadlines().mergeFrom(
             other.internalGetCompletedDeadlines());
+        bitField0_ |= 0x00002000;
         internalGetMutableStartReassigments().mergeFrom(
             other.internalGetStartReassigments());
+        bitField0_ |= 0x00004000;
         internalGetMutableCompletedReassigments().mergeFrom(
             other.internalGetCompletedReassigments());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00008000;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -2337,17 +2117,147 @@ public final class KogitoWorkItemsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                taskName_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                taskDescription_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                taskPriority_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 34: {
+                actualOwner_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              case 42: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensurePotUsersIsMutable();
+                potUsers_.add(s);
+                break;
+              } // case 42
+              case 50: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensurePotGroupsIsMutable();
+                potGroups_.add(s);
+                break;
+              } // case 50
+              case 58: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureExcludedUsersIsMutable();
+                excludedUsers_.add(s);
+                break;
+              } // case 58
+              case 66: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureAdminUsersIsMutable();
+                adminUsers_.add(s);
+                break;
+              } // case 66
+              case 74: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureAdminGroupsIsMutable();
+                adminGroups_.add(s);
+                break;
+              } // case 74
+              case 82: {
+                taskReferenceName_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000200;
+                break;
+              } // case 82
+              case 90: {
+                org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment m =
+                    input.readMessage(
+                        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment.parser(),
+                        extensionRegistry);
+                if (commentsBuilder_ == null) {
+                  ensureCommentsIsMutable();
+                  comments_.add(m);
+                } else {
+                  commentsBuilder_.addMessage(m);
+                }
+                break;
+              } // case 90
+              case 98: {
+                org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment m =
+                    input.readMessage(
+                        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment.parser(),
+                        extensionRegistry);
+                if (attachmentsBuilder_ == null) {
+                  ensureAttachmentsIsMutable();
+                  attachments_.add(m);
+                } else {
+                  attachmentsBuilder_.addMessage(m);
+                }
+                break;
+              } // case 98
+              case 106: {
+                com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
+                startDeadlines__ = input.readMessage(
+                    StartDeadlinesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableStartDeadlines().getMutableMap().put(
+                    startDeadlines__.getKey(), startDeadlines__.getValue());
+                bitField0_ |= 0x00001000;
+                break;
+              } // case 106
+              case 114: {
+                com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
+                completedDeadlines__ = input.readMessage(
+                    CompletedDeadlinesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableCompletedDeadlines().getMutableMap().put(
+                    completedDeadlines__.getKey(), completedDeadlines__.getValue());
+                bitField0_ |= 0x00002000;
+                break;
+              } // case 114
+              case 122: {
+                com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
+                startReassigments__ = input.readMessage(
+                    StartReassigmentsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableStartReassigments().getMutableMap().put(
+                    startReassigments__.getKey(), startReassigments__.getValue());
+                bitField0_ |= 0x00004000;
+                break;
+              } // case 122
+              case 130: {
+                com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
+                completedReassigments__ = input.readMessage(
+                    CompletedReassigmentsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableCompletedReassigments().getMutableMap().put(
+                    completedReassigments__.getKey(), completedReassigments__.getValue());
+                bitField0_ |= 0x00008000;
+                break;
+              } // case 130
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -2400,11 +2310,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setTaskName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         taskName_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2413,8 +2321,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTaskName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         taskName_ = getDefaultInstance().getTaskName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -2425,12 +2333,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setTaskNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         taskName_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2483,11 +2389,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setTaskDescription(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         taskDescription_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2496,8 +2400,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTaskDescription() {
-        bitField0_ = (bitField0_ & ~0x00000002);
         taskDescription_ = getDefaultInstance().getTaskDescription();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -2508,12 +2412,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setTaskDescriptionBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         taskDescription_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2566,11 +2468,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setTaskPriority(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
         taskPriority_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2579,8 +2479,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTaskPriority() {
-        bitField0_ = (bitField0_ & ~0x00000004);
         taskPriority_ = getDefaultInstance().getTaskPriority();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -2591,12 +2491,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setTaskPriorityBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         taskPriority_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2649,11 +2547,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setActualOwner(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+        if (value == null) { throw new NullPointerException(); }
         actualOwner_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2662,8 +2558,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearActualOwner() {
-        bitField0_ = (bitField0_ & ~0x00000008);
         actualOwner_ = getDefaultInstance().getActualOwner();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -2674,22 +2570,21 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setActualOwnerBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000008;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         actualOwner_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList potUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList potUsers_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensurePotUsersIsMutable() {
-        if (!((bitField0_ & 0x00000010) != 0)) {
+        if (!potUsers_.isModifiable()) {
           potUsers_ = new com.google.protobuf.LazyStringArrayList(potUsers_);
-          bitField0_ |= 0x00000010;
-         }
+        }
+        bitField0_ |= 0x00000010;
       }
       /**
        * <code>repeated string pot_users = 5;</code>
@@ -2697,7 +2592,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getPotUsersList() {
-        return potUsers_.getUnmodifiableView();
+        potUsers_.makeImmutable();
+        return potUsers_;
       }
       /**
        * <code>repeated string pot_users = 5;</code>
@@ -2731,11 +2627,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setPotUsers(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensurePotUsersIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensurePotUsersIsMutable();
         potUsers_.set(index, value);
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2746,11 +2641,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addPotUsers(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensurePotUsersIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensurePotUsersIsMutable();
         potUsers_.add(value);
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2764,6 +2658,7 @@ public final class KogitoWorkItemsProtobuf {
         ensurePotUsersIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, potUsers_);
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2772,8 +2667,9 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearPotUsers() {
-        potUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
+        potUsers_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000010);;
         onChanged();
         return this;
       }
@@ -2784,22 +2680,22 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addPotUsersBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensurePotUsersIsMutable();
         potUsers_.add(value);
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList potGroups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList potGroups_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensurePotGroupsIsMutable() {
-        if (!((bitField0_ & 0x00000020) != 0)) {
+        if (!potGroups_.isModifiable()) {
           potGroups_ = new com.google.protobuf.LazyStringArrayList(potGroups_);
-          bitField0_ |= 0x00000020;
-         }
+        }
+        bitField0_ |= 0x00000020;
       }
       /**
        * <code>repeated string pot_groups = 6;</code>
@@ -2807,7 +2703,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getPotGroupsList() {
-        return potGroups_.getUnmodifiableView();
+        potGroups_.makeImmutable();
+        return potGroups_;
       }
       /**
        * <code>repeated string pot_groups = 6;</code>
@@ -2841,11 +2738,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setPotGroups(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensurePotGroupsIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensurePotGroupsIsMutable();
         potGroups_.set(index, value);
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2856,11 +2752,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addPotGroups(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensurePotGroupsIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensurePotGroupsIsMutable();
         potGroups_.add(value);
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2874,6 +2769,7 @@ public final class KogitoWorkItemsProtobuf {
         ensurePotGroupsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, potGroups_);
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2882,8 +2778,9 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearPotGroups() {
-        potGroups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000020);
+        potGroups_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000020);;
         onChanged();
         return this;
       }
@@ -2894,22 +2791,22 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addPotGroupsBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensurePotGroupsIsMutable();
         potGroups_.add(value);
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList excludedUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList excludedUsers_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureExcludedUsersIsMutable() {
-        if (!((bitField0_ & 0x00000040) != 0)) {
+        if (!excludedUsers_.isModifiable()) {
           excludedUsers_ = new com.google.protobuf.LazyStringArrayList(excludedUsers_);
-          bitField0_ |= 0x00000040;
-         }
+        }
+        bitField0_ |= 0x00000040;
       }
       /**
        * <code>repeated string excluded_users = 7;</code>
@@ -2917,7 +2814,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getExcludedUsersList() {
-        return excludedUsers_.getUnmodifiableView();
+        excludedUsers_.makeImmutable();
+        return excludedUsers_;
       }
       /**
        * <code>repeated string excluded_users = 7;</code>
@@ -2951,11 +2849,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setExcludedUsers(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureExcludedUsersIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureExcludedUsersIsMutable();
         excludedUsers_.set(index, value);
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2966,11 +2863,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addExcludedUsers(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureExcludedUsersIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureExcludedUsersIsMutable();
         excludedUsers_.add(value);
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2984,6 +2880,7 @@ public final class KogitoWorkItemsProtobuf {
         ensureExcludedUsersIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, excludedUsers_);
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2992,8 +2889,9 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearExcludedUsers() {
-        excludedUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000040);
+        excludedUsers_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000040);;
         onChanged();
         return this;
       }
@@ -3004,22 +2902,22 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addExcludedUsersBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureExcludedUsersIsMutable();
         excludedUsers_.add(value);
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList adminUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList adminUsers_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureAdminUsersIsMutable() {
-        if (!((bitField0_ & 0x00000080) != 0)) {
+        if (!adminUsers_.isModifiable()) {
           adminUsers_ = new com.google.protobuf.LazyStringArrayList(adminUsers_);
-          bitField0_ |= 0x00000080;
-         }
+        }
+        bitField0_ |= 0x00000080;
       }
       /**
        * <code>repeated string admin_users = 8;</code>
@@ -3027,7 +2925,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getAdminUsersList() {
-        return adminUsers_.getUnmodifiableView();
+        adminUsers_.makeImmutable();
+        return adminUsers_;
       }
       /**
        * <code>repeated string admin_users = 8;</code>
@@ -3061,11 +2960,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setAdminUsers(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureAdminUsersIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureAdminUsersIsMutable();
         adminUsers_.set(index, value);
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -3076,11 +2974,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addAdminUsers(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureAdminUsersIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureAdminUsersIsMutable();
         adminUsers_.add(value);
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -3094,6 +2991,7 @@ public final class KogitoWorkItemsProtobuf {
         ensureAdminUsersIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, adminUsers_);
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -3102,8 +3000,9 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearAdminUsers() {
-        adminUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        adminUsers_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000080);;
         onChanged();
         return this;
       }
@@ -3114,22 +3013,22 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addAdminUsersBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureAdminUsersIsMutable();
         adminUsers_.add(value);
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList adminGroups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList adminGroups_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureAdminGroupsIsMutable() {
-        if (!((bitField0_ & 0x00000100) != 0)) {
+        if (!adminGroups_.isModifiable()) {
           adminGroups_ = new com.google.protobuf.LazyStringArrayList(adminGroups_);
-          bitField0_ |= 0x00000100;
-         }
+        }
+        bitField0_ |= 0x00000100;
       }
       /**
        * <code>repeated string admin_groups = 9;</code>
@@ -3137,7 +3036,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getAdminGroupsList() {
-        return adminGroups_.getUnmodifiableView();
+        adminGroups_.makeImmutable();
+        return adminGroups_;
       }
       /**
        * <code>repeated string admin_groups = 9;</code>
@@ -3171,11 +3071,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setAdminGroups(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureAdminGroupsIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureAdminGroupsIsMutable();
         adminGroups_.set(index, value);
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -3186,11 +3085,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addAdminGroups(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureAdminGroupsIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureAdminGroupsIsMutable();
         adminGroups_.add(value);
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -3204,6 +3102,7 @@ public final class KogitoWorkItemsProtobuf {
         ensureAdminGroupsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, adminGroups_);
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -3212,8 +3111,9 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearAdminGroups() {
-        adminGroups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000100);
+        adminGroups_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000100);;
         onChanged();
         return this;
       }
@@ -3224,12 +3124,11 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addAdminGroupsBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureAdminGroupsIsMutable();
         adminGroups_.add(value);
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -3282,11 +3181,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setTaskReferenceName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000200;
+        if (value == null) { throw new NullPointerException(); }
         taskReferenceName_ = value;
+        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -3295,8 +3192,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTaskReferenceName() {
-        bitField0_ = (bitField0_ & ~0x00000200);
         taskReferenceName_ = getDefaultInstance().getTaskReferenceName();
+        bitField0_ = (bitField0_ & ~0x00000200);
         onChanged();
         return this;
       }
@@ -3307,12 +3204,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setTaskReferenceNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000200;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         taskReferenceName_ = value;
+        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -3800,7 +3695,7 @@ public final class KogitoWorkItemsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> startDeadlines_;
       private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
-      internalGetStartDeadlines() {
+          internalGetStartDeadlines() {
         if (startDeadlines_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               StartDeadlinesDefaultEntryHolder.defaultEntry);
@@ -3808,8 +3703,7 @@ public final class KogitoWorkItemsProtobuf {
         return startDeadlines_;
       }
       private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
-      internalGetMutableStartDeadlines() {
-        onChanged();;
+          internalGetMutableStartDeadlines() {
         if (startDeadlines_ == null) {
           startDeadlines_ = com.google.protobuf.MapField.newMapField(
               StartDeadlinesDefaultEntryHolder.defaultEntry);
@@ -3817,16 +3711,16 @@ public final class KogitoWorkItemsProtobuf {
         if (!startDeadlines_.isMutable()) {
           startDeadlines_ = startDeadlines_.copy();
         }
+        bitField0_ |= 0x00001000;
+        onChanged();
         return startDeadlines_;
       }
-
       public int getStartDeadlinesCount() {
         return internalGetStartDeadlines().getMap().size();
       }
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
        */
-
       @java.lang.Override
       public boolean containsStartDeadlines(
           java.lang.String key) {
@@ -3845,7 +3739,6 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> getStartDeadlinesMap() {
         return internalGetStartDeadlines().getMap();
       }
@@ -3853,10 +3746,11 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
        */
       @java.lang.Override
-
-      public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrDefault(
+      public /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrDefault(
           java.lang.String key,
-          org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue) {
+          /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> map =
             internalGetStartDeadlines().getMap();
@@ -3866,7 +3760,6 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
        */
       @java.lang.Override
-
       public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -3877,8 +3770,8 @@ public final class KogitoWorkItemsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearStartDeadlines() {
+        bitField0_ = (bitField0_ & ~0x00001000);
         internalGetMutableStartDeadlines().getMutableMap()
             .clear();
         return this;
@@ -3886,7 +3779,6 @@ public final class KogitoWorkItemsProtobuf {
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
        */
-
       public Builder removeStartDeadlines(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -3899,7 +3791,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
-      getMutableStartDeadlines() {
+          getMutableStartDeadlines() {
+        bitField0_ |= 0x00001000;
         return internalGetMutableStartDeadlines().getMutableMap();
       }
       /**
@@ -3909,29 +3802,27 @@ public final class KogitoWorkItemsProtobuf {
           java.lang.String key,
           org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableStartDeadlines().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
        */
-
       public Builder putAllStartDeadlines(
           java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> values) {
         internalGetMutableStartDeadlines().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00001000;
         return this;
       }
 
       private com.google.protobuf.MapField<
           java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> completedDeadlines_;
       private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
-      internalGetCompletedDeadlines() {
+          internalGetCompletedDeadlines() {
         if (completedDeadlines_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               CompletedDeadlinesDefaultEntryHolder.defaultEntry);
@@ -3939,8 +3830,7 @@ public final class KogitoWorkItemsProtobuf {
         return completedDeadlines_;
       }
       private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
-      internalGetMutableCompletedDeadlines() {
-        onChanged();;
+          internalGetMutableCompletedDeadlines() {
         if (completedDeadlines_ == null) {
           completedDeadlines_ = com.google.protobuf.MapField.newMapField(
               CompletedDeadlinesDefaultEntryHolder.defaultEntry);
@@ -3948,16 +3838,16 @@ public final class KogitoWorkItemsProtobuf {
         if (!completedDeadlines_.isMutable()) {
           completedDeadlines_ = completedDeadlines_.copy();
         }
+        bitField0_ |= 0x00002000;
+        onChanged();
         return completedDeadlines_;
       }
-
       public int getCompletedDeadlinesCount() {
         return internalGetCompletedDeadlines().getMap().size();
       }
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
        */
-
       @java.lang.Override
       public boolean containsCompletedDeadlines(
           java.lang.String key) {
@@ -3976,7 +3866,6 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> getCompletedDeadlinesMap() {
         return internalGetCompletedDeadlines().getMap();
       }
@@ -3984,10 +3873,11 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
        */
       @java.lang.Override
-
-      public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrDefault(
+      public /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrDefault(
           java.lang.String key,
-          org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue) {
+          /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> map =
             internalGetCompletedDeadlines().getMap();
@@ -3997,7 +3887,6 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
        */
       @java.lang.Override
-
       public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -4008,8 +3897,8 @@ public final class KogitoWorkItemsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearCompletedDeadlines() {
+        bitField0_ = (bitField0_ & ~0x00002000);
         internalGetMutableCompletedDeadlines().getMutableMap()
             .clear();
         return this;
@@ -4017,7 +3906,6 @@ public final class KogitoWorkItemsProtobuf {
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
        */
-
       public Builder removeCompletedDeadlines(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -4030,7 +3918,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
-      getMutableCompletedDeadlines() {
+          getMutableCompletedDeadlines() {
+        bitField0_ |= 0x00002000;
         return internalGetMutableCompletedDeadlines().getMutableMap();
       }
       /**
@@ -4040,29 +3929,27 @@ public final class KogitoWorkItemsProtobuf {
           java.lang.String key,
           org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableCompletedDeadlines().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
        */
-
       public Builder putAllCompletedDeadlines(
           java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline> values) {
         internalGetMutableCompletedDeadlines().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00002000;
         return this;
       }
 
       private com.google.protobuf.MapField<
           java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> startReassigments_;
       private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
-      internalGetStartReassigments() {
+          internalGetStartReassigments() {
         if (startReassigments_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               StartReassigmentsDefaultEntryHolder.defaultEntry);
@@ -4070,8 +3957,7 @@ public final class KogitoWorkItemsProtobuf {
         return startReassigments_;
       }
       private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
-      internalGetMutableStartReassigments() {
-        onChanged();;
+          internalGetMutableStartReassigments() {
         if (startReassigments_ == null) {
           startReassigments_ = com.google.protobuf.MapField.newMapField(
               StartReassigmentsDefaultEntryHolder.defaultEntry);
@@ -4079,16 +3965,16 @@ public final class KogitoWorkItemsProtobuf {
         if (!startReassigments_.isMutable()) {
           startReassigments_ = startReassigments_.copy();
         }
+        bitField0_ |= 0x00004000;
+        onChanged();
         return startReassigments_;
       }
-
       public int getStartReassigmentsCount() {
         return internalGetStartReassigments().getMap().size();
       }
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
        */
-
       @java.lang.Override
       public boolean containsStartReassigments(
           java.lang.String key) {
@@ -4107,7 +3993,6 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> getStartReassigmentsMap() {
         return internalGetStartReassigments().getMap();
       }
@@ -4115,10 +4000,11 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
        */
       @java.lang.Override
-
-      public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrDefault(
+      public /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrDefault(
           java.lang.String key,
-          org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue) {
+          /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> map =
             internalGetStartReassigments().getMap();
@@ -4128,7 +4014,6 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
        */
       @java.lang.Override
-
       public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -4139,8 +4024,8 @@ public final class KogitoWorkItemsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearStartReassigments() {
+        bitField0_ = (bitField0_ & ~0x00004000);
         internalGetMutableStartReassigments().getMutableMap()
             .clear();
         return this;
@@ -4148,7 +4033,6 @@ public final class KogitoWorkItemsProtobuf {
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
        */
-
       public Builder removeStartReassigments(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -4161,7 +4045,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
-      getMutableStartReassigments() {
+          getMutableStartReassigments() {
+        bitField0_ |= 0x00004000;
         return internalGetMutableStartReassigments().getMutableMap();
       }
       /**
@@ -4171,29 +4056,27 @@ public final class KogitoWorkItemsProtobuf {
           java.lang.String key,
           org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableStartReassigments().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00004000;
         return this;
       }
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
        */
-
       public Builder putAllStartReassigments(
           java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> values) {
         internalGetMutableStartReassigments().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00004000;
         return this;
       }
 
       private com.google.protobuf.MapField<
           java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> completedReassigments_;
       private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
-      internalGetCompletedReassigments() {
+          internalGetCompletedReassigments() {
         if (completedReassigments_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               CompletedReassigmentsDefaultEntryHolder.defaultEntry);
@@ -4201,8 +4084,7 @@ public final class KogitoWorkItemsProtobuf {
         return completedReassigments_;
       }
       private com.google.protobuf.MapField<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
-      internalGetMutableCompletedReassigments() {
-        onChanged();;
+          internalGetMutableCompletedReassigments() {
         if (completedReassigments_ == null) {
           completedReassigments_ = com.google.protobuf.MapField.newMapField(
               CompletedReassigmentsDefaultEntryHolder.defaultEntry);
@@ -4210,16 +4092,16 @@ public final class KogitoWorkItemsProtobuf {
         if (!completedReassigments_.isMutable()) {
           completedReassigments_ = completedReassigments_.copy();
         }
+        bitField0_ |= 0x00008000;
+        onChanged();
         return completedReassigments_;
       }
-
       public int getCompletedReassigmentsCount() {
         return internalGetCompletedReassigments().getMap().size();
       }
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
        */
-
       @java.lang.Override
       public boolean containsCompletedReassigments(
           java.lang.String key) {
@@ -4238,7 +4120,6 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> getCompletedReassigmentsMap() {
         return internalGetCompletedReassigments().getMap();
       }
@@ -4246,10 +4127,11 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
        */
       @java.lang.Override
-
-      public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrDefault(
+      public /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrDefault(
           java.lang.String key,
-          org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue) {
+          /* nullable */
+org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> map =
             internalGetCompletedReassigments().getMap();
@@ -4259,7 +4141,6 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
        */
       @java.lang.Override
-
       public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -4270,8 +4151,8 @@ public final class KogitoWorkItemsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearCompletedReassigments() {
+        bitField0_ = (bitField0_ & ~0x00008000);
         internalGetMutableCompletedReassigments().getMutableMap()
             .clear();
         return this;
@@ -4279,7 +4160,6 @@ public final class KogitoWorkItemsProtobuf {
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
        */
-
       public Builder removeCompletedReassigments(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -4292,7 +4172,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
-      getMutableCompletedReassigments() {
+          getMutableCompletedReassigments() {
+        bitField0_ |= 0x00008000;
         return internalGetMutableCompletedReassigments().getMutableMap();
       }
       /**
@@ -4302,22 +4183,20 @@ public final class KogitoWorkItemsProtobuf {
           java.lang.String key,
           org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableCompletedReassigments().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00008000;
         return this;
       }
       /**
        * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
        */
-
       public Builder putAllCompletedReassigments(
           java.util.Map<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment> values) {
         internalGetMutableCompletedReassigments().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00008000;
         return this;
       }
       @java.lang.Override
@@ -4353,7 +4232,18 @@ public final class KogitoWorkItemsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new HumanTaskWorkItemData(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -4459,72 +4349,6 @@ public final class KogitoWorkItemsProtobuf {
       return new Comment();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Comment(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              id_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              content_ = s;
-              break;
-            }
-            case 24: {
-              bitField0_ |= 0x00000002;
-              updatedAt_ = input.readInt64();
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000004;
-              updatedBy_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_Comment_descriptor;
@@ -4540,7 +4364,8 @@ public final class KogitoWorkItemsProtobuf {
 
     private int bitField0_;
     public static final int ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object id_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object id_ = "";
     /**
      * <code>string id = 1;</code>
      * @return The id.
@@ -4578,7 +4403,8 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int CONTENT_FIELD_NUMBER = 2;
-    private volatile java.lang.Object content_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object content_ = "";
     /**
      * <code>optional string content = 2;</code>
      * @return Whether the content field is set.
@@ -4624,7 +4450,7 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int UPDATEDAT_FIELD_NUMBER = 3;
-    private long updatedAt_;
+    private long updatedAt_ = 0L;
     /**
      * <code>optional int64 updatedAt = 3;</code>
      * @return Whether the updatedAt field is set.
@@ -4643,7 +4469,8 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int UPDATEDBY_FIELD_NUMBER = 4;
-    private volatile java.lang.Object updatedBy_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object updatedBy_ = "";
     /**
      * <code>optional string updatedBy = 4;</code>
      * @return Whether the updatedBy field is set.
@@ -4714,7 +4541,7 @@ public final class KogitoWorkItemsProtobuf {
       if (((bitField0_ & 0x00000004) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, updatedBy_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -4736,7 +4563,7 @@ public final class KogitoWorkItemsProtobuf {
       if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, updatedBy_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -4768,7 +4595,7 @@ public final class KogitoWorkItemsProtobuf {
         if (!getUpdatedBy()
             .equals(other.getUpdatedBy())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -4794,7 +4621,7 @@ public final class KogitoWorkItemsProtobuf {
         hash = (37 * hash) + UPDATEDBY_FIELD_NUMBER;
         hash = (53 * hash) + getUpdatedBy().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -4911,30 +4738,22 @@ public final class KogitoWorkItemsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         id_ = "";
-
         content_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         updatedAt_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         updatedBy_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -4961,58 +4780,32 @@ public final class KogitoWorkItemsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment result = new org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        result.id_ = id_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.content_ = content_;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.updatedAt_ = updatedAt_;
-          to_bitField0_ |= 0x00000002;
-        }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.updatedBy_ = updatedBy_;
-        result.bitField0_ = to_bitField0_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.id_ = id_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.content_ = content_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.updatedAt_ = updatedAt_;
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.updatedBy_ = updatedBy_;
+          to_bitField0_ |= 0x00000004;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment) {
@@ -5027,22 +4820,23 @@ public final class KogitoWorkItemsProtobuf {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment.getDefaultInstance()) return this;
         if (!other.getId().isEmpty()) {
           id_ = other.id_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasContent()) {
-          bitField0_ |= 0x00000001;
           content_ = other.content_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.hasUpdatedAt()) {
           setUpdatedAt(other.getUpdatedAt());
         }
         if (other.hasUpdatedBy()) {
-          bitField0_ |= 0x00000004;
           updatedBy_ = other.updatedBy_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -5057,17 +4851,50 @@ public final class KogitoWorkItemsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                id_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                content_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 24: {
+                updatedAt_ = input.readInt64();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              case 34: {
+                updatedBy_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -5113,11 +4940,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5126,8 +4951,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearId() {
-        
         id_ = getDefaultInstance().getId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -5138,12 +4963,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5154,7 +4977,7 @@ public final class KogitoWorkItemsProtobuf {
        * @return Whether the content field is set.
        */
       public boolean hasContent() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>optional string content = 2;</code>
@@ -5196,11 +5019,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setContent(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         content_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5209,8 +5030,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearContent() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         content_ = getDefaultInstance().getContent();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -5221,12 +5042,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setContentBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         content_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5238,7 +5057,7 @@ public final class KogitoWorkItemsProtobuf {
        */
       @java.lang.Override
       public boolean hasUpdatedAt() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <code>optional int64 updatedAt = 3;</code>
@@ -5254,8 +5073,9 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder setUpdatedAt(long value) {
-        bitField0_ |= 0x00000002;
+
         updatedAt_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -5264,7 +5084,7 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearUpdatedAt() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         updatedAt_ = 0L;
         onChanged();
         return this;
@@ -5276,7 +5096,7 @@ public final class KogitoWorkItemsProtobuf {
        * @return Whether the updatedBy field is set.
        */
       public boolean hasUpdatedBy() {
-        return ((bitField0_ & 0x00000004) != 0);
+        return ((bitField0_ & 0x00000008) != 0);
       }
       /**
        * <code>optional string updatedBy = 4;</code>
@@ -5318,11 +5138,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setUpdatedBy(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
         updatedBy_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -5331,8 +5149,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearUpdatedBy() {
-        bitField0_ = (bitField0_ & ~0x00000004);
         updatedBy_ = getDefaultInstance().getUpdatedBy();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -5343,12 +5161,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setUpdatedByBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         updatedBy_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -5385,7 +5201,18 @@ public final class KogitoWorkItemsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Comment(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -5509,78 +5336,6 @@ public final class KogitoWorkItemsProtobuf {
       return new Attachment();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Attachment(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              id_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              content_ = s;
-              break;
-            }
-            case 24: {
-              bitField0_ |= 0x00000002;
-              updatedAt_ = input.readInt64();
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000004;
-              updatedBy_ = s;
-              break;
-            }
-            case 42: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000008;
-              name_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_Attachment_descriptor;
@@ -5596,7 +5351,8 @@ public final class KogitoWorkItemsProtobuf {
 
     private int bitField0_;
     public static final int ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object id_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object id_ = "";
     /**
      * <code>string id = 1;</code>
      * @return The id.
@@ -5634,7 +5390,8 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int CONTENT_FIELD_NUMBER = 2;
-    private volatile java.lang.Object content_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object content_ = "";
     /**
      * <code>optional string content = 2;</code>
      * @return Whether the content field is set.
@@ -5680,7 +5437,7 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int UPDATEDAT_FIELD_NUMBER = 3;
-    private long updatedAt_;
+    private long updatedAt_ = 0L;
     /**
      * <code>optional int64 updatedAt = 3;</code>
      * @return Whether the updatedAt field is set.
@@ -5699,7 +5456,8 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int UPDATEDBY_FIELD_NUMBER = 4;
-    private volatile java.lang.Object updatedBy_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object updatedBy_ = "";
     /**
      * <code>optional string updatedBy = 4;</code>
      * @return Whether the updatedBy field is set.
@@ -5745,7 +5503,8 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int NAME_FIELD_NUMBER = 5;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <code>optional string name = 5;</code>
      * @return Whether the name field is set.
@@ -5819,7 +5578,7 @@ public final class KogitoWorkItemsProtobuf {
       if (((bitField0_ & 0x00000008) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, name_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -5844,7 +5603,7 @@ public final class KogitoWorkItemsProtobuf {
       if (((bitField0_ & 0x00000008) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, name_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -5881,7 +5640,7 @@ public final class KogitoWorkItemsProtobuf {
         if (!getName()
             .equals(other.getName())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -5911,7 +5670,7 @@ public final class KogitoWorkItemsProtobuf {
         hash = (37 * hash) + NAME_FIELD_NUMBER;
         hash = (53 * hash) + getName().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -6028,32 +5787,23 @@ public final class KogitoWorkItemsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         id_ = "";
-
         content_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         updatedAt_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         updatedBy_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
         name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -6080,62 +5830,36 @@ public final class KogitoWorkItemsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment result = new org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        result.id_ = id_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.content_ = content_;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.updatedAt_ = updatedAt_;
-          to_bitField0_ |= 0x00000002;
-        }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.updatedBy_ = updatedBy_;
-        if (((from_bitField0_ & 0x00000008) != 0)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.name_ = name_;
-        result.bitField0_ = to_bitField0_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.id_ = id_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.content_ = content_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.updatedAt_ = updatedAt_;
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.updatedBy_ = updatedBy_;
+          to_bitField0_ |= 0x00000004;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.name_ = name_;
+          to_bitField0_ |= 0x00000008;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment) {
@@ -6150,27 +5874,28 @@ public final class KogitoWorkItemsProtobuf {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment.getDefaultInstance()) return this;
         if (!other.getId().isEmpty()) {
           id_ = other.id_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasContent()) {
-          bitField0_ |= 0x00000001;
           content_ = other.content_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.hasUpdatedAt()) {
           setUpdatedAt(other.getUpdatedAt());
         }
         if (other.hasUpdatedBy()) {
-          bitField0_ |= 0x00000004;
           updatedBy_ = other.updatedBy_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         if (other.hasName()) {
-          bitField0_ |= 0x00000008;
           name_ = other.name_;
+          bitField0_ |= 0x00000010;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -6185,17 +5910,55 @@ public final class KogitoWorkItemsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                id_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                content_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 24: {
+                updatedAt_ = input.readInt64();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              case 34: {
+                updatedBy_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              case 42: {
+                name_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -6241,11 +6004,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -6254,8 +6015,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearId() {
-        
         id_ = getDefaultInstance().getId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -6266,12 +6027,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -6282,7 +6041,7 @@ public final class KogitoWorkItemsProtobuf {
        * @return Whether the content field is set.
        */
       public boolean hasContent() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>optional string content = 2;</code>
@@ -6324,11 +6083,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setContent(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         content_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6337,8 +6094,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearContent() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         content_ = getDefaultInstance().getContent();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -6349,12 +6106,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setContentBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         content_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6366,7 +6121,7 @@ public final class KogitoWorkItemsProtobuf {
        */
       @java.lang.Override
       public boolean hasUpdatedAt() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <code>optional int64 updatedAt = 3;</code>
@@ -6382,8 +6137,9 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder setUpdatedAt(long value) {
-        bitField0_ |= 0x00000002;
+
         updatedAt_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -6392,7 +6148,7 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearUpdatedAt() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         updatedAt_ = 0L;
         onChanged();
         return this;
@@ -6404,7 +6160,7 @@ public final class KogitoWorkItemsProtobuf {
        * @return Whether the updatedBy field is set.
        */
       public boolean hasUpdatedBy() {
-        return ((bitField0_ & 0x00000004) != 0);
+        return ((bitField0_ & 0x00000008) != 0);
       }
       /**
        * <code>optional string updatedBy = 4;</code>
@@ -6446,11 +6202,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setUpdatedBy(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
         updatedBy_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -6459,8 +6213,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearUpdatedBy() {
-        bitField0_ = (bitField0_ & ~0x00000004);
         updatedBy_ = getDefaultInstance().getUpdatedBy();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -6471,12 +6225,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setUpdatedByBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         updatedBy_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -6487,7 +6239,7 @@ public final class KogitoWorkItemsProtobuf {
        * @return Whether the name field is set.
        */
       public boolean hasName() {
-        return ((bitField0_ & 0x00000008) != 0);
+        return ((bitField0_ & 0x00000010) != 0);
       }
       /**
        * <code>optional string name = 5;</code>
@@ -6529,11 +6281,9 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -6542,8 +6292,8 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000008);
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
         return this;
       }
@@ -6554,12 +6304,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000008;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         name_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -6596,7 +6344,18 @@ public final class KogitoWorkItemsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Attachment(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -6643,14 +6402,14 @@ public final class KogitoWorkItemsProtobuf {
     /**
      * <code>map&lt;string, string&gt; content = 1;</code>
      */
-
-    java.lang.String getContentOrDefault(
+    /* nullable */
+java.lang.String getContentOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; content = 1;</code>
      */
-
     java.lang.String getContentOrThrow(
         java.lang.String key);
   }
@@ -6676,62 +6435,6 @@ public final class KogitoWorkItemsProtobuf {
       return new Deadline();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Deadline(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                content_ = com.google.protobuf.MapField.newMapField(
-                    ContentDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000001;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              content__ = input.readMessage(
-                  ContentDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              content_.getMutableMap().put(
-                  content__.getKey(), content__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_Deadline_descriptor;
@@ -6769,6 +6472,7 @@ public final class KogitoWorkItemsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> content_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -6779,14 +6483,12 @@ public final class KogitoWorkItemsProtobuf {
       }
       return content_;
     }
-
     public int getContentCount() {
       return internalGetContent().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; content = 1;</code>
      */
-
     @java.lang.Override
     public boolean containsContent(
         java.lang.String key) {
@@ -6805,7 +6507,6 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, string&gt; content = 1;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getContentMap() {
       return internalGetContent().getMap();
     }
@@ -6813,10 +6514,11 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, string&gt; content = 1;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getContentOrDefault(
+    public /* nullable */
+java.lang.String getContentOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetContent().getMap();
@@ -6826,7 +6528,6 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, string&gt; content = 1;</code>
      */
     @java.lang.Override
-
     public java.lang.String getContentOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -6858,7 +6559,7 @@ public final class KogitoWorkItemsProtobuf {
           internalGetContent(),
           ContentDefaultEntryHolder.defaultEntry,
           1);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -6877,7 +6578,7 @@ public final class KogitoWorkItemsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(1, content__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -6894,7 +6595,7 @@ public final class KogitoWorkItemsProtobuf {
 
       if (!internalGetContent().equals(
           other.internalGetContent())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -6909,7 +6610,7 @@ public final class KogitoWorkItemsProtobuf {
         hash = (37 * hash) + CONTENT_FIELD_NUMBER;
         hash = (53 * hash) + internalGetContent().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -7048,22 +6749,18 @@ public final class KogitoWorkItemsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         internalGetMutableContent().clear();
         return this;
       }
@@ -7091,45 +6788,19 @@ public final class KogitoWorkItemsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline result = new org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline(this);
-        int from_bitField0_ = bitField0_;
-        result.content_ = internalGetContent();
-        result.content_.makeImmutable();
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.content_ = internalGetContent();
+          result.content_.makeImmutable();
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline) {
@@ -7144,7 +6815,8 @@ public final class KogitoWorkItemsProtobuf {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline.getDefaultInstance()) return this;
         internalGetMutableContent().mergeFrom(
             other.internalGetContent());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000001;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -7159,17 +6831,39 @@ public final class KogitoWorkItemsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                content__ = input.readMessage(
+                    ContentDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableContent().getMutableMap().put(
+                    content__.getKey(), content__.getValue());
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -7177,7 +6871,7 @@ public final class KogitoWorkItemsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> content_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetContent() {
+          internalGetContent() {
         if (content_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               ContentDefaultEntryHolder.defaultEntry);
@@ -7185,8 +6879,7 @@ public final class KogitoWorkItemsProtobuf {
         return content_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableContent() {
-        onChanged();;
+          internalGetMutableContent() {
         if (content_ == null) {
           content_ = com.google.protobuf.MapField.newMapField(
               ContentDefaultEntryHolder.defaultEntry);
@@ -7194,16 +6887,16 @@ public final class KogitoWorkItemsProtobuf {
         if (!content_.isMutable()) {
           content_ = content_.copy();
         }
+        bitField0_ |= 0x00000001;
+        onChanged();
         return content_;
       }
-
       public int getContentCount() {
         return internalGetContent().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; content = 1;</code>
        */
-
       @java.lang.Override
       public boolean containsContent(
           java.lang.String key) {
@@ -7222,7 +6915,6 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, string&gt; content = 1;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getContentMap() {
         return internalGetContent().getMap();
       }
@@ -7230,10 +6922,11 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, string&gt; content = 1;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getContentOrDefault(
+      public /* nullable */
+java.lang.String getContentOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetContent().getMap();
@@ -7243,7 +6936,6 @@ public final class KogitoWorkItemsProtobuf {
        * <code>map&lt;string, string&gt; content = 1;</code>
        */
       @java.lang.Override
-
       public java.lang.String getContentOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -7254,8 +6946,8 @@ public final class KogitoWorkItemsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearContent() {
+        bitField0_ = (bitField0_ & ~0x00000001);
         internalGetMutableContent().getMutableMap()
             .clear();
         return this;
@@ -7263,7 +6955,6 @@ public final class KogitoWorkItemsProtobuf {
       /**
        * <code>map&lt;string, string&gt; content = 1;</code>
        */
-
       public Builder removeContent(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -7276,7 +6967,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableContent() {
+          getMutableContent() {
+        bitField0_ |= 0x00000001;
         return internalGetMutableContent().getMutableMap();
       }
       /**
@@ -7286,22 +6978,20 @@ public final class KogitoWorkItemsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableContent().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000001;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; content = 1;</code>
        */
-
       public Builder putAllContent(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableContent().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000001;
         return this;
       }
       @java.lang.Override
@@ -7337,7 +7027,18 @@ public final class KogitoWorkItemsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Deadline(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -7424,8 +7125,10 @@ public final class KogitoWorkItemsProtobuf {
       super(builder);
     }
     private Reassignment() {
-      users_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      groups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      users_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+      groups_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -7435,73 +7138,6 @@ public final class KogitoWorkItemsProtobuf {
       return new Reassignment();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Reassignment(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                users_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              users_.add(s);
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                groups_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000002;
-              }
-              groups_.add(s);
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          users_ = users_.getUnmodifiableView();
-        }
-        if (((mutable_bitField0_ & 0x00000002) != 0)) {
-          groups_ = groups_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_Reassignment_descriptor;
@@ -7516,7 +7152,9 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int USERS_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList users_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList users_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string users = 1;</code>
      * @return A list containing the users.
@@ -7551,7 +7189,9 @@ public final class KogitoWorkItemsProtobuf {
     }
 
     public static final int GROUPS_FIELD_NUMBER = 2;
-    private com.google.protobuf.LazyStringList groups_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList groups_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string groups = 2;</code>
      * @return A list containing the groups.
@@ -7605,7 +7245,7 @@ public final class KogitoWorkItemsProtobuf {
       for (int i = 0; i < groups_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, groups_.getRaw(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -7630,7 +7270,7 @@ public final class KogitoWorkItemsProtobuf {
         size += dataSize;
         size += 1 * getGroupsList().size();
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -7649,7 +7289,7 @@ public final class KogitoWorkItemsProtobuf {
           .equals(other.getUsersList())) return false;
       if (!getGroupsList()
           .equals(other.getGroupsList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -7668,7 +7308,7 @@ public final class KogitoWorkItemsProtobuf {
         hash = (37 * hash) + GROUPS_FIELD_NUMBER;
         hash = (53 * hash) + getGroupsList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -7785,26 +7425,22 @@ public final class KogitoWorkItemsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        users_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        groups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = 0;
+        users_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
+        groups_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         return this;
       }
 
@@ -7831,53 +7467,23 @@ public final class KogitoWorkItemsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment result = new org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          users_ = users_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.users_ = users_;
-        if (((bitField0_ & 0x00000002) != 0)) {
-          groups_ = groups_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000002);
-        }
-        result.groups_ = groups_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          users_.makeImmutable();
+          result.users_ = users_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          groups_.makeImmutable();
+          result.groups_ = groups_;
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment) {
@@ -7893,7 +7499,7 @@ public final class KogitoWorkItemsProtobuf {
         if (!other.users_.isEmpty()) {
           if (users_.isEmpty()) {
             users_ = other.users_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureUsersIsMutable();
             users_.addAll(other.users_);
@@ -7903,14 +7509,14 @@ public final class KogitoWorkItemsProtobuf {
         if (!other.groups_.isEmpty()) {
           if (groups_.isEmpty()) {
             groups_ = other.groups_;
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ |= 0x00000002;
           } else {
             ensureGroupsIsMutable();
             groups_.addAll(other.groups_);
           }
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -7925,27 +7531,53 @@ public final class KogitoWorkItemsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureUsersIsMutable();
+                users_.add(s);
+                break;
+              } // case 10
+              case 18: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureGroupsIsMutable();
+                groups_.add(s);
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList users_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList users_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureUsersIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!users_.isModifiable()) {
           users_ = new com.google.protobuf.LazyStringArrayList(users_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <code>repeated string users = 1;</code>
@@ -7953,7 +7585,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getUsersList() {
-        return users_.getUnmodifiableView();
+        users_.makeImmutable();
+        return users_;
       }
       /**
        * <code>repeated string users = 1;</code>
@@ -7987,11 +7620,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setUsers(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureUsersIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureUsersIsMutable();
         users_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -8002,11 +7634,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addUsers(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureUsersIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureUsersIsMutable();
         users_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -8020,6 +7651,7 @@ public final class KogitoWorkItemsProtobuf {
         ensureUsersIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, users_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -8028,8 +7660,9 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearUsers() {
-        users_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        users_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -8040,22 +7673,22 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addUsersBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureUsersIsMutable();
         users_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList groups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList groups_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureGroupsIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!groups_.isModifiable()) {
           groups_ = new com.google.protobuf.LazyStringArrayList(groups_);
-          bitField0_ |= 0x00000002;
-         }
+        }
+        bitField0_ |= 0x00000002;
       }
       /**
        * <code>repeated string groups = 2;</code>
@@ -8063,7 +7696,8 @@ public final class KogitoWorkItemsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getGroupsList() {
-        return groups_.getUnmodifiableView();
+        groups_.makeImmutable();
+        return groups_;
       }
       /**
        * <code>repeated string groups = 2;</code>
@@ -8097,11 +7731,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder setGroups(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureGroupsIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureGroupsIsMutable();
         groups_.set(index, value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -8112,11 +7745,10 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addGroups(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureGroupsIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureGroupsIsMutable();
         groups_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -8130,6 +7762,7 @@ public final class KogitoWorkItemsProtobuf {
         ensureGroupsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, groups_);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -8138,8 +7771,9 @@ public final class KogitoWorkItemsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearGroups() {
-        groups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        groups_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000002);;
         onChanged();
         return this;
       }
@@ -8150,12 +7784,11 @@ public final class KogitoWorkItemsProtobuf {
        */
       public Builder addGroupsBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureGroupsIsMutable();
         groups_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -8192,7 +7825,18 @@ public final class KogitoWorkItemsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Reassignment(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 

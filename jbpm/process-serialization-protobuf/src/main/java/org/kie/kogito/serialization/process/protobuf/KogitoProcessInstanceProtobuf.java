@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.kie.kogito.serialization.process.protobuf;
 
 public final class KogitoProcessInstanceProtobuf {
@@ -378,7 +379,8 @@ public final class KogitoProcessInstanceProtobuf {
       errorMessage_ = "";
       referenceId_ = "";
       swimlaneContext_ = java.util.Collections.emptyList();
-      completedNodeIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      completedNodeIds_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       cancelTimerId_ = "";
     }
 
@@ -389,197 +391,6 @@ public final class KogitoProcessInstanceProtobuf {
       return new ProcessInstance();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private ProcessInstance(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              processType_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              processId_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              id_ = s;
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              parentProcessInstanceId_ = s;
-              break;
-            }
-            case 42: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000002;
-              businessKey_ = s;
-              break;
-            }
-            case 50: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000004;
-              deploymentId_ = s;
-              break;
-            }
-            case 58: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000008;
-              description_ = s;
-              break;
-            }
-            case 64: {
-
-              state_ = input.readInt32();
-              break;
-            }
-            case 72: {
-              bitField0_ |= 0x00000010;
-              startDate_ = input.readInt64();
-              break;
-            }
-            case 80: {
-              bitField0_ |= 0x00000020;
-              nodeInstanceCounter_ = input.readInt64();
-              break;
-            }
-            case 88: {
-
-              signalCompletion_ = input.readBool();
-              break;
-            }
-            case 98: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000040;
-              rootProcessInstanceId_ = s;
-              break;
-            }
-            case 106: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000080;
-              rootProcessId_ = s;
-              break;
-            }
-            case 114: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000100;
-              errorNodeId_ = s;
-              break;
-            }
-            case 122: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000200;
-              errorMessage_ = s;
-              break;
-            }
-            case 130: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000400;
-              referenceId_ = s;
-              break;
-            }
-            case 138: {
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000800) != 0)) {
-                subBuilder = sla_.toBuilder();
-              }
-              sla_ = input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(sla_);
-                sla_ = subBuilder.buildPartial();
-              }
-              bitField0_ |= 0x00000800;
-              break;
-            }
-            case 146: {
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder subBuilder = null;
-              if (((bitField0_ & 0x00001000) != 0)) {
-                subBuilder = context_.toBuilder();
-              }
-              context_ = input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(context_);
-                context_ = subBuilder.buildPartial();
-              }
-              bitField0_ |= 0x00001000;
-              break;
-            }
-            case 154: {
-              if (!((mutable_bitField0_ & 0x00002000) != 0)) {
-                swimlaneContext_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext>();
-                mutable_bitField0_ |= 0x00002000;
-              }
-              swimlaneContext_.add(
-                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext.parser(), extensionRegistry));
-              break;
-            }
-            case 162: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00004000) != 0)) {
-                completedNodeIds_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00004000;
-              }
-              completedNodeIds_.add(s);
-              break;
-            }
-            case 170: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00002000;
-              cancelTimerId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00002000) != 0)) {
-          swimlaneContext_ = java.util.Collections.unmodifiableList(swimlaneContext_);
-        }
-        if (((mutable_bitField0_ & 0x00004000) != 0)) {
-          completedNodeIds_ = completedNodeIds_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_ProcessInstance_descriptor;
@@ -595,7 +406,8 @@ public final class KogitoProcessInstanceProtobuf {
 
     private int bitField0_;
     public static final int PROCESS_TYPE_FIELD_NUMBER = 1;
-    private volatile java.lang.Object processType_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object processType_ = "";
     /**
      * <code>string process_type = 1;</code>
      * @return The processType.
@@ -633,7 +445,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int PROCESS_ID_FIELD_NUMBER = 2;
-    private volatile java.lang.Object processId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object processId_ = "";
     /**
      * <code>string process_id = 2;</code>
      * @return The processId.
@@ -671,7 +484,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int ID_FIELD_NUMBER = 3;
-    private volatile java.lang.Object id_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object id_ = "";
     /**
      * <code>string id = 3;</code>
      * @return The id.
@@ -709,7 +523,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int PARENT_PROCESS_INSTANCE_ID_FIELD_NUMBER = 4;
-    private volatile java.lang.Object parentProcessInstanceId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object parentProcessInstanceId_ = "";
     /**
      * <code>optional string parent_process_instance_id = 4;</code>
      * @return Whether the parentProcessInstanceId field is set.
@@ -755,7 +570,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int BUSINESS_KEY_FIELD_NUMBER = 5;
-    private volatile java.lang.Object businessKey_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object businessKey_ = "";
     /**
      * <code>optional string business_key = 5;</code>
      * @return Whether the businessKey field is set.
@@ -801,7 +617,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int DEPLOYMENTID_FIELD_NUMBER = 6;
-    private volatile java.lang.Object deploymentId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object deploymentId_ = "";
     /**
      * <code>optional string deploymentId = 6;</code>
      * @return Whether the deploymentId field is set.
@@ -847,7 +664,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int DESCRIPTION_FIELD_NUMBER = 7;
-    private volatile java.lang.Object description_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object description_ = "";
     /**
      * <code>optional string description = 7;</code>
      * @return Whether the description field is set.
@@ -893,7 +711,7 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int STATE_FIELD_NUMBER = 8;
-    private int state_;
+    private int state_ = 0;
     /**
      * <code>int32 state = 8;</code>
      * @return The state.
@@ -904,7 +722,7 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int START_DATE_FIELD_NUMBER = 9;
-    private long startDate_;
+    private long startDate_ = 0L;
     /**
      * <code>optional int64 start_date = 9;</code>
      * @return Whether the startDate field is set.
@@ -923,7 +741,7 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int NODE_INSTANCE_COUNTER_FIELD_NUMBER = 10;
-    private long nodeInstanceCounter_;
+    private long nodeInstanceCounter_ = 0L;
     /**
      * <code>optional int64 node_instance_counter = 10;</code>
      * @return Whether the nodeInstanceCounter field is set.
@@ -942,7 +760,7 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int SIGNAL_COMPLETION_FIELD_NUMBER = 11;
-    private boolean signalCompletion_;
+    private boolean signalCompletion_ = false;
     /**
      * <code>bool signal_completion = 11;</code>
      * @return The signalCompletion.
@@ -953,7 +771,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int ROOT_PROCESS_INSTANCE_ID_FIELD_NUMBER = 12;
-    private volatile java.lang.Object rootProcessInstanceId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object rootProcessInstanceId_ = "";
     /**
      * <code>optional string root_process_instance_id = 12;</code>
      * @return Whether the rootProcessInstanceId field is set.
@@ -999,7 +818,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int ROOT_PROCESS_ID_FIELD_NUMBER = 13;
-    private volatile java.lang.Object rootProcessId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object rootProcessId_ = "";
     /**
      * <code>optional string root_process_id = 13;</code>
      * @return Whether the rootProcessId field is set.
@@ -1045,7 +865,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int ERROR_NODE_ID_FIELD_NUMBER = 14;
-    private volatile java.lang.Object errorNodeId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object errorNodeId_ = "";
     /**
      * <code>optional string error_node_id = 14;</code>
      * @return Whether the errorNodeId field is set.
@@ -1091,7 +912,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int ERROR_MESSAGE_FIELD_NUMBER = 15;
-    private volatile java.lang.Object errorMessage_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object errorMessage_ = "";
     /**
      * <code>optional string error_message = 15;</code>
      * @return Whether the errorMessage field is set.
@@ -1137,7 +959,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int REFERENCE_ID_FIELD_NUMBER = 16;
-    private volatile java.lang.Object referenceId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object referenceId_ = "";
     /**
      * <code>optional string reference_id = 16;</code>
      * @return Whether the referenceId field is set.
@@ -1235,6 +1058,7 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int SWIMLANE_CONTEXT_FIELD_NUMBER = 19;
+    @SuppressWarnings("serial")
     private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext> swimlaneContext_;
     /**
      * <code>repeated .org.kie.kogito.serialization.process.protobuf.SwimlaneContext swimlane_context = 19;</code>
@@ -1275,7 +1099,9 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int COMPLETEDNODEIDS_FIELD_NUMBER = 20;
-    private com.google.protobuf.LazyStringList completedNodeIds_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList completedNodeIds_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string completedNodeIds = 20;</code>
      * @return A list containing the completedNodeIds.
@@ -1310,7 +1136,8 @@ public final class KogitoProcessInstanceProtobuf {
     }
 
     public static final int CANCEL_TIMER_ID_FIELD_NUMBER = 21;
-    private volatile java.lang.Object cancelTimerId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object cancelTimerId_ = "";
     /**
      * <code>optional string cancel_timer_id = 21;</code>
      * @return Whether the cancelTimerId field is set.
@@ -1432,7 +1259,7 @@ public final class KogitoProcessInstanceProtobuf {
       if (((bitField0_ & 0x00002000) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 21, cancelTimerId_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -1516,7 +1343,7 @@ public final class KogitoProcessInstanceProtobuf {
       if (((bitField0_ & 0x00002000) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(21, cancelTimerId_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -1615,7 +1442,7 @@ public final class KogitoProcessInstanceProtobuf {
         if (!getCancelTimerId()
             .equals(other.getCancelTimerId())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -1703,7 +1530,7 @@ public final class KogitoProcessInstanceProtobuf {
         hash = (37 * hash) + CANCEL_TIMER_ID_FIELD_NUMBER;
         hash = (53 * hash) + getCancelTimerId().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -1839,60 +1666,43 @@ public final class KogitoProcessInstanceProtobuf {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         processType_ = "";
-
         processId_ = "";
-
         id_ = "";
-
         parentProcessInstanceId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         businessKey_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         deploymentId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
         description_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
         state_ = 0;
-
         startDate_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000010);
         nodeInstanceCounter_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000020);
         signalCompletion_ = false;
-
         rootProcessInstanceId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000040);
         rootProcessId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000080);
         errorNodeId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000100);
         errorMessage_ = "";
-        bitField0_ = (bitField0_ & ~0x00000200);
         referenceId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000400);
-        if (slaBuilder_ == null) {
-          sla_ = null;
-        } else {
-          slaBuilder_.clear();
+        sla_ = null;
+        if (slaBuilder_ != null) {
+          slaBuilder_.dispose();
+          slaBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000800);
-        if (contextBuilder_ == null) {
-          context_ = null;
-        } else {
-          contextBuilder_.clear();
+        context_ = null;
+        if (contextBuilder_ != null) {
+          contextBuilder_.dispose();
+          contextBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00001000);
         if (swimlaneContextBuilder_ == null) {
           swimlaneContext_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00002000);
         } else {
+          swimlaneContext_ = null;
           swimlaneContextBuilder_.clear();
         }
-        completedNodeIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00040000);
+        completedNodeIds_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         cancelTimerId_ = "";
-        bitField0_ = (bitField0_ & ~0x00008000);
         return this;
       }
 
@@ -1919,128 +1729,109 @@ public final class KogitoProcessInstanceProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf.ProcessInstance buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf.ProcessInstance result = new org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf.ProcessInstance(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        result.processType_ = processType_;
-        result.processId_ = processId_;
-        result.id_ = id_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.parentProcessInstanceId_ = parentProcessInstanceId_;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.businessKey_ = businessKey_;
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.deploymentId_ = deploymentId_;
-        if (((from_bitField0_ & 0x00000008) != 0)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.description_ = description_;
-        result.state_ = state_;
-        if (((from_bitField0_ & 0x00000010) != 0)) {
-          result.startDate_ = startDate_;
-          to_bitField0_ |= 0x00000010;
-        }
-        if (((from_bitField0_ & 0x00000020) != 0)) {
-          result.nodeInstanceCounter_ = nodeInstanceCounter_;
-          to_bitField0_ |= 0x00000020;
-        }
-        result.signalCompletion_ = signalCompletion_;
-        if (((from_bitField0_ & 0x00000040) != 0)) {
-          to_bitField0_ |= 0x00000040;
-        }
-        result.rootProcessInstanceId_ = rootProcessInstanceId_;
-        if (((from_bitField0_ & 0x00000080) != 0)) {
-          to_bitField0_ |= 0x00000080;
-        }
-        result.rootProcessId_ = rootProcessId_;
-        if (((from_bitField0_ & 0x00000100) != 0)) {
-          to_bitField0_ |= 0x00000100;
-        }
-        result.errorNodeId_ = errorNodeId_;
-        if (((from_bitField0_ & 0x00000200) != 0)) {
-          to_bitField0_ |= 0x00000200;
-        }
-        result.errorMessage_ = errorMessage_;
-        if (((from_bitField0_ & 0x00000400) != 0)) {
-          to_bitField0_ |= 0x00000400;
-        }
-        result.referenceId_ = referenceId_;
-        if (((from_bitField0_ & 0x00000800) != 0)) {
-          if (slaBuilder_ == null) {
-            result.sla_ = sla_;
-          } else {
-            result.sla_ = slaBuilder_.build();
-          }
-          to_bitField0_ |= 0x00000800;
-        }
-        if (((from_bitField0_ & 0x00001000) != 0)) {
-          if (contextBuilder_ == null) {
-            result.context_ = context_;
-          } else {
-            result.context_ = contextBuilder_.build();
-          }
-          to_bitField0_ |= 0x00001000;
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf.ProcessInstance result) {
         if (swimlaneContextBuilder_ == null) {
-          if (((bitField0_ & 0x00002000) != 0)) {
+          if (((bitField0_ & 0x00040000) != 0)) {
             swimlaneContext_ = java.util.Collections.unmodifiableList(swimlaneContext_);
-            bitField0_ = (bitField0_ & ~0x00002000);
+            bitField0_ = (bitField0_ & ~0x00040000);
           }
           result.swimlaneContext_ = swimlaneContext_;
         } else {
           result.swimlaneContext_ = swimlaneContextBuilder_.build();
         }
-        if (((bitField0_ & 0x00004000) != 0)) {
-          completedNodeIds_ = completedNodeIds_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00004000);
-        }
-        result.completedNodeIds_ = completedNodeIds_;
-        if (((from_bitField0_ & 0x00008000) != 0)) {
-          to_bitField0_ |= 0x00002000;
-        }
-        result.cancelTimerId_ = cancelTimerId_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf.ProcessInstance result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.processType_ = processType_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.processId_ = processId_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.id_ = id_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.parentProcessInstanceId_ = parentProcessInstanceId_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.businessKey_ = businessKey_;
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.deploymentId_ = deploymentId_;
+          to_bitField0_ |= 0x00000004;
+        }
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.description_ = description_;
+          to_bitField0_ |= 0x00000008;
+        }
+        if (((from_bitField0_ & 0x00000080) != 0)) {
+          result.state_ = state_;
+        }
+        if (((from_bitField0_ & 0x00000100) != 0)) {
+          result.startDate_ = startDate_;
+          to_bitField0_ |= 0x00000010;
+        }
+        if (((from_bitField0_ & 0x00000200) != 0)) {
+          result.nodeInstanceCounter_ = nodeInstanceCounter_;
+          to_bitField0_ |= 0x00000020;
+        }
+        if (((from_bitField0_ & 0x00000400) != 0)) {
+          result.signalCompletion_ = signalCompletion_;
+        }
+        if (((from_bitField0_ & 0x00000800) != 0)) {
+          result.rootProcessInstanceId_ = rootProcessInstanceId_;
+          to_bitField0_ |= 0x00000040;
+        }
+        if (((from_bitField0_ & 0x00001000) != 0)) {
+          result.rootProcessId_ = rootProcessId_;
+          to_bitField0_ |= 0x00000080;
+        }
+        if (((from_bitField0_ & 0x00002000) != 0)) {
+          result.errorNodeId_ = errorNodeId_;
+          to_bitField0_ |= 0x00000100;
+        }
+        if (((from_bitField0_ & 0x00004000) != 0)) {
+          result.errorMessage_ = errorMessage_;
+          to_bitField0_ |= 0x00000200;
+        }
+        if (((from_bitField0_ & 0x00008000) != 0)) {
+          result.referenceId_ = referenceId_;
+          to_bitField0_ |= 0x00000400;
+        }
+        if (((from_bitField0_ & 0x00010000) != 0)) {
+          result.sla_ = slaBuilder_ == null
+              ? sla_
+              : slaBuilder_.build();
+          to_bitField0_ |= 0x00000800;
+        }
+        if (((from_bitField0_ & 0x00020000) != 0)) {
+          result.context_ = contextBuilder_ == null
+              ? context_
+              : contextBuilder_.build();
+          to_bitField0_ |= 0x00001000;
+        }
+        if (((from_bitField0_ & 0x00080000) != 0)) {
+          completedNodeIds_.makeImmutable();
+          result.completedNodeIds_ = completedNodeIds_;
+        }
+        if (((from_bitField0_ & 0x00100000) != 0)) {
+          result.cancelTimerId_ = cancelTimerId_;
+          to_bitField0_ |= 0x00002000;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf.ProcessInstance) {
@@ -2055,34 +1846,37 @@ public final class KogitoProcessInstanceProtobuf {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf.ProcessInstance.getDefaultInstance()) return this;
         if (!other.getProcessType().isEmpty()) {
           processType_ = other.processType_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getProcessId().isEmpty()) {
           processId_ = other.processId_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (!other.getId().isEmpty()) {
           id_ = other.id_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (other.hasParentProcessInstanceId()) {
-          bitField0_ |= 0x00000001;
           parentProcessInstanceId_ = other.parentProcessInstanceId_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         if (other.hasBusinessKey()) {
-          bitField0_ |= 0x00000002;
           businessKey_ = other.businessKey_;
+          bitField0_ |= 0x00000010;
           onChanged();
         }
         if (other.hasDeploymentId()) {
-          bitField0_ |= 0x00000004;
           deploymentId_ = other.deploymentId_;
+          bitField0_ |= 0x00000020;
           onChanged();
         }
         if (other.hasDescription()) {
-          bitField0_ |= 0x00000008;
           description_ = other.description_;
+          bitField0_ |= 0x00000040;
           onChanged();
         }
         if (other.getState() != 0) {
@@ -2098,28 +1892,28 @@ public final class KogitoProcessInstanceProtobuf {
           setSignalCompletion(other.getSignalCompletion());
         }
         if (other.hasRootProcessInstanceId()) {
-          bitField0_ |= 0x00000040;
           rootProcessInstanceId_ = other.rootProcessInstanceId_;
+          bitField0_ |= 0x00000800;
           onChanged();
         }
         if (other.hasRootProcessId()) {
-          bitField0_ |= 0x00000080;
           rootProcessId_ = other.rootProcessId_;
+          bitField0_ |= 0x00001000;
           onChanged();
         }
         if (other.hasErrorNodeId()) {
-          bitField0_ |= 0x00000100;
           errorNodeId_ = other.errorNodeId_;
+          bitField0_ |= 0x00002000;
           onChanged();
         }
         if (other.hasErrorMessage()) {
-          bitField0_ |= 0x00000200;
           errorMessage_ = other.errorMessage_;
+          bitField0_ |= 0x00004000;
           onChanged();
         }
         if (other.hasReferenceId()) {
-          bitField0_ |= 0x00000400;
           referenceId_ = other.referenceId_;
+          bitField0_ |= 0x00008000;
           onChanged();
         }
         if (other.hasSla()) {
@@ -2132,7 +1926,7 @@ public final class KogitoProcessInstanceProtobuf {
           if (!other.swimlaneContext_.isEmpty()) {
             if (swimlaneContext_.isEmpty()) {
               swimlaneContext_ = other.swimlaneContext_;
-              bitField0_ = (bitField0_ & ~0x00002000);
+              bitField0_ = (bitField0_ & ~0x00040000);
             } else {
               ensureSwimlaneContextIsMutable();
               swimlaneContext_.addAll(other.swimlaneContext_);
@@ -2145,7 +1939,7 @@ public final class KogitoProcessInstanceProtobuf {
               swimlaneContextBuilder_.dispose();
               swimlaneContextBuilder_ = null;
               swimlaneContext_ = other.swimlaneContext_;
-              bitField0_ = (bitField0_ & ~0x00002000);
+              bitField0_ = (bitField0_ & ~0x00040000);
               swimlaneContextBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getSwimlaneContextFieldBuilder() : null;
@@ -2157,7 +1951,7 @@ public final class KogitoProcessInstanceProtobuf {
         if (!other.completedNodeIds_.isEmpty()) {
           if (completedNodeIds_.isEmpty()) {
             completedNodeIds_ = other.completedNodeIds_;
-            bitField0_ = (bitField0_ & ~0x00004000);
+            bitField0_ |= 0x00080000;
           } else {
             ensureCompletedNodeIdsIsMutable();
             completedNodeIds_.addAll(other.completedNodeIds_);
@@ -2165,11 +1959,11 @@ public final class KogitoProcessInstanceProtobuf {
           onChanged();
         }
         if (other.hasCancelTimerId()) {
-          bitField0_ |= 0x00008000;
           cancelTimerId_ = other.cancelTimerId_;
+          bitField0_ |= 0x00100000;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -2184,17 +1978,148 @@ public final class KogitoProcessInstanceProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf.ProcessInstance parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                processType_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                processId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                id_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 34: {
+                parentProcessInstanceId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              case 42: {
+                businessKey_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
+              case 50: {
+                deploymentId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 50
+              case 58: {
+                description_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000040;
+                break;
+              } // case 58
+              case 64: {
+                state_ = input.readInt32();
+                bitField0_ |= 0x00000080;
+                break;
+              } // case 64
+              case 72: {
+                startDate_ = input.readInt64();
+                bitField0_ |= 0x00000100;
+                break;
+              } // case 72
+              case 80: {
+                nodeInstanceCounter_ = input.readInt64();
+                bitField0_ |= 0x00000200;
+                break;
+              } // case 80
+              case 88: {
+                signalCompletion_ = input.readBool();
+                bitField0_ |= 0x00000400;
+                break;
+              } // case 88
+              case 98: {
+                rootProcessInstanceId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000800;
+                break;
+              } // case 98
+              case 106: {
+                rootProcessId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00001000;
+                break;
+              } // case 106
+              case 114: {
+                errorNodeId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00002000;
+                break;
+              } // case 114
+              case 122: {
+                errorMessage_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00004000;
+                break;
+              } // case 122
+              case 130: {
+                referenceId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00008000;
+                break;
+              } // case 130
+              case 138: {
+                input.readMessage(
+                    getSlaFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00010000;
+                break;
+              } // case 138
+              case 146: {
+                input.readMessage(
+                    getContextFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00020000;
+                break;
+              } // case 146
+              case 154: {
+                org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext m =
+                    input.readMessage(
+                        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext.parser(),
+                        extensionRegistry);
+                if (swimlaneContextBuilder_ == null) {
+                  ensureSwimlaneContextIsMutable();
+                  swimlaneContext_.add(m);
+                } else {
+                  swimlaneContextBuilder_.addMessage(m);
+                }
+                break;
+              } // case 154
+              case 162: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureCompletedNodeIdsIsMutable();
+                completedNodeIds_.add(s);
+                break;
+              } // case 162
+              case 170: {
+                cancelTimerId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00100000;
+                break;
+              } // case 170
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf.ProcessInstance) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -2240,11 +2165,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setProcessType(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         processType_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2253,8 +2176,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearProcessType() {
-        
         processType_ = getDefaultInstance().getProcessType();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -2265,12 +2188,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setProcessTypeBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         processType_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2316,11 +2237,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setProcessId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         processId_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2329,8 +2248,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearProcessId() {
-        
         processId_ = getDefaultInstance().getProcessId();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -2341,12 +2260,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setProcessIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         processId_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2392,11 +2309,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         id_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2405,8 +2320,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearId() {
-        
         id_ = getDefaultInstance().getId();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -2417,12 +2332,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         id_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2433,7 +2346,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the parentProcessInstanceId field is set.
        */
       public boolean hasParentProcessInstanceId() {
-        return ((bitField0_ & 0x00000001) != 0);
+        return ((bitField0_ & 0x00000008) != 0);
       }
       /**
        * <code>optional string parent_process_instance_id = 4;</code>
@@ -2475,11 +2388,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setParentProcessInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         parentProcessInstanceId_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2488,8 +2399,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearParentProcessInstanceId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         parentProcessInstanceId_ = getDefaultInstance().getParentProcessInstanceId();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -2500,12 +2411,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setParentProcessInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         parentProcessInstanceId_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2516,7 +2425,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the businessKey field is set.
        */
       public boolean hasBusinessKey() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000010) != 0);
       }
       /**
        * <code>optional string business_key = 5;</code>
@@ -2558,11 +2467,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setBusinessKey(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         businessKey_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2571,8 +2478,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearBusinessKey() {
-        bitField0_ = (bitField0_ & ~0x00000002);
         businessKey_ = getDefaultInstance().getBusinessKey();
+        bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
         return this;
       }
@@ -2583,12 +2490,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setBusinessKeyBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         businessKey_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2599,7 +2504,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the deploymentId field is set.
        */
       public boolean hasDeploymentId() {
-        return ((bitField0_ & 0x00000004) != 0);
+        return ((bitField0_ & 0x00000020) != 0);
       }
       /**
        * <code>optional string deploymentId = 6;</code>
@@ -2641,11 +2546,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setDeploymentId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
         deploymentId_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2654,8 +2557,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearDeploymentId() {
-        bitField0_ = (bitField0_ & ~0x00000004);
         deploymentId_ = getDefaultInstance().getDeploymentId();
+        bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
         return this;
       }
@@ -2666,12 +2569,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setDeploymentIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         deploymentId_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2682,7 +2583,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the description field is set.
        */
       public boolean hasDescription() {
-        return ((bitField0_ & 0x00000008) != 0);
+        return ((bitField0_ & 0x00000040) != 0);
       }
       /**
        * <code>optional string description = 7;</code>
@@ -2724,11 +2625,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setDescription(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+        if (value == null) { throw new NullPointerException(); }
         description_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2737,8 +2636,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearDescription() {
-        bitField0_ = (bitField0_ & ~0x00000008);
         description_ = getDefaultInstance().getDescription();
+        bitField0_ = (bitField0_ & ~0x00000040);
         onChanged();
         return this;
       }
@@ -2749,12 +2648,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setDescriptionBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000008;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         description_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2774,8 +2671,9 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder setState(int value) {
-        
+
         state_ = value;
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -2784,7 +2682,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearState() {
-        
+        bitField0_ = (bitField0_ & ~0x00000080);
         state_ = 0;
         onChanged();
         return this;
@@ -2797,7 +2695,7 @@ public final class KogitoProcessInstanceProtobuf {
        */
       @java.lang.Override
       public boolean hasStartDate() {
-        return ((bitField0_ & 0x00000010) != 0);
+        return ((bitField0_ & 0x00000100) != 0);
       }
       /**
        * <code>optional int64 start_date = 9;</code>
@@ -2813,8 +2711,9 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder setStartDate(long value) {
-        bitField0_ |= 0x00000010;
+
         startDate_ = value;
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -2823,7 +2722,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearStartDate() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000100);
         startDate_ = 0L;
         onChanged();
         return this;
@@ -2836,7 +2735,7 @@ public final class KogitoProcessInstanceProtobuf {
        */
       @java.lang.Override
       public boolean hasNodeInstanceCounter() {
-        return ((bitField0_ & 0x00000020) != 0);
+        return ((bitField0_ & 0x00000200) != 0);
       }
       /**
        * <code>optional int64 node_instance_counter = 10;</code>
@@ -2852,8 +2751,9 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder setNodeInstanceCounter(long value) {
-        bitField0_ |= 0x00000020;
+
         nodeInstanceCounter_ = value;
+        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -2862,7 +2762,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearNodeInstanceCounter() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000200);
         nodeInstanceCounter_ = 0L;
         onChanged();
         return this;
@@ -2883,8 +2783,9 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder setSignalCompletion(boolean value) {
-        
+
         signalCompletion_ = value;
+        bitField0_ |= 0x00000400;
         onChanged();
         return this;
       }
@@ -2893,7 +2794,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearSignalCompletion() {
-        
+        bitField0_ = (bitField0_ & ~0x00000400);
         signalCompletion_ = false;
         onChanged();
         return this;
@@ -2905,7 +2806,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the rootProcessInstanceId field is set.
        */
       public boolean hasRootProcessInstanceId() {
-        return ((bitField0_ & 0x00000040) != 0);
+        return ((bitField0_ & 0x00000800) != 0);
       }
       /**
        * <code>optional string root_process_instance_id = 12;</code>
@@ -2947,11 +2848,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setRootProcessInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000040;
+        if (value == null) { throw new NullPointerException(); }
         rootProcessInstanceId_ = value;
+        bitField0_ |= 0x00000800;
         onChanged();
         return this;
       }
@@ -2960,8 +2859,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearRootProcessInstanceId() {
-        bitField0_ = (bitField0_ & ~0x00000040);
         rootProcessInstanceId_ = getDefaultInstance().getRootProcessInstanceId();
+        bitField0_ = (bitField0_ & ~0x00000800);
         onChanged();
         return this;
       }
@@ -2972,12 +2871,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setRootProcessInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000040;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         rootProcessInstanceId_ = value;
+        bitField0_ |= 0x00000800;
         onChanged();
         return this;
       }
@@ -2988,7 +2885,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the rootProcessId field is set.
        */
       public boolean hasRootProcessId() {
-        return ((bitField0_ & 0x00000080) != 0);
+        return ((bitField0_ & 0x00001000) != 0);
       }
       /**
        * <code>optional string root_process_id = 13;</code>
@@ -3030,11 +2927,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setRootProcessId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000080;
+        if (value == null) { throw new NullPointerException(); }
         rootProcessId_ = value;
+        bitField0_ |= 0x00001000;
         onChanged();
         return this;
       }
@@ -3043,8 +2938,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearRootProcessId() {
-        bitField0_ = (bitField0_ & ~0x00000080);
         rootProcessId_ = getDefaultInstance().getRootProcessId();
+        bitField0_ = (bitField0_ & ~0x00001000);
         onChanged();
         return this;
       }
@@ -3055,12 +2950,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setRootProcessIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000080;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         rootProcessId_ = value;
+        bitField0_ |= 0x00001000;
         onChanged();
         return this;
       }
@@ -3071,7 +2964,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the errorNodeId field is set.
        */
       public boolean hasErrorNodeId() {
-        return ((bitField0_ & 0x00000100) != 0);
+        return ((bitField0_ & 0x00002000) != 0);
       }
       /**
        * <code>optional string error_node_id = 14;</code>
@@ -3113,11 +3006,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setErrorNodeId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000100;
+        if (value == null) { throw new NullPointerException(); }
         errorNodeId_ = value;
+        bitField0_ |= 0x00002000;
         onChanged();
         return this;
       }
@@ -3126,8 +3017,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearErrorNodeId() {
-        bitField0_ = (bitField0_ & ~0x00000100);
         errorNodeId_ = getDefaultInstance().getErrorNodeId();
+        bitField0_ = (bitField0_ & ~0x00002000);
         onChanged();
         return this;
       }
@@ -3138,12 +3029,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setErrorNodeIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000100;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         errorNodeId_ = value;
+        bitField0_ |= 0x00002000;
         onChanged();
         return this;
       }
@@ -3154,7 +3043,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the errorMessage field is set.
        */
       public boolean hasErrorMessage() {
-        return ((bitField0_ & 0x00000200) != 0);
+        return ((bitField0_ & 0x00004000) != 0);
       }
       /**
        * <code>optional string error_message = 15;</code>
@@ -3196,11 +3085,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setErrorMessage(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000200;
+        if (value == null) { throw new NullPointerException(); }
         errorMessage_ = value;
+        bitField0_ |= 0x00004000;
         onChanged();
         return this;
       }
@@ -3209,8 +3096,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearErrorMessage() {
-        bitField0_ = (bitField0_ & ~0x00000200);
         errorMessage_ = getDefaultInstance().getErrorMessage();
+        bitField0_ = (bitField0_ & ~0x00004000);
         onChanged();
         return this;
       }
@@ -3221,12 +3108,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setErrorMessageBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000200;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         errorMessage_ = value;
+        bitField0_ |= 0x00004000;
         onChanged();
         return this;
       }
@@ -3237,7 +3122,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the referenceId field is set.
        */
       public boolean hasReferenceId() {
-        return ((bitField0_ & 0x00000400) != 0);
+        return ((bitField0_ & 0x00008000) != 0);
       }
       /**
        * <code>optional string reference_id = 16;</code>
@@ -3279,11 +3164,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setReferenceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000400;
+        if (value == null) { throw new NullPointerException(); }
         referenceId_ = value;
+        bitField0_ |= 0x00008000;
         onChanged();
         return this;
       }
@@ -3292,8 +3175,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearReferenceId() {
-        bitField0_ = (bitField0_ & ~0x00000400);
         referenceId_ = getDefaultInstance().getReferenceId();
+        bitField0_ = (bitField0_ & ~0x00008000);
         onChanged();
         return this;
       }
@@ -3304,12 +3187,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setReferenceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000400;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         referenceId_ = value;
+        bitField0_ |= 0x00008000;
         onChanged();
         return this;
       }
@@ -3322,7 +3203,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the sla field is set.
        */
       public boolean hasSla() {
-        return ((bitField0_ & 0x00000800) != 0);
+        return ((bitField0_ & 0x00010000) != 0);
       }
       /**
        * <code>optional .org.kie.kogito.serialization.process.protobuf.SLAContext sla = 17;</code>
@@ -3344,11 +3225,11 @@ public final class KogitoProcessInstanceProtobuf {
             throw new NullPointerException();
           }
           sla_ = value;
-          onChanged();
         } else {
           slaBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00010000;
+        onChanged();
         return this;
       }
       /**
@@ -3358,11 +3239,11 @@ public final class KogitoProcessInstanceProtobuf {
           org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.Builder builderForValue) {
         if (slaBuilder_ == null) {
           sla_ = builderForValue.build();
-          onChanged();
         } else {
           slaBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00010000;
+        onChanged();
         return this;
       }
       /**
@@ -3370,39 +3251,38 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder mergeSla(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext value) {
         if (slaBuilder_ == null) {
-          if (((bitField0_ & 0x00000800) != 0) &&
-              sla_ != null &&
-              sla_ != org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.getDefaultInstance()) {
-            sla_ =
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.newBuilder(sla_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00010000) != 0) &&
+            sla_ != null &&
+            sla_ != org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.getDefaultInstance()) {
+            getSlaBuilder().mergeFrom(value);
           } else {
             sla_ = value;
           }
-          onChanged();
         } else {
           slaBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00010000;
+        onChanged();
         return this;
       }
       /**
        * <code>optional .org.kie.kogito.serialization.process.protobuf.SLAContext sla = 17;</code>
        */
       public Builder clearSla() {
-        if (slaBuilder_ == null) {
-          sla_ = null;
-          onChanged();
-        } else {
-          slaBuilder_.clear();
+        bitField0_ = (bitField0_ & ~0x00010000);
+        sla_ = null;
+        if (slaBuilder_ != null) {
+          slaBuilder_.dispose();
+          slaBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000800);
+        onChanged();
         return this;
       }
       /**
        * <code>optional .org.kie.kogito.serialization.process.protobuf.SLAContext sla = 17;</code>
        */
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLAContext.Builder getSlaBuilder() {
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00010000;
         onChanged();
         return getSlaFieldBuilder().getBuilder();
       }
@@ -3442,7 +3322,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the context field is set.
        */
       public boolean hasContext() {
-        return ((bitField0_ & 0x00001000) != 0);
+        return ((bitField0_ & 0x00020000) != 0);
       }
       /**
        * <code>optional .org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 18;</code>
@@ -3464,11 +3344,11 @@ public final class KogitoProcessInstanceProtobuf {
             throw new NullPointerException();
           }
           context_ = value;
-          onChanged();
         } else {
           contextBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00020000;
+        onChanged();
         return this;
       }
       /**
@@ -3478,11 +3358,11 @@ public final class KogitoProcessInstanceProtobuf {
           org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder builderForValue) {
         if (contextBuilder_ == null) {
           context_ = builderForValue.build();
-          onChanged();
         } else {
           contextBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00020000;
+        onChanged();
         return this;
       }
       /**
@@ -3490,39 +3370,38 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder mergeContext(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext value) {
         if (contextBuilder_ == null) {
-          if (((bitField0_ & 0x00001000) != 0) &&
-              context_ != null &&
-              context_ != org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.getDefaultInstance()) {
-            context_ =
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.newBuilder(context_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00020000) != 0) &&
+            context_ != null &&
+            context_ != org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.getDefaultInstance()) {
+            getContextBuilder().mergeFrom(value);
           } else {
             context_ = value;
           }
-          onChanged();
         } else {
           contextBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00020000;
+        onChanged();
         return this;
       }
       /**
        * <code>optional .org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 18;</code>
        */
       public Builder clearContext() {
-        if (contextBuilder_ == null) {
-          context_ = null;
-          onChanged();
-        } else {
-          contextBuilder_.clear();
+        bitField0_ = (bitField0_ & ~0x00020000);
+        context_ = null;
+        if (contextBuilder_ != null) {
+          contextBuilder_.dispose();
+          contextBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00001000);
+        onChanged();
         return this;
       }
       /**
        * <code>optional .org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 18;</code>
        */
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder getContextBuilder() {
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00020000;
         onChanged();
         return getContextFieldBuilder().getBuilder();
       }
@@ -3557,9 +3436,9 @@ public final class KogitoProcessInstanceProtobuf {
       private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext> swimlaneContext_ =
         java.util.Collections.emptyList();
       private void ensureSwimlaneContextIsMutable() {
-        if (!((bitField0_ & 0x00002000) != 0)) {
+        if (!((bitField0_ & 0x00040000) != 0)) {
           swimlaneContext_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext>(swimlaneContext_);
-          bitField0_ |= 0x00002000;
+          bitField0_ |= 0x00040000;
          }
       }
 
@@ -3709,7 +3588,7 @@ public final class KogitoProcessInstanceProtobuf {
       public Builder clearSwimlaneContext() {
         if (swimlaneContextBuilder_ == null) {
           swimlaneContext_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00002000);
+          bitField0_ = (bitField0_ & ~0x00040000);
           onChanged();
         } else {
           swimlaneContextBuilder_.clear();
@@ -3786,7 +3665,7 @@ public final class KogitoProcessInstanceProtobuf {
           swimlaneContextBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContext.Builder, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SwimlaneContextOrBuilder>(
                   swimlaneContext_,
-                  ((bitField0_ & 0x00002000) != 0),
+                  ((bitField0_ & 0x00040000) != 0),
                   getParentForChildren(),
                   isClean());
           swimlaneContext_ = null;
@@ -3794,12 +3673,13 @@ public final class KogitoProcessInstanceProtobuf {
         return swimlaneContextBuilder_;
       }
 
-      private com.google.protobuf.LazyStringList completedNodeIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList completedNodeIds_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureCompletedNodeIdsIsMutable() {
-        if (!((bitField0_ & 0x00004000) != 0)) {
+        if (!completedNodeIds_.isModifiable()) {
           completedNodeIds_ = new com.google.protobuf.LazyStringArrayList(completedNodeIds_);
-          bitField0_ |= 0x00004000;
-         }
+        }
+        bitField0_ |= 0x00080000;
       }
       /**
        * <code>repeated string completedNodeIds = 20;</code>
@@ -3807,7 +3687,8 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getCompletedNodeIdsList() {
-        return completedNodeIds_.getUnmodifiableView();
+        completedNodeIds_.makeImmutable();
+        return completedNodeIds_;
       }
       /**
        * <code>repeated string completedNodeIds = 20;</code>
@@ -3841,11 +3722,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setCompletedNodeIds(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureCompletedNodeIdsIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureCompletedNodeIdsIsMutable();
         completedNodeIds_.set(index, value);
+        bitField0_ |= 0x00080000;
         onChanged();
         return this;
       }
@@ -3856,11 +3736,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder addCompletedNodeIds(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureCompletedNodeIdsIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureCompletedNodeIdsIsMutable();
         completedNodeIds_.add(value);
+        bitField0_ |= 0x00080000;
         onChanged();
         return this;
       }
@@ -3874,6 +3753,7 @@ public final class KogitoProcessInstanceProtobuf {
         ensureCompletedNodeIdsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, completedNodeIds_);
+        bitField0_ |= 0x00080000;
         onChanged();
         return this;
       }
@@ -3882,8 +3762,9 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearCompletedNodeIds() {
-        completedNodeIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00004000);
+        completedNodeIds_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00080000);;
         onChanged();
         return this;
       }
@@ -3894,12 +3775,11 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder addCompletedNodeIdsBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureCompletedNodeIdsIsMutable();
         completedNodeIds_.add(value);
+        bitField0_ |= 0x00080000;
         onChanged();
         return this;
       }
@@ -3910,7 +3790,7 @@ public final class KogitoProcessInstanceProtobuf {
        * @return Whether the cancelTimerId field is set.
        */
       public boolean hasCancelTimerId() {
-        return ((bitField0_ & 0x00008000) != 0);
+        return ((bitField0_ & 0x00100000) != 0);
       }
       /**
        * <code>optional string cancel_timer_id = 21;</code>
@@ -3952,11 +3832,9 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setCancelTimerId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00008000;
+        if (value == null) { throw new NullPointerException(); }
         cancelTimerId_ = value;
+        bitField0_ |= 0x00100000;
         onChanged();
         return this;
       }
@@ -3965,8 +3843,8 @@ public final class KogitoProcessInstanceProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearCancelTimerId() {
-        bitField0_ = (bitField0_ & ~0x00008000);
         cancelTimerId_ = getDefaultInstance().getCancelTimerId();
+        bitField0_ = (bitField0_ & ~0x00100000);
         onChanged();
         return this;
       }
@@ -3977,12 +3855,10 @@ public final class KogitoProcessInstanceProtobuf {
        */
       public Builder setCancelTimerIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00008000;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         cancelTimerId_ = value;
+        bitField0_ |= 0x00100000;
         onChanged();
         return this;
       }
@@ -4019,7 +3895,18 @@ public final class KogitoProcessInstanceProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ProcessInstance(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 

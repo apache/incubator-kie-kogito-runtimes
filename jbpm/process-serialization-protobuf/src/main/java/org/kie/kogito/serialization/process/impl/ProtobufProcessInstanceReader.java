@@ -41,6 +41,7 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
 import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.process.instance.impl.humantask.Reassignment;
+import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.workflow.core.node.AsyncEventNodeInstance;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
@@ -58,6 +59,7 @@ import org.jbpm.workflow.instance.node.StateNodeInstance;
 import org.jbpm.workflow.instance.node.SubProcessNodeInstance;
 import org.jbpm.workflow.instance.node.TimerNodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
+import org.kie.api.definition.process.WorkflowElementIdentifier;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.kie.kogito.process.impl.AbstractProcess;
@@ -88,6 +90,8 @@ import org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLACont
 import org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext;
 import org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf;
 import org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -96,7 +100,7 @@ import com.google.protobuf.util.JsonFormat;
 import static org.kie.kogito.serialization.process.protobuf.ProtobufTypeRegistryFactory.protobufTypeRegistryFactoryInstance;
 
 public class ProtobufProcessInstanceReader {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtobufProcessInstanceReader.class);
     private RuleFlowProcessInstance ruleFlowProcessInstance;
     private MarshallerReaderContext context;
     private ProtobufVariableReader varReader;
@@ -108,6 +112,7 @@ public class ProtobufProcessInstanceReader {
     }
 
     public RuleFlowProcessInstance read(InputStream input) throws IOException {
+        LOGGER.info("read process");
         KogitoProcessInstanceProtobuf.ProcessInstance processInstanceProtobuf;
 
         String format = this.context.get(MarshallerContextName.MARSHALLER_FORMAT);
@@ -228,8 +233,8 @@ public class ProtobufProcessInstanceReader {
             nodeInstanceImpl.setId(nodeInstanceProtobuf.getId());
         }
 
-        if (nodeInstanceImpl.getNodeId() == 0) {
-            nodeInstanceImpl.setNodeId(nodeInstanceProtobuf.getNodeId());
+        if (nodeInstanceImpl.getNodeId() == null) {
+            nodeInstanceImpl.setNodeId(WorkflowElementIdentifierFactory.fromExternalFormat(nodeInstanceProtobuf.getNodeId()));
         }
 
         if (nodeInstanceImpl.getNodeInstanceContainer() == null) {
@@ -404,9 +409,10 @@ public class ProtobufProcessInstanceReader {
     private NodeInstanceImpl buildJoinInstance(JoinNodeInstanceContent content) {
         JoinInstance nodeInstance = new JoinInstance();
         if (content.getTriggerCount() > 0) {
-            Map<Long, Integer> triggers = new HashMap<>();
+            Map<WorkflowElementIdentifier, Integer> triggers = new HashMap<>();
             for (JoinNodeInstanceContent.JoinTrigger _join : content.getTriggerList()) {
-                triggers.put(_join.getNodeId(), _join.getCounter());
+                LOGGER.info("unmarshalling join {}", _join.getNodeId());
+                triggers.put(WorkflowElementIdentifierFactory.fromExternalFormat(_join.getNodeId()), _join.getCounter());
             }
             nodeInstance.internalSetTriggers(triggers);
         }

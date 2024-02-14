@@ -52,6 +52,7 @@ public class StateNodeInstance extends CompositeContextNodeInstance implements E
         Connection selected = null;
         int priority = Integer.MAX_VALUE;
         for (Connection connection : stateNode.getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE)) {
+<<<<<<< HEAD
             Collection<Constraint> constraints = stateNode.getConstraints(connection);
 
             if (constraints != null) {
@@ -68,6 +69,19 @@ public class StateNodeInstance extends CompositeContextNodeInstance implements E
                             priority = constraint.getPriority();
                         }
                     }
+=======
+            Constraint constraint = stateNode.getConstraint(connection);
+            if (constraint != null && constraint.getPriority() < priority) {
+                String rule = "RuleFlowStateNode-" + getProcessInstance().getProcessId() + "-" +
+                        getStateNode().getUniqueId() + "-" +
+                        connection.getTo().getId().toExternalFormat() + "-" +
+                        connection.getToType();
+                boolean isActive = ((InternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda())
+                        .isRuleActiveInRuleFlowGroup("DROOLS_SYSTEM", rule, getProcessInstance().getStringId());
+                if (isActive) {
+                    selected = connection;
+                    priority = constraint.getPriority();
+>>>>>>> 2509cdbb34 ([incubator-kie-issues-916] unify identifiers / part 1)
                 }
             }
         }
@@ -162,7 +176,7 @@ public class StateNodeInstance extends CompositeContextNodeInstance implements E
             Collection<Constraint> constraints = getStateNode().getConstraints(connection);
             if (constraints != null) {
                 String constraintName = getActivationEventType() + "-"
-                        + connection.getTo().getId() + "-" + connection.getToType();
+                        + connection.getTo().getId().toExternalFormat() + "-" + connection.getToType();
                 if (constraintName.equals(event.getMatch().getRule().getName())
                         && checkProcessInstance((InternalMatch) event.getMatch())) {
                     selected = connection;
