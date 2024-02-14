@@ -40,6 +40,7 @@ import java.util.stream.Stream;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
+import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
@@ -89,16 +90,16 @@ public class ProcessInstanceMarshallTest {
         workflow.setType(RULEFLOW_TYPE);
 
         Node endNode = new EndNode();
-        endNode.setId(1);
+        endNode.setId(WorkflowElementIdentifierFactory.fromExternalFormat("one"));
         endNode.setName("end node");
 
         Node taskNode = new HumanTaskNode();
-        taskNode.setId(2);
+        taskNode.setId(WorkflowElementIdentifierFactory.fromExternalFormat("two"));
         taskNode.setName("human task");
         new ConnectionImpl(taskNode, Node.CONNECTION_DEFAULT_TYPE, endNode, Node.CONNECTION_DEFAULT_TYPE);
 
         Node startNode = new StartNode();
-        startNode.setId(0);
+        startNode.setId(WorkflowElementIdentifierFactory.fromExternalFormat("three"));
         startNode.setName("start node");
         new ConnectionImpl(startNode, Node.CONNECTION_DEFAULT_TYPE, taskNode, Node.CONNECTION_DEFAULT_TYPE);
 

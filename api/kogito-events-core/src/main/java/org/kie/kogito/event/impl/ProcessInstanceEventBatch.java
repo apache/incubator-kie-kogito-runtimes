@@ -179,7 +179,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
 
         if (event.getNodeInstance() instanceof KogitoNodeInstance) {
             KogitoNodeInstance ni = (KogitoNodeInstance) event.getNodeInstance();
-            builder.nodeDefinitionId(ni.getNode().getNodeUniqueId())
+            builder.nodeDefinitionId(ni.getNode().getUniqueId())
                     .nodeInstanceId(ni.getId())
                     .nodeName(ni.getNodeName())
                     .nodeType(ni.getNode().getClass().getSimpleName())
@@ -236,7 +236,7 @@ public class ProcessInstanceEventBatch implements EventBatch {
                 .nodeName(event.getNodeInstance().getNodeName())
                 .nodeType(event.getNodeInstance().getNode().getClass().getSimpleName())
                 .nodeInstanceId(event.getNodeInstance().getId())
-                .nodeDefinitionId(event.getNodeInstance().getNode().getNodeUniqueId())
+                .nodeDefinitionId(event.getNodeInstance().getNode().getUniqueId())
                 .slaDueDate(nodeInstance.getSlaDueDate());
 
         if (eventType == ProcessInstanceNodeEventBody.EVENT_TYPE_ENTER) {

@@ -58,7 +58,7 @@ message TimerNodeInstanceContent {
 message JoinNodeInstanceContent {
     repeated JoinTrigger trigger = 1;
     message JoinTrigger {
-        optional int64 node_id = 1;
+        optional string node_id = 1;
         optional int32 counter = 2;
     }
 }

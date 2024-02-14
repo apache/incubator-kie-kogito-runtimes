@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.kie.kogito.serialization.process.protobuf;
 
 public final class KogitoNodeInstanceContentsProtobuf {
@@ -98,14 +99,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
-    java.lang.String getTimerInstanceReferenceOrDefault(
+    /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key);
   }
@@ -122,7 +123,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
       super(builder);
     }
     private RuleSetNodeInstanceContent() {
-      timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       ruleFlowGroup_ = "";
     }
 
@@ -133,80 +135,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new RuleSetNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private RuleSetNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                timerInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              timerInstanceId_.add(s);
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              ruleFlowGroup_ = s;
-              break;
-            }
-            case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
-                timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
-                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000004;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              timerInstanceReference__ = input.readMessage(
-                  TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              timerInstanceReference_.getMutableMap().put(
-                  timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_RuleSetNodeInstanceContent_descriptor;
@@ -234,7 +162,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
     private int bitField0_;
     public static final int TIMER_INSTANCE_ID_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList timerInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string timer_instance_id = 1;</code>
      * @return A list containing the timerInstanceId.
@@ -269,7 +199,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int RULE_FLOW_GROUP_FIELD_NUMBER = 2;
-    private volatile java.lang.Object ruleFlowGroup_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object ruleFlowGroup_ = "";
     /**
      * <code>optional string rule_flow_group = 2;</code>
      * @return Whether the ruleFlowGroup field is set.
@@ -326,6 +257,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> timerInstanceReference_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -336,14 +268,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       return timerInstanceReference_;
     }
-
     public int getTimerInstanceReferenceCount() {
       return internalGetTimerInstanceReference().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     @java.lang.Override
     public boolean containsTimerInstanceReference(
         java.lang.String key) {
@@ -362,7 +292,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
       return internalGetTimerInstanceReference().getMap();
     }
@@ -370,10 +299,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTimerInstanceReferenceOrDefault(
+    public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTimerInstanceReference().getMap();
@@ -383,7 +313,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -421,7 +350,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           internalGetTimerInstanceReference(),
           TimerInstanceReferenceDefaultEntryHolder.defaultEntry,
           3);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -451,7 +380,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(3, timerInstanceReference__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -475,7 +404,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       if (!internalGetTimerInstanceReference().equals(
           other.internalGetTimerInstanceReference())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -498,7 +427,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_INSTANCE_REFERENCE_FIELD_NUMBER;
         hash = (53 * hash) + internalGetTimerInstanceReference().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -637,26 +566,21 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.RuleSetNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = 0;
+        timerInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         ruleFlowGroup_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         internalGetMutableTimerInstanceReference().clear();
         return this;
       }
@@ -684,56 +608,29 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.RuleSetNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.RuleSetNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.RuleSetNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.timerInstanceId_ = timerInstanceId_;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.ruleFlowGroup_ = ruleFlowGroup_;
-        result.timerInstanceReference_ = internalGetTimerInstanceReference();
-        result.timerInstanceReference_.makeImmutable();
-        result.bitField0_ = to_bitField0_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.RuleSetNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          timerInstanceId_.makeImmutable();
+          result.timerInstanceId_ = timerInstanceId_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.ruleFlowGroup_ = ruleFlowGroup_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.timerInstanceReference_ = internalGetTimerInstanceReference();
+          result.timerInstanceReference_.makeImmutable();
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.RuleSetNodeInstanceContent) {
@@ -749,7 +646,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!other.timerInstanceId_.isEmpty()) {
           if (timerInstanceId_.isEmpty()) {
             timerInstanceId_ = other.timerInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureTimerInstanceIdIsMutable();
             timerInstanceId_.addAll(other.timerInstanceId_);
@@ -757,13 +654,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
           onChanged();
         }
         if (other.hasRuleFlowGroup()) {
-          bitField0_ |= 0x00000002;
           ruleFlowGroup_ = other.ruleFlowGroup_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         internalGetMutableTimerInstanceReference().mergeFrom(
             other.internalGetTimerInstanceReference());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000004;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -778,27 +676,61 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.RuleSetNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureTimerInstanceIdIsMutable();
+                timerInstanceId_.add(s);
+                break;
+              } // case 10
+              case 18: {
+                ruleFlowGroup_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                timerInstanceReference__ = input.readMessage(
+                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableTimerInstanceReference().getMutableMap().put(
+                    timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.RuleSetNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureTimerInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!timerInstanceId_.isModifiable()) {
           timerInstanceId_ = new com.google.protobuf.LazyStringArrayList(timerInstanceId_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -806,7 +738,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getTimerInstanceIdList() {
-        return timerInstanceId_.getUnmodifiableView();
+        timerInstanceId_.makeImmutable();
+        return timerInstanceId_;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -840,11 +773,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -855,11 +787,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -873,6 +804,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         ensureTimerInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, timerInstanceId_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -881,8 +813,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerInstanceId() {
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -893,12 +826,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -951,11 +883,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setRuleFlowGroup(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         ruleFlowGroup_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -964,8 +894,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearRuleFlowGroup() {
-        bitField0_ = (bitField0_ & ~0x00000002);
         ruleFlowGroup_ = getDefaultInstance().getRuleFlowGroup();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -976,12 +906,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setRuleFlowGroupBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ruleFlowGroup_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -989,7 +917,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> timerInstanceReference_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetTimerInstanceReference() {
+          internalGetTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -997,8 +925,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return timerInstanceReference_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableTimerInstanceReference() {
-        onChanged();;
+          internalGetMutableTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -1006,16 +933,16 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!timerInstanceReference_.isMutable()) {
           timerInstanceReference_ = timerInstanceReference_.copy();
         }
+        bitField0_ |= 0x00000004;
+        onChanged();
         return timerInstanceReference_;
       }
-
       public int getTimerInstanceReferenceCount() {
         return internalGetTimerInstanceReference().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       @java.lang.Override
       public boolean containsTimerInstanceReference(
           java.lang.String key) {
@@ -1034,7 +961,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
         return internalGetTimerInstanceReference().getMap();
       }
@@ -1042,10 +968,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getTimerInstanceReferenceOrDefault(
+      public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetTimerInstanceReference().getMap();
@@ -1055,7 +982,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.lang.String getTimerInstanceReferenceOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -1066,8 +992,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearTimerInstanceReference() {
+        bitField0_ = (bitField0_ & ~0x00000004);
         internalGetMutableTimerInstanceReference().getMutableMap()
             .clear();
         return this;
@@ -1075,7 +1001,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder removeTimerInstanceReference(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -1088,7 +1013,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableTimerInstanceReference() {
+          getMutableTimerInstanceReference() {
+        bitField0_ |= 0x00000004;
         return internalGetMutableTimerInstanceReference().getMutableMap();
       }
       /**
@@ -1098,22 +1024,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableTimerInstanceReference().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder putAllTimerInstanceReference(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableTimerInstanceReference().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000004;
         return this;
       }
       @java.lang.Override
@@ -1149,7 +1073,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new RuleSetNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -1396,14 +1331,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
      */
-
-    java.lang.String getTimerInstanceReferenceOrDefault(
+    /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
      */
-
     java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key);
   }
@@ -1421,7 +1356,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
     private WorkItemNodeInstanceContent() {
       workItemId_ = "";
-      timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       errorHandlingProcessInstanceId_ = "";
       variable_ = java.util.Collections.emptyList();
       result_ = java.util.Collections.emptyList();
@@ -1437,156 +1373,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new WorkItemNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private WorkItemNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              workItemId_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                timerInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              timerInstanceId_.add(s);
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              errorHandlingProcessInstanceId_ = s;
-              break;
-            }
-            case 32: {
-
-              state_ = input.readInt32();
-              break;
-            }
-            case 42: {
-              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
-                variable_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable>();
-                mutable_bitField0_ |= 0x00000004;
-              }
-              variable_.add(
-                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.parser(), extensionRegistry));
-              break;
-            }
-            case 50: {
-              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
-                result_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable>();
-                mutable_bitField0_ |= 0x00000008;
-              }
-              result_.add(
-                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.parser(), extensionRegistry));
-              break;
-            }
-            case 58: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000002;
-              phaseId_ = s;
-              break;
-            }
-            case 66: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000004;
-              phaseStatus_ = s;
-              break;
-            }
-            case 74: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000008;
-              name_ = s;
-              break;
-            }
-            case 80: {
-              bitField0_ |= 0x00000010;
-              startDate_ = input.readInt64();
-              break;
-            }
-            case 88: {
-              bitField0_ |= 0x00000020;
-              completeDate_ = input.readInt64();
-              break;
-            }
-            case 98: {
-              com.google.protobuf.Any.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000040) != 0)) {
-                subBuilder = workItemData_.toBuilder();
-              }
-              workItemData_ = input.readMessage(com.google.protobuf.Any.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(workItemData_);
-                workItemData_ = subBuilder.buildPartial();
-              }
-              bitField0_ |= 0x00000040;
-              break;
-            }
-            case 106: {
-              if (!((mutable_bitField0_ & 0x00000400) != 0)) {
-                timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
-                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000400;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              timerInstanceReference__ = input.readMessage(
-                  TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              timerInstanceReference_.getMutableMap().put(
-                  timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-        }
-        if (((mutable_bitField0_ & 0x00000004) != 0)) {
-          variable_ = java.util.Collections.unmodifiableList(variable_);
-        }
-        if (((mutable_bitField0_ & 0x00000008) != 0)) {
-          result_ = java.util.Collections.unmodifiableList(result_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_WorkItemNodeInstanceContent_descriptor;
@@ -1614,7 +1400,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
     private int bitField0_;
     public static final int WORK_ITEM_ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object workItemId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object workItemId_ = "";
     /**
      * <code>string work_item_id = 1;</code>
      * @return The workItemId.
@@ -1652,7 +1439,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int TIMER_INSTANCE_ID_FIELD_NUMBER = 2;
-    private com.google.protobuf.LazyStringList timerInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string timer_instance_id = 2;</code>
      * @return A list containing the timerInstanceId.
@@ -1687,7 +1476,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int ERROR_HANDLING_PROCESS_INSTANCE_ID_FIELD_NUMBER = 3;
-    private volatile java.lang.Object errorHandlingProcessInstanceId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object errorHandlingProcessInstanceId_ = "";
     /**
      * <code>optional string error_handling_process_instance_id = 3;</code>
      * @return Whether the errorHandlingProcessInstanceId field is set.
@@ -1733,7 +1523,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int STATE_FIELD_NUMBER = 4;
-    private int state_;
+    private int state_ = 0;
     /**
      * <pre>
      * work item data
@@ -1748,6 +1538,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int VARIABLE_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
     private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> variable_;
     /**
      * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable variable = 5;</code>
@@ -1788,6 +1579,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int RESULT_FIELD_NUMBER = 6;
+    @SuppressWarnings("serial")
     private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> result_;
     /**
      * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable result = 6;</code>
@@ -1828,7 +1620,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int PHASE_ID_FIELD_NUMBER = 7;
-    private volatile java.lang.Object phaseId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object phaseId_ = "";
     /**
      * <code>optional string phase_id = 7;</code>
      * @return Whether the phaseId field is set.
@@ -1874,7 +1667,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int PHASE_STATUS_FIELD_NUMBER = 8;
-    private volatile java.lang.Object phaseStatus_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object phaseStatus_ = "";
     /**
      * <code>optional string phase_status = 8;</code>
      * @return Whether the phaseStatus field is set.
@@ -1920,7 +1714,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int NAME_FIELD_NUMBER = 9;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <code>optional string name = 9;</code>
      * @return Whether the name field is set.
@@ -1966,7 +1761,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int START_DATE_FIELD_NUMBER = 10;
-    private long startDate_;
+    private long startDate_ = 0L;
     /**
      * <code>optional int64 start_date = 10;</code>
      * @return Whether the startDate field is set.
@@ -1985,7 +1780,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int COMPLETE_DATE_FIELD_NUMBER = 11;
-    private long completeDate_;
+    private long completeDate_ = 0L;
     /**
      * <code>optional int64 complete_date = 11;</code>
      * @return Whether the completeDate field is set.
@@ -2041,6 +1836,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> timerInstanceReference_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -2051,14 +1847,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       return timerInstanceReference_;
     }
-
     public int getTimerInstanceReferenceCount() {
       return internalGetTimerInstanceReference().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
      */
-
     @java.lang.Override
     public boolean containsTimerInstanceReference(
         java.lang.String key) {
@@ -2077,7 +1871,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
       return internalGetTimerInstanceReference().getMap();
     }
@@ -2085,10 +1878,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTimerInstanceReferenceOrDefault(
+    public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTimerInstanceReference().getMap();
@@ -2098,7 +1892,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -2166,7 +1959,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           internalGetTimerInstanceReference(),
           TimerInstanceReferenceDefaultEntryHolder.defaultEntry,
           13);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -2232,7 +2025,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(13, timerInstanceReference__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -2294,7 +2087,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       if (!internalGetTimerInstanceReference().equals(
           other.internalGetTimerInstanceReference())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -2355,7 +2148,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_INSTANCE_REFERENCE_FIELD_NUMBER;
         hash = (53 * hash) + internalGetTimerInstanceReference().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -2513,42 +2306,36 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         workItemId_ = "";
-
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        timerInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         errorHandlingProcessInstanceId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         state_ = 0;
-
         if (variableBuilder_ == null) {
           variable_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
         } else {
+          variable_ = null;
           variableBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000010);
         if (resultBuilder_ == null) {
           result_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
+          result_ = null;
           resultBuilder_.clear();
         }
-        phaseId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000010);
-        phaseStatus_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
+        phaseId_ = "";
+        phaseStatus_ = "";
         name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000040);
         startDate_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000080);
         completeDate_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000100);
-        if (workItemDataBuilder_ == null) {
-          workItemData_ = null;
-        } else {
-          workItemDataBuilder_.clear();
+        workItemData_ = null;
+        if (workItemDataBuilder_ != null) {
+          workItemDataBuilder_.dispose();
+          workItemDataBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000200);
         internalGetMutableTimerInstanceReference().clear();
         return this;
       }
@@ -2576,104 +2363,83 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        result.workItemId_ = workItemId_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.timerInstanceId_ = timerInstanceId_;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.errorHandlingProcessInstanceId_ = errorHandlingProcessInstanceId_;
-        result.state_ = state_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent result) {
         if (variableBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) != 0)) {
+          if (((bitField0_ & 0x00000010) != 0)) {
             variable_ = java.util.Collections.unmodifiableList(variable_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.variable_ = variable_;
         } else {
           result.variable_ = variableBuilder_.build();
         }
         if (resultBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) != 0)) {
+          if (((bitField0_ & 0x00000020) != 0)) {
             result_ = java.util.Collections.unmodifiableList(result_);
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000020);
           }
           result.result_ = result_;
         } else {
           result.result_ = resultBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000010) != 0)) {
+      }
+
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.workItemId_ = workItemId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          timerInstanceId_.makeImmutable();
+          result.timerInstanceId_ = timerInstanceId_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.errorHandlingProcessInstanceId_ = errorHandlingProcessInstanceId_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.state_ = state_;
+        }
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.phaseId_ = phaseId_;
           to_bitField0_ |= 0x00000002;
         }
-        result.phaseId_ = phaseId_;
-        if (((from_bitField0_ & 0x00000020) != 0)) {
+        if (((from_bitField0_ & 0x00000080) != 0)) {
+          result.phaseStatus_ = phaseStatus_;
           to_bitField0_ |= 0x00000004;
         }
-        result.phaseStatus_ = phaseStatus_;
-        if (((from_bitField0_ & 0x00000040) != 0)) {
+        if (((from_bitField0_ & 0x00000100) != 0)) {
+          result.name_ = name_;
           to_bitField0_ |= 0x00000008;
         }
-        result.name_ = name_;
-        if (((from_bitField0_ & 0x00000080) != 0)) {
+        if (((from_bitField0_ & 0x00000200) != 0)) {
           result.startDate_ = startDate_;
           to_bitField0_ |= 0x00000010;
         }
-        if (((from_bitField0_ & 0x00000100) != 0)) {
+        if (((from_bitField0_ & 0x00000400) != 0)) {
           result.completeDate_ = completeDate_;
           to_bitField0_ |= 0x00000020;
         }
-        if (((from_bitField0_ & 0x00000200) != 0)) {
-          if (workItemDataBuilder_ == null) {
-            result.workItemData_ = workItemData_;
-          } else {
-            result.workItemData_ = workItemDataBuilder_.build();
-          }
+        if (((from_bitField0_ & 0x00000800) != 0)) {
+          result.workItemData_ = workItemDataBuilder_ == null
+              ? workItemData_
+              : workItemDataBuilder_.build();
           to_bitField0_ |= 0x00000040;
         }
-        result.timerInstanceReference_ = internalGetTimerInstanceReference();
-        result.timerInstanceReference_.makeImmutable();
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        if (((from_bitField0_ & 0x00001000) != 0)) {
+          result.timerInstanceReference_ = internalGetTimerInstanceReference();
+          result.timerInstanceReference_.makeImmutable();
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent) {
@@ -2688,12 +2454,13 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent.getDefaultInstance()) return this;
         if (!other.getWorkItemId().isEmpty()) {
           workItemId_ = other.workItemId_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.timerInstanceId_.isEmpty()) {
           if (timerInstanceId_.isEmpty()) {
             timerInstanceId_ = other.timerInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000002;
           } else {
             ensureTimerInstanceIdIsMutable();
             timerInstanceId_.addAll(other.timerInstanceId_);
@@ -2701,8 +2468,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
           onChanged();
         }
         if (other.hasErrorHandlingProcessInstanceId()) {
-          bitField0_ |= 0x00000002;
           errorHandlingProcessInstanceId_ = other.errorHandlingProcessInstanceId_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (other.getState() != 0) {
@@ -2712,7 +2479,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           if (!other.variable_.isEmpty()) {
             if (variable_.isEmpty()) {
               variable_ = other.variable_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000010);
             } else {
               ensureVariableIsMutable();
               variable_.addAll(other.variable_);
@@ -2725,7 +2492,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
               variableBuilder_.dispose();
               variableBuilder_ = null;
               variable_ = other.variable_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000010);
               variableBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getVariableFieldBuilder() : null;
@@ -2738,7 +2505,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           if (!other.result_.isEmpty()) {
             if (result_.isEmpty()) {
               result_ = other.result_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000020);
             } else {
               ensureResultIsMutable();
               result_.addAll(other.result_);
@@ -2751,7 +2518,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
               resultBuilder_.dispose();
               resultBuilder_ = null;
               result_ = other.result_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000020);
               resultBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getResultFieldBuilder() : null;
@@ -2761,18 +2528,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           }
         }
         if (other.hasPhaseId()) {
-          bitField0_ |= 0x00000010;
           phaseId_ = other.phaseId_;
+          bitField0_ |= 0x00000040;
           onChanged();
         }
         if (other.hasPhaseStatus()) {
-          bitField0_ |= 0x00000020;
           phaseStatus_ = other.phaseStatus_;
+          bitField0_ |= 0x00000080;
           onChanged();
         }
         if (other.hasName()) {
-          bitField0_ |= 0x00000040;
           name_ = other.name_;
+          bitField0_ |= 0x00000100;
           onChanged();
         }
         if (other.hasStartDate()) {
@@ -2786,7 +2553,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         internalGetMutableTimerInstanceReference().mergeFrom(
             other.internalGetTimerInstanceReference());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00001000;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -2801,17 +2569,118 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                workItemId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureTimerInstanceIdIsMutable();
+                timerInstanceId_.add(s);
+                break;
+              } // case 18
+              case 26: {
+                errorHandlingProcessInstanceId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 32: {
+                state_ = input.readInt32();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
+              case 42: {
+                org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable m =
+                    input.readMessage(
+                        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.parser(),
+                        extensionRegistry);
+                if (variableBuilder_ == null) {
+                  ensureVariableIsMutable();
+                  variable_.add(m);
+                } else {
+                  variableBuilder_.addMessage(m);
+                }
+                break;
+              } // case 42
+              case 50: {
+                org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable m =
+                    input.readMessage(
+                        org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.parser(),
+                        extensionRegistry);
+                if (resultBuilder_ == null) {
+                  ensureResultIsMutable();
+                  result_.add(m);
+                } else {
+                  resultBuilder_.addMessage(m);
+                }
+                break;
+              } // case 50
+              case 58: {
+                phaseId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000040;
+                break;
+              } // case 58
+              case 66: {
+                phaseStatus_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000080;
+                break;
+              } // case 66
+              case 74: {
+                name_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000100;
+                break;
+              } // case 74
+              case 80: {
+                startDate_ = input.readInt64();
+                bitField0_ |= 0x00000200;
+                break;
+              } // case 80
+              case 88: {
+                completeDate_ = input.readInt64();
+                bitField0_ |= 0x00000400;
+                break;
+              } // case 88
+              case 98: {
+                input.readMessage(
+                    getWorkItemDataFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000800;
+                break;
+              } // case 98
+              case 106: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                timerInstanceReference__ = input.readMessage(
+                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableTimerInstanceReference().getMutableMap().put(
+                    timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
+                bitField0_ |= 0x00001000;
+                break;
+              } // case 106
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -2857,11 +2726,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setWorkItemId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         workItemId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2870,8 +2737,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearWorkItemId() {
-        
         workItemId_ = getDefaultInstance().getWorkItemId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -2882,22 +2749,21 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setWorkItemIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         workItemId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureTimerInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!timerInstanceId_.isModifiable()) {
           timerInstanceId_ = new com.google.protobuf.LazyStringArrayList(timerInstanceId_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000002;
       }
       /**
        * <code>repeated string timer_instance_id = 2;</code>
@@ -2905,7 +2771,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getTimerInstanceIdList() {
-        return timerInstanceId_.getUnmodifiableView();
+        timerInstanceId_.makeImmutable();
+        return timerInstanceId_;
       }
       /**
        * <code>repeated string timer_instance_id = 2;</code>
@@ -2939,11 +2806,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.set(index, value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2954,11 +2820,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2972,6 +2837,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         ensureTimerInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, timerInstanceId_);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2980,8 +2846,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerInstanceId() {
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000002);;
         onChanged();
         return this;
       }
@@ -2992,12 +2859,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3008,7 +2874,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return Whether the errorHandlingProcessInstanceId field is set.
        */
       public boolean hasErrorHandlingProcessInstanceId() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <code>optional string error_handling_process_instance_id = 3;</code>
@@ -3050,11 +2916,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setErrorHandlingProcessInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         errorHandlingProcessInstanceId_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -3063,8 +2927,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearErrorHandlingProcessInstanceId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
         errorHandlingProcessInstanceId_ = getDefaultInstance().getErrorHandlingProcessInstanceId();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -3075,12 +2939,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setErrorHandlingProcessInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         errorHandlingProcessInstanceId_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -3108,8 +2970,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder setState(int value) {
-        
+
         state_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -3122,7 +2985,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearState() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         state_ = 0;
         onChanged();
         return this;
@@ -3131,9 +2994,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> variable_ =
         java.util.Collections.emptyList();
       private void ensureVariableIsMutable() {
-        if (!((bitField0_ & 0x00000004) != 0)) {
+        if (!((bitField0_ & 0x00000010) != 0)) {
           variable_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable>(variable_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000010;
          }
       }
 
@@ -3283,7 +3146,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       public Builder clearVariable() {
         if (variableBuilder_ == null) {
           variable_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000010);
           onChanged();
         } else {
           variableBuilder_.clear();
@@ -3360,7 +3223,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           variableBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder>(
                   variable_,
-                  ((bitField0_ & 0x00000004) != 0),
+                  ((bitField0_ & 0x00000010) != 0),
                   getParentForChildren(),
                   isClean());
           variable_ = null;
@@ -3371,9 +3234,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> result_ =
         java.util.Collections.emptyList();
       private void ensureResultIsMutable() {
-        if (!((bitField0_ & 0x00000008) != 0)) {
+        if (!((bitField0_ & 0x00000020) != 0)) {
           result_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable>(result_);
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000020;
          }
       }
 
@@ -3523,7 +3386,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       public Builder clearResult() {
         if (resultBuilder_ == null) {
           result_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000020);
           onChanged();
         } else {
           resultBuilder_.clear();
@@ -3600,7 +3463,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           resultBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder>(
                   result_,
-                  ((bitField0_ & 0x00000008) != 0),
+                  ((bitField0_ & 0x00000020) != 0),
                   getParentForChildren(),
                   isClean());
           result_ = null;
@@ -3614,7 +3477,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return Whether the phaseId field is set.
        */
       public boolean hasPhaseId() {
-        return ((bitField0_ & 0x00000010) != 0);
+        return ((bitField0_ & 0x00000040) != 0);
       }
       /**
        * <code>optional string phase_id = 7;</code>
@@ -3656,11 +3519,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setPhaseId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000010;
+        if (value == null) { throw new NullPointerException(); }
         phaseId_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -3669,8 +3530,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearPhaseId() {
-        bitField0_ = (bitField0_ & ~0x00000010);
         phaseId_ = getDefaultInstance().getPhaseId();
+        bitField0_ = (bitField0_ & ~0x00000040);
         onChanged();
         return this;
       }
@@ -3681,12 +3542,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setPhaseIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000010;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         phaseId_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -3697,7 +3556,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return Whether the phaseStatus field is set.
        */
       public boolean hasPhaseStatus() {
-        return ((bitField0_ & 0x00000020) != 0);
+        return ((bitField0_ & 0x00000080) != 0);
       }
       /**
        * <code>optional string phase_status = 8;</code>
@@ -3739,11 +3598,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setPhaseStatus(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000020;
+        if (value == null) { throw new NullPointerException(); }
         phaseStatus_ = value;
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -3752,8 +3609,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearPhaseStatus() {
-        bitField0_ = (bitField0_ & ~0x00000020);
         phaseStatus_ = getDefaultInstance().getPhaseStatus();
+        bitField0_ = (bitField0_ & ~0x00000080);
         onChanged();
         return this;
       }
@@ -3764,12 +3621,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setPhaseStatusBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000020;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         phaseStatus_ = value;
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -3780,7 +3635,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return Whether the name field is set.
        */
       public boolean hasName() {
-        return ((bitField0_ & 0x00000040) != 0);
+        return ((bitField0_ & 0x00000100) != 0);
       }
       /**
        * <code>optional string name = 9;</code>
@@ -3822,11 +3677,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000040;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -3835,8 +3688,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000040);
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000100);
         onChanged();
         return this;
       }
@@ -3847,12 +3700,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000040;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         name_ = value;
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -3864,7 +3715,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Override
       public boolean hasStartDate() {
-        return ((bitField0_ & 0x00000080) != 0);
+        return ((bitField0_ & 0x00000200) != 0);
       }
       /**
        * <code>optional int64 start_date = 10;</code>
@@ -3880,8 +3731,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder setStartDate(long value) {
-        bitField0_ |= 0x00000080;
+
         startDate_ = value;
+        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -3890,7 +3742,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearStartDate() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000200);
         startDate_ = 0L;
         onChanged();
         return this;
@@ -3903,7 +3755,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Override
       public boolean hasCompleteDate() {
-        return ((bitField0_ & 0x00000100) != 0);
+        return ((bitField0_ & 0x00000400) != 0);
       }
       /**
        * <code>optional int64 complete_date = 11;</code>
@@ -3919,8 +3771,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder setCompleteDate(long value) {
-        bitField0_ |= 0x00000100;
+
         completeDate_ = value;
+        bitField0_ |= 0x00000400;
         onChanged();
         return this;
       }
@@ -3929,7 +3782,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearCompleteDate() {
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000400);
         completeDate_ = 0L;
         onChanged();
         return this;
@@ -3943,7 +3796,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return Whether the workItemData field is set.
        */
       public boolean hasWorkItemData() {
-        return ((bitField0_ & 0x00000200) != 0);
+        return ((bitField0_ & 0x00000800) != 0);
       }
       /**
        * <code>optional .google.protobuf.Any work_item_data = 12;</code>
@@ -3965,11 +3818,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
             throw new NullPointerException();
           }
           workItemData_ = value;
-          onChanged();
         } else {
           workItemDataBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000800;
+        onChanged();
         return this;
       }
       /**
@@ -3979,11 +3832,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.Any.Builder builderForValue) {
         if (workItemDataBuilder_ == null) {
           workItemData_ = builderForValue.build();
-          onChanged();
         } else {
           workItemDataBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000800;
+        onChanged();
         return this;
       }
       /**
@@ -3991,39 +3844,38 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder mergeWorkItemData(com.google.protobuf.Any value) {
         if (workItemDataBuilder_ == null) {
-          if (((bitField0_ & 0x00000200) != 0) &&
-              workItemData_ != null &&
-              workItemData_ != com.google.protobuf.Any.getDefaultInstance()) {
-            workItemData_ =
-              com.google.protobuf.Any.newBuilder(workItemData_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000800) != 0) &&
+            workItemData_ != null &&
+            workItemData_ != com.google.protobuf.Any.getDefaultInstance()) {
+            getWorkItemDataBuilder().mergeFrom(value);
           } else {
             workItemData_ = value;
           }
-          onChanged();
         } else {
           workItemDataBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000800;
+        onChanged();
         return this;
       }
       /**
        * <code>optional .google.protobuf.Any work_item_data = 12;</code>
        */
       public Builder clearWorkItemData() {
-        if (workItemDataBuilder_ == null) {
-          workItemData_ = null;
-          onChanged();
-        } else {
-          workItemDataBuilder_.clear();
+        bitField0_ = (bitField0_ & ~0x00000800);
+        workItemData_ = null;
+        if (workItemDataBuilder_ != null) {
+          workItemDataBuilder_.dispose();
+          workItemDataBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000200);
+        onChanged();
         return this;
       }
       /**
        * <code>optional .google.protobuf.Any work_item_data = 12;</code>
        */
       public com.google.protobuf.Any.Builder getWorkItemDataBuilder() {
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000800;
         onChanged();
         return getWorkItemDataFieldBuilder().getBuilder();
       }
@@ -4058,7 +3910,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> timerInstanceReference_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetTimerInstanceReference() {
+          internalGetTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -4066,8 +3918,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return timerInstanceReference_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableTimerInstanceReference() {
-        onChanged();;
+          internalGetMutableTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -4075,16 +3926,16 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!timerInstanceReference_.isMutable()) {
           timerInstanceReference_ = timerInstanceReference_.copy();
         }
+        bitField0_ |= 0x00001000;
+        onChanged();
         return timerInstanceReference_;
       }
-
       public int getTimerInstanceReferenceCount() {
         return internalGetTimerInstanceReference().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
        */
-
       @java.lang.Override
       public boolean containsTimerInstanceReference(
           java.lang.String key) {
@@ -4103,7 +3954,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
         return internalGetTimerInstanceReference().getMap();
       }
@@ -4111,10 +3961,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getTimerInstanceReferenceOrDefault(
+      public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetTimerInstanceReference().getMap();
@@ -4124,7 +3975,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
        */
       @java.lang.Override
-
       public java.lang.String getTimerInstanceReferenceOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -4135,8 +3985,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearTimerInstanceReference() {
+        bitField0_ = (bitField0_ & ~0x00001000);
         internalGetMutableTimerInstanceReference().getMutableMap()
             .clear();
         return this;
@@ -4144,7 +3994,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
        */
-
       public Builder removeTimerInstanceReference(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -4157,7 +4006,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableTimerInstanceReference() {
+          getMutableTimerInstanceReference() {
+        bitField0_ |= 0x00001000;
         return internalGetMutableTimerInstanceReference().getMutableMap();
       }
       /**
@@ -4167,22 +4017,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableTimerInstanceReference().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 13;</code>
        */
-
       public Builder putAllTimerInstanceReference(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableTimerInstanceReference().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00001000;
         return this;
       }
       @java.lang.Override
@@ -4218,7 +4066,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new WorkItemNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -4307,14 +4166,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
-    java.lang.String getTimerInstanceReferenceOrDefault(
+    /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key);
   }
@@ -4332,7 +4191,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
     private LambdaSubProcessNodeInstanceContent() {
       processInstanceId_ = "";
-      timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -4342,80 +4202,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new LambdaSubProcessNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private LambdaSubProcessNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              processInstanceId_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                timerInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000002;
-              }
-              timerInstanceId_.add(s);
-              break;
-            }
-            case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
-                timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
-                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000004;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              timerInstanceReference__ = input.readMessage(
-                  TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              timerInstanceReference_.getMutableMap().put(
-                  timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000002) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_LambdaSubProcessNodeInstanceContent_descriptor;
@@ -4443,7 +4229,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
     private int bitField0_;
     public static final int PROCESS_INSTANCE_ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object processInstanceId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object processInstanceId_ = "";
     /**
      * <code>optional string process_instance_id = 1;</code>
      * @return Whether the processInstanceId field is set.
@@ -4489,7 +4276,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int TIMER_INSTANCE_ID_FIELD_NUMBER = 2;
-    private com.google.protobuf.LazyStringList timerInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string timer_instance_id = 2;</code>
      * @return A list containing the timerInstanceId.
@@ -4535,6 +4324,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> timerInstanceReference_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -4545,14 +4335,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       return timerInstanceReference_;
     }
-
     public int getTimerInstanceReferenceCount() {
       return internalGetTimerInstanceReference().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     @java.lang.Override
     public boolean containsTimerInstanceReference(
         java.lang.String key) {
@@ -4571,7 +4359,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
       return internalGetTimerInstanceReference().getMap();
     }
@@ -4579,10 +4366,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTimerInstanceReferenceOrDefault(
+    public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTimerInstanceReference().getMap();
@@ -4592,7 +4380,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -4630,7 +4417,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           internalGetTimerInstanceReference(),
           TimerInstanceReferenceDefaultEntryHolder.defaultEntry,
           3);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -4660,7 +4447,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(3, timerInstanceReference__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -4684,7 +4471,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           .equals(other.getTimerInstanceIdList())) return false;
       if (!internalGetTimerInstanceReference().equals(
           other.internalGetTimerInstanceReference())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -4707,7 +4494,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_INSTANCE_REFERENCE_FIELD_NUMBER;
         hash = (53 * hash) + internalGetTimerInstanceReference().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -4846,26 +4633,21 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         processInstanceId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        timerInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         internalGetMutableTimerInstanceReference().clear();
         return this;
       }
@@ -4893,56 +4675,29 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.processInstanceId_ = processInstanceId_;
-        if (((bitField0_ & 0x00000002) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000002);
-        }
-        result.timerInstanceId_ = timerInstanceId_;
-        result.timerInstanceReference_ = internalGetTimerInstanceReference();
-        result.timerInstanceReference_.makeImmutable();
-        result.bitField0_ = to_bitField0_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.processInstanceId_ = processInstanceId_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          timerInstanceId_.makeImmutable();
+          result.timerInstanceId_ = timerInstanceId_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.timerInstanceReference_ = internalGetTimerInstanceReference();
+          result.timerInstanceReference_.makeImmutable();
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent) {
@@ -4956,14 +4711,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
       public Builder mergeFrom(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent other) {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent.getDefaultInstance()) return this;
         if (other.hasProcessInstanceId()) {
-          bitField0_ |= 0x00000001;
           processInstanceId_ = other.processInstanceId_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.timerInstanceId_.isEmpty()) {
           if (timerInstanceId_.isEmpty()) {
             timerInstanceId_ = other.timerInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ |= 0x00000002;
           } else {
             ensureTimerInstanceIdIsMutable();
             timerInstanceId_.addAll(other.timerInstanceId_);
@@ -4972,7 +4727,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         internalGetMutableTimerInstanceReference().mergeFrom(
             other.internalGetTimerInstanceReference());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000004;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -4987,17 +4743,50 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                processInstanceId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureTimerInstanceIdIsMutable();
+                timerInstanceId_.add(s);
+                break;
+              } // case 18
+              case 26: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                timerInstanceReference__ = input.readMessage(
+                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableTimerInstanceReference().getMutableMap().put(
+                    timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -5050,11 +4839,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setProcessInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         processInstanceId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5063,8 +4850,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearProcessInstanceId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         processInstanceId_ = getDefaultInstance().getProcessInstanceId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -5075,22 +4862,21 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setProcessInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         processInstanceId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureTimerInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!timerInstanceId_.isModifiable()) {
           timerInstanceId_ = new com.google.protobuf.LazyStringArrayList(timerInstanceId_);
-          bitField0_ |= 0x00000002;
-         }
+        }
+        bitField0_ |= 0x00000002;
       }
       /**
        * <code>repeated string timer_instance_id = 2;</code>
@@ -5098,7 +4884,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getTimerInstanceIdList() {
-        return timerInstanceId_.getUnmodifiableView();
+        timerInstanceId_.makeImmutable();
+        return timerInstanceId_;
       }
       /**
        * <code>repeated string timer_instance_id = 2;</code>
@@ -5132,11 +4919,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.set(index, value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5147,11 +4933,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5165,6 +4950,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         ensureTimerInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, timerInstanceId_);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5173,8 +4959,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerInstanceId() {
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000002);;
         onChanged();
         return this;
       }
@@ -5185,12 +4972,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5198,7 +4984,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> timerInstanceReference_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetTimerInstanceReference() {
+          internalGetTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -5206,8 +4992,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return timerInstanceReference_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableTimerInstanceReference() {
-        onChanged();;
+          internalGetMutableTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -5215,16 +5000,16 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!timerInstanceReference_.isMutable()) {
           timerInstanceReference_ = timerInstanceReference_.copy();
         }
+        bitField0_ |= 0x00000004;
+        onChanged();
         return timerInstanceReference_;
       }
-
       public int getTimerInstanceReferenceCount() {
         return internalGetTimerInstanceReference().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       @java.lang.Override
       public boolean containsTimerInstanceReference(
           java.lang.String key) {
@@ -5243,7 +5028,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
         return internalGetTimerInstanceReference().getMap();
       }
@@ -5251,10 +5035,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getTimerInstanceReferenceOrDefault(
+      public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetTimerInstanceReference().getMap();
@@ -5264,7 +5049,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.lang.String getTimerInstanceReferenceOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -5275,8 +5059,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearTimerInstanceReference() {
+        bitField0_ = (bitField0_ & ~0x00000004);
         internalGetMutableTimerInstanceReference().getMutableMap()
             .clear();
         return this;
@@ -5284,7 +5068,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder removeTimerInstanceReference(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -5297,7 +5080,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableTimerInstanceReference() {
+          getMutableTimerInstanceReference() {
+        bitField0_ |= 0x00000004;
         return internalGetMutableTimerInstanceReference().getMutableMap();
       }
       /**
@@ -5307,22 +5091,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableTimerInstanceReference().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder putAllTimerInstanceReference(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableTimerInstanceReference().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000004;
         return this;
       }
       @java.lang.Override
@@ -5358,7 +5140,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new LambdaSubProcessNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -5447,14 +5240,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
-    java.lang.String getTimerInstanceReferenceOrDefault(
+    /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key);
   }
@@ -5472,7 +5265,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
     private SubProcessNodeInstanceContent() {
       processInstanceId_ = "";
-      timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -5482,80 +5276,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new SubProcessNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private SubProcessNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              processInstanceId_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                timerInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000002;
-              }
-              timerInstanceId_.add(s);
-              break;
-            }
-            case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
-                timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
-                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000004;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              timerInstanceReference__ = input.readMessage(
-                  TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              timerInstanceReference_.getMutableMap().put(
-                  timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000002) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_SubProcessNodeInstanceContent_descriptor;
@@ -5583,7 +5303,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
     private int bitField0_;
     public static final int PROCESS_INSTANCE_ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object processInstanceId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object processInstanceId_ = "";
     /**
      * <code>optional string process_instance_id = 1;</code>
      * @return Whether the processInstanceId field is set.
@@ -5629,7 +5350,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int TIMER_INSTANCE_ID_FIELD_NUMBER = 2;
-    private com.google.protobuf.LazyStringList timerInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string timer_instance_id = 2;</code>
      * @return A list containing the timerInstanceId.
@@ -5675,6 +5398,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> timerInstanceReference_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -5685,14 +5409,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       return timerInstanceReference_;
     }
-
     public int getTimerInstanceReferenceCount() {
       return internalGetTimerInstanceReference().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     @java.lang.Override
     public boolean containsTimerInstanceReference(
         java.lang.String key) {
@@ -5711,7 +5433,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
       return internalGetTimerInstanceReference().getMap();
     }
@@ -5719,10 +5440,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTimerInstanceReferenceOrDefault(
+    public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTimerInstanceReference().getMap();
@@ -5732,7 +5454,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -5770,7 +5491,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           internalGetTimerInstanceReference(),
           TimerInstanceReferenceDefaultEntryHolder.defaultEntry,
           3);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -5800,7 +5521,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(3, timerInstanceReference__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -5824,7 +5545,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           .equals(other.getTimerInstanceIdList())) return false;
       if (!internalGetTimerInstanceReference().equals(
           other.internalGetTimerInstanceReference())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -5847,7 +5568,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_INSTANCE_REFERENCE_FIELD_NUMBER;
         hash = (53 * hash) + internalGetTimerInstanceReference().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -5986,26 +5707,21 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.SubProcessNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         processInstanceId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        timerInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         internalGetMutableTimerInstanceReference().clear();
         return this;
       }
@@ -6033,56 +5749,29 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.SubProcessNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.SubProcessNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.SubProcessNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.processInstanceId_ = processInstanceId_;
-        if (((bitField0_ & 0x00000002) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000002);
-        }
-        result.timerInstanceId_ = timerInstanceId_;
-        result.timerInstanceReference_ = internalGetTimerInstanceReference();
-        result.timerInstanceReference_.makeImmutable();
-        result.bitField0_ = to_bitField0_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.SubProcessNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.processInstanceId_ = processInstanceId_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          timerInstanceId_.makeImmutable();
+          result.timerInstanceId_ = timerInstanceId_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.timerInstanceReference_ = internalGetTimerInstanceReference();
+          result.timerInstanceReference_.makeImmutable();
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.SubProcessNodeInstanceContent) {
@@ -6096,14 +5785,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
       public Builder mergeFrom(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.SubProcessNodeInstanceContent other) {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.SubProcessNodeInstanceContent.getDefaultInstance()) return this;
         if (other.hasProcessInstanceId()) {
-          bitField0_ |= 0x00000001;
           processInstanceId_ = other.processInstanceId_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.timerInstanceId_.isEmpty()) {
           if (timerInstanceId_.isEmpty()) {
             timerInstanceId_ = other.timerInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ |= 0x00000002;
           } else {
             ensureTimerInstanceIdIsMutable();
             timerInstanceId_.addAll(other.timerInstanceId_);
@@ -6112,7 +5801,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         internalGetMutableTimerInstanceReference().mergeFrom(
             other.internalGetTimerInstanceReference());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000004;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -6127,17 +5817,50 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.SubProcessNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                processInstanceId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureTimerInstanceIdIsMutable();
+                timerInstanceId_.add(s);
+                break;
+              } // case 18
+              case 26: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                timerInstanceReference__ = input.readMessage(
+                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableTimerInstanceReference().getMutableMap().put(
+                    timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.SubProcessNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -6190,11 +5913,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setProcessInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         processInstanceId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -6203,8 +5924,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearProcessInstanceId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         processInstanceId_ = getDefaultInstance().getProcessInstanceId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -6215,22 +5936,21 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setProcessInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         processInstanceId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureTimerInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!timerInstanceId_.isModifiable()) {
           timerInstanceId_ = new com.google.protobuf.LazyStringArrayList(timerInstanceId_);
-          bitField0_ |= 0x00000002;
-         }
+        }
+        bitField0_ |= 0x00000002;
       }
       /**
        * <code>repeated string timer_instance_id = 2;</code>
@@ -6238,7 +5958,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getTimerInstanceIdList() {
-        return timerInstanceId_.getUnmodifiableView();
+        timerInstanceId_.makeImmutable();
+        return timerInstanceId_;
       }
       /**
        * <code>repeated string timer_instance_id = 2;</code>
@@ -6272,11 +5993,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.set(index, value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6287,11 +6007,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6305,6 +6024,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         ensureTimerInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, timerInstanceId_);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6313,8 +6033,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerInstanceId() {
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000002);;
         onChanged();
         return this;
       }
@@ -6325,12 +6046,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6338,7 +6058,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> timerInstanceReference_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetTimerInstanceReference() {
+          internalGetTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -6346,8 +6066,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return timerInstanceReference_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableTimerInstanceReference() {
-        onChanged();;
+          internalGetMutableTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -6355,16 +6074,16 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!timerInstanceReference_.isMutable()) {
           timerInstanceReference_ = timerInstanceReference_.copy();
         }
+        bitField0_ |= 0x00000004;
+        onChanged();
         return timerInstanceReference_;
       }
-
       public int getTimerInstanceReferenceCount() {
         return internalGetTimerInstanceReference().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       @java.lang.Override
       public boolean containsTimerInstanceReference(
           java.lang.String key) {
@@ -6383,7 +6102,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
         return internalGetTimerInstanceReference().getMap();
       }
@@ -6391,10 +6109,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getTimerInstanceReferenceOrDefault(
+      public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetTimerInstanceReference().getMap();
@@ -6404,7 +6123,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.lang.String getTimerInstanceReferenceOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -6415,8 +6133,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearTimerInstanceReference() {
+        bitField0_ = (bitField0_ & ~0x00000004);
         internalGetMutableTimerInstanceReference().getMutableMap()
             .clear();
         return this;
@@ -6424,7 +6142,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder removeTimerInstanceReference(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -6437,7 +6154,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableTimerInstanceReference() {
+          getMutableTimerInstanceReference() {
+        bitField0_ |= 0x00000004;
         return internalGetMutableTimerInstanceReference().getMutableMap();
       }
       /**
@@ -6447,22 +6165,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableTimerInstanceReference().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder putAllTimerInstanceReference(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableTimerInstanceReference().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000004;
         return this;
       }
       @java.lang.Override
@@ -6498,7 +6214,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SubProcessNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -6570,14 +6297,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
-
-    java.lang.String getTimerInstanceReferenceOrDefault(
+    /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
-
     java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key);
   }
@@ -6594,7 +6321,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
       super(builder);
     }
     private MilestoneNodeInstanceContent() {
-      timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -6604,74 +6332,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new MilestoneNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private MilestoneNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                timerInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              timerInstanceId_.add(s);
-              break;
-            }
-            case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
-                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000002;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              timerInstanceReference__ = input.readMessage(
-                  TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              timerInstanceReference_.getMutableMap().put(
-                  timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_MilestoneNodeInstanceContent_descriptor;
@@ -6698,7 +6358,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int TIMER_INSTANCE_ID_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList timerInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string timer_instance_id = 1;</code>
      * @return A list containing the timerInstanceId.
@@ -6744,6 +6406,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> timerInstanceReference_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -6754,14 +6417,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       return timerInstanceReference_;
     }
-
     public int getTimerInstanceReferenceCount() {
       return internalGetTimerInstanceReference().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
-
     @java.lang.Override
     public boolean containsTimerInstanceReference(
         java.lang.String key) {
@@ -6780,7 +6441,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
       return internalGetTimerInstanceReference().getMap();
     }
@@ -6788,10 +6448,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTimerInstanceReferenceOrDefault(
+    public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTimerInstanceReference().getMap();
@@ -6801,7 +6462,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -6836,7 +6496,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           internalGetTimerInstanceReference(),
           TimerInstanceReferenceDefaultEntryHolder.defaultEntry,
           2);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -6863,7 +6523,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(2, timerInstanceReference__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -6882,7 +6542,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           .equals(other.getTimerInstanceIdList())) return false;
       if (!internalGetTimerInstanceReference().equals(
           other.internalGetTimerInstanceReference())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -6901,7 +6561,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_INSTANCE_REFERENCE_FIELD_NUMBER;
         hash = (53 * hash) + internalGetTimerInstanceReference().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -7040,24 +6700,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.MilestoneNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = 0;
+        timerInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         internalGetMutableTimerInstanceReference().clear();
         return this;
       }
@@ -7085,50 +6741,23 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.MilestoneNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.MilestoneNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.MilestoneNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.timerInstanceId_ = timerInstanceId_;
-        result.timerInstanceReference_ = internalGetTimerInstanceReference();
-        result.timerInstanceReference_.makeImmutable();
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.MilestoneNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          timerInstanceId_.makeImmutable();
+          result.timerInstanceId_ = timerInstanceId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.timerInstanceReference_ = internalGetTimerInstanceReference();
+          result.timerInstanceReference_.makeImmutable();
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.MilestoneNodeInstanceContent) {
@@ -7144,7 +6773,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!other.timerInstanceId_.isEmpty()) {
           if (timerInstanceId_.isEmpty()) {
             timerInstanceId_ = other.timerInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureTimerInstanceIdIsMutable();
             timerInstanceId_.addAll(other.timerInstanceId_);
@@ -7153,7 +6782,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         internalGetMutableTimerInstanceReference().mergeFrom(
             other.internalGetTimerInstanceReference());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000002;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -7168,27 +6798,56 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.MilestoneNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureTimerInstanceIdIsMutable();
+                timerInstanceId_.add(s);
+                break;
+              } // case 10
+              case 18: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                timerInstanceReference__ = input.readMessage(
+                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableTimerInstanceReference().getMutableMap().put(
+                    timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.MilestoneNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureTimerInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!timerInstanceId_.isModifiable()) {
           timerInstanceId_ = new com.google.protobuf.LazyStringArrayList(timerInstanceId_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -7196,7 +6855,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getTimerInstanceIdList() {
-        return timerInstanceId_.getUnmodifiableView();
+        timerInstanceId_.makeImmutable();
+        return timerInstanceId_;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -7230,11 +6890,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7245,11 +6904,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7263,6 +6921,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         ensureTimerInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, timerInstanceId_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7271,8 +6930,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerInstanceId() {
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -7283,12 +6943,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7296,7 +6955,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> timerInstanceReference_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetTimerInstanceReference() {
+          internalGetTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -7304,8 +6963,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return timerInstanceReference_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableTimerInstanceReference() {
-        onChanged();;
+          internalGetMutableTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -7313,16 +6971,16 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!timerInstanceReference_.isMutable()) {
           timerInstanceReference_ = timerInstanceReference_.copy();
         }
+        bitField0_ |= 0x00000002;
+        onChanged();
         return timerInstanceReference_;
       }
-
       public int getTimerInstanceReferenceCount() {
         return internalGetTimerInstanceReference().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
-
       @java.lang.Override
       public boolean containsTimerInstanceReference(
           java.lang.String key) {
@@ -7341,7 +6999,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
         return internalGetTimerInstanceReference().getMap();
       }
@@ -7349,10 +7006,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getTimerInstanceReferenceOrDefault(
+      public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetTimerInstanceReference().getMap();
@@ -7362,7 +7020,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
       @java.lang.Override
-
       public java.lang.String getTimerInstanceReferenceOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -7373,8 +7030,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearTimerInstanceReference() {
+        bitField0_ = (bitField0_ & ~0x00000002);
         internalGetMutableTimerInstanceReference().getMutableMap()
             .clear();
         return this;
@@ -7382,7 +7039,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
-
       public Builder removeTimerInstanceReference(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -7395,7 +7051,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableTimerInstanceReference() {
+          getMutableTimerInstanceReference() {
+        bitField0_ |= 0x00000002;
         return internalGetMutableTimerInstanceReference().getMutableMap();
       }
       /**
@@ -7405,22 +7062,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableTimerInstanceReference().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000002;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
-
       public Builder putAllTimerInstanceReference(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableTimerInstanceReference().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000002;
         return this;
       }
       @java.lang.Override
@@ -7456,7 +7111,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new MilestoneNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -7502,48 +7168,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new EventNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private EventNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_EventNodeInstanceContent_descriptor;
@@ -7571,7 +7195,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -7580,7 +7204,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       if (size != -1) return size;
 
       size = 0;
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -7595,7 +7219,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventNodeInstanceContent other = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventNodeInstanceContent) obj;
 
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -7606,7 +7230,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -7723,18 +7347,13 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -7770,38 +7389,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
 
       @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventNodeInstanceContent) {
           return mergeFrom((org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventNodeInstanceContent)other);
@@ -7813,7 +7400,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       public Builder mergeFrom(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventNodeInstanceContent other) {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventNodeInstanceContent.getDefaultInstance()) return this;
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -7828,17 +7415,30 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       @java.lang.Override
@@ -7874,7 +7474,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new EventNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -7938,55 +7549,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new TimerNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private TimerNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              timerId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_TimerNodeInstanceContent_descriptor;
@@ -8002,7 +7564,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
     private int bitField0_;
     public static final int TIMER_ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object timerId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object timerId_ = "";
     /**
      * <code>optional string timer_id = 1;</code>
      * @return Whether the timerId field is set.
@@ -8064,7 +7627,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       if (((bitField0_ & 0x00000001) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, timerId_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -8076,7 +7639,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, timerId_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -8096,7 +7659,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!getTimerId()
             .equals(other.getTimerId())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -8111,7 +7674,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_ID_FIELD_NUMBER;
         hash = (53 * hash) + getTimerId().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -8228,24 +7791,19 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.TimerNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         timerId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -8272,49 +7830,21 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.TimerNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.TimerNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.TimerNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.timerId_ = timerId_;
-        result.bitField0_ = to_bitField0_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.TimerNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.timerId_ = timerId_;
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.TimerNodeInstanceContent) {
@@ -8328,11 +7858,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
       public Builder mergeFrom(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.TimerNodeInstanceContent other) {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.TimerNodeInstanceContent.getDefaultInstance()) return this;
         if (other.hasTimerId()) {
-          bitField0_ |= 0x00000001;
           timerId_ = other.timerId_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -8347,17 +7877,35 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.TimerNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                timerId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.TimerNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -8410,11 +7958,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         timerId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -8423,8 +7969,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         timerId_ = getDefaultInstance().getTimerId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -8435,12 +7981,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         timerId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -8477,7 +8021,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TimerNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -8548,61 +8103,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new JoinNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private JoinNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                trigger_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              trigger_.add(
-                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          trigger_ = java.util.Collections.unmodifiableList(trigger_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_JoinNodeInstanceContent_descriptor;
@@ -8621,15 +8121,21 @@ public final class KogitoNodeInstanceContentsProtobuf {
         com.google.protobuf.MessageOrBuilder {
 
       /**
-       * <code>optional int64 node_id = 1;</code>
+       * <code>optional string node_id = 1;</code>
        * @return Whether the nodeId field is set.
        */
       boolean hasNodeId();
       /**
-       * <code>optional int64 node_id = 1;</code>
+       * <code>optional string node_id = 1;</code>
        * @return The nodeId.
        */
-      long getNodeId();
+      java.lang.String getNodeId();
+      /**
+       * <code>optional string node_id = 1;</code>
+       * @return The bytes for nodeId.
+       */
+      com.google.protobuf.ByteString
+          getNodeIdBytes();
 
       /**
        * <code>optional int32 counter = 2;</code>
@@ -8655,6 +8161,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         super(builder);
       }
       private JoinTrigger() {
+        nodeId_ = "";
       }
 
       @java.lang.Override
@@ -8664,59 +8171,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return new JoinTrigger();
       }
 
-      @java.lang.Override
-      public final com.google.protobuf.UnknownFieldSet
-      getUnknownFields() {
-        return this.unknownFields;
-      }
-      private JoinTrigger(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        this();
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
-        int mutable_bitField0_ = 0;
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-            com.google.protobuf.UnknownFieldSet.newBuilder();
-        try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 8: {
-                bitField0_ |= 0x00000001;
-                nodeId_ = input.readInt64();
-                break;
-              }
-              case 16: {
-                bitField0_ |= 0x00000002;
-                counter_ = input.readInt32();
-                break;
-              }
-              default: {
-                if (!parseUnknownField(
-                    input, unknownFields, extensionRegistry, tag)) {
-                  done = true;
-                }
-                break;
-              }
-            }
-          }
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(this);
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(
-              e).setUnfinishedMessage(this);
-        } finally {
-          this.unknownFields = unknownFields.build();
-          makeExtensionsImmutable();
-        }
-      }
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_JoinNodeInstanceContent_JoinTrigger_descriptor;
@@ -8732,9 +8186,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       private int bitField0_;
       public static final int NODE_ID_FIELD_NUMBER = 1;
-      private long nodeId_;
+      @SuppressWarnings("serial")
+      private volatile java.lang.Object nodeId_ = "";
       /**
-       * <code>optional int64 node_id = 1;</code>
+       * <code>optional string node_id = 1;</code>
        * @return Whether the nodeId field is set.
        */
       @java.lang.Override
@@ -8742,16 +8197,43 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return ((bitField0_ & 0x00000001) != 0);
       }
       /**
-       * <code>optional int64 node_id = 1;</code>
+       * <code>optional string node_id = 1;</code>
        * @return The nodeId.
        */
       @java.lang.Override
-      public long getNodeId() {
-        return nodeId_;
+      public java.lang.String getNodeId() {
+        java.lang.Object ref = nodeId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          nodeId_ = s;
+          return s;
+        }
+      }
+      /**
+       * <code>optional string node_id = 1;</code>
+       * @return The bytes for nodeId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getNodeIdBytes() {
+        java.lang.Object ref = nodeId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          nodeId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
 
       public static final int COUNTER_FIELD_NUMBER = 2;
-      private int counter_;
+      private int counter_ = 0;
       /**
        * <code>optional int32 counter = 2;</code>
        * @return Whether the counter field is set.
@@ -8784,12 +8266,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
         if (((bitField0_ & 0x00000001) != 0)) {
-          output.writeInt64(1, nodeId_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, nodeId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
           output.writeInt32(2, counter_);
         }
-        unknownFields.writeTo(output);
+        getUnknownFields().writeTo(output);
       }
 
       @java.lang.Override
@@ -8799,14 +8281,13 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
         size = 0;
         if (((bitField0_ & 0x00000001) != 0)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(1, nodeId_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, nodeId_);
         }
         if (((bitField0_ & 0x00000002) != 0)) {
           size += com.google.protobuf.CodedOutputStream
             .computeInt32Size(2, counter_);
         }
-        size += unknownFields.getSerializedSize();
+        size += getUnknownFields().getSerializedSize();
         memoizedSize = size;
         return size;
       }
@@ -8823,15 +8304,15 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
         if (hasNodeId() != other.hasNodeId()) return false;
         if (hasNodeId()) {
-          if (getNodeId()
-              != other.getNodeId()) return false;
+          if (!getNodeId()
+              .equals(other.getNodeId())) return false;
         }
         if (hasCounter() != other.hasCounter()) return false;
         if (hasCounter()) {
           if (getCounter()
               != other.getCounter()) return false;
         }
-        if (!unknownFields.equals(other.unknownFields)) return false;
+        if (!getUnknownFields().equals(other.getUnknownFields())) return false;
         return true;
       }
 
@@ -8844,14 +8325,13 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (19 * hash) + getDescriptor().hashCode();
         if (hasNodeId()) {
           hash = (37 * hash) + NODE_ID_FIELD_NUMBER;
-          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-              getNodeId());
+          hash = (53 * hash) + getNodeId().hashCode();
         }
         if (hasCounter()) {
           hash = (37 * hash) + COUNTER_FIELD_NUMBER;
           hash = (53 * hash) + getCounter();
         }
-        hash = (29 * hash) + unknownFields.hashCode();
+        hash = (29 * hash) + getUnknownFields().hashCode();
         memoizedHashCode = hash;
         return hash;
       }
@@ -8968,26 +8448,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
         // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger.newBuilder()
         private Builder() {
-          maybeForceBuilderInitialization();
+
         }
 
         private Builder(
             com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
           super(parent);
-          maybeForceBuilderInitialization();
-        }
-        private void maybeForceBuilderInitialization() {
-          if (com.google.protobuf.GeneratedMessageV3
-                  .alwaysUseFieldBuilders) {
-          }
+
         }
         @java.lang.Override
         public Builder clear() {
           super.clear();
-          nodeId_ = 0L;
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = 0;
+          nodeId_ = "";
           counter_ = 0;
-          bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
 
@@ -9014,6 +8488,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
         @java.lang.Override
         public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger buildPartial() {
           org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger(this);
+          if (bitField0_ != 0) { buildPartial0(result); }
+          onBuilt();
+          return result;
+        }
+
+        private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger result) {
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -9024,43 +8504,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
             result.counter_ = counter_;
             to_bitField0_ |= 0x00000002;
           }
-          result.bitField0_ = to_bitField0_;
-          onBuilt();
-          return result;
+          result.bitField0_ |= to_bitField0_;
         }
 
-        @java.lang.Override
-        public Builder clone() {
-          return super.clone();
-        }
-        @java.lang.Override
-        public Builder setField(
-            com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.setField(field, value);
-        }
-        @java.lang.Override
-        public Builder clearField(
-            com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
-        }
-        @java.lang.Override
-        public Builder clearOneof(
-            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
-        }
-        @java.lang.Override
-        public Builder setRepeatedField(
-            com.google.protobuf.Descriptors.FieldDescriptor field,
-            int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
-        }
-        @java.lang.Override
-        public Builder addRepeatedField(
-            com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.addRepeatedField(field, value);
-        }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
           if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger) {
@@ -9074,12 +8520,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
         public Builder mergeFrom(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger other) {
           if (other == org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger.getDefaultInstance()) return this;
           if (other.hasNodeId()) {
-            setNodeId(other.getNodeId());
+            nodeId_ = other.nodeId_;
+            bitField0_ |= 0x00000001;
+            onChanged();
           }
           if (other.hasCounter()) {
             setCounter(other.getCounter());
           }
-          this.mergeUnknownFields(other.unknownFields);
+          this.mergeUnknownFields(other.getUnknownFields());
           onChanged();
           return this;
         }
@@ -9094,56 +8542,119 @@ public final class KogitoNodeInstanceContentsProtobuf {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger parsedMessage = null;
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
           try {
-            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  nodeId_ = input.readStringRequireUtf8();
+                  bitField0_ |= 0x00000001;
+                  break;
+                } // case 10
+                case 16: {
+                  counter_ = input.readInt32();
+                  bitField0_ |= 0x00000002;
+                  break;
+                } // case 16
+                default: {
+                  if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                    done = true; // was an endgroup tag
+                  }
+                  break;
+                } // default:
+              } // switch (tag)
+            } // while (!done)
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger) e.getUnfinishedMessage();
             throw e.unwrapIOException();
           } finally {
-            if (parsedMessage != null) {
-              mergeFrom(parsedMessage);
-            }
-          }
+            onChanged();
+          } // finally
           return this;
         }
         private int bitField0_;
 
-        private long nodeId_ ;
+        private java.lang.Object nodeId_ = "";
         /**
-         * <code>optional int64 node_id = 1;</code>
+         * <code>optional string node_id = 1;</code>
          * @return Whether the nodeId field is set.
          */
-        @java.lang.Override
         public boolean hasNodeId() {
           return ((bitField0_ & 0x00000001) != 0);
         }
         /**
-         * <code>optional int64 node_id = 1;</code>
+         * <code>optional string node_id = 1;</code>
          * @return The nodeId.
          */
-        @java.lang.Override
-        public long getNodeId() {
-          return nodeId_;
+        public java.lang.String getNodeId() {
+          java.lang.Object ref = nodeId_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            nodeId_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
         }
         /**
-         * <code>optional int64 node_id = 1;</code>
+         * <code>optional string node_id = 1;</code>
+         * @return The bytes for nodeId.
+         */
+        public com.google.protobuf.ByteString
+            getNodeIdBytes() {
+          java.lang.Object ref = nodeId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            nodeId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>optional string node_id = 1;</code>
          * @param value The nodeId to set.
          * @return This builder for chaining.
          */
-        public Builder setNodeId(long value) {
-          bitField0_ |= 0x00000001;
+        public Builder setNodeId(
+            java.lang.String value) {
+          if (value == null) { throw new NullPointerException(); }
           nodeId_ = value;
+          bitField0_ |= 0x00000001;
           onChanged();
           return this;
         }
         /**
-         * <code>optional int64 node_id = 1;</code>
+         * <code>optional string node_id = 1;</code>
          * @return This builder for chaining.
          */
         public Builder clearNodeId() {
+          nodeId_ = getDefaultInstance().getNodeId();
           bitField0_ = (bitField0_ & ~0x00000001);
-          nodeId_ = 0L;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional string node_id = 1;</code>
+         * @param value The bytes for nodeId to set.
+         * @return This builder for chaining.
+         */
+        public Builder setNodeIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) { throw new NullPointerException(); }
+          checkByteStringIsUtf8(value);
+          nodeId_ = value;
+          bitField0_ |= 0x00000001;
           onChanged();
           return this;
         }
@@ -9171,8 +8682,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
          * @return This builder for chaining.
          */
         public Builder setCounter(int value) {
-          bitField0_ |= 0x00000002;
+
           counter_ = value;
+          bitField0_ |= 0x00000002;
           onChanged();
           return this;
         }
@@ -9219,7 +8731,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new JoinTrigger(input, extensionRegistry);
+          Builder builder = newBuilder();
+          try {
+            builder.mergeFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(builder.buildPartial());
+          } catch (com.google.protobuf.UninitializedMessageException e) {
+            throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(e)
+                .setUnfinishedMessage(builder.buildPartial());
+          }
+          return builder.buildPartial();
         }
       };
 
@@ -9240,6 +8763,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int TRIGGER_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger> trigger_;
     /**
      * <code>repeated .org.kie.kogito.serialization.process.protobuf.JoinNodeInstanceContent.JoinTrigger trigger = 1;</code>
@@ -9296,7 +8820,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       for (int i = 0; i < trigger_.size(); i++) {
         output.writeMessage(1, trigger_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -9309,7 +8833,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, trigger_.get(i));
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -9326,7 +8850,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       if (!getTriggerList()
           .equals(other.getTriggerList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -9341,7 +8865,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TRIGGER_FIELD_NUMBER;
         hash = (53 * hash) + getTriggerList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -9458,29 +8982,25 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getTriggerFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (triggerBuilder_ == null) {
           trigger_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
+          trigger_ = null;
           triggerBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -9507,7 +9027,13 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent result) {
         if (triggerBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             trigger_ = java.util.Collections.unmodifiableList(trigger_);
@@ -9517,42 +9043,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
         } else {
           result.trigger_ = triggerBuilder_.build();
         }
-        onBuilt();
-        return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent) {
@@ -9591,7 +9087,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -9606,17 +9102,43 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger m =
+                    input.readMessage(
+                        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent.JoinTrigger.parser(),
+                        extensionRegistry);
+                if (triggerBuilder_ == null) {
+                  ensureTriggerIsMutable();
+                  trigger_.add(m);
+                } else {
+                  triggerBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -9893,7 +9415,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new JoinNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -9965,14 +9498,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
-
-    java.lang.String getTimerInstanceReferenceOrDefault(
+    /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
-
     java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key);
   }
@@ -9989,7 +9522,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
       super(builder);
     }
     private StateNodeInstanceContent() {
-      timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -9999,74 +9533,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new StateNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private StateNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                timerInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              timerInstanceId_.add(s);
-              break;
-            }
-            case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
-                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000002;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              timerInstanceReference__ = input.readMessage(
-                  TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              timerInstanceReference_.getMutableMap().put(
-                  timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_StateNodeInstanceContent_descriptor;
@@ -10093,7 +9559,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int TIMER_INSTANCE_ID_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList timerInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string timer_instance_id = 1;</code>
      * @return A list containing the timerInstanceId.
@@ -10139,6 +9607,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> timerInstanceReference_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -10149,14 +9618,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       return timerInstanceReference_;
     }
-
     public int getTimerInstanceReferenceCount() {
       return internalGetTimerInstanceReference().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
-
     @java.lang.Override
     public boolean containsTimerInstanceReference(
         java.lang.String key) {
@@ -10175,7 +9642,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
       return internalGetTimerInstanceReference().getMap();
     }
@@ -10183,10 +9649,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTimerInstanceReferenceOrDefault(
+    public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTimerInstanceReference().getMap();
@@ -10196,7 +9663,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -10231,7 +9697,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           internalGetTimerInstanceReference(),
           TimerInstanceReferenceDefaultEntryHolder.defaultEntry,
           2);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -10258,7 +9724,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(2, timerInstanceReference__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -10277,7 +9743,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           .equals(other.getTimerInstanceIdList())) return false;
       if (!internalGetTimerInstanceReference().equals(
           other.internalGetTimerInstanceReference())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -10296,7 +9762,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_INSTANCE_REFERENCE_FIELD_NUMBER;
         hash = (53 * hash) + internalGetTimerInstanceReference().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -10435,24 +9901,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.StateNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = 0;
+        timerInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         internalGetMutableTimerInstanceReference().clear();
         return this;
       }
@@ -10480,50 +9942,23 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.StateNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.StateNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.StateNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.timerInstanceId_ = timerInstanceId_;
-        result.timerInstanceReference_ = internalGetTimerInstanceReference();
-        result.timerInstanceReference_.makeImmutable();
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.StateNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          timerInstanceId_.makeImmutable();
+          result.timerInstanceId_ = timerInstanceId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.timerInstanceReference_ = internalGetTimerInstanceReference();
+          result.timerInstanceReference_.makeImmutable();
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.StateNodeInstanceContent) {
@@ -10539,7 +9974,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!other.timerInstanceId_.isEmpty()) {
           if (timerInstanceId_.isEmpty()) {
             timerInstanceId_ = other.timerInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureTimerInstanceIdIsMutable();
             timerInstanceId_.addAll(other.timerInstanceId_);
@@ -10548,7 +9983,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         internalGetMutableTimerInstanceReference().mergeFrom(
             other.internalGetTimerInstanceReference());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000002;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -10563,27 +9999,56 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.StateNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureTimerInstanceIdIsMutable();
+                timerInstanceId_.add(s);
+                break;
+              } // case 10
+              case 18: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                timerInstanceReference__ = input.readMessage(
+                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableTimerInstanceReference().getMutableMap().put(
+                    timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.StateNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureTimerInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!timerInstanceId_.isModifiable()) {
           timerInstanceId_ = new com.google.protobuf.LazyStringArrayList(timerInstanceId_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -10591,7 +10056,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getTimerInstanceIdList() {
-        return timerInstanceId_.getUnmodifiableView();
+        timerInstanceId_.makeImmutable();
+        return timerInstanceId_;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -10625,11 +10091,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -10640,11 +10105,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -10658,6 +10122,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         ensureTimerInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, timerInstanceId_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -10666,8 +10131,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerInstanceId() {
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -10678,12 +10144,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -10691,7 +10156,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> timerInstanceReference_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetTimerInstanceReference() {
+          internalGetTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -10699,8 +10164,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return timerInstanceReference_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableTimerInstanceReference() {
-        onChanged();;
+          internalGetMutableTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -10708,16 +10172,16 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!timerInstanceReference_.isMutable()) {
           timerInstanceReference_ = timerInstanceReference_.copy();
         }
+        bitField0_ |= 0x00000002;
+        onChanged();
         return timerInstanceReference_;
       }
-
       public int getTimerInstanceReferenceCount() {
         return internalGetTimerInstanceReference().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
-
       @java.lang.Override
       public boolean containsTimerInstanceReference(
           java.lang.String key) {
@@ -10736,7 +10200,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
         return internalGetTimerInstanceReference().getMap();
       }
@@ -10744,10 +10207,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getTimerInstanceReferenceOrDefault(
+      public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetTimerInstanceReference().getMap();
@@ -10757,7 +10221,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
       @java.lang.Override
-
       public java.lang.String getTimerInstanceReferenceOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -10768,8 +10231,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearTimerInstanceReference() {
+        bitField0_ = (bitField0_ & ~0x00000002);
         internalGetMutableTimerInstanceReference().getMutableMap()
             .clear();
         return this;
@@ -10777,7 +10240,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
-
       public Builder removeTimerInstanceReference(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -10790,7 +10252,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableTimerInstanceReference() {
+          getMutableTimerInstanceReference() {
+        bitField0_ |= 0x00000002;
         return internalGetMutableTimerInstanceReference().getMutableMap();
       }
       /**
@@ -10800,22 +10263,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableTimerInstanceReference().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000002;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 2;</code>
        */
-
       public Builder putAllTimerInstanceReference(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableTimerInstanceReference().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000002;
         return this;
       }
       @java.lang.Override
@@ -10851,7 +10312,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new StateNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -10938,14 +10410,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
-    java.lang.String getTimerInstanceReferenceOrDefault(
+    /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key);
   }
@@ -10962,7 +10434,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
       super(builder);
     }
     private CompositeContextNodeInstanceContent() {
-      timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -10972,87 +10445,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new CompositeContextNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private CompositeContextNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                timerInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              timerInstanceId_.add(s);
-              break;
-            }
-            case 18: {
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder subBuilder = null;
-              if (context_ != null) {
-                subBuilder = context_.toBuilder();
-              }
-              context_ = input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(context_);
-                context_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 26: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
-                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000002;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              timerInstanceReference__ = input.readMessage(
-                  TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              timerInstanceReference_.getMutableMap().put(
-                  timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_CompositeContextNodeInstanceContent_descriptor;
@@ -11079,7 +10471,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int TIMER_INSTANCE_ID_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList timerInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string timer_instance_id = 1;</code>
      * @return A list containing the timerInstanceId.
@@ -11136,7 +10530,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
      */
     @java.lang.Override
     public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContextOrBuilder getContextOrBuilder() {
-      return getContext();
+      return context_ == null ? org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.getDefaultInstance() : context_;
     }
 
     public static final int TIMER_INSTANCE_REFERENCE_FIELD_NUMBER = 3;
@@ -11151,6 +10545,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> timerInstanceReference_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -11161,14 +10556,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       return timerInstanceReference_;
     }
-
     public int getTimerInstanceReferenceCount() {
       return internalGetTimerInstanceReference().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     @java.lang.Override
     public boolean containsTimerInstanceReference(
         java.lang.String key) {
@@ -11187,7 +10580,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
       return internalGetTimerInstanceReference().getMap();
     }
@@ -11195,10 +10587,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTimerInstanceReferenceOrDefault(
+    public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTimerInstanceReference().getMap();
@@ -11208,7 +10601,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -11246,7 +10638,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           internalGetTimerInstanceReference(),
           TimerInstanceReferenceDefaultEntryHolder.defaultEntry,
           3);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -11277,7 +10669,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(3, timerInstanceReference__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -11301,7 +10693,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       if (!internalGetTimerInstanceReference().equals(
           other.internalGetTimerInstanceReference())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -11324,7 +10716,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_INSTANCE_REFERENCE_FIELD_NUMBER;
         hash = (53 * hash) + internalGetTimerInstanceReference().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -11463,28 +10855,23 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.CompositeContextNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        if (contextBuilder_ == null) {
-          context_ = null;
-        } else {
-          context_ = null;
+        bitField0_ = 0;
+        timerInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
+        context_ = null;
+        if (contextBuilder_ != null) {
+          contextBuilder_.dispose();
           contextBuilder_ = null;
         }
         internalGetMutableTimerInstanceReference().clear();
@@ -11514,55 +10901,28 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.CompositeContextNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.CompositeContextNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.CompositeContextNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.timerInstanceId_ = timerInstanceId_;
-        if (contextBuilder_ == null) {
-          result.context_ = context_;
-        } else {
-          result.context_ = contextBuilder_.build();
-        }
-        result.timerInstanceReference_ = internalGetTimerInstanceReference();
-        result.timerInstanceReference_.makeImmutable();
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.CompositeContextNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          timerInstanceId_.makeImmutable();
+          result.timerInstanceId_ = timerInstanceId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.context_ = contextBuilder_ == null
+              ? context_
+              : contextBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.timerInstanceReference_ = internalGetTimerInstanceReference();
+          result.timerInstanceReference_.makeImmutable();
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.CompositeContextNodeInstanceContent) {
@@ -11578,7 +10938,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!other.timerInstanceId_.isEmpty()) {
           if (timerInstanceId_.isEmpty()) {
             timerInstanceId_ = other.timerInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureTimerInstanceIdIsMutable();
             timerInstanceId_.addAll(other.timerInstanceId_);
@@ -11590,7 +10950,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         internalGetMutableTimerInstanceReference().mergeFrom(
             other.internalGetTimerInstanceReference());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000004;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -11605,27 +10966,63 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.CompositeContextNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureTimerInstanceIdIsMutable();
+                timerInstanceId_.add(s);
+                break;
+              } // case 10
+              case 18: {
+                input.readMessage(
+                    getContextFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                timerInstanceReference__ = input.readMessage(
+                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableTimerInstanceReference().getMutableMap().put(
+                    timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.CompositeContextNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureTimerInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!timerInstanceId_.isModifiable()) {
           timerInstanceId_ = new com.google.protobuf.LazyStringArrayList(timerInstanceId_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -11633,7 +11030,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getTimerInstanceIdList() {
-        return timerInstanceId_.getUnmodifiableView();
+        timerInstanceId_.makeImmutable();
+        return timerInstanceId_;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -11667,11 +11065,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -11682,11 +11079,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -11700,6 +11096,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         ensureTimerInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, timerInstanceId_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -11708,8 +11105,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerInstanceId() {
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -11720,12 +11118,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -11738,7 +11135,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return Whether the context field is set.
        */
       public boolean hasContext() {
-        return contextBuilder_ != null || context_ != null;
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
@@ -11760,11 +11157,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
             throw new NullPointerException();
           }
           context_ = value;
-          onChanged();
         } else {
           contextBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -11774,11 +11171,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
           org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder builderForValue) {
         if (contextBuilder_ == null) {
           context_ = builderForValue.build();
-          onChanged();
         } else {
           contextBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -11786,38 +11183,38 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder mergeContext(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext value) {
         if (contextBuilder_ == null) {
-          if (context_ != null) {
-            context_ =
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.newBuilder(context_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000002) != 0) &&
+            context_ != null &&
+            context_ != org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.getDefaultInstance()) {
+            getContextBuilder().mergeFrom(value);
           } else {
             context_ = value;
           }
-          onChanged();
         } else {
           contextBuilder_.mergeFrom(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
        */
       public Builder clearContext() {
-        if (contextBuilder_ == null) {
-          context_ = null;
-          onChanged();
-        } else {
-          context_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        context_ = null;
+        if (contextBuilder_ != null) {
+          contextBuilder_.dispose();
           contextBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
        */
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder getContextBuilder() {
-        
+        bitField0_ |= 0x00000002;
         onChanged();
         return getContextFieldBuilder().getBuilder();
       }
@@ -11852,7 +11249,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> timerInstanceReference_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetTimerInstanceReference() {
+          internalGetTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -11860,8 +11257,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return timerInstanceReference_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableTimerInstanceReference() {
-        onChanged();;
+          internalGetMutableTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -11869,16 +11265,16 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!timerInstanceReference_.isMutable()) {
           timerInstanceReference_ = timerInstanceReference_.copy();
         }
+        bitField0_ |= 0x00000004;
+        onChanged();
         return timerInstanceReference_;
       }
-
       public int getTimerInstanceReferenceCount() {
         return internalGetTimerInstanceReference().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       @java.lang.Override
       public boolean containsTimerInstanceReference(
           java.lang.String key) {
@@ -11897,7 +11293,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
         return internalGetTimerInstanceReference().getMap();
       }
@@ -11905,10 +11300,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getTimerInstanceReferenceOrDefault(
+      public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetTimerInstanceReference().getMap();
@@ -11918,7 +11314,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.lang.String getTimerInstanceReferenceOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -11929,8 +11324,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearTimerInstanceReference() {
+        bitField0_ = (bitField0_ & ~0x00000004);
         internalGetMutableTimerInstanceReference().getMutableMap()
             .clear();
         return this;
@@ -11938,7 +11333,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder removeTimerInstanceReference(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -11951,7 +11345,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableTimerInstanceReference() {
+          getMutableTimerInstanceReference() {
+        bitField0_ |= 0x00000004;
         return internalGetMutableTimerInstanceReference().getMutableMap();
       }
       /**
@@ -11961,22 +11356,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableTimerInstanceReference().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder putAllTimerInstanceReference(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableTimerInstanceReference().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000004;
         return this;
       }
       @java.lang.Override
@@ -12012,7 +11405,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new CompositeContextNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -12099,14 +11503,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
-    java.lang.String getTimerInstanceReferenceOrDefault(
+    /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key);
   }
@@ -12123,7 +11527,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
       super(builder);
     }
     private DynamicNodeInstanceContent() {
-      timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -12133,87 +11538,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new DynamicNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private DynamicNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                timerInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              timerInstanceId_.add(s);
-              break;
-            }
-            case 18: {
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder subBuilder = null;
-              if (context_ != null) {
-                subBuilder = context_.toBuilder();
-              }
-              context_ = input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(context_);
-                context_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 26: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
-                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000002;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              timerInstanceReference__ = input.readMessage(
-                  TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              timerInstanceReference_.getMutableMap().put(
-                  timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_DynamicNodeInstanceContent_descriptor;
@@ -12240,7 +11564,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int TIMER_INSTANCE_ID_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList timerInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string timer_instance_id = 1;</code>
      * @return A list containing the timerInstanceId.
@@ -12297,7 +11623,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
      */
     @java.lang.Override
     public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContextOrBuilder getContextOrBuilder() {
-      return getContext();
+      return context_ == null ? org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.getDefaultInstance() : context_;
     }
 
     public static final int TIMER_INSTANCE_REFERENCE_FIELD_NUMBER = 3;
@@ -12312,6 +11638,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> timerInstanceReference_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -12322,14 +11649,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       return timerInstanceReference_;
     }
-
     public int getTimerInstanceReferenceCount() {
       return internalGetTimerInstanceReference().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     @java.lang.Override
     public boolean containsTimerInstanceReference(
         java.lang.String key) {
@@ -12348,7 +11673,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
       return internalGetTimerInstanceReference().getMap();
     }
@@ -12356,10 +11680,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTimerInstanceReferenceOrDefault(
+    public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTimerInstanceReference().getMap();
@@ -12369,7 +11694,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -12407,7 +11731,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           internalGetTimerInstanceReference(),
           TimerInstanceReferenceDefaultEntryHolder.defaultEntry,
           3);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -12438,7 +11762,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(3, timerInstanceReference__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -12462,7 +11786,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       if (!internalGetTimerInstanceReference().equals(
           other.internalGetTimerInstanceReference())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -12485,7 +11809,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_INSTANCE_REFERENCE_FIELD_NUMBER;
         hash = (53 * hash) + internalGetTimerInstanceReference().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -12624,28 +11948,23 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.DynamicNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        if (contextBuilder_ == null) {
-          context_ = null;
-        } else {
-          context_ = null;
+        bitField0_ = 0;
+        timerInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
+        context_ = null;
+        if (contextBuilder_ != null) {
+          contextBuilder_.dispose();
           contextBuilder_ = null;
         }
         internalGetMutableTimerInstanceReference().clear();
@@ -12675,55 +11994,28 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.DynamicNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.DynamicNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.DynamicNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.timerInstanceId_ = timerInstanceId_;
-        if (contextBuilder_ == null) {
-          result.context_ = context_;
-        } else {
-          result.context_ = contextBuilder_.build();
-        }
-        result.timerInstanceReference_ = internalGetTimerInstanceReference();
-        result.timerInstanceReference_.makeImmutable();
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.DynamicNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          timerInstanceId_.makeImmutable();
+          result.timerInstanceId_ = timerInstanceId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.context_ = contextBuilder_ == null
+              ? context_
+              : contextBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.timerInstanceReference_ = internalGetTimerInstanceReference();
+          result.timerInstanceReference_.makeImmutable();
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.DynamicNodeInstanceContent) {
@@ -12739,7 +12031,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!other.timerInstanceId_.isEmpty()) {
           if (timerInstanceId_.isEmpty()) {
             timerInstanceId_ = other.timerInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureTimerInstanceIdIsMutable();
             timerInstanceId_.addAll(other.timerInstanceId_);
@@ -12751,7 +12043,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         internalGetMutableTimerInstanceReference().mergeFrom(
             other.internalGetTimerInstanceReference());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000004;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -12766,27 +12059,63 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.DynamicNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureTimerInstanceIdIsMutable();
+                timerInstanceId_.add(s);
+                break;
+              } // case 10
+              case 18: {
+                input.readMessage(
+                    getContextFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                timerInstanceReference__ = input.readMessage(
+                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableTimerInstanceReference().getMutableMap().put(
+                    timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.DynamicNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureTimerInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!timerInstanceId_.isModifiable()) {
           timerInstanceId_ = new com.google.protobuf.LazyStringArrayList(timerInstanceId_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -12794,7 +12123,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getTimerInstanceIdList() {
-        return timerInstanceId_.getUnmodifiableView();
+        timerInstanceId_.makeImmutable();
+        return timerInstanceId_;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -12828,11 +12158,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -12843,11 +12172,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -12861,6 +12189,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         ensureTimerInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, timerInstanceId_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -12869,8 +12198,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerInstanceId() {
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -12881,12 +12211,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -12899,7 +12228,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return Whether the context field is set.
        */
       public boolean hasContext() {
-        return contextBuilder_ != null || context_ != null;
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
@@ -12921,11 +12250,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
             throw new NullPointerException();
           }
           context_ = value;
-          onChanged();
         } else {
           contextBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -12935,11 +12264,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
           org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder builderForValue) {
         if (contextBuilder_ == null) {
           context_ = builderForValue.build();
-          onChanged();
         } else {
           contextBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -12947,38 +12276,38 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder mergeContext(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext value) {
         if (contextBuilder_ == null) {
-          if (context_ != null) {
-            context_ =
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.newBuilder(context_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000002) != 0) &&
+            context_ != null &&
+            context_ != org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.getDefaultInstance()) {
+            getContextBuilder().mergeFrom(value);
           } else {
             context_ = value;
           }
-          onChanged();
         } else {
           contextBuilder_.mergeFrom(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
        */
       public Builder clearContext() {
-        if (contextBuilder_ == null) {
-          context_ = null;
-          onChanged();
-        } else {
-          context_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        context_ = null;
+        if (contextBuilder_ != null) {
+          contextBuilder_.dispose();
           contextBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
        */
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder getContextBuilder() {
-        
+        bitField0_ |= 0x00000002;
         onChanged();
         return getContextFieldBuilder().getBuilder();
       }
@@ -13013,7 +12342,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> timerInstanceReference_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetTimerInstanceReference() {
+          internalGetTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -13021,8 +12350,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return timerInstanceReference_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableTimerInstanceReference() {
-        onChanged();;
+          internalGetMutableTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -13030,16 +12358,16 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!timerInstanceReference_.isMutable()) {
           timerInstanceReference_ = timerInstanceReference_.copy();
         }
+        bitField0_ |= 0x00000004;
+        onChanged();
         return timerInstanceReference_;
       }
-
       public int getTimerInstanceReferenceCount() {
         return internalGetTimerInstanceReference().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       @java.lang.Override
       public boolean containsTimerInstanceReference(
           java.lang.String key) {
@@ -13058,7 +12386,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
         return internalGetTimerInstanceReference().getMap();
       }
@@ -13066,10 +12393,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getTimerInstanceReferenceOrDefault(
+      public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetTimerInstanceReference().getMap();
@@ -13079,7 +12407,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.lang.String getTimerInstanceReferenceOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -13090,8 +12417,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearTimerInstanceReference() {
+        bitField0_ = (bitField0_ & ~0x00000004);
         internalGetMutableTimerInstanceReference().getMutableMap()
             .clear();
         return this;
@@ -13099,7 +12426,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder removeTimerInstanceReference(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -13112,7 +12438,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableTimerInstanceReference() {
+          getMutableTimerInstanceReference() {
+        bitField0_ |= 0x00000004;
         return internalGetMutableTimerInstanceReference().getMutableMap();
       }
       /**
@@ -13122,22 +12449,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableTimerInstanceReference().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder putAllTimerInstanceReference(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableTimerInstanceReference().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000004;
         return this;
       }
       @java.lang.Override
@@ -13173,7 +12498,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new DynamicNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -13260,14 +12596,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
-    java.lang.String getTimerInstanceReferenceOrDefault(
+    /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key);
   }
@@ -13284,7 +12620,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
       super(builder);
     }
     private EventSubProcessNodeInstanceContent() {
-      timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -13294,87 +12631,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new EventSubProcessNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private EventSubProcessNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                timerInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              timerInstanceId_.add(s);
-              break;
-            }
-            case 18: {
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder subBuilder = null;
-              if (context_ != null) {
-                subBuilder = context_.toBuilder();
-              }
-              context_ = input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(context_);
-                context_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 26: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
-                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000002;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              timerInstanceReference__ = input.readMessage(
-                  TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              timerInstanceReference_.getMutableMap().put(
-                  timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_EventSubProcessNodeInstanceContent_descriptor;
@@ -13401,7 +12657,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int TIMER_INSTANCE_ID_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList timerInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string timer_instance_id = 1;</code>
      * @return A list containing the timerInstanceId.
@@ -13458,7 +12716,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
      */
     @java.lang.Override
     public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContextOrBuilder getContextOrBuilder() {
-      return getContext();
+      return context_ == null ? org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.getDefaultInstance() : context_;
     }
 
     public static final int TIMER_INSTANCE_REFERENCE_FIELD_NUMBER = 3;
@@ -13473,6 +12731,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> timerInstanceReference_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -13483,14 +12742,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       return timerInstanceReference_;
     }
-
     public int getTimerInstanceReferenceCount() {
       return internalGetTimerInstanceReference().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
-
     @java.lang.Override
     public boolean containsTimerInstanceReference(
         java.lang.String key) {
@@ -13509,7 +12766,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
       return internalGetTimerInstanceReference().getMap();
     }
@@ -13517,10 +12773,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTimerInstanceReferenceOrDefault(
+    public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTimerInstanceReference().getMap();
@@ -13530,7 +12787,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -13568,7 +12824,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           internalGetTimerInstanceReference(),
           TimerInstanceReferenceDefaultEntryHolder.defaultEntry,
           3);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -13599,7 +12855,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(3, timerInstanceReference__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -13623,7 +12879,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       if (!internalGetTimerInstanceReference().equals(
           other.internalGetTimerInstanceReference())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -13646,7 +12902,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_INSTANCE_REFERENCE_FIELD_NUMBER;
         hash = (53 * hash) + internalGetTimerInstanceReference().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -13785,28 +13041,23 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        if (contextBuilder_ == null) {
-          context_ = null;
-        } else {
-          context_ = null;
+        bitField0_ = 0;
+        timerInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
+        context_ = null;
+        if (contextBuilder_ != null) {
+          contextBuilder_.dispose();
           contextBuilder_ = null;
         }
         internalGetMutableTimerInstanceReference().clear();
@@ -13836,55 +13087,28 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.timerInstanceId_ = timerInstanceId_;
-        if (contextBuilder_ == null) {
-          result.context_ = context_;
-        } else {
-          result.context_ = contextBuilder_.build();
-        }
-        result.timerInstanceReference_ = internalGetTimerInstanceReference();
-        result.timerInstanceReference_.makeImmutable();
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          timerInstanceId_.makeImmutable();
+          result.timerInstanceId_ = timerInstanceId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.context_ = contextBuilder_ == null
+              ? context_
+              : contextBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.timerInstanceReference_ = internalGetTimerInstanceReference();
+          result.timerInstanceReference_.makeImmutable();
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent) {
@@ -13900,7 +13124,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!other.timerInstanceId_.isEmpty()) {
           if (timerInstanceId_.isEmpty()) {
             timerInstanceId_ = other.timerInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureTimerInstanceIdIsMutable();
             timerInstanceId_.addAll(other.timerInstanceId_);
@@ -13912,7 +13136,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         internalGetMutableTimerInstanceReference().mergeFrom(
             other.internalGetTimerInstanceReference());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000004;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -13927,27 +13152,63 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureTimerInstanceIdIsMutable();
+                timerInstanceId_.add(s);
+                break;
+              } // case 10
+              case 18: {
+                input.readMessage(
+                    getContextFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                timerInstanceReference__ = input.readMessage(
+                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableTimerInstanceReference().getMutableMap().put(
+                    timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureTimerInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!timerInstanceId_.isModifiable()) {
           timerInstanceId_ = new com.google.protobuf.LazyStringArrayList(timerInstanceId_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -13955,7 +13216,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getTimerInstanceIdList() {
-        return timerInstanceId_.getUnmodifiableView();
+        timerInstanceId_.makeImmutable();
+        return timerInstanceId_;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -13989,11 +13251,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -14004,11 +13265,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -14022,6 +13282,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         ensureTimerInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, timerInstanceId_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -14030,8 +13291,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerInstanceId() {
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -14042,12 +13304,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -14060,7 +13321,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return Whether the context field is set.
        */
       public boolean hasContext() {
-        return contextBuilder_ != null || context_ != null;
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
@@ -14082,11 +13343,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
             throw new NullPointerException();
           }
           context_ = value;
-          onChanged();
         } else {
           contextBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -14096,11 +13357,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
           org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder builderForValue) {
         if (contextBuilder_ == null) {
           context_ = builderForValue.build();
-          onChanged();
         } else {
           contextBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -14108,38 +13369,38 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder mergeContext(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext value) {
         if (contextBuilder_ == null) {
-          if (context_ != null) {
-            context_ =
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.newBuilder(context_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000002) != 0) &&
+            context_ != null &&
+            context_ != org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.getDefaultInstance()) {
+            getContextBuilder().mergeFrom(value);
           } else {
             context_ = value;
           }
-          onChanged();
         } else {
           contextBuilder_.mergeFrom(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
        */
       public Builder clearContext() {
-        if (contextBuilder_ == null) {
-          context_ = null;
-          onChanged();
-        } else {
-          context_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        context_ = null;
+        if (contextBuilder_ != null) {
+          contextBuilder_.dispose();
           contextBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
        */
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder getContextBuilder() {
-        
+        bitField0_ |= 0x00000002;
         onChanged();
         return getContextFieldBuilder().getBuilder();
       }
@@ -14174,7 +13435,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> timerInstanceReference_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetTimerInstanceReference() {
+          internalGetTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -14182,8 +13443,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return timerInstanceReference_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableTimerInstanceReference() {
-        onChanged();;
+          internalGetMutableTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -14191,16 +13451,16 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!timerInstanceReference_.isMutable()) {
           timerInstanceReference_ = timerInstanceReference_.copy();
         }
+        bitField0_ |= 0x00000004;
+        onChanged();
         return timerInstanceReference_;
       }
-
       public int getTimerInstanceReferenceCount() {
         return internalGetTimerInstanceReference().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       @java.lang.Override
       public boolean containsTimerInstanceReference(
           java.lang.String key) {
@@ -14219,7 +13479,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
         return internalGetTimerInstanceReference().getMap();
       }
@@ -14227,10 +13486,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getTimerInstanceReferenceOrDefault(
+      public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetTimerInstanceReference().getMap();
@@ -14240,7 +13500,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
       @java.lang.Override
-
       public java.lang.String getTimerInstanceReferenceOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -14251,8 +13510,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearTimerInstanceReference() {
+        bitField0_ = (bitField0_ & ~0x00000004);
         internalGetMutableTimerInstanceReference().getMutableMap()
             .clear();
         return this;
@@ -14260,7 +13519,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder removeTimerInstanceReference(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -14273,7 +13531,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableTimerInstanceReference() {
+          getMutableTimerInstanceReference() {
+        bitField0_ |= 0x00000004;
         return internalGetMutableTimerInstanceReference().getMutableMap();
       }
       /**
@@ -14283,22 +13542,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableTimerInstanceReference().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 3;</code>
        */
-
       public Builder putAllTimerInstanceReference(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableTimerInstanceReference().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000004;
         return this;
       }
       @java.lang.Override
@@ -14334,7 +13591,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new EventSubProcessNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -14439,14 +13707,14 @@ public final class KogitoNodeInstanceContentsProtobuf {
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
      */
-
-    java.lang.String getTimerInstanceReferenceOrDefault(
+    /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
      */
-
     java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key);
   }
@@ -14463,7 +13731,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
       super(builder);
     }
     private ForEachNodeInstanceContent() {
-      timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -14473,102 +13742,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new ForEachNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private ForEachNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                timerInstanceId_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              timerInstanceId_.add(s);
-              break;
-            }
-            case 18: {
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder subBuilder = null;
-              if (context_ != null) {
-                subBuilder = context_.toBuilder();
-              }
-              context_ = input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(context_);
-                context_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 24: {
-
-              totalInstances_ = input.readInt32();
-              break;
-            }
-            case 32: {
-
-              executedInstances_ = input.readInt32();
-              break;
-            }
-            case 40: {
-
-              hasAsyncInstances_ = input.readBool();
-              break;
-            }
-            case 50: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
-                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000002;
-              }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-              timerInstanceReference__ = input.readMessage(
-                  TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              timerInstanceReference_.getMutableMap().put(
-                  timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_ForEachNodeInstanceContent_descriptor;
@@ -14595,7 +13768,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int TIMER_INSTANCE_ID_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList timerInstanceId_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string timer_instance_id = 1;</code>
      * @return A list containing the timerInstanceId.
@@ -14652,11 +13827,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      */
     @java.lang.Override
     public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContextOrBuilder getContextOrBuilder() {
-      return getContext();
+      return context_ == null ? org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.getDefaultInstance() : context_;
     }
 
     public static final int TOTALINSTANCES_FIELD_NUMBER = 3;
-    private int totalInstances_;
+    private int totalInstances_ = 0;
     /**
      * <code>int32 totalInstances = 3;</code>
      * @return The totalInstances.
@@ -14667,7 +13842,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int EXECUTEDINSTANCES_FIELD_NUMBER = 4;
-    private int executedInstances_;
+    private int executedInstances_ = 0;
     /**
      * <code>int32 executedInstances = 4;</code>
      * @return The executedInstances.
@@ -14678,7 +13853,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int HASASYNCINSTANCES_FIELD_NUMBER = 5;
-    private boolean hasAsyncInstances_;
+    private boolean hasAsyncInstances_ = false;
     /**
      * <code>bool hasAsyncInstances = 5;</code>
      * @return The hasAsyncInstances.
@@ -14700,6 +13875,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> timerInstanceReference_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -14710,14 +13886,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       return timerInstanceReference_;
     }
-
     public int getTimerInstanceReferenceCount() {
       return internalGetTimerInstanceReference().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
      */
-
     @java.lang.Override
     public boolean containsTimerInstanceReference(
         java.lang.String key) {
@@ -14736,7 +13910,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
       return internalGetTimerInstanceReference().getMap();
     }
@@ -14744,10 +13917,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTimerInstanceReferenceOrDefault(
+    public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTimerInstanceReference().getMap();
@@ -14757,7 +13931,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTimerInstanceReferenceOrThrow(
         java.lang.String key) {
       if (key == null) { throw new NullPointerException("map key"); }
@@ -14804,7 +13977,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           internalGetTimerInstanceReference(),
           TimerInstanceReferenceDefaultEntryHolder.defaultEntry,
           6);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -14847,7 +14020,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(6, timerInstanceReference__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -14877,7 +14050,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
           != other.getHasAsyncInstances()) return false;
       if (!internalGetTimerInstanceReference().equals(
           other.internalGetTimerInstanceReference())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -14907,7 +14080,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         hash = (37 * hash) + TIMER_INSTANCE_REFERENCE_FIELD_NUMBER;
         hash = (53 * hash) + internalGetTimerInstanceReference().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -15046,36 +14219,28 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.ForEachNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        if (contextBuilder_ == null) {
-          context_ = null;
-        } else {
-          context_ = null;
+        bitField0_ = 0;
+        timerInstanceId_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
+        context_ = null;
+        if (contextBuilder_ != null) {
+          contextBuilder_.dispose();
           contextBuilder_ = null;
         }
         totalInstances_ = 0;
-
         executedInstances_ = 0;
-
         hasAsyncInstances_ = false;
-
         internalGetMutableTimerInstanceReference().clear();
         return this;
       }
@@ -15103,58 +14268,37 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.ForEachNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.ForEachNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.ForEachNodeInstanceContent(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          timerInstanceId_ = timerInstanceId_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.timerInstanceId_ = timerInstanceId_;
-        if (contextBuilder_ == null) {
-          result.context_ = context_;
-        } else {
-          result.context_ = contextBuilder_.build();
-        }
-        result.totalInstances_ = totalInstances_;
-        result.executedInstances_ = executedInstances_;
-        result.hasAsyncInstances_ = hasAsyncInstances_;
-        result.timerInstanceReference_ = internalGetTimerInstanceReference();
-        result.timerInstanceReference_.makeImmutable();
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.ForEachNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          timerInstanceId_.makeImmutable();
+          result.timerInstanceId_ = timerInstanceId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.context_ = contextBuilder_ == null
+              ? context_
+              : contextBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.totalInstances_ = totalInstances_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.executedInstances_ = executedInstances_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.hasAsyncInstances_ = hasAsyncInstances_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.timerInstanceReference_ = internalGetTimerInstanceReference();
+          result.timerInstanceReference_.makeImmutable();
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.ForEachNodeInstanceContent) {
@@ -15170,7 +14314,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!other.timerInstanceId_.isEmpty()) {
           if (timerInstanceId_.isEmpty()) {
             timerInstanceId_ = other.timerInstanceId_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureTimerInstanceIdIsMutable();
             timerInstanceId_.addAll(other.timerInstanceId_);
@@ -15191,7 +14335,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         internalGetMutableTimerInstanceReference().mergeFrom(
             other.internalGetTimerInstanceReference());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000020;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -15206,27 +14351,78 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.ForEachNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureTimerInstanceIdIsMutable();
+                timerInstanceId_.add(s);
+                break;
+              } // case 10
+              case 18: {
+                input.readMessage(
+                    getContextFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 24: {
+                totalInstances_ = input.readInt32();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              case 32: {
+                executedInstances_ = input.readInt32();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
+              case 40: {
+                hasAsyncInstances_ = input.readBool();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 40
+              case 50: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                timerInstanceReference__ = input.readMessage(
+                    TimerInstanceReferenceDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableTimerInstanceReference().getMutableMap().put(
+                    timerInstanceReference__.getKey(), timerInstanceReference__.getValue());
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 50
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.ForEachNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureTimerInstanceIdIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!timerInstanceId_.isModifiable()) {
           timerInstanceId_ = new com.google.protobuf.LazyStringArrayList(timerInstanceId_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -15234,7 +14430,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public com.google.protobuf.ProtocolStringList
           getTimerInstanceIdList() {
-        return timerInstanceId_.getUnmodifiableView();
+        timerInstanceId_.makeImmutable();
+        return timerInstanceId_;
       }
       /**
        * <code>repeated string timer_instance_id = 1;</code>
@@ -15268,11 +14465,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setTimerInstanceId(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -15283,11 +14479,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTimerInstanceIdIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -15301,6 +14496,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         ensureTimerInstanceIdIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, timerInstanceId_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -15309,8 +14505,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTimerInstanceId() {
-        timerInstanceId_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        timerInstanceId_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -15321,12 +14518,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder addTimerInstanceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureTimerInstanceIdIsMutable();
         timerInstanceId_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -15339,7 +14535,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return Whether the context field is set.
        */
       public boolean hasContext() {
-        return contextBuilder_ != null || context_ != null;
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
@@ -15361,11 +14557,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
             throw new NullPointerException();
           }
           context_ = value;
-          onChanged();
         } else {
           contextBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -15375,11 +14571,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
           org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder builderForValue) {
         if (contextBuilder_ == null) {
           context_ = builderForValue.build();
-          onChanged();
         } else {
           contextBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -15387,38 +14583,38 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder mergeContext(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext value) {
         if (contextBuilder_ == null) {
-          if (context_ != null) {
-            context_ =
-              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.newBuilder(context_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000002) != 0) &&
+            context_ != null &&
+            context_ != org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.getDefaultInstance()) {
+            getContextBuilder().mergeFrom(value);
           } else {
             context_ = value;
           }
-          onChanged();
         } else {
           contextBuilder_.mergeFrom(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
        */
       public Builder clearContext() {
-        if (contextBuilder_ == null) {
-          context_ = null;
-          onChanged();
-        } else {
-          context_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        context_ = null;
+        if (contextBuilder_ != null) {
+          contextBuilder_.dispose();
           contextBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.org.kie.kogito.serialization.process.protobuf.WorkflowContext context = 2;</code>
        */
       public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext.Builder getContextBuilder() {
-        
+        bitField0_ |= 0x00000002;
         onChanged();
         return getContextFieldBuilder().getBuilder();
       }
@@ -15465,8 +14661,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder setTotalInstances(int value) {
-        
+
         totalInstances_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -15475,7 +14672,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearTotalInstances() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         totalInstances_ = 0;
         onChanged();
         return this;
@@ -15496,8 +14693,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder setExecutedInstances(int value) {
-        
+
         executedInstances_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -15506,7 +14704,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearExecutedInstances() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         executedInstances_ = 0;
         onChanged();
         return this;
@@ -15527,8 +14725,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder setHasAsyncInstances(boolean value) {
-        
+
         hasAsyncInstances_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -15537,7 +14736,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearHasAsyncInstances() {
-        
+        bitField0_ = (bitField0_ & ~0x00000010);
         hasAsyncInstances_ = false;
         onChanged();
         return this;
@@ -15546,7 +14745,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> timerInstanceReference_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetTimerInstanceReference() {
+          internalGetTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -15554,8 +14753,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         return timerInstanceReference_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableTimerInstanceReference() {
-        onChanged();;
+          internalGetMutableTimerInstanceReference() {
         if (timerInstanceReference_ == null) {
           timerInstanceReference_ = com.google.protobuf.MapField.newMapField(
               TimerInstanceReferenceDefaultEntryHolder.defaultEntry);
@@ -15563,16 +14761,16 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (!timerInstanceReference_.isMutable()) {
           timerInstanceReference_ = timerInstanceReference_.copy();
         }
+        bitField0_ |= 0x00000020;
+        onChanged();
         return timerInstanceReference_;
       }
-
       public int getTimerInstanceReferenceCount() {
         return internalGetTimerInstanceReference().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
        */
-
       @java.lang.Override
       public boolean containsTimerInstanceReference(
           java.lang.String key) {
@@ -15591,7 +14789,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getTimerInstanceReferenceMap() {
         return internalGetTimerInstanceReference().getMap();
       }
@@ -15599,10 +14796,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getTimerInstanceReferenceOrDefault(
+      public /* nullable */
+java.lang.String getTimerInstanceReferenceOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetTimerInstanceReference().getMap();
@@ -15612,7 +14810,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
        */
       @java.lang.Override
-
       public java.lang.String getTimerInstanceReferenceOrThrow(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -15623,8 +14820,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         return map.get(key);
       }
-
       public Builder clearTimerInstanceReference() {
+        bitField0_ = (bitField0_ & ~0x00000020);
         internalGetMutableTimerInstanceReference().getMutableMap()
             .clear();
         return this;
@@ -15632,7 +14829,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
        */
-
       public Builder removeTimerInstanceReference(
           java.lang.String key) {
         if (key == null) { throw new NullPointerException("map key"); }
@@ -15645,7 +14841,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableTimerInstanceReference() {
+          getMutableTimerInstanceReference() {
+        bitField0_ |= 0x00000020;
         return internalGetMutableTimerInstanceReference().getMutableMap();
       }
       /**
@@ -15655,22 +14852,20 @@ public final class KogitoNodeInstanceContentsProtobuf {
           java.lang.String key,
           java.lang.String value) {
         if (key == null) { throw new NullPointerException("map key"); }
-        if (value == null) {
-  throw new NullPointerException("map value");
-}
-
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableTimerInstanceReference().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000020;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; timer_instance_reference = 6;</code>
        */
-
       public Builder putAllTimerInstanceReference(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableTimerInstanceReference().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000020;
         return this;
       }
       @java.lang.Override
@@ -15706,7 +14901,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ForEachNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -15765,54 +14971,6 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return new AsyncEventNodeInstanceContent();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private AsyncEventNodeInstanceContent(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              jobId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.internal_static_org_kie_kogito_serialization_process_protobuf_AsyncEventNodeInstanceContent_descriptor;
@@ -15827,7 +14985,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
     }
 
     public static final int JOB_ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object jobId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object jobId_ = "";
     /**
      * <code>string job_id = 1;</code>
      * @return The jobId.
@@ -15881,7 +15040,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(jobId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, jobId_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -15893,7 +15052,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(jobId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, jobId_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -15910,7 +15069,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       if (!getJobId()
           .equals(other.getJobId())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -15923,7 +15082,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + JOB_ID_FIELD_NUMBER;
       hash = (53 * hash) + getJobId().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -16040,24 +15199,19 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         jobId_ = "";
-
         return this;
       }
 
@@ -16084,43 +15238,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
       @java.lang.Override
       public org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent buildPartial() {
         org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent result = new org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent(this);
-        result.jobId_ = jobId_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
+      private void buildPartial0(org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.jobId_ = jobId_;
+        }
       }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent) {
@@ -16135,9 +15264,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent.getDefaultInstance()) return this;
         if (!other.getJobId().isEmpty()) {
           jobId_ = other.jobId_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -16152,19 +15282,38 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                jobId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object jobId_ = "";
       /**
@@ -16207,11 +15356,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setJobId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         jobId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -16220,8 +15367,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
        * @return This builder for chaining.
        */
       public Builder clearJobId() {
-        
         jobId_ = getDefaultInstance().getJobId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -16232,12 +15379,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
        */
       public Builder setJobIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         jobId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -16274,7 +15419,18 @@ public final class KogitoNodeInstanceContentsProtobuf {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new AsyncEventNodeInstanceContent(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -16490,7 +15646,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
       "anceContent\022c\n\007trigger\030\001 \003(\0132R.org.kie.k" +
       "ogito.serialization.process.protobuf.Joi" +
       "nNodeInstanceContent.JoinTrigger\032Q\n\013Join" +
-      "Trigger\022\024\n\007node_id\030\001 \001(\003H\000\210\001\001\022\024\n\007counter" +
+      "Trigger\022\024\n\007node_id\030\001 \001(\tH\000\210\001\001\022\024\n\007counter" +
       "\030\002 \001(\005H\001\210\001\001B\n\n\010_node_idB\n\n\010_counter\"\374\001\n\030" +
       "StateNodeInstanceContent\022\031\n\021timer_instan" +
       "ce_id\030\001 \003(\t\022\205\001\n\030timer_instance_reference" +

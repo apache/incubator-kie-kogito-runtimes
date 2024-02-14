@@ -18,7 +18,7 @@ message Variable {
 
 message NodeInstance {
     string id = 1;
-    int64 node_id = 2;
+    string node_id = 2;
     google.protobuf.Any content = 3;
 
     optional int32 level = 4;
