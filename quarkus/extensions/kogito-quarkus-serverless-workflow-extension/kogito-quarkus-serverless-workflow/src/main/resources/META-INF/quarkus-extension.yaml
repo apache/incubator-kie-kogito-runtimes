@@ -6,12 +6,12 @@ metadata:
     - "SonataFlow"
     - "serverless workflow"
     - "serverless"
-    - "workflow"
+    - "workflows"
     - "SW"
     - "SWF"
   guide: "https://quarkus.io/guides/kogito"
   categories:
-    - "business-automation"
+    - "cloud"
   status: "preview"
   config:
     - "kogito."

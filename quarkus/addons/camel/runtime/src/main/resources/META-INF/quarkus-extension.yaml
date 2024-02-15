@@ -24,8 +24,9 @@ metadata:
     - sonataflow
     - camel
     - serverless
-    - workflow
+    - workflows
 #  guide: ...
   categories:
     - "integration"
+    - "cloud"
   status: "preview"

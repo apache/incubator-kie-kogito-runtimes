@@ -29,6 +29,7 @@ metadata:
   guide: https://quarkus.io/guides/kie
   categories:
     - "business-automation"
+    - "cloud"
   status: "stable"
   config:
     - "kogito.events."

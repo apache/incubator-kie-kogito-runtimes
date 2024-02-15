@@ -30,6 +30,7 @@ metadata:
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"
+    - "cloud"
   status: "stable"
   config:
     - "kogito."

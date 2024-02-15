@@ -33,4 +33,5 @@ metadata:
   guide: "https://quarkus.io/guides/jbpm"
   categories:
     - "business-automation"
+    - "cloud"
   status: "stable"

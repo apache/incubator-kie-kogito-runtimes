@@ -123,6 +123,18 @@
     <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-addons-quarkus-common-deployment</artifactId>
+      <scope>test</scope>
+      <type>pom</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-serverless-workflow-deployment</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
