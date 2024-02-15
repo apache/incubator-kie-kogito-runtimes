@@ -25,7 +25,7 @@ metadata:
     - kubernetes
     - service
     - discovery
-      - workflows
+    - workflows
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"
