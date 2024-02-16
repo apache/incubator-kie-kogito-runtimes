@@ -120,7 +120,9 @@ public class ProcessInstanceEventBatch implements EventBatch {
     }
 
     private void handleProcessVariableEvent(ProcessVariableChangedEvent event) {
-
+        if (event.getTags().contains("internal")) {
+            return;
+        }
         Map<String, Object> metadata = buildProcessMetadata((KogitoWorkflowProcessInstance) event.getProcessInstance());
         KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
         ProcessInstanceVariableEventBody.Builder builder = ProcessInstanceVariableEventBody.create()
