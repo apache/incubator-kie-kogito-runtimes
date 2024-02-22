@@ -37,9 +37,10 @@ import org.kie.kogito.correlation.CorrelationInstance;
 import org.kie.kogito.correlation.SimpleCorrelation;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventDispatcher;
-import org.kie.kogito.internal.utils.ConversionUtils;
+import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,20 +75,19 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
             }
             return CompletableFuture.completedFuture(null);
         }
-
-        final String kogitoReferenceId = resolveCorrelationId(event);
-        if (!ConversionUtils.isEmpty(kogitoReferenceId)) {
-            return CompletableFuture.supplyAsync(() -> handleMessageWithReference(trigger, event, kogitoReferenceId), executor);
-        }
-
-        //if the trigger is for a start event (model converter is set only for start node)
-        if (modelConverter.isPresent()) {
-            return CompletableFuture.supplyAsync(() -> startNewInstance(trigger, event), executor);
-        }
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("No matches found for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
-        }
-        return CompletableFuture.completedFuture(null);
+        return resolveCorrelationId(event)
+                .map(kogitoReferenceId -> CompletableFuture.supplyAsync(() -> handleMessageWithReference(trigger, event, kogitoReferenceId), executor))
+                .orElseGet(() -> {
+                    // if the trigger is for a start event (model converter is set only for start node)
+                    if (modelConverter.isPresent()) {
+                        return CompletableFuture.supplyAsync(() -> startNewInstance(trigger, event), executor);
+                    } else {
+                        if (LOGGER.isInfoEnabled()) {
+                            LOGGER.info("No matches found for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
+                        }
+                        return CompletableFuture.completedFuture(null);
+                    }
+                });
     }
 
     private Optional<CompositeCorrelation> compositeCorrelation(DataEvent<?> event) {
@@ -95,10 +95,11 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
                 correlationKeys.stream().map(k -> new SimpleCorrelation<>(k, resolve(event, k))).collect(Collectors.toSet()))) : Optional.empty();
     }
 
-    private String resolveCorrelationId(DataEvent<?> event) {
+    private Optional<String> resolveCorrelationId(DataEvent<?> event) {
         return compositeCorrelation(event).flatMap(process.correlations()::find)
                 .map(CorrelationInstance::getCorrelatedId)
-                .orElseGet(event::getKogitoReferenceId);
+                .or(() -> Optional.ofNullable((String) event.getExtension(CloudEventExtensionConstants.BUSINESS_KEY)))
+                .or(() -> Optional.ofNullable(event.getKogitoReferenceId()));
     }
 
     private Object resolve(DataEvent<?> event, String key) {
@@ -117,8 +118,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
         LOGGER.debug("Received message with reference id '{}' going to use it to send signal '{}'",
                 instanceId,
                 trigger);
-        return process.instances()
-                .findById(instanceId)
+        return process.instances().findByIdOrBusinessKey(instanceId)
                 .map(instance -> {
                     signalProcessInstance(trigger, instance.id(), event);
                     return instance;

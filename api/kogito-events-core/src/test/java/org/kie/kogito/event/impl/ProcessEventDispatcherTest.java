@@ -78,6 +78,8 @@ class ProcessEventDispatcherTest {
         when(process.correlations()).thenReturn(correlationService);
         when(processInstances.findById(Mockito.anyString())).thenReturn(Optional.empty());
         when(processInstances.findById("1")).thenReturn(Optional.of(processInstance));
+        when(processInstances.findByIdOrBusinessKey(Mockito.anyString())).thenReturn(Optional.empty());
+        when(processInstances.findByIdOrBusinessKey("1")).thenReturn(Optional.of(processInstance));
         processService = mock(ProcessService.class);
         when(processService.createProcessInstance(eq(process), any(), any(), any(), any(), any(), any(), any())).thenReturn(processInstance);
         when(processService.signalProcessInstance(eq(process), any(), any(), any())).thenReturn(Optional.of(mock(DummyModel.class)));
@@ -117,7 +119,7 @@ class ProcessEventDispatcherTest {
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> referenceId = ArgumentCaptor.forClass(String.class);
 
-        verify(processInstances, never()).findById(any());
+        verify(processInstances, never()).findByIdOrBusinessKey("invalidReference");
         verify(processService, never()).signalProcessInstance(eq(process), any(), any(), signal.capture());
         verify(processService, times(1)).createProcessInstance(eq(process), any(), any(DummyModel.class), any(), any(), signal.capture(), referenceId.capture(), isNull());
 
@@ -135,7 +137,7 @@ class ProcessEventDispatcherTest {
         ArgumentCaptor<String> referenceId = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Map<String, List<String>>> headers = ArgumentCaptor.forClass(Map.class);
 
-        verify(processInstances, times(1)).findById("invalidReference");
+        verify(processInstances, times(1)).findByIdOrBusinessKey("invalidReference");
         verify(processService, never()).signalProcessInstance(eq(process), any(), any(), signal.capture());
         verify(processService, times(1)).createProcessInstance(eq(process), any(), any(DummyModel.class), headers.capture(), any(), signal.capture(), referenceId.capture(), isNull());
 
