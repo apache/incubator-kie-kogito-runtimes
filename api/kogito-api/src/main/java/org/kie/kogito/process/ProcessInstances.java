@@ -29,8 +29,8 @@ public interface ProcessInstances<T> {
 
     Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode);
 
-    default Optional<ProcessInstance<T>> findByIdOrBusinessKey(String id) {
-        return findById(id).or(() -> stream().filter(pi -> id.equals(pi.businessKey())).findAny());
+    default Optional<ProcessInstance<T>> findByBusinessKey(String id) {
+        return stream().filter(pi -> id.equals(pi.businessKey())).findAny();
     }
 
     Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode);

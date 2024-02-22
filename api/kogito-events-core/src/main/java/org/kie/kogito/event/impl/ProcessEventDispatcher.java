@@ -37,10 +37,8 @@ import org.kie.kogito.correlation.CorrelationInstance;
 import org.kie.kogito.correlation.SimpleCorrelation;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventDispatcher;
-import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,18 +74,47 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
             return CompletableFuture.completedFuture(null);
         }
         return resolveCorrelationId(event)
-                .map(kogitoReferenceId -> CompletableFuture.supplyAsync(() -> handleMessageWithReference(trigger, event, kogitoReferenceId), executor))
+                .map(kogitoReferenceId -> asCompletable(trigger, event, findById(kogitoReferenceId)))
                 .orElseGet(() -> {
-                    // if the trigger is for a start event (model converter is set only for start node)
-                    if (modelConverter.isPresent()) {
-                        return CompletableFuture.supplyAsync(() -> startNewInstance(trigger, event), executor);
-                    } else {
-                        if (LOGGER.isInfoEnabled()) {
-                            LOGGER.info("No matches found for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
-                        }
-                        return CompletableFuture.completedFuture(null);
+                    // check processInstanceId
+                    String processInstanceId = event.getKogitoReferenceId();
+                    if (processInstanceId != null) {
+                        return asCompletable(trigger, event, findById(processInstanceId));
                     }
+                    // check businessKey
+                    String businessKey = event.getKogitoBusinessKey();
+                    if (businessKey != null) {
+                        return asCompletable(trigger, event, findByBusinessKey(businessKey));
+                    }
+                    // try to start a new instance if possible
+                    return CompletableFuture.supplyAsync(() -> startNewInstance(trigger, event), executor);
                 });
+    }
+
+    private CompletableFuture<ProcessInstance<M>> asCompletable(String trigger, DataEvent<D> event, Optional<ProcessInstance<M>> processInstance) {
+        return CompletableFuture.supplyAsync(() -> processInstance.map(pi -> {
+            signalProcessInstance(trigger, pi.id(), event);
+            return pi;
+        }).orElseGet(() -> startNewInstance(trigger, event)), executor);
+    }
+
+    private Optional<ProcessInstance<M>> findById(String id) {
+        LOGGER.debug("Received message with process instance id '{}'", id);
+        Optional<ProcessInstance<M>> result = process.instances().findById(id);
+        if (LOGGER.isDebugEnabled() && result.isEmpty()) {
+            LOGGER.debug("No instance found for process instance id '{}'", id);
+        }
+        return result;
+
+    }
+
+    private Optional<ProcessInstance<M>> findByBusinessKey(String key) {
+        LOGGER.debug("Received message with business key '{}'", key);
+        Optional<ProcessInstance<M>> result = process.instances().findByBusinessKey(key);
+        if (LOGGER.isDebugEnabled() && result.isEmpty()) {
+            LOGGER.debug("No instance found for business key '{}'", key);
+        }
+        return result;
     }
 
     private Optional<CompositeCorrelation> compositeCorrelation(DataEvent<?> event) {
@@ -97,9 +124,8 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
 
     private Optional<String> resolveCorrelationId(DataEvent<?> event) {
         return compositeCorrelation(event).flatMap(process.correlations()::find)
-                .map(CorrelationInstance::getCorrelatedId)
-                .or(() -> Optional.ofNullable((String) event.getExtension(CloudEventExtensionConstants.BUSINESS_KEY)))
-                .or(() -> Optional.ofNullable(event.getKogitoReferenceId()));
+                .map(CorrelationInstance::getCorrelatedId);
+
     }
 
     private Object resolve(DataEvent<?> event, String key) {
@@ -114,21 +140,6 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
         }
     }
 
-    private ProcessInstance<M> handleMessageWithReference(String trigger, DataEvent<D> event, String instanceId) {
-        LOGGER.debug("Received message with reference id '{}' going to use it to send signal '{}'",
-                instanceId,
-                trigger);
-        return process.instances().findByIdOrBusinessKey(instanceId)
-                .map(instance -> {
-                    signalProcessInstance(trigger, instance.id(), event);
-                    return instance;
-                })
-                .orElseGet(() -> {
-                    LOGGER.info("Process instance with id '{}' not found for triggering signal '{}'", instanceId, trigger);
-                    return startNewInstance(trigger, event);
-                });
-    }
-
     private Optional<M> signalProcessInstance(String trigger, String id, DataEvent<D> event) {
         return processService.signalProcessInstance((Process) process, id, dataResolver.apply(event), "Message-" + trigger);
     }
@@ -139,7 +150,12 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
             return processService.createProcessInstance(process, event.getKogitoBusinessKey(), m.apply(dataResolver.apply(event)),
                     headersFromEvent(event), event.getKogitoStartFromNode(), trigger,
                     event.getKogitoProcessInstanceId(), compositeCorrelation(event).orElse(null));
-        }).orElse(null);
+        }).orElseGet(() -> {
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("No matches found for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
+            }
+            return null;
+        });
     }
 
     protected Map<String, List<String>> headersFromEvent(DataEvent<D> event) {
