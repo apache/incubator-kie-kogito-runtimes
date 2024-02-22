@@ -1231,68 +1231,68 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-task-management</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-task-management</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-task-management</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-task-management-deployment</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-task-management-deployment</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-task-management</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-springboot-task-management</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-task-management-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-springboot-task-management</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-task-notification</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-task-notification</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-task-management-deployment</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-task-notification-deployment</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-task-management</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-task-notification-deployment</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-task-management</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-springboot-task-notification</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-task-notification</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-springboot-task-notification</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-task-notification</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-task-notification-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-task-notification-deployment</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-task-notification</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-task-notification</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -1308,35 +1308,35 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-mail</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-mail</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-mail</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-mail-deployment</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-mail-deployment</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-mail</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-springboot-mail</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-mail-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-springboot-mail</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-mail-deployment</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-mail</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-mail</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -2094,8 +2094,8 @@
 
       <!-- spring boot starter -->
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-spring-boot-starter</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-with-drools-spring-boot-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2104,13 +2104,13 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-processes-spring-boot-starter</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-spring-boot-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-processes-spring-boot-starter</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-spring-boot-starter</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -2127,19 +2127,19 @@
 
       <!-- Quarkus extension -->
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-quarkus</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-with-drools-quarkus</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-quarkus</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-with-drools-quarkus</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-quarkus-deployment</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-with-drools-quarkus-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2263,19 +2263,19 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-quarkus-processes</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-quarkus</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-quarkus-processes</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-quarkus</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-quarkus-processes-deployment</artifactId>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-quarkus-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

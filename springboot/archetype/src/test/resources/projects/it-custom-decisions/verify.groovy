@@ -31,7 +31,7 @@ assert Files.exists(projectPath.resolve("src/test/java/it/pkg/TrafficViolationTe
 // Check starters in pom.xml - decisions starter specified, so drools-decisions-spring-boot-starter should be added in the basic-project
 String pomContent = Files.readString(projectPath.resolve("pom.xml"))
 assert pomContent.contains("drools-decisions-spring-boot-starter")
-assert !pomContent.contains("kogito-spring-boot-starter")
+assert !pomContent.contains("jbpm-with-drools-spring-boot-starter")
 
 // Also no addons were specified
 assert !pomContent.contains("addon")

@@ -57,7 +57,7 @@
         </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-quarkus</artifactId>
+            <artifactId>jbpm-with-drools-quarkus</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
