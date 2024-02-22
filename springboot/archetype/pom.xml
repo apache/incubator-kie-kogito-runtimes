@@ -64,13 +64,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-decisions-spring-boot-starter</artifactId>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-decisions-spring-boot-starter</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-rules-spring-boot-starter</artifactId>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-rules-spring-boot-starter</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

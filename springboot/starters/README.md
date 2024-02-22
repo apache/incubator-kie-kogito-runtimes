@@ -52,8 +52,8 @@ Starter only for Decisions (DMN) support. To add it to your project, use:
 
 <dependencies>
   <dependency>
-    <groupId>org.kie.kogito</groupId>
-    <artifactId>kogito-decisions-spring-boot-starter</artifactId>
+    <groupId>org.drools</groupId>
+    <artifactId>drools-decisions-spring-boot-starter</artifactId>
   </dependency>
 </dependencies>
 ```
@@ -94,8 +94,8 @@ Adds the Kogito Rules engine support (DRLs) to your project:
 
 <dependencies>
   <dependency>
-    <groupId>org.kie.kogito</groupId>
-    <artifactId>kogito-rules-spring-boot-starter</artifactId>
+    <groupId>org.drools</groupId>
+    <artifactId>drools-rules-spring-boot-starter</artifactId>
   </dependency>
 </dependencies>
 ```

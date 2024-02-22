@@ -66,13 +66,13 @@
       </activation>
       <dependencies>
         <dependency>
-          <groupId>org.kie.kogito</groupId>
-          <artifactId>kogito-quarkus-rules-deployment</artifactId>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-quarkus-rules-deployment</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.kie.kogito</groupId>
-          <artifactId>kogito-quarkus-decisions-deployment</artifactId>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-quarkus-decisions-deployment</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
