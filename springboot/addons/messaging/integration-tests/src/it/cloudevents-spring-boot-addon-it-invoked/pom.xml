@@ -52,7 +52,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>drools</groupId>
+      <groupId>org.drools</groupId>
       <artifactId>drools-decisions-spring-boot-starter</artifactId>
     </dependency>
     <dependency>
