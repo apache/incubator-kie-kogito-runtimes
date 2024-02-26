@@ -54,6 +54,8 @@ def resolveAddonGroupId(String artifactId) {
             return "org.drools"
         case { artifactId.startsWith("jbpm-") }:
             return "org.jbpm"
+        case { artifactId.startsWith("sonataflow-") }:
+            return "org.sonataflow"
         default: return "org.kie.kogito"
     }
 }

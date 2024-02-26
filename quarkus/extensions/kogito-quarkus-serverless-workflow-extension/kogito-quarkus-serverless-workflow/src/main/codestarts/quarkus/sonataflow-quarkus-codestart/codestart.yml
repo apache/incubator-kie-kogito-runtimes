@@ -9,7 +9,7 @@ metadata:
 language:
   base:
     dependencies:
-      - org.kie.kogito:kogito-quarkus-serverless-workflow
+      - org.sonataflow:sonataflow-quarkus
       - io.quarkus:quarkus-resteasy-jackson
     test-dependencies:
       - io.rest-assured:rest-assured
