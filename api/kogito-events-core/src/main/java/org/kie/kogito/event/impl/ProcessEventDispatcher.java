@@ -92,7 +92,11 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
     }
 
     private CompletableFuture<ProcessInstance<M>> asCompletable(String trigger, DataEvent<D> event, Optional<ProcessInstance<M>> processInstance) {
+
         return CompletableFuture.supplyAsync(() -> processInstance.map(pi -> {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Sending signal {} to process instance id '{}'", trigger, pi.id());
+            }
             signalProcessInstance(trigger, pi.id(), event);
             return pi;
         }).orElseGet(() -> startNewInstance(trigger, event)), executor);
