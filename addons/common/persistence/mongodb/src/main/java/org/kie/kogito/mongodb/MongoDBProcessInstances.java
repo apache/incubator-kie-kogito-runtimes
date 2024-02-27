@@ -29,6 +29,8 @@ import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
+import org.jbpm.flow.serialization.MarshallerContextName;
+import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
 import org.kie.kogito.Model;
 import org.kie.kogito.mongodb.transaction.AbstractTransactionManager;
 import org.kie.kogito.process.MutableProcessInstances;
@@ -37,8 +39,6 @@ import org.kie.kogito.process.ProcessInstanceDuplicatedException;
 import org.kie.kogito.process.ProcessInstanceOptimisticLockingException;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
-import org.kie.kogito.serialization.process.MarshallerContextName;
-import org.kie.kogito.serialization.process.ProcessInstanceMarshallerService;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.ClientSession;

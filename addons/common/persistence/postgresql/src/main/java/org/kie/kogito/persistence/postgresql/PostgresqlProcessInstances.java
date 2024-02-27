@@ -26,13 +26,13 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceOptimisticLockingException;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
-import org.kie.kogito.serialization.process.ProcessInstanceMarshallerService;
 
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
