@@ -704,6 +704,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 pInstance.setState(STATE_ACTIVE);
                 pInstance.internalSetErrorNodeId(null);
                 pInstance.internalSetErrorMessage(null);
+                org.kie.api.runtime.process.NodeInstanceContainer nodeInstanceContainer = ni.getNodeInstanceContainer();
+                if (nodeInstanceContainer instanceof NodeInstance) {
+                    ((NodeInstance) nodeInstanceContainer).internalSetTriggerTime(new Date());
+                }
                 ni.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
                 removeOnFinish();
             }
