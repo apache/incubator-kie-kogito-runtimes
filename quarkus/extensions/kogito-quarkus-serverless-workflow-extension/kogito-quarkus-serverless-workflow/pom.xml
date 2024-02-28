@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>sonataflow-quarkus-extension</artifactId>
-    <groupId>org.sonataflow</groupId>
+    <groupId>org.apache.sonataflow</groupId>
     <version>999-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -159,7 +159,7 @@
             <configuration>
               <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
               <capabilities>
-                <provides>org.sonataflow.serverless-workflow</provides>
+                <provides>org.apache.sonataflow.serverless-workflow</provides>
               </capabilities>
             </configuration>
           </execution>

@@ -51,7 +51,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.sonataflow</groupId>
+      <groupId>org.apache.sonataflow</groupId>
       <artifactId>sonataflow-quarkus</artifactId>
     </dependency>
     <dependency>
@@ -68,7 +68,7 @@
     </dependency>
      <!-- hack for CI to work -->
     <dependency>
-      <groupId>org.sonataflow</groupId>
+      <groupId>org.apache.sonataflow</groupId>
       <artifactId>sonataflow-quarkus-deployment</artifactId>
       <version>${project.version}</version>
       <type>pom</type>

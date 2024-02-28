@@ -269,23 +269,23 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-addons-quarkus-camel</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-addons-quarkus-camel</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-addons-quarkus-camel-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-addons-quarkus-camel-deployment</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
@@ -1992,23 +1992,23 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-addons-quarkus-python</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-addons-quarkus-python</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
        <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-addons-quarkus-python-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-addons-quarkus-python-deployment</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
@@ -2247,18 +2247,18 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-quarkus</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-quarkus</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-quarkus-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2314,23 +2314,23 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-quarkus-devui</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-quarkus-devui</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-quarkus-devui-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-quarkus-devui-deployment</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>

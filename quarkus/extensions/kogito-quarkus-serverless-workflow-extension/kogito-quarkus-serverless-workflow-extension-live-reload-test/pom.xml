@@ -24,7 +24,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.sonataflow</groupId>
+        <groupId>org.apache.sonataflow</groupId>
         <artifactId>sonataflow-quarkus-extension</artifactId>
         <version>999-SNAPSHOT</version>
     </parent>
@@ -38,7 +38,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.sonataflow</groupId>
+            <groupId>org.apache.sonataflow</groupId>
             <artifactId>sonataflow-quarkus</artifactId>
         </dependency>
         <dependency>
@@ -105,7 +105,7 @@
 
         <!-- these are used implicitly by quarkus tests so let's make Maven aware of them -->
         <dependency>
-            <groupId>org.sonataflow</groupId>
+            <groupId>org.apache.sonataflow</groupId>
             <artifactId>sonataflow-quarkus-deployment</artifactId>
             <version>${project.version}</version>
             <type>pom</type>

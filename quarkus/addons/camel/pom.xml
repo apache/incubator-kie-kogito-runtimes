@@ -29,7 +29,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.sonataflow</groupId>
+  <groupId>org.apache.sonataflow</groupId>
   <artifactId>sonataflow-addons-quarkus-camel-parent</artifactId>
   <name>SonataFlow :: Add-Ons :: Quarkus :: Camel :: Parent</name>
   <description>SonataFlow Quarkus Camel Integration with Serverless Workflow</description>

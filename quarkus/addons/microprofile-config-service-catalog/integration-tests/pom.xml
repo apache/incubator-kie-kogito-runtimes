@@ -55,7 +55,7 @@
             <artifactId>quarkus-smallrye-openapi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.sonataflow</groupId>
+            <groupId>org.apache.sonataflow</groupId>
             <artifactId>sonataflow-quarkus</artifactId>
         </dependency>
 
@@ -93,7 +93,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.sonataflow</groupId>
+            <groupId>org.apache.sonataflow</groupId>
             <artifactId>sonataflow-quarkus-deployment</artifactId>
             <scope>test</scope>
         </dependency>

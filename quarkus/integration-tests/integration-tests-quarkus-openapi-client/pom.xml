@@ -49,13 +49,13 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.sonataflow</groupId>
+      <groupId>org.apache.sonataflow</groupId>
       <artifactId>sonataflow-quarkus</artifactId>
     </dependency>
 
     <!-- this is used implicitly by sonataflow-quarkus, let's make Maven parallel build to be aware of it. -->
     <dependency>
-      <groupId>org.sonataflow</groupId>
+      <groupId>org.apache.sonataflow</groupId>
       <artifactId>sonataflow-quarkus-deployment</artifactId>
       <version>${project.version}</version>
       <type>pom</type>

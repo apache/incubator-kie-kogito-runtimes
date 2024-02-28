@@ -22,7 +22,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.sonataflow</groupId>
+    <groupId>org.apache.sonataflow</groupId>
     <artifactId>sonataflow-addons-quarkus-python-parent</artifactId>
     <version>999-SNAPSHOT</version>
   </parent>
