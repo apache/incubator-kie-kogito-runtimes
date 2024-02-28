@@ -63,7 +63,7 @@
 
     <dependency>
       <groupId>org.kie</groupId>
-      <artifactId>kie-addons-quarkus-events-decisions</artifactId>
+      <artifactId>kie-addons-quarkus-events-process</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -149,7 +149,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>
-      <artifactId>kie-addons-quarkus-events-decisions-deployment</artifactId>
+      <artifactId>kie-addons-quarkus-events-process-deployment</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>test</scope>
