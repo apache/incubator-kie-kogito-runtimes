@@ -74,7 +74,7 @@
             <configuration>
               <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
               <capabilities>
-                <provides>org.sonataflow.addons.camel</provides>
+                <provides>org.apache.sonataflow.addons.camel</provides>
               </capabilities>
             </configuration>
           </execution>
