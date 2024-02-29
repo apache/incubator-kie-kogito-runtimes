@@ -16,28 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.flow.serialization;
+package org.jbpm.process.instance.event;
 
-import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
+import org.kie.api.event.process.ProcessMigrationEvent;
+import org.kie.api.runtime.KieRuntime;
+import org.kie.api.runtime.process.ProcessInstance;
 
-public interface ProcessInstanceMarshallerListener {
+public class ProcessMigrationEventImpl extends ProcessEvent implements ProcessMigrationEvent {
 
-    default void afterUnmarshallProcess(KogitoProcessRuntime runtime, KogitoWorkflowProcessInstance processInstance) {
+    private static final long serialVersionUID = 510l;
 
+    public ProcessMigrationEventImpl(ProcessInstance instance, KieRuntime kruntime, String identity) {
+        super(instance, kruntime, identity);
     }
 
-    default void afterUnmarshallNode(KogitoProcessRuntime runtime, KogitoNodeInstance node) {
-
-    }
-
-    default void beforeMarshallNode(KogitoProcessRuntime runtime, KogitoNodeInstance node) {
-
-    }
-
-    default void beforeMarshallProcess(KogitoProcessRuntime runtime, KogitoWorkflowProcessInstance node) {
-
+    @Override
+    public String toString() {
+        return "==>[ProcessMigratedEventImpl(name=" + getProcessInstance().getProcessName() + "; id=" + getProcessInstance().getProcessId() + ")]";
     }
 
 }

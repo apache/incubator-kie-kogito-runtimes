@@ -87,6 +87,7 @@ import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.definition.process.WorkflowElementIdentifier;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.process.workitem.Attachment;
 import org.kie.kogito.process.workitem.Comment;
@@ -229,7 +230,8 @@ public class ProtobufProcessInstanceReader {
         if (workflowContext.getIterationLevelsCount() > 0) {
             processInstance.getIterationLevels().putAll(buildIterationLevels(workflowContext.getIterationLevelsList()));
         }
-        Arrays.stream(listeners).forEach(e -> e.afterUnmarshallProcess(processInstance));
+        KogitoProcessRuntime runtime = ((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS)).getProcessRuntime();
+        Arrays.stream(listeners).forEach(e -> e.afterUnmarshallProcess(runtime, processInstance));
         return processInstance;
     }
 
@@ -317,7 +319,8 @@ public class ProtobufProcessInstanceReader {
             }
 
             KogitoNodeInstance kogitoNodeInstance = (KogitoNodeInstance) result;
-            Arrays.stream(listeners).forEach(e -> e.afterUnmarshallNode(kogitoNodeInstance));
+            KogitoProcessRuntime runtime = ((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS)).getProcessRuntime();
+            Arrays.stream(listeners).forEach(e -> e.afterUnmarshallNode(runtime, kogitoNodeInstance));
             return result;
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read node instance content");

@@ -187,6 +187,10 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
 
     }
 
+    public KogitoProcessRuntime getProcessRuntime() {
+        return this.processRuntime;
+    }
+
     @Override
     public void activate() {
         if (this.activated) {
