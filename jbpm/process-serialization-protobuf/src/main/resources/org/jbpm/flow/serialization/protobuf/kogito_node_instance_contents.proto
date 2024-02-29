@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package org.jbpm.flow.serialization.process.protobuf;
+package org.jbpm.flow.serialization.protobuf;
 
 import "org/jbpm/flow/serialization/protobuf/kogito_types.proto";
 import "google/protobuf/any.proto";

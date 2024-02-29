@@ -43,6 +43,8 @@ public class ProcessInstanceMarshallerService {
 
     private List<ObjectMarshallerStrategy> strats;
 
+    private List<ProcessInstanceMarshallerListener> listeners;
+
     private Map<MarshallerContextName<Object>, Object> contextEntries;
 
     private ProcessInstanceMarshallerFactory processInstanceMarshallerFactory;
@@ -65,11 +67,27 @@ public class ProcessInstanceMarshallerService {
             return this;
         }
 
+        public Builder withDefaultListeners() {
+            ServiceLoader<ProcessInstanceMarshallerListener> loader = ServiceLoader.load(ProcessInstanceMarshallerListener.class);
+
+            for (ProcessInstanceMarshallerListener strategy : loader) {
+                ProcessInstanceMarshallerService.this.listeners.add(strategy);
+            }
+            return this;
+        }
+
         public Builder withDefaultObjectMarshallerStrategies() {
             ServiceLoader<ObjectMarshallerStrategy> loader = ServiceLoader.load(ObjectMarshallerStrategy.class);
 
             for (ObjectMarshallerStrategy strategy : loader) {
                 ProcessInstanceMarshallerService.this.strats.add(strategy);
+            }
+            return this;
+        }
+
+        public Builder withListeners(ProcessInstanceMarshallerListener... strategies) {
+            for (ProcessInstanceMarshallerListener strategy : strategies) {
+                ProcessInstanceMarshallerService.this.listeners.add(strategy);
             }
             return this;
         }
@@ -122,6 +140,7 @@ public class ProcessInstanceMarshallerService {
             MarshallerReaderContext context = processInstanceMarshallerFactory.newReaderContext(bais);
             context.set(MarshallerContextName.MARSHALLER_PROCESS, process);
             context.set(MarshallerContextName.MARSHALLER_INSTANCE_READ_ONLY, readOnly);
+            context.set(MarshallerContextName.MARSHALLER_INSTANCE_LISTENER, listeners.toArray(ProcessInstanceMarshallerListener[]::new));
             setupEnvironment(context);
             org.jbpm.flow.serialization.ProcessInstanceMarshaller marshaller = processInstanceMarshallerFactory.newKogitoProcessInstanceMarshaller();
             return marshaller.readProcessInstance(context);
@@ -147,6 +166,7 @@ public class ProcessInstanceMarshallerService {
             try (ByteArrayInputStream bais = new ByteArrayInputStream(data)) {
                 MarshallerReaderContext context = processInstanceMarshallerFactory.newReaderContext(bais);
                 context.set(MarshallerContextName.MARSHALLER_PROCESS, processInstance.process());
+                context.set(MarshallerContextName.MARSHALLER_INSTANCE_LISTENER, listeners.toArray(ProcessInstanceMarshallerListener[]::new));
                 setupEnvironment(context);
                 org.jbpm.flow.serialization.ProcessInstanceMarshaller marshaller =
                         processInstanceMarshallerFactory.newKogitoProcessInstanceMarshaller();

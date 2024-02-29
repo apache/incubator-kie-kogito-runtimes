@@ -21,6 +21,7 @@ package org.jbpm.flow.serialization.impl;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,7 +32,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.MarshallerWriterContext;
+import org.jbpm.flow.serialization.ProcessInstanceMarshallerListener;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.CompositeContextNodeInstanceContent;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.DynamicNodeInstanceContent;
@@ -97,18 +100,21 @@ public class ProtobufProcessInstanceWriter {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtobufProcessInstanceWriter.class);
     private MarshallerWriterContext context;
     private ProtobufVariableWriter varWriter;
+    private ProcessInstanceMarshallerListener[] listeners;
 
     public ProtobufProcessInstanceWriter(MarshallerWriterContext context) {
         this.context = context;
         this.varWriter = new ProtobufVariableWriter(context);
+        this.listeners = context.get(MarshallerContextName.MARSHALLER_INSTANCE_LISTENER);
     }
 
     public void writeProcessInstance(WorkflowProcessInstanceImpl workFlow, OutputStream os) throws IOException {
-        LOGGER.info("write process");
+        Arrays.stream(listeners).forEach(e -> e.beforeMarshallProcess(workFlow));
 
         KogitoProcessInstanceProtobuf.ProcessInstance.Builder instance = KogitoProcessInstanceProtobuf.ProcessInstance.newBuilder()
                 .setId(workFlow.getStringId())
                 .setProcessId(workFlow.getProcessId())
+                .setProcessVersion(workFlow.getProcessVersion())
                 .setState(workFlow.getState())
                 .setProcessType(workFlow.getProcess().getType())
                 .setSignalCompletion(workFlow.isSignalCompletion());
@@ -242,6 +248,8 @@ public class ProtobufProcessInstanceWriter {
     }
 
     private Any buildNodeInstanceContent(NodeInstance nodeInstance) {
+        Arrays.stream(listeners).forEach(e -> e.beforeMarshallNode((KogitoNodeInstance) nodeInstance));
+
         if (nodeInstance instanceof RuleSetNodeInstance) {
             return buildRuleSetNodeInstance((RuleSetNodeInstance) nodeInstance);
         } else if (nodeInstance instanceof ForEachNodeInstance) {
