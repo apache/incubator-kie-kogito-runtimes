@@ -33,6 +33,10 @@ public interface ProcessInstances<T> {
         return findByBusinessKey(id, ProcessInstanceReadMode.READ_ONLY);
     }
 
+    default void migrate(String targetProcessId, String targetProcessVersion, String[] processIds) throws OperationNotSupportedException {
+        throw new OperationNotSupportedException();
+    }
+
     default Optional<ProcessInstance<T>> findByBusinessKey(String id, ProcessInstanceReadMode mode) {
         return stream(mode).filter(pi -> id.equals(pi.businessKey())).findAny();
     }
@@ -50,6 +54,5 @@ public interface ProcessInstances<T> {
     default Stream<ProcessInstance<T>> stream() {
         return stream(ProcessInstanceReadMode.READ_ONLY);
     }
-
 
 }

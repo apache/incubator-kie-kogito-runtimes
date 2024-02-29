@@ -21,6 +21,7 @@ package org.jbpm.flow.serialization.migration;
 import org.jbpm.flow.migration.MigrationPlanService;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +39,14 @@ public class StandardMigrationProcessInstanceMarshallerListener implements Proce
     }
 
     @Override
-    public void afterUnmarshallProcess(KogitoWorkflowProcessInstance processInstance) {
+    public void afterUnmarshallProcess(KogitoProcessRuntime runtime, KogitoWorkflowProcessInstance processInstance) {
         LOGGER.debug("Migration processInstance {}", processInstance);
         migrationPlanService.migrateProcessElement(processInstance);
+        runtime.getProcessEventSupport().fireOnMigration(processInstance, runtime.getKieRuntime());
     }
 
     @Override
-    public void afterUnmarshallNode(KogitoNodeInstance nodeInstance) {
+    public void afterUnmarshallNode(KogitoProcessRuntime runtime, KogitoNodeInstance nodeInstance) {
         LOGGER.debug("Migration nodeInstance {}", nodeInstance);
         migrationPlanService.migrateNodeElement(nodeInstance);
     }

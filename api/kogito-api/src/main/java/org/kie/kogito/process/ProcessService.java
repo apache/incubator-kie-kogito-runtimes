@@ -67,7 +67,7 @@ public interface ProcessService {
 
     <T extends MappableToModel<R>, R> Optional<R> findById(Process<T> process, String id);
 
-    <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion, String ...id) throws OperationNotSupportedException;
+    <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion, String... id) throws OperationNotSupportedException;
 
     <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion) throws OperationNotSupportedException;
 

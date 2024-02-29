@@ -82,7 +82,9 @@ import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.definition.process.WorkflowElementIdentifier;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.process.workitem.Attachment;
 import org.kie.kogito.process.workitem.Comment;
 import org.kie.kogito.process.workitem.HumanTaskWorkItem;
@@ -109,7 +111,8 @@ public class ProtobufProcessInstanceWriter {
     }
 
     public void writeProcessInstance(WorkflowProcessInstanceImpl workFlow, OutputStream os) throws IOException {
-        Arrays.stream(listeners).forEach(e -> e.beforeMarshallProcess(workFlow));
+        KogitoProcessRuntime runtime = ((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS)).getProcessRuntime();
+        Arrays.stream(listeners).forEach(e -> e.beforeMarshallProcess(runtime, workFlow));
 
         KogitoProcessInstanceProtobuf.ProcessInstance.Builder instance = KogitoProcessInstanceProtobuf.ProcessInstance.newBuilder()
                 .setId(workFlow.getStringId())
@@ -248,7 +251,8 @@ public class ProtobufProcessInstanceWriter {
     }
 
     private Any buildNodeInstanceContent(NodeInstance nodeInstance) {
-        Arrays.stream(listeners).forEach(e -> e.beforeMarshallNode((KogitoNodeInstance) nodeInstance));
+        KogitoProcessRuntime runtime = ((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS)).getProcessRuntime();
+        Arrays.stream(listeners).forEach(e -> e.beforeMarshallNode(runtime, (KogitoNodeInstance) nodeInstance));
 
         if (nodeInstance instanceof RuleSetNodeInstance) {
             return buildRuleSetNodeInstance((RuleSetNodeInstance) nodeInstance);
