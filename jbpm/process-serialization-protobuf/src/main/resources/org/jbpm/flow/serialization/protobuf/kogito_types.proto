@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package org.jbpm.flow.serialization.process.protobuf;
+package org.jbpm.flow.serialization.protobuf;
 
 option java_outer_classname = "KogitoTypesProtobuf";
 

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.MarshallerReaderContext;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerException;
+import org.jbpm.flow.serialization.ProcessInstanceMarshallerListener;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.CompositeContextNodeInstanceContent;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.DynamicNodeInstanceContent;
@@ -104,11 +106,13 @@ public class ProtobufProcessInstanceReader {
     private RuleFlowProcessInstance ruleFlowProcessInstance;
     private MarshallerReaderContext context;
     private ProtobufVariableReader varReader;
+    private ProcessInstanceMarshallerListener[] listeners;
 
     public ProtobufProcessInstanceReader(MarshallerReaderContext context) {
         this.context = context;
         this.ruleFlowProcessInstance = new RuleFlowProcessInstance();
         this.varReader = new ProtobufVariableReader(context);
+        this.listeners = context.get(MarshallerContextName.MARSHALLER_INSTANCE_LISTENER);
     }
 
     public RuleFlowProcessInstance read(InputStream input) throws IOException {
@@ -129,10 +133,12 @@ public class ProtobufProcessInstanceReader {
     private RuleFlowProcessInstance buildWorkflow(KogitoProcessInstanceProtobuf.ProcessInstance processInstanceProtobuf) {
 
         RuleFlowProcessInstance processInstance = ruleFlowProcessInstance;
-        processInstance.setProcess(((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS)).get());
+        processInstance.setProcessId(processInstanceProtobuf.getProcessId());
+        processInstance.setProcessVersion(processInstanceProtobuf.getProcessVersion());
+
+        processInstance.setInternalProcess(((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS)).get());
 
         processInstance.setId(processInstanceProtobuf.getId());
-        processInstance.setProcessId(processInstanceProtobuf.getProcessId());
         processInstance.setState(processInstanceProtobuf.getState());
         processInstance.setSignalCompletion(processInstanceProtobuf.getSignalCompletion());
 
@@ -223,7 +229,7 @@ public class ProtobufProcessInstanceReader {
         if (workflowContext.getIterationLevelsCount() > 0) {
             processInstance.getIterationLevels().putAll(buildIterationLevels(workflowContext.getIterationLevelsList()));
         }
-
+        Arrays.stream(listeners).forEach(e -> e.afterUnmarshallProcess(processInstance));
         return processInstance;
     }
 
@@ -310,6 +316,8 @@ public class ProtobufProcessInstanceReader {
                 result.internalSetTriggerTime(new Date(nodeInstance.getTriggerDate()));
             }
 
+            KogitoNodeInstance kogitoNodeInstance = (KogitoNodeInstance) result;
+            Arrays.stream(listeners).forEach(e -> e.afterUnmarshallNode(kogitoNodeInstance));
             return result;
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot read node instance content");
