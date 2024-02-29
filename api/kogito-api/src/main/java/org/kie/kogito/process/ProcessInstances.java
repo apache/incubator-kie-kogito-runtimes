@@ -37,9 +37,19 @@ public interface ProcessInstances<T> {
         return stream(mode).filter(pi -> id.equals(pi.businessKey())).findAny();
     }
 
+    default void migrate(String targetProcessId, String targetProcessVersion, String[] processIds) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void migrate(String targetProcessId, String targetProcessVersion) {
+        throw new UnsupportedOperationException();
+    }
+
     Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode);
 
     default Stream<ProcessInstance<T>> stream() {
         return stream(ProcessInstanceReadMode.READ_ONLY);
     }
+
+
 }

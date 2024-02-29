@@ -27,6 +27,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.naming.OperationNotSupportedException;
+
 import org.jbpm.process.instance.impl.humantask.HumanTaskHelper;
 import org.jbpm.process.instance.impl.humantask.HumanTaskTransition;
 import org.jbpm.util.JsonSchemaUtil;
@@ -112,6 +114,16 @@ public class ProcessServiceImpl implements ProcessService {
                 .findById(id, ProcessInstanceReadMode.READ_ONLY);
         Optional<T> mappable = instance.map(ProcessInstance::variables);
         return mappable.map(MappableToModel::toModel);
+    }
+
+    @Override
+    public <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion, String... processIds) throws OperationNotSupportedException {
+        process.instances().migrate(targetProcessId, targetProcessVersion, processIds);
+    }
+
+    @Override
+    public <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion) throws OperationNotSupportedException {
+        process.instances().migrate(targetProcessId, targetProcessVersion);
     }
 
     @Override
@@ -400,4 +412,5 @@ public class ProcessServiceImpl implements ProcessService {
                 new Policy<?>[] { policy },
                 JsonSchemaUtil.load(Thread.currentThread().getContextClassLoader(), process.id(), taskName));
     }
+
 }
