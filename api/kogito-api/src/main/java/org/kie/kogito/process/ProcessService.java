@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import javax.naming.OperationNotSupportedException;
+
 import org.kie.kogito.MapOutput;
 import org.kie.kogito.MappableToModel;
 import org.kie.kogito.Model;
@@ -64,6 +66,10 @@ public interface ProcessService {
     <T extends MappableToModel<R>, R> List<R> getProcessInstanceOutput(Process<T> process);
 
     <T extends MappableToModel<R>, R> Optional<R> findById(Process<T> process, String id);
+
+    <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion, String ...id) throws OperationNotSupportedException;
+
+    <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion) throws OperationNotSupportedException;
 
     <T extends MappableToModel<R>, R> Optional<R> delete(Process<T> process, String id);
 
