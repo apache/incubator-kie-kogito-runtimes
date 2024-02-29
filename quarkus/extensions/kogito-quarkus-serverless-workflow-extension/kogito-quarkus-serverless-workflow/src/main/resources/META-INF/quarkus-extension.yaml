@@ -16,7 +16,7 @@ metadata:
   config:
     - "kogito."
   codestart:
-    name: "kogito-serverless-workflow-codestart"
+    name: "sonataflow-quarkus-codestart"
     languages:
       - "java"
     artifact: "org.apache.sonataflow:sonataflow-quarkus:codestarts:jar:${project.version}"

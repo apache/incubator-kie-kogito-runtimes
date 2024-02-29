@@ -33,7 +33,7 @@ public class ServerlessWorkflowCodestartTest {
 
     @RegisterExtension
     public static QuarkusCodestartTest codestartTest = QuarkusCodestartTest.builder()
-            .setupStandaloneExtensionTest("org.sonataflow:sonataflow-quarkus")
+            .setupStandaloneExtensionTest("org.apache.sonataflow:sonataflow-quarkus")
             .extension(ArtifactKey.fromString("io.quarkus:quarkus-config-yaml"))
             .putData(QuarkusCodestartData.QuarkusDataKey.APP_CONFIG, Map.of("quarkus.devservices.enabled", "false"))
             .languages(JAVA)

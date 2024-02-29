@@ -1,5 +1,5 @@
-name: sonataflow-serverless-workflow-codestart
-ref: sonataflow-serverless-workflow
+name: sonataflow-quarkus-codestart
+ref: sonataflow-quarkus
 type: code
 tags: extension-codestart
 metadata:
