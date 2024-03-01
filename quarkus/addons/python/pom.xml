@@ -25,6 +25,7 @@
     <artifactId>kogito-addons-quarkus-parent</artifactId>
     <version>999-SNAPSHOT</version>
   </parent>
+  <groupId>org.kie.kogito</groupId>
   <artifactId>kogito-addons-quarkus-serverless-workflow-python-parent</artifactId>
   <name>Kogito:: Addons :: Quarkus:: Serverless Workflow:: Python:: Parent</name>
   <description>Serverless Workflow Python Quarkus Addons</description>
