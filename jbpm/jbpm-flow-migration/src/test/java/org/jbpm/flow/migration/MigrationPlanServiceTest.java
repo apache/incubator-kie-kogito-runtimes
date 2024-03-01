@@ -71,7 +71,8 @@ public class MigrationPlanServiceTest {
         MigrationPlanService service = new MigrationPlanService();
         WorkflowProcessInstanceImpl processImpl = new RuleFlowProcessInstance();
         processImpl.setProcess(new DummyProcess("process_A", "1"));
-        ExtendedNodeInstanceImpl nodeInstanceImpl = new ExtendedNodeInstanceImpl() {};
+        ExtendedNodeInstanceImpl nodeInstanceImpl = new ExtendedNodeInstanceImpl() {
+        };
         nodeInstanceImpl.setProcessInstance(processImpl);
         nodeInstanceImpl.setNodeId(fromExternalFormat("node_1"));
         service.migrateNodeElement(nodeInstanceImpl);
@@ -85,7 +86,8 @@ public class MigrationPlanServiceTest {
         MigrationPlanService service = new MigrationPlanService();
         WorkflowProcessInstanceImpl processImpl = new RuleFlowProcessInstance();
         processImpl.setProcess(new DummyProcess("process_A", "1"));
-        ExtendedNodeInstanceImpl nodeInstanceImpl = new ExtendedNodeInstanceImpl() {};
+        ExtendedNodeInstanceImpl nodeInstanceImpl = new ExtendedNodeInstanceImpl() {
+        };
         nodeInstanceImpl.setProcessInstance(processImpl);
         nodeInstanceImpl.setNodeId(fromExternalFormat("node_2"));
         service.migrateNodeElement(nodeInstanceImpl);
@@ -99,7 +101,8 @@ public class MigrationPlanServiceTest {
         MigrationPlanService service = new MigrationPlanService();
         WorkflowProcessInstanceImpl processImpl = new RuleFlowProcessInstance();
         processImpl.setProcess(new DummyProcess("process_A", "1"));
-        ExtendedNodeInstanceImpl nodeInstanceImpl = new ExtendedNodeInstanceImpl() {};
+        ExtendedNodeInstanceImpl nodeInstanceImpl = new ExtendedNodeInstanceImpl() {
+        };
         nodeInstanceImpl.setProcessInstance(processImpl);
         nodeInstanceImpl.setNodeId(fromExternalFormat("node_3"));
         service.migrateNodeElement(nodeInstanceImpl);
@@ -113,7 +116,8 @@ public class MigrationPlanServiceTest {
         MigrationPlanService service = new MigrationPlanService();
         WorkflowProcessInstanceImpl processImpl = new RuleFlowProcessInstance();
         processImpl.setProcess(new DummyProcess("process_C", "1"));
-        ExtendedNodeInstanceImpl nodeInstanceImpl = new ExtendedNodeInstanceImpl() {};
+        ExtendedNodeInstanceImpl nodeInstanceImpl = new ExtendedNodeInstanceImpl() {
+        };
         nodeInstanceImpl.setProcessInstance(processImpl);
         nodeInstanceImpl.setNodeId(fromExternalFormat("node_3"));
         service.migrateNodeElement(nodeInstanceImpl);

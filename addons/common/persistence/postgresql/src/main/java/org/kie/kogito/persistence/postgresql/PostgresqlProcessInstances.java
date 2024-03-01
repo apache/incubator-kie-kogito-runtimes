@@ -201,7 +201,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
             throw uncheckedException(e, "Error deleting process instance %s", Arrays.toString(processIds));
         }
     }
- 
+
     private boolean updateInternal(String id, byte[] payload) {
         try {
             Future<RowSet<Row>> future =
