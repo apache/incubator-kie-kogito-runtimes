@@ -212,7 +212,7 @@ public class KogitoProcessEventSupportImpl implements KogitoProcessEventSupport 
 
     @Override
     public void fireOnMigration(final KogitoProcessInstance processInstance, KieRuntime kruntime) {
-        ProcessMigrationEventImpl event = new ProcessMigrationEventImpl(processInstance, kruntime, identityProvider.getName());
+        ProcessMigrationEventImpl event = new ProcessMigrationEventImpl(processInstance, kruntime, "System");
         notifyAllListeners(l -> l.onMigration(event));
     }
 

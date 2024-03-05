@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.jbpm.flow.migration.MigrationPlanFile;
 import org.jbpm.flow.migration.MigrationPlanFileProvider;
 import org.jbpm.util.JbpmClassLoaderUtil;
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
     }
 
     @Override
-    public List<Path> listMigrationPlanFiles(String... extensions) {
+    public List<MigrationPlanFile> listMigrationPlanFiles(String... extensions) {
         List<String> allowedExtensions = Arrays.asList(extensions);
         if (this.rootPath.getScheme().equals("jar")) {
             return walkInJarPaths(this.rootPath, allowedExtensions);
@@ -70,10 +71,10 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
 
     }
 
-    private List<Path> walkInJarPaths(URI baseURI, List<String> extensions) {
+    private List<MigrationPlanFile> walkInJarPaths(URI baseURI, List<String> extensions) {
         LOGGER.debug("Searching Migration Plans in rootPath {}", rootPath);
         try (FileSystem fileSystem = FileSystems.newFileSystem(rootPath, emptyMap(), JbpmClassLoaderUtil.findClassLoader())) {
-            Path myPath = fileSystem.getPath(rootPath.getPath());
+            Path myPath = fileSystem.getPath(MIGRATION_PLAN_FOLDER);
             return walkingPaths(myPath, extensions);
         } catch (Exception e) {
             LOGGER.error("There was a problem during migration plan execution", e);
@@ -81,12 +82,13 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
         }
     }
 
-    public List<Path> walkingPaths(Path basePath, List<String> allowedExtensions) {
-        List<Path> migrationPlans = new ArrayList<>();
-        try (Stream<Path> walk = Files.walk(basePath, 1)) {
+    public List<MigrationPlanFile> walkingPaths(Path basePath, List<String> allowedExtensions) {
+        List<MigrationPlanFile> migrationPlans = new ArrayList<>();
+        try (Stream<Path> walk = Files.walk(basePath)) {
             migrationPlans = walk
                     .filter(Files::isRegularFile)
                     .filter(e -> isMigrationPlanFileExtension(e, allowedExtensions))
+                    .map(this::toMigrationPlanFile)
                     .toList();
         } catch (IOException e) {
             LOGGER.error("There was an error trying to search for migration plan in basePath {}", basePath, e);
@@ -102,6 +104,15 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
             }
         };
         return extensions.stream().anyMatch(predicate);
+    }
+
+    private MigrationPlanFile toMigrationPlanFile(Path path) {
+        try {
+            return new MigrationPlanFile(path, Files.readAllBytes(path));
+        } catch (IOException e) {
+            LOGGER.error("There was an error trying to search for migration plan in basePath {}", e);
+            return new MigrationPlanFile(path, new byte[0]);
+        }
     }
 
 }

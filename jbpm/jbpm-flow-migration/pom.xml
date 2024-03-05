@@ -9,7 +9,6 @@
         <version>999-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.jbpm.flow.migration</groupId>
     <artifactId>jbpm-flow-migration</artifactId>
 
     <properties>

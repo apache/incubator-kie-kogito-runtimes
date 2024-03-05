@@ -21,11 +21,7 @@ package org.jbpm.flow.migration;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.jbpm.flow.migration.model.MigrationPlan;
@@ -46,42 +42,32 @@ public class MigrationPlanProvider {
     public List<MigrationPlan> findMigrationPlans() {
         String[] extensions = fileReaders.stream().map(MigrationPlanFileReader::getFileExtension).toArray(String[]::new);
 
-        List<Path> migrationPlanFiles = new ArrayList<>();
+        List<MigrationPlanFile> migrationPlanFiles = new ArrayList<>();
         for (MigrationPlanFileProvider provider : fileProviders) {
             migrationPlanFiles.addAll(provider.listMigrationPlanFiles(extensions));
         }
 
-        // sort by schema
-        Collections.sort(migrationPlanFiles, new Comparator<Path>() {
-
-            @Override
-            public int compare(Path o1, Path o2) {
-                return o1.getFileSystem().provider().getScheme().compareTo(o2.getFileSystem().provider().getScheme());
-            }
-
-        });
-
         List<MigrationPlan> migrationPlans = new ArrayList<>();
-        for (Path path : migrationPlanFiles) {
+        for (MigrationPlanFile mpf : migrationPlanFiles) {
             try {
-                migrationPlans.add(readMigrationPlan(path));
+                migrationPlans.add(readMigrationPlan(mpf));
             } catch (IOException e) {
-                LOGGER.error("Error trying to read migration plan {}", path, e);
+                LOGGER.error("Error trying to read migration plan {}", mpf.getPath(), e);
             }
         }
 
         return migrationPlans;
     }
 
-    private MigrationPlan readMigrationPlan(Path path) throws IOException {
-        try (InputStream is = new ByteArrayInputStream(Files.readAllBytes(path))) {
+    private MigrationPlan readMigrationPlan(MigrationPlanFile mpf) throws IOException {
+        try (InputStream is = new ByteArrayInputStream(mpf.getContent())) {
             for (MigrationPlanFileReader reader : fileReaders) {
-                if (reader.accept(path)) {
+                if (reader.accept(mpf.getPath())) {
                     return reader.read(is);
                 }
             }
         }
-        throw new MigrationPlanFileFormatException("Not file format reader found for " + path);
+        throw new MigrationPlanFileFormatException("Not file format reader found for " + mpf.getPath());
 
     }
 

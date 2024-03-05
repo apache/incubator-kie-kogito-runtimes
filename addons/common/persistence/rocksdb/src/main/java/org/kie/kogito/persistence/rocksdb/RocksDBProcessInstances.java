@@ -42,7 +42,7 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
 
     public RocksDBProcessInstances(Process<T> process, RocksDB db) {
         this.process = process;
-        marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().build();
+        marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().withDefaultListeners().build();
         this.db = db;
     }
 

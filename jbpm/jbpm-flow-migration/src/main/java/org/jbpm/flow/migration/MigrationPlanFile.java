@@ -16,35 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.process;
 
-import java.util.Collection;
-import java.util.Optional;
+package org.jbpm.flow.migration;
 
-import org.kie.kogito.KogitoEngine;
-import org.kie.kogito.Model;
+import java.nio.file.Path;
 
-public interface Processes extends KogitoEngine {
+public class MigrationPlanFile {
 
-    default Optional<Process<? extends Model>> processByProcessInstanceId(String processInstanceId) {
-        for (String processId : processIds()) {
-            Process<? extends Model> process = processById(processId);
-            if (process.instances().findById(processInstanceId, ProcessInstanceReadMode.READ_ONLY).isPresent()) {
-                return Optional.of(process);
-            }
-        }
-        return Optional.empty();
+    private Path path;
+
+    private byte[] content;
+
+    public MigrationPlanFile(Path path, byte[] content) {
+        this.path = path;
+        this.content = content;
     }
 
-    Process<? extends Model> processById(String processId);
-
-    Collection<String> processIds();
-
-    default void activate() {
-
+    public Path getPath() {
+        return path;
     }
 
-    default void deactivate() {
-
+    public void setPath(Path path) {
+        this.path = path;
     }
+
+    public byte[] getContent() {
+        return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
+
 }

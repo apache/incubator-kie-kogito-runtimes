@@ -30,18 +30,22 @@ import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.kogito.Application;
+import org.kie.kogito.Model;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceExecutionException;
+import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import static java.util.Collections.singletonMap;
 
 public abstract class BaseProcessInstanceManagementResource<T> implements ProcessInstanceManagement<T> {
 
@@ -125,6 +129,26 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
 
             return buildOkResponse(data);
         });
+    }
+
+    public T doMigrateInstance(ProcessService processService, String processId, ProcessMigrationSpec migrationSpec, String processInstanceId) {
+        try {
+            Process<? extends Model> process = processes.get().processById(processId);
+            processService.migrate(process, migrationSpec.getTargetProcessId(), migrationSpec.getTargetProcessVersion(), processInstanceId);
+            return buildOkResponse(singletonMap("message", processInstanceId + " instance migrated"));
+        } catch (Exception e) {
+            return badRequestResponse(e.getMessage());
+        }
+    }
+
+    public T doMigrateAllInstances(ProcessService processService, String processId, ProcessMigrationSpec migrationSpec) {
+        try {
+            Process<? extends Model> process = processes.get().processById(processId);
+            processService.migrate(process, migrationSpec.getTargetProcessId(), migrationSpec.getTargetProcessVersion());
+            return buildOkResponse(singletonMap("message", "All intances migrated"));
+        } catch (Exception e) {
+            return badRequestResponse(e.getMessage());
+        }
     }
 
     public T doGetWorkItemsInProcessInstance(String processId, String processInstanceId) {

@@ -111,6 +111,7 @@ public class ProcessInstanceMarshallerService {
     }
 
     private ProcessInstanceMarshallerService() {
+        this.listeners = new ArrayList<>();
         this.strats = new ArrayList<>();
         this.contextEntries = new HashMap<>();
     }
@@ -126,6 +127,8 @@ public class ProcessInstanceMarshallerService {
     public byte[] marshallProcessInstance(ProcessInstance<?> processInstance) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             MarshallerWriterContext context = processInstanceMarshallerFactory.newWriterContext(baos);
+            context.set(MarshallerContextName.MARSHALLER_PROCESS, processInstance.process());
+            context.set(MarshallerContextName.MARSHALLER_INSTANCE_LISTENER, listeners.toArray(ProcessInstanceMarshallerListener[]::new));
             setupEnvironment(context);
             org.jbpm.flow.serialization.ProcessInstanceMarshaller marshaller = processInstanceMarshallerFactory.newKogitoProcessInstanceMarshaller();
             marshaller.writeProcessInstance(context, processInstance);

@@ -33,8 +33,8 @@ public interface ProcessInstances<T> {
         return findByBusinessKey(id, ProcessInstanceReadMode.READ_ONLY);
     }
 
-    default void migrate(String targetProcessId, String targetProcessVersion, String[] processIds) throws OperationNotSupportedException {
-        throw new OperationNotSupportedException();
+    default void migrate(String targetProcessId, String targetProcessVersion, String... processIds) {
+        throw new UnsupportedOperationException();
     }
 
     default Optional<ProcessInstance<T>> findByBusinessKey(String id, ProcessInstanceReadMode mode) {

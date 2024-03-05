@@ -69,6 +69,7 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
         this.collection = Objects.requireNonNull(getCollection(mongoClient, process.id(), dbName));
         this.marshaller = ProcessInstanceMarshallerService.newBuilder()
                 .withDefaultObjectMarshallerStrategies()
+                .withDefaultListeners()
                 .withContextEntries(singletonMap(MarshallerContextName.MARSHALLER_FORMAT, MarshallerContextName.MARSHALLER_FORMAT_JSON))
                 .build();
         this.transactionManager = Objects.requireNonNull(transactionManager);

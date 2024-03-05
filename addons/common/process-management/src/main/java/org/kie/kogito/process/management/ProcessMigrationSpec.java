@@ -16,35 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.process;
+package org.kie.kogito.process.management;
 
-import java.util.Collection;
-import java.util.Optional;
+public class ProcessMigrationSpec {
 
-import org.kie.kogito.KogitoEngine;
-import org.kie.kogito.Model;
+    private String targetProcessId;
 
-public interface Processes extends KogitoEngine {
+    private String targetProcessVersion;
 
-    default Optional<Process<? extends Model>> processByProcessInstanceId(String processInstanceId) {
-        for (String processId : processIds()) {
-            Process<? extends Model> process = processById(processId);
-            if (process.instances().findById(processInstanceId, ProcessInstanceReadMode.READ_ONLY).isPresent()) {
-                return Optional.of(process);
-            }
-        }
-        return Optional.empty();
+    public String getTargetProcessId() {
+        return targetProcessId;
     }
 
-    Process<? extends Model> processById(String processId);
-
-    Collection<String> processIds();
-
-    default void activate() {
-
+    public void setTargetProcessId(String targetProcessId) {
+        this.targetProcessId = targetProcessId;
     }
 
-    default void deactivate() {
-
+    public String getTargetProcessVersion() {
+        return targetProcessVersion;
     }
+
+    public void setTargetProcessVersion(String targetProcessVersion) {
+        this.targetProcessVersion = targetProcessVersion;
+    }
+
 }

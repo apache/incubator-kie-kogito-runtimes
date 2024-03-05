@@ -201,6 +201,16 @@ class BaseProcessInstanceManagementResourceTest {
             public Object getProcessInfo(String processId) {
                 return null;
             }
+
+            @Override
+            public Object migrateAllInstances(String processId, ProcessMigrationSpec migrationSpec) {
+                return null;
+            }
+
+            @Override
+            public Object migrateInstance(String processId, String processInstanceId, ProcessMigrationSpec migrationSpec) {
+                return null;
+            }
         });
     }
 

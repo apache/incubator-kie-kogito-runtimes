@@ -38,15 +38,23 @@ public class StandardMigrationProcessInstanceMarshallerListener implements Proce
         this.migrationPlanService = new MigrationPlanService();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void afterUnmarshallProcess(KogitoProcessRuntime runtime, KogitoWorkflowProcessInstance processInstance) {
+        if (!migrationPlanService.shouldMigrate(processInstance)) {
+            return;
+        }
         LOGGER.debug("Migration processInstance {}", processInstance);
         migrationPlanService.migrateProcessElement(processInstance);
         runtime.getProcessEventSupport().fireOnMigration(processInstance, runtime.getKieRuntime());
+
     }
 
     @Override
     public void afterUnmarshallNode(KogitoProcessRuntime runtime, KogitoNodeInstance nodeInstance) {
+        if (!migrationPlanService.shouldMigrate((KogitoWorkflowProcessInstance) nodeInstance.getProcessInstance())) {
+            return;
+        }
         LOGGER.debug("Migration nodeInstance {}", nodeInstance);
         migrationPlanService.migrateNodeElement(nodeInstance);
     }
