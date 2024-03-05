@@ -85,4 +85,8 @@ public class MigrationPlanService {
                 new ProcessDefinitionMigrationPlan(pi.getProcessId(), pi.getProcessVersion());
         return migrations.get(pd);
     }
+
+    public boolean shouldMigrate(KogitoWorkflowProcessInstance processInstance) {
+        return getMigrationPlan(processInstance) != null;
+    }
 }

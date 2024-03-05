@@ -21,8 +21,6 @@ package org.kie.kogito.process;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.naming.OperationNotSupportedException;
-
 public interface ProcessInstances<T> {
 
     default Optional<ProcessInstance<T>> findById(String id) {
@@ -35,12 +33,12 @@ public interface ProcessInstances<T> {
         return stream().filter(pi -> id.equals(pi.businessKey())).findAny();
     }
 
-    default void migrate(String targetProcessId, String targetProcessVersion, String[] processIds) throws OperationNotSupportedException {
-        throw new OperationNotSupportedException();
+    default void migrate(String targetProcessId, String targetProcessVersion, String... processIds) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
     }
 
-    default void migrate(String targetProcessId, String targetProcessVersion) throws OperationNotSupportedException {
-        throw new OperationNotSupportedException();
+    default void migrate(String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
     }
 
     Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode);

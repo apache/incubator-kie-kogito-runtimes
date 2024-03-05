@@ -117,7 +117,7 @@ public class ProtobufProcessInstanceReader {
     }
 
     public RuleFlowProcessInstance read(InputStream input) throws IOException {
-        LOGGER.info("read process");
+        LOGGER.debug("read process");
         KogitoProcessInstanceProtobuf.ProcessInstance processInstanceProtobuf;
 
         String format = this.context.get(MarshallerContextName.MARSHALLER_FORMAT);

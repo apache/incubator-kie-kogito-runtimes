@@ -46,7 +46,7 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     public JDBCProcessInstances(Process<?> process, DataSource dataSource, boolean lock) {
         this.process = process;
         this.lock = lock;
-        this.marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().build();
+        this.marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().withDefaultListeners().build();
         this.repository = new GenericRepository(dataSource);
     }
 
@@ -86,6 +86,16 @@ public class JDBCProcessInstances implements MutableProcessInstances {
         } finally {
             disconnect(instance);
         }
+    }
+
+    @Override
+    public void migrate(String targetProcessId, String targetProcessVersion) {
+        repository.migrate(process.id(), process.version(), targetProcessId, targetProcessVersion);
+    }
+
+    @Override
+    public void migrate(String targetProcessId, String targetProcessVersion, String... processIds) {
+        repository.migrate(process.id(), process.version(), targetProcessId, targetProcessVersion, processIds);
     }
 
     @Override

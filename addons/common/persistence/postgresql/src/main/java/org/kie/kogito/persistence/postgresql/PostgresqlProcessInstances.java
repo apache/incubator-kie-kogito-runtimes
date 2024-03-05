@@ -27,8 +27,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
@@ -57,8 +55,8 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     private static final String FIND_BY_ID = "SELECT payload, version FROM process_instances WHERE process_id = $1 and id = $2 and process_version ";
     private static final String FIND_ALL = "SELECT payload, version FROM process_instances WHERE process_id = $1 and process_version ";
     private static final String UPDATE_WITH_LOCK = "UPDATE process_instances SET payload = $1, version = $2 WHERE process_id = $3 and id = $4 and version = $5 and process_version ";
-    private static final String MIGRATE_BULK = "UPDATE process_instances SET process_id = $1 and process_version = $2 WHERE process_id = $3 and process_version ";
-    private static final String MIGRATE_INSTANCE = "UPDATE process_instances SET process_id = $1 and process_version = $2 WHERE process_id = $3 and id = $4 and process_version ";
+    private static final String MIGRATE_BULK = "UPDATE process_instances SET process_id = $1, process_version = $2 WHERE process_id = $3 and process_version ";
+    private static final String MIGRATE_INSTANCE = "UPDATE process_instances SET process_id = $1, process_version = $2 WHERE process_id = $3 and id = ANY ($4) and process_version ";
 
     private final Process<?> process;
     private final PgPool client;
@@ -70,7 +68,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         this.process = process;
         this.client = client;
         this.queryTimeoutMillis = queryTimeoutMillis;
-        this.marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().build();
+        this.marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().withDefaultListeners().build();
         this.lock = lock;
     }
 
@@ -167,7 +165,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public void migrate(String targetProcessId, String targetProcessVersion) throws OperationNotSupportedException {
+    public void migrate(String targetProcessId, String targetProcessVersion) {
         try {
             Future<RowSet<Row>> future = null;
             if (process.version() == null) {
@@ -185,13 +183,13 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public void migrate(String targetProcessId, String targetProcessVersion, String[] processIds) throws OperationNotSupportedException {
+    public void migrate(String targetProcessId, String targetProcessVersion, String... processIds) {
         try {
             Future<RowSet<Row>> future = null;
             if (process.version() == null) {
-                future = client.preparedQuery(MIGRATE_BULK + IS_NULL).execute(tuple(targetProcessId, targetProcessVersion, processIds, process.id()));
+                future = client.preparedQuery(MIGRATE_INSTANCE + IS_NULL).execute(tuple(targetProcessId, targetProcessVersion, processIds, process.id()));
             } else {
-                future = client.preparedQuery(MIGRATE_BULK + "= $5").execute(tuple(targetProcessId, targetProcessVersion, processIds, process.id(), process.version()));
+                future = client.preparedQuery(MIGRATE_INSTANCE + "= $5").execute(tuple(targetProcessId, targetProcessVersion, processIds, process.id(), process.version()));
             }
             getExecutedResult(future);
         } catch (InterruptedException e) {

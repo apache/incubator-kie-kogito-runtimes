@@ -19,7 +19,6 @@
 
 package org.jbpm.flow.migration;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
@@ -36,6 +35,6 @@ public interface MigrationPlanFileProvider {
                 .collect(Collectors.toList());
     }
 
-    List<Path> listMigrationPlanFiles(String... extensions);
+    List<MigrationPlanFile> listMigrationPlanFiles(String... extensions);
 
 }
