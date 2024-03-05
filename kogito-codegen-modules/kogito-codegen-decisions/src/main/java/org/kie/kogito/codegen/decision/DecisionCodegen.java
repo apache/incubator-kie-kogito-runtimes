@@ -134,24 +134,11 @@ public class DecisionCodegen extends AbstractGenerator {
         List<DecisionRestResourceGenerator> rgs = new ArrayList<>(); // REST resources
         List<DMNModel> models = resources.stream().map(DMNResource::getDmnModel).collect(Collectors.toList());
 
-        //        DMNOASResult oasResult = null;
-        //        try {
-        //            Comparator<DMNModel> nsNameComparator = Comparator.comparing(DMNModel::getNamespace).thenComparing(DMNModel::getName);
-        //            List<DMNModel> orderedModels = new ArrayList<>(models);
-        //            Collections.sort(orderedModels, nsNameComparator);
-        //            oasResult = DMNOASGeneratorFactory.generator(orderedModels).build();
-        //            String jsonContent = new ObjectMapper().writeValueAsString(oasResult.getJsonSchemaNode());
-        //            storeFile(GeneratedFileType.STATIC_HTTP_RESOURCE, "dmnDefinitions.json", jsonContent);
-        //        } catch (Exception e) {
-        //            LOGGER.error("Error while trying to generate OpenAPI specification for the DMN models", e);
-        //        }
-
         for (DMNModel model : models) {
-            DMNOASResult oasResult = generateAndStoreDefinitionsJson(model);
-
             if (model.getName() == null || model.getName().isEmpty()) {
                 throw new RuntimeException("Model name should not be empty");
             }
+            DMNOASResult oasResult = generateAndStoreDefinitionsJson(model);
 
             boolean stronglyTypedEnabled = Optional.ofNullable(context())
                     .flatMap(c -> c.getApplicationProperty(STRONGLY_TYPED_CONFIGURATION_KEY))

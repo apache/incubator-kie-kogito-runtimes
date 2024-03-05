@@ -26,9 +26,18 @@ public class CodegenUtils {
     }
 
     public static String getDefinitionsFileFromModel(DMNModel dmnModel) {
-        String resourcePath = dmnModel.getResource().getSourcePath();
-        String modelName = resourcePath.contains("/") ? resourcePath.substring(resourcePath.lastIndexOf('/') + 1) : resourcePath;
+        String modelName = geNameForDefinitionsFile(dmnModel);
         return modelName.replace(" ", "_").replace(".dmn", ".json");
+    }
+
+    static String geNameForDefinitionsFile(DMNModel dmnModel) {
+        if (dmnModel.getResource() != null && dmnModel.getResource().getSourcePath() != null) {
+            String resourcePath = dmnModel.getResource().getSourcePath().replace('\\', '/');
+            return resourcePath.contains("/") ? resourcePath.substring(resourcePath.lastIndexOf('/') + 1) : resourcePath;
+        } else {
+            return dmnModel.getName()+ ".dmn";
+        }
+
     }
 
 }
