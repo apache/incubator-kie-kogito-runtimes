@@ -108,7 +108,12 @@ public class KogitoAssetsProcessor {
         // configure the application generator
         PathCollection rootPaths = root.getResolvedPaths();
         if (rootPaths.stream().noneMatch(path -> path.endsWith(File.separator + "generated-resources"))) {
-            Path classesPath = root.getRootDirectories().getSinglePath();
+            Path classesPath =
+                    rootPaths.stream().filter(path -> {
+                        String fullPath = path.toString();
+                        String dir = fullPath.substring(fullPath.lastIndexOf(File.separator) + 1);
+                        return dir.equals("classes");
+                    }).findFirst().orElseThrow(() -> new RuntimeException("Failed to find classes path in root directories"));
             Path toAdd = Path.of(classesPath.toString().replace(File.separator + "classes", File.separator + "generated-resources"));
             List<Path> prevPaths = rootPaths.stream().collect(Collectors.toList());
             prevPaths.add(toAdd);
