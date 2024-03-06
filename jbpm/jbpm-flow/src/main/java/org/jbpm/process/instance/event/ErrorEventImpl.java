@@ -23,22 +23,15 @@ import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 
-public class ErrorEventImpl extends ProcessEvent implements ErrorEvent {
+public class ErrorEventImpl extends AbstractProcessNodeEvent implements ErrorEvent {
 
     private static final long serialVersionUID = 1L;
-    private final NodeInstance nodeInstance;
     private final Exception exception;
 
     public ErrorEventImpl(ProcessInstance instance, KieRuntime kruntime, NodeInstance nodeInstance,
             Exception exception) {
-        super(instance, kruntime);
-        this.nodeInstance = nodeInstance;
+        super(nodeInstance, instance, kruntime);
         this.exception = exception;
-    }
-
-    @Override
-    public NodeInstance getNodeInstance() {
-        return nodeInstance;
     }
 
     @Override
@@ -48,6 +41,6 @@ public class ErrorEventImpl extends ProcessEvent implements ErrorEvent {
 
     @Override
     public String toString() {
-        return "ErrorEventImpl [nodeInstance=" + nodeInstance + ", exception=" + exception + "]";
+        return "ErrorEventImpl [nodeInstance=" + getNodeInstance() + ", exception=" + exception + "]";
     }
 }
