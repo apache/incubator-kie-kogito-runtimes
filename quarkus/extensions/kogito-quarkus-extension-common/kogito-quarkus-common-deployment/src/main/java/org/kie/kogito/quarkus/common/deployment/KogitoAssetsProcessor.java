@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -106,19 +107,7 @@ public class KogitoAssetsProcessor {
     @BuildStep
     public KogitoBuildContextBuildItem generateKogitoBuildContext(List<KogitoBuildContextAttributeBuildItem> attributes) {
         // configure the application generator
-        PathCollection rootPaths = root.getResolvedPaths();
-        if (rootPaths.stream().noneMatch(path -> path.endsWith(File.separator + "generated-resources"))) {
-            Path classesPath =
-                    rootPaths.stream().filter(path -> {
-                        String fullPath = path.toString();
-                        String dir = fullPath.substring(fullPath.lastIndexOf(File.separator) + 1);
-                        return dir.equals("classes");
-                    }).findFirst().orElseThrow(() -> new RuntimeException("Failed to find classes path in root directories"));
-            Path toAdd = Path.of(classesPath.toString().replace(File.separator + "classes", File.separator + "generated-resources"));
-            List<Path> prevPaths = rootPaths.stream().collect(Collectors.toList());
-            prevPaths.add(toAdd);
-            rootPaths = PathList.from(prevPaths);
-        }
+        PathCollection rootPaths = getRootPaths();
         KogitoBuildContext context =
                 kogitoBuildContext(outputTargetBuildItem.getOutputDirectory(),
                         rootPaths,
@@ -227,6 +216,29 @@ public class KogitoAssetsProcessor {
     public EfestoGeneratedClassBuildItem reflectiveEfestoGeneratedClassBuildItem(KogitoGeneratedSourcesBuildItem kogitoGeneratedSourcesBuildItem) {
         LOGGER.debugf("reflectiveEfestoGeneratedClassBuildItem %s", kogitoGeneratedSourcesBuildItem);
         return new EfestoGeneratedClassBuildItem(kogitoGeneratedSourcesBuildItem.getGeneratedFiles());
+    }
+
+    private PathCollection getRootPaths() {
+        PathCollection resolvedPaths = root.getResolvedPaths();
+        AtomicReference<PathCollection> toReturnRef = new AtomicReference<>(resolvedPaths);
+        if (resolvedPaths.stream().noneMatch(path -> path.endsWith(File.separator + "generated-resources"))) {
+            Optional<Path> optClassesPath =
+                    resolvedPaths.stream().filter(path -> {
+                        String fullPath = path.toString();
+                        String dir = fullPath.substring(fullPath.lastIndexOf(File.separator) + 1);
+                        return dir.equals("classes");
+                    }).findFirst();
+            optClassesPath.ifPresent(classesPath -> {
+                Path toAdd = Path.of(classesPath.toString().replace(File.separator + "classes",
+                        File.separator +
+                                "generated" +
+                                "-resources"));
+                List<Path> prevPaths = toReturnRef.get().stream().collect(Collectors.toList());
+                prevPaths.add(toAdd);
+                toReturnRef.set(PathList.from(prevPaths));
+            });
+        }
+        return toReturnRef.get();
     }
 
     private Collection<GeneratedFile> collectGeneratedFiles(KogitoGeneratedSourcesBuildItem sources, List<KogitoAddonsPreGeneratedSourcesBuildItem> preSources,
