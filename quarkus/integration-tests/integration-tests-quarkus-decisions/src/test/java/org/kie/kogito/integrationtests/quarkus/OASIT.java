@@ -83,7 +83,7 @@ class OASIT {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"basicAdd",
+    @ValueSource(strings = { "basicAdd",
             "DScoercion",
             "ElementAtIndex",
             "FaceMask",
@@ -91,7 +91,7 @@ class OASIT {
             "HospitalStatus",
             "java_function_context",
             "OneOfEachType",
-            "StatusService"})
+            "StatusService" })
     public void testOASdmnDefinitions(String name) {
         RestAssured.given()
                 .get("/" + name + ".json")
