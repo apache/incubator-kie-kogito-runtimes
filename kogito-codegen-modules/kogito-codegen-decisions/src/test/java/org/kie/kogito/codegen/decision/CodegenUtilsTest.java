@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CodegenUtilsTest {
 
     @Test
-    void getDefinitionsFileFromModelWithSpace(){
+    void getDefinitionsFileFromModelWithSpace() {
         File dmnFile = FileUtils.getFile("Traffic Violation.dmn");
         assertNotNull(dmnFile);
         assertTrue(dmnFile.exists());
@@ -35,14 +35,14 @@ class CodegenUtilsTest {
                 .fromResources(Collections.singleton(dmnResource))
                 .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
         assertThat(dmnRuntime.getModels()).hasSize(1);
-        final DMNModel dmnModel = dmnRuntime.getModel("https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF", "Traffic Violation");
+        final DMNModel dmnModel = dmnRuntime.getModel("https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF", "Traffic Violation Model Name");
         assertNotNull(dmnModel);
         String expected = "Traffic_Violation.json";
         assertEquals(expected, CodegenUtils.getDefinitionsFileFromModel(dmnModel));
     }
 
     @Test
-    void geNameForDefinitionsFileWithSourcePath(){
+    void geNameForDefinitionsFileWithSourcePath() {
         File dmnFile = FileUtils.getFile("Traffic Violation.dmn");
         assertNotNull(dmnFile);
         assertTrue(dmnFile.exists());
@@ -53,7 +53,7 @@ class CodegenUtilsTest {
                 .fromResources(Collections.singleton(dmnResource))
                 .getOrElseThrow(e -> new RuntimeException("Error compiling DMN model(s)", e));
         assertThat(dmnRuntime.getModels()).hasSize(1);
-        final DMNModel dmnModel = dmnRuntime.getModel("https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF", "Traffic Violation");
+        final DMNModel dmnModel = dmnRuntime.getModel("https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF", "Traffic Violation Model Name");
         assertNotNull(dmnModel);
         String expected = "Traffic Violation.dmn";
         assertEquals(expected, CodegenUtils.geNameForDefinitionsFile(dmnModel));
@@ -67,7 +67,7 @@ class CodegenUtilsTest {
         DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(new FileReader(dmnFile));
         assertNotNull(dmnRuntime);
         assertThat(dmnRuntime.getModels()).hasSize(1);
-        final DMNModel dmnModel = dmnRuntime.getModel("https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF", "Traffic Violation Model Name" );
+        final DMNModel dmnModel = dmnRuntime.getModel("https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF", "Traffic Violation Model Name");
         assertNotNull(dmnModel);
         String expected = "Traffic Violation Model Name.dmn";
         assertEquals(expected, CodegenUtils.geNameForDefinitionsFile(dmnModel));

@@ -35,7 +35,7 @@ public class CodegenUtils {
             String resourcePath = dmnModel.getResource().getSourcePath().replace('\\', '/');
             return resourcePath.contains("/") ? resourcePath.substring(resourcePath.lastIndexOf('/') + 1) : resourcePath;
         } else {
-            return dmnModel.getName()+ ".dmn";
+            return dmnModel.getName() + ".dmn";
         }
 
     }
