@@ -25,7 +25,7 @@ import org.kie.kogito.config.ConfigBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.autoconfigure.actuate.metrics.AutoConfigureMetrics;
+import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.emptyOrNullString;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
-@AutoConfigureMetrics
+@AutoConfigureObservability
 public class MonitoringTest extends BaseRestTest {
 
     @Autowired
