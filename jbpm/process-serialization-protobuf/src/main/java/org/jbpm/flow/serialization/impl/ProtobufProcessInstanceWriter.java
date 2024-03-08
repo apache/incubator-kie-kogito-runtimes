@@ -117,11 +117,13 @@ public class ProtobufProcessInstanceWriter {
         KogitoProcessInstanceProtobuf.ProcessInstance.Builder instance = KogitoProcessInstanceProtobuf.ProcessInstance.newBuilder()
                 .setId(workFlow.getStringId())
                 .setProcessId(workFlow.getProcessId())
-                .setProcessVersion(workFlow.getProcessVersion())
                 .setState(workFlow.getState())
                 .setProcessType(workFlow.getProcess().getType())
                 .setSignalCompletion(workFlow.isSignalCompletion());
 
+        if (workFlow.getProcessVersion() != null) {
+            instance.setProcessVersion(workFlow.getProcessVersion());
+        }
         if (workFlow.getStartDate() != null) {
             instance.setStartDate(workFlow.getStartDate().getTime());
         }
