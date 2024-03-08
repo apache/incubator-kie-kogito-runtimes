@@ -107,7 +107,7 @@ public class KogitoAssetsProcessor {
     @BuildStep
     public KogitoBuildContextBuildItem generateKogitoBuildContext(List<KogitoBuildContextAttributeBuildItem> attributes) {
         // configure the application generator
-        PathCollection rootPaths = getRootPaths();
+        PathCollection rootPaths = getRootPaths( root.getResolvedPaths());
         KogitoBuildContext context =
                 kogitoBuildContext(outputTargetBuildItem.getOutputDirectory(),
                         rootPaths,
@@ -218,8 +218,7 @@ public class KogitoAssetsProcessor {
         return new EfestoGeneratedClassBuildItem(kogitoGeneratedSourcesBuildItem.getGeneratedFiles());
     }
 
-    private PathCollection getRootPaths() {
-        PathCollection resolvedPaths = root.getResolvedPaths();
+    static PathCollection getRootPaths(PathCollection resolvedPaths) {
         AtomicReference<PathCollection> toReturnRef = new AtomicReference<>(resolvedPaths);
         if (resolvedPaths.stream().noneMatch(path -> path.endsWith(File.separator + "generated-resources"))) {
             Optional<Path> optClassesPath =
