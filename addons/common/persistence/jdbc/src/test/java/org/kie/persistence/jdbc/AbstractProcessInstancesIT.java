@@ -263,7 +263,7 @@ abstract class AbstractProcessInstancesIT {
         }
 
         try (Connection connection = dataSource.getConnection();
-                ResultSet resultSet = connection.createStatement().executeQuery("SELECT process_id, process_version FROM process_instances WHERE id = " + processInstance2.id())) {
+                ResultSet resultSet = connection.createStatement().executeQuery("SELECT process_id, process_version FROM process_instances WHERE id = '" + processInstance2.id() + "'")) {
 
             while (resultSet.next()) {
                 assertEquals(resultSet.getString(1), "BPMN2_UserTask");

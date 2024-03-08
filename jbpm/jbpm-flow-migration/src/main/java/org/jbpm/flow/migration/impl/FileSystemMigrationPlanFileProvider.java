@@ -21,6 +21,7 @@ package org.jbpm.flow.migration.impl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -50,7 +51,8 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
 
     public FileSystemMigrationPlanFileProvider() {
         try {
-            this.rootPath = getClass().getResource(MIGRATION_PLAN_FOLDER).toURI();
+            URL url = getClass().getResource(MIGRATION_PLAN_FOLDER);
+            this.rootPath = url != null ? url.toURI() : URI.create(MIGRATION_PLAN_FOLDER);
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
