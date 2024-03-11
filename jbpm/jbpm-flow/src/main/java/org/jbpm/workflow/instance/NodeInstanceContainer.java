@@ -63,7 +63,6 @@ public interface NodeInstanceContainer extends KogitoNodeInstanceContainer {
     default NodeInstance getByNodeDefinitionId(final String nodeDefinitionId, NodeContainer nodeContainer) {
         for (Node node : nodeContainer.getNodes()) {
 
-
             if (nodeDefinitionId.equals(node.getUniqueId())) {
                 if (nodeContainer instanceof Node) {
                     Collection<KogitoNodeInstance> nodeInstances = getKogitoNodeInstances(ni -> ni.getNode().getId() == (((Node) nodeContainer).getId()), true);

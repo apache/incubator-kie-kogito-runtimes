@@ -75,7 +75,7 @@ public class CallbackJobsServiceResource {
 
         Optional<Process<? extends Model>> process = processes.get().processByProcessInstanceId(processInstanceId);
         if (process.isEmpty()) {
-            return Response.status(Status.NOT_FOUND).entity("Process with id " + processId + " not found").build();
+            return Response.status(Status.NOT_FOUND).entity("Process instance with id " + processInstanceId + " not found").build();
         }
 
         String correlationId = null;
