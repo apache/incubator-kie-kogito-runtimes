@@ -168,5 +168,4 @@ public interface KogitoProcessEventSupport {
 
     void removeEventListener(KogitoProcessEventListener listener);
 
-
 }

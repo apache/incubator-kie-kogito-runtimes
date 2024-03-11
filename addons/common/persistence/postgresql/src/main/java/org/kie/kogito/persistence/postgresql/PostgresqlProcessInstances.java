@@ -38,6 +38,7 @@ import org.kie.kogito.process.impl.AbstractProcessInstance;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.PreparedQuery;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
@@ -167,12 +168,13 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     @Override
     public void migrate(String targetProcessId, String targetProcessVersion) {
         try {
-            Future<RowSet<Row>> future = null;
+            PreparedQuery<RowSet<Row>> rows = null;
             if (process.version() == null) {
-                future = client.preparedQuery(MIGRATE_BULK + IS_NULL).execute(tuple(targetProcessId, targetProcessVersion, process.id()));
+                rows = client.preparedQuery(MIGRATE_BULK + IS_NULL);
             } else {
-                future = client.preparedQuery(MIGRATE_BULK + "= $4").execute(tuple(targetProcessId, targetProcessVersion, process.id(), process.version()));
+                rows = client.preparedQuery(MIGRATE_BULK + "= $4");
             }
+            Future<RowSet<Row>> future = rows.execute(tuple(targetProcessId, targetProcessVersion, process.id()));
             getExecutedResult(future);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -185,12 +187,14 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     @Override
     public void migrate(String targetProcessId, String targetProcessVersion, String... processIds) {
         try {
-            Future<RowSet<Row>> future = null;
+            PreparedQuery<RowSet<Row>> rows = null;
             if (process.version() == null) {
-                future = client.preparedQuery(MIGRATE_INSTANCE + IS_NULL).execute(tuple(targetProcessId, targetProcessVersion, processIds, process.id()));
+                rows = client.preparedQuery(MIGRATE_INSTANCE + IS_NULL);
+
             } else {
-                future = client.preparedQuery(MIGRATE_INSTANCE + "= $5").execute(tuple(targetProcessId, targetProcessVersion, processIds, process.id(), process.version()));
+                rows = client.preparedQuery(MIGRATE_INSTANCE + "= $5");
             }
+            Future<RowSet<Row>> future = rows.execute(tuple(targetProcessId, targetProcessVersion, process.id(), processIds));
             getExecutedResult(future);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
