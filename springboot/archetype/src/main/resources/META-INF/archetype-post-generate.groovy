@@ -32,10 +32,10 @@ def startersToArtifactIds(String starters) {
         return []
     }
     def validStarters = [
-            [id: "processes", starter: "kogito-processes-spring-boot-starter"],
-            [id: "rules", starter: "kogito-rules-spring-boot-starter"],
-            [id: "decisions", starter: "kogito-decisions-spring-boot-starter"],
-            [id: "predictions", starter: "kogito-predictions-spring-boot-starter"]
+            [id: "processes", starter: "jbpm-spring-boot-starter"],
+            [id: "rules", starter: "drools-rules-spring-boot-starter"],
+            [id: "decisions", starter: "drools-decisions-spring-boot-starter"],
+            [id: "predictions", starter: "kie-predictions-spring-boot-starter"]
     ]
     def startersList = starters.split(",")
     return startersList.collect { starterId ->
@@ -48,6 +48,18 @@ def startersToArtifactIds(String starters) {
     }.findAll { it -> it != null }
 }
 
+def resolveAddonGroupId(String artifactId) {
+    switch (artifactId) {
+        case { artifactId.startsWith("drools-") }:
+            return "org.drools"
+        case { artifactId.startsWith("jbpm-") }:
+            return "org.jbpm"
+        case { artifactId.startsWith("sonataflow-") }:
+            return "org.apache.sonataflow"
+        default: return "org.kie"
+    }
+}
+
 /**
  * Convert the addons list to actual Kogito Addons artifacts Ids
  */
@@ -58,25 +70,25 @@ def addonsToArtifactsIds(String addons) {
     // this list should be maintained manually for now for each generic/spring boot add-on we create
     // see: https://issues.redhat.com/browse/KOGITO-5619
     def validAddons = [
-            [id: "persistence-filesystem", addon: "kogito-addons-springboot-persistence-filesystem"],
-            [id: "persistence-infinispan", addon: "kogito-addons-springboot-persistence-infinispan"],
-            [id: "persistence-jdbc", addon: "kogito-addons-springboot-persistence-jdbc"],
-            [id: "persistence-mongodb", addon: "kogito-addons-springboot-persistence-mongodb"],
-            [id: "persistence-postgresql", addon: "kogito-addons-springboot-persistence-postgresql"],
+            [id: "persistence-filesystem", addon: "kie-addons-springboot-persistence-filesystem"],
+            [id: "persistence-infinispan", addon: "kie-addons-springboot-persistence-infinispan"],
+            [id: "persistence-jdbc", addon: "kie-addons-springboot-persistence-jdbc"],
+            [id: "persistence-mongodb", addon: "kie-addons-springboot-persistence-mongodb"],
+            [id: "persistence-postgresql", addon: "kie-addons-springboot-persistence-postgresql"],
             [id: "human-task-prediction-api", addon: "kogito-addons-human-task-prediction-api"],
-            [id: "messaging", addon: "kogito-addons-springboot-messaging"],
-            [id: "events-decisions", addon: "kogito-addons-springboot-events-decisions"],
-            [id: "events-process-kafka", addon: "kogito-addons-springboot-events-process-kafka"],
-            [id: "explainability", addon: "kogito-addons-springboot-explainability"],
+            [id: "messaging", addon: "kie-addons-springboot-messaging"],
+            [id: "events-decisions", addon: "kie-addons-springboot-events-decisions"],
+            [id: "events-process-kafka", addon: "kie-addons-springboot-events-process-kafka"],
+            [id: "explainability", addon: "kie-addons-springboot-explainability"],
             [id: "jobs-management", addon: "kogito-addons-springboot-jobs-management"],
-            [id: "mail", addon: "kogito-addons-springboot-mail"],
-            [id: "monitoring-elastic", addon: "kogito-addons-springboot-monitoring-elastic"],
-            [id: "monitoring-prometheus", addon: "kogito-addons-springboot-monitoring-prometheus"],
-            [id: "process-management", addon: "kogito-addons-springboot-process-management"],
-            [id: "process-svg", addon: "kogito-addons-springboot-process-svg"],
-            [id: "task-management", addon: "kogito-addons-springboot-task-management"],
-            [id: "task-notification", addon: "kogito-addons-springboot-task-notification"],
-            [id: "tracing-decision", addon: "kogito-addons-springboot-tracing-decision"]
+            [id: "mail", addon: "jbpm-addons-springboot-mail"],
+            [id: "monitoring-elastic", addon: "kie-addons-springboot-monitoring-elastic"],
+            [id: "monitoring-prometheus", addon: "kie-addons-springboot-monitoring-prometheus"],
+            [id: "process-management", addon: "kie-addons-springboot-process-management"],
+            [id: "process-svg", addon: "kie-addons-springboot-process-svg"],
+            [id: "task-management", addon: "jbpm-addons-springboot-task-management"],
+            [id: "task-notification", addon: "jbpm-addons-springboot-task-notification"],
+            [id: "tracing-decision", addon: "kie-addons-springboot-tracing-decision"]
     ]
     def addonsList = addons.split(",")
     return addonsList.collect { addonId ->
@@ -95,16 +107,16 @@ def addonsToArtifactsIds(String addons) {
 def addDependenciesToPOM(String starters, String addons) {
     def artifacts = startersToArtifactIds(starters)
     if (artifacts.isEmpty()) {
-        artifacts << "kogito-spring-boot-starter"
+        artifacts << "jbpm-with-drools-spring-boot-starter"
     }
     artifacts = artifacts + addonsToArtifactsIds(addons)
     def dependencies = new StringBuilder()
     artifacts.each { artifact ->
-        dependencies <<
-                '    <dependency>\n' +
-                '       <groupId>org.kie.kogito</groupId>\n' +
-                '       <artifactId>' + artifact + '</artifactId>\n' +
-                '    </dependency>\n'
+            dependencies <<
+                    '    <dependency>\n' +
+                    '       <groupId>' + resolveAddonGroupId(artifact) + '</groupId>\n' +
+                    '       <artifactId>' + artifact + '</artifactId>\n' +
+                    '    </dependency>\n';
     }
     def pomPath = Paths.get(request.getOutputDirectory(), request.getArtifactId(), "pom.xml")
     def pomFile = Files.readString(pomPath).replace("    <!-- kogito dependencies -->", dependencies)

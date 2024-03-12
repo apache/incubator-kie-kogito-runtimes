@@ -23,24 +23,17 @@ import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 
-public class SignalEventImpl extends ProcessEvent implements SignalEvent {
+public class SignalEventImpl extends AbstractProcessNodeEvent implements SignalEvent {
 
     private static final long serialVersionUID = 1L;
-    private NodeInstance nodeInstance;
-    private String signalName;
-    private Object signalObject;
+    private final String signalName;
+    private final Object signalObject;
 
     public SignalEventImpl(ProcessInstance instance, KieRuntime kruntime, NodeInstance nodeInstance,
             String signalName, Object signalObject, String identity) {
-        super(instance, kruntime, identity);
-        this.nodeInstance = nodeInstance;
+        super(nodeInstance, instance, kruntime, identity);
         this.signalName = signalName;
         this.signalObject = signalObject;
-    }
-
-    @Override
-    public NodeInstance getNodeInstance() {
-        return nodeInstance;
     }
 
     @Override
@@ -55,7 +48,7 @@ public class SignalEventImpl extends ProcessEvent implements SignalEvent {
 
     @Override
     public String toString() {
-        return "SignalEventImpl [nodeInstance=" + nodeInstance + ", signalName=" + signalName + ", signalObject=" +
+        return "SignalEventImpl [nodeInstance=" + getNodeInstance() + ", signalName=" + signalName + ", signalObject=" +
                 signalObject + "]";
     }
 }

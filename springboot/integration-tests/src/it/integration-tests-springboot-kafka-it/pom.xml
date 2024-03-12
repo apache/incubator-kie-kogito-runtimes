@@ -49,18 +49,18 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-spring-boot-starter</artifactId>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-with-drools-spring-boot-starter</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-springboot-messaging</artifactId>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-addons-springboot-messaging</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-springboot-events-process-kafka</artifactId>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-addons-springboot-events-process-kafka</artifactId>
     </dependency>
 
     <dependency>

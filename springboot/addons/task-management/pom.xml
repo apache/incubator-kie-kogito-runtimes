@@ -24,13 +24,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>kogito-addons-springboot-parent</artifactId>
-    <groupId>org.kie.kogito</groupId>
+    <groupId>org.kie</groupId>
     <version>999-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>kogito-addons-springboot-task-management</artifactId>
-  <name>Kogito :: Add-Ons :: Task Management :: Spring Boot Addon</name>
+  <groupId>org.jbpm</groupId>
+  <artifactId>jbpm-addons-springboot-task-management</artifactId>
+  <name>jBPM :: Add-Ons :: Task Management :: Spring Boot Addon</name>
   <description>Management of human tasks for Spring Boot</description>
 
   <properties>
@@ -43,8 +44,8 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-springboot-rest-exception-handler</artifactId>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-addons-springboot-rest-exception-handler</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>

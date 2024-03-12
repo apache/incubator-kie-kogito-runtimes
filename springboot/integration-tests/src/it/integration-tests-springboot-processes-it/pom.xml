@@ -49,28 +49,28 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-processes-spring-boot-starter</artifactId>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-spring-boot-starter</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-springboot-process-management</artifactId>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-addons-springboot-process-management</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-springboot-task-management</artifactId>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-addons-springboot-task-management</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-springboot-process-svg</artifactId>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-addons-springboot-process-svg</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-springboot-monitoring-prometheus</artifactId>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-addons-springboot-monitoring-prometheus</artifactId>
     </dependency>
 
     <dependency>
