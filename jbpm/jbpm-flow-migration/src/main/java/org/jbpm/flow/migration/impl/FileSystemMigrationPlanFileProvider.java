@@ -52,7 +52,7 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
     public FileSystemMigrationPlanFileProvider() {
         try {
             URL url = getClass().getResource(MIGRATION_PLAN_FOLDER);
-            this.rootPath = url != null ? url.toURI() : URI.create(MIGRATION_PLAN_FOLDER);
+            this.rootPath = url != null ? url.toURI() : URI.create("file://" + MIGRATION_PLAN_FOLDER);
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
@@ -65,7 +65,7 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
     @Override
     public List<MigrationPlanFile> listMigrationPlanFiles(String... extensions) {
         List<String> allowedExtensions = Arrays.asList(extensions);
-        if (this.rootPath.getScheme().equals("jar")) {
+        if ("jar".equals(this.rootPath.getScheme())) {
             return walkInJarPaths(this.rootPath, allowedExtensions);
         } else {
             return walkingPaths(Path.of(this.rootPath), allowedExtensions);
@@ -77,6 +77,10 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
         LOGGER.debug("Searching Migration Plans in rootPath {}", rootPath);
         try (FileSystem fileSystem = FileSystems.newFileSystem(rootPath, emptyMap(), JbpmClassLoaderUtil.findClassLoader())) {
             Path myPath = fileSystem.getPath(MIGRATION_PLAN_FOLDER);
+            if (!Files.exists(myPath)) {
+                LOGGER.debug("There was not any migration plan found within jar {}", myPath);
+                return Collections.emptyList();
+            }
             return walkingPaths(myPath, extensions);
         } catch (Exception e) {
             LOGGER.error("There was a problem during migration plan execution", e);
@@ -86,6 +90,10 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
 
     public List<MigrationPlanFile> walkingPaths(Path basePath, List<String> allowedExtensions) {
         List<MigrationPlanFile> migrationPlans = new ArrayList<>();
+        if (!Files.exists(basePath)) {
+            LOGGER.debug("There was not any migration plan found in path {}", basePath);
+            return Collections.emptyList();
+        }
         try (Stream<Path> walk = Files.walk(basePath)) {
             migrationPlans = walk
                     .filter(Files::isRegularFile)
