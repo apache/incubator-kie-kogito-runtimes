@@ -23,8 +23,8 @@ import java.util.Collection;
 import org.jbpm.workflow.core.node.AsyncEventNode;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
-import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.api.definition.process.WorkflowElementIdentifier;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 
 import static org.jbpm.ruleflow.core.Metadata.CUSTOM_ASYNC;

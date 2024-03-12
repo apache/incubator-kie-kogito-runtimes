@@ -111,7 +111,7 @@ class CallbackJobsServiceResourceTest {
     void triggerTimerProcessNotFound() {
         Response response = resource.triggerTimer(PROCESS_ID, PROCESS_INSTANCE_ID, TIMER_ID, LIMIT, PAYLOAD);
         assertThat(response.getStatus()).isEqualTo(NOT_FOUND.getStatusCode());
-        assertThat(response.getEntity()).isEqualTo("Process with id " + PROCESS_ID + " not found");
+        assertThat(response.getEntity()).isEqualTo("Process instance with id " + PROCESS_INSTANCE_ID + " not found");
     }
 
     @Test
