@@ -34,15 +34,10 @@ import java.util.stream.StreamSupport;
 
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class GenericRepository extends Repository {
 
     private static final String PAYLOAD = "payload";
     private static final String VERSION = "version";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericRepository.class);
 
     private final DataSource dataSource;
 
@@ -51,15 +46,23 @@ public class GenericRepository extends Repository {
     }
 
     @Override
-    void insertInternal(String processId, String processVersion, UUID id, byte[] payload) {
+    void insertInternal(String processId, String processVersion, UUID id, byte[] payload, String businessKey) {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(INSERT)) {
-            statement.setString(1, id.toString());
+            String processInstanceId = id.toString();
+            statement.setString(1, processInstanceId);
             statement.setBytes(2, payload);
             statement.setString(3, processId);
             statement.setString(4, processVersion);
             statement.setLong(5, 0L);
             statement.executeUpdate();
+            if (businessKey != null) {
+                try (PreparedStatement businessKeyStmt = connection.prepareStatement(INSERT_BUSINESS_KEY)) {
+                    businessKeyStmt.setString(1, businessKey);
+                    businessKeyStmt.setString(2, processInstanceId);
+                    businessKeyStmt.executeUpdate();
+                }
+            }
         } catch (Exception e) {
             throw uncheckedException(e, "Error inserting process instance %s", id);
         }
@@ -138,6 +141,19 @@ public class GenericRepository extends Repository {
             throw uncheckedException(e, "Error finding process instance %s", id);
         }
         return Optional.empty();
+    }
+
+    @Override
+    Optional<Record> findByBusinessKey(String processId, String processVersion, String businessKey) {
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement(FIND_BY_BUSINESS_KEY)) {
+            statement.setString(1, businessKey);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next() ? Optional.of(from(resultSet)) : Optional.empty();
+            }
+        } catch (Exception e) {
+            throw uncheckedException(e, "Error finding process instance using business key %s", businessKey);
+        }
     }
 
     private static class CloseableWrapper implements Runnable {
