@@ -37,15 +37,13 @@ public interface ProcessInstances<T> {
         throw new UnsupportedOperationException();
     }
 
+
     default Optional<ProcessInstance<T>> findByBusinessKey(String id, ProcessInstanceReadMode mode) {
         return stream(mode).filter(pi -> id.equals(pi.businessKey())).findAny();
     }
 
-    default void migrate(String targetProcessId, String targetProcessVersion, String[] processIds) {
-        throw new UnsupportedOperationException();
-    }
 
-    default void migrate(String targetProcessId, String targetProcessVersion) {
+    default long migrate(String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 

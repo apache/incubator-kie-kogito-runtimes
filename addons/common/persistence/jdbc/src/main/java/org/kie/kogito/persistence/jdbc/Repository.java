@@ -73,7 +73,7 @@ abstract class Repository {
         return new RuntimeException(String.format(message, param), ex);
     }
 
-    abstract void migrate(String id, String version, String targetProcessId, String targetProcessVersion);
+    abstract long migrate(String id, String version, String targetProcessId, String targetProcessVersion);
 
     abstract void migrate(String id, String version, String targetProcessId, String targetProcessVersion, String[] processIds);
 }

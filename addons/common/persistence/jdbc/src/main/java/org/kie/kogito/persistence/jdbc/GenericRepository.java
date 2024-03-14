@@ -237,7 +237,7 @@ public class GenericRepository extends Repository {
     }
 
     @Override
-    void migrate(String processId, String processVersion, String targetProcessId, String targetProcessVersion) {
+    long migrate(String processId, String processVersion, String targetProcessId, String targetProcessVersion) {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(Repository.MIGRATE_BULK, processVersion))) {
             statement.setString(1, targetProcessId);
@@ -246,7 +246,7 @@ public class GenericRepository extends Repository {
             if (processVersion != null) {
                 statement.setString(4, processVersion);
             }
-            statement.executeUpdate();
+            return statement.executeUpdate();
         } catch (Exception e) {
             throw uncheckedException(e, "Error updating process instance %s-%s", processId, processVersion);
         }
