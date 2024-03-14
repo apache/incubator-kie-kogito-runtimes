@@ -120,8 +120,8 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException {
-        process.instances().migrate(targetProcessId, targetProcessVersion);
+    public <T> long migrate(Process<T> process, String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException {
+        return process.instances().migrate(targetProcessId, targetProcessVersion);
     }
 
     @Override

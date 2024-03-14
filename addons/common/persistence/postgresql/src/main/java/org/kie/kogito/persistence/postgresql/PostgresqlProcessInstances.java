@@ -166,7 +166,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public void migrate(String targetProcessId, String targetProcessVersion) {
+    public long migrate(String targetProcessId, String targetProcessVersion) {
         try {
             PreparedQuery<RowSet<Row>> rows = null;
             if (process.version() == null) {
@@ -175,7 +175,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
                 rows = client.preparedQuery(MIGRATE_BULK + "= $4");
             }
             Future<RowSet<Row>> future = rows.execute(tuple(targetProcessId, targetProcessVersion, process.id()));
-            getExecutedResult(future);
+            return getResultFromFuture(future).map(RowSet::rowCount).orElse(0);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw uncheckedException(e, "Error migration process instance %s %s", process.id(), process.version());

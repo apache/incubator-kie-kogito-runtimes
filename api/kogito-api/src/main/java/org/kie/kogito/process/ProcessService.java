@@ -67,7 +67,7 @@ public interface ProcessService {
 
     <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion, String... id) throws UnsupportedOperationException;
 
-    <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException;
+    <T> long migrate(Process<T> process, String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException;
 
     <T extends MappableToModel<R>, R> Optional<R> delete(Process<T> process, String id);
 
