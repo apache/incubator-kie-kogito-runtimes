@@ -45,8 +45,6 @@ import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import static java.util.Collections.singletonMap;
-
 public abstract class BaseProcessInstanceManagementResource<T> implements ProcessInstanceManagement<T> {
 
     private static final String PROCESS_REQUIRED = "Process id must be given";
