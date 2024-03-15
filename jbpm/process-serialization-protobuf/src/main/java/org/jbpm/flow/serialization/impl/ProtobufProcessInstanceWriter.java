@@ -108,6 +108,7 @@ public class ProtobufProcessInstanceWriter {
         this.context = context;
         this.varWriter = new ProtobufVariableWriter(context);
         this.listeners = context.get(MarshallerContextName.MARSHALLER_INSTANCE_LISTENER);
+        this.listeners = this.listeners != null ? this.listeners : new ProcessInstanceMarshallerListener[0];
     }
 
     public void writeProcessInstance(WorkflowProcessInstanceImpl workFlow, OutputStream os) throws IOException {
