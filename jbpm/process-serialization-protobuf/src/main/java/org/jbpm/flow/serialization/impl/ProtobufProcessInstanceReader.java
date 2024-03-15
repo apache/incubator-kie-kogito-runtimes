@@ -114,6 +114,7 @@ public class ProtobufProcessInstanceReader {
         this.ruleFlowProcessInstance = new RuleFlowProcessInstance();
         this.varReader = new ProtobufVariableReader(context);
         this.listeners = context.get(MarshallerContextName.MARSHALLER_INSTANCE_LISTENER);
+        this.listeners = this.listeners != null ? this.listeners : new ProcessInstanceMarshallerListener[0];
     }
 
     public RuleFlowProcessInstance read(InputStream input) throws IOException {

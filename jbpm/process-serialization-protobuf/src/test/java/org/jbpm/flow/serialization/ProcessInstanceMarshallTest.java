@@ -60,6 +60,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.impl.AbstractProcess;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -108,7 +109,7 @@ public class ProcessInstanceMarshallTest {
         workflow.addNode(endNode);
 
         process = mock(AbstractProcess.class);
-
+        when(process.getProcessRuntime()).thenReturn(mock(KogitoProcessRuntime.class));
         when(process.get()).thenReturn(workflow);
     }
 
@@ -195,6 +196,7 @@ public class ProcessInstanceMarshallTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ProtobufProcessMarshallerWriteContext ctxOut = new ProtobufProcessMarshallerWriteContext(out);
         ctxOut.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, defaultStrategies());
+        ctxOut.set(MarshallerContextName.MARSHALLER_PROCESS, process);
 
         ProtobufProcessInstanceWriter writer = new ProtobufProcessInstanceWriter(ctxOut);
 
@@ -227,12 +229,14 @@ public class ProcessInstanceMarshallTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ProtobufProcessMarshallerWriteContext ctxOut = new ProtobufProcessMarshallerWriteContext(out);
         ctxOut.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, defaultStrategies());
+        ctxOut.set(MarshallerContextName.MARSHALLER_PROCESS, process);
         ProtobufVariableWriter writer = new ProtobufVariableWriter(ctxOut);
         List<KogitoTypesProtobuf.Variable> variables = writer.buildVariables(singletonMap("var", toMarshall).entrySet().stream().collect(Collectors.toList()));
 
         ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         ProtobufMarshallerReaderContext ctxIn = new ProtobufMarshallerReaderContext(in);
         ctxIn.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, defaultStrategies());
+        ctxIn.set(MarshallerContextName.MARSHALLER_PROCESS, process);
         ProtobufVariableReader reader = new ProtobufVariableReader(ctxIn);
         List<Variable> unmarshalledVars = reader.buildVariables(variables);
         assertThat(unmarshalledVars).hasSize(1);
