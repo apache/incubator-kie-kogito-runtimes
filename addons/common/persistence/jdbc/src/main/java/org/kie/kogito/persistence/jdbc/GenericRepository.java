@@ -146,8 +146,12 @@ public class GenericRepository extends Repository {
     @Override
     Optional<Record> findByBusinessKey(String processId, String processVersion, String businessKey) {
         try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_BY_BUSINESS_KEY)) {
+                PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(FIND_BY_BUSINESS_KEY, processVersion))) {
             statement.setString(1, businessKey);
+            statement.setString(2, processId);
+            if (processVersion != null) {
+                statement.setString(3, processVersion);
+            }
             try (ResultSet resultSet = statement.executeQuery()) {
                 return resultSet.next() ? Optional.of(from(resultSet)) : Optional.empty();
             }
