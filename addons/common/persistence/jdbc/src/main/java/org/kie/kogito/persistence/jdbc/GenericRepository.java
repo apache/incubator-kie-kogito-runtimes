@@ -64,7 +64,7 @@ public class GenericRepository extends Repository {
                 }
             }
         } catch (Exception e) {
-            throw uncheckedException(e, "Error inserting process instance %s", id);
+            throw uncheckedException(e, "Error inserting process instance id: %s, processId: %s processVersion: %s business key: %s", id, processId, processVersion, businessKey);
         }
     }
 
@@ -152,7 +152,7 @@ public class GenericRepository extends Repository {
                 return resultSet.next() ? Optional.of(from(resultSet)) : Optional.empty();
             }
         } catch (Exception e) {
-            throw uncheckedException(e, "Error finding process instance using business key %s", businessKey);
+            throw uncheckedException(e, "Error finding process instance. Business key: %s, Process Id: %s, Process version: %s", businessKey, processId, processVersion);
         }
     }
 

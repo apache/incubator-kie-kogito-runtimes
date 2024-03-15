@@ -1,7 +1,7 @@
 CREATE TABLE business_key_mapping (
-     name character (255) NOT NULL,
+     business_key character (255) NOT NULL,
      process_instance_id character (36) NOT NULL,
-     PRIMARY KEY (name),
+     PRIMARY KEY (business_key),
      CONSTRAINT fk_process_instances 
      FOREIGN KEY (process_instance_id)
      REFERENCES process_instances(id)
