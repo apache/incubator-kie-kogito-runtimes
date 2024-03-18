@@ -214,8 +214,8 @@ class PostgresqlProcessInstancesIT {
         process.instances().migrate("migrated", "2");
         RowSet<Row> rows = client.preparedQuery("SELECT process_id, process_version FROM process_instances").execute().toCompletionStage().toCompletableFuture().get();
         for (Row row : rows) {
-            assertEquals(row.get(String.class, 1), "migrated");
-            assertEquals(row.get(String.class, 2), "2");
+            assertEquals(row.get(String.class, 0), "migrated");
+            assertEquals(row.get(String.class, 1), "2");
         }
     }
 
@@ -232,13 +232,13 @@ class PostgresqlProcessInstancesIT {
         RowSet<Row> rows = null;
         rows = client.preparedQuery("SELECT process_id, process_version FROM process_instances WHERE id = $1").execute(Tuple.of(processInstance1.id())).toCompletionStage().toCompletableFuture().get();
         for (Row row : rows) {
-            assertEquals(row.get(String.class, 1), "migrated");
-            assertEquals(row.get(String.class, 2), "2");
+            assertEquals(row.get(String.class, 0), "migrated");
+            assertEquals(row.get(String.class, 1), "2");
         }
         rows = client.preparedQuery("SELECT process_id, process_version FROM process_instances WHERE id = $1").execute(Tuple.of(processInstance2.id())).toCompletionStage().toCompletableFuture().get();
         for (Row row : rows) {
-            assertEquals(row.get(String.class, 1), "BPMN2_UserTask");
-            assertEquals(row.get(String.class, 2), "1.0");
+            assertEquals(row.get(String.class, 0), "BPMN2_UserTask");
+            assertEquals(row.get(String.class, 1), "1.0");
         }
     }
 

@@ -234,8 +234,8 @@ abstract class AbstractProcessInstancesIT {
                 ResultSet resultSet = connection.createStatement().executeQuery("SELECT process_id, process_version FROM process_instances")) {
 
             while (resultSet.next()) {
-                assertEquals(resultSet.getString(0), "migrated");
-                assertEquals(resultSet.getString(1), "2");
+                assertEquals(resultSet.getString(1), "migrated");
+                assertEquals(resultSet.getString(2), "2");
             }
         }
     }
@@ -257,8 +257,8 @@ abstract class AbstractProcessInstancesIT {
                 ResultSet resultSet = connection.createStatement().executeQuery("SELECT process_id, process_version FROM process_instances")) {
 
             while (resultSet.next()) {
-                assertEquals(resultSet.getString(0), "migrated");
-                assertEquals(resultSet.getString(1), "2");
+                assertEquals(resultSet.getString(1), "migrated");
+                assertEquals(resultSet.getString(2), "2");
             }
         }
 
@@ -266,8 +266,8 @@ abstract class AbstractProcessInstancesIT {
                 ResultSet resultSet = connection.createStatement().executeQuery("SELECT process_id, process_version FROM process_instances WHERE id = '" + processInstance2.id() + "'")) {
 
             while (resultSet.next()) {
-                assertEquals(resultSet.getString(0), "BPMN2_UserTask");
-                assertEquals(resultSet.getString(1), "1.0");
+                assertEquals(resultSet.getString(1), "BPMN2_UserTask");
+                assertEquals(resultSet.getString(2), "1.0");
             }
         }
 
