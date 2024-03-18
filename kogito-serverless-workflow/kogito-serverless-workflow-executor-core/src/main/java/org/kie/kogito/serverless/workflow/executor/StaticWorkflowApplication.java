@@ -37,6 +37,7 @@ import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.api.event.process.ProcessCompletedEvent;
+import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.Addons;
 import org.kie.kogito.KogitoEngine;
 import org.kie.kogito.Model;
@@ -120,6 +121,37 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
         }
     }
 
+    private static class WorkflowApplicationBuilder {
+
+        private Map<String, Object> properties;
+        private Collection<ProcessEventListener> listeners = new ArrayList<>();
+
+        public WorkflowApplicationBuilder withProperties(Map<String, Object> properties) {
+            this.properties = properties;
+            return this;
+        }
+
+        public WorkflowApplicationBuilder withEventListener(ProcessEventListener listener, ProcessEventListener... extraListeners) {
+            listeners.add(listener);
+            for (ProcessEventListener extraListener : extraListeners) {
+                listeners.add(extraListener);
+            }
+            return this;
+        }
+
+        public StaticWorkflowApplication build() {
+            Map<String, SynchronousQueue<JsonNodeModel>> queues = new ConcurrentHashMap<>();
+            withEventListener(new StaticCompletionEventListener(queues));
+            StaticWorkflowApplication application = new StaticWorkflowApplication(properties, queues, listeners);
+            application.applicationRegisters.forEach(register -> register.register(application));
+            return application;
+        }
+    }
+
+    public static WorkflowApplicationBuilder builder() {
+        return new WorkflowApplicationBuilder();
+    }
+
     public static StaticWorkflowApplication create() {
         Properties properties = new Properties();
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties")) {
@@ -133,15 +165,12 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     }
 
     public static StaticWorkflowApplication create(Map<String, Object> properties) {
-        Map<String, SynchronousQueue<JsonNodeModel>> queues = new ConcurrentHashMap<>();
-        StaticWorkflowApplication application = new StaticWorkflowApplication(properties, queues);
-        application.applicationRegisters.forEach(register -> register.register(application));
-        return application;
+        return builder().withProperties(properties).build();
     }
 
-    private StaticWorkflowApplication(Map<String, Object> properties, Map<String, SynchronousQueue<JsonNodeModel>> queues) {
+    private StaticWorkflowApplication(Map<String, Object> properties, Map<String, SynchronousQueue<JsonNodeModel>> queues, Collection<ProcessEventListener> listeners) {
         super(new StaticConfig(new Addons(Collections.emptySet()), new StaticProcessConfig(new CachedWorkItemHandlerConfig(),
-                new DefaultProcessEventListenerConfig(new StaticCompletionEventListener(queues)),
+                new DefaultProcessEventListenerConfig(listeners),
                 new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory())), new StaticConfigBean()));
         if (!properties.isEmpty()) {
             ConfigResolverHolder.setConfigResolver(MultiSourceConfigResolver.withSystemProperties(properties));
