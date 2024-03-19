@@ -28,7 +28,7 @@ public class DefaultProcessEventListenerConfig extends CachedProcessEventListene
         }
     }
 
-    public DefaultProcessEventListenerConfig(Iterable<ProcessEventListener> listeners) {
+    public DefaultProcessEventListenerConfig(Iterable<? extends ProcessEventListener> listeners) {
         for (ProcessEventListener listener : listeners) {
             register(listener);
         }
