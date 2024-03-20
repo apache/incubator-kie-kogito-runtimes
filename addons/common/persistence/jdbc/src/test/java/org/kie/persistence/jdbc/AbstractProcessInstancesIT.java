@@ -254,7 +254,7 @@ abstract class AbstractProcessInstancesIT {
 
         DataSource dataSource = getDataSource();
         try (Connection connection = dataSource.getConnection();
-                ResultSet resultSet = connection.createStatement().executeQuery("SELECT process_id, process_version FROM process_instances")) {
+                ResultSet resultSet = connection.createStatement().executeQuery("SELECT process_id, process_version FROM process_instances WHERE id = '" + processInstance1.id() + "'")) {
 
             while (resultSet.next()) {
                 assertEquals(resultSet.getString(1), "migrated");
