@@ -43,7 +43,8 @@ public interface ProcessInstances<T> {
     }
 
 
-    default long migrate(String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException {
+
+    default long migrate(String targetProcessId, String targetProcessVersion) {
         throw new UnsupportedOperationException();
     }
 
