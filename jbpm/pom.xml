@@ -43,6 +43,7 @@
     <module>jbpm-bpmn2</module>
     <module>process-serialization-protobuf</module>
     <module>process-workitems</module>
+    <module>jbpm-tests</module>
   </modules>
 
 </project>
