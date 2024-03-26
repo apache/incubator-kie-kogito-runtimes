@@ -164,7 +164,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
                     .map(name -> {
                         ProtoEnum modelEnum = new ProtoEnum(name, clazz.getPackage().getName());
                         Stream.of(clazz.getDeclaredFields())
-                                .filter(f -> !f.getName().startsWith("$"))
+                                .filter(f -> f.isEnumConstant())
                                 .sorted(Comparator.comparing(Field::getName))
                                 .forEach(f -> addEnumField(f, modelEnum));
                         proto.addEnum(modelEnum);
