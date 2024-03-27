@@ -16,21 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.process.impl;
+package org.kie.kogito.quarkus.addons.common.deployment;
 
-import org.kie.api.event.process.ProcessEventListener;
+public class KogitoCapabilityExtension {
 
-public class DefaultProcessEventListenerConfig extends CachedProcessEventListenerConfig {
+    private String groupId;
+    private String artifactId;
 
-    public DefaultProcessEventListenerConfig(ProcessEventListener... listeners) {
-        for (ProcessEventListener listener : listeners) {
-            register(listener);
-        }
+    public KogitoCapabilityExtension(String groupId, String artifactId) {
+        this.groupId = groupId;
+        this.artifactId = artifactId;
     }
 
-    public DefaultProcessEventListenerConfig(Iterable<? extends ProcessEventListener> listeners) {
-        for (ProcessEventListener listener : listeners) {
-            register(listener);
-        }
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public String getArtifactId() {
+        return artifactId;
     }
 }
