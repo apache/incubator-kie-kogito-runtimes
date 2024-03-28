@@ -227,7 +227,7 @@ abstract class AbstractProcessInstancesIT {
         ProcessInstance<BpmnVariables> processInstance2 = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance2.start();
 
-        process.instances().migrate("migrated", "2");
+        process.instances().migrateAll("migrated", "2");
 
         DataSource dataSource = getDataSource();
         try (Connection connection = dataSource.getConnection();
@@ -250,7 +250,7 @@ abstract class AbstractProcessInstancesIT {
         ProcessInstance<BpmnVariables> processInstance2 = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance2.start();
 
-        process.instances().migrate("migrated", "2", processInstance1.id());
+        process.instances().migrateProcessInstances("migrated", "2", processInstance1.id());
 
         DataSource dataSource = getDataSource();
         try (Connection connection = dataSource.getConnection();

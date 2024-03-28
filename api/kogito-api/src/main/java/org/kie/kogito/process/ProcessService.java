@@ -65,9 +65,9 @@ public interface ProcessService {
 
     <T extends MappableToModel<R>, R> Optional<R> findById(Process<T> process, String id);
 
-    <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion, String... id) throws UnsupportedOperationException;
+    <T> void migrateProcessInstances(Process<T> process, String targetProcessId, String targetProcessVersion, String... id) throws UnsupportedOperationException;
 
-    <T> long migrate(Process<T> process, String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException;
+    <T> long migrateAll(Process<T> process, String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException;
 
     <T extends MappableToModel<R>, R> Optional<R> delete(Process<T> process, String id);
 

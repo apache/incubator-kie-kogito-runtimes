@@ -89,12 +89,12 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public long migrate(String targetProcessId, String targetProcessVersion) {
+    public long migrateAll(String targetProcessId, String targetProcessVersion) {
         return repository.migrate(process.id(), process.version(), targetProcessId, targetProcessVersion);
     }
 
     @Override
-    public void migrate(String targetProcessId, String targetProcessVersion, String... processIds) {
+    public void migrateProcessInstances(String targetProcessId, String targetProcessVersion, String... processIds) {
         repository.migrate(process.id(), process.version(), targetProcessId, targetProcessVersion, processIds);
     }
 

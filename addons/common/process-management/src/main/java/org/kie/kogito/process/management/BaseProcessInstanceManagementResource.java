@@ -132,7 +132,7 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
     public T doMigrateInstance(ProcessService processService, String processId, ProcessMigrationSpec migrationSpec, String processInstanceId) {
         try {
             Process<? extends Model> process = processes.get().processById(processId);
-            processService.migrate(process, migrationSpec.getTargetProcessId(), migrationSpec.getTargetProcessVersion(), processInstanceId);
+            processService.migrateProcessInstances(process, migrationSpec.getTargetProcessId(), migrationSpec.getTargetProcessVersion(), processInstanceId);
             Map<String, Object> message = new HashMap<>();
             message.put("message", processInstanceId + " instance migrated");
             message.put("processInstanceId", processInstanceId);
@@ -145,7 +145,7 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
     public T doMigrateAllInstances(ProcessService processService, String processId, ProcessMigrationSpec migrationSpec) {
         try {
             Process<? extends Model> process = processes.get().processById(processId);
-            long numberOfProcessInstanceMigrated = processService.migrate(process, migrationSpec.getTargetProcessId(), migrationSpec.getTargetProcessVersion());
+            long numberOfProcessInstanceMigrated = processService.migrateAll(process, migrationSpec.getTargetProcessId(), migrationSpec.getTargetProcessVersion());
             Map<String, Object> message = new HashMap<>();
             message.put("message", "All intances migrated");
             message.put("numberOfProcessInstanceMigrated", numberOfProcessInstanceMigrated);
