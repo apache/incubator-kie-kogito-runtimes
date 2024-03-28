@@ -166,7 +166,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public long migrate(String targetProcessId, String targetProcessVersion) {
+    public long migrateAll(String targetProcessId, String targetProcessVersion) {
         try {
             PreparedQuery<RowSet<Row>> rows = null;
             if (process.version() == null) {
@@ -185,7 +185,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public void migrate(String targetProcessId, String targetProcessVersion, String... processIds) {
+    public void migrateProcessInstances(String targetProcessId, String targetProcessVersion, String... processIds) {
         try {
             PreparedQuery<RowSet<Row>> rows = null;
             if (process.version() == null) {

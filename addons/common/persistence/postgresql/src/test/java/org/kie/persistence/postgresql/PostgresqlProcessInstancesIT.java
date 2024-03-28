@@ -211,7 +211,7 @@ class PostgresqlProcessInstancesIT {
         ProcessInstance<BpmnVariables> processInstance2 = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance2.start();
 
-        process.instances().migrate("migrated", "2");
+        process.instances().migrateAll("migrated", "2");
         RowSet<Row> rows = client.preparedQuery("SELECT process_id, process_version FROM process_instances").execute().toCompletionStage().toCompletableFuture().get();
         for (Row row : rows) {
             assertEquals(row.get(String.class, 0), "migrated");
@@ -228,7 +228,7 @@ class PostgresqlProcessInstancesIT {
         ProcessInstance<BpmnVariables> processInstance2 = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance2.start();
 
-        process.instances().migrate("migrated", "2", processInstance1.id());
+        process.instances().migrateProcessInstances("migrated", "2", processInstance1.id());
         RowSet<Row> rows = null;
         rows = client.preparedQuery("SELECT process_id, process_version FROM process_instances WHERE id = $1").execute(Tuple.of(processInstance1.id())).toCompletionStage().toCompletableFuture().get();
         for (Row row : rows) {

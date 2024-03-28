@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -47,35 +48,46 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
 
     public static final String MIGRATION_PLAN_FOLDER = "/META-INF/migration-plan/";
 
-    private URI rootPath;
+    private List<URI> rootPaths;
 
     public FileSystemMigrationPlanFileProvider() {
         try {
-            URL url = getClass().getResource(MIGRATION_PLAN_FOLDER);
-            this.rootPath = url != null ? url.toURI() : URI.create("file://" + MIGRATION_PLAN_FOLDER);
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException(e);
+            List<URL> url = Collections.list(JbpmClassLoaderUtil.findClassLoader().getResources(MIGRATION_PLAN_FOLDER));
+            this.rootPaths = url.stream().map(this::toURI).filter(Optional::isPresent).map(Optional::get).toList();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("error trying to get Migration Plan folder");
+        }
+    }
+
+    private Optional<URI> toURI(URL e) {
+        try {
+            return Optional.of(e.toURI());
+        } catch (URISyntaxException ex) {
+            return Optional.<URI> empty();
         }
     }
 
     public FileSystemMigrationPlanFileProvider(URI rootPath) {
-        this.rootPath = rootPath;
+        this.rootPaths = List.of(rootPath);
     }
 
     @Override
     public List<MigrationPlanFile> listMigrationPlanFiles(String... extensions) {
         List<String> allowedExtensions = Arrays.asList(extensions);
-        if ("jar".equals(this.rootPath.getScheme())) {
-            return walkInJarPaths(this.rootPath, allowedExtensions);
-        } else {
-            return walkingPaths(Path.of(this.rootPath), allowedExtensions);
+        List<MigrationPlanFile> migrationPlanFiles = new ArrayList<>();
+        for (URI rootPath : rootPaths) {
+            if ("jar".equals(rootPath.getScheme())) {
+                migrationPlanFiles.addAll(walkInJarPaths(rootPath, allowedExtensions));
+            } else {
+                migrationPlanFiles.addAll(walkingPaths(Path.of(rootPath), allowedExtensions));
+            }
         }
-
+        return migrationPlanFiles;
     }
 
     private List<MigrationPlanFile> walkInJarPaths(URI baseURI, List<String> extensions) {
-        LOGGER.debug("Searching Migration Plans in rootPath {}", rootPath);
-        try (FileSystem fileSystem = FileSystems.newFileSystem(rootPath, emptyMap(), JbpmClassLoaderUtil.findClassLoader())) {
+        LOGGER.debug("Searching Migration Plans in rootPath {}", baseURI);
+        try (FileSystem fileSystem = FileSystems.newFileSystem(baseURI, emptyMap(), JbpmClassLoaderUtil.findClassLoader())) {
             Path myPath = fileSystem.getPath(MIGRATION_PLAN_FOLDER);
             if (!Files.exists(myPath)) {
                 LOGGER.debug("There was not any migration plan found within jar {}", myPath);

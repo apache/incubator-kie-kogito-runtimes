@@ -33,11 +33,11 @@ public interface ProcessInstances<T> {
         return stream().filter(pi -> id.equals(pi.businessKey())).findAny();
     }
 
-    default void migrate(String targetProcessId, String targetProcessVersion, String... processIds) {
+    default void migrateProcessInstances(String targetProcessId, String targetProcessVersion, String... processIds) {
         throw new UnsupportedOperationException();
     }
 
-    default long migrate(String targetProcessId, String targetProcessVersion) {
+    default long migrateAll(String targetProcessId, String targetProcessVersion) {
         throw new UnsupportedOperationException();
     }
 

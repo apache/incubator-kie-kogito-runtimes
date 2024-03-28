@@ -115,13 +115,13 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T> void migrate(Process<T> process, String targetProcessId, String targetProcessVersion, String... processIds) throws UnsupportedOperationException {
-        process.instances().migrate(targetProcessId, targetProcessVersion, processIds);
+    public <T> void migrateProcessInstances(Process<T> process, String targetProcessId, String targetProcessVersion, String... processIds) throws UnsupportedOperationException {
+        process.instances().migrateProcessInstances(targetProcessId, targetProcessVersion, processIds);
     }
 
     @Override
-    public <T> long migrate(Process<T> process, String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException {
-        return process.instances().migrate(targetProcessId, targetProcessVersion);
+    public <T> long migrateAll(Process<T> process, String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException {
+        return process.instances().migrateAll(targetProcessId, targetProcessVersion);
     }
 
     @Override
