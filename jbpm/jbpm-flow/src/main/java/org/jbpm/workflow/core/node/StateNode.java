@@ -43,7 +43,7 @@ public class StateNode extends CompositeContextNode implements Constrainable {
         if (!getDefaultOutgoingConnections().contains(connection)) {
             throw new IllegalArgumentException("connection is unknown:" + connection);
         }
-        addConstraint(new ConnectionRef((String) connection.getMetaData().get("UniqueId"),
+        addConstraint(new ConnectionRef(connection.getUniqueId(),
                 connection.getTo().getId(), connection.getToType()), constraint);
     }
 
@@ -70,7 +70,7 @@ public class StateNode extends CompositeContextNode implements Constrainable {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");
         }
-        ConnectionRef ref = new ConnectionRef((String) connection.getMetaData().get("UniqueId"), connection.getTo().getId(), connection.getToType());
+        ConnectionRef ref = new ConnectionRef(connection.getUniqueId(), connection.getTo().getId(), connection.getToType());
         return this.constraints.get(ref);
     }
 

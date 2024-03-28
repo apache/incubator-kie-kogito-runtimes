@@ -54,7 +54,7 @@ public class StateNodeInstance extends CompositeContextNodeInstance implements E
             if (constraint != null && constraint.getPriority() < priority) {
                 String rule = "RuleFlowStateNode-" + getProcessInstance().getProcessId() + "-" +
                         getStateNode().getUniqueId() + "-" +
-                        connection.getTo().getId() + "-" +
+                        connection.getTo().getId().toExternalFormat() + "-" +
                         connection.getToType();
                 boolean isActive = ((InternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda())
                         .isRuleActiveInRuleFlowGroup("DROOLS_SYSTEM", rule, getProcessInstance().getStringId());
@@ -149,7 +149,7 @@ public class StateNodeInstance extends CompositeContextNodeInstance implements E
             Constraint constraint = getStateNode().getConstraint(connection);
             if (constraint != null) {
                 String constraintName = getActivationEventType() + "-"
-                        + connection.getTo().getId() + "-" + connection.getToType();
+                        + connection.getTo().getId().toExternalFormat() + "-" + connection.getToType();
                 if (constraintName.equals(event.getMatch().getRule().getName())
                         && checkProcessInstance((InternalMatch) event.getMatch())) {
                     selected = connection;
