@@ -19,10 +19,12 @@
 package org.jbpm.workflow.core.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.jbpm.process.core.Context;
@@ -53,7 +55,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     private Map<String, Context> contexts = new HashMap<>();
     private Map<String, Object> metaData = new HashMap<>();
 
-    protected Map<ConnectionRef, Constraint> constraints = new HashMap<>();
+    protected Map<ConnectionRef, Collection<Constraint>> constraints = new HashMap<>();
 
     private IOSpecification ioSpecification;
     private MultiInstanceSpecification multiInstanceSpecification;
@@ -398,7 +400,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         this.metaData = metaData;
     }
 
-    public Constraint getConstraint(final Connection connection) {
+    public Collection<Constraint> getConstraint(final Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");
         }
@@ -409,7 +411,8 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     }
 
     public Constraint internalGetConstraint(final ConnectionRef ref) {
-        return this.constraints.get(ref);
+        Collection<Constraint> constraints = this.constraints.get(ref);
+        return constraints != null ? constraints.iterator().next() : null;
     }
 
     public void setConstraint(final Connection connection,
@@ -431,10 +434,12 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
             throw new IllegalArgumentException(
                     "A " + this.getName() + " node only accepts constraints linked to a connection");
         }
-        this.constraints.put(connectionRef, constraint);
+        Collection<Constraint> values = this.constraints.computeIfAbsent(connectionRef, r -> new ArrayList<>());
+        values.removeIf(v -> Objects.equals(v.getConstraint(), constraint.getConstraint()));
+        values.add(constraint);
     }
 
-    public Map<ConnectionRef, Constraint> getConstraints() {
+    public Map<ConnectionRef, Collection<Constraint>> getConstraints() {
         return Collections.unmodifiableMap(this.constraints);
     }
 

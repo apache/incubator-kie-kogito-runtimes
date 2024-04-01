@@ -759,35 +759,39 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         if (connection.getFrom() instanceof Split) {
             Split split = (Split) connection.getFrom();
             if (split.getType() == Split.TYPE_XOR || split.getType() == Split.TYPE_OR) {
-                Constraint constraint = split.getConstraint(connection);
-                if (constraint == null) {
+                Collection<Constraint> constraints = split.getConstraint(connection);
+                if (constraints == null) {
                     xmlDump.append(">" + EOL +
                             "      <conditionExpression xsi:type=\"tFormalExpression\" />");
                 } else {
-                    if (constraint.getName() != null && constraint.getName().trim().length() > 0) {
-                        xmlDump.append("name=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(constraint.getName()) + "\" ");
-                    }
-                    if (constraint.getPriority() != 0) {
-                        xmlDump.append("tns:priority=\"" + constraint.getPriority() + "\" ");
-                    }
-                    xmlDump.append(">" + EOL +
-                            "      <conditionExpression xsi:type=\"tFormalExpression\" ");
-                    if ("code".equals(constraint.getType())) {
-                        if (JavaDialect.ID.equals(constraint.getDialect())) {
-                            xmlDump.append("language=\"" + JAVA_LANGUAGE + "\" ");
-                        } else if ("XPath".equals(constraint.getDialect())) {
-                            xmlDump.append("language=\"" + XPATH_LANGUAGE + "\" ");
-                        } else if ("FEEL".equals(constraint.getDialect())) {
-                            xmlDump.append("language=\"" + FEEL_LANGUAGE + "\" ");
+                    for (Constraint constraint : constraints) {
+                        if (constraint != null) {
+                            if (constraint.getName() != null && constraint.getName().trim().length() > 0) {
+                                xmlDump.append("name=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(constraint.getName()) + "\" ");
+                            }
+                            if (constraint.getPriority() != 0) {
+                                xmlDump.append("tns:priority=\"" + constraint.getPriority() + "\" ");
+                            }
+                            xmlDump.append(">" + EOL +
+                                    "      <conditionExpression xsi:type=\"tFormalExpression\" ");
+                            if ("code".equals(constraint.getType())) {
+                                if (JavaDialect.ID.equals(constraint.getDialect())) {
+                                    xmlDump.append("language=\"" + JAVA_LANGUAGE + "\" ");
+                                } else if ("XPath".equals(constraint.getDialect())) {
+                                    xmlDump.append("language=\"" + XPATH_LANGUAGE + "\" ");
+                                } else if ("FEEL".equals(constraint.getDialect())) {
+                                    xmlDump.append("language=\"" + FEEL_LANGUAGE + "\" ");
+                                }
+                            } else {
+                                xmlDump.append("language=\"" + RULE_LANGUAGE + "\" ");
+                            }
+                            String constraintString = constraint.getConstraint();
+                            if (constraintString == null) {
+                                constraintString = "";
+                            }
+                            xmlDump.append(">" + XmlDumper.replaceIllegalChars(constraintString) + "</conditionExpression>");
                         }
-                    } else {
-                        xmlDump.append("language=\"" + RULE_LANGUAGE + "\" ");
                     }
-                    String constraintString = constraint.getConstraint();
-                    if (constraintString == null) {
-                        constraintString = "";
-                    }
-                    xmlDump.append(">" + XmlDumper.replaceIllegalChars(constraintString) + "</conditionExpression>");
                 }
                 xmlDump.append(EOL
                         + "    </sequenceFlow>" + EOL);
