@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.context.variable.Mappable;
+import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.Node;
@@ -435,7 +436,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
                     "A " + this.getName() + " node only accepts constraints linked to a connection");
         }
         Collection<Constraint> values = this.constraints.computeIfAbsent(connectionRef, r -> new ArrayList<>());
-        values.removeIf(v -> Objects.equals(v.getConstraint(), constraint.getConstraint()));
+        values.removeIf(v -> !ReturnValueConstraintEvaluator.class.isInstance(v) && Objects.equals(v.getConstraint(), constraint.getConstraint()));
         values.add(constraint);
     }
 
