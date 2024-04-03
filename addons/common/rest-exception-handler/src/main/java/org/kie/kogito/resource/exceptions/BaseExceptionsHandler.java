@@ -21,6 +21,7 @@ package org.kie.kogito.resource.exceptions;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.kie.kogito.internal.process.runtime.WorkItemNotFoundException;
@@ -46,6 +47,7 @@ public abstract class BaseExceptionsHandler<T> {
     public static final String FAILED_NODE_ID = "failedNodeId";
     public static final String ID = "id";
     private final Map<Class<? extends Exception>, FunctionHolder<T, ?>> mapper;
+    private final Map<Class<? extends Exception>, FunctionHolder<T, ?>> fallbackMapper;
 
     private static class FunctionHolder<T, R> {
         private final Function<Exception, R> contentGenerator;
@@ -69,6 +71,7 @@ public abstract class BaseExceptionsHandler<T> {
 
     protected BaseExceptionsHandler() {
         mapper = new HashMap<>();
+        fallbackMapper = new HashMap<>();
         mapper.put(InvalidLifeCyclePhaseException.class, new FunctionHolder<>(
                 ex -> Collections.singletonMap(MESSAGE, ex.getMessage()), ex -> BaseExceptionsHandler.this::badRequest));
 
@@ -107,7 +110,7 @@ public abstract class BaseExceptionsHandler<T> {
                     return response;
                 }, ex -> BaseExceptionsHandler.this::conflict));
 
-        mapper.put(ProcessInstanceExecutionException.class, new FunctionHolder<>(
+        fallbackMapper.put(ProcessInstanceExecutionException.class, new FunctionHolder<>(
                 ex -> {
                     ProcessInstanceExecutionException exception = (ProcessInstanceExecutionException) ex;
                     Map<String, String> response = new HashMap<>();
@@ -141,7 +144,7 @@ public abstract class BaseExceptionsHandler<T> {
                     return response;
                 }, ex -> BaseExceptionsHandler.this::badRequest));
 
-        mapper.put(WorkItemExecutionException.class, new FunctionHolder<>(
+        fallbackMapper.put(WorkItemExecutionException.class, new FunctionHolder<>(
                 ex -> Map.of(MESSAGE, ex.getMessage()),
                 ex -> fromErrorCode(((WorkItemExecutionException) ex).getErrorCode())));
 
@@ -174,19 +177,26 @@ public abstract class BaseExceptionsHandler<T> {
     protected abstract <R> T forbidden(R body);
 
     public <R extends Exception, U> T mapException(R exception) {
-        FunctionHolder<T, U> holder = (FunctionHolder<T, U>) mapper.getOrDefault(exception.getClass(), defaultHolder);
-        U body = holder.getContentGenerator().apply(exception);
-        if (exception instanceof ProcessInstanceExecutionException || exception instanceof WorkItemExecutionException) {
-            Throwable rootCause = exception.getCause();
+        return findHandler(exception, mapper).or(() -> findHandler(exception, fallbackMapper)).orElseGet(() -> mapIt(defaultHolder, exception));
+    }
 
-            while (rootCause != null) {
+    private <U> Optional<T> findHandler(Exception exception, Map<Class<? extends Exception>, FunctionHolder<T, ?>> mapper) {
+        Exception candidate = null;
+        if (mapper.containsKey(exception.getClass())) {
+            candidate = exception;
+        } else {
+            Throwable rootCause = exception.getCause();
+            while (candidate == null && rootCause != null) {
                 if (mapper.containsKey(rootCause.getClass())) {
-                    holder = (FunctionHolder<T, U>) mapper.get(rootCause.getClass());
-                    break;
+                    candidate = (Exception) rootCause;
                 }
                 rootCause = rootCause.getCause();
             }
         }
-        return holder.getResponseGenerator().apply(exception).apply(body);
+        return candidate == null ? Optional.empty() : Optional.of(mapIt(mapper.get(candidate.getClass()), candidate));
+    }
+
+    private <U> T mapIt(FunctionHolder<T, U> holder, Exception exception) {
+        return holder.getResponseGenerator().apply(exception).apply(holder.getContentGenerator().apply(exception));
     }
 }
