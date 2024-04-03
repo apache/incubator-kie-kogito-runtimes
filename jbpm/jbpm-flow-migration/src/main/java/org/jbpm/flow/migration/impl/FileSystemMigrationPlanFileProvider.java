@@ -46,6 +46,7 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemMigrationPlanFileProvider.class);
 
+    public static final String EXPLODED_MIGRATION_PLAN_FOLDER = "META-INF/migration-plan/";
     public static final String MIGRATION_PLAN_FOLDER = "/META-INF/migration-plan/";
 
     private List<URI> rootPaths;
@@ -53,6 +54,9 @@ public class FileSystemMigrationPlanFileProvider implements MigrationPlanFilePro
     public FileSystemMigrationPlanFileProvider() {
         try {
             List<URL> url = Collections.list(JbpmClassLoaderUtil.findClassLoader().getResources(MIGRATION_PLAN_FOLDER));
+            if (url.isEmpty()) {
+                url = Collections.list(JbpmClassLoaderUtil.findClassLoader().getResources(EXPLODED_MIGRATION_PLAN_FOLDER));
+            }
             this.rootPaths = url.stream().map(this::toURI).filter(Optional::isPresent).map(Optional::get).toList();
         } catch (IOException e) {
             throw new IllegalArgumentException("error trying to get Migration Plan folder");
