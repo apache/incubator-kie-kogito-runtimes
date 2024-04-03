@@ -324,7 +324,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
                     Connection selectedConnection = null;
                     ConstraintEvaluator selectedConstraint = null;
                     for (final Connection connection : outgoingCopy) {
-                        Collection<Constraint> constraints = ((NodeImpl) node).getConstraint(connection);
+                        Collection<Constraint> constraints = ((NodeImpl) node).getConstraints(connection);
                         if (constraints != null) {
                             for (Constraint constraint : constraints) {
                                 if (constraint instanceof ConstraintEvaluator && constraint.getPriority() < priority
@@ -357,7 +357,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
                 }
                 if (!found) {
                     for (final Connection connection : connections) {
-                        Collection<Constraint> constraints = ((NodeImpl) node).getConstraint(connection);
+                        Collection<Constraint> constraints = ((NodeImpl) node).getConstraints(connection);
                         if (constraints != null) {
                             for (Constraint constraint : constraints) {
                                 if (constraint.isDefault()) {

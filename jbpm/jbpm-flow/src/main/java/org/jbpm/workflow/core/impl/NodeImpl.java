@@ -401,14 +401,18 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         this.metaData = metaData;
     }
 
-    public Collection<Constraint> getConstraint(final Connection connection) {
+    public Collection<Constraint> getConstraints(final Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");
         }
 
         ConnectionRef ref = new ConnectionRef((String) connection.getMetaData().get("UniqueId"), connection.getTo().getId(), connection.getToType());
         return this.constraints.get(ref);
+    }
 
+    public Constraint getConstraint(final Connection connection) {
+        Collection<Constraint> constraints = getConstraints(connection);
+        return constraints != null ? constraints.iterator().next() : null;
     }
 
     public Constraint internalGetConstraint(final ConnectionRef ref) {

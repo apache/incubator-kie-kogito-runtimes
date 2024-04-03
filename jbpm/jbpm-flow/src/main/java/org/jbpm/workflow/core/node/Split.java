@@ -102,7 +102,7 @@ public class Split extends NodeImpl implements Constrainable {
     }
 
     @Override
-    public Collection<Constraint> getConstraint(final Connection connection) {
+    public Collection<Constraint> getConstraints(final Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");
         }

@@ -85,7 +85,7 @@ public class SplitInstance extends NodeInstanceImpl {
                 Connection selected = null;
                 for (final Iterator<Connection> iterator = outgoing.iterator(); iterator.hasNext();) {
                     final Connection connection = iterator.next();
-                    Collection<Constraint> constraints = split.getConstraint(connection);
+                    Collection<Constraint> constraints = split.getConstraints(connection);
                     if (constraints != null) {
                         for (Constraint constraint : constraints) {
                             if (constraint instanceof ConstraintEvaluator && constraint.getPriority() < priority && !constraint.isDefault()) {
@@ -139,7 +139,7 @@ public class SplitInstance extends NodeInstanceImpl {
                     ConstraintEvaluator selectedConstraint = null;
                     for (final Iterator<Connection> iterator = outgoingCopy.iterator(); iterator.hasNext();) {
                         final Connection connection = iterator.next();
-                        Collection<Constraint> constraints = split.getConstraint(connection);
+                        Collection<Constraint> constraints = split.getConstraints(connection);
                         if (constraints != null) {
                             for (Constraint constraint : constraints) {
                                 if (constraint instanceof ConstraintEvaluator && constraint.getPriority() < priority
@@ -174,7 +174,7 @@ public class SplitInstance extends NodeInstanceImpl {
                     final Iterator<Connection> iterator = outgoing.iterator();
                     while (!found && iterator.hasNext()) {
                         final Connection connection = iterator.next();
-                        Collection<Constraint> constraints = split.getConstraint(connection);
+                        Collection<Constraint> constraints = split.getConstraints(connection);
                         if (constraints != null) {
                             for (Constraint constraint : constraints) {
                                 if (constraint != null && constraint.isDefault()) {

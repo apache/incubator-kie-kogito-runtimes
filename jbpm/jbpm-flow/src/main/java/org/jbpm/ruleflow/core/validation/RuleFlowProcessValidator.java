@@ -270,7 +270,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 if (split.getType() == Split.TYPE_XOR || split.getType() == Split.TYPE_OR) {
                     for (final Iterator<Connection> it = split.getDefaultOutgoingConnections().iterator(); it.hasNext();) {
                         final Connection connection = it.next();
-                        Collection<Constraint> constraints = split.getConstraint(connection);
+                        Collection<Constraint> constraints = split.getConstraints(connection);
                         if ((constraints == null || constraints.stream().allMatch(c -> c == null || c.getConstraint() == null || c.getConstraint().isBlank())) && !split.isDefault(connection)) {
                             addErrorMessage(process,
                                     node,
