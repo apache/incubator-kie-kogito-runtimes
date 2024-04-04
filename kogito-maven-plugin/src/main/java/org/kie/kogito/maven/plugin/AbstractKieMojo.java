@@ -102,7 +102,7 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     }
 
     protected KogitoBuildContext discoverKogitoRuntimeContext(ClassLoader classLoader) {
-        AppPaths appPaths = AppPaths.fromProjectDir(projectDir.toPath(), outputDirectory.toPath());
+        AppPaths appPaths = AppPaths.fromProjectDir(projectDir.toPath());
         KogitoBuildContext context = contextBuilder()
                 .withClassAvailabilityResolver(this::hasClassOnClasspath)
                 .withClassSubTypeAvailabilityResolver(classSubTypeAvailabilityResolver())

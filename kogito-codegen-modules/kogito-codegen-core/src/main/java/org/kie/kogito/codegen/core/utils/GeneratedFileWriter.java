@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import org.drools.codegen.common.AppPaths;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 
@@ -76,7 +77,7 @@ public class GeneratedFileWriter {
     public static final String DEFAULT_SOURCES_DIR = "generated-sources/kogito/";
     public static final String DEFAULT_RESOURCE_PATH = "generated-resources/kogito/";
     public static final String DEFAULT_SCAFFOLDED_SOURCES_DIR = "src/main/java/";
-    public static final String DEFAULT_CLASSES_DIR = "target/classes";
+    public static final String DEFAULT_CLASSES_DIR = String.format("%s/classes", AppPaths.TARGET_DIR);
 
     /**
      *

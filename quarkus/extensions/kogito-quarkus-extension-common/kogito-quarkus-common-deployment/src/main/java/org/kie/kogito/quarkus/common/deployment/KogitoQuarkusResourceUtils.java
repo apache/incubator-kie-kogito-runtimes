@@ -78,10 +78,10 @@ public class KogitoQuarkusResourceUtils {
     // need to manually late-provide the resource in the expected location for quarkus:dev phase --so not: writeGeneratedFile( f, resourcePath )
     private static final GeneratedFileWriter.Builder generatedFileWriterBuilder =
             new GeneratedFileWriter.Builder(
-                    "target/classes",
-                    System.getProperty("kogito.codegen.sources.directory", "target/generated-sources/kogito/"),
-                    System.getProperty("kogito.codegen.resources.directory", "target/generated-resources/kogito/"),
-                    "target/generated-sources/kogito/");
+                    String.format("%s/classes", AppPaths.TARGET_DIR),
+                    System.getProperty("kogito.codegen.sources.directory", String.format("%s/generated-sources/kogito/", AppPaths.TARGET_DIR)),
+                    System.getProperty("kogito.codegen.resources.directory", String.format("%s/generated-resources/kogito/", AppPaths.TARGET_DIR)),
+                    String.format("%s/generated-sources/kogito/", AppPaths.TARGET_DIR));
 
     public static KogitoBuildContext kogitoBuildContext(Path outputTarget, Iterable<Path> paths, IndexView index, Dependency appArtifact) {
         // scan and parse paths
