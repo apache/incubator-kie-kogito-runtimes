@@ -18,6 +18,8 @@
  */
 package org.kie.kogito.integrationtests.springboot;
 
+import java.util.HashMap;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.KogitoGAV;
@@ -48,6 +50,7 @@ public class MonitoringTest extends BaseRestTest {
     public void test() {
         String pId = given().contentType(ContentType.JSON)
                 .when()
+                .body(new HashMap<>())
                 .post("/monitoring")
                 .then()
                 .statusCode(201)
