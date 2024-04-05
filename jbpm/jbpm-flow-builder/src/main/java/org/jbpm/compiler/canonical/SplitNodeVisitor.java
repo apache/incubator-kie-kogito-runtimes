@@ -86,7 +86,7 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
                                 returnValueEvaluator = lambda;
                             }
                             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
-                                    new StringLiteralExpr(entry.getKey().getNodeId().toExternalFormat()),
+                                    getWorkflowElementConstructor(entry.getKey().getNodeId()),
                                     new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
                                     new StringLiteralExpr(entry.getKey().getToType()),
                                     new StringLiteralExpr(constraint.getDialect()),
