@@ -71,7 +71,7 @@ public class StateNodeVisitor extends CompositeContextNodeVisitor<StateNode> {
                 if (constraint != null) {
                     result.add(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
                             getOrNullExpr(ref.getConnectionId()),
-                            new StringLiteralExpr(ref.getNodeId().toExternalFormat()),
+                            getWorkflowElementConstructor(ref.getNodeId()),
                             new StringLiteralExpr(ref.getToType()),
                             new StringLiteralExpr(constraint.getDialect()),
                             new StringLiteralExpr(StringEscapeUtils.escapeJava(constraint.getConstraint())),
