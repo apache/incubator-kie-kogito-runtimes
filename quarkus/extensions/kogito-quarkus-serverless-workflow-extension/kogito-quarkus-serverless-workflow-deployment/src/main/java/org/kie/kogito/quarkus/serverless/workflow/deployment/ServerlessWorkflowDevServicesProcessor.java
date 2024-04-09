@@ -19,6 +19,7 @@
 package org.kie.kogito.quarkus.serverless.workflow.deployment;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.kie.kogito.quarkus.workflow.deployment.AbstractDevServicesProcessor;
 import org.kie.kogito.quarkus.workflow.deployment.config.KogitoWorkflowBuildTimeConfig;
@@ -45,12 +46,15 @@ public class ServerlessWorkflowDevServicesProcessor extends AbstractDevServicesP
 
     @BuildStep(onlyIf = { GlobalDevServicesConfig.Enabled.class, IsDevelopment.class })
     CardPageBuildItem createDevUILink(List<SystemPropertyBuildItem> systemPropertyBuildItems) {
-        String data_index_url = getProperty(systemPropertyBuildItems, "kogito.data-index.url");
-        CardPageBuildItem cardPageBuildItem = new CardPageBuildItem(); // <2> This name must be the extension name
-        cardPageBuildItem.addPage(Page.externalPageBuilder("Data Index GraphQL UI CARD ")
-                .url(data_index_url + "/q/graphql-ui/")
-                .isHtmlContent()
-                .icon("fa-map-signs"));
-        return cardPageBuildItem;
+        Optional<String> dataindex_url_prop = getProperty(systemPropertyBuildItems, "kogito.data-index.url");
+        if (dataindex_url_prop.isPresent()) {
+            CardPageBuildItem cardPageBuildItem = new CardPageBuildItem();
+            cardPageBuildItem.addPage(Page.externalPageBuilder("Data Index GraphQL UI")
+                    .url(dataindex_url_prop.get() + "/q/graphql-ui/")
+                    .isHtmlContent()
+                    .icon("font-awesome-solid:signs-post"));
+            return cardPageBuildItem;
+        }
+        return null;
     }
 }

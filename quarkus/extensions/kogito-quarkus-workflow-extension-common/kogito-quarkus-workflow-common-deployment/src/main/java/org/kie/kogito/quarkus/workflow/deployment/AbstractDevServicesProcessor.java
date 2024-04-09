@@ -71,10 +71,10 @@ public abstract class AbstractDevServicesProcessor {
         return launchMode.getLaunchMode().isDevOrTest() || config.alwaysInclude;
     }
 
-    protected String getProperty(List<SystemPropertyBuildItem> systemPropertyBuildItems, String propertyKey) {
+    protected Optional<String> getProperty(List<SystemPropertyBuildItem> systemPropertyBuildItems, String propertyKey) {
         return systemPropertyBuildItems.stream().filter(property -> property.getKey().equals(propertyKey))
                 .findAny()
-                .map(SystemPropertyBuildItem::getValue).orElse(null);
+                .map(SystemPropertyBuildItem::getValue);
     }
 
     @BuildStep(onlyIf = { GlobalDevServicesConfig.Enabled.class, IsDevelopment.class })
