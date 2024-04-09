@@ -22,7 +22,7 @@ package org.kie.api.event.usertask;
 public interface UserTaskCommentEvent extends UserTaskEvent {
 
     Comment getOldComment();
-    
+
     Comment getNewComment();
 
 }

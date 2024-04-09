@@ -22,4 +22,3 @@ public interface MilestoneNodeBuilder<T extends NodeContainerBuilder<T, ?>> exte
 
     MilestoneNodeBuilder<T> constraint(String constraint);
 }
-

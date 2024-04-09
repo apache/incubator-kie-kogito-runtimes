@@ -28,6 +28,7 @@ public interface ProcessBuilderFactory {
 
     /**
      * Returns a <code>ProcessBuilder</code> that can be used to create a process definition
+     * 
      * @param processId the unique id of the process being defined
      * @return builder instance to create process definition
      */
@@ -36,6 +37,7 @@ public interface ProcessBuilderFactory {
     /**
      * Converts process definition into an array of bytes.<br>
      * Typically this array will be converted to a Resource for a KIE base
+     * 
      * @param builder process definition to be converted to byte[]
      * @return byte[] containing process definition
      */

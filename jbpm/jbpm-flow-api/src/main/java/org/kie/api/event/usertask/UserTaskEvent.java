@@ -30,8 +30,8 @@ import org.kie.api.runtime.process.WorkItem;
  * A runtime event related to the execution of process instances.
  */
 public interface UserTaskEvent
-    extends
-    KieRuntimeEvent {
+        extends
+        KieRuntimeEvent {
 
     /**
      * The ProcessInstance this event relates to.
@@ -41,15 +41,16 @@ public interface UserTaskEvent
     ProcessInstance getProcessInstance();
 
     NodeInstance getNodeInstance();
-    
+
     WorkItem getWorkItem();
-    
+
     String getUserTaskId();
-    
+
     String getUserTaskDefinitionId();
-    
+
     /**
      * Returns exact date when the event was created
+     * 
      * @return time when event was created
      */
     Date getEventDate();

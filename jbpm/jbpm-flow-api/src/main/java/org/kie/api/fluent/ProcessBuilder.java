@@ -24,7 +24,8 @@ import java.util.Map;
 import org.kie.api.definition.process.Process;
 
 /**
- * Builder that contains methods to create a process definition. 
+ * Builder that contains methods to create a process definition.
+ * 
  * @see ProcessBuilderFactory
  */
 public interface ProcessBuilder extends NodeContainerBuilder<ProcessBuilder, ProcessBuilder> {
@@ -42,12 +43,13 @@ public interface ProcessBuilder extends NodeContainerBuilder<ProcessBuilder, Pro
     ProcessBuilder globals(Map<String, String> globals);
 
     ProcessBuilder global(String name, String type);
-    
+
     ProcessBuilder swimlane(String name);
 
     /**
      * Validates and returns process definition.<br>
      * Should be invoked after all other method calls.
+     * 
      * @return validated process definition
      */
     Process build();

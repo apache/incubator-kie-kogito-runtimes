@@ -19,9 +19,10 @@
 package org.kie.api.fluent;
 
 /**
- * Include operations to define a container node.<br> 
+ * Include operations to define a container node.<br>
  * As it name indicates, a container node contains nodes (a process is also a container node), so this class defines all methods to create children nodes.<br>
- * A container node also holds variables, exception handlers and establish connections between nodes.  
+ * A container node also holds variables, exception handlers and establish connections between nodes.
+ * 
  * @param <T> Concrete container node
  * @param <P> Parent container node
  */
@@ -66,7 +67,7 @@ public interface NodeContainerBuilder<T extends NodeContainerBuilder<T, P>, P ex
     T connection(long fromId, long toId);
 
     /**
-     * Adds a variable to this container 
+     * Adds a variable to this container
      */
     <V> T variable(Variable<V> variable);
 }

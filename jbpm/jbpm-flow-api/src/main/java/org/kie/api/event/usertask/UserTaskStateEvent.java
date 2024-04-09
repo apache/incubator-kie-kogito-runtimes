@@ -25,6 +25,4 @@ public interface UserTaskStateEvent extends UserTaskEvent {
 
     String getOldStatus();
 
-
-
 }

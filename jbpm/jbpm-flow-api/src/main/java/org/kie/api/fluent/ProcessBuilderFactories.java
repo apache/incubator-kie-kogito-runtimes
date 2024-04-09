@@ -27,7 +27,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ProcessBuilderFactories {
 
-    private ProcessBuilderFactories() {}
+    private ProcessBuilderFactories() {
+    }
 
     private static ProcessBuilderFactory instance;
 
@@ -36,9 +37,9 @@ public class ProcessBuilderFactories {
             try {
                 instance =
                         Class.forName(System.getProperty("org.jbpm.processBuilder.factoryClass",
-                                                         "org.jbpm.ruleflow.core.RuleFlowProcessFactoryBuilder"))
-                             .asSubclass(ProcessBuilderFactory.class)
-                             .newInstance();
+                                "org.jbpm.ruleflow.core.RuleFlowProcessFactoryBuilder"))
+                                .asSubclass(ProcessBuilderFactory.class)
+                                .newInstance();
             } catch (ReflectiveOperationException e) {
                 LoggerFactory.getLogger(ProcessBuilderFactories.class).error("Unable to instance ProcessBuilderFactory", e);
                 throw new IllegalStateException(e);

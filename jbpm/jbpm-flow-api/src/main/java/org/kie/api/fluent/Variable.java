@@ -21,11 +21,12 @@ package org.kie.api.fluent;
 import java.util.HashMap;
 import java.util.Map;
 
-/** 
+/**
  * Builder pattern like class used to build a variable.<br>
- * A variable requires a name and a data type.<br> 
- * Value and metadata are optional.<br> 
+ * A variable requires a name and a data type.<br>
+ * Value and metadata are optional.<br>
  * Usage:
+ * 
  * <pre>
  *  Variable.var("test",String.class)
  *          .value("example value")
@@ -37,7 +38,7 @@ import java.util.Map;
  * @see NodeContainerBuilder#variable(Variable)
  */
 public class Variable<T> {
-    
+
     private String name;
     private T value;
     private Class<T> type;
@@ -47,7 +48,7 @@ public class Variable<T> {
         this.name = name;
         this.type = type;
     }
-    
+
     public static <T> Variable<T> var(String name, Class<T> type) {
         return new Variable<>(name, type);
     }

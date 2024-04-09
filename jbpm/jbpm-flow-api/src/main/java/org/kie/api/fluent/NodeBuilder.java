@@ -26,10 +26,11 @@ package org.kie.api.fluent;
  */
 public interface NodeBuilder<T extends NodeBuilder<T, P>, P extends NodeContainerBuilder<P, ?>> {
 
-    /** 
+    /**
      * Method to notify that definition of this node is done
-     * @return container parent node 
-    */
+     * 
+     * @return container parent node
+     */
     P done();
 
     T name(String name);

@@ -21,9 +21,10 @@ package org.kie.api.event.usertask;
 public interface UserTaskVariableEvent extends UserTaskEvent {
 
     enum VariableEventType {
-        INPUT, OUTPUT
+        INPUT,
+        OUTPUT
     }
-    
+
     String getVariableName();
 
     Object getOldValue();

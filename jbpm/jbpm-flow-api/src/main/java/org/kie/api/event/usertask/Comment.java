@@ -26,9 +26,9 @@ public interface Comment {
     String getCommentId();
 
     String getCommentContent();
-    
+
     String getUpdatedBy();
-    
+
     Date getUpdatedAt();
 
 }
