@@ -77,7 +77,6 @@
       <groupId>jakarta.xml.bind</groupId>
       <artifactId>jakarta.xml.bind-api</artifactId>
       <scope>provided</scope>
-      <version>4.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
@@ -88,7 +87,6 @@
       <groupId>org.glassfish.jaxb</groupId>
       <artifactId>jaxb-runtime</artifactId>
       <scope>provided</scope>
-      <version>4.0.4</version>
     </dependency>
     <!--~~(No version provided)~~>--><dependency>
       <groupId>org.eclipse.angus</groupId>
