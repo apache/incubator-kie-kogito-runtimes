@@ -37,6 +37,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.drools.codegen.common.AppPaths;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.kie.kogito.codegen.core.ApplicationGenerator;
@@ -110,7 +111,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     protected void addCompileSourceRoots() {
         project.addCompileSourceRoot(getSourcesPath().getPath());
-        project.addCompileSourceRoot(generatedSources.getPath());
+        project.addCompileSourceRoot(AppPaths.BuildTool.MAVEN.GENERATED_SOURCES_PATH.toString());
     }
 
     protected void generateModel() throws MojoExecutionException {
@@ -129,9 +130,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
         Map<GeneratedFileType, List<GeneratedFile>> mappedGeneratedFiles = generatedFiles.stream()
                 .collect(Collectors.groupingBy(GeneratedFile::type));
-        mappedGeneratedFiles.entrySet().stream()
+        List<GeneratedFile> generatedUncompiledFiles = mappedGeneratedFiles.entrySet().stream()
                 .filter(entry -> !entry.getKey().equals(COMPILED_CLASS))
-                .forEach(entry -> writeGeneratedFiles(entry.getValue()));
+                .flatMap(entry -> entry.getValue().stream())
+                .toList();
+        writeGeneratedFiles(generatedUncompiledFiles);
 
         List<GeneratedFile> generatedCompiledFiles = mappedGeneratedFiles.getOrDefault(COMPILED_CLASS,
                 Collections.emptyList())

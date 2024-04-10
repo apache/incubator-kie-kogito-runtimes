@@ -24,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
-import org.drools.codegen.common.AppPaths;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 
@@ -43,10 +42,10 @@ public class GeneratedFileWriter {
 
         /**
          *
-         * @param classesDir usually target/classes/
-         * @param sourcesDir usually target/generated-sources/kogito/
+         * @param classesDir usually generated-sources/kogito
+         * @param sourcesDir usually src/main/java/
          * @param resourcesDir usually target/generated-resources/kogito/
-         * @param scaffoldedSourcesDir usually src/main/java/
+         * @param scaffoldedSourcesDir usually target/generated-sources/kogito/
          */
         public Builder(String classesDir, String sourcesDir, String resourcesDir, String scaffoldedSourcesDir) {
             this.classesDir = classesDir;
@@ -73,18 +72,12 @@ public class GeneratedFileWriter {
     private final Path sourcesDir;
     private final Path resourcePath;
     private final Path scaffoldedSourcesDir;
-
-    public static final String DEFAULT_SOURCES_DIR = "generated-sources/kogito/";
-    public static final String DEFAULT_RESOURCE_PATH = "generated-resources/kogito/";
-    public static final String DEFAULT_SCAFFOLDED_SOURCES_DIR = "src/main/java/";
-    public static final String DEFAULT_CLASSES_DIR = String.format("%s/classes", AppPaths.TARGET_DIR);
-
     /**
      *
-     * @param classesDir usually {@link #DEFAULT_CLASSES_DIR}
-     * @param sourcesDir usually target/generated-sources/kogito/. See {@link #DEFAULT_SOURCES_DIR}
-     * @param resourcePath usually target/generated-resources/kogito/ {@link #DEFAULT_RESOURCE_PATH}
-     * @param scaffoldedSourcesDir usually {@link #DEFAULT_SCAFFOLDED_SOURCES_DIR}
+     * @param classesDir usually generated-sources/kogito
+     * @param sourcesDir usually src/main/java/
+     * @param resourcePath usually target/generated-resources/kogito/
+     * @param scaffoldedSourcesDir usually target/generated-sources/kogito/
      */
     public GeneratedFileWriter(Path classesDir, Path sourcesDir, Path resourcePath, Path scaffoldedSourcesDir) {
         this.classesDir = classesDir;
@@ -107,11 +100,7 @@ public class GeneratedFileWriter {
                     writeGeneratedFile(f, classesDir);
                     break;
                 case SOURCE:
-                    if (f.type().isCustomizable()) {
-                        writeGeneratedFile(f, scaffoldedSourcesDir);
-                    } else {
-                        writeGeneratedFile(f, sourcesDir);
-                    }
+                    writeGeneratedFile(f, scaffoldedSourcesDir);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown Category " + category.name());

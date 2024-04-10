@@ -56,6 +56,8 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.maven.dependency.Dependency;
 import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
+import static org.drools.util.Config.getConfig;
+
 /**
  * Utility class to aggregate and share resource handling in Kogito extensions
  */
@@ -76,16 +78,22 @@ public class KogitoQuarkusResourceUtils {
 
     // since quarkus-maven-plugin is later phase of maven-resources-plugin,
     // need to manually late-provide the resource in the expected location for quarkus:dev phase --so not: writeGeneratedFile( f, resourcePath )
-    private static final GeneratedFileWriter.Builder generatedFileWriterBuilder =
-            new GeneratedFileWriter.Builder(
-                    String.format("%s/classes", AppPaths.TARGET_DIR),
-                    System.getProperty("kogito.codegen.sources.directory", String.format("%s/generated-sources/kogito/", AppPaths.TARGET_DIR)),
-                    System.getProperty("kogito.codegen.resources.directory", String.format("%s/generated-resources/kogito/", AppPaths.TARGET_DIR)),
-                    String.format("%s/generated-sources/kogito/", AppPaths.TARGET_DIR));
+    private static final GeneratedFileWriter.Builder generatedFileWriterBuilder;
 
-    public static KogitoBuildContext kogitoBuildContext(Path outputTarget, Iterable<Path> paths, IndexView index, Dependency appArtifact) {
+    static {
+        String targetClasses = AppPaths.BT.CLASSES_PATH.toString();
+        String generatedSourcesKogito = Path.of(AppPaths.GENERATED_SOURCES_DIR, "kogito").toString();
+        String generatedResourcesSourcesKogito = Path.of(AppPaths.GENERATED_RESOURCES_DIR, "kogito").toString();
+        generatedFileWriterBuilder = new GeneratedFileWriter.Builder(
+                targetClasses,
+                getConfig("kogito.codegen.sources.directory", generatedSourcesKogito),
+                getConfig("kogito.codegen.resources.directory", generatedResourcesSourcesKogito),
+                generatedSourcesKogito);
+    }
+
+    public static KogitoBuildContext kogitoBuildContext(Iterable<Path> paths, IndexView index, Dependency appArtifact) {
         // scan and parse paths
-        AppPaths appPaths = QuarkusAppPaths.from(outputTarget, paths, AppPaths.BuildTool.findBuildTool());
+        AppPaths appPaths = QuarkusAppPaths.from(paths, AppPaths.BT);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
                 .withApplicationPropertyProvider(new KogitoQuarkusApplicationPropertiesProvider())

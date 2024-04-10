@@ -22,6 +22,7 @@ import java.io.File;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -67,11 +68,8 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     @Parameter(required = true, defaultValue = "${project.build.outputDirectory}")
     protected File outputDirectory;
 
-    @Parameter(defaultValue = "${project.build.directory}/" + GeneratedFileWriter.DEFAULT_SOURCES_DIR)
-    protected File generatedSources;
-
-    @Parameter(defaultValue = "${project.build.directory}/" + GeneratedFileWriter.DEFAULT_RESOURCE_PATH)
-    protected File generatedResources;
+    @Parameter(required = true, defaultValue = "${project.basedir}")
+    protected File baseDir;
 
     @Parameter(property = "kogito.codegen.persistence", defaultValue = "true")
     protected boolean persistence;
@@ -250,20 +248,29 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     }
 
     protected void writeGeneratedFiles(Collection<GeneratedFile> generatedFiles) {
-        generatedFiles.forEach(this::writeGeneratedFile);
+        GeneratedFileWriter writer = getGeneratedFileWriter();
+        generatedFiles.forEach(generatedFile -> writeGeneratedFile(generatedFile, writer));
     }
 
     protected void writeGeneratedFile(GeneratedFile generatedFile) {
-        GeneratedFileWriter writer = new GeneratedFileWriter(outputDirectory.toPath(),
-                generatedSources.toPath(),
-                generatedResources.toPath(),
-                getSourcesPath().toPath());
+        writeGeneratedFile(generatedFile, getGeneratedFileWriter());
+    }
 
+    protected void writeGeneratedFile(GeneratedFile generatedFile, GeneratedFileWriter writer) {
         getLog().info("Generating: " + generatedFile.relativePath());
         writer.write(generatedFile);
     }
 
     protected File getSourcesPath() {
-        return generatedSources;
+        return AppPaths.BuildTool.MAVEN.GENERATED_SOURCES_PATH.toFile();
+    }
+
+    private GeneratedFileWriter getGeneratedFileWriter() {
+        Path sourcesDir = Path.of(baseDir.getAbsolutePath(), AppPaths.BuildTool.MAVEN.GENERATED_SOURCES_PATH.toString());
+        Path resourcesDir = Path.of(baseDir.getAbsolutePath(), AppPaths.BuildTool.MAVEN.GENERATED_RESOURCES_PATH.toString());
+        return new GeneratedFileWriter(outputDirectory.toPath(),
+                sourcesDir,
+                resourcesDir,
+                getSourcesPath().toPath());
     }
 }
