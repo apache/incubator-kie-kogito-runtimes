@@ -45,8 +45,6 @@ import io.serverlessworkflow.api.functions.FunctionRef;
 
 public abstract class WorkItemBuilder {
 
-    private static final String RESULT = "Result";
-
     protected <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> addFunctionArgs(Workflow workflow, WorkItemNodeFactory<T> node, FunctionRef functionRef) {
         JsonNode functionArgs = functionRef.getArguments();
         if (functionArgs != null) {
@@ -74,7 +72,7 @@ public abstract class WorkItemBuilder {
             String outputVar) {
         return embeddedSubProcess.workItemNode(parserContext.newId())
                 .inMapping(inputVar, SWFConstants.MODEL_WORKFLOW_VAR)
-                .outMapping(RESULT, outputVar);
+                .outMapping(SWFConstants.RESULT, outputVar);
     }
 
     protected final void processArgs(Workflow workflow, WorkItemNodeFactory<?> workItemFactory,

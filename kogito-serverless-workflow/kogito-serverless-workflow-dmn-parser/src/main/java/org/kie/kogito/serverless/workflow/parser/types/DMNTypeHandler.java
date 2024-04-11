@@ -18,36 +18,65 @@
  */
 package org.kie.kogito.serverless.workflow.parser.types;
 
-import java.util.Optional;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UncheckedIOException;
+import java.util.Map;
+import java.util.Objects;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
-import org.kie.kogito.serverless.workflow.dmn.DMNWorkItemHandler;
-import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationId;
+import org.jbpm.ruleflow.core.factory.NodeFactory;
+import org.kie.kogito.decision.DecisionModel;
+import org.kie.kogito.dmn.DMNKogito;
+import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.kogito.serverless.workflow.SWFConstants;
+import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
+import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandler;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
+import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
+import io.serverlessworkflow.api.functions.FunctionRef;
 
-public class DMNTypeHandler extends WorkItemTypeHandler {
+public class DMNTypeHandler implements FunctionTypeHandler {
 
-    @Override
-    protected <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(Workflow workflow,
-            ParserContext context,
-            WorkItemNodeFactory<T> node,
-            FunctionDefinition functionDef) {
-        WorkflowOperationId operationId = context.operationIdFactory().from(workflow, functionDef, Optional.of(context));
-        return node.workName("dmn")
-                .metaData(DMNWorkItemHandler.FILE_PROP, operationId.getFileName());
-    }
+    private static final String DMN_TYPE = "dmn";
+    public static final String NAMESPACE = "namespace";
+    public static final String MODEL = "model";
+    public static final String FILE = "file";
+
+    private static final String REQUIRED_MESSAGE = "%s is required on metadata for DMN";
 
     @Override
     public String type() {
-        return DMNWorkItemHandler.NAME;
+        return DMN_TYPE;
     }
 
     @Override
     public boolean isCustom() {
         return true;
+    }
+
+    @Override
+    public NodeFactory<?, ?> getActionNode(Workflow workflow, ParserContext context,
+            RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, FunctionDefinition functionDef,
+            FunctionRef functionRef, VariableInfo varInfo) {
+        Map<String, String> metadata = Objects.requireNonNull(functionDef.getMetadata(), "Metadata is required for DMN");
+        String namespace = Objects.requireNonNull(metadata.get(NAMESPACE), String.format(REQUIRED_MESSAGE, NAMESPACE));
+        String model = Objects.requireNonNull(metadata.get(MODEL), String.format(REQUIRED_MESSAGE, MODEL));
+        String file = Objects.requireNonNull(metadata.get(FILE), String.format(REQUIRED_MESSAGE, FILE));
+        return embeddedSubProcess.ruleSetNode(context.newId()).decision(namespace, model, model, () -> loadDMNFromFile(namespace, model, file))
+                .inMapping(varInfo.getInputVar(), SWFConstants.MODEL_WORKFLOW_VAR)
+                .outMapping(SWFConstants.RESULT, varInfo.getOutputVar());
+    }
+
+    private DecisionModel loadDMNFromFile(String namespace, String model, String file) {
+        try (Reader reader = new InputStreamReader(URIContentLoaderFactory.builder(file).withClassloader(this.getClass().getClassLoader()).build().getInputStream())) {
+            return new DmnDecisionModel(DMNKogito.createGenericDMNRuntime(reader), namespace, model);
+        } catch (IOException io) {
+            throw new UncheckedIOException(io);
+        }
     }
 }
