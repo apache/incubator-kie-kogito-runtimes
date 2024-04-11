@@ -262,15 +262,20 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     }
 
     protected File getSourcesPath() {
-        return AppPaths.BuildTool.MAVEN.GENERATED_SOURCES_PATH.toFile();
+        // using runtime BT instead of static AppPaths.MAVEN to allow
+        // invocation from GRADLE
+        return Path.of(baseDir.getAbsolutePath(), AppPaths.BT.GENERATED_SOURCES_PATH.toString()).toFile();
     }
 
     private GeneratedFileWriter getGeneratedFileWriter() {
-        Path sourcesDir = Path.of(baseDir.getAbsolutePath(), AppPaths.BuildTool.MAVEN.GENERATED_SOURCES_PATH.toString());
-        Path resourcesDir = Path.of(baseDir.getAbsolutePath(), AppPaths.BuildTool.MAVEN.GENERATED_RESOURCES_PATH.toString());
+        // using runtime BT instead of static AppPaths.MAVEN to allow
+        // invocation from GRADLE
+        Path sourcesDir = Path.of(baseDir.getAbsolutePath(), AppPaths.BT.GENERATED_SOURCES_PATH.toString());
+        Path resourcesDir = Path.of(baseDir.getAbsolutePath(), AppPaths.BT.GENERATED_RESOURCES_PATH.toString());
+        Path scaffoldedSourcesDir = getSourcesPath().toPath();
         return new GeneratedFileWriter(outputDirectory.toPath(),
                 sourcesDir,
                 resourcesDir,
-                getSourcesPath().toPath());
+                scaffoldedSourcesDir);
     }
 }

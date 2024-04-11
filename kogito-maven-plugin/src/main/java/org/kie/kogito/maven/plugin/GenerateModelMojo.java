@@ -55,9 +55,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     public static final PathMatcher drlFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.drl");
 
-    @Parameter(property = "kogito.codegen.sources.directory", defaultValue = "${project.build.directory}/generated-sources/kogito")
-    private File customizableSourcesPath;
-
     /**
      * Partial generation can be used when reprocessing a pre-compiled project
      * for faster code-generation. It only generates code for rules and processes,
@@ -73,19 +70,16 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
 
-    @Parameter(property = "build.output.directory", readonly = true, defaultValue = "${project.build.directory}/classes/")
-    private String buildOutputDirectory;
-
     @Override
     public void execute() throws MojoExecutionException {
         // TODO to be removed with DROOLS-7090
         boolean indexFileDirectorySet = false;
-        getLog().debug("execute -> " + buildOutputDirectory);
-        if (buildOutputDirectory == null) {
+        getLog().debug("execute -> " + outputDirectory);
+        if (outputDirectory == null) {
             throw new MojoExecutionException("${project.build.directory} is null");
         }
         if (System.getProperty(INDEXFILE_DIRECTORY_PROPERTY) == null) {
-            System.setProperty(INDEXFILE_DIRECTORY_PROPERTY, buildOutputDirectory);
+            System.setProperty(INDEXFILE_DIRECTORY_PROPERTY, outputDirectory.toString());
             indexFileDirectorySet = true;
         }
         addCompileSourceRoots();
@@ -104,14 +98,11 @@ public class GenerateModelMojo extends AbstractKieMojo {
         return onDemand;
     }
 
-    @Override
-    protected File getSourcesPath() {
-        return customizableSourcesPath;
-    }
-
     protected void addCompileSourceRoots() {
         project.addCompileSourceRoot(getSourcesPath().getPath());
-        project.addCompileSourceRoot(AppPaths.BuildTool.MAVEN.GENERATED_SOURCES_PATH.toString());
+        // using runtime BT instead of static AppPaths.MAVEN to allow
+        // invocation from GRADLE
+        project.addCompileSourceRoot(AppPaths.BT.GENERATED_SOURCES_PATH.toString());
     }
 
     protected void generateModel() throws MojoExecutionException {
