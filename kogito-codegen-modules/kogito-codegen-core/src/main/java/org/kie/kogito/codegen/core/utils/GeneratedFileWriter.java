@@ -24,8 +24,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import org.drools.codegen.common.AppPaths;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
+
+import static org.drools.util.Config.getConfig;
 
 /**
  * Writes {@link GeneratedFile} to the right directory, depending on its
@@ -33,23 +36,31 @@ import org.drools.codegen.common.GeneratedFileType;
  */
 public class GeneratedFileWriter {
 
+    public static Builder builder() {
+        // using runtime BT instead to allow usage of
+        // Springboot from GRADLE
+        String targetClasses = AppPaths.BT.CLASSES_PATH.toString();
+        String generatedResourcesSourcesKogito = Path.of(AppPaths.GENERATED_RESOURCES_DIR, "kogito").toString();
+        String generatedSourcesKogito = Path.of(AppPaths.GENERATED_SOURCES_DIR, "kogito").toString();
+        return new Builder(targetClasses,
+                           getConfig("kogito.codegen.resources.directory", generatedResourcesSourcesKogito),
+                           getConfig("kogito.codegen.sources.directory", generatedSourcesKogito));
+    }
+
     public static class Builder {
 
         private final String classesDir;
-        private final String sourcesDir;
         private final String resourcePath;
         private final String scaffoldedSourcesDir;
 
         /**
          *
-         * @param classesDir usually generated-sources/kogito
-         * @param sourcesDir usually src/main/java/
+         * @param classesDir usually target/classes/
          * @param resourcesDir usually target/generated-resources/kogito/
          * @param scaffoldedSourcesDir usually target/generated-sources/kogito/
          */
-        public Builder(String classesDir, String sourcesDir, String resourcesDir, String scaffoldedSourcesDir) {
+        private Builder(String classesDir, String resourcesDir, String scaffoldedSourcesDir) {
             this.classesDir = classesDir;
-            this.sourcesDir = sourcesDir;
             this.resourcePath = resourcesDir;
             this.scaffoldedSourcesDir = scaffoldedSourcesDir;
         }
@@ -62,26 +73,22 @@ public class GeneratedFileWriter {
         public GeneratedFileWriter build(Path basePath) {
             return new GeneratedFileWriter(
                     basePath.resolve(classesDir),
-                    basePath.resolve(sourcesDir),
                     basePath.resolve(resourcePath),
                     basePath.resolve(scaffoldedSourcesDir));
         }
     }
 
     private final Path classesDir;
-    private final Path sourcesDir;
     private final Path resourcePath;
     private final Path scaffoldedSourcesDir;
     /**
      *
-     * @param classesDir usually generated-sources/kogito
-     * @param sourcesDir usually src/main/java/
+     * @param classesDir usually target/classes/
      * @param resourcePath usually target/generated-resources/kogito/
      * @param scaffoldedSourcesDir usually target/generated-sources/kogito/
      */
-    public GeneratedFileWriter(Path classesDir, Path sourcesDir, Path resourcePath, Path scaffoldedSourcesDir) {
+    private GeneratedFileWriter(Path classesDir, Path resourcePath, Path scaffoldedSourcesDir) {
         this.classesDir = classesDir;
-        this.sourcesDir = sourcesDir;
         this.resourcePath = resourcePath;
         this.scaffoldedSourcesDir = scaffoldedSourcesDir;
     }
@@ -112,10 +119,6 @@ public class GeneratedFileWriter {
 
     public Path getClassesDir() {
         return classesDir;
-    }
-
-    public Path getSourcesDir() {
-        return sourcesDir;
     }
 
     public Path getResourcePath() {

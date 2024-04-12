@@ -99,10 +99,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
     }
 
     protected void addCompileSourceRoots() {
-        project.addCompileSourceRoot(getSourcesPath().getPath());
-        // using runtime BT instead of static AppPaths.MAVEN to allow
-        // invocation from GRADLE
-        project.addCompileSourceRoot(AppPaths.BT.GENERATED_SOURCES_PATH.toString());
+        project.addCompileSourceRoot(getGeneratedFileWriter().getScaffoldedSourcesDir().toString());
     }
 
     protected void generateModel() throws MojoExecutionException {

@@ -56,6 +56,8 @@ import org.reflections.util.ConfigurationBuilder;
 
 public abstract class AbstractKieMojo extends AbstractMojo {
 
+    protected static final GeneratedFileWriter.Builder generatedFileWriterBuilder = GeneratedFileWriter.builder();
+
     @Parameter(required = true, defaultValue = "${project.basedir}")
     protected File projectDir;
 
@@ -267,15 +269,8 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         return Path.of(baseDir.getAbsolutePath(), AppPaths.BT.GENERATED_SOURCES_PATH.toString()).toFile();
     }
 
-    private GeneratedFileWriter getGeneratedFileWriter() {
-        // using runtime BT instead of static AppPaths.MAVEN to allow
-        // invocation from GRADLE
-        Path sourcesDir = Path.of(baseDir.getAbsolutePath(), AppPaths.BT.GENERATED_SOURCES_PATH.toString());
-        Path resourcesDir = Path.of(baseDir.getAbsolutePath(), AppPaths.BT.GENERATED_RESOURCES_PATH.toString());
-        Path scaffoldedSourcesDir = getSourcesPath().toPath();
-        return new GeneratedFileWriter(outputDirectory.toPath(),
-                sourcesDir,
-                resourcesDir,
-                scaffoldedSourcesDir);
+    protected GeneratedFileWriter getGeneratedFileWriter() {
+        return generatedFileWriterBuilder
+                .build(Path.of(baseDir.getAbsolutePath()));
     }
 }
