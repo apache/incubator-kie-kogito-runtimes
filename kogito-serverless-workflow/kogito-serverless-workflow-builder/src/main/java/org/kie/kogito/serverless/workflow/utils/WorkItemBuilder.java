@@ -33,6 +33,7 @@ import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
+import org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils;
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionParametersFactorySupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ObjectResolverSupplier;
 
@@ -70,9 +71,7 @@ public abstract class WorkItemBuilder {
             ParserContext parserContext,
             String inputVar,
             String outputVar) {
-        return embeddedSubProcess.workItemNode(parserContext.newId())
-                .inMapping(inputVar, SWFConstants.MODEL_WORKFLOW_VAR)
-                .outMapping(SWFConstants.RESULT, outputVar);
+        return NodeFactoryUtils.addMapping(embeddedSubProcess.workItemNode(parserContext.newId()), inputVar, outputVar);
     }
 
     protected final void processArgs(Workflow workflow, WorkItemNodeFactory<?> workItemFactory,

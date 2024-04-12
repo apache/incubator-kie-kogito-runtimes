@@ -30,11 +30,11 @@ import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
-import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandler;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
+import org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -67,9 +67,8 @@ public class DMNTypeHandler implements FunctionTypeHandler {
         String namespace = Objects.requireNonNull(metadata.get(NAMESPACE), String.format(REQUIRED_MESSAGE, NAMESPACE));
         String model = Objects.requireNonNull(metadata.get(MODEL), String.format(REQUIRED_MESSAGE, MODEL));
         String file = Objects.requireNonNull(metadata.get(FILE), String.format(REQUIRED_MESSAGE, FILE));
-        return embeddedSubProcess.ruleSetNode(context.newId()).decision(namespace, model, model, () -> loadDMNFromFile(namespace, model, file))
-                .inMapping(varInfo.getInputVar(), SWFConstants.MODEL_WORKFLOW_VAR)
-                .outMapping(SWFConstants.RESULT, varInfo.getOutputVar());
+        return NodeFactoryUtils.addMapping(embeddedSubProcess.ruleSetNode(context.newId()).decision(namespace, model, model, () -> loadDMNFromFile(namespace, model, file)),
+                varInfo.getInputVar(), varInfo.getOutputVar());
     }
 
     private DecisionModel loadDMNFromFile(String namespace, String model, String file) {
