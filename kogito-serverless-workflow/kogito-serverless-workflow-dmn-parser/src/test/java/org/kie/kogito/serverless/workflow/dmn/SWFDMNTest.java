@@ -24,13 +24,16 @@ public class SWFDMNTest {
     void testDMNFile() throws IOException {
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             Workflow workflow = workflow("PlayingWithDMN")
-                    .start(operation().action(call(custom("DMNTest", "dmn").metadata(DMNTypeHandler.FILE, "Traffic_Violation.dmn")
+                    .start(operation().action(call(custom("DMNTest", "dmn").metadata(DMNTypeHandler.FILE, "Traffic Violation.dmn")
                             .metadata(DMNTypeHandler.MODEL, "Traffic Violation")
                             .metadata(DMNTypeHandler.NAMESPACE, "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF"))))
                     .end().build();
             JsonNode response = application.execute(workflow, Map.of("Driver", Map.of("Name", "Pepe", "Age", 19, "Points", 0, "State", "Spain", "City", "Zaragoza"), "Violation", Map.of("Code", "12",
                     "Date", new Date(System.currentTimeMillis()), "Type", "parking"))).getWorkflowdata();
             assertThat(response.get("Should the driver be suspended?")).isEqualTo(new TextNode("No"));
+            response = application.execute(workflow, Map.of("Driver", Map.of("Name", "Pepe", "Age", 19, "Points", 19, "State", "Spain", "City", "Zaragoza"), "Violation", Map.of("Code", "12",
+                    "Date", new Date(System.currentTimeMillis()), "Type", "speed", "Speed Limit", "120", "Actual Speed", "180"))).getWorkflowdata();
+            assertThat(response.get("Should the driver be suspended?")).isEqualTo(new TextNode("Yes"));
         }
     }
 }
