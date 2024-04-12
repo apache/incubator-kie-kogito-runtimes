@@ -18,49 +18,60 @@
  */
 package org.kie.kogito.quarkus.common.deployment;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Arrays;
+
+import io.quarkus.bootstrap.model.PathsCollection;
+import io.quarkus.paths.PathCollection;
+import org.drools.codegen.common.AppPaths;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class KogitoAssetsProcessorTest {
 
-    //    @ParameterizedTest
-    //    @ValueSource(booleans = { true, false })
-    //    void getRootPathsWithoutClasses(boolean withGradle) {
-    //        String projectDirPath = "projectDir";
-    //        Path projectDir = Path.of(projectDirPath);
-    //        AppPaths.BuildTool bt;
-    //        if (withGradle) {
-    //            bt = AppPaths.BuildTool.GRADLE;
-    //        } else {
-    //            bt = AppPaths.BuildTool.MAVEN;
-    //        }
-    //        Path outputTarget = Path.of(bt.OUTPUT_DIRECTORY);
-    //        Iterable<Path> paths = Arrays.asList(projectDir, outputTarget);
-    //        PathCollection resolvedPaths = PathsCollection.from(paths);
-    //        PathCollection retrieved = KogitoAssetsProcessor.getRootPaths(resolvedPaths, bt);
-    //        assertEquals(resolvedPaths.size(), retrieved.size());
-    //        paths.forEach(expected -> assertTrue(retrieved.contains(expected)));
-    //    }
-    //
-    //    @ParameterizedTest
-    //    @ValueSource(booleans = { true, false })
-    //    void getRootPathsWithClasses(boolean withGradle) {
-    //        String projectDirPath = "projectDir";
-    //        String outputTargetPath;
-    //        AppPaths.BuildTool bt;
-    //        if (withGradle) {
-    //            bt = AppPaths.BuildTool.GRADLE;
-    //        } else {
-    //            bt = AppPaths.BuildTool.MAVEN;
-    //        }
-    //        outputTargetPath = bt.OUTPUT_DIRECTORY;
-    //        String outputTargetPathClasses = String.format("%s/%s/classes", projectDirPath, outputTargetPath).replace("./", "").replace("/", File.separator);
-    //        Path projectDir = Path.of(projectDirPath);
-    //        Path outputTarget = Path.of(outputTargetPathClasses);
-    //        Iterable<Path> paths = Arrays.asList(projectDir, outputTarget);
-    //
-    //        PathCollection resolvedPaths = PathsCollection.from(paths);
-    //        PathCollection retrieved = KogitoAssetsProcessor.getRootPaths(resolvedPaths, bt);
-    //        assertEquals(resolvedPaths.size() + 1, retrieved.size());
-    //        paths.forEach(expected -> assertTrue(retrieved.contains(expected)));
-    //        String expectedPath = String.format("%s/%s", projectDirPath, bt.GENERATED_RESOURCES_PATH).replace("/", File.separator);
-    //        assertTrue(retrieved.contains(Path.of(expectedPath)));
-    //    }
+        @ParameterizedTest
+        @ValueSource(booleans = { true, false })
+        void getRootPathsWithoutClasses(boolean withGradle) {
+            String projectDirPath = "projectDir";
+            Path projectDir = Path.of(projectDirPath);
+            AppPaths.BuildTool bt;
+            if (withGradle) {
+                bt = AppPaths.BuildTool.GRADLE;
+            } else {
+                bt = AppPaths.BuildTool.MAVEN;
+            }
+            Path outputTarget = Path.of(bt.OUTPUT_DIRECTORY);
+            Iterable<Path> paths = Arrays.asList(projectDir, outputTarget);
+            PathCollection resolvedPaths = PathsCollection.from(paths);
+            PathCollection retrieved = KogitoAssetsProcessor.getRootPaths(resolvedPaths, bt);
+            assertEquals(resolvedPaths.size(), retrieved.size());
+            paths.forEach(expected -> assertTrue(retrieved.contains(expected)));
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = { true, false })
+        void getRootPathsWithClasses(boolean withGradle) {
+            String projectDirPath = "projectDir";
+            AppPaths.BuildTool bt;
+            if (withGradle) {
+                bt = AppPaths.BuildTool.GRADLE;
+            } else {
+                bt = AppPaths.BuildTool.MAVEN;
+            }
+            String outputTargetPathClasses = String.format("%s/%s", projectDirPath, bt.CLASSES_PATH.toString()).replace("./", "").replace("/", File.separator);
+            Path projectDir = Path.of(projectDirPath);
+            Path outputTarget = Path.of(outputTargetPathClasses);
+            Iterable<Path> paths = Arrays.asList(projectDir, outputTarget);
+
+            PathCollection resolvedPaths = PathsCollection.from(paths);
+            PathCollection retrieved = KogitoAssetsProcessor.getRootPaths(resolvedPaths, bt);
+            int expectedSize = withGradle ? 1 : resolvedPaths.size();
+            assertEquals(expectedSize, retrieved.size());
+            String expectedPath = String.format("%s/%s", projectDirPath, bt.CLASSES_PATH).replace("/", File.separator);
+            assertTrue(retrieved.contains(Path.of(expectedPath)));
+        }
 }

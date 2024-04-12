@@ -231,9 +231,7 @@ public class KogitoAssetsProcessor {
                             String lookingFor = "build/classes/java/main".replace("/", File.separator);
                             return fullPath.endsWith(lookingFor);
                         }).findFirst();
-                optClassesPath.ifPresent(classesPath -> {
-                    toReturnRef.set(PathList.of(classesPath));
-                });
+                optClassesPath.ifPresent(classesPath -> toReturnRef.set(PathList.of(classesPath)));
                 return toReturnRef.get();
             }
             default -> {
