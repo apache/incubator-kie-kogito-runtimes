@@ -23,6 +23,7 @@ import org.jbpm.flow.serialization.ProcessInstanceMarshallerListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
+import org.kie.kogito.process.Processes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,22 +42,23 @@ public class StandardMigrationProcessInstanceMarshallerListener implements Proce
     @SuppressWarnings("deprecation")
     @Override
     public void afterUnmarshallProcess(KogitoProcessRuntime runtime, KogitoWorkflowProcessInstance processInstance) {
-        if (!migrationPlanService.shouldMigrate(processInstance)) {
+        if (!migrationPlanService.shouldMigrate(runtime.getApplication().get(Processes.class), processInstance)) {
             return;
         }
-        LOGGER.debug("Migration processInstance {}", processInstance);
-        migrationPlanService.migrateProcessElement(processInstance);
+        LOGGER.debug("Migration processInstance state {}-{} and definition {}-{}",
+                processInstance.getProcessId(), processInstance.getProcessVersion(), processInstance.getProcess().getId(), processInstance.getProcess().getVersion());
+        migrationPlanService.migrateProcessElement(runtime.getApplication().get(Processes.class), processInstance);
         runtime.getProcessEventSupport().fireOnMigration(processInstance, runtime.getKieRuntime());
 
     }
 
     @Override
     public void afterUnmarshallNode(KogitoProcessRuntime runtime, KogitoNodeInstance nodeInstance) {
-        if (!migrationPlanService.shouldMigrate((KogitoWorkflowProcessInstance) nodeInstance.getProcessInstance())) {
+        if (!migrationPlanService.shouldMigrate(runtime.getApplication().get(Processes.class), (KogitoWorkflowProcessInstance) nodeInstance.getProcessInstance())) {
             return;
         }
         LOGGER.debug("Migration nodeInstance {}", nodeInstance);
-        migrationPlanService.migrateNodeElement(nodeInstance);
+        migrationPlanService.migrateNodeElement(runtime.getApplication().get(Processes.class), nodeInstance);
     }
 
 }
