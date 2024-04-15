@@ -54,7 +54,7 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
 
     private DMNRuntime dmnRuntime = initDmnRuntime();
 
-    private static final String targetFolder =  File.separator + AppPaths.TARGET_DIR + File.separator;
+    private static final String targetFolder = File.separator + AppPaths.TARGET_DIR + File.separator;
     private static final String generatedResourcesFolder = targetFolder + "generated-resources" + File.separator;
 
     @Override
