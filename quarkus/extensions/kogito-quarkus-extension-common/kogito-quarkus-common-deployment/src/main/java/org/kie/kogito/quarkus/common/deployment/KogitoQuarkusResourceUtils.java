@@ -30,10 +30,17 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
+import io.quarkus.deployment.annotations.BuildProducer;
+import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
+import io.quarkus.maven.dependency.Dependency;
+import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 import org.drools.codegen.common.AppPaths;
 import org.drools.codegen.common.DroolsModelBuildContext;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
+import org.drools.codegen.common.GeneratedFileWriter;
 import org.drools.quarkus.util.deployment.QuarkusAppPaths;
 import org.drools.util.PortablePath;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -44,19 +51,9 @@ import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.SourceFileCodegenBindNotifier;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.drools.codegen.common.GeneratedFileWriter;
 import org.kie.memorycompiler.resources.ResourceReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
-import io.quarkus.deployment.annotations.BuildProducer;
-import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
-import io.quarkus.maven.dependency.Dependency;
-import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
-
-import static org.drools.util.Config.getConfig;
 
 /**
  * Utility class to aggregate and share resource handling in Kogito extensions
@@ -82,7 +79,7 @@ public class KogitoQuarkusResourceUtils {
 
     public static KogitoBuildContext kogitoBuildContext(Iterable<Path> paths, IndexView index, Dependency appArtifact) {
         // scan and parse paths
-        AppPaths appPaths = QuarkusAppPaths.from(paths, AppPaths.BT);
+        AppPaths appPaths = QuarkusAppPaths.from(paths);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
                 .withApplicationPropertyProvider(new KogitoQuarkusApplicationPropertiesProvider())
@@ -108,9 +105,7 @@ public class KogitoQuarkusResourceUtils {
     private static Predicate<Class<?>> classSubTypeAvailabilityResolver(IndexView index) {
         return clazz -> index.getAllKnownImplementors(DotName.createSimple(clazz.getCanonicalName()))
                 .stream()
-                .filter(c -> !Modifier.isInterface(c.flags()) && !Modifier.isAbstract(c.flags()))
-                .findFirst()
-                .isPresent();
+                .anyMatch(c -> !Modifier.isInterface(c.flags()) && !Modifier.isAbstract(c.flags()));
     }
 
     /**
