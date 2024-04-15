@@ -118,7 +118,7 @@ public class MigrationPlanService {
 
         // target process not being deployed
         if (!processes.processIds().contains(targetDefinition.getProcessId())) {
-            LOGGER.debug("No migration target defintion deployed in this container {} fro migrating {}. it won't be migrated", targetDefinition, processStateDefinition);
+            LOGGER.debug("No migration target defintion deployed in this container {} for migrating {}. it won't be migrated", targetDefinition, processStateDefinition);
             return null;
         }
 

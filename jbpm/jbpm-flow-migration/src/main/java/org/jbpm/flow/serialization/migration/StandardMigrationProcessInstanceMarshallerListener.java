@@ -20,6 +20,7 @@ package org.jbpm.flow.serialization.migration;
 
 import org.jbpm.flow.migration.MigrationPlanService;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerListener;
+import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
@@ -43,6 +44,9 @@ public class StandardMigrationProcessInstanceMarshallerListener implements Proce
     @Override
     public void afterUnmarshallProcess(KogitoProcessRuntime runtime, KogitoWorkflowProcessInstance processInstance) {
         if (!migrationPlanService.shouldMigrate(runtime.getApplication().get(Processes.class), processInstance)) {
+            LOGGER.debug("No migration plan found. upgrading process");
+            RuleFlowProcessInstance ruleFlowProcessInstance = (RuleFlowProcessInstance) processInstance;
+            ruleFlowProcessInstance.setProcess(ruleFlowProcessInstance.getProcess());
             return;
         }
         LOGGER.debug("Migration processInstance state {}-{} and definition {}-{}",
