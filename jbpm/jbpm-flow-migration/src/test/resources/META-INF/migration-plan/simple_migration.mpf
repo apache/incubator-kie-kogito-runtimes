@@ -1,5 +1,5 @@
 {
-    "name" : "my simple migration",
+    "name" : "my simple migration versioned",
     "processMigrationPlan" : {
         "sourceProcessDefinition" : {
             "processId" : "process_D",
