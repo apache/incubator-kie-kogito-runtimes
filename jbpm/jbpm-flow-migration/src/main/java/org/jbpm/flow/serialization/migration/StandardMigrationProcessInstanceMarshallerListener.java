@@ -43,10 +43,12 @@ public class StandardMigrationProcessInstanceMarshallerListener implements Proce
     @SuppressWarnings("deprecation")
     @Override
     public void afterUnmarshallProcess(KogitoProcessRuntime runtime, KogitoWorkflowProcessInstance processInstance) {
-        if (!migrationPlanService.shouldMigrate(runtime.getApplication().get(Processes.class), processInstance)) {
-            LOGGER.debug("No migration plan found. upgrading process");
-            RuleFlowProcessInstance ruleFlowProcessInstance = (RuleFlowProcessInstance) processInstance;
-            ruleFlowProcessInstance.setProcess(ruleFlowProcessInstance.getProcess());
+        if (!migrationPlanService.hasMigrationPlan(runtime.getApplication().get(Processes.class), processInstance)) {
+            if (!this.migrationPlanService.isEqualVersion(runtime.getApplication().get(Processes.class), processInstance)) {
+                LOGGER.debug("Process State version and process container mismatch. Migrating process without plan.");
+                RuleFlowProcessInstance ruleFlowProcessInstance = (RuleFlowProcessInstance) processInstance;
+                ruleFlowProcessInstance.setProcess(ruleFlowProcessInstance.getProcess());
+            }
             return;
         }
         LOGGER.debug("Migration processInstance state {}-{} and definition {}-{}",
@@ -58,7 +60,7 @@ public class StandardMigrationProcessInstanceMarshallerListener implements Proce
 
     @Override
     public void afterUnmarshallNode(KogitoProcessRuntime runtime, KogitoNodeInstance nodeInstance) {
-        if (!migrationPlanService.shouldMigrate(runtime.getApplication().get(Processes.class), (KogitoWorkflowProcessInstance) nodeInstance.getProcessInstance())) {
+        if (!migrationPlanService.hasMigrationPlan(runtime.getApplication().get(Processes.class), (KogitoWorkflowProcessInstance) nodeInstance.getProcessInstance())) {
             return;
         }
         LOGGER.debug("Migration nodeInstance {}", nodeInstance);

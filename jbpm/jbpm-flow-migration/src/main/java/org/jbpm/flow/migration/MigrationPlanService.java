@@ -130,7 +130,19 @@ public class MigrationPlanService {
         return targetDeployed.equals(targetDefinition) ? plan : null;
     }
 
-    public boolean shouldMigrate(Processes processes, KogitoWorkflowProcessInstance processInstance) {
+    public boolean isEqualVersion(Processes processes, KogitoWorkflowProcessInstance processInstance) {
+        String currentProcessId = processInstance.getProcess().getId();
+        String currentVersion = processInstance.getProcess().getVersion();
+        ProcessDefinitionMigrationPlan currentProcessDefinition = new ProcessDefinitionMigrationPlan(currentProcessId, currentVersion);
+
+        RuleFlowProcessInstance pi = (RuleFlowProcessInstance) processInstance;
+        ProcessDefinitionMigrationPlan processStateDefinition = new ProcessDefinitionMigrationPlan(pi.getProcessId(), pi.getProcessVersion());
+
+        // check if definition and state match. we don't need to perform any migration.
+        return currentProcessDefinition.equals(processStateDefinition);
+    }
+    
+    public boolean hasMigrationPlan(Processes processes, KogitoWorkflowProcessInstance processInstance) {
         return getMigrationPlan(processes, processInstance) != null;
     }
 }
