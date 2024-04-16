@@ -38,13 +38,13 @@ import org.apache.maven.project.MavenProject;
 import org.drools.codegen.common.AppPaths;
 import org.drools.codegen.common.DroolsModelBuildContext;
 import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileWriter;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
-import org.drools.codegen.common.GeneratedFileWriter;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
@@ -56,7 +56,7 @@ import org.reflections.util.ConfigurationBuilder;
 
 public abstract class AbstractKieMojo extends AbstractMojo {
 
-    protected static final GeneratedFileWriter.Builder generatedFileWriterBuilder = GeneratedFileWriter.builder("kogito","kogito.codegen.resources.directory", "kogito.codegen.sources.directory");
+    protected static final GeneratedFileWriter.Builder generatedFileWriterBuilder = GeneratedFileWriter.builder("kogito", "kogito.codegen.resources.directory", "kogito.codegen.sources.directory");
 
     @Parameter(required = true, defaultValue = "${project.basedir}")
     protected File projectDir;

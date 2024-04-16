@@ -30,12 +30,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
-import io.quarkus.deployment.annotations.BuildProducer;
-import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
-import io.quarkus.maven.dependency.Dependency;
-import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 import org.drools.codegen.common.AppPaths;
 import org.drools.codegen.common.DroolsModelBuildContext;
 import org.drools.codegen.common.GeneratedFile;
@@ -54,6 +48,13 @@ import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.memorycompiler.resources.ResourceReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
+import io.quarkus.deployment.annotations.BuildProducer;
+import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
+import io.quarkus.maven.dependency.Dependency;
+import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
 /**
  * Utility class to aggregate and share resource handling in Kogito extensions
@@ -75,7 +76,7 @@ public class KogitoQuarkusResourceUtils {
 
     // since quarkus-maven-plugin is later phase of maven-resources-plugin,
     // need to manually late-provide the resource in the expected location for quarkus:dev phase --so not: writeGeneratedFile( f, resourcePath )
-    private static final GeneratedFileWriter.Builder generatedFileWriterBuilder = GeneratedFileWriter.builder("kogito","kogito.codegen.resources.directory", "kogito.codegen.sources.directory" );
+    private static final GeneratedFileWriter.Builder generatedFileWriterBuilder = GeneratedFileWriter.builder("kogito", "kogito.codegen.resources.directory", "kogito.codegen.sources.directory");
 
     public static KogitoBuildContext kogitoBuildContext(Iterable<Path> paths, IndexView index, Dependency appArtifact) {
         // scan and parse paths
