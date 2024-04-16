@@ -19,22 +19,26 @@
 package org.jbpm.workflow.core.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Objects;
 
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.context.variable.Mappable;
+import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.WorkflowProcess;
-import org.jbpm.workflow.core.node.CompositeNode;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.NodeContainer;
+import org.kie.api.definition.process.WorkflowElementIdentifier;
 
 /**
  * Default implementation of a node.
@@ -43,8 +47,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
 
     private static final long serialVersionUID = 510l;
 
-    private long id;
-    private static final AtomicLong uniqueIdGen = new AtomicLong(0);
+    private WorkflowElementIdentifier id;
 
     private String name;
     private Map<String, List<Connection>> incomingConnections;
@@ -53,13 +56,13 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     private Map<String, Context> contexts = new HashMap<>();
     private Map<String, Object> metaData = new HashMap<>();
 
-    protected Map<ConnectionRef, Constraint> constraints = new HashMap<>();
+    protected Map<ConnectionRef, Collection<Constraint>> constraints = new HashMap<>();
 
     private IOSpecification ioSpecification;
     private MultiInstanceSpecification multiInstanceSpecification;
 
     public NodeImpl() {
-        this.id = -1;
+        this.id = WorkflowElementIdentifierFactory.newRandom();
         this.incomingConnections = new HashMap<>();
         this.outgoingConnections = new HashMap<>();
         this.ioSpecification = new IOSpecification();
@@ -143,28 +146,16 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     }
 
     @Override
-    public long getId() {
+    public WorkflowElementIdentifier getId() {
         return this.id;
     }
 
     @Override
-    public String getUniqueId() {
-        StringBuilder result = new StringBuilder(id + "");
-        NodeContainer nodeContainer = getParentContainer();
-        while (nodeContainer instanceof CompositeNode) {
-            CompositeNode composite = (CompositeNode) nodeContainer;
-            result.insert(0, composite.getId() + ":");
-            nodeContainer = composite.getParentContainer();
-        }
-        return result.toString();
-    }
-
-    @Override
-    public void setId(final long id) {
+    public void setId(WorkflowElementIdentifier id) {
         this.id = id;
-        String uniqueId = (String) getMetaData("UniqueId");
+        String uniqueId = (String) getMetaData(Metadata.UNIQUE_ID);
         if (uniqueId == null) {
-            setMetaData("UniqueId", "_jbpm-unique-" + uniqueIdGen.getAndIncrement());
+            setMetaData(Metadata.UNIQUE_ID, id.toExternalFormat());
         }
     }
 
@@ -398,18 +389,23 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         this.metaData = metaData;
     }
 
-    public Constraint getConstraint(final Connection connection) {
+    public Collection<Constraint> getConstraints(final Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");
         }
 
-        ConnectionRef ref = new ConnectionRef((String) connection.getMetaData().get("UniqueId"), connection.getTo().getId(), connection.getToType());
+        ConnectionRef ref = new ConnectionRef(connection.getUniqueId(), connection.getTo().getId(), connection.getToType());
         return this.constraints.get(ref);
+    }
 
+    public Constraint getConstraint(final Connection connection) {
+        Collection<Constraint> constraints = getConstraints(connection);
+        return constraints != null ? constraints.iterator().next() : null;
     }
 
     public Constraint internalGetConstraint(final ConnectionRef ref) {
-        return this.constraints.get(ref);
+        Collection<Constraint> constraints = this.constraints.get(ref);
+        return constraints != null ? constraints.iterator().next() : null;
     }
 
     public void setConstraint(final Connection connection,
@@ -421,7 +417,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
             throw new IllegalArgumentException("connection is unknown:" + connection);
         }
         addConstraint(
-                new ConnectionRef((String) connection.getMetaData().get("UniqueId"), connection.getTo().getId(), connection.getToType()),
+                new ConnectionRef(connection.getUniqueId(), connection.getTo().getId(), connection.getToType()),
                 constraint);
 
     }
@@ -431,16 +427,13 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
             throw new IllegalArgumentException(
                     "A " + this.getName() + " node only accepts constraints linked to a connection");
         }
-        this.constraints.put(connectionRef, constraint);
+        Collection<Constraint> values = this.constraints.computeIfAbsent(connectionRef, r -> new ArrayList<>());
+        values.removeIf(v -> !ReturnValueConstraintEvaluator.class.isInstance(v) && Objects.equals(v.getConstraint(), constraint.getConstraint()));
+        values.add(constraint);
     }
 
-    public Map<ConnectionRef, Constraint> getConstraints() {
+    public Map<ConnectionRef, Collection<Constraint>> getConstraints() {
         return Collections.unmodifiableMap(this.constraints);
-    }
-
-    @Override
-    public String getNodeUniqueId() {
-        return (String) getMetaData("UniqueId");
     }
 
     @Override

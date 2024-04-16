@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.integrationtests.springboot;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.restassured.RestAssured;
@@ -91,15 +92,15 @@ class ManagementAddOnTest extends BaseRestTest {
             .then()
                 .statusCode(200)
                 .body("$.size()", is(10))
-                .body("[0].id", is(1))
+                .body("[0].id", is("_F8881669-9AE6-46D0-9633-02A42D3D06BB"))
                 .body("[0].name", is("End"))
                 .body("[0].type", is("EndNode"))
-                .body("[0].uniqueId", is("1"))
+                .body("[0].uniqueId", is("_F8881669-9AE6-46D0-9633-02A42D3D06BB"))
                 .body("[0].nodeDefinitionId", not(emptyOrNullString()))
-                .body("[9].id", is(10))
+                .body("[9].id", is("_BC5E8132-1AD8-4F2A-94DA-299C99D79CD9"))
                 .body("[9].name", is("BoundaryEvent"))
                 .body("[9].type", is("BoundaryEventNode"))
-                .body("[9].uniqueId", is("10"))
+                .body("[9].uniqueId", is("_BC5E8132-1AD8-4F2A-94DA-299C99D79CD9"))
                 .body("[9].nodeDefinitionId", not(emptyOrNullString()));
     }
 
@@ -129,6 +130,7 @@ class ManagementAddOnTest extends BaseRestTest {
     private String givenGreetingsProcess() {
         return given().contentType(ContentType.JSON)
                 .when()
+                    .body(new HashMap<>())
                     .post("/greetings")
                 .then()
                     .statusCode(201)

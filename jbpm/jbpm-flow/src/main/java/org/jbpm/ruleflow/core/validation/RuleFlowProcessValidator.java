@@ -20,6 +20,7 @@ package org.jbpm.ruleflow.core.validation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -43,6 +44,7 @@ import org.jbpm.process.core.validation.ProcessValidator;
 import org.jbpm.process.core.validation.impl.ProcessValidationErrorImpl;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.WorkflowProcess;
@@ -82,6 +84,8 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.io.Resource;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.expr.ExpressionHandlerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.lang.String.format;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
@@ -96,6 +100,8 @@ import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
  * Default implementation of a RuleFlow validator.
  */
 public class RuleFlowProcessValidator implements ProcessValidator {
+
+    private static final Logger logger = LoggerFactory.getLogger(RuleFlowProcessValidator.class);
 
     public static final String ASSOCIATIONS = "BPMN.Associations";
 
@@ -268,10 +274,8 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 if (split.getType() == Split.TYPE_XOR || split.getType() == Split.TYPE_OR) {
                     for (final Iterator<Connection> it = split.getDefaultOutgoingConnections().iterator(); it.hasNext();) {
                         final Connection connection = it.next();
-                        if (split.getConstraint(connection) == null && !split.isDefault(connection)
-                                || (!split.isDefault(connection)
-                                        && (split.getConstraint(connection).getConstraint() == null
-                                                || split.getConstraint(connection).getConstraint().trim().length() == 0))) {
+                        Collection<Constraint> constraints = split.getConstraints(connection);
+                        if ((constraints == null || constraints.stream().allMatch(c -> c == null || c.getConstraint() == null || c.getConstraint().isBlank())) && !split.isDefault(connection)) {
                             addErrorMessage(process,
                                     node,
                                     errors,
@@ -611,7 +615,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                                 addErrorMessage(process,
                                         startNode,
                                         errors,
-                                        "Start in Event SubProcess '" + compositeNode.getName() + "' [" + compositeNode.getId() + "] must contain a trigger (event definition).");
+                                        "Start in Event SubProcess '" + compositeNode.getName() + "' [" + compositeNode.getId().toExternalFormat() + "] must contain a trigger (event definition).");
                             }
                         }
                     }
@@ -805,8 +809,11 @@ public class RuleFlowProcessValidator implements ProcessValidator {
             }
             if (container instanceof CompositeNode) {
                 for (CompositeNode.NodeAndType nodeAndTypes : ((CompositeNode) container).getLinkedIncomingNodes().values()) {
-                    processNode(nodeAndTypes.getNode(),
-                            processNodes);
+                    if (nodeAndTypes.getNode() != null) {
+                        processNode(nodeAndTypes.getNode(), processNodes);
+                    } else {
+                        logger.error("Composite Node " + nodeAndTypes + " is null");
+                    }
                 }
             }
         }
@@ -840,7 +847,11 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         if (prevValue == null || Boolean.FALSE.equals(prevValue)) {
             for (final List<Connection> list : node.getOutgoingConnections().values()) {
                 for (final Connection connection : list) {
-                    processNode(connection.getTo(), nodes);
+                    if (connection.getTo() != null) {
+                        processNode(connection.getTo(), nodes);
+                    } else {
+                        logger.error("Connection is null {} connected to {} from {}", connection.getMetaData(), connection.getTo(), connection.getFrom());
+                    }
                 }
             }
         }
@@ -1057,7 +1068,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 nodeQueue.addAll(Arrays.asList(process.getNodes()));
                 while (!nodeQueue.isEmpty()) {
                     org.kie.api.definition.process.Node polledNode = nodeQueue.poll();
-                    if (activityRef.equals(polledNode.getMetaData().get("UniqueId"))) {
+                    if (activityRef.equals(polledNode.getUniqueId())) {
                         refNode = polledNode;
                         break;
                     }
@@ -1095,11 +1106,14 @@ public class RuleFlowProcessValidator implements ProcessValidator {
             org.kie.api.definition.process.Node node,
             List<ProcessValidationError> errors,
             String message) {
-        String error = String.format("Node '%s' [%d] %s",
-                node.getName(),
-                node.getId(),
-                message);
-        errors.add(new ProcessValidationErrorImpl(process,
-                error));
+
+        String error = message;
+        if (node != null) {
+            error = String.format("Node '%s' [%s] %s",
+                    node.getName(),
+                    node.getId().toExternalFormat(),
+                    message);
+        }
+        errors.add(new ProcessValidationErrorImpl(process, error));
     }
 }

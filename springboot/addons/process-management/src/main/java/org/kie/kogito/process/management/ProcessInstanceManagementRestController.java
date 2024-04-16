@@ -77,6 +77,18 @@ public class ProcessInstanceManagementRestController extends BaseProcessInstance
     }
 
     @Override
+    @PostMapping(value = "{processId}/instances/{processInstanceId}/migrate", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity migrateInstance(@PathVariable("processId") String processId, @PathVariable("processInstanceId") String processInstanceId, ProcessMigrationSpec migrationSpec) {
+        return doMigrateInstance(processId, migrationSpec, processInstanceId);
+    }
+
+    @Override
+    @PostMapping(value = "{processId}/migrate", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity migrateAllInstances(String processId, ProcessMigrationSpec migrationSpec) {
+        return doMigrateAllInstances(processId, migrationSpec);
+    }
+
+    @Override
     @GetMapping(value = "{processId}/instances/{processInstanceId}/error", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity getInstanceInError(@PathVariable("processId") String processId,
             @PathVariable("processInstanceId") String processInstanceId) {
@@ -126,4 +138,5 @@ public class ProcessInstanceManagementRestController extends BaseProcessInstance
     public ResponseEntity cancelProcessInstanceId(@PathVariable("processId") String processId, @PathVariable("processInstanceId") String processInstanceId) {
         return doCancelProcessInstanceId(processId, processInstanceId);
     }
+
 }
