@@ -27,14 +27,20 @@ import java.util.Objects;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
+import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.kogito.serverless.workflow.SWFConstants;
+import org.kie.kogito.serverless.workflow.dmn.SWFDecisionEngine;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandler;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
-import org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils;
+import org.kie.kogito.serverless.workflow.parser.handlers.MappingSetter;
+import org.kie.kogito.serverless.workflow.parser.handlers.MappingUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -67,8 +73,24 @@ public class DMNTypeHandler implements FunctionTypeHandler {
         String namespace = Objects.requireNonNull(metadata.get(NAMESPACE), String.format(REQUIRED_MESSAGE, NAMESPACE));
         String model = Objects.requireNonNull(metadata.get(MODEL), String.format(REQUIRED_MESSAGE, MODEL));
         String file = Objects.requireNonNull(metadata.get(FILE), String.format(REQUIRED_MESSAGE, FILE));
-        return NodeFactoryUtils.addMapping(embeddedSubProcess.ruleSetNode(context.newId()).decision(namespace, model, model, () -> loadDMNFromFile(namespace, model, file)),
+        RuleSetNodeFactory<?> nodeFactory = MappingUtils.addMapping(embeddedSubProcess.ruleSetNode(context.newId()).decision(namespace, model, model, () -> loadDMNFromFile(namespace, model, file)),
                 varInfo.getInputVar(), varInfo.getOutputVar());
+        JsonNode functionArgs = functionRef.getArguments();
+        if (functionArgs != null) {
+            nodeFactory.metaData(SWFDecisionEngine.EXPR_LANG, workflow.getExpressionLang());
+            MappingUtils.processArgs(workflow, functionArgs, new MappingSetter() {
+                @Override
+                public void accept(String key, Object value) {
+                    nodeFactory.parameter(key, value);
+                }
+
+                @Override
+                public void accept(Object value) {
+                    nodeFactory.parameter(SWFConstants.CONTENT_DATA, value);
+                }
+            });
+        }
+        return nodeFactory;
     }
 
     private DecisionModel loadDMNFromFile(String namespace, String model, String file) {

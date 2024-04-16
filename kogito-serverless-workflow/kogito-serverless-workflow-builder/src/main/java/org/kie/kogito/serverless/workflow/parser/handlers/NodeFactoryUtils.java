@@ -27,7 +27,6 @@ import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.EventNodeFactory;
 import org.jbpm.ruleflow.core.factory.JoinFactory;
-import org.jbpm.ruleflow.core.factory.MappableNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.ruleflow.core.factory.StartNodeFactory;
@@ -39,7 +38,6 @@ import org.jbpm.workflow.core.node.Join;
 import org.jbpm.workflow.core.node.Split;
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.correlation.SimpleCorrelation;
-import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 
 import io.serverlessworkflow.api.events.EventDefinition;
@@ -134,11 +132,6 @@ public class NodeFactoryUtils {
         return nodeFactory.name("EventSplit_" + nodeFactory.getNode().getId().toExternalFormat())
                 .type(type)
                 .metaData("EventBased", "true");
-    }
-
-    public static <T extends MappableNodeFactory<?>> T addMapping(T nodeFactory, String inputVar, String outputVar) {
-        return (T) nodeFactory.inMapping(inputVar, SWFConstants.MODEL_WORKFLOW_VAR)
-                .outMapping(SWFConstants.RESULT, outputVar);
     }
 
     public static <T extends RuleFlowNodeContainerFactory<T, ?>> SplitFactory<T> exclusiveSplitNode(SplitFactory<T> nodeFactory) {
