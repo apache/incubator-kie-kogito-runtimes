@@ -49,10 +49,9 @@ public class SWFDMNTest {
 
     private Workflow buildWorkflow(Object args) {
         return workflow("PlayingWithDMN")
-                .start(operation().action(call(custom("DMNTest", "dmn").metadata(DMNTypeHandler.FILE, "Traffic Violation.dmn")
+                .start(operation().action(call(custom("DMNTest", "dmn").metadata(DMNTypeHandler.FILE, "classpath:valid_models/DMNv1_x/Traffic Violation Simple.dmn")
                         .metadata(DMNTypeHandler.MODEL, "Traffic Violation")
-                        .metadata(DMNTypeHandler.NAMESPACE, "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF"), args))
-                        .outputFilter("{\"Should the driver be suspended?\"}"))
+                        .metadata(DMNTypeHandler.NAMESPACE, "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF"), args)))
                 .end().build();
     }
 }
