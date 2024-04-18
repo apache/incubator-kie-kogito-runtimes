@@ -16,7 +16,7 @@
 
   <properties>
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>3.8.3</version.io.quarkus>
+    <version.io.quarkus>3.8.4</version.io.quarkus>
     <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>
     <version.org.springframework.boot>3.2.4</version.org.springframework.boot>
     <version.org.apache.kafka>3.6.1</version.org.apache.kafka>
@@ -68,7 +68,7 @@
 
     <version.io.smallrye.reactive.mutiny-vertx-web-client>3.10.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
 
-    <version.io.vertx>4.5.4</version.io.vertx>
+    <version.io.vertx>4.5.7</version.io.vertx>
     <version.io.grpc>1.59.1</version.io.grpc>
 
     <version.io.quarkus.camel>3.9.0</version.io.quarkus.camel>
