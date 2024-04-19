@@ -105,20 +105,20 @@ public class MigrationPlanService {
         // there is no migration plan define for the source
         MigrationPlan plan = migrations.get(processStateDefinition);
         if (plan == null) {
-            LOGGER.debug("No migration plan defined for process state {}. It won't be migrated", processStateDefinition);
+            LOGGER.debug("No migration plan defined for process state {}.", processStateDefinition);
             return null;
         }
 
         // current process definition matches the target process of the migration plan
         ProcessDefinitionMigrationPlan targetDefinition = plan.getProcessMigrationPlan().getTargetProcessDefinition();
         if (!targetDefinition.equals(currentProcessDefinition)) {
-            LOGGER.debug("Migration plan found for {} does not match target definition {}, Found plan to {}. It won't be migrated", processStateDefinition, currentProcessDefinition, targetDefinition);
+            LOGGER.debug("Migration plan found for {} does not match target definition {}, Found plan to {}.", processStateDefinition, currentProcessDefinition, targetDefinition);
             return null;
         }
 
         // target process not being deployed
         if (!processes.processIds().contains(targetDefinition.getProcessId())) {
-            LOGGER.debug("No migration target defintion deployed in this container {} for migrating {}. it won't be migrated", targetDefinition, processStateDefinition);
+            LOGGER.debug("No migration target defintion deployed in this container {} for migrating {}.", targetDefinition, processStateDefinition);
             return null;
         }
 
@@ -141,7 +141,7 @@ public class MigrationPlanService {
         // check if definition and state match. we don't need to perform any migration.
         return currentProcessDefinition.equals(processStateDefinition);
     }
-    
+
     public boolean hasMigrationPlan(Processes processes, KogitoWorkflowProcessInstance processInstance) {
         return getMigrationPlan(processes, processInstance) != null;
     }
