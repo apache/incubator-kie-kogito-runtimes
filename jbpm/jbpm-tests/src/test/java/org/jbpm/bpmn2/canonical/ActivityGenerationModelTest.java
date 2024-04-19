@@ -560,8 +560,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         for (String className : classData.keySet()) {
             Class<?> processClass = Class.forName(className, true, cl);
- 
-            
+
             Method processMethod = processClass.getMethod("process");
             Process process = (Process) processMethod.invoke(null);
             assertThat(process).isNotNull();
