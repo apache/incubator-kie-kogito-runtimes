@@ -83,7 +83,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testMinimalProcess() throws Exception {
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/flow/BPMN2-Minimal.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/flow/BPMN2-MinimalProcess.bpmn2")).get(0);
 
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
@@ -91,7 +91,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         log(content);
 
         Map<String, String> classData = new HashMap<>();
-        classData.put("Minimal", content);
+        classData.put("org.jbpm.bpmn2.flow.MinimalProcess", content);
 
         Map<String, BpmnProcess> processes = createProcesses(classData, Collections.emptyMap());
         ProcessInstance<BpmnVariables> processInstance = processes.get("Minimal").createInstance();
@@ -114,7 +114,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testUserTaskProcessWithTaskModels() throws Exception {
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-UserTask.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/activity/BPMN2-UserTask.bpmn2")).get(0);
 
         List<UserTaskModelMetaData> models = ProcessToExecModelGenerator.INSTANCE.generateUserTaskModel((WorkflowProcess) process.get());
 
@@ -131,7 +131,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testUserTaskProcess() throws Exception {
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-UserTask.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/activity/BPMN2-UserTask.bpmn2")).get(0);
 
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
@@ -139,7 +139,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         log(content);
 
         Map<String, String> classData = new HashMap<>();
-        classData.put("org.drools.bpmn2.UserTaskProcess", content);
+        classData.put("org.jbpm.bpmn2.activity.UserTaskProcess", content);
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
 
         Map<String, BpmnProcess> processes = createProcesses(classData, Collections.singletonMap("Human Task", workItemHandler));
@@ -158,7 +158,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testUserTaskWithParamProcess() throws Exception {
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-UserTaskWithParametrizedInput.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/activity/BPMN2-UserTaskWithParametrizedInput.bpmn2")).get(0);
 
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
@@ -166,12 +166,12 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         log(content);
 
         Map<String, String> classData = new HashMap<>();
-        classData.put("org.drools.bpmn2.UserTaskProcess", content);
+        classData.put("org.jbpm.bpmn2.activity.UserTaskProcess", content);
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
 
         Map<String, BpmnProcess> processes = createProcesses(classData, Collections.singletonMap("Human Task", workItemHandler));
-        ProcessInstance<BpmnVariables> processInstance = processes.get("UserTask").createInstance();
+        ProcessInstance<BpmnVariables> processInstance = processes.get("UserTaskWithParametrizedInput").createInstance();
 
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
@@ -184,7 +184,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testScriptMultilineExprProcess() throws Exception {
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-CallActivitySubProcess.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/subprocess/BPMN2-CallActivitySubProcess.bpmn2")).get(0);
 
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
@@ -192,10 +192,10 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         log(content);
 
         Map<String, String> classData = new HashMap<>();
-        classData.put("org.drools.bpmn2.SubProcessProcess", content);
+        classData.put("org.jbpm.bpmn2.subprocess.CallActivitySubProcessProcess", content);
 
         Map<String, BpmnProcess> processes = createProcesses(classData, Collections.emptyMap());
-        ProcessInstance<BpmnVariables> processInstance = processes.get("SubProcess").createInstance();
+        ProcessInstance<BpmnVariables> processInstance = processes.get("CallActivitySubProcess").createInstance();
 
         processInstance.start();
 
@@ -204,7 +204,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testExclusiveSplit() throws Exception {
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-ExclusiveSplit.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/flow/BPMN2-ExclusiveSplit.bpmn2")).get(0);
 
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
@@ -212,7 +212,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         log(content);
 
         Map<String, String> classData = new HashMap<>();
-        classData.put("org.drools.bpmn2.TestProcess", content);
+        classData.put("org.jbpm.bpmn2.flow.ExclusiveSplitProcess", content);
 
         SystemOutWorkItemHandler workItemHandler = new SystemOutWorkItemHandler();
 
@@ -220,7 +220,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("x", "First");
         params.put("y", "Second");
-        ProcessInstance<BpmnVariables> processInstance = processes.get("com.sample.test").createInstance(BpmnVariables.create(params));
+        ProcessInstance<BpmnVariables> processInstance = processes.get("ExclusiveSplit").createInstance(BpmnVariables.create(params));
 
         processInstance.start();
 
@@ -230,7 +230,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testExclusiveSplitRetriggerAfterError() throws Exception {
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-ExclusiveSplit.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/flow/BPMN2-ExclusiveSplit.bpmn2")).get(0);
 
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
@@ -238,7 +238,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         log(content);
 
         Map<String, String> classData = new HashMap<>();
-        classData.put("org.drools.bpmn2.TestProcess", content);
+        classData.put("org.jbpm.bpmn2.flow.ExclusiveSplitProcess", content);
 
         SystemOutWorkItemHandler workItemHandler = new SystemOutWorkItemHandler();
 
@@ -246,7 +246,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("x", "First1");
         params.put("y", "Second1");
-        ProcessInstance<BpmnVariables> processInstance = processes.get("com.sample.test").createInstance(BpmnVariables.create(params));
+        ProcessInstance<BpmnVariables> processInstance = processes.get("ExclusiveSplit").createInstance(BpmnVariables.create(params));
 
         processInstance.start();
 
@@ -269,19 +269,19 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
     @Test
     public void testInclusiveSplit() throws Exception {
 
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-InclusiveSplit.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/flow/BPMN2-InclusiveSplit.bpmn2")).get(0);
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
         assertThat(content).isNotNull();
         log(content);
 
         Map<String, String> classData = new HashMap<>();
-        classData.put("org.drools.bpmn2.TestProcess", content);
+        classData.put("org.jbpm.bpmn2.flow.InclusiveSplitProcess", content);
 
         Map<String, BpmnProcess> processes = createProcesses(classData, Collections.emptyMap());
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("x", 15);
-        ProcessInstance<BpmnVariables> processInstance = processes.get("com.sample.test").createInstance(BpmnVariables.create(params));
+        ProcessInstance<BpmnVariables> processInstance = processes.get("InclusiveSplit").createInstance(BpmnVariables.create(params));
 
         processInstance.start();
 
@@ -292,14 +292,14 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
     @Test
     public void testInclusiveSplitDefaultConnection() throws Exception {
 
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-InclusiveGatewayWithDefault.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/flow/BPMN2-InclusiveGatewayWithDefault.bpmn2")).get(0);
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
         assertThat(content).isNotNull();
         log(content);
 
         Map<String, String> classData = new HashMap<>();
-        classData.put("org.drools.bpmn2.InclusiveGatewayWithDefaultProcess", content);
+        classData.put("org.jbpmn.bpmn2.flow.InclusiveGatewayWithDefaultProcess", content);
 
         Map<String, BpmnProcess> processes = createProcesses(classData, Collections.emptyMap());
         Map<String, Object> params = new HashMap<String, Object>();
@@ -315,7 +315,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
     @Test
     public void testParallelGateway() throws Exception {
 
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-ParallelSplit.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/event/BPMN2-ParallelSplit.bpmn2")).get(0);
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
         assertThat(content).isNotNull();
@@ -326,7 +326,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         Map<String, BpmnProcess> processes = createProcesses(classData, Collections.emptyMap());
         Map<String, Object> params = new HashMap<String, Object>();
-        ProcessInstance<BpmnVariables> processInstance = processes.get("com.sample.test").createInstance(BpmnVariables.create(params));
+        ProcessInstance<BpmnVariables> processInstance = processes.get("ParallelSplit").createInstance(BpmnVariables.create(params));
 
         processInstance.start();
 
@@ -336,20 +336,20 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testInclusiveSplitAndJoinNested() throws Exception {
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-InclusiveSplitAndJoinNested.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/flow/BPMN2-InclusiveSplitAndJoinNested.bpmn2")).get(0);
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
         assertThat(content).isNotNull();
         log(content);
 
         Map<String, String> classData = new HashMap<>();
-        classData.put("org.drools.bpmn2.TestProcess", content);
+        classData.put("org.jbpm.bpmn2.flow.InclusiveSplitAndJoinNestedProcess", content);
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("x", 15);
         Map<String, BpmnProcess> processes = createProcesses(classData, Collections.singletonMap("Human Task", workItemHandler));
-        ProcessInstance<BpmnVariables> processInstance = processes.get("com.sample.test").createInstance(BpmnVariables.create(params));
+        ProcessInstance<BpmnVariables> processInstance = processes.get("InclusiveSplitAndJoinNested").createInstance(BpmnVariables.create(params));
 
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
@@ -374,14 +374,14 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testInclusiveSplitAndJoinNestedWithBusinessKey() throws Exception {
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-InclusiveSplitAndJoinNested.bpmn2")).get(0);
+        BpmnProcess process = BpmnProcess.from(new ClassPathResource("org/jbpm/bpmn2/flow/BPMN2-InclusiveSplitAndJoinNested.bpmn2")).get(0);
         ProcessMetaData metaData = ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get());
         String content = metaData.getGeneratedClassModel().toString();
         assertThat(content).isNotNull();
         log(content);
 
         Map<String, String> classData = new HashMap<>();
-        classData.put("org.drools.bpmn2.TestProcess", content);
+        classData.put("org.jbpm.bpmn2.flow.InclusiveSplitAndJoinNestedProcess", content);
 
         String businessKey = "custom";
 
@@ -389,12 +389,12 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("x", 15);
         Map<String, BpmnProcess> processes = createProcesses(classData, Collections.singletonMap("Human Task", workItemHandler));
-        ProcessInstance<BpmnVariables> processInstance = processes.get("com.sample.test").createInstance(businessKey, BpmnVariables.create(params));
+        ProcessInstance<BpmnVariables> processInstance = processes.get("InclusiveSplitAndJoinNested").createInstance(businessKey, BpmnVariables.create(params));
 
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
 
-        ProcessInstance<BpmnVariables> loadedProcessInstance = processes.get("com.sample.test").instances().findById(processInstance.id()).orElse(null);
+        ProcessInstance<BpmnVariables> loadedProcessInstance = processes.get("InclusiveSplitAndJoinNested").instances().findById(processInstance.id()).orElse(null);
         assertThat(loadedProcessInstance).isNotNull();
         assertThat(loadedProcessInstance.businessKey()).isEqualTo(businessKey);
 
@@ -560,7 +560,8 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         for (String className : classData.keySet()) {
             Class<?> processClass = Class.forName(className, true, cl);
-
+ 
+            
             Method processMethod = processClass.getMethod("process");
             Process process = (Process) processMethod.invoke(null);
             assertThat(process).isNotNull();

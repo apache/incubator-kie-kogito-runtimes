@@ -21,7 +21,7 @@
     </operation>
   </interface>
 
-  <process processType="Private" isExecutable="true" id="ServiceProcess" name="Service Process" >
+  <process processType="Private" isExecutable="true" id="ServiceProcessWithMvelTransformation" name="Service Process" >
 
     <!-- process variables -->
     <property id="s" itemSubjectRef="_sItem"/>

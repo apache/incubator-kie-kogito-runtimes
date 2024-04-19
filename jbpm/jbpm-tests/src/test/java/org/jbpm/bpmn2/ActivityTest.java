@@ -475,7 +475,8 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testCallActivityMI() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/subprocess/BPMN2-CallActivityMI.bpmn2",
+        kruntime = createKogitoProcessRuntime(
+                "org/jbpm/bpmn2/subprocess/BPMN2-CallActivityMI.bpmn2",
                 "org/jbpm/bpmn2/subprocess/BPMN2-CallActivitySubProcess.bpmn2");
 
         final List<String> subprocessStarted = new ArrayList<>();
@@ -756,7 +757,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         Map<String, Object> params = new HashMap<>();
         params.put("s", "JoHn");
         KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime
-                .startProcess("ServiceProcess", params);
+                .startProcess("ServiceProcessWithMvelTransformation", params);
         assertProcessInstanceFinished(processInstance, kruntime);
         assertThat(processInstance.getVariable("s")).isEqualTo("hello john!");
     }
@@ -989,7 +990,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 workItemHandler);
         Map<String, Object> params = new HashMap<>();
-        KogitoProcessInstance processInstance = kruntime.startProcess("CallActivity", params);
+        KogitoProcessInstance processInstance = kruntime.startProcess("CallActivitySubProcessWithBoundaryEvent", params);
         assertProcessInstanceActive(processInstance.getStringId(), kruntime);
 
         org.kie.kogito.internal.process.runtime.KogitoWorkItem wi = workItemHandler.getWorkItem();
@@ -1187,7 +1188,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         HelloService.VALIDATE_STRING = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><person><id>123</id><name>john</name></person>";
 
         KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime
-                .startProcess("ServiceProcess", params);
+                .startProcess("ServiceProcessWithMvelJaxbTransformation", params);
         assertProcessInstanceFinished(processInstance, kruntime);
 
     }

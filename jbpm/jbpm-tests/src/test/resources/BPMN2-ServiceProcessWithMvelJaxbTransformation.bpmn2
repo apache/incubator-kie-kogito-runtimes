@@ -21,7 +21,7 @@
     </operation>
   </interface>
 
-  <process processType="Private" isExecutable="true" id="ServiceProcess" name="Service Process" >
+  <process processType="Private" isExecutable="true" id="ServiceProcessWithMvelJaxbTransformation" name="Service Process" >
     <extensionElements>
       <tns:import name="jakarta.xml.bind.JAXBContext"/>
       <tns:import name="java.io.StringReader"/>
