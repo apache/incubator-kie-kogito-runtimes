@@ -28,6 +28,7 @@ import org.kie.kogito.event.Topic;
 import org.kie.kogito.event.TopicDiscovery;
 import org.kie.kogito.event.cloudevents.CloudEventMeta;
 
+import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class QuarkusTopicDiscoveryTest {
@@ -38,24 +39,11 @@ class QuarkusTopicDiscoveryTest {
         expectedTopics.add(new Topic("processedtravellers", ChannelType.OUTGOING));
         expectedTopics.add(new Topic("mycooltopic", ChannelType.INCOMING));
 
-        final TopicDiscovery discovery = new QuarkusTopicDiscovery() {
-            final Map<String, String> properties = new HashMap<>() {
-                {
-                    put("mp.messaging.outgoing.processedtravellers.connector", "quarkus-http");
-                    put("mp.messaging.outgoing.processedtravellers.url", "http://localhost:8080/");
-                    put("mp.messaging.incoming.kogito_incoming_stream.connector", "smallrye-kafka");
-                    put("mp.messaging.incoming.kogito_incoming_stream.topic", "mycooltopic");
-                }
-            };
+        final TopicDiscovery discovery = getTopicDiscovery(entry("mp.messaging.outgoing.processedtravellers.connector", "quarkus-http"),
+                entry("mp.messaging.outgoing.processedtravellers.url", "http://localhost:8080/"),
+                entry("mp.messaging.incoming.kogito_incoming_stream.connector", "smallrye-kafka"),
+                entry("mp.messaging.incoming.kogito_incoming_stream.topic", "mycooltopic"));
 
-            Iterable<String> getPropertyNames() {
-                return properties.keySet();
-            }
-
-            Optional<String> getOptionalValue(String key) {
-                return Optional.ofNullable(properties.get(key));
-            }
-        };
         final List<Topic> topics = discovery.getTopics(Collections.emptyList());
         assertThat(topics).hasSize(2);
         expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
@@ -67,26 +55,12 @@ class QuarkusTopicDiscoveryTest {
         expectedTopics.add(new Topic("mycooltopic", ChannelType.OUTGOING));
         expectedTopics.add(new Topic("mycooltopic", ChannelType.INCOMING));
 
-        final TopicDiscovery discovery = new QuarkusTopicDiscovery() {
-            final Map<String, String> properties = new HashMap<>() {
-                {
-                    put("mp.messaging.outgoing.processedtravellers.connector", "quarkus-http");
-                    put("mp.messaging.outgoing.processedtravellers.url", "http://localhost:8080/");
-                    put("mp.messaging.outgoing.processedtravellers.topic", "mycooltopic");
-                    put("mp.messaging.incoming.kogito_incoming_stream.connector", "smallrye-kafka");
-                    put("mp.messaging.incoming.kogito_incoming_stream.topic", "mycooltopic");
-                }
-            };
+        final TopicDiscovery discovery = getTopicDiscovery(entry("mp.messaging.outgoing.processedtravellers.connector", "quarkus-http"),
+                entry("mp.messaging.outgoing.processedtravellers.url", "http://localhost:8080/"),
+                entry("mp.messaging.outgoing.processedtravellers.topic", "mycooltopic"),
+                entry("mp.messaging.incoming.kogito_incoming_stream.connector", "smallrye-kafka"),
+                entry("mp.messaging.incoming.kogito_incoming_stream.topic", "mycooltopic"));
 
-            Iterable<String> getPropertyNames() {
-                return properties.keySet();
-            }
-
-            Optional<String> getOptionalValue(String key) {
-                return Optional.ofNullable(properties.get(key));
-            }
-        };
-        ;
         final List<Topic> topics = discovery.getTopics(Collections.emptyList());
         assertThat(topics).hasSize(2);
         expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
@@ -129,4 +103,21 @@ class QuarkusTopicDiscoveryTest {
         final List<Topic> topics = discovery.getTopics(Collections.emptyList());
         assertThat(topics).isEmpty();
     }
+
+    private TopicDiscovery getTopicDiscovery(Map.Entry<String, String>... entries) {
+        return new QuarkusTopicDiscovery() {
+            final Map<String, String> properties = Map.ofEntries(entries);
+
+            @Override
+            Iterable<String> getPropertyNames() {
+                return properties.keySet();
+            }
+
+            @Override
+            Optional<String> getOptionalValue(String key) {
+                return Optional.ofNullable(properties.get(key));
+            }
+        };
+    }
+
 }
