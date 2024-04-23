@@ -65,15 +65,15 @@ public class MetricsProcessEventListener extends DefaultKogitoProcessEventListen
     }
 
     private Counter getErrorCounter(String appId, String processId, String errorMessage) {
-        return buildCounter("kogito_process_instance_error", "Process instances currently in error state", appId, processId, Tag.of("error_message", errorMessage));
+        return buildCounter("kogito_process_instance_error", "Number of errors that has occurred", appId, processId, Tag.of("error_message", errorMessage));
     }
 
     private Counter getNumberOfSLAsViolatedCounter(String appId, String processId, String nodeName) {
-        return buildCounter("kogito_process_instance_sla_violated_total", "Process Instances SLA Violated", appId, processId, Tag.of("node_name", nodeName));
+        return buildCounter("kogito_process_instance_sla_violated_total", "Number of SLA violations that has ocurred", appId, processId, Tag.of("node_name", nodeName));
     }
 
     private Counter getNumberOfProcessInstancesCompletedCounter(String appId, String processId, String state) {
-        return buildCounter("kogito_process_instance_completed_total", "Completed Process Instances", appId, processId, Tag.of("state", state));
+        return buildCounter("kogito_process_instance_completed_total", "Completed Process Instances", appId, processId, Tag.of("process_state", state));
     }
 
     private Counter buildCounter(String name, String description, String appId, String processId, Tag... tags) {
