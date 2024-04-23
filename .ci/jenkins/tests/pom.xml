@@ -59,8 +59,8 @@
         <log.slf4j.version>1.7.25</log.slf4j.version>
         <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
 
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
     <dependencyManagement>
         <dependencies>
