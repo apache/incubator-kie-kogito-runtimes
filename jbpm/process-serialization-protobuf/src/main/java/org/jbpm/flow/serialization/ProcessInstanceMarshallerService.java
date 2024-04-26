@@ -31,6 +31,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.jbpm.flow.serialization.impl.ProtobufProcessInstanceMarshallerFactory;
+import org.jbpm.util.JbpmClassLoaderUtil;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
@@ -48,6 +49,9 @@ public class ProcessInstanceMarshallerService {
     private Map<MarshallerContextName<Object>, Object> contextEntries;
 
     private ProcessInstanceMarshallerFactory processInstanceMarshallerFactory;
+
+    private List<NodeInstanceReader> readers;
+    private List<NodeInstanceWriter> writers;
 
     public class Builder {
 
@@ -77,10 +81,22 @@ public class ProcessInstanceMarshallerService {
         }
 
         public Builder withDefaultObjectMarshallerStrategies() {
-            ServiceLoader<ObjectMarshallerStrategy> loader = ServiceLoader.load(ObjectMarshallerStrategy.class);
+            ServiceLoader<ObjectMarshallerStrategy> loader = ServiceLoader.load(ObjectMarshallerStrategy.class, JbpmClassLoaderUtil.findClassLoader());
 
             for (ObjectMarshallerStrategy strategy : loader) {
                 ProcessInstanceMarshallerService.this.strats.add(strategy);
+            }
+
+            ServiceLoader<NodeInstanceReader> readerLoader = ServiceLoader.load(NodeInstanceReader.class, JbpmClassLoaderUtil.findClassLoader());
+
+            for (NodeInstanceReader reader : readerLoader) {
+                ProcessInstanceMarshallerService.this.readers.add(reader);
+            }
+
+            ServiceLoader<NodeInstanceWriter> writerLoader = ServiceLoader.load(NodeInstanceWriter.class, JbpmClassLoaderUtil.findClassLoader());
+
+            for (NodeInstanceWriter writer : writerLoader) {
+                ProcessInstanceMarshallerService.this.writers.add(writer);
             }
             return this;
         }
@@ -101,6 +117,8 @@ public class ProcessInstanceMarshallerService {
 
         public ProcessInstanceMarshallerService build() {
             Collections.sort(ProcessInstanceMarshallerService.this.strats);
+            Collections.sort(ProcessInstanceMarshallerService.this.readers);
+            Collections.sort(ProcessInstanceMarshallerService.this.writers);
             return ProcessInstanceMarshallerService.this;
         }
 
@@ -113,6 +131,8 @@ public class ProcessInstanceMarshallerService {
     private ProcessInstanceMarshallerService() {
         this.listeners = new ArrayList<>();
         this.strats = new ArrayList<>();
+        this.readers = new ArrayList<>();
+        this.writers = new ArrayList<>();
         this.contextEntries = new HashMap<>();
     }
 

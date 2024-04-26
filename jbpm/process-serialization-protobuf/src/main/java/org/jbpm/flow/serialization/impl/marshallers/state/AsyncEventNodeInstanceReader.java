@@ -16,38 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.flow.serialization.impl;
+package org.jbpm.flow.serialization.impl.marshallers.state;
 
-import java.io.InputStream;
-
-import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.MarshallerReaderContext;
 import org.jbpm.flow.serialization.NodeInstanceReader;
+import org.jbpm.flow.serialization.ProcessInstanceMarshallerException;
+import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.AsyncEventNodeInstanceContent;
+import org.jbpm.workflow.core.node.AsyncEventNodeInstance;
+import org.kie.api.runtime.process.NodeInstance;
 
 import com.google.protobuf.Any;
 
-public class ProtobufMarshallerReaderContext extends ProtobufAbstractMarshallerContext implements MarshallerReaderContext {
+public class AsyncEventNodeInstanceReader implements NodeInstanceReader {
 
-    private InputStream is;
-
-    public ProtobufMarshallerReaderContext(InputStream is) {
-        this.is = is;
+    @Override
+    public boolean accept(Any value) {
+        return value.is(AsyncEventNodeInstanceContent.class);
     }
 
     @Override
-    public InputStream input() {
-        return is;
-    }
-
-    @Override
-    public NodeInstanceReader findNodeInstanceReader(Any nodeInstance) {
-        NodeInstanceReader[] readers = this.get(MarshallerContextName.MARSHALLER_NODE_INSTANCE_READER);
-        for (NodeInstanceReader reader : readers) {
-            if (reader.accept(nodeInstance)) {
-                return reader;
-            }
+    public NodeInstance read(MarshallerReaderContext context, Any marshalled) {
+        try {
+            AsyncEventNodeInstanceContent content = marshalled.unpack(AsyncEventNodeInstanceContent.class);
+            AsyncEventNodeInstance nodeInstance = new AsyncEventNodeInstance();
+            nodeInstance.setJobId(content.getJobId());
+            return nodeInstance;
+        } catch (Exception e) {
+            throw new ProcessInstanceMarshallerException(e);
         }
-        return null;
     }
 
 }

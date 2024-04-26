@@ -16,16 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.flow.serialization;
+package org.jbpm.flow.serialization.impl.marshallers.state;
 
-import java.io.OutputStream;
-
+import org.jbpm.flow.serialization.MarshallerReaderContext;
+import org.jbpm.flow.serialization.NodeInstanceReader;
+import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.EventNodeInstanceContent;
+import org.jbpm.workflow.instance.node.EventNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 
-public interface MarshallerWriterContext extends MarshallerContext {
+import com.google.protobuf.Any;
 
-    OutputStream output();
+public class EventNodeInstanceReader implements NodeInstanceReader {
 
-    NodeInstanceWriter findNodeInstanceWriter(NodeInstance nodeInstance);
+    @Override
+    public boolean accept(Any value) {
+        return value.is(EventNodeInstanceContent.class);
+    }
+
+    @Override
+    public NodeInstance read(MarshallerReaderContext context, Any value) {
+        return new EventNodeInstance();
+    }
 
 }
