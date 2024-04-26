@@ -40,7 +40,7 @@ import org.kie.kogito.process.bpmn2.BpmnProcesses;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
 import org.kie.kogito.process.impl.AbstractProcess;
 
-public class XXX extends AbstractProcess<Model> {
+public class ThisIsJustTemplate extends AbstractProcess<Model> {
 
 
     public static org.kie.kogito.process.Process<Model> newProcess(Application application) {

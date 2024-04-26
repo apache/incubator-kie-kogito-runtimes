@@ -149,7 +149,6 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
     }
 
     private BlockStmt createInstance(SubProcessNode subProcessNode, ProcessMetaData metadata) {
-        // return app.get(Processes.class).<Model>processById(subprocessId).createInstance(model);
         String processId = ProcessToExecModelGenerator.extractProcessId(subProcessNode.getProcessId());
         String subProcessModelClassName = metadata.getModelClassName() != null ? metadata.getModelClassName() : ProcessToExecModelGenerator.extractModelClassName(processId);
         String processFieldName = "app";
