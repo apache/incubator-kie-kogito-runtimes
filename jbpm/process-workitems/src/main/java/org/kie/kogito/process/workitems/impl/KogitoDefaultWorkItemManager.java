@@ -86,7 +86,9 @@ public class KogitoDefaultWorkItemManager implements InternalKogitoWorkItemManag
             KogitoWorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
             if (handler != null) {
                 handler.abortWorkItem(workItem, this);
+                workItem.setState(ABORTED);
             } else {
+                workItem.setState(ABORTED);
                 workItems.remove(workItem.getStringId());
                 throw new KogitoWorkItemHandlerNotFoundException(workItem.getName());
             }
