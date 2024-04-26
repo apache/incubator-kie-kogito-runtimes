@@ -44,10 +44,10 @@ public class ThisIsJustTemplate extends AbstractProcess<Model> {
 
 
     public static org.kie.kogito.process.Process<Model> newProcess(Application application) {
-        return new XXX(application.config().get(ProcessConfig.class), application);
+        return new ThisIsJustTemplate(application.config().get(ProcessConfig.class), application);
     }
 
-    public XXX(ProcessConfig processConfig, Application application) {
+    public ThisIsJustTemplate(ProcessConfig processConfig, Application application) {
         super(processConfig, application);
         application.get(BpmnProcesses.class).addProcess(this);
         this.activate();
