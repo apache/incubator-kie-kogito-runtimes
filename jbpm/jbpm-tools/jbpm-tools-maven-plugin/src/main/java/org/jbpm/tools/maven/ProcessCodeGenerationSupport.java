@@ -158,7 +158,7 @@ public class ProcessCodeGenerationSupport {
         ClassOrInterfaceType modelType = StaticJavaParser.parseClassOrInterfaceType(modelMetadata.getModelClassName());
         processType.getExtendedTypes(0).setTypeArguments(modelType);
         processType.findAll(ObjectCreationExpr.class, e -> "BpmnProcessInstance".equals(e.getType().getNameAsString())).forEach(e -> e.setType(processType.getNameAsString() + "Instance"));
-        processType.findAll(ObjectCreationExpr.class, e -> "XXX".equals(e.getType().getNameAsString())).forEach(e -> e.setType(processType.getNameAsString()));
+        processType.findAll(ObjectCreationExpr.class, e -> "ThisIsJustTemplate".equals(e.getType().getNameAsString())).forEach(e -> e.setType(processType.getNameAsString()));
         processType.findAll(ObjectCreationExpr.class, e -> "BpmnVariables".equals(e.getType().getNameAsString())).forEach(e -> e.setType(modelType.getNameAsString()));
         processType.findAll(VariableDeclarationExpr.class, e -> "BpmnVariables".equals(e.getVariable(0).getTypeAsString())).forEach(e -> {
             if (e.getVariables().isNonEmpty()) {
