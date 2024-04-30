@@ -149,6 +149,7 @@ public class ProcessInstanceMarshallerService {
             MarshallerWriterContext context = processInstanceMarshallerFactory.newWriterContext(baos);
             context.set(MarshallerContextName.MARSHALLER_PROCESS, processInstance.process());
             context.set(MarshallerContextName.MARSHALLER_INSTANCE_LISTENER, listeners.toArray(ProcessInstanceMarshallerListener[]::new));
+            context.set(MarshallerContextName.MARSHALLER_NODE_INSTANCE_WRITER, this.writers.toArray(NodeInstanceWriter[]::new));
             setupEnvironment(context);
             org.jbpm.flow.serialization.ProcessInstanceMarshaller marshaller = processInstanceMarshallerFactory.newKogitoProcessInstanceMarshaller();
             marshaller.writeProcessInstance(context, processInstance);
@@ -164,6 +165,7 @@ public class ProcessInstanceMarshallerService {
             context.set(MarshallerContextName.MARSHALLER_PROCESS, process);
             context.set(MarshallerContextName.MARSHALLER_INSTANCE_READ_ONLY, readOnly);
             context.set(MarshallerContextName.MARSHALLER_INSTANCE_LISTENER, listeners.toArray(ProcessInstanceMarshallerListener[]::new));
+            context.set(MarshallerContextName.MARSHALLER_NODE_INSTANCE_READER, this.readers.toArray(NodeInstanceReader[]::new));
             setupEnvironment(context);
             org.jbpm.flow.serialization.ProcessInstanceMarshaller marshaller = processInstanceMarshallerFactory.newKogitoProcessInstanceMarshaller();
             return marshaller.readProcessInstance(context);
@@ -190,6 +192,7 @@ public class ProcessInstanceMarshallerService {
                 MarshallerReaderContext context = processInstanceMarshallerFactory.newReaderContext(bais);
                 context.set(MarshallerContextName.MARSHALLER_PROCESS, processInstance.process());
                 context.set(MarshallerContextName.MARSHALLER_INSTANCE_LISTENER, listeners.toArray(ProcessInstanceMarshallerListener[]::new));
+                context.set(MarshallerContextName.MARSHALLER_NODE_INSTANCE_READER, this.readers.toArray(NodeInstanceReader[]::new));
                 setupEnvironment(context);
                 org.jbpm.flow.serialization.ProcessInstanceMarshaller marshaller =
                         processInstanceMarshallerFactory.newKogitoProcessInstanceMarshaller();

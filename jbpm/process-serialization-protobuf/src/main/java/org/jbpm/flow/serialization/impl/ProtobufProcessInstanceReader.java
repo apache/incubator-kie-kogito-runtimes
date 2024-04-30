@@ -203,7 +203,7 @@ public class ProtobufProcessInstanceReader {
 
         NodeInstanceReader reader = context.findNodeInstanceReader(nodeContentProtobuf);
         if (reader == null) {
-            throw new IllegalArgumentException("Unknown node instance");
+            throw new IllegalArgumentException("Unknown node instance " + nodeInstance);
         }
 
         try {
