@@ -54,6 +54,7 @@ import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeString;
 
 public abstract class AbstractVisitor {
 
+    protected static final String ON_ACTION_SCRIPT_METHOD = "onActionScript";
     protected static final String FACTORY_FIELD_NAME = "factory";
     protected static final String KCONTEXT_VAR = "kcontext";
 

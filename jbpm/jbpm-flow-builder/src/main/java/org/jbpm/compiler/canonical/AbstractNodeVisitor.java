@@ -19,7 +19,11 @@
 package org.jbpm.compiler.canonical;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.jbpm.process.core.ContextContainer;
@@ -30,19 +34,25 @@ import org.jbpm.process.instance.impl.actions.ProduceEventAction;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.factory.MappableNodeFactory;
+import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.DataAssociation;
 import org.jbpm.workflow.core.impl.DataDefinition;
+import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
+import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.node.Assignment;
 import org.jbpm.workflow.core.node.HumanTaskNode;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.Transformation;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.utils.ConversionUtils;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.AssignExpr.Operator;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
@@ -79,6 +89,57 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
         if (isAdHocNode(node) && !(node instanceof HumanTaskNode)) {
             metadata.addSignal(node.getName(), null);
         }
+        if (isExtendedNode(node)) {
+            ExtendedNodeImpl extendedNodeImpl = (ExtendedNodeImpl) node;
+            addScript(extendedNodeImpl, body, ON_ACTION_SCRIPT_METHOD, ExtendedNodeImpl.EVENT_NODE_ENTER);
+            addScript(extendedNodeImpl, body, ON_ACTION_SCRIPT_METHOD, ExtendedNodeImpl.EVENT_NODE_EXIT);
+        }
+    }
+
+    private void addScript(ExtendedNodeImpl extendedNodeImpl, BlockStmt body, String factoryMethod, String actionType) {
+        if (!extendedNodeImpl.hasActions(actionType)) {
+            return;
+        }
+        for (DroolsAction action : extendedNodeImpl.getActions(actionType).stream().filter(Predicate.not(Objects::isNull)).toList()) {
+            DroolsConsequenceAction script = (DroolsConsequenceAction) action;
+            body.addStatement(getFactoryMethod(getNodeId((T) extendedNodeImpl), factoryMethod,
+                    new StringLiteralExpr(ExtendedNodeImpl.EVENT_NODE_ENTER),
+                    new StringLiteralExpr(script.getDialect()),
+                    new StringLiteralExpr(script.getConsequence() != null ? ConversionUtils.sanitizeString(script.getConsequence()) : ""),
+                    buildDroolsConsequenceAction(extendedNodeImpl, script.getDialect(), script.getConsequence())));
+        }
+    }
+
+    public Expression buildDroolsConsequenceAction(ExtendedNodeImpl extendedNodeImpl, String dialect, String script) {
+        BlockStmt newDroolsConsequenceActionExpression = new BlockStmt();
+        if (script != null) {
+            if (dialect.contains("java")) {
+                newDroolsConsequenceActionExpression = StaticJavaParser.parseBlock("{" + script + "}");
+                Set<NameExpr> identifiers = new HashSet<>(newDroolsConsequenceActionExpression.findAll(NameExpr.class));
+                for (NameExpr identifier : identifiers) {
+                    VariableScope scope = (VariableScope) extendedNodeImpl.resolveContext(VariableScope.VARIABLE_SCOPE, identifier.getNameAsString());
+                    if (scope == null) {
+                        continue;
+                    }
+                    Variable var = scope.findVariable(identifier.getNameAsString());
+                    if (var == null) {
+                        continue;
+                    }
+                    Type type = StaticJavaParser.parseType(var.getType().getStringType());
+                    VariableDeclarationExpr target = new VariableDeclarationExpr(type, var.getName());
+                    Expression source = new MethodCallExpr(new NameExpr(KCONTEXT_VAR), "getVariable", NodeList.nodeList(new StringLiteralExpr(var.getName())));
+                    source = new CastExpr(type, source);
+                    AssignExpr assign = new AssignExpr(target, source, Operator.ASSIGN);
+                    newDroolsConsequenceActionExpression.addStatement(0, assign);
+                }
+            }
+        }
+        ClassOrInterfaceType type = StaticJavaParser.parseClassOrInterfaceType(org.kie.kogito.internal.process.runtime.KogitoProcessContext.class.getName());
+        return new LambdaExpr(NodeList.nodeList(new Parameter(type, KCONTEXT_VAR)), newDroolsConsequenceActionExpression, true);
+    }
+
+    private boolean isExtendedNode(T node) {
+        return node instanceof ExtendedNodeImpl;
     }
 
     private boolean isAdHocNode(Node node) {
