@@ -50,9 +50,9 @@ import org.kie.kogito.internal.utils.KogitoTags;
 import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
-import org.kie.kogito.serverless.workflow.suppliers.AbortExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.CollectorActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.CompensationActionSupplier;
+import org.kie.kogito.serverless.workflow.suppliers.ErrorExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.MergeActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ProduceEventActionSupplier;
@@ -527,10 +527,10 @@ public abstract class StateHandler<S extends State> {
 
         Map<String, String> metadata = state.getMetadata();
         if (metadata != null) {
-            String errorMessage = state.getMetadata().get("errorMessage");
+            String errorMessage = metadata.get("errorMessage");
             if (errorMessage != null && !errorMessage.isBlank()) {
                 NodeFactory<?, ?> errorMessageNode =
-                        factory.actionNode(parserContext.newId()).action(new AbortExpressionActionSupplier(workflow.getExpressionLang(), errorMessage, SWFConstants.DEFAULT_WORKFLOW_VAR));
+                        factory.actionNode(parserContext.newId()).action(new ErrorExpressionActionSupplier(workflow.getExpressionLang(), errorMessage, SWFConstants.DEFAULT_WORKFLOW_VAR));
                 connect(errorMessageNode, startNode);
                 startNode = errorMessageNode;
             }

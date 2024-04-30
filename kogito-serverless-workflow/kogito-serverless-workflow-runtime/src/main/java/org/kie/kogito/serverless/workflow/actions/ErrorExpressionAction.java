@@ -21,19 +21,23 @@ package org.kie.kogito.serverless.workflow.actions;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
-public class AbortExpressionAction extends BaseExpressionAction {
+import com.fasterxml.jackson.databind.JsonNode;
 
-    public AbortExpressionAction(String lang, String expr, String inputVar) {
+public class ErrorExpressionAction extends BaseExpressionAction {
+
+    public ErrorExpressionAction(String lang, String expr, String inputVar) {
         super(lang, expr, inputVar);
     }
 
     public void execute(KogitoProcessContext context) throws Exception {
         if (expr.isValid()) {
-            String error = evaluate(context, String.class);
-            if (error != null) {
-                setError(context, error);
+            JsonNode error = evaluate(context, JsonNode.class);
+            if (!error.isNull() && error.isTextual()) {
+                String errorStr = error.asText();
+                if (!errorStr.isBlank()) {
+                    setError(context, errorStr);
+                }
             }
         } else {
             setError(context, expr.toString());
@@ -41,8 +45,6 @@ public class AbortExpressionAction extends BaseExpressionAction {
     }
 
     private void setError(KogitoProcessContext context, String error) {
-        ProcessInstance pi = (ProcessInstance) context.getProcessInstance();
-        pi.setErrorState((NodeInstance) context.getNodeInstance(), new AbortExpressionException(error));
-        pi.setState(KogitoProcessInstance.STATE_ABORTED);
+        ((ProcessInstance) context.getProcessInstance()).setErrorState((NodeInstance) context.getNodeInstance(), new IllegalArgumentException(error));
     }
 }

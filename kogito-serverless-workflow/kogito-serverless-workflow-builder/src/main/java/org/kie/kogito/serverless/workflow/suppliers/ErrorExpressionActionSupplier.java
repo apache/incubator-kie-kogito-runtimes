@@ -22,18 +22,18 @@ import org.jbpm.compiler.canonical.ExpressionSupplier;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.descriptors.ExpressionUtils;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
-import org.kie.kogito.serverless.workflow.actions.AbortExpressionAction;
+import org.kie.kogito.serverless.workflow.actions.ErrorExpressionAction;
 
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 
-public class AbortExpressionActionSupplier extends AbortExpressionAction implements ExpressionSupplier {
+public class ErrorExpressionActionSupplier extends ErrorExpressionAction implements ExpressionSupplier {
 
     private ObjectCreationExpr expression;
 
-    public AbortExpressionActionSupplier(String lang, String expr, String inputVar) {
+    public ErrorExpressionActionSupplier(String lang, String expr, String inputVar) {
         super(lang, expr, inputVar);
-        this.expression = ExpressionUtils.getObjectCreationExpr(AbortExpressionAction.class, lang, expr, inputVar);
+        this.expression = ExpressionUtils.getObjectCreationExpr(ErrorExpressionAction.class, lang, expr, inputVar);
     }
 
     @Override
