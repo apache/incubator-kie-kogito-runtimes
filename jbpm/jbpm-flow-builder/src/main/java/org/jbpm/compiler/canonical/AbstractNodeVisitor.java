@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,6 @@ import org.jbpm.process.instance.impl.actions.ProduceEventAction;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.factory.MappableNodeFactory;
-import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.DataAssociation;
 import org.jbpm.workflow.core.impl.DataDefinition;
@@ -100,17 +100,30 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
         if (!extendedNodeImpl.hasActions(actionType)) {
             return;
         }
-        for (DroolsAction action : extendedNodeImpl.getActions(actionType).stream().filter(Predicate.not(Objects::isNull)).toList()) {
-            DroolsConsequenceAction script = (DroolsConsequenceAction) action;
+        List<DroolsConsequenceAction> scripts = extendedNodeImpl.getActions(actionType).stream()
+                .filter(Predicate.not(Objects::isNull))
+                .filter(DroolsConsequenceAction.class::isInstance)
+                .map(DroolsConsequenceAction.class::cast)
+                .toList();
+
+        for (DroolsConsequenceAction script : scripts) {
             body.addStatement(getFactoryMethod(getNodeId((T) extendedNodeImpl), factoryMethod,
                     new StringLiteralExpr(ExtendedNodeImpl.EVENT_NODE_ENTER),
                     new StringLiteralExpr(script.getDialect()),
-                    new StringLiteralExpr(script.getConsequence() != null ? ConversionUtils.sanitizeString(script.getConsequence()) : ""),
+                    new StringLiteralExpr(emptyOrTransform(script.getConsequence(), ConversionUtils::sanitizeString)),
                     buildDroolsConsequenceAction(extendedNodeImpl, script.getDialect(), script.getConsequence())));
+            ;
         }
     }
 
-    public Expression buildDroolsConsequenceAction(ExtendedNodeImpl extendedNodeImpl, String dialect, String script) {
+    private String emptyOrTransform(String value, Function<String, String> data) {
+        if (value == null) {
+            return "";
+        }
+        return data.apply(value);
+    }
+
+    private Expression buildDroolsConsequenceAction(ExtendedNodeImpl extendedNodeImpl, String dialect, String script) {
         BlockStmt newDroolsConsequenceActionExpression = new BlockStmt();
         if (script != null) {
             if (dialect.contains("java")) {
