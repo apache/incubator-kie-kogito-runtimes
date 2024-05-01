@@ -66,6 +66,6 @@ public class JoinNodeInstanceReader implements NodeInstanceReader {
 
     @Override
     public Class<? extends GeneratedMessageV3> type() {
-        return EventSubProcessNodeInstanceContent.class;
+        return JoinNodeInstanceContent.class;
     }
 }
