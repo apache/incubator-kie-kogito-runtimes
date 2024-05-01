@@ -77,6 +77,7 @@ import static org.jbpm.ruleflow.core.Metadata.CUSTOM_AUTO_START;
 import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
 import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_DONE;
 import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_NAME;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeString;
 
 public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisitor {
 
@@ -109,7 +110,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
             body.addStatement(getFactoryMethod(getNodeId((T) extendedNodeImpl), factoryMethod,
                     new StringLiteralExpr(ExtendedNodeImpl.EVENT_NODE_ENTER),
                     new StringLiteralExpr(script.getDialect()),
-                    new StringLiteralExpr(script.getConsequence()),
+                    new StringLiteralExpr(sanitizeString(script.getConsequence())),
                     buildDroolsConsequenceAction(extendedNodeImpl, script.getDialect(), script.getConsequence())));
             ;
         }
