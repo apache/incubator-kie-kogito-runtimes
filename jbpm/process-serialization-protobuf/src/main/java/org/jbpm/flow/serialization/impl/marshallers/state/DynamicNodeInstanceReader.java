@@ -30,6 +30,7 @@ import org.jbpm.workflow.instance.node.DynamicNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.GeneratedMessageV3;
 
 public class DynamicNodeInstanceReader implements NodeInstanceReader {
 
@@ -60,4 +61,8 @@ public class DynamicNodeInstanceReader implements NodeInstanceReader {
         }
     }
 
+    @Override
+    public Class<? extends GeneratedMessageV3> type() {
+        return DynamicNodeInstanceContent.class;
+    }
 }

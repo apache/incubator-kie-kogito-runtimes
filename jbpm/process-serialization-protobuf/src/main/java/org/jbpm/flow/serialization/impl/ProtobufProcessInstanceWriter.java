@@ -225,10 +225,14 @@ public class ProtobufProcessInstanceWriter {
         if (writer == null) {
             throw new IllegalArgumentException("Unknown node instance type: " + nodeInstance);
         }
+
+        LOGGER.debug("Node writer {}", writer);
         GeneratedMessageV3.Builder<?> builder = writer.write(context, nodeInstance);
 
+        LOGGER.debug("Node instance being writing {}", nodeInstance);
         FieldDescriptor fieldContext = getContextField(builder);
         if (fieldContext != null) {
+            LOGGER.debug("Node instance context being writing {}", nodeInstance);
             builder.setField(fieldContext, buildWorkflowContext((NodeInstanceContainer & ContextInstanceContainer & ContextableInstance) nodeInstance));
         }
 

@@ -31,7 +31,7 @@ public interface NodeInstanceWriter extends Comparable<NodeInstanceWriter> {
 
     @Override
     default int compareTo(NodeInstanceWriter that) {
-        return that.order().compareTo(this.order());
+        return this.order().compareTo(that.order());
     }
 
     boolean accept(NodeInstance value);

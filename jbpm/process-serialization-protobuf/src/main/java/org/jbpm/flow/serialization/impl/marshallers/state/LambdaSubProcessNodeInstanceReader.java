@@ -24,11 +24,13 @@ import java.util.HashMap;
 import org.jbpm.flow.serialization.MarshallerReaderContext;
 import org.jbpm.flow.serialization.NodeInstanceReader;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerException;
+import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.LambdaSubProcessNodeInstanceContent;
 import org.jbpm.workflow.instance.node.LambdaSubProcessNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.GeneratedMessageV3;
 
 public class LambdaSubProcessNodeInstanceReader implements NodeInstanceReader {
 
@@ -55,4 +57,8 @@ public class LambdaSubProcessNodeInstanceReader implements NodeInstanceReader {
         }
     }
 
+    @Override
+    public Class<? extends GeneratedMessageV3> type() {
+        return EventSubProcessNodeInstanceContent.class;
+    }
 }

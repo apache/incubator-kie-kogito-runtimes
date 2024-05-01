@@ -24,6 +24,7 @@ import java.util.Map;
 import org.jbpm.flow.serialization.MarshallerReaderContext;
 import org.jbpm.flow.serialization.NodeInstanceReader;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerException;
+import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.jbpm.workflow.instance.node.JoinInstance;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.GeneratedMessageV3;
 
 public class JoinNodeInstanceReader implements NodeInstanceReader {
 
@@ -62,4 +64,8 @@ public class JoinNodeInstanceReader implements NodeInstanceReader {
         }
     }
 
+    @Override
+    public Class<? extends GeneratedMessageV3> type() {
+        return EventSubProcessNodeInstanceContent.class;
+    }
 }

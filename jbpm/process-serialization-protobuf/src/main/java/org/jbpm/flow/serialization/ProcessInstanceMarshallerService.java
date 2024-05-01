@@ -64,9 +64,10 @@ public class ProcessInstanceMarshallerService {
             return this;
         }
 
+        @SuppressWarnings("unchecked")
         public <T> Builder withContextEntries(Map<MarshallerContextName<T>, T> contextEntries) {
             for (Map.Entry<MarshallerContextName<T>, T> item : contextEntries.entrySet()) {
-                ProcessInstanceMarshallerService.this.contextEntries.put((MarshallerContextName<Object>) item.getKey(), (Object) item.getValue());
+                ProcessInstanceMarshallerService.this.contextEntries.put((MarshallerContextName<Object>) item.getKey(), item.getValue());
             }
             return this;
         }

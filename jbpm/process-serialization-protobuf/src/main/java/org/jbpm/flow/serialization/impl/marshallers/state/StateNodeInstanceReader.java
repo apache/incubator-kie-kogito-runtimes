@@ -30,12 +30,13 @@ import org.jbpm.workflow.instance.node.StateNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.GeneratedMessageV3;
 
 public class StateNodeInstanceReader implements NodeInstanceReader {
 
     @Override
     public Integer order() {
-        return NodeInstanceReader.super.order();
+        return NodeInstanceReader.super.order() + 1;
     }
 
     @Override
@@ -64,4 +65,8 @@ public class StateNodeInstanceReader implements NodeInstanceReader {
         }
     }
 
+    @Override
+    public Class<? extends GeneratedMessageV3> type() {
+        return StateNodeInstanceContent.class;
+    }
 }

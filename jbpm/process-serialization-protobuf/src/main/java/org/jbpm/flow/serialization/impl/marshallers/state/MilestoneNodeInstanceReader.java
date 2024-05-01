@@ -30,6 +30,7 @@ import org.jbpm.workflow.instance.node.MilestoneNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.GeneratedMessageV3;
 
 public class MilestoneNodeInstanceReader implements NodeInstanceReader {
 
@@ -59,4 +60,8 @@ public class MilestoneNodeInstanceReader implements NodeInstanceReader {
         }
     }
 
+    @Override
+    public Class<? extends GeneratedMessageV3> type() {
+        return MilestoneNodeInstanceContent.class;
+    }
 }

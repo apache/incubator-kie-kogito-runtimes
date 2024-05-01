@@ -48,6 +48,7 @@ import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class WorkItemNodeInstanceReader implements NodeInstanceReader {
@@ -55,6 +56,11 @@ public class WorkItemNodeInstanceReader implements NodeInstanceReader {
     @Override
     public boolean accept(Any value) {
         return value.is(WorkItemNodeInstanceContent.class);
+    }
+
+    @Override
+    public Class<? extends GeneratedMessageV3> type() {
+        return WorkItemNodeInstanceContent.class;
     }
 
     @Override

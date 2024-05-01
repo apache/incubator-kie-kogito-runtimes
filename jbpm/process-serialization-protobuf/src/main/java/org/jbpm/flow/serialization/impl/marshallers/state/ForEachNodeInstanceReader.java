@@ -26,6 +26,7 @@ import org.jbpm.workflow.instance.node.ForEachNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.GeneratedMessageV3;
 
 public class ForEachNodeInstanceReader implements NodeInstanceReader {
 
@@ -39,6 +40,12 @@ public class ForEachNodeInstanceReader implements NodeInstanceReader {
         try {
             ForEachNodeInstanceContent content = value.unpack(ForEachNodeInstanceContent.class);
             ForEachNodeInstance nodeInstance = new ForEachNodeInstance();
+            if (content.getTimerInstanceIdCount() > 0) {
+                nodeInstance.internalSetTimerInstances(content.getTimerInstanceIdList().stream().toList());
+            }
+            if (content.getTimerInstanceReferenceCount() > 0) {
+                nodeInstance.internalSetTimerInstancesReference(content.getTimerInstanceReferenceMap());
+            }
             nodeInstance.setExecutedInstances(content.getExecutedInstances());
             nodeInstance.setTotalInstances(content.getTotalInstances());
             nodeInstance.setHasAsyncInstances(content.getHasAsyncInstances());
@@ -48,4 +55,8 @@ public class ForEachNodeInstanceReader implements NodeInstanceReader {
         }
     }
 
+    @Override
+    public Class<? extends GeneratedMessageV3> type() {
+        return ForEachNodeInstanceContent.class;
+    }
 }

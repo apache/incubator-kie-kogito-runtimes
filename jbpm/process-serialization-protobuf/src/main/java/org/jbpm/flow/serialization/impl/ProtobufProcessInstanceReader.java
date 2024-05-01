@@ -199,20 +199,23 @@ public class ProtobufProcessInstanceReader {
     }
 
     protected NodeInstanceImpl buildNodeInstance(KogitoTypesProtobuf.NodeInstance nodeInstance, KogitoNodeInstanceContainer parent) {
-        final com.google.protobuf.Any nodeContentProtobuf = nodeInstance.getContent();
-
-        NodeInstanceReader reader = context.findNodeInstanceReader(nodeContentProtobuf);
-        if (reader == null) {
-            throw new IllegalArgumentException("Unknown node instance " + nodeInstance);
-        }
-
         try {
+            com.google.protobuf.Any nodeContentProtobuf = nodeInstance.getContent();
+
+            NodeInstanceReader reader = context.findNodeInstanceReader(nodeContentProtobuf);
+            if (reader == null) {
+                throw new IllegalArgumentException("Unknown node instance " + nodeInstance);
+            }
+            LOGGER.debug("Node reader {}", reader);
             NodeInstanceImpl result = (NodeInstanceImpl) reader.read(context, nodeContentProtobuf);
             setCommonNodeInstanceData(ruleFlowProcessInstance, parent, nodeInstance, result);
 
-            FieldDescriptor fieldDescriptor = getContextField(nodeInstance);
+            LOGGER.debug("Node {} content {}", reader.type(), nodeContentProtobuf);
+            GeneratedMessageV3 content = nodeContentProtobuf.unpack(reader.type());
+            LOGGER.debug("Node instance being reading {}", result);
+            FieldDescriptor fieldDescriptor = getContextField(content);
             if (fieldDescriptor != null) {
-                GeneratedMessageV3 content = nodeContentProtobuf.unpack(GeneratedMessageV3.class);
+                LOGGER.debug("Node instance context being reading {}", result);
                 KogitoTypesProtobuf.WorkflowContext workflowContext = (KogitoTypesProtobuf.WorkflowContext) content.getField(fieldDescriptor);
                 buildWorkflowContext((NodeInstanceContainer & ContextInstanceContainer & ContextableInstance) result, workflowContext);
             }
@@ -232,13 +235,13 @@ public class ProtobufProcessInstanceReader {
             Arrays.stream(listeners).forEach(e -> e.afterUnmarshallNode(runtime, kogitoNodeInstance));
             return result;
         } catch (IOException e) {
-            throw new IllegalArgumentException("Cannot read node instance content");
+            throw new IllegalArgumentException("Cannot read node instance content", e);
         }
     }
 
-    public FieldDescriptor getContextField(GeneratedMessageV3 meesage) {
-        for (FieldDescriptor field : meesage.getDescriptorForType().getFields()) {
-            if ("context".equals(field.getName()) && field.getContainingType().equals(WorkflowContext.getDescriptor())) {
+    public FieldDescriptor getContextField(GeneratedMessageV3 message) {
+        for (FieldDescriptor field : message.getDescriptorForType().getFields()) {
+            if ("context".equals(field.getName())) {
                 return field;
             }
         }

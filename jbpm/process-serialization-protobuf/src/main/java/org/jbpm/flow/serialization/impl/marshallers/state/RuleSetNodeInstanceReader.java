@@ -29,6 +29,7 @@ import org.jbpm.workflow.instance.node.RuleSetNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.GeneratedMessageV3;
 
 public class RuleSetNodeInstanceReader implements NodeInstanceReader {
 
@@ -56,4 +57,8 @@ public class RuleSetNodeInstanceReader implements NodeInstanceReader {
         }
     }
 
+    @Override
+    public Class<? extends GeneratedMessageV3> type() {
+        return RuleSetNodeInstanceContent.class;
+    }
 }
