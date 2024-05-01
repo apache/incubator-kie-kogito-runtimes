@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -46,7 +45,6 @@ import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.Transformation;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
-import org.kie.kogito.internal.utils.ConversionUtils;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;
@@ -104,23 +102,17 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
                 .filter(Predicate.not(Objects::isNull))
                 .filter(DroolsConsequenceAction.class::isInstance)
                 .map(DroolsConsequenceAction.class::cast)
+                .filter(e -> e.getConsequence() != null && !e.getConsequence().isBlank())
                 .toList();
 
         for (DroolsConsequenceAction script : scripts) {
             body.addStatement(getFactoryMethod(getNodeId((T) extendedNodeImpl), factoryMethod,
                     new StringLiteralExpr(ExtendedNodeImpl.EVENT_NODE_ENTER),
                     new StringLiteralExpr(script.getDialect()),
-                    new StringLiteralExpr(emptyOrTransform(script.getConsequence(), ConversionUtils::sanitizeString)),
+                    new StringLiteralExpr(script.getConsequence()),
                     buildDroolsConsequenceAction(extendedNodeImpl, script.getDialect(), script.getConsequence())));
             ;
         }
-    }
-
-    private String emptyOrTransform(String value, Function<String, String> data) {
-        if (value == null) {
-            return "";
-        }
-        return data.apply(value);
     }
 
     private Expression buildDroolsConsequenceAction(ExtendedNodeImpl extendedNodeImpl, String dialect, String script) {
