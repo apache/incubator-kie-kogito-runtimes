@@ -24,7 +24,6 @@ import java.util.Map;
 import org.jbpm.flow.serialization.MarshallerReaderContext;
 import org.jbpm.flow.serialization.NodeInstanceReader;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerException;
-import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.EventSubProcessNodeInstanceContent;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.JoinNodeInstanceContent;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.jbpm.workflow.instance.node.JoinInstance;
