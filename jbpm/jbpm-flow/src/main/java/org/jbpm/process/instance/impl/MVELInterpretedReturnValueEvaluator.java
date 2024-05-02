@@ -25,15 +25,15 @@ import org.mvel2.integration.impl.ImmutableDefaultFactory;
 import org.mvel2.integration.impl.SimpleValueResolver;
 
 public class MVELInterpretedReturnValueEvaluator implements ReturnValueEvaluator {
-    private static final long serialVersionUID = 510l;
 
     private String expr;
 
     public MVELInterpretedReturnValueEvaluator(String expression) {
+        this.expr = expression;
     }
 
     public Object evaluate(KogitoProcessContext context) throws Exception {
-        return MVEL.eval(this.expr, new ImmutableDefaultFactory() {
+        Object value = MVEL.eval(this.expr, new ImmutableDefaultFactory() {
             @Override
             public boolean isResolveable(String name) {
                 return context.getVariable(name) != null;
@@ -44,6 +44,7 @@ public class MVELInterpretedReturnValueEvaluator implements ReturnValueEvaluator
                 return new SimpleValueResolver(context.getVariable(name));
             };
         });
+        return value;
     }
 
 }
