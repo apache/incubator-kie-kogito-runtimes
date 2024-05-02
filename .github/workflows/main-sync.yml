@@ -1,0 +1,21 @@
+name: Sync main branch
+
+env:
+  GITHUB_TOKEN: ${{ secrets.APACHE_SYNC_MIDSTREAM_TOKEN }}
+
+on:
+  schedule:
+    - cron:  '0 1 * * 0' 
+  workflow_dispatch:
+
+jobs:
+  sync-main:
+    name: Sync main branch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create a PR to sync main branch with main-apache
+        uses: kiegroup/kie-ci/.ci/actions/main-sync@main
+        with:
+          main_sync_workflow_exclude_paths: ${{ vars.MAIN_SYNC_WORKFLOW_EXCLUDE_PATHS }}
+          main_sync_workflow_pr_reviewers: ${{ vars.MAIN_SYNC_WORKFLOW_PR_REVIEWERS }}
