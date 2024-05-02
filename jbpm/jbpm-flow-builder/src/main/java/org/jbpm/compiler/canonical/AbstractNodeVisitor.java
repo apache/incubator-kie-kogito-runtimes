@@ -108,7 +108,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
 
         for (DroolsConsequenceAction script : scripts) {
             body.addStatement(getFactoryMethod(getNodeId((T) extendedNodeImpl), factoryMethod,
-                    new StringLiteralExpr(ExtendedNodeImpl.EVENT_NODE_ENTER),
+                    new StringLiteralExpr(actionType),
                     new StringLiteralExpr(script.getDialect()),
                     new StringLiteralExpr(sanitizeString(script.getConsequence())),
                     buildDroolsConsequenceAction(extendedNodeImpl, script.getDialect(), script.getConsequence())));
