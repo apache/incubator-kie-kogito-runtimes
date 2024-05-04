@@ -114,7 +114,12 @@
       <artifactId>kogito-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-wiring-dynamic</artifactId>
+      <scope>test</scope>
+      <version>999-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <profiles>
