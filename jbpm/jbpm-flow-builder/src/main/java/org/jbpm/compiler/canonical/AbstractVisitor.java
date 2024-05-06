@@ -56,7 +56,7 @@ public abstract class AbstractVisitor {
 
     protected static final String ON_ACTION_SCRIPT_METHOD = "onActionScript";
     protected static final String FACTORY_FIELD_NAME = "factory";
-    protected static final String KCONTEXT_VAR = "kcontext";
+    public static final String KCONTEXT_VAR = "kcontext";
 
     protected MethodCallExpr getWorkflowElementConstructor(WorkflowElementIdentifier identifier) {
         Type type = new ClassOrInterfaceType().setName(WorkflowElementIdentifierFactory.class.getName());

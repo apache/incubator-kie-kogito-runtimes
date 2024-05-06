@@ -19,13 +19,12 @@
 package org.jbpm.compiler.canonical;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.jbpm.process.builder.action.ActionCompilerRegistry;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.process.core.context.variable.Variable;
@@ -46,11 +45,9 @@ import org.jbpm.workflow.core.node.Transformation;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
 
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.AssignExpr.Operator;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
@@ -117,31 +114,10 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
     }
 
     private Expression buildDroolsConsequenceAction(ExtendedNodeImpl extendedNodeImpl, String dialect, String script) {
-        BlockStmt newDroolsConsequenceActionExpression = new BlockStmt();
-        if (script != null) {
-            if (dialect.contains("java")) {
-                newDroolsConsequenceActionExpression = StaticJavaParser.parseBlock("{" + script + "}");
-                Set<NameExpr> identifiers = new HashSet<>(newDroolsConsequenceActionExpression.findAll(NameExpr.class));
-                for (NameExpr identifier : identifiers) {
-                    VariableScope scope = (VariableScope) extendedNodeImpl.resolveContext(VariableScope.VARIABLE_SCOPE, identifier.getNameAsString());
-                    if (scope == null) {
-                        continue;
-                    }
-                    Variable var = scope.findVariable(identifier.getNameAsString());
-                    if (var == null) {
-                        continue;
-                    }
-                    Type type = StaticJavaParser.parseType(var.getType().getStringType());
-                    VariableDeclarationExpr target = new VariableDeclarationExpr(type, var.getName());
-                    Expression source = new MethodCallExpr(new NameExpr(KCONTEXT_VAR), "getVariable", NodeList.nodeList(new StringLiteralExpr(var.getName())));
-                    source = new CastExpr(type, source);
-                    AssignExpr assign = new AssignExpr(target, source, Operator.ASSIGN);
-                    newDroolsConsequenceActionExpression.addStatement(0, assign);
-                }
-            }
+        if (script == null) {
+            return new NullLiteralExpr();
         }
-        ClassOrInterfaceType type = StaticJavaParser.parseClassOrInterfaceType(org.kie.kogito.internal.process.runtime.KogitoProcessContext.class.getName());
-        return new LambdaExpr(NodeList.nodeList(new Parameter(type, KCONTEXT_VAR)), newDroolsConsequenceActionExpression, true);
+        return ActionCompilerRegistry.instance().find(dialect).buildAction(extendedNodeImpl, script);
     }
 
     private boolean isExtendedNode(T node) {
