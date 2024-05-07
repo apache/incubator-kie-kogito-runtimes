@@ -25,6 +25,8 @@ import org.kie.api.runtime.process.NodeInstanceContainer;
 
 public interface NodeInstanceFactory {
 
+    Class<? extends Node> forClass();
+
     NodeInstance getNodeInstance(Node node, WorkflowProcessInstance processInstance, NodeInstanceContainer nodeInstanceContainer);
 
 }

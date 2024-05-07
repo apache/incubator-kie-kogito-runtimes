@@ -32,6 +32,11 @@ public class MockNodeInstanceFactory implements NodeInstanceFactory {
 
     private MockNodeInstance instance;
 
+    @Override
+    public Class<? extends Node> forClass() {
+        return this.instance.getNode().getClass();
+    }
+
     public MockNodeInstanceFactory(MockNodeInstance instance) {
         this.instance = instance;
     }
