@@ -1,6 +1,7 @@
 pom.xml;kogito-maven-plugin,springboot
-addons/common/pom.xml;events,monitoring,explainability,human-task-prediction,mail,tracing,task-management,marshallers
+addons/common/pom.xml;events,explainability,human-task-prediction,mail,tracing,task-management,marshallers
 addons/common/persistence/pom.xml;infinispan,filesystem,mongodb,postgresql,rocksdb
+addons/common/monitoring/pom.xml;prometheus,elastic
 api/pom.xml;kogito-api-incubation-common,kogito-api-incubation-common-objectmapper,kogito-api-incubation-application,kogito-api-incubation-processes,kogito-api-incubation-processes-services,kogito-api-incubation-predictions,kogito-api-incubation-predictions-services,kogito-api-incubation-decisions,kogito-api-incubation-decisions-services,kogito-api-incubation-rules,kogito-api-incubation-rules-services
 drools/pom.xml;kogito-pmml-api-dependencies,kogito-efesto-drl,kogito-pmml-dependencies,kogito-pmml-openapi,kogito-pmml,kogito-scenario-simulation
 kogito-codegen-modules/pom.xml;kogito-codegen-rules,kogito-codegen-decisions,kogito-codegen-predictions,kogito-codegen-integration-tests,kogito-codegen-sample
