@@ -96,6 +96,8 @@
               <exclude>.mvn/maven.config</exclude>
               <exclude>**/simple_invalid_migration.invalid</exclude>
               <exclude>**/*.mpf</exclude>
+              <exclude>**/src/test/**/*.txt</exclude>
+              <exclude>**/.gitkeep</exclude>
             </excludes>
           </configuration>
         </plugin>
