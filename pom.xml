@@ -103,6 +103,7 @@
               <exclude>**/*.lst</exclude>
               <exclude>**/requirements.txt</exclude>
               <exclude>**/*.addon</exclude>
+              <exclude>**/*.avsc</exclude>
             </excludes>
           </configuration>
         </plugin>
