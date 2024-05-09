@@ -202,8 +202,8 @@ public abstract class RuleFlowNodeContainerFactory<T extends RuleFlowNodeContain
     }
 
     private Connection getConnection(WorkflowElementIdentifier fromId, WorkflowElementIdentifier toId, String uniqueId) {
-        Node from = ((NodeContainer) node).getNode(fromId);
-        Node to = ((NodeContainer) node).getNode(toId);
+        Node from = ((NodeContainer) getNodeContainer()).getNode(fromId);
+        Node to = ((NodeContainer) getNodeContainer()).getNode(toId);
         Connection connection = new ConnectionImpl(from, CONNECTION_DEFAULT_TYPE, to, CONNECTION_DEFAULT_TYPE);
         if (uniqueId != null) {
             connection.setMetaData(UNIQUE_ID, uniqueId);
@@ -244,7 +244,7 @@ public abstract class RuleFlowNodeContainerFactory<T extends RuleFlowNodeContain
     public abstract T variable(String name, DataType type, Object value, String metaDataName, Object metaDataValue);
 
     private <S extends Context> S getScope(String scopeType, Class<S> scopeClass) {
-        ContextContainer contextContainer = (ContextContainer) node;
+        ContextContainer contextContainer = (ContextContainer) getNodeContainer();
         Context scope = contextContainer.getDefaultContext(scopeType);
         if (scope == null) {
             try {
@@ -259,9 +259,9 @@ public abstract class RuleFlowNodeContainerFactory<T extends RuleFlowNodeContain
     }
 
     public RuleFlowNodeContainerFactory<T, P> addCompensationContext(String contextId) {
-        if (node instanceof ContextContainer) {
+        if (getNodeContainer() instanceof ContextContainer) {
             CompensationScope compensationScope = new CompensationScope();
-            ContextContainer contextNode = (ContextContainer) node;
+            ContextContainer contextNode = (ContextContainer) getNodeContainer();
             contextNode.addContext(compensationScope);
             contextNode.setDefaultContext(compensationScope);
             compensationScope.setContextContainerId(contextId);
