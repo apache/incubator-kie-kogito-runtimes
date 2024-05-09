@@ -98,6 +98,11 @@
               <exclude>**/*.mpf</exclude>
               <exclude>**/src/test/**/*.txt</exclude>
               <exclude>**/.gitkeep</exclude>
+              <exclude>**/checkstyle-cachefile</exclude>
+              <exclude>**/*.log</exclude>
+              <exclude>**/*.lst</exclude>
+              <exclude>**/requirements.txt</exclude>
+              <exclude>**/*.addon</exclude>
             </excludes>
           </configuration>
         </plugin>
