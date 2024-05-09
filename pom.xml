@@ -104,6 +104,7 @@
               <exclude>**/requirements.txt</exclude>
               <exclude>**/*.addon</exclude>
               <exclude>**/*.avsc</exclude>
+              <exclude>**/LoanUnit.xls.properties.test</exclude>
             </excludes>
           </configuration>
         </plugin>
