@@ -105,6 +105,7 @@
               <exclude>**/*.addon</exclude>
               <exclude>**/*.avsc</exclude>
               <exclude>**/LoanUnit.xls.properties.test</exclude>
+              <exclude>**/src_test_resources_application.yml</exclude>
             </excludes>
           </configuration>
         </plugin>
