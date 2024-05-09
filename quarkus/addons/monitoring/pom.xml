@@ -38,6 +38,7 @@
     <module>core</module>
     <module>prometheus</module>
     <module>elastic</module>
+    <module>sonataflow</module>
   </modules>
 
 </project>

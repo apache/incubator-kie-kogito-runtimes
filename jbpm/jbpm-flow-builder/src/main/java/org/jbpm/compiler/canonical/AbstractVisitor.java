@@ -50,11 +50,13 @@ import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_ADD_COMPENSATION_CONTEXT;
 import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VARIABLE;
 import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_METADATA;
+import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeString;
 
 public abstract class AbstractVisitor {
 
+    protected static final String ON_ACTION_SCRIPT_METHOD = "onActionScript";
     protected static final String FACTORY_FIELD_NAME = "factory";
-    protected static final String KCONTEXT_VAR = "kcontext";
+    public static final String KCONTEXT_VAR = "kcontext";
 
     protected MethodCallExpr getWorkflowElementConstructor(WorkflowElementIdentifier identifier) {
         Type type = new ClassOrInterfaceType().setName(WorkflowElementIdentifierFactory.class.getName());
@@ -73,9 +75,9 @@ public abstract class AbstractVisitor {
 
     protected String getOrDefault(String value, String defaultValue) {
         if (value == null) {
-            return defaultValue;
+            return sanitizeString(defaultValue);
         }
-        return value;
+        return sanitizeString(value);
     }
 
     protected Expression getOrNullExpr(String value) {
