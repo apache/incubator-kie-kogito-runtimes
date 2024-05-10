@@ -106,6 +106,13 @@
               <exclude>**/*.avsc</exclude>
               <exclude>**/LoanUnit.xls.properties.test</exclude>
               <exclude>**/src_test_resources_application.yml</exclude>
+              <exclude>**/BPMN*.xsd</exclude>
+              <exclude>**/bpsim.xsd</exclude>
+              <exclude>**/DC.xsd</exclude>
+              <exclude>**/DI.xsd</exclude>
+              <exclude>**/DiagramDefinition.xsd</exclude>
+              <exclude>**/DiagramInterchange.xsd</exclude>
+              <exclude>**/Semantic.xsd</exclude>
             </excludes>
           </configuration>
         </plugin>
