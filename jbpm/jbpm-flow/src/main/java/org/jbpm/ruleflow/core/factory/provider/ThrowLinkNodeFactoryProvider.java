@@ -22,13 +22,14 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.ThrowLinkNodeFactory;
 import org.jbpm.workflow.core.NodeContainer;
+import org.jbpm.workflow.core.node.ThrowLinkNode;
 import org.kie.api.definition.process.WorkflowElementIdentifier;
 
 public class ThrowLinkNodeFactoryProvider implements NodeFactoryProvider {
 
     @Override
     public boolean accept(Class<?> type) {
-        return false;
+        return ThrowLinkNode.class.equals(type);
     }
 
     @Override
