@@ -20,14 +20,16 @@ package org.jbpm.flow.serialization.impl;
 
 import java.io.OutputStream;
 
+import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.MarshallerWriterContext;
+import org.jbpm.flow.serialization.NodeInstanceWriter;
+import org.kie.api.runtime.process.NodeInstance;
 
 /**
  * Extension to default <code>MarshallerWriteContext</code>
  */
 
 public class ProtobufProcessMarshallerWriteContext extends ProtobufAbstractMarshallerContext implements MarshallerWriterContext {
-
     private OutputStream os;
 
     public ProtobufProcessMarshallerWriteContext(OutputStream os) {
@@ -37,6 +39,17 @@ public class ProtobufProcessMarshallerWriteContext extends ProtobufAbstractMarsh
     @Override
     public OutputStream output() {
         return os;
+    }
+
+    @Override
+    public NodeInstanceWriter findNodeInstanceWriter(NodeInstance nodeInstance) {
+        NodeInstanceWriter[] writers = this.get(MarshallerContextName.MARSHALLER_NODE_INSTANCE_WRITER);
+        for (NodeInstanceWriter writer : writers) {
+            if (writer.accept(nodeInstance)) {
+                return writer;
+            }
+        }
+        return null;
     }
 
 }

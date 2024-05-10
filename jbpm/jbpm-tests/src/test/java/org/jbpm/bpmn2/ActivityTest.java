@@ -37,6 +37,8 @@ import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.task.SendTaskModel;
 import org.jbpm.bpmn2.task.SendTaskProcess;
+import org.jbpm.bpmn2.subprocess.SubProcessWithEntryExitScriptsModel;
+import org.jbpm.bpmn2.subprocess.SubProcessWithEntryExitScriptsProcess;
 import org.jbpm.bpmn2.test.RequirePersistence;
 import org.jbpm.process.builder.ActionBuilder;
 import org.jbpm.process.builder.AssignmentBuilder;
@@ -52,6 +54,7 @@ import org.jbpm.process.instance.event.listeners.TriggerRulesEventListener;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
+import org.jbpm.test.utils.EventTrackerProcessListener;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.jbpm.workflow.core.impl.DataAssociation;
 import org.jbpm.workflow.core.impl.DataDefinition;
@@ -444,39 +447,27 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Disabled("On Exit not supported, see https://issues.redhat.com/browse/KOGITO-2067")
     public void testSubProcessWithEntryExitScripts() throws Exception {
-        kruntime = createKogitoProcessRuntime("subprocess/BPMN2-SubProcessWithEntryExitScripts.bpmn2");
-        TestWorkItemHandler handler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
+        Application app = ProcessTestHelper.newApplication();
+        EventTrackerProcessListener listener = new EventTrackerProcessListener();
+        ProcessTestHelper.registerProcessEventListener(app, listener);
 
-        KogitoProcessInstance processInstance = kruntime.startProcess("com.sample.bpmn.hello");
+        org.kie.kogito.process.Process<SubProcessWithEntryExitScriptsModel> process = SubProcessWithEntryExitScriptsProcess.newProcess(app);
+        ProcessInstance<SubProcessWithEntryExitScriptsModel> processInstance = process.createInstance(process.createModel());
+        processInstance.start();
 
-        assertNodeTriggered(processInstance.getStringId(), "Task1");
-        Object var1 = getProcessVarValue(processInstance, "var1");
-        assertThat(var1).isNotNull().hasToString("10");
+        assertThat(listener.tracked()).anyMatch(ProcessTestHelper.triggered("Task1"));
+        assertThat(processInstance.variables().getVar1()).isNotNull().hasToString("10");
+        assertThat(listener.tracked()).anyMatch(ProcessTestHelper.triggered("Task2"));
+        assertThat(processInstance.variables().getVar2()).isNotNull().hasToString("20");
+        assertThat(listener.tracked()).anyMatch(ProcessTestHelper.triggered("Task3"));
+        assertThat(processInstance.variables().getVar3()).isNotNull().hasToString("30");
+        assertThat(listener.tracked()).anyMatch(ProcessTestHelper.triggered("SubProcess"));
+        assertThat(processInstance.variables().getVar4()).isNotNull().hasToString("40");
+        assertThat(processInstance.variables().getVar5()).isNotNull().hasToString("50");
 
-        assertNodeTriggered(processInstance.getStringId(), "Task2");
-        Object var2 = getProcessVarValue(processInstance, "var2");
-        assertThat(var2).isNotNull().hasToString("20");
-
-        assertNodeTriggered(processInstance.getStringId(), "Task3");
-        Object var3 = getProcessVarValue(processInstance, "var3");
-        assertThat(var3).isNotNull().hasToString("30");
-
-        assertNodeTriggered(processInstance.getStringId(), "SubProcess");
-        Object var4 = getProcessVarValue(processInstance, "var4");
-        assertThat(var4).isNotNull().hasToString("40");
-
-        Object var5 = getProcessVarValue(processInstance, "var5");
-        assertThat(var5).isNotNull().hasToString("50");
-
-        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = handler.getWorkItem();
-        assertThat(workItem).isNotNull();
-
-        kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
-
-        assertProcessInstanceCompleted(processInstance);
+        ProcessTestHelper.completeWorkItem(processInstance, "john", Collections.emptyMap());
+        assertThat(processInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test

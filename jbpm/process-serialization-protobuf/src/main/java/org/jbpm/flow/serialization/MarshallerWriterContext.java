@@ -20,8 +20,12 @@ package org.jbpm.flow.serialization;
 
 import java.io.OutputStream;
 
+import org.kie.api.runtime.process.NodeInstance;
+
 public interface MarshallerWriterContext extends MarshallerContext {
 
     OutputStream output();
+
+    NodeInstanceWriter findNodeInstanceWriter(NodeInstance nodeInstance);
 
 }
