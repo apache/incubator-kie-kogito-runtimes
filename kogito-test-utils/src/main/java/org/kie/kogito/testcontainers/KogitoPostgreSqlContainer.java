@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 /**
  * PostgreSQL Container for Kogito examples.
@@ -42,6 +41,7 @@ public class KogitoPostgreSqlContainer extends PostgreSQLContainer<KogitoPostgre
         super(KogitoGenericContainer.getImageName(NAME));
         withLogConsumer(getLogger());
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
+        withStartupTimeout(Constants.CONTAINER_START_TIMEOUT);
     }
 
     private Consumer<OutputFrame> getLogger() {
@@ -51,10 +51,6 @@ public class KogitoPostgreSqlContainer extends PostgreSQLContainer<KogitoPostgre
     @Override
     public void start() {
         super.start();
-        waitingFor(new LogMessageWaitStrategy()
-                .withRegEx(".*Container is started.*jdbc:postgresql\\s")
-                .withTimes(2)
-                .withStartupTimeout(Constants.CONTAINER_START_TIMEOUT));
         LOGGER.info("PostgreSql server: {}", this.getContainerIpAddress() + ":" + this.getMappedPort(POSTGRESQL_PORT));
     }
 
