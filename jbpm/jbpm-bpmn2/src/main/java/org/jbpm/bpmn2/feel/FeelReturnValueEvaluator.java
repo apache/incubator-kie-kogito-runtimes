@@ -35,7 +35,6 @@ import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.api.runtime.Globals;
 import org.kie.dmn.api.feel.runtime.events.FEELEvent;
 import org.kie.dmn.feel.FEEL;
-import org.kie.dmn.feel.lang.impl.FEELBuilder;
 import org.kie.dmn.feel.parser.feel11.profiles.KieExtendedFEELProfile;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
@@ -79,7 +78,7 @@ public class FeelReturnValueEvaluator implements ReturnValueEvaluator, Externali
 
             variables.putAll(variableScope.getVariables());
         }
-        FEEL feel = FEELBuilder.builder().withProfiles(Collections.singletonList(new KieExtendedFEELProfile())).build();
+        FEEL feel = FEEL.newInstance(Collections.singletonList(new KieExtendedFEELProfile()));
         FeelErrorEvaluatorListener listener = new FeelErrorEvaluatorListener();
         feel.addListener(listener);
 
