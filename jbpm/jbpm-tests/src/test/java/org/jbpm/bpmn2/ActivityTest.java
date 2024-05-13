@@ -19,13 +19,15 @@
 package org.jbpm.bpmn2;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.drools.compiler.rule.builder.PackageBuildContext;
+import org.jbpm.bpmn2.activity.ScriptTaskModel;
+import org.jbpm.bpmn2.activity.ScriptTaskProcess;
+import org.jbpm.bpmn2.activity.ScriptTaskWithIOModel;
+import org.jbpm.bpmn2.activity.ScriptTaskWithIOProcess;
+import org.jbpm.bpmn2.flow.CompositeWithDIGraphicalModel;
+import org.jbpm.bpmn2.flow.CompositeWithDIGraphicalProcess;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.handler.ServiceTaskHandler;
@@ -82,12 +84,7 @@ import org.kie.api.runtime.process.DataTransformer;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.Application;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
-import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
+import org.kie.kogito.internal.process.runtime.*;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 
@@ -195,33 +192,39 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testCompositeProcessWithDIGraphical() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/flow/BPMN2-CompositeProcessWithDIGraphical.bpmn2");
-        KogitoProcessInstance processInstance = kruntime.startProcess("CompositeWithDIGraphical");
-        assertProcessInstanceCompleted(processInstance);
+
+        Application app = ProcessTestHelper.newApplication();
+        org.kie.kogito.process.Process<CompositeWithDIGraphicalModel> compositeWithDIGraphicalProcess = CompositeWithDIGraphicalProcess.newProcess(app);
+        CompositeWithDIGraphicalModel model = compositeWithDIGraphicalProcess.createModel();
+        ProcessInstance<CompositeWithDIGraphicalModel> instance = compositeWithDIGraphicalProcess.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
     public void testScriptTask() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/activity/BPMN2-ScriptTask.bpmn2");
-        KogitoProcessInstance processInstance = kruntime.startProcess("ScriptTask");
-        assertProcessInstanceCompleted(processInstance);
+        Application app = ProcessTestHelper.newApplication();
+        org.kie.kogito.process.Process<ScriptTaskModel> scriptTasklProcess = ScriptTaskProcess.newProcess(app);
+        ScriptTaskModel model = scriptTasklProcess.createModel();
+        ProcessInstance<ScriptTaskModel> instance = scriptTasklProcess.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
     public void testScriptTaskWithIO() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/activity/BPMN2-ScriptTaskWithIO.bpmn2");
-
-        Process scriptProcess = kruntime.getKieBase().getProcess("ScriptTaskWithIO");
-        assertThat(scriptProcess).isNotNull();
-        Node[] nodes = ((NodeContainer) scriptProcess).getNodes();
+        Application app = ProcessTestHelper.newApplication();
+        org.kie.kogito.process.Process<ScriptTaskWithIOModel> scriptTaskWithIOProcess = ScriptTaskWithIOProcess.newProcess(app);
+        ScriptTaskWithIOModel model = scriptTaskWithIOProcess.createModel();
+        model.setName("john");
+        ProcessInstance<ScriptTaskWithIOModel> instance = scriptTaskWithIOProcess.createInstance(model);
+        instance.start();
+        assertThat(scriptTaskWithIOProcess).isNotNull();
+        Collection<KogitoNode> nodes = scriptTaskWithIOProcess.findNodes(Objects::nonNull);
         assertThat(nodes).hasSize(3);
         assertThat(nodes).filteredOn(n -> n instanceof ActionNode).allMatch(n -> ((ActionNode) n).getInAssociations().size() == 1 && ((ActionNode) n).getOutAssociations().size() == 1);
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "John");
-        KogitoProcessInstance processInstance = kruntime.startProcess("ScriptTaskWithIO", params);
-
-        assertProcessInstanceCompleted(processInstance);
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
