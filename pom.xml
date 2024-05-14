@@ -53,7 +53,7 @@
 
   <scm>
     <connection>scm:git:https://github.com/apache/incubator-kie-kogito-runtimes.git</connection>
-    <developerConnection>scm:git:git@github.com:apache/incubator-kie-kogito-runtimes.git</developerConnection>
+    <developerConnection>scm:git:https://github.com/apache/incubator-kie-kogito-runtimes.git</developerConnection>
     <url>https://github.com/apache/incubator-kie-kogito-runtimes</url>
   </scm>
 
