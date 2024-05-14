@@ -21,6 +21,7 @@ package org.jbpm.flow.serialization;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -31,11 +32,19 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.jbpm.flow.serialization.impl.ProtobufMarshallerReaderContext;
 import org.jbpm.flow.serialization.impl.ProtobufProcessInstanceReader;
@@ -49,6 +58,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
+import org.jbpm.util.JbpmClassLoaderUtil;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
@@ -62,8 +72,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.impl.AbstractProcess;
+import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -113,6 +127,7 @@ public class ProcessInstanceMarshallTest {
         when(process.get()).thenReturn(workflow);
     }
 
+    @XmlRootElement
     public static class MarshableObject implements Serializable {
 
         private static final long serialVersionUID = 1481370154514125687L;
@@ -167,6 +182,16 @@ public class ProcessInstanceMarshallTest {
     }
 
     private static Stream<Arguments> testRoundTrip() throws Exception {
+        MarshableObject marshableObject = new MarshableObject("henry");
+        JAXBContext jaxbContext = JAXBContext.newInstance(MarshableObject.class);
+        jakarta.xml.bind.Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+        jaxbMarshaller.setProperty(jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document document = db.newDocument();
+        jaxbMarshaller.marshal(marshableObject, document);
+
         return Stream.of(
                 Arguments.of(1),
                 Arguments.of("hello"),
@@ -177,7 +202,7 @@ public class ProcessInstanceMarshallTest {
                 Arguments.of(BigDecimal.valueOf(10l)),
                 Arguments.of(new MarshableObject("henry")),
                 Arguments.of(new ObjectMapper().readTree("{ \"key\" : \"value\" }")),
-                Arguments.of(new ObjectMapper().valueToTree(new MarshableObject("henry"))),
+                Arguments.of(new ObjectMapper().valueToTree(marshableObject)),
                 Arguments.of(new Date()),
                 Arguments.of(Instant.now()),
                 Arguments.of(OffsetDateTime.now()),
@@ -185,9 +210,8 @@ public class ProcessInstanceMarshallTest {
                 Arguments.of(LocalDate.now()),
                 Arguments.of(ZonedDateTime.now()),
                 Arguments.of(new Timestamp(System.currentTimeMillis())),
-                Arguments.of(Duration.ofDays(1))
-
-        );
+                Arguments.of(Duration.ofDays(1)),
+                Arguments.of(document));
     }
 
     @ParameterizedTest
@@ -240,12 +264,35 @@ public class ProcessInstanceMarshallTest {
         ProtobufVariableReader reader = new ProtobufVariableReader(ctxIn);
         List<Variable> unmarshalledVars = reader.buildVariables(variables);
         assertThat(unmarshalledVars).hasSize(1);
-        assertThat(unmarshalledVars.get(0).getValue()).isEqualTo(toMarshall);
+        assertThat(unmarshalledVars.get(0).getValue())
+                .usingComparatorForType(new DocumentComparator(), Document.class)
+                .usingRecursiveComparison()
+                .isEqualTo(toMarshall);
+    }
+
+    public class DocumentComparator implements Comparator<Document> {
+
+        @Override
+        public int compare(Document doc1, Document doc2) {
+            return toXml(doc1).compareTo(toXml(doc2));
+        }
+    }
+
+    private String toXml(Document document) {
+        try {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer trans = tf.newTransformer();
+            StringWriter sw = new StringWriter();
+            trans.transform(new DOMSource(document), new StreamResult(sw));
+            return sw.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private ObjectMarshallerStrategy[] defaultStrategies() {
         List<ObjectMarshallerStrategy> strats = new ArrayList<>();
-        ServiceLoader<ObjectMarshallerStrategy> loader = ServiceLoader.load(ObjectMarshallerStrategy.class);
+        ServiceLoader<ObjectMarshallerStrategy> loader = ServiceLoader.load(ObjectMarshallerStrategy.class, JbpmClassLoaderUtil.findClassLoader());
 
         for (ObjectMarshallerStrategy strategy : loader) {
             strats.add(strategy);
