@@ -72,14 +72,14 @@ import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess.RULEFLOW_TYPE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.annotation.XmlRootElement;
 
 public class ProcessInstanceMarshallTest {
     private static final String PROCESS_DESCRIPTION = "The description";
