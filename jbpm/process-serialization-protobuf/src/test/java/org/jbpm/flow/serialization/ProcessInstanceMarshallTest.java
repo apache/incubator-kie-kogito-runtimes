@@ -30,12 +30,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,7 +55,6 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
-import org.jbpm.util.JbpmClassLoaderUtil;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
@@ -76,14 +72,14 @@ import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.annotation.XmlRootElement;
-
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess.RULEFLOW_TYPE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 public class ProcessInstanceMarshallTest {
     private static final String PROCESS_DESCRIPTION = "The description";
@@ -219,7 +215,7 @@ public class ProcessInstanceMarshallTest {
     public void testProcessInstanceMarshalling(RuleFlowProcessInstance toMarshall) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ProtobufProcessMarshallerWriteContext ctxOut = new ProtobufProcessMarshallerWriteContext(out);
-        ctxOut.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, defaultStrategies());
+        ctxOut.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, ObjectMarshallerStrategyHelper.defaultStrategies());
         ctxOut.set(MarshallerContextName.MARSHALLER_PROCESS, process);
 
         ProtobufProcessInstanceWriter writer = new ProtobufProcessInstanceWriter(ctxOut);
@@ -228,7 +224,7 @@ public class ProcessInstanceMarshallTest {
 
         ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         ProtobufMarshallerReaderContext ctxIn = new ProtobufMarshallerReaderContext(in);
-        ctxIn.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, defaultStrategies());
+        ctxIn.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, ObjectMarshallerStrategyHelper.defaultStrategies());
         ctxIn.set(MarshallerContextName.MARSHALLER_PROCESS, process);
         ProtobufProcessInstanceReader reader = new ProtobufProcessInstanceReader(ctxIn);
         RuleFlowProcessInstance unmarshalled = reader.read(in);
@@ -252,14 +248,14 @@ public class ProcessInstanceMarshallTest {
     public void testRoundTrip(Object toMarshall) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ProtobufProcessMarshallerWriteContext ctxOut = new ProtobufProcessMarshallerWriteContext(out);
-        ctxOut.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, defaultStrategies());
+        ctxOut.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, ObjectMarshallerStrategyHelper.defaultStrategies());
         ctxOut.set(MarshallerContextName.MARSHALLER_PROCESS, process);
         ProtobufVariableWriter writer = new ProtobufVariableWriter(ctxOut);
         List<KogitoTypesProtobuf.Variable> variables = writer.buildVariables(singletonMap("var", toMarshall).entrySet().stream().collect(Collectors.toList()));
 
         ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         ProtobufMarshallerReaderContext ctxIn = new ProtobufMarshallerReaderContext(in);
-        ctxIn.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, defaultStrategies());
+        ctxIn.set(MarshallerContextName.OBJECT_MARSHALLING_STRATEGIES, ObjectMarshallerStrategyHelper.defaultStrategies());
         ctxIn.set(MarshallerContextName.MARSHALLER_PROCESS, process);
         ProtobufVariableReader reader = new ProtobufVariableReader(ctxIn);
         List<Variable> unmarshalledVars = reader.buildVariables(variables);
@@ -290,14 +286,4 @@ public class ProcessInstanceMarshallTest {
         }
     }
 
-    private ObjectMarshallerStrategy[] defaultStrategies() {
-        List<ObjectMarshallerStrategy> strats = new ArrayList<>();
-        ServiceLoader<ObjectMarshallerStrategy> loader = ServiceLoader.load(ObjectMarshallerStrategy.class, JbpmClassLoaderUtil.findClassLoader());
-
-        for (ObjectMarshallerStrategy strategy : loader) {
-            strats.add(strategy);
-        }
-        Collections.sort(strats);
-        return strats.stream().toArray(ObjectMarshallerStrategy[]::new);
-    }
 }
