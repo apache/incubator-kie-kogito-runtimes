@@ -81,7 +81,7 @@ public class ProcessVisitor extends AbstractVisitor {
     private NodeVisitorBuilderService nodeVisitorService;
 
     public ProcessVisitor(ClassLoader contextClassLoader) {
-        nodeVisitorService = new NodeVisitorBuilderService();
+        nodeVisitorService = new NodeVisitorBuilderService(contextClassLoader);
     }
 
     public void visitProcess(WorkflowProcess process, MethodDeclaration processMethod, ProcessMetaData metadata) {

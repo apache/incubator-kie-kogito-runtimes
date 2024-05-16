@@ -24,5 +24,5 @@ public interface NodeVisitorBuilder {
 
     Class<?> type();
 
-    AbstractNodeVisitor<? extends org.kie.api.definition.process.Node> visitor(NodeVisitorBuilderService nodeVisitorService);
+    AbstractNodeVisitor<? extends org.kie.api.definition.process.Node> visitor(NodeVisitorBuilderService nodeVisitorService, ClassLoader contextClassLoader);
 }

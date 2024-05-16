@@ -31,8 +31,8 @@ public class HumanTaskNodeVisitorBuilder implements NodeVisitorBuilder {
     }
 
     @Override
-    public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService) {
-        return new HumanTaskNodeVisitor();
+    public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService, ClassLoader classLoader) {
+        return new HumanTaskNodeVisitor(classLoader);
     }
 
 }

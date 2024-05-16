@@ -20,7 +20,6 @@ package org.jbpm.compiler.canonical.node;
 
 import org.jbpm.compiler.canonical.AbstractNodeVisitor;
 import org.jbpm.compiler.canonical.WorkItemNodeVisitor;
-import org.jbpm.util.JbpmClassLoaderUtil;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.definition.process.Node;
 
@@ -32,8 +31,8 @@ public class WorkItemNodeVisitorBuilder implements NodeVisitorBuilder {
     }
 
     @Override
-    public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService) {
-        return new WorkItemNodeVisitor(JbpmClassLoaderUtil.findClassLoader());
+    public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService, ClassLoader classLoader) {
+        return new WorkItemNodeVisitor(classLoader);
     }
 
 }

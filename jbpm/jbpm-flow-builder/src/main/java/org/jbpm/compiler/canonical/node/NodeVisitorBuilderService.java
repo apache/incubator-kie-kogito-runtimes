@@ -24,19 +24,26 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.jbpm.compiler.canonical.AbstractNodeVisitor;
+import org.jbpm.util.JbpmClassLoaderUtil;
 
 public class NodeVisitorBuilderService {
 
     private Map<Class<?>, NodeVisitorBuilder> nodesVisitors;
+    private ClassLoader contextClassLoader;
 
     public NodeVisitorBuilderService() {
-        nodesVisitors = ServiceLoader.load(NodeVisitorBuilder.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toMap(NodeVisitorBuilder::type, Function.identity()));
+        this(JbpmClassLoaderUtil.findClassLoader());
+    }
+
+    public NodeVisitorBuilderService(ClassLoader contextClassLoader) {
+        this.nodesVisitors = ServiceLoader.load(NodeVisitorBuilder.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toMap(NodeVisitorBuilder::type, Function.identity()));
+        this.contextClassLoader = contextClassLoader;
     }
 
     public AbstractNodeVisitor<? extends org.kie.api.definition.process.Node> findNodeVisitor(Class<?> clazz) {
         NodeVisitorBuilder nodeVisitor = nodesVisitors.get(clazz);
         if (nodeVisitor != null) {
-            return nodeVisitor.visitor(this);
+            return nodeVisitor.visitor(this, contextClassLoader);
         }
         throw new IllegalArgumentException(clazz + " visitor not supported");
     }

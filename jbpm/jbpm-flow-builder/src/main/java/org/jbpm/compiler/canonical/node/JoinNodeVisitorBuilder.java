@@ -31,7 +31,7 @@ public class JoinNodeVisitorBuilder implements NodeVisitorBuilder {
     }
 
     @Override
-    public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService) {
+    public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService, ClassLoader classLoader) {
         return new JoinNodeVisitor();
     }
 

@@ -20,7 +20,6 @@ package org.jbpm.compiler.canonical.node;
 
 import org.jbpm.compiler.canonical.AbstractNodeVisitor;
 import org.jbpm.compiler.canonical.RuleSetNodeVisitor;
-import org.jbpm.util.JbpmClassLoaderUtil;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.api.definition.process.Node;
 
@@ -32,8 +31,8 @@ public class RuleSetNodeVisitorBuilder implements NodeVisitorBuilder {
     }
 
     @Override
-    public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService) {
-        return new RuleSetNodeVisitor(JbpmClassLoaderUtil.findClassLoader());
+    public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService, ClassLoader classLoader) {
+        return new RuleSetNodeVisitor(classLoader);
     }
 
 }
