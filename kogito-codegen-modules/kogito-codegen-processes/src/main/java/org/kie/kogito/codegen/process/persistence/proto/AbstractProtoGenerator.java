@@ -171,7 +171,7 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
         alreadyGenerated.addAll(protoBuiltins());
         for (T dataModel : dataModels.stream().filter(this::filterDataModels).toList()) {
             try {
-                LOGGER.info("internal proto geneartion {}", fqn(dataModel));
+                LOGGER.debug("internal proto geneartion {}", fqn(dataModel));
                 internalGenerate(
                         proto,
                         alreadyGenerated,
