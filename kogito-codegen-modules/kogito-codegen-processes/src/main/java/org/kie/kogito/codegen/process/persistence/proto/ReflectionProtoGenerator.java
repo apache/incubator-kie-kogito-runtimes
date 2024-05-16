@@ -44,16 +44,12 @@ import org.kie.kogito.codegen.VariableInfo;
 import org.kie.kogito.codegen.process.persistence.ExclusionTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 import static java.lang.String.format;
 
 public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionProtoGenerator.class);
-    private static final List<Class<?>> PROTO_BUILTINS = List.of(JsonNode.class, Document.class);
 
     private ReflectionProtoGenerator(Collection<Class<?>> modelClasses, Collection<Class<?>> dataClasses) {
         super(modelClasses, dataClasses);
@@ -66,9 +62,12 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
     @Override
     protected ProtoMessage messageFromClass(Proto proto, Set<String> alreadyGenerated, Class<?> clazz, String messageComment, String fieldComment) throws Exception {
+
         if (!shouldGenerateProto(clazz)) {
+            LOGGER.info("Skipping generating reflection proto for class {}", clazz);
             return null;
         }
+        LOGGER.debug("Generating reflection proto for class {}", clazz);
 
         String clazzName = extractName(clazz).get();
         ProtoMessage message = new ProtoMessage(clazzName, clazz.getPackage().getName());
@@ -130,9 +129,6 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
     }
 
     protected boolean shouldGenerateProto(Class<?> clazz) {
-        if (PROTO_BUILTINS.contains(clazz)) {
-            return false;
-        }
         return extractName(clazz).isPresent();
     }
 

@@ -19,6 +19,7 @@
 package org.kie.kogito.codegen.process.persistence.proto;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
@@ -35,6 +36,8 @@ public interface ProtoGenerator {
     Proto protoOfDataClasses(String packageName, String... headers);
 
     Collection<GeneratedFile> generateProtoFiles();
+
+    List<String> protoBuiltins();
 
     interface Builder<E, T extends ProtoGenerator> {
 
