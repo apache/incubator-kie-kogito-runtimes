@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.drools.compiler.rule.builder.PackageBuildContext;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
@@ -34,8 +36,21 @@ import org.jbpm.bpmn2.objects.Address;
 import org.jbpm.bpmn2.objects.HelloService;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
+import org.jbpm.bpmn2.subprocess.CallActivityModel;
+import org.jbpm.bpmn2.subprocess.CallActivityProcess;
+import org.jbpm.bpmn2.subprocess.CallActivitySubProcessProcess;
+import org.jbpm.bpmn2.subprocess.InputMappingUsingValueModel;
+import org.jbpm.bpmn2.subprocess.InputMappingUsingValueProcess;
+import org.jbpm.bpmn2.subprocess.SingleTaskWithVarDefModel;
+import org.jbpm.bpmn2.subprocess.SingleTaskWithVarDefProcess;
 import org.jbpm.bpmn2.subprocess.SubProcessWithEntryExitScriptsModel;
 import org.jbpm.bpmn2.subprocess.SubProcessWithEntryExitScriptsProcess;
+import org.jbpm.bpmn2.subprocess.SubProcessWithTerminateEndEventModel;
+import org.jbpm.bpmn2.subprocess.SubProcessWithTerminateEndEventProcess;
+import org.jbpm.bpmn2.subprocess.SubProcessWithTerminateEndEventProcessScopeModel;
+import org.jbpm.bpmn2.subprocess.SubProcessWithTerminateEndEventProcessScopeProcess;
+import org.jbpm.bpmn2.task.ReceiveTaskModel;
+import org.jbpm.bpmn2.task.ReceiveTaskProcess;
 import org.jbpm.bpmn2.test.RequirePersistence;
 import org.jbpm.process.builder.ActionBuilder;
 import org.jbpm.process.builder.AssignmentBuilder;
@@ -61,6 +76,8 @@ import org.jbpm.workflow.core.node.WorkItemNode;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.DynamicUtils;
+import org.jbpm.workflow.instance.node.EndNodeInstance;
+import org.jbpm.workflow.instance.node.StartNodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -70,6 +87,7 @@ import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowElementIdentifier;
+import org.kie.api.event.process.ProcessNodeEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
@@ -410,25 +428,26 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testCallActivityWithContantsAssignment() throws Exception {
-        kruntime = createKogitoProcessRuntime(
-                "org/jbpm/bpmn2/subprocess/BPMN2-SingleTaskWithVarDef.bpmn2",
-                "org/jbpm/bpmn2/subprocess/BPMN2-InputMappingUsingValue.bpmn2");
+    public void testCallActivityWithContantsAssignment() {
+        Application app = ProcessTestHelper.newApplication();
+        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(app, "CustomTask", workItemHandler);
+        org.kie.kogito.process.Process<SingleTaskWithVarDefModel> singleTaskWithVarDefModelProcess = SingleTaskWithVarDefProcess.newProcess(app);
+        SingleTaskWithVarDefModel singleTaskWithVarDefModel = singleTaskWithVarDefModelProcess.createModel();
+        ProcessInstance<SingleTaskWithVarDefModel> singleTaskWithVarDefModelProcessInstance = singleTaskWithVarDefModelProcess.createInstance(singleTaskWithVarDefModel);
+        org.kie.kogito.process.Process<InputMappingUsingValueModel> processDefinition = InputMappingUsingValueProcess.newProcess(app);
+        InputMappingUsingValueModel model = processDefinition.createModel();
+        org.kie.kogito.process.ProcessInstance<InputMappingUsingValueModel> instance = processDefinition.createInstance(model);
+        instance.start();
 
-        TestWorkItemHandler handler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("CustomTask", handler);
-        Map<String, Object> params = new HashMap<>();
-        KogitoProcessInstance processInstance = kruntime.startProcess("InputMappingUsingValue", params);
-
-        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = handler.getWorkItem();
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
-
         Object value = workItem.getParameter("TaskName");
         assertThat(value).isNotNull().isEqualTo("test string");
 
-        kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
-
-        assertProcessInstanceCompleted(processInstance);
+        singleTaskWithVarDefModelProcessInstance.completeWorkItem(workItem.getStringId(), Collections.emptyMap());
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -456,16 +475,18 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testCallActivity() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/subprocess/BPMN2-CallActivity.bpmn2",
-                "org/jbpm/bpmn2/subprocess/BPMN2-CallActivitySubProcess.bpmn2");
+    public void testCallActivity() {
+        Application app = ProcessTestHelper.newApplication();
+        org.kie.kogito.process.Process<CallActivityModel> processDefinition = CallActivityProcess.newProcess(app);
+        CallActivityModel model = processDefinition.createModel();
+        model.setX("oldValue");
+        ProcessInstance<CallActivityModel> instance = processDefinition.createInstance(model);
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("x", "oldValue");
-        KogitoProcessInstance processInstance = kruntime.startProcess(
-                "CallActivity", params);
-        assertProcessInstanceCompleted(processInstance);
-        assertThat(((KogitoWorkflowProcessInstance) processInstance).getVariable("y")).isEqualTo("new value");
+        CallActivitySubProcessProcess.newProcess(app);
+
+        instance.start();
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(instance.variables().getY()).isEqualTo("new value");
     }
 
     @Test
@@ -607,36 +628,46 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testSubProcessWithTerminateEndEvent() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/subprocess/BPMN2-SubProcessWithTerminateEndEvent.bpmn2");
-        final List<String> list = new ArrayList<>();
-        kruntime.getProcessEventManager().addEventListener(new DefaultKogitoProcessEventListener() {
+    public void testSubProcessWithTerminateEndEvent() {
+        Application app = ProcessTestHelper.newApplication();
+        EventTrackerProcessListener listener = new EventTrackerProcessListener();
+        ProcessTestHelper.registerProcessEventListener(app, listener);
+        org.kie.kogito.process.Process<SubProcessWithTerminateEndEventModel> processDefinition = SubProcessWithTerminateEndEventProcess.newProcess(app);
+        SubProcessWithTerminateEndEventModel model = processDefinition.createModel();
 
-            @Override
-            public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
-                list.add(event.getNodeInstance().getNodeName());
-            }
-        });
-        KogitoProcessInstance processInstance = kruntime.startProcess("SubProcessWithTerminateEndEvent");
-        assertProcessInstanceCompleted(processInstance);
-        assertThat(list).hasSize(7);
+        org.kie.kogito.process.ProcessInstance<SubProcessWithTerminateEndEventModel> instance = processDefinition.createInstance(model);
+        instance.start();
+        Set<NodeInstance> processNodeEvents = listener.tracked().stream()
+                .map(ProcessNodeEvent::getNodeInstance)
+                .collect(Collectors.toSet());
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processNodeEvents).hasSize(7);
+
     }
 
     @Test
-    public void testSubProcessWithTerminateEndEventProcessScope()
-            throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/subprocess/BPMN2-SubProcessWithTerminateEndEventProcessScope.bpmn2");
-        final List<String> list = new ArrayList<>();
-        kruntime.getProcessEventManager().addEventListener(new DefaultKogitoProcessEventListener() {
+    public void testSubProcessWithTerminateEndEventProcessScope() {
+
+        Application app = ProcessTestHelper.newApplication();
+        final List<String> nodeList = new ArrayList<>();
+        EventTrackerProcessListener listener = new EventTrackerProcessListener() {
 
             @Override
             public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
-                list.add(event.getNodeInstance().getNodeName());
+                NodeInstance nodeInstance = event.getNodeInstance();
+                if (!(nodeInstance instanceof EndNodeInstance || nodeInstance instanceof StartNodeInstance)) {
+                    nodeList.add(nodeInstance.getNodeName());
+                }
             }
-        });
-        KogitoProcessInstance processInstance = kruntime.startProcess("SubProcessWithTerminateEndEventProcessScope");
-        assertProcessInstanceCompleted(processInstance);
-        assertThat(list).hasSize(5);
+        };
+        ProcessTestHelper.registerProcessEventListener(app, listener);
+        org.kie.kogito.process.Process<SubProcessWithTerminateEndEventProcessScopeModel> processDefinition = SubProcessWithTerminateEndEventProcessScopeProcess.newProcess(app);
+        SubProcessWithTerminateEndEventProcessScopeModel model = processDefinition.createModel();
+
+        org.kie.kogito.process.ProcessInstance<SubProcessWithTerminateEndEventProcessScopeModel> instance = processDefinition.createInstance(model);
+        instance.start();
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(nodeList).hasSize(3);
     }
 
     @Test
@@ -841,17 +872,19 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testReceiveTask() throws Exception {
+        Application app = ProcessTestHelper.newApplication();
         kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/task/BPMN2-ReceiveTask.bpmn2");
         ReceiveTaskHandler receiveTaskHandler = new ReceiveTaskHandler(kruntime);
-
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task",
-                receiveTaskHandler);
-        KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime
-                .startProcess("ReceiveTask");
-        assertProcessInstanceActive(processInstance);
+        ProcessTestHelper.registerHandler(app, "Receive Task", receiveTaskHandler);
+        org.kie.kogito.process.Process<ReceiveTaskModel> processDefinition = ReceiveTaskProcess.newProcess(app);
+        ReceiveTaskModel model = processDefinition.createModel();
+        org.kie.kogito.process.ProcessInstance<ReceiveTaskModel> instance = processDefinition.createInstance(model);
+        instance.start();
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
         receiveTaskHandler.setKnowledgeRuntime(kruntime);
         receiveTaskHandler.messageReceived("HelloMessage", "Hello john!");
-        assertProcessInstanceFinished(processInstance, kruntime);
+        ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
