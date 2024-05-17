@@ -22,8 +22,6 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import org.drools.compiler.rule.builder.PackageBuildContext;
-import org.jbpm.bpmn2.activity.*;
-import org.jbpm.bpmn2.flow.*;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.handler.ServiceTaskHandler;
