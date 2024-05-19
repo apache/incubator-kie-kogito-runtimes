@@ -39,7 +39,7 @@ public class ExpressionReturnValueEvaluator extends AbstractReturnValueEvaluator
     }
 
     @Override
-    public Object evaluate(KogitoProcessContext processContext) throws RuntimeException {
+    public Object evaluate(KogitoProcessContext processContext) {
         return expression.eval(processContext.getVariable(rootName), returnType, processContext);
     }
 }

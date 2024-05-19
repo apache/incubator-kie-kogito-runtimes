@@ -44,7 +44,7 @@ public class FeelReturnValueEvaluator extends AbstractReturnValueEvaluator {
         super("FEEL", expr);
     }
 
-    public Object evaluate(KogitoProcessContext context) throws RuntimeException {
+    public Object evaluate(KogitoProcessContext context) {
         Map<String, Object> variables = new HashMap<>();
         variables.put("kcontext", context);
 

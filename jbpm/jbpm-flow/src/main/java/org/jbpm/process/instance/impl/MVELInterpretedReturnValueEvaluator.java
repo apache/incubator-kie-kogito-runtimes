@@ -56,7 +56,7 @@ public class MVELInterpretedReturnValueEvaluator extends AbstractReturnValueEval
         return MVEL.eval(expression, factory);
     }
 
-    public Object evaluate(KogitoProcessContext context) throws RuntimeException {
+    public Object evaluate(KogitoProcessContext context) {
         Object value = MVEL.eval(this.expression(), new ImmutableDefaultFactory() {
             @Override
             public boolean isResolveable(String name) {

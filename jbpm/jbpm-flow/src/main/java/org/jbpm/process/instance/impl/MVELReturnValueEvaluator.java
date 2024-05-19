@@ -63,7 +63,7 @@ public class MVELReturnValueEvaluator extends AbstractReturnValueEvaluator imple
         compiledExpression = unit.getCompiledExpression(data);
     }
 
-    public Object evaluate(KogitoProcessContext context) throws RuntimeException {
+    public Object evaluate(KogitoProcessContext context) {
         int length = unit.getOtherIdentifiers().length;
         Object[] vars = new Object[length];
         if (unit.getOtherIdentifiers() != null) {

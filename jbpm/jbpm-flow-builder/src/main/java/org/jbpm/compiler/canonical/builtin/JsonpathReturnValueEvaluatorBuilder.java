@@ -16,30 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.process.instance.impl;
+package org.jbpm.compiler.canonical.builtin;
 
-import java.util.function.Function;
+import org.jbpm.process.core.ContextResolver;
 
-import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
 
-public interface ReturnValueEvaluator {
+public class JsonpathReturnValueEvaluatorBuilder implements ReturnValueEvaluatorBuilder {
 
-    default String dialect() {
-        return "functional";
+    @Override
+    public boolean accept(String dialect) {
+        return dialect.toLowerCase().contains("jsonpath");
     }
 
-    default String expression() {
-        return "functional";
-    }
-
-    Object evaluate(KogitoProcessContext processContext);
-
-    default Object eval(Object event) {
-        return this.eval(name -> "value".equals(name) ? event : null);
-    }
-
-    default Object eval(Function<String, Object> resolver) {
-        return this.evaluate(new EmtpyKogitoProcessContext(resolver));
+    @Override
+    public Expression build(ContextResolver resolver, String expression) {
+        return new NullLiteralExpr();
     }
 
 }

@@ -46,7 +46,7 @@ public class XPATHReturnValueEvaluator extends AbstractReturnValueEvaluator {
         super("XPath", expression);
     }
 
-    public Object evaluate(final KogitoProcessContext context) throws RuntimeException {
+    public Object evaluate(final KogitoProcessContext context) {
         try {
             XPathFactory factory = XPathFactory.newInstance();
             XPath xpathEvaluator = factory.newXPath();
