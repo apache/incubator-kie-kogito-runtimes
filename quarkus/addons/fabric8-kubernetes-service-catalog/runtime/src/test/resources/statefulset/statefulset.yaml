@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
       - name: example-statefulset-with-service
-        image: quay.io/kiegroup/process-quarkus-example:latest
+        image: docker.io/apache/incubator-kie-process-quarkus-example:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
