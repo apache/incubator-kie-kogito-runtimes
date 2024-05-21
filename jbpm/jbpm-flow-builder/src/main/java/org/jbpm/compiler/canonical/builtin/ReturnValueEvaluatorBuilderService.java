@@ -38,11 +38,15 @@ public class ReturnValueEvaluatorBuilderService {
                 .toList();
     }
 
-    public static ReturnValueEvaluatorBuilderService instance(ClassLoader contextClassLoader) {
+    public static ReturnValueEvaluatorBuilderService instance() {
         if (INSTANCE == null) {
-            INSTANCE = new ReturnValueEvaluatorBuilderService(contextClassLoader);
+            INSTANCE = instance(JbpmClassLoaderUtil.findClassLoader());
         }
         return INSTANCE;
+    }
+
+    public static ReturnValueEvaluatorBuilderService instance(ClassLoader contextClassLoader) {
+        return new ReturnValueEvaluatorBuilderService(contextClassLoader);
     }
 
     public ReturnValueEvaluatorBuilderService() {

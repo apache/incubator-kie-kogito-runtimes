@@ -43,7 +43,6 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
 
     ReturnValueEvaluatorBuilderService returnValueEvaluatorBuilderService;
 
-    
     public SplitNodeVisitor(ReturnValueEvaluatorBuilderService returnValueEvaluatorBuilderService) {
         this.returnValueEvaluatorBuilderService = returnValueEvaluatorBuilderService;
     }
