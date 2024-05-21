@@ -90,6 +90,7 @@ public class ProcessVisitor extends AbstractVisitor {
 
     public ProcessVisitor(ClassLoader contextClassLoader) {
         nodeVisitorService = new NodeVisitorBuilderService(contextClassLoader);
+        returnValueEvaluatorBuilderService = ReturnValueEvaluatorBuilderService.instance(contextClassLoader);
     }
 
     public void visitProcess(WorkflowProcess process, MethodDeclaration processMethod, ProcessMetaData metadata) {
