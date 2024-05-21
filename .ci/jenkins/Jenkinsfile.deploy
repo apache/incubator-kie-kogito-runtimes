@@ -158,6 +158,7 @@ pipeline {
                                 .run("clean $installOrDeploy")
                         }
                     }
+                }
             }
             post {
                 always {
