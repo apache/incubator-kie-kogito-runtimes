@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
       - name: example-deployment-no-service
-        image: docker.io/apache/incubator-kie-process-quarkus-example:latest
+        image: docker.io/namespace/bananas:latest
         ports:
         - containerPort: 8080
           protocol: TCP
