@@ -16,63 +16,60 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.process.instance;
 
-import java.util.HashMap;
+package org.jbpm.process.instance.impl;
+
+import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
 
-import org.drools.core.process.AbstractProcessContext;
-import org.jbpm.process.core.ContextResolver;
-import org.jbpm.process.core.context.variable.VariableScope;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
-public class KogitoProcessContextImpl extends AbstractProcessContext implements KogitoProcessContext {
+public class EmtpyKogitoProcessContext implements KogitoProcessContext {
 
-    private Map<String, Object> contextData;
+    private Function<String, Object> resolver;
 
-    public KogitoProcessContextImpl(KieRuntime kruntime) {
-        super(kruntime);
-        contextData = new HashMap<>();
-    }
-
-    public boolean isVariableResolvable(String variableId) {
-        if (contextData.containsKey(variableId)) {
-            return true;
-        }
-
-        ContextResolver resolver = (ContextResolver) getNodeInstance();
-        if (resolver == null) {
-            return false;
-        }
-        return resolver.resolveContext(VariableScope.VARIABLE_SCOPE, variableId) != null;
+    public EmtpyKogitoProcessContext(Function<String, Object> resolver) {
+        this.resolver = resolver;
     }
 
     @Override
     public KogitoProcessInstance getProcessInstance() {
-        return (KogitoProcessInstance) super.getProcessInstance();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public KogitoNodeInstance getNodeInstance() {
-        return (KogitoNodeInstance) super.getNodeInstance();
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object getVariable(String variableName) {
+        return resolver.apply(variableName);
+    }
+
+    @Override
+    public void setVariable(String variableName, Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public KieRuntime getKieRuntime() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public KogitoProcessRuntime getKogitoProcessRuntime() {
-        return InternalProcessRuntime.asKogitoProcessRuntime(getKieRuntime());
-    }
-
-    public void setContextData(Map<String, Object> contextData) {
-        this.contextData = contextData;
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Map<String, Object> getContextData() {
-        return contextData;
+        return Collections.emptyMap();
     }
+
 }

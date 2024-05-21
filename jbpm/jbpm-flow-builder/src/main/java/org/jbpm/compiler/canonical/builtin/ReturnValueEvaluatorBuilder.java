@@ -19,15 +19,14 @@
 package org.jbpm.compiler.canonical.builtin;
 
 import org.jbpm.process.core.ContextResolver;
-import org.jbpm.workflow.core.Constraint;
 
 import com.github.javaparser.ast.expr.Expression;
 
-public interface ConstraintEvaluatorBuilder {
+public interface ReturnValueEvaluatorBuilder {
 
     String KCONTEXT_VAR = "kcontext";
 
-    boolean accept(Constraint constraint);
+    boolean accept(String constraint);
 
-    Expression build(ContextResolver resolver, org.jbpm.workflow.core.Constraint constraint);
+    Expression build(ContextResolver resolver, String expression);
 }

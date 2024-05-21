@@ -21,7 +21,7 @@ package org.jbpm.compiler.canonical;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import org.jbpm.compiler.canonical.builtin.ConstraintEvaluatorBuilderService;
+import org.jbpm.compiler.canonical.builtin.ReturnValueEvaluatorBuilderService;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.workflow.core.Constraint;
@@ -38,6 +38,12 @@ import static org.jbpm.ruleflow.core.factory.SplitFactory.METHOD_CONSTRAINT;
 import static org.jbpm.ruleflow.core.factory.SplitFactory.METHOD_TYPE;
 
 public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
+
+    ReturnValueEvaluatorBuilderService returnValueEvaluatorBuilderService;
+
+    public SplitNodeVisitor(ReturnValueEvaluatorBuilderService returnValueEvaluatorBuilderService) {
+        this.returnValueEvaluatorBuilderService = returnValueEvaluatorBuilderService;
+    }
 
     @Override
     protected String getNodeKey() {
@@ -57,7 +63,7 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
                 if (entry.getValue() != null) {
                     for (Constraint constraint : entry.getValue()) {
                         if (constraint != null) {
-                            Expression returnValueEvaluator = ConstraintEvaluatorBuilderService.instance().build(node, constraint);
+                            Expression returnValueEvaluator = returnValueEvaluatorBuilderService.build(node, constraint.getDialect(), constraint.getConstraint());
                             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
                                     getWorkflowElementConstructor(entry.getKey().getNodeId()),
                                     new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),

@@ -23,35 +23,38 @@ import java.util.ServiceLoader;
 
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.util.JbpmClassLoaderUtil;
-import org.jbpm.workflow.core.Constraint;
 
 import com.github.javaparser.ast.expr.Expression;
 
-public class ConstraintEvaluatorBuilderService {
+public class ReturnValueEvaluatorBuilderService {
 
-    private static ConstraintEvaluatorBuilderService INSTANCE;
-    private List<ConstraintEvaluatorBuilder> builders;
+    private static ReturnValueEvaluatorBuilderService INSTANCE;
+    private List<ReturnValueEvaluatorBuilder> builders;
 
-    public static ConstraintEvaluatorBuilderService instance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ConstraintEvaluatorBuilderService();
-        }
-        return INSTANCE;
-    }
-
-    public ConstraintEvaluatorBuilderService() {
-        builders = ServiceLoader.load(ConstraintEvaluatorBuilder.class, JbpmClassLoaderUtil.findClassLoader())
+    private ReturnValueEvaluatorBuilderService(ClassLoader contextClassLoader) {
+        builders = ServiceLoader.load(ReturnValueEvaluatorBuilder.class, contextClassLoader)
                 .stream()
                 .map(ServiceLoader.Provider::get)
                 .toList();
     }
 
-    public Expression build(ContextResolver resolver, Constraint constraint) {
-        for (ConstraintEvaluatorBuilder builder : builders) {
-            if (builder.accept(constraint)) {
-                return builder.build(resolver, constraint);
+    public static ReturnValueEvaluatorBuilderService instance(ClassLoader contextClassLoader) {
+        if (INSTANCE == null) {
+            INSTANCE = new ReturnValueEvaluatorBuilderService(contextClassLoader);
+        }
+        return INSTANCE;
+    }
+
+    public ReturnValueEvaluatorBuilderService() {
+        this(JbpmClassLoaderUtil.findClassLoader());
+    }
+
+    public Expression build(ContextResolver resolver, String dialect, String expression) {
+        for (ReturnValueEvaluatorBuilder builder : builders) {
+            if (builder.accept(dialect)) {
+                return builder.build(resolver, expression);
             }
         }
-        throw new IllegalArgumentException("No dialect found " + constraint.getDialect() + " for building constraint");
+        throw new IllegalArgumentException("No dialect found " + dialect + " for return expression evaluator building return value expression");
     }
 }
