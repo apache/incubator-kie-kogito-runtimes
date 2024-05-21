@@ -24,6 +24,10 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
 public interface ReturnValueEvaluator {
 
+    default Class<?> type() {
+        return Object.class;
+    }
+
     default String dialect() {
         return "functional";
     }
@@ -40,6 +44,10 @@ public interface ReturnValueEvaluator {
 
     default Object eval(Function<String, Object> resolver) {
         return this.evaluate(new EmtpyKogitoProcessContext(resolver));
+    }
+
+    default String root() {
+        return null;
     }
 
 }

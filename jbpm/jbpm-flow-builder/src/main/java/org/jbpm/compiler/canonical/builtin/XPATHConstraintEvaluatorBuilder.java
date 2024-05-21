@@ -36,7 +36,7 @@ public class XPATHConstraintEvaluatorBuilder implements ReturnValueEvaluatorBuil
     }
 
     @Override
-    public Expression build(ContextResolver resolver, String expression) {
+    public Expression build(ContextResolver resolver, String expression, Class<?> type, String rootName) {
         return new ObjectCreationExpr(null,
                 StaticJavaParser.parseClassOrInterfaceType(XPATHReturnValueEvaluator.class.getName()),
                 new NodeList<>(new StringLiteralExpr(ConversionUtils.sanitizeString(expression))));

@@ -36,7 +36,7 @@ public class FEELConstraintEvaluatorBuilder implements ReturnValueEvaluatorBuild
     }
 
     @Override
-    public Expression build(ContextResolver resolver, String expresssion) {
+    public Expression build(ContextResolver resolver, String expresssion, Class<?> type, String rootName) {
         return new ObjectCreationExpr(null,
                 StaticJavaParser.parseClassOrInterfaceType(FeelReturnValueEvaluator.class.getName()),
                 new NodeList<>(new StringLiteralExpr(ConversionUtils.sanitizeString(expresssion))));

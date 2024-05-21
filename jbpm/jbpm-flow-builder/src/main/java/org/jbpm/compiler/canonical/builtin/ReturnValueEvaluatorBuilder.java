@@ -28,5 +28,10 @@ public interface ReturnValueEvaluatorBuilder {
 
     boolean accept(String constraint);
 
-    Expression build(ContextResolver resolver, String expression);
+    Expression build(ContextResolver resolver, String expression, Class<?> type, String rootName);
+
+    default Expression build(ContextResolver resolver, String expression) {
+        return this.build(resolver, expression, Object.class, null);
+    }
+
 }

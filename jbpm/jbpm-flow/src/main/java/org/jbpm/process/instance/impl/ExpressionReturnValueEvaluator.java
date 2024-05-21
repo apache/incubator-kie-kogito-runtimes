@@ -24,22 +24,18 @@ import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 
 public class ExpressionReturnValueEvaluator extends AbstractReturnValueEvaluator {
     private Expression expression;
-    private String rootName;
-    private Class<?> returnType;
 
     public ExpressionReturnValueEvaluator(String lang, String expression, String rootName) {
         this(lang, expression, rootName, Boolean.class);
     }
 
     public ExpressionReturnValueEvaluator(String lang, String expression, String rootName, Class<?> returnType) {
-        super(lang, expression);
+        super(lang, expression, returnType, rootName);
         this.expression = ExpressionHandlerFactory.get(lang, expression);
-        this.rootName = rootName;
-        this.returnType = returnType;
     }
 
     @Override
     public Object evaluate(KogitoProcessContext processContext) {
-        return expression.eval(processContext.getVariable(rootName), returnType, processContext);
+        return expression.eval(processContext.getVariable(root()), type(), processContext);
     }
 }

@@ -36,7 +36,7 @@ public class MVELConstraintEvaluatorBuilder implements ReturnValueEvaluatorBuild
     }
 
     @Override
-    public Expression build(ContextResolver resolver, String expression) {
+    public Expression build(ContextResolver resolver, String expression, Class<?> type, String rootName) {
 
         return new ObjectCreationExpr(null,
                 StaticJavaParser.parseClassOrInterfaceType(MVELInterpretedReturnValueEvaluator.class.getName()),

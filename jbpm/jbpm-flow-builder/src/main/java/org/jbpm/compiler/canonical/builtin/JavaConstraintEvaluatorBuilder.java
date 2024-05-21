@@ -42,7 +42,7 @@ public class JavaConstraintEvaluatorBuilder implements ReturnValueEvaluatorBuild
     }
 
     @Override
-    public Expression build(ContextResolver resolver, String expression) {
+    public Expression build(ContextResolver resolver, String expression, Class<?> type, String rootName) {
         BlockStmt actionBody = new BlockStmt();
         LambdaExpr lambda = new LambdaExpr(
                 new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->

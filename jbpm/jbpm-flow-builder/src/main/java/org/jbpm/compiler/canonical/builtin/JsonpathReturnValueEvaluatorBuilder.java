@@ -19,9 +19,15 @@
 package org.jbpm.compiler.canonical.builtin;
 
 import org.jbpm.process.core.ContextResolver;
+import org.jbpm.process.instance.impl.ExpressionReturnValueEvaluator;
+import org.kie.kogito.internal.utils.ConversionUtils;
 
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 public class JsonpathReturnValueEvaluatorBuilder implements ReturnValueEvaluatorBuilder {
 
@@ -31,8 +37,15 @@ public class JsonpathReturnValueEvaluatorBuilder implements ReturnValueEvaluator
     }
 
     @Override
-    public Expression build(ContextResolver resolver, String expression) {
-        return new NullLiteralExpr();
+    public Expression build(ContextResolver resolver, String expression, Class<?> type, String rootName) {
+        NodeList<Expression> arguments = new NodeList<>();
+        arguments.add(new StringLiteralExpr("jsonpath"));
+        arguments.add(new StringLiteralExpr(ConversionUtils.sanitizeString(expression)));
+        arguments.add(new StringLiteralExpr(rootName));
+        arguments.add(new ClassExpr(StaticJavaParser.parseClassOrInterfaceType(type.getName())));
+
+        return new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType(ExpressionReturnValueEvaluator.class.getName()), arguments);
+
     }
 
 }

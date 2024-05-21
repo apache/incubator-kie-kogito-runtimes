@@ -50,9 +50,13 @@ public class ReturnValueEvaluatorBuilderService {
     }
 
     public Expression build(ContextResolver resolver, String dialect, String expression) {
+        return build(resolver, dialect, expression, Object.class, null);
+    }
+
+    public Expression build(ContextResolver resolver, String dialect, String expression, Class<?> type, String root) {
         for (ReturnValueEvaluatorBuilder builder : builders) {
             if (builder.accept(dialect)) {
-                return builder.build(resolver, expression);
+                return builder.build(resolver, expression, type, root);
             }
         }
         throw new IllegalArgumentException("No dialect found " + dialect + " for return expression evaluator building return value expression");

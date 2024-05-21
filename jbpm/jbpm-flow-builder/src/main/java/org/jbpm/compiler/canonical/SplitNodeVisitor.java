@@ -23,6 +23,8 @@ import java.util.Map.Entry;
 
 import org.jbpm.compiler.canonical.builtin.ReturnValueEvaluatorBuilderService;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
+import org.jbpm.process.instance.impl.ReturnValueEvaluator;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.impl.ConnectionRef;
@@ -62,8 +64,13 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
             for (Entry<ConnectionRef, Collection<Constraint>> entry : node.getConstraints().entrySet()) {
                 if (entry.getValue() != null) {
                     for (Constraint constraint : entry.getValue()) {
-                        if (constraint != null) {
-                            Expression returnValueEvaluator = returnValueEvaluatorBuilderService.build(node, constraint.getDialect(), constraint.getConstraint());
+                        if (constraint instanceof ReturnValueConstraintEvaluator) {
+                            ReturnValueEvaluator evaluator = ((ReturnValueConstraintEvaluator) constraint).getReturnValueEvaluator();
+                            Expression returnValueEvaluator = returnValueEvaluatorBuilderService.build(node,
+                                    evaluator.dialect(),
+                                    evaluator.expression(),
+                                    evaluator.type(),
+                                    evaluator.root());
                             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
                                     getWorkflowElementConstructor(entry.getKey().getNodeId()),
                                     new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),

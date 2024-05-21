@@ -27,10 +27,28 @@ public abstract class AbstractReturnValueEvaluator implements ReturnValueEvaluat
 
     protected String dialect;
     protected String expression;
+    protected Class<?> type;
+    private String root;
 
     public AbstractReturnValueEvaluator(String dialect, String expression) {
+        this(dialect, expression, Object.class, null);
+    }
+
+    public AbstractReturnValueEvaluator(String dialect, String expression, Class<?> type, String root) {
         this.dialect = dialect;
         this.expression = expression;
+        this.type = type;
+        this.root = root;
+    }
+
+    @Override
+    public String root() {
+        return root;
+    }
+
+    @Override
+    public Class<?> type() {
+        return type;
     }
 
     @Override
