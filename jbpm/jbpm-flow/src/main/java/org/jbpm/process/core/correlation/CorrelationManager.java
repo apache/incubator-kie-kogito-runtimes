@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.jbpm.process.instance.impl.ReturnValueEvaluator;
+import org.jbpm.util.JbpmClassLoaderUtil;
 
 public class CorrelationManager implements Serializable {
 
@@ -38,6 +39,7 @@ public class CorrelationManager implements Serializable {
     public CorrelationManager() {
         this.correlations = new HashMap<>();
         this.messages = new HashMap<>();
+        this.classLoader = JbpmClassLoaderUtil.findClassLoader();
     }
 
     public void setClassLoader(ClassLoader classLoader) {

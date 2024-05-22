@@ -264,6 +264,9 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
 
     public RuleFlowProcessFactory newCorrelationSubscription(String correlationKeyId, String propertyId, ReturnValueEvaluator evaluator) {
         RuleFlowProcess process = getRuleFlowProcess();
+        if (!process.getCorrelationManager().isSubscribe(correlationKeyId)) {
+            process.getCorrelationManager().subscribeTo(correlationKeyId);
+        }
         process.getCorrelationManager().addProcessSubscriptionPropertyExpression(correlationKeyId, propertyId, evaluator);
         return this;
     }

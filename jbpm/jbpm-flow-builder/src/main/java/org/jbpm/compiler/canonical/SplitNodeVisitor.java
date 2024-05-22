@@ -20,6 +20,8 @@ package org.jbpm.compiler.canonical;
 
 import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 import org.jbpm.compiler.canonical.builtin.ReturnValueEvaluatorBuilderService;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -66,7 +68,7 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
                     continue;
                 }
 
-                for (Constraint constraint : entry.getValue()) {
+                for (Constraint constraint : entry.getValue().stream().filter(Predicate.not(Objects::isNull)).toList()) {
                     Expression returnValueEvaluator;
                     if (constraint instanceof ReturnValueConstraintEvaluator) {
                         ReturnValueEvaluator evaluator = ((ReturnValueConstraintEvaluator) constraint).getReturnValueEvaluator();
