@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.bpmn2.feel;
+package org.jbpm.process.instance.impl;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
 
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
-import org.jbpm.process.instance.impl.ReturnValueEvaluator;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.api.runtime.Globals;
 import org.kie.dmn.api.feel.runtime.events.FEELEvent;
 import org.kie.dmn.feel.FEEL;
+import org.kie.dmn.feel.lang.impl.FEELBuilder;
 import org.kie.dmn.feel.parser.feel11.profiles.KieExtendedFEELProfile;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
@@ -78,7 +78,7 @@ public class FeelReturnValueEvaluator implements ReturnValueEvaluator, Externali
 
             variables.putAll(variableScope.getVariables());
         }
-        FEEL feel = FEEL.newInstance(Collections.singletonList(new KieExtendedFEELProfile()));
+        FEEL feel = FEELBuilder.builder().withProfiles(Collections.singletonList(new KieExtendedFEELProfile())).build();
         FeelErrorEvaluatorListener listener = new FeelErrorEvaluatorListener();
         feel.addListener(listener);
 

@@ -16,14 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.bpmn2.feel;
+package org.jbpm.compiler.canonical.node;
 
-public class FeelReturnValueEvaluatorException extends RuntimeException {
+import org.jbpm.compiler.canonical.AbstractNodeVisitor;
+import org.jbpm.compiler.canonical.EventNodeVisitor;
+import org.jbpm.workflow.core.node.EventNode;
+import org.kie.api.definition.process.Node;
 
-    private static final long serialVersionUID = 2323430157674272027L;
+public class EventNodeVisitorBuilder implements NodeVisitorBuilder {
 
-    public FeelReturnValueEvaluatorException(String message) {
-        super(message);
+    @Override
+    public Class<?> type() {
+        return EventNode.class;
+    }
+
+    @Override
+    public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService, ClassLoader classLoader) {
+        return new EventNodeVisitor();
     }
 
 }
