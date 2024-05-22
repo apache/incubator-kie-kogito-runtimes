@@ -71,7 +71,7 @@ public class CollaborationTest extends JbpmBpmn2TestCase {
         ProcessTestHelper.registerHandler(application, "Human Task", new DoNothingWorkItemHandler());
         org.kie.kogito.process.Process<CollaborationStartMessageModel> processDefinition = CollaborationStartMessageProcess.newProcess(application);
 
-        processDefinition.send(Sig.of("Message-collaboration", new Message("1", "example")));
+        processDefinition.send(Sig.of("collaboration", new Message("1", "example")));
 
         assertThat(processInstanceId).hasSize(1);
 
