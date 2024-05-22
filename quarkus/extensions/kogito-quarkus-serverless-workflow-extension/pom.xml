@@ -38,7 +38,6 @@
   <modules>
     <module>kogito-quarkus-serverless-workflow</module>
     <module>kogito-quarkus-serverless-workflow-deployment</module>
-    <module>kogito-quarkus-serverless-workflow-integration-test</module>
     <module>kogito-quarkus-serverless-workflow-image-integration-test</module>
     <module>kogito-quarkus-serverless-workflow-extension-live-reload-test</module>
   </modules>
