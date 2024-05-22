@@ -62,25 +62,34 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
 
         if (node.getType() == Split.TYPE_OR || node.getType() == Split.TYPE_XOR) {
             for (Entry<ConnectionRef, Collection<Constraint>> entry : node.getConstraints().entrySet()) {
-                if (entry.getValue() != null) {
-                    for (Constraint constraint : entry.getValue()) {
-                        if (constraint instanceof ReturnValueConstraintEvaluator) {
-                            ReturnValueEvaluator evaluator = ((ReturnValueConstraintEvaluator) constraint).getReturnValueEvaluator();
-                            Expression returnValueEvaluator = returnValueEvaluatorBuilderService.build(node,
-                                    evaluator.dialect(),
-                                    evaluator.expression(),
-                                    evaluator.type(),
-                                    evaluator.root());
-                            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
-                                    getWorkflowElementConstructor(entry.getKey().getNodeId()),
-                                    new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
-                                    new StringLiteralExpr(entry.getKey().getToType()),
-                                    new StringLiteralExpr(constraint.getDialect()),
-                                    returnValueEvaluator,
-                                    new IntegerLiteralExpr(constraint.getPriority()),
-                                    new BooleanLiteralExpr(constraint.isDefault())));
-                        }
+                if (entry.getValue() == null || entry.getValue().isEmpty()) {
+                    continue;
+                }
+
+                for (Constraint constraint : entry.getValue()) {
+                    Expression returnValueEvaluator;
+                    if (constraint instanceof ReturnValueConstraintEvaluator) {
+                        ReturnValueEvaluator evaluator = ((ReturnValueConstraintEvaluator) constraint).getReturnValueEvaluator();
+                        returnValueEvaluator = returnValueEvaluatorBuilderService.build(node,
+                                evaluator.dialect(),
+                                evaluator.expression(),
+                                evaluator.type(),
+                                evaluator.root());
+
+                    } else {
+                        returnValueEvaluator = returnValueEvaluatorBuilderService.build(node,
+                                constraint.getDialect(),
+                                constraint.getConstraint());
                     }
+                    body.addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
+                            getWorkflowElementConstructor(entry.getKey().getNodeId()),
+                            new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
+                            new StringLiteralExpr(entry.getKey().getToType()),
+                            new StringLiteralExpr(constraint.getDialect()),
+                            returnValueEvaluator,
+                            new IntegerLiteralExpr(constraint.getPriority()),
+                            new BooleanLiteralExpr(constraint.isDefault())));
+
                 }
             }
         }
