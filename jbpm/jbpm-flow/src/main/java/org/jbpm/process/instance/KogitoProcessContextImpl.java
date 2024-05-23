@@ -44,11 +44,13 @@ public class KogitoProcessContextImpl extends AbstractProcessContext implements 
             return true;
         }
 
-        ContextResolver resolver = (ContextResolver) getNodeInstance();
-        if (resolver == null) {
-            return false;
+        KogitoNodeInstance nodeInstance = getNodeInstance();
+        if (nodeInstance instanceof ContextResolver) {
+            ContextResolver resolver = (ContextResolver) nodeInstance;
+            return resolver.resolveContext(VariableScope.VARIABLE_SCOPE, variableId) != null;
         }
-        return resolver.resolveContext(VariableScope.VARIABLE_SCOPE, variableId) != null;
+
+        return nodeInstance.getVariable(variableId) != null;
     }
 
     @Override
