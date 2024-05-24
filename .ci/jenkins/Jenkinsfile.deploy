@@ -161,6 +161,8 @@ pipeline {
                                     sh ('gpg --list-keys')
                                     sh ("gpg --batch --pinentry-mode=loopback --passphrase \"${SIGNING_KEY_PASSWORD}\" --import signkey.gpg")
                                     sh ('rm $WORKSPACE/signkey.gpg')
+
+                                    mvnCmd.withProperty('gpg.passphrase', SIGNING_KEY_PASSWORD)
                                 }
                             }
                             mvnCmd.withProfiles(['apache-release'])
