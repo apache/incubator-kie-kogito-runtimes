@@ -33,7 +33,7 @@
   <itemDefinition id="_xItem" structureRef="String" />
   <escalation id="escId" escalationCode="Code3" />
   
-  <process processType="Private" isExecutable="true" id="non-interrupting-escalation" name="Escalation Boundary Event Process" >
+  <process processType="Private" isExecutable="true" id="EscalationBoundaryEventWithTask" name="Escalation Boundary Event Process" tns:packageName="org.jbpm.bpmn2.escalation">
 
     <!-- process variables -->
     <property id="x" itemSubjectRef="_xItem"/>
@@ -47,7 +47,7 @@
       <sequenceFlow id="_2-1-_2-2" sourceRef="_2-1" targetRef="_2-2" />
       
       <intermediateThrowEvent id="_2-2" name="escSub">
-        <escalationEventDefinition id="EscalationEventDefinition_2" />
+        <escalationEventDefinition id="EscalationEventDefinition_2" escalationRef="escId"/>
       </intermediateThrowEvent>
       <sequenceFlow id="_2-2-_2-3" sourceRef="_2-2" targetRef="_2-3" />
     
@@ -57,14 +57,16 @@
       <endEvent id="_2-4" name="endSub" />
     </subProcess>
     <sequenceFlow id="_2-_3" sourceRef="_2" targetRef="_3" />
+
     
+    <boundaryEvent id="_4" name="CatchEscalation" attachedToRef="_2" cancelActivity="false" >
+      <escalationEventDefinition />
+    </boundaryEvent>
+    
+        
     <endEvent id="_3" name="End" >
         <terminateEventDefinition/>
     </endEvent>
-    
-    <boundaryEvent id="_4" name="CatchEscalation" attachedToRef="_2" cancelActivity="false" >
-      <escalationEventDefinition escalationRef="escId" />
-    </boundaryEvent>
     <sequenceFlow id="_4-_5" sourceRef="_4" targetRef="_5" />
     
     <scriptTask id="_5" name="Goodbye" >

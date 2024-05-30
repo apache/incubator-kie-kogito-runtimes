@@ -480,8 +480,9 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 
         String variable = ((EventNode) node).getVariableName();
         ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
+        String signalName = "Escalation-" + attachedTo + (escalationCode != null ? "-" + escalationCode : "");
         DroolsConsequenceAction action =
-                createJavaAction(new SignalProcessInstanceAction("Escalation-" + attachedTo + "-" + escalationCode, variable, null, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                createJavaAction(new SignalProcessInstanceAction(signalName, variable, null, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
         exceptionHandler.setAction(action);
         exceptionHandler.setFaultVariable(variable);
         exceptionScope.setExceptionHandler(escalationCode, exceptionHandler);
