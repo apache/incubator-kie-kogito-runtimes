@@ -212,6 +212,9 @@ public class ProcessCodeGenerationSupport {
         writeCompilationUnit(modelMetadata.generateUnit());
         writeCompilationUnit(inputMdelMetadata.generateUnit());
         writeCompilationUnit(outputModelMetadata.generateUnit());
+        for (CompilationUnit handler : metadata.getGeneratedHandlers().values()) {
+            writeCompilationUnit(handler);
+        }
     }
 
     private void writeCompilationUnit(CompilationUnit unit) throws IOException {
