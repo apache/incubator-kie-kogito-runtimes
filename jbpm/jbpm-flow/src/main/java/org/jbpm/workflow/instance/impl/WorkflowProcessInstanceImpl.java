@@ -946,7 +946,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     private boolean canComplete() {
-        if (nodeInstances.isEmpty()) {
+        if (nodeInstances.isEmpty() || nodeInstances.stream().anyMatch(Predicate.not(NodeInstance::isCancelled))) {
             return true;
         } else {
             int eventSubprocessCounter = 0;
@@ -1228,4 +1228,5 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     public final ProcessInstance<?> unwrap() {
         return this.kogitoProcessInstance;
     }
+
 }
