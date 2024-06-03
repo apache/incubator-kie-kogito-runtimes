@@ -20,8 +20,10 @@ package org.jbpm.compiler.canonical;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Stream;
 
+import org.jbpm.compiler.canonical.builtin.ReturnValueEvaluatorBuilderService;
 import org.jbpm.compiler.canonical.node.NodeVisitorBuilderService;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.DynamicNodeFactory;
@@ -35,8 +37,11 @@ import static org.jbpm.ruleflow.core.factory.DynamicNodeFactory.METHOD_LANGUAGE;
 
 public class DynamicNodeVisitor extends CompositeContextNodeVisitor<DynamicNode> {
 
-    public DynamicNodeVisitor(NodeVisitorBuilderService nodeVisitorService) {
+    private ReturnValueEvaluatorBuilderService builder;
+
+    public DynamicNodeVisitor(NodeVisitorBuilderService nodeVisitorService, ClassLoader classLoader) {
         super(nodeVisitorService);
+        this.builder = ReturnValueEvaluatorBuilderService.instance(classLoader);
     }
 
     @Override
@@ -56,22 +61,26 @@ public class DynamicNodeVisitor extends CompositeContextNodeVisitor<DynamicNode>
 
     @Override
     public Stream<MethodCallExpr> visitCustomFields(DynamicNode node, VariableScope variableScope) {
+        if (node.isAutoComplete()) {
+            return Collections.<MethodCallExpr> emptyList().stream();
+        }
+
         Collection<MethodCallExpr> methods = new ArrayList<>();
         methods.add(getFactoryMethod(getNodeId(node), METHOD_LANGUAGE, getOrNullExpr(node.getLanguage())));
-        if (node.getActivationCondition() != null && !node.getActivationCondition().trim().isEmpty()) {
-            methods.add(getActivationConditionStatement(node, variableScope));
+        if (node.getActivationCondition() != null && !node.getActivationCondition().isBlank()) {
+            methods.add(getActivationConditionStatement(node));
         }
-        if (node.getCompletionCondition() != null && !node.getCompletionCondition().trim().isEmpty()) {
-            methods.add(getCompletionConditionStatement(node, variableScope));
+        if (node.getCompletionCondition() != null && !node.getCompletionCondition().isBlank()) {
+            methods.add(getCompletionConditionStatement(node));
         }
         return methods.stream();
     }
 
-    private MethodCallExpr getActivationConditionStatement(DynamicNode node, VariableScope scope) {
-        return getFactoryMethod(getNodeId(node), METHOD_ACTIVATION_EXPRESSION, createLambdaExpr(node.getActivationCondition(), scope));
+    private MethodCallExpr getActivationConditionStatement(DynamicNode node) {
+        return getFactoryMethod(getNodeId(node), METHOD_ACTIVATION_EXPRESSION, builder.build(node, node.getLanguage(), node.getActivationCondition(), Boolean.class, (String) null));
     }
 
-    private MethodCallExpr getCompletionConditionStatement(DynamicNode node, VariableScope scope) {
-        return getFactoryMethod(getNodeId(node), METHOD_COMPLETION_EXPRESSION, createLambdaExpr(node.getCompletionCondition(), scope));
+    private MethodCallExpr getCompletionConditionStatement(DynamicNode node) {
+        return getFactoryMethod(getNodeId(node), METHOD_COMPLETION_EXPRESSION, builder.build(node, node.getLanguage(), node.getCompletionCondition(), Boolean.class, (String) null));
     }
 }
