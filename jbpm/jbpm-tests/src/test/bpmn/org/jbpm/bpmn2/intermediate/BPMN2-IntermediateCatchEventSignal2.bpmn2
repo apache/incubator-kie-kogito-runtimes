@@ -33,7 +33,7 @@
 
   <itemDefinition id="_xItem" structureRef="String" />
 
-  <process processType="Private" isExecutable="true" id="IntermediateCatchEventSignal2" name="IntermediateCatchEvent 2 Process" >
+  <process processType="Private" isExecutable="true" id="IntermediateCatchEventSignal2" name="IntermediateCatchEvent 2 Process" tns:packageName="org.jbpm.bpmn2.intermediate">
 
     <!-- process variables -->
     <property id="x" itemSubjectRef="_xItem"/>
