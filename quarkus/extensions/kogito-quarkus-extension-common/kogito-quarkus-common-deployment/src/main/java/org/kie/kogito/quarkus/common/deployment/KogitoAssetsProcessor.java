@@ -42,6 +42,8 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
 import org.jboss.logging.Logger;
+import org.jbpm.ruleflow.core.factory.provider.NodeFactoryProvider;
+import org.jbpm.workflow.instance.impl.NodeInstanceFactoryProvider;
 import org.kie.efesto.quarkus.deployment.EfestoGeneratedClassBuildItem;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.Generator;
@@ -63,9 +65,11 @@ import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.LiveReloadBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
+import io.quarkus.deployment.pkg.steps.NativeOrNativeSourcesBuild;
 import io.quarkus.maven.dependency.Dependency;
 import io.quarkus.maven.dependency.ResolvedDependency;
 import io.quarkus.paths.PathCollection;
@@ -155,6 +159,14 @@ public class KogitoAssetsProcessor {
             generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE, HOT_RELOAD_SUPPORT_PATH + ".java", getHotReloadSupportSource()));
         }
         return new KogitoGeneratedSourcesBuildItem(generatedFiles);
+    }
+
+    @BuildStep(onlyIf = NativeOrNativeSourcesBuild.class)
+    public void addNativeLoaders(BuildProducer<ServiceProviderBuildItem> serviceProvider) {
+        serviceProvider.produce(ServiceProviderBuildItem.allProvidersFromClassPath(NodeInstanceFactoryProvider.class.getCanonicalName()));
+        serviceProvider.produce(ServiceProviderBuildItem.allProvidersFromClassPath(NodeFactoryProvider.class.getCanonicalName()));
+        serviceProvider.produce(ServiceProviderBuildItem.allProvidersFromClassPath("org.jbpm.flow.serialization.NodeInstanceWriter"));
+        serviceProvider.produce(ServiceProviderBuildItem.allProvidersFromClassPath("org.jbpm.flow.serialization.NodeInstanceReader"));
     }
 
     @BuildStep
