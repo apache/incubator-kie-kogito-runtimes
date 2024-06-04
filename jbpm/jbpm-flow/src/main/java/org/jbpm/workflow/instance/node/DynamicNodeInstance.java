@@ -80,7 +80,8 @@ public class DynamicNodeInstance extends CompositeContextNodeInstance {
         return getDynamicNode().canActivate(ContextFactory.fromNode(this));
     }
 
-    public boolean canComplete() {
+    private boolean canComplete() {
+
         return getNodeInstances(false).isEmpty() && getDynamicNode().canComplete(ContextFactory.fromNode(this));
     }
 
@@ -112,9 +113,9 @@ public class DynamicNodeInstance extends CompositeContextNodeInstance {
                 return;
             }
         }
-
+        // TODO what if we reach the end of one branch but others might still need to be created ?
+        // TODO are we sure there will always be node instances left if we are not done yet?
         if (isTerminated(nodeInstance) || canComplete()) {
-            this.cancelType = CancelType.OBSOLETE;
             triggerCompleted(CONNECTION_DEFAULT_TYPE);
         }
         if (!canComplete()) {

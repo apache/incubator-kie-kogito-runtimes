@@ -946,7 +946,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     private boolean canComplete() {
-        if (nodeInstances.isEmpty() || nodeInstances.stream().anyMatch(Predicate.not(NodeInstance::isCancelled))) {
+        if (nodeInstances.isEmpty()) {
             return true;
         } else {
             int eventSubprocessCounter = 0;

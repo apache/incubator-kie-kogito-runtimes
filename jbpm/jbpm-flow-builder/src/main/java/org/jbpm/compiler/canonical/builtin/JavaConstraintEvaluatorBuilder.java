@@ -57,7 +57,7 @@ public class JavaConstraintEvaluatorBuilder implements ReturnValueEvaluatorBuild
         }
 
         if (blockStmt == null) {
-            blockStmt = StaticJavaParser.parseBlock(expression);
+            blockStmt = StaticJavaParser.parseBlock("{" + expression + "}");
         }
 
         Set<NameExpr> identifiers = new HashSet<>(blockStmt.findAll(NameExpr.class));
@@ -79,7 +79,7 @@ public class JavaConstraintEvaluatorBuilder implements ReturnValueEvaluatorBuild
     private BlockStmt parseStatement(String expression) {
         try {
             BlockStmt block = new BlockStmt();
-            block.addStatement(StaticJavaParser.parseStatement("{" + expression + "}"));
+            block.addStatement(StaticJavaParser.parseStatement(expression));
             return block;
         } catch (ParseProblemException e) {
             return null;
