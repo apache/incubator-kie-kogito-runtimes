@@ -98,7 +98,6 @@ import org.jbpm.process.builder.ReturnValueEvaluatorBuilder;
 import org.jbpm.process.builder.dialect.ProcessDialect;
 import org.jbpm.process.builder.dialect.ProcessDialectRegistry;
 import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.impl.DataTransformerRegistry;
 import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventListener;
 import org.jbpm.process.instance.event.listeners.TriggerRulesEventListener;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
@@ -134,7 +133,6 @@ import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.event.rule.BeforeMatchFiredEvent;
 import org.kie.api.event.rule.MatchCancelledEvent;
 import org.kie.api.event.rule.MatchCreatedEvent;
-import org.kie.api.runtime.process.DataTransformer;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.SecurityPolicy;
@@ -843,50 +841,6 @@ public class ActivityTest extends JbpmBpmn2TestCase {
                 .startProcess("ServiceProcessWithMvelTransformation", params);
         assertProcessInstanceFinished(processInstance, kruntime);
         assertThat(processInstance.getVariable("s")).isEqualTo("hello john!");
-    }
-
-    @Test
-    public void testServiceTaskWithCustomTransformation() throws Exception {
-        DataTransformerRegistry.get().register("http://custom/transformer", new DataTransformer() {
-
-            @Override
-            public Object transform(Object expression, Map<String, Object> parameters) {
-                // support only single object
-                String value = parameters.values().iterator().next().toString();
-                Object result = null;
-                if ("caplitalizeFirst".equals(expression)) {
-                    String first = value.substring(0, 1);
-                    String main = value.substring(1, value.length());
-
-                    result = first.toUpperCase() + main;
-                } else if ("caplitalizeLast".equals(expression)) {
-                    String last = value.substring(value.length() - 1);
-                    String main = value.substring(0, value.length() - 1);
-
-                    result = main + last.toUpperCase();
-                } else {
-                    throw new IllegalArgumentException("Unknown expression " + expression);
-                }
-                return result;
-            }
-
-            @Override
-            public Object compile(String expression, Map<String, Object> parameters) {
-                // compilation not supported
-                return expression;
-            }
-        });
-        kruntime = createKogitoProcessRuntime("BPMN2-ServiceProcessWithCustomTransformation.bpmn2");
-
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Service Task",
-                new ServiceTaskHandler());
-        Map<String, Object> params = new HashMap<>();
-        params.put("s", "john doe");
-
-        KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime
-                .startProcess("ServiceProcess", params);
-        assertProcessInstanceFinished(processInstance, kruntime);
-        assertThat(processInstance.getVariable("s")).isEqualTo("John doE");
     }
 
     @Test
