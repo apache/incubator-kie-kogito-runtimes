@@ -58,11 +58,11 @@
       </dataInputAssociation>
     </userTask>
     <intermediateCatchEvent id="_4" name="event" >
-      <dataOutput id="_4_Output" name="param" />
+      <dataOutput id="_4_Output" name="param" itemSubjectRef="_xItem"/>
       <dataOutputAssociation>
       <sourceRef>_4_Output</sourceRef>
       <targetRef>x</targetRef>
-      <transformation language="http://www.java.com/java">param.toUpperCase();</transformation>
+      <transformation language="http://www.java.com/java">param.toUpperCase()</transformation>
       </dataOutputAssociation>
       <outputSet>
         <dataOutputRefs>_4_Output</dataOutputRefs>

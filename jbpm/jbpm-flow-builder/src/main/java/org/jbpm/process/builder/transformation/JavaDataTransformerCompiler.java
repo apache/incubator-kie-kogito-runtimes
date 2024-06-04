@@ -19,11 +19,11 @@
 package org.jbpm.process.builder.transformation;
 
 import java.util.List;
-import java.util.Map;
 
 import org.jbpm.workflow.core.impl.DataDefinition;
 import org.jbpm.workflow.core.node.Transformation;
 
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
@@ -36,6 +36,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 public class JavaDataTransformerCompiler implements DataTransformerCompiler {
@@ -48,7 +49,17 @@ public class JavaDataTransformerCompiler implements DataTransformerCompiler {
     @Override
     public Expression compile(List<DataDefinition> inputs, List<DataDefinition> outputs, Transformation transformation) {
         // build lambda function
-        BlockStmt body = StaticJavaParser.parseBlock("{" + transformation.getExpression() + "}");
+        String expression = transformation.getExpression();
+        BlockStmt body = parseExpression(expression);
+
+        if (body == null) {
+            body = parseStatement(expression);
+        }
+
+        if (body == null) {
+            body = StaticJavaParser.parseBlock("{" + expression + "}");
+        }
+
         for (DataDefinition input : inputs) {
             ClassOrInterfaceType type = StaticJavaParser.parseClassOrInterfaceType(input.getType());
             VariableDeclarationExpr target = new VariableDeclarationExpr(type, input.getLabel());
@@ -57,9 +68,28 @@ public class JavaDataTransformerCompiler implements DataTransformerCompiler {
             body.addStatement(0, assignment);
         }
 
-        Expression lambda = new LambdaExpr(NodeList.nodeList(new Parameter(StaticJavaParser.parseClassOrInterfaceType(Map.class.getName()), "parameters")), body, true);
-        ClassOrInterfaceType type = StaticJavaParser.parseClassOrInterfaceType("java.util.function.Function<java.util.Map, Object>");
+        Expression lambda = new LambdaExpr(NodeList.nodeList(new Parameter(StaticJavaParser.parseClassOrInterfaceType("java.util.Map<String,Object>"), "parameters")), body, true);
+        ClassOrInterfaceType type = StaticJavaParser.parseClassOrInterfaceType("java.util.function.Function<java.util.Map<String, Object>, Object>");
         return new CastExpr(type, lambda);
     }
 
+    private BlockStmt parseStatement(String expression) {
+        try {
+            BlockStmt block = new BlockStmt();
+            block.addStatement(StaticJavaParser.parseStatement(expression));
+            return block;
+        } catch (ParseProblemException e) {
+            return null;
+        }
+    }
+
+    private BlockStmt parseExpression(String expression) {
+        try {
+            BlockStmt block = new BlockStmt();
+            block.addStatement(new ReturnStmt(StaticJavaParser.parseExpression(expression)));
+            return block;
+        } catch (ParseProblemException e) {
+            return null;
+        }
+    }
 }
