@@ -37,6 +37,7 @@ import org.jbpm.compiler.canonical.ModelMetaData;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.TemplateHelper;
+import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.core.SemanticModules;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
@@ -50,9 +51,16 @@ import com.github.javaparser.ast.Node.TreeTraversal;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.printer.DefaultPrettyPrinter;
 import com.github.javaparser.printer.Printer;
@@ -148,6 +156,7 @@ public class ProcessCodeGenerationSupport {
 
         // process
         CompilationUnit processUnit = metadata.getGeneratedClassModel();
+        addMembers(metadata, processUnit);
 
         RuleFlowProcess ruleFlowProcess = (RuleFlowProcess) process;
         for (String importClass : ruleFlowProcess.getImports()) {
@@ -231,5 +240,39 @@ public class ProcessCodeGenerationSupport {
         ClassOrInterfaceDeclaration modelType = unit.findFirst(ClassOrInterfaceDeclaration.class).get();
         LOG.debug("{} generated", modelType.getNameAsString());
         Files.write(Paths.get(outputFolder.toString(), modelType.getName().asString() + ".java"), modelSource.getBytes());
+    }
+
+    private void addMembers(ProcessMetaData processMetaData, CompilationUnit compilationUnit) {
+        ClassOrInterfaceDeclaration cls = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get();
+        if (!processMetaData.getTriggers().isEmpty()) {
+
+            for (TriggerMetaData trigger : processMetaData.getTriggers()) {
+                // add message produces as field
+                if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
+                    ClassOrInterfaceType type = StaticJavaParser.parseClassOrInterfaceType(org.kie.kogito.event.impl.MessageProducer.class.getName() + "<" + trigger.getDataType() + ">");
+                    String producerFieldName = "producer_" + trigger.getOwnerId();
+                    String producerFieldNameCapitalized = "Producer_" + trigger.getOwnerId();
+
+                    FieldDeclaration producerFieldDeclaration = new FieldDeclaration()
+                            .addVariable(new VariableDeclarator(type, producerFieldName));
+                    cls.addMember(producerFieldDeclaration);
+
+                    MethodDeclaration setMethod = new MethodDeclaration();
+                    setMethod.addParameter(type, producerFieldName);
+                    setMethod.setName("set" + producerFieldNameCapitalized);
+                    setMethod.setType(StaticJavaParser.parseType("void"));
+                    AssignExpr assignExpr = new AssignExpr(
+                            new FieldAccessExpr(new ThisExpr(), producerFieldName),
+                            new NameExpr(producerFieldName),
+                            AssignExpr.Operator.ASSIGN);
+
+                    BlockStmt body = new BlockStmt();
+                    body.addStatement(assignExpr);
+                    setMethod.setBody(body);
+
+                    cls.addMember(setMethod);
+                }
+            }
+        }
     }
 }
