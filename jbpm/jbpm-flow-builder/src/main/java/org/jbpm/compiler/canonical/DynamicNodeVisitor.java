@@ -20,7 +20,6 @@ package org.jbpm.compiler.canonical;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Stream;
 
 import org.jbpm.compiler.canonical.builtin.ReturnValueEvaluatorBuilderService;
@@ -61,16 +60,13 @@ public class DynamicNodeVisitor extends CompositeContextNodeVisitor<DynamicNode>
 
     @Override
     public Stream<MethodCallExpr> visitCustomFields(DynamicNode node, VariableScope variableScope) {
-        if (node.isAutoComplete()) {
-            return Collections.<MethodCallExpr> emptyList().stream();
-        }
 
         Collection<MethodCallExpr> methods = new ArrayList<>();
         methods.add(getFactoryMethod(getNodeId(node), METHOD_LANGUAGE, getOrNullExpr(node.getLanguage())));
         if (node.getActivationCondition() != null && !node.getActivationCondition().isBlank()) {
             methods.add(getActivationConditionStatement(node));
         }
-        if (node.getCompletionCondition() != null && !node.getCompletionCondition().isBlank()) {
+        if (!node.isAutoComplete() && node.getCompletionCondition() != null && !node.getCompletionCondition().isBlank()) {
             methods.add(getCompletionConditionStatement(node));
         }
         return methods.stream();
