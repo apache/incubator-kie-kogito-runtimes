@@ -50,7 +50,11 @@ public class JavaConstraintEvaluatorBuilder implements ReturnValueEvaluatorBuild
                 new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->
                 actionBody);
 
-        BlockStmt blockStmt = parseExpression(expression);
+        BlockStmt blockStmt = parseIdentifier(expression);
+
+        if (blockStmt == null) {
+            blockStmt = parseExpression(expression);
+        }
 
         if (blockStmt == null) {
             blockStmt = parseStatement(expression);
@@ -90,6 +94,16 @@ public class JavaConstraintEvaluatorBuilder implements ReturnValueEvaluatorBuild
         try {
             BlockStmt block = new BlockStmt();
             block.addStatement(new ReturnStmt(StaticJavaParser.parseExpression(expression)));
+            return block;
+        } catch (ParseProblemException e) {
+            return null;
+        }
+    }
+
+    private BlockStmt parseIdentifier(String expression) {
+        try {
+            BlockStmt block = new BlockStmt();
+            block.addStatement(new ReturnStmt(new NameExpr(StaticJavaParser.parseSimpleName(expression.trim()))));
             return block;
         } catch (ParseProblemException e) {
             return null;

@@ -441,7 +441,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         RuleFlowProcess rfp = ((RuleFlowProcess) wfpi.getProcess());
 
         // we avoid create containers incorrectly
-        NodeInstance nodeInstance = wfpi.getByNodeDefinitionId(nodeId, rfp);
+        NodeInstance nodeInstance = wfpi.getNodeByPredicate(rfp,
+                ni -> Objects.equals(nodeId, ni.getName()) || Objects.equals(nodeId, ni.getId().toExternalFormat()));
         if (nodeInstance == null) {
             throw new NodeNotFoundException(this.id, nodeId);
         }
