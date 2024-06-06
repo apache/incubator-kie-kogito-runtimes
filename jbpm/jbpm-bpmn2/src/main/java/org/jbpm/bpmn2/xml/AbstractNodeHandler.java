@@ -39,6 +39,7 @@ import org.jbpm.bpmn2.core.ItemDefinition;
 import org.jbpm.bpmn2.core.Lane;
 import org.jbpm.bpmn2.core.SequenceFlow;
 import org.jbpm.bpmn2.core.Signal;
+import org.jbpm.compiler.canonical.builtin.ReturnValueEvaluatorBuilderService;
 import org.jbpm.compiler.xml.Handler;
 import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
@@ -49,6 +50,8 @@ import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.DataTypeResolver;
+import org.jbpm.process.instance.impl.MVELInterpretedReturnValueEvaluator;
+import org.jbpm.process.instance.impl.ReturnValueEvaluator;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.jbpm.util.PatternConstants;
@@ -572,7 +575,11 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         String lang = element.get().getAttribute("language");
         String expression = element.get().getTextContent();
 
-        return new Transformation(lang, expression);
+        ReturnValueEvaluator evaluator = null;
+        if (lang.toLowerCase().contains("mvel")) {
+            evaluator = new MVELInterpretedReturnValueEvaluator(expression);
+        }
+        return new Transformation(lang, expression, evaluator);
     }
 
     protected List<DataDefinition> readSources(org.w3c.dom.Node parent, Function<String, DataDefinition> variableResolver) {

@@ -40,7 +40,7 @@
     </operation>
   </interface>
 
-  <process processType="Private" isExecutable="true" id="ServiceProcessWithMvelJaxbTransformation" name="Service Process" >
+  <process processType="Private" isExecutable="true" id="ServiceProcessWithMvelJaxbTransformation" name="Service Process" tns:packageName="org.jbpm.bpmn2.service" >
     <extensionElements>
       <tns:import name="jakarta.xml.bind.JAXBContext"/>
       <tns:import name="java.io.StringReader"/>
