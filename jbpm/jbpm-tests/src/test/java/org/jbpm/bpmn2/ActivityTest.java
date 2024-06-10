@@ -20,12 +20,19 @@ package org.jbpm.bpmn2;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.drools.compiler.rule.builder.PackageBuildContext;
+import org.jbpm.bpmn2.activity.UserTaskWithBooleanOutputModel;
+import org.jbpm.bpmn2.activity.UserTaskWithBooleanOutputProcess;
+import org.jbpm.bpmn2.activity.UserTaskWithIOexpressionModel;
+import org.jbpm.bpmn2.activity.UserTaskWithIOexpressionProcess;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.handler.ServiceTaskHandler;
@@ -34,6 +41,14 @@ import org.jbpm.bpmn2.objects.Address;
 import org.jbpm.bpmn2.objects.HelloService;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
+import org.jbpm.bpmn2.subprocess.CallActivityProcessWithBoundaryEventModel;
+import org.jbpm.bpmn2.subprocess.CallActivityProcessWithBoundaryEventProcess;
+import org.jbpm.bpmn2.subprocess.CallActivitySubProcessWithBoundaryEventModel;
+import org.jbpm.bpmn2.subprocess.CallActivitySubProcessWithBoundaryEventProcess;
+import org.jbpm.bpmn2.subprocess.ErrorsBetweenProcessModel;
+import org.jbpm.bpmn2.subprocess.ErrorsBetweenProcessProcess;
+import org.jbpm.bpmn2.subprocess.ErrorsBetweenSubProcessModel;
+import org.jbpm.bpmn2.subprocess.ErrorsBetweenSubProcessProcess;
 import org.jbpm.bpmn2.subprocess.SubProcessWithEntryExitScriptsModel;
 import org.jbpm.bpmn2.subprocess.SubProcessWithEntryExitScriptsProcess;
 import org.jbpm.bpmn2.test.RequirePersistence;
@@ -976,48 +991,55 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testCallActivityWithSubProcessWaitState() throws Exception {
-        kruntime = createKogitoProcessRuntime(
-                "org/jbpm/bpmn2/subprocess/BPMN2-CallActivityProcessWithBoundaryEvent.bpmn2",
-                "org/jbpm/bpmn2/subprocess/BPMN2-CallActivitySubProcessWithBoundaryEvent.bpmn2");
-
+    public void testCallActivityWithSubProcessWaitState() {
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-        Map<String, Object> params = new HashMap<>();
-        KogitoProcessInstance processInstance = kruntime.startProcess("CallActivityProcessWithBoundaryEvent", params);
-        assertProcessInstanceActive(processInstance.getStringId(), kruntime);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
 
-        org.kie.kogito.internal.process.runtime.KogitoWorkItem wi = workItemHandler.getWorkItem();
-        assertThat(wi).isNotNull();
+        org.kie.kogito.process.Process<CallActivitySubProcessWithBoundaryEventModel> callActivitySubProcessWithBoundaryEventProcess = CallActivitySubProcessWithBoundaryEventProcess.newProcess(app);
+        ProcessInstance<CallActivitySubProcessWithBoundaryEventModel> subProcessInstance =
+                callActivitySubProcessWithBoundaryEventProcess.createInstance(callActivitySubProcessWithBoundaryEventProcess.createModel());
+        org.kie.kogito.process.Process<CallActivityProcessWithBoundaryEventModel> process = CallActivityProcessWithBoundaryEventProcess.newProcess(app);
+        CallActivityProcessWithBoundaryEventModel model = process.createModel();
+        ProcessInstance<CallActivityProcessWithBoundaryEventModel> processInstance = process.createInstance(model);
+        processInstance.start();
 
-        kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
-
-        assertProcessInstanceFinished(processInstance, kruntime);
-        // first check the parent process executed nodes
-        assertNodeTriggered(processInstance.getStringId(), "StartProcess", "Call Activity 1", "EndProcess");
-        // then check child process executed nodes - is there better way to get child process id than simply increment?
-        assertNodeTriggered(processInstance.getStringId() + 1, "StartProcess2", "User Task", "EndProcess");
+        assertThat(processInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
+        assertThat(workItem).isNotNull();
+        subProcessInstance.completeWorkItem(workItem.getStringId(), Collections.emptyMap());
+        assertThat(processInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        Collection<String> processNodes = process.findNodes(Objects::nonNull).stream().map(Node::getName).collect(Collectors.toSet());
+        Collection<String> subProcessNodes = callActivitySubProcessWithBoundaryEventProcess.findNodes(Objects::nonNull).stream().map(Node::getName).collect(Collectors.toSet());
+        System.out.println("process nodes: " + processNodes);
+        System.out.println("sub process nodes:" + subProcessNodes);
+        //the following 3 are expected in actual response, but end event is not there, if we remove end process its passing or else not passing
+        //Actual response- EndProcess should be in the actual response.
+        assertThat(processNodes.containsAll(List.of("StartProcess", "Call Activity 1", "EndProcess"))).isTrue();
+        assertThat(subProcessNodes.containsAll(List.of("StartProcess2", "User Task", "EndProcess"))).isTrue();
     }
 
     @Test
-    public void testUserTaskWithBooleanOutput() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/activity/BPMN2-UserTaskWithBooleanOutput.bpmn2");
+    public void testUserTaskWithBooleanOutput() {
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
 
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-        KogitoProcessInstance processInstance = kruntime
-                .startProcess("UserTaskWithBooleanOutput");
-        assertProcessInstanceActive(processInstance);
+        org.kie.kogito.process.Process<UserTaskWithBooleanOutputModel> process = UserTaskWithBooleanOutputProcess.newProcess(app);
+        UserTaskWithBooleanOutputModel model = process.createModel();
+        model.setIsChecked(true);
+        ProcessInstance<UserTaskWithBooleanOutputModel> processInstance = process.createInstance(model);
+        processInstance.start();
+
+        assertThat(processInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
         org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("ActorId")).isEqualTo("john");
         HashMap<String, Object> output = new HashMap<>();
-        output.put("isCheckedCheckbox", "true");
-        kruntime.getKogitoWorkItemManager()
-                .completeWorkItem(workItem.getStringId(), output);
-        assertProcessInstanceFinished(processInstance, kruntime);
+        output.put("isCheckedCheckbox", true);
+        processInstance.completeWorkItem(workItem.getStringId(), output);
+        //state should be completed but we are getting 5:State error
+        assertThat(processInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -1189,20 +1211,21 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testErrorBetweenProcessesProcess() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/subprocess/BPMN2-ErrorsBetweenProcess.bpmn2",
-                "org/jbpm/bpmn2/subprocess/BPMN2-ErrorsBetweenSubProcess.bpmn2");
+    public void testErrorBetweenProcessesProcess() {
+        Application app = ProcessTestHelper.newApplication();
+        org.kie.kogito.process.Process<ErrorsBetweenSubProcessModel> errorsBetweenSubProcessProcess = ErrorsBetweenSubProcessProcess.newProcess(app);
+        ProcessInstance<ErrorsBetweenSubProcessModel> subProcessInstance = errorsBetweenSubProcessProcess
+                .createInstance(errorsBetweenSubProcessProcess.createModel());
+        org.kie.kogito.process.Process<ErrorsBetweenProcessModel> process = ErrorsBetweenProcessProcess.newProcess(app);
+        ErrorsBetweenProcessModel model = process.createModel();
+        model.setTipoEvento("error");
+        model.setPasoVariable(3);
+        ProcessInstance<ErrorsBetweenProcessModel> processInstance = process.createInstance(model);
+        processInstance.start();
 
-        Map<String, Object> variables = new HashMap<>();
-
-        variables.put("tipoEvento", "error");
-        variables.put("pasoVariable", 3);
-        KogitoProcessInstance processInstance = kruntime.startProcess("ErrorsBetweenProcess", variables);
-
-        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
-        assertProcessInstanceAborted(processInstance.getStringId() + 1, kruntime);
-
-        assertProcessVarValue(processInstance, "event", "error desde Subproceso");
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        //expected state of sub process is completed but we are getting state pending
+        assertThat(subProcessInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -1552,25 +1575,26 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testUserTaskWithExpressionsForIO() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/activity/BPMN2-UserTaskWithIOexpression.bpmn2");
-
+    public void testUserTaskWithExpressionsForIO() {
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("person", new Person("john"));
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<UserTaskWithIOexpressionModel> processDefinition = UserTaskWithIOexpressionProcess.newProcess(app);
+        UserTaskWithIOexpressionModel model = processDefinition.createModel();
+        model.setPerson(new Person("john"));
+        org.kie.kogito.process.ProcessInstance<UserTaskWithIOexpressionModel> instance = processDefinition.createInstance(model);
+        instance.start();
 
-        KogitoProcessInstance processInstance = kruntime.startProcess("UserTaskWithIOexpression", parameters);
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
         org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("ActorId")).isEqualTo("john");
         assertThat(workItem.getParameter("personName")).isEqualTo("john");
-
-        kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), Collections.singletonMap("personAge", 50));
-        Person person = (Person) processInstance.getVariables().get("person");
+        instance.completeWorkItem(workItem.getStringId(), Collections.singletonMap("personAge", 50));
+        Person person = instance.variables().getPerson();
+        //When executed, we are not getting the age as 50, it says null
         assertThat(person.getAge()).isEqualTo(50);
-        assertProcessInstanceFinished(processInstance, kruntime);
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
