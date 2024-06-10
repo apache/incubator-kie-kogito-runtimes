@@ -42,6 +42,8 @@ import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.handler.ServiceTaskHandler;
 import org.jbpm.bpmn2.handler.SignallingTaskHandlerDecorator;
+import org.jbpm.bpmn2.intermediate.IntermediateThrowEventMessageModel;
+import org.jbpm.bpmn2.intermediate.IntermediateThrowEventMessageProcess;
 import org.jbpm.bpmn2.objects.ExceptionService;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
@@ -765,12 +767,15 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testMessageIntermediateThrow() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-IntermediateThrowEventMessage.bpmn2");
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Send Task", new SendTaskHandler());
-        Map<String, Object> params = new HashMap<>();
-        params.put("x", "MyValue");
-        KogitoProcessInstance processInstance = kruntime.startProcess("IntermediateThrowEventMessage", params);
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Send Task", new SendTaskHandler());
+        org.kie.kogito.process.Process<IntermediateThrowEventMessageModel> definition = IntermediateThrowEventMessageProcess.newProcess(app);
+        IntermediateThrowEventMessageModel model = definition.createModel();
+        model.setX("MyValue");
+
+        org.kie.kogito.process.ProcessInstance<IntermediateThrowEventMessageModel> instance = definition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test

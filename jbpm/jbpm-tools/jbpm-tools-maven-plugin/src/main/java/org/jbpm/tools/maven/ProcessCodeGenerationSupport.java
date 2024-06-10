@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.Node.TreeTraversal;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -259,6 +260,7 @@ public class ProcessCodeGenerationSupport {
 
                     MethodDeclaration setMethod = new MethodDeclaration();
                     setMethod.addParameter(type, producerFieldName);
+                    setMethod.setModifier(Keyword.PUBLIC, true);
                     setMethod.setName("set" + producerFieldNameCapitalized);
                     setMethod.setType(StaticJavaParser.parseType("void"));
                     AssignExpr assignExpr = new AssignExpr(

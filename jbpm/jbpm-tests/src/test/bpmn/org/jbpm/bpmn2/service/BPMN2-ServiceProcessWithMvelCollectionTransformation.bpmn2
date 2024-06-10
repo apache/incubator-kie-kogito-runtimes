@@ -53,8 +53,8 @@
     <startEvent id="_1" name="StartProcess" />
     <serviceTask id="_2" name="Hello" operationRef="_2_ServiceOperation" implementation="Other" >
       <ioSpecification>
-        <dataInput id="_2_param" name="Parameter" />
-        <dataOutput id="_2_result" name="Result" />
+        <dataInput id="_2_param" name="Parameter" itemSubjectRef="_sItem"/>
+        <dataOutput id="_2_result" name="Result" itemSubjectRef="_sItem"/>
         <inputSet>
           <dataInputRefs>_2_param</dataInputRefs>
         </inputSet>
@@ -70,7 +70,7 @@
       <dataOutputAssociation>
         <sourceRef>_2_result</sourceRef>
         <targetRef>list</targetRef>
-        <transformation language="http://www.mvel.org/2.0">Arrays.asList(Result.split(","))</transformation>
+        <transformation language="http://www.mvel.org/2.0">java.util.Arrays.asList(Result.split(","))</transformation>
       </dataOutputAssociation>
     </serviceTask>
     <endEvent id="_3" name="EndProcess" >

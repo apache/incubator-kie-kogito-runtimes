@@ -40,8 +40,8 @@
     <bpmn2:scriptTask id="_4" name="Event">
       <bpmn2:incoming>_3-_4</bpmn2:incoming>
       <bpmn2:outgoing>_4-_5</bpmn2:outgoing>
-      <bpmn2:script>kcontext.getKieRuntime().getGlobal(&quot;TestOK&quot;).toString();
-</bpmn2:script>
+      <bpmn2:script>kcontext.setVariable("TestOK", Boolean.TRUE);
+     </bpmn2:script>
     </bpmn2:scriptTask>
     <bpmn2:endEvent id="_5" name="EndProcess">
       <bpmn2:incoming>_4-_5</bpmn2:incoming>

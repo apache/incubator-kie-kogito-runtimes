@@ -266,7 +266,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
         }
 
         Expression lang = new StringLiteralExpr(transformation.getLanguage());
-        Expression expression = new StringLiteralExpr(transformation.getExpression());
+        Expression expression = new StringLiteralExpr(sanitizeString(transformation.getExpression()));
 
         ContextResolver contextResolver = type.equals(DataAssociationType.INPUT) ? node : wrapContextResolver(node, inputs);
 
@@ -396,7 +396,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
     }
 
     protected ObjectCreationExpr buildProducerAction(Node node, ProcessMetaData metadata) {
-        TriggerMetaData trigger = TriggerMetaData.of(node);
+        TriggerMetaData trigger = TriggerMetaData.of(node, (String) node.getMetaData().get(Metadata.MAPPING_VARIABLE_INPUT));
         return buildProducerAction(parseClassOrInterfaceType(ProduceEventAction.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseClassOrInterfaceType(trigger.getDataType()))),
                 trigger, metadata);
 

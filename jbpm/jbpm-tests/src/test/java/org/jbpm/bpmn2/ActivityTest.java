@@ -62,6 +62,12 @@ import org.jbpm.bpmn2.objects.Address;
 import org.jbpm.bpmn2.objects.HelloService;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
+import org.jbpm.bpmn2.service.ServiceProcessWithMvelCollectionTransformationModel;
+import org.jbpm.bpmn2.service.ServiceProcessWithMvelCollectionTransformationProcess;
+import org.jbpm.bpmn2.service.ServiceProcessWithMvelJaxbTransformationModel;
+import org.jbpm.bpmn2.service.ServiceProcessWithMvelJaxbTransformationProcess;
+import org.jbpm.bpmn2.service.ServiceProcessWithMvelTransformationModel;
+import org.jbpm.bpmn2.service.ServiceProcessWithMvelTransformationProcess;
 import org.jbpm.bpmn2.subprocess.AssignmentProcessModel;
 import org.jbpm.bpmn2.subprocess.AssignmentProcessProcess;
 import org.jbpm.bpmn2.subprocess.AssignmentSubProcessModel;
@@ -136,6 +142,8 @@ import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.handlers.HelloService_hello__2_Handler;
+import org.kie.kogito.handlers.HelloService_validate__2_Handler;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
@@ -830,20 +838,6 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testServiceTaskWithMvelTransformation() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ServiceProcessWithMvelTransformation.bpmn2");
-
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Service Task",
-                new ServiceTaskHandler());
-        Map<String, Object> params = new HashMap<>();
-        params.put("s", "JoHn");
-        KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime
-                .startProcess("ServiceProcessWithMvelTransformation", params);
-        assertProcessInstanceFinished(processInstance, kruntime);
-        assertThat(processInstance.getVariable("s")).isEqualTo("hello john!");
-    }
-
-    @Test
     public void testServiceTaskNoInterfaceName() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-ServiceTask-web-service.bpmn2");
 
@@ -1198,38 +1192,57 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testServiceTaskWithMvelCollectionTransformation() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ServiceProcessWithMvelCollectionTransformation.bpmn2");
+    public void testServiceTaskWithMvelTransformation() throws Exception {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.HelloService_hello__2_Handler", new HelloService_hello__2_Handler());
+        org.kie.kogito.process.Process<ServiceProcessWithMvelTransformationModel> definition = ServiceProcessWithMvelTransformationProcess.newProcess(app);
+        ServiceProcessWithMvelTransformationModel model = definition.createModel();
 
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Service Task",
-                new ServiceTaskHandler());
-        Map<String, Object> params = new HashMap<>();
-        params.put("s", "john,poul,mary");
-        KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime
-                .startProcess("ServiceProcess", params);
-        assertProcessInstanceFinished(processInstance, kruntime);
-        @SuppressWarnings("unchecked")
-        List<String> result = (List<String>) processInstance.getVariable("list");
+        model.setS("JoHn");
+
+        org.kie.kogito.process.ProcessInstance<ServiceProcessWithMvelTransformationModel> instance = definition.createInstance(model);
+        instance.start();
+
+        assertThat(instance.variables().getS()).isEqualTo("hello john!");
+
+    }
+
+    @Test
+    public void testServiceTaskWithMvelCollectionTransformation() throws Exception {
+
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.HelloService_hello__2_Handler", new HelloService_hello__2_Handler());
+        org.kie.kogito.process.Process<ServiceProcessWithMvelCollectionTransformationModel> definition = ServiceProcessWithMvelCollectionTransformationProcess.newProcess(app);
+        ServiceProcessWithMvelCollectionTransformationModel model = definition.createModel();
+
+        model.setS("john,poul,mary");
+
+        org.kie.kogito.process.ProcessInstance<ServiceProcessWithMvelCollectionTransformationModel> instance = definition.createInstance(model);
+        instance.start();
+
+        List<String> result = (List<String>) instance.variables().getList();
         assertThat(result).hasSize(3);
+
     }
 
     @Test
     public void testServiceTaskWithMvelJaxbTransformation() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ServiceProcessWithMvelJaxbTransformation.bpmn2");
+        HelloService.VALIDATE_STRING = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><person><id>123</id><name>john</name></person>";
 
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Service Task",
-                new ServiceTaskHandler());
-        Map<String, Object> params = new HashMap<>();
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.HelloService_validate__2_Handler", new HelloService_validate__2_Handler());
+        org.kie.kogito.process.Process<ServiceProcessWithMvelJaxbTransformationModel> definition = ServiceProcessWithMvelJaxbTransformationProcess.newProcess(app);
+        ServiceProcessWithMvelJaxbTransformationModel model = definition.createModel();
+
         Person person = new Person();
         person.setId(123);
         person.setName("john");
-        params.put("s", person);
+        model.setS(person);
 
-        HelloService.VALIDATE_STRING = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><person><id>123</id><name>john</name></person>";
+        org.kie.kogito.process.ProcessInstance<ServiceProcessWithMvelJaxbTransformationModel> instance = definition.createInstance(model);
+        instance.start();
 
-        KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime
-                .startProcess("ServiceProcessWithMvelJaxbTransformation", params);
-        assertProcessInstanceFinished(processInstance, kruntime);
+        assertThat(instance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
 
     }
 
