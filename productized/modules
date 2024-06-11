@@ -7,7 +7,7 @@ drools/pom.xml;kogito-pmml-api-dependencies,kogito-efesto-drl,kogito-pmml-depend
 jbpm/pom.xml;jbpm-tools,jbpm-tests
 kogito-codegen-modules/pom.xml;kogito-codegen-rules,kogito-codegen-decisions,kogito-codegen-predictions,kogito-codegen-integration-tests,kogito-codegen-sample
 kogito-serverless-workflow/pom.xml;kogito-serverless-workflow-executor-tests
-quarkus/addons/pom.xml;explainability,mail,monitoring,process-svg,task-notification,tracing-decision,task-management,marshallers,process-definitions
+quarkus/addons/pom.xml;explainability,mail,monitoring,process-svg,task-notification,task-management,marshallers,process-definitions
 quarkus/addons/events/pom.xml;decisions,predictions,rules,mongodb
 quarkus/addons/jobs/pom.xml;messaging
 quarkus/addons/persistence/pom.xml;infinispan,kafka,filesystem,mongodb,postgresql,rocksdb
