@@ -23,9 +23,7 @@
   <bpmn2:itemDefinition id="_xItem" isCollection="false" structureRef="Integer"/>
   <bpmn2:itemDefinition id="ItemDefinition_1" isCollection="false" structureRef="Boolean"/>
   <bpmn2:process id="IntermediateCatchEventTimerDurationWithError" name="IntermediateCatchEvent Process" isExecutable="true" processType="Private" tns:packageName="org.jbpm.bpmn2.intermediate" > 
-    <bpmn2:extensionElements>
-      <tns:global identifier="TestOK" type="Boolean"/>
-    </bpmn2:extensionElements>
+    <bpmn2:property id="TestOK" itemSubjectRef="ItemDefinition_1" name="TestOK"/>
     <bpmn2:property id="x" itemSubjectRef="_xItem" name="x"/>
     <bpmn2:startEvent id="_1" name="StartProcess">
       <bpmn2:outgoing>_1-_3</bpmn2:outgoing>
@@ -40,7 +38,10 @@
     <bpmn2:scriptTask id="_4" name="Event">
       <bpmn2:incoming>_3-_4</bpmn2:incoming>
       <bpmn2:outgoing>_4-_5</bpmn2:outgoing>
-      <bpmn2:script>kcontext.setVariable("TestOK", Boolean.TRUE);
+      <bpmn2:script>
+        System.out.println("TestOK: " + TestOK);
+        kcontext.setVariable("TestOK", Boolean.TRUE);
+        System.out.println("TestOK: " + kcontext.getVariable("TestOK"));
      </bpmn2:script>
     </bpmn2:scriptTask>
     <bpmn2:endEvent id="_5" name="EndProcess">

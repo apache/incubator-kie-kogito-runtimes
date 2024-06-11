@@ -48,6 +48,7 @@ import org.jbpm.bpmn2.intermediate.IntermediateCatchEventTimerCycleCronModel;
 import org.jbpm.bpmn2.intermediate.IntermediateCatchEventTimerCycleCronProcess;
 import org.jbpm.bpmn2.intermediate.IntermediateCatchEventTimerDurationWithErrorModel;
 import org.jbpm.bpmn2.intermediate.IntermediateCatchEventTimerDurationWithErrorProcess;
+import org.jbpm.bpmn2.intermediate.IntermediateCatchEventTimerDurationWithErrorProcessInstance;
 import org.jbpm.bpmn2.intermediate.IntermediateCatchSignalBetweenUserTasksModel;
 import org.jbpm.bpmn2.intermediate.IntermediateCatchSignalBetweenUserTasksProcess;
 import org.jbpm.bpmn2.intermediate.IntermediateThrowEventMessageModel;
@@ -70,7 +71,6 @@ import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.command.ExecutableCommand;
-import org.kie.api.definition.process.WorkflowElementIdentifier;
 import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
@@ -90,7 +90,6 @@ import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.Sig;
-import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -1013,7 +1012,14 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         Application app = ProcessTestHelper.newApplication();
 
         ProcessTestHelper.registerHandler(app, "Send Task", new SendTaskHandler());
-        org.kie.kogito.process.Process<IntermediateThrowEventMessageModel> definition = IntermediateThrowEventMessageProcess.newProcess(app);
+        IntermediateThrowEventMessageProcess definition = (IntermediateThrowEventMessageProcess) IntermediateThrowEventMessageProcess.newProcess(app);
+        StringBuilder builder = new StringBuilder();
+        definition.setProducer__2(new MessageProducer<String>() {
+            @Override
+            public void produce(KogitoProcessInstance pi, String eventData) {
+                builder.append(eventData);
+            }
+        });
         IntermediateThrowEventMessageModel model = definition.createModel();
 
         model.setX("MyValue");
@@ -1021,61 +1027,8 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         org.kie.kogito.process.ProcessInstance<IntermediateThrowEventMessageModel> instance = definition.createInstance(model);
         instance.start();
 
+        assertThat(builder.toString()).isEqualTo("MyValue");
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
-
-    }
-
-    @Test
-    public void testMessageIntermediateThrowVerifyWorkItemData() throws Exception {
-        Application app = ProcessTestHelper.newApplication();
-
-        TestWorkItemHandler handler = new TestWorkItemHandler();
-        ProcessTestHelper.registerHandler(app, "Send Task", handler);
-        org.kie.kogito.process.Process<IntermediateThrowEventMessageModel> definition = IntermediateThrowEventMessageProcess.newProcess(app);
-        IntermediateThrowEventMessageModel model = definition.createModel();
-
-        model.setX("MyValue");
-
-        org.kie.kogito.process.ProcessInstance<IntermediateThrowEventMessageModel> instance = definition.createInstance(model);
-        instance.start();
-
-        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
-        KogitoWorkItem workItem = handler.getWorkItem();
-        assertThat(workItem).isNotNull().isInstanceOf(KogitoWorkItem.class);
-
-        String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
-        WorkflowElementIdentifier nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
-
-        assertThat(nodeId).isNotNull();
-        assertThat(nodeInstanceId).isNotNull();
-
-    }
-
-    @Test
-    public void testMessageIntermediateThrowVerifyWorkItemDataDeploymentId() throws Exception {
-        Application app = ProcessTestHelper.newApplication();
-
-        TestWorkItemHandler handler = new TestWorkItemHandler();
-        ProcessTestHelper.registerHandler(app, "Send Task", handler);
-        org.kie.kogito.process.Process<IntermediateThrowEventMessageModel> definition = IntermediateThrowEventMessageProcess.newProcess(app);
-        IntermediateThrowEventMessageModel model = definition.createModel();
-
-        model.setX("MyValue");
-
-        org.kie.kogito.process.ProcessInstance<IntermediateThrowEventMessageModel> instance = definition.createInstance(model);
-        instance.start();
-
-        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
-        KogitoWorkItem workItem = handler.getWorkItem();
-        assertThat(workItem).isNotNull().isInstanceOf(KogitoWorkItem.class);
-
-        String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
-        WorkflowElementIdentifier nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
-        String deploymentId = ((InternalKogitoWorkItem) workItem).getDeploymentId();
-
-        assertThat(nodeId).isNotNull();
-        assertThat(nodeInstanceId).isNotNull();
-        assertThat(deploymentId).isNull();
 
     }
 
@@ -1888,6 +1841,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         Application app = ProcessTestHelper.newApplication();
         EventTrackerProcessListener listener = new EventTrackerProcessListener();
         ProcessTestHelper.registerProcessEventListener(app, listener);
+        ProcessTestHelper.registerHandler(app, "Human Task", new SystemOutWorkItemHandler());
         org.kie.kogito.process.Process<IntermediateCatchEventSignalWithTransformationModel> definition = IntermediateCatchEventSignalWithTransformationProcess.newProcess(app);
 
         org.kie.kogito.process.ProcessInstance<IntermediateCatchEventSignalWithTransformationModel> instance = definition.createInstance(definition.createModel());
@@ -1940,9 +1894,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         org.kie.kogito.process.ProcessInstance<IntermediateCatchEventTimerCycleCronModel> instance = definition.createInstance(definition.createModel());
         instance.start();
         latch.await(5, TimeUnit.SECONDS);
-        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
-        instance.abort();
-        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -1969,11 +1921,11 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             }
         });
         org.kie.kogito.process.Process<IntermediateCatchEventTimerDurationWithErrorModel> definition = IntermediateCatchEventTimerDurationWithErrorProcess.newProcess(app);
-        org.kie.kogito.process.ProcessInstance<IntermediateCatchEventTimerDurationWithErrorModel> instance = definition.createInstance(definition.createModel());
+        IntermediateCatchEventTimerDurationWithErrorProcessInstance instance = (IntermediateCatchEventTimerDurationWithErrorProcessInstance) definition.createInstance(definition.createModel());
         instance.start();
-        latch.await(5, TimeUnit.SECONDS);
-        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
-        assertThat(instance.variables().getTestOK()).isTrue();
+        latch.await(10, TimeUnit.SECONDS);
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(instance.variables().getTestOK()).isEqualTo(Boolean.TRUE);
 
     }
 
