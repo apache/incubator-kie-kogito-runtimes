@@ -21,6 +21,7 @@ package org.jbpm.process.core.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jbpm.process.core.transformation.JavaDataTransformer;
 import org.jbpm.process.core.transformation.MVELDataTransformer;
 import org.kie.api.runtime.process.DataTransformer;
 import org.slf4j.Logger;
@@ -46,6 +47,7 @@ public class DataTransformerRegistry {
     protected DataTransformerRegistry() {
         this.registry = new ConcurrentHashMap<>();
         this.registry.put("http://www.mvel.org/2.0", new MVELDataTransformer());
+        this.registry.put("http://www.java.com/java", new JavaDataTransformer());
     }
 
     public static DataTransformerRegistry get() {

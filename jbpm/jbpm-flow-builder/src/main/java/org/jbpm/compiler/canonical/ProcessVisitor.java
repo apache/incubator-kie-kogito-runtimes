@@ -19,7 +19,6 @@
 package org.jbpm.compiler.canonical;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,40 +26,27 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.jbpm.compiler.canonical.builtin.ReturnValueEvaluatorBuilderService;
 import org.jbpm.compiler.canonical.descriptors.ExpressionUtils;
+import org.jbpm.compiler.canonical.node.NodeVisitorBuilderService;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.correlation.Correlation;
+import org.jbpm.process.core.correlation.CorrelationManager;
+import org.jbpm.process.core.correlation.CorrelationProperties;
+import org.jbpm.process.core.correlation.Message;
+import org.jbpm.process.instance.impl.ReturnValueEvaluator;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
-import org.jbpm.workflow.core.node.ActionNode;
-import org.jbpm.workflow.core.node.BoundaryEventNode;
-import org.jbpm.workflow.core.node.CatchLinkNode;
-import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.CompositeNode;
-import org.jbpm.workflow.core.node.DynamicNode;
-import org.jbpm.workflow.core.node.EndNode;
-import org.jbpm.workflow.core.node.EventNode;
-import org.jbpm.workflow.core.node.EventSubProcessNode;
-import org.jbpm.workflow.core.node.FaultNode;
-import org.jbpm.workflow.core.node.ForEachNode;
-import org.jbpm.workflow.core.node.HumanTaskNode;
-import org.jbpm.workflow.core.node.Join;
-import org.jbpm.workflow.core.node.MilestoneNode;
-import org.jbpm.workflow.core.node.RuleSetNode;
-import org.jbpm.workflow.core.node.Split;
-import org.jbpm.workflow.core.node.StartNode;
-import org.jbpm.workflow.core.node.StateNode;
-import org.jbpm.workflow.core.node.SubProcessNode;
-import org.jbpm.workflow.core.node.ThrowLinkNode;
-import org.jbpm.workflow.core.node.TimerNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Process;
@@ -98,30 +84,13 @@ public class ProcessVisitor extends AbstractVisitor {
 
     public static final String DEFAULT_VERSION = "1.0";
 
-    private Map<Class<?>, AbstractNodeVisitor<? extends org.kie.api.definition.process.Node>> nodesVisitors = new HashMap<>();
+    private NodeVisitorBuilderService nodeVisitorService;
+
+    private ReturnValueEvaluatorBuilderService returnValueEvaluatorBuilderService;
 
     public ProcessVisitor(ClassLoader contextClassLoader) {
-        this.nodesVisitors.put(StartNode.class, new StartNodeVisitor());
-        this.nodesVisitors.put(ActionNode.class, new ActionNodeVisitor());
-        this.nodesVisitors.put(EndNode.class, new EndNodeVisitor());
-        this.nodesVisitors.put(HumanTaskNode.class, new HumanTaskNodeVisitor());
-        this.nodesVisitors.put(WorkItemNode.class, new WorkItemNodeVisitor<>(contextClassLoader));
-        this.nodesVisitors.put(SubProcessNode.class, new LambdaSubProcessNodeVisitor());
-        this.nodesVisitors.put(Split.class, new SplitNodeVisitor());
-        this.nodesVisitors.put(Join.class, new JoinNodeVisitor());
-        this.nodesVisitors.put(FaultNode.class, new FaultNodeVisitor());
-        this.nodesVisitors.put(RuleSetNode.class, new RuleSetNodeVisitor(contextClassLoader));
-        this.nodesVisitors.put(BoundaryEventNode.class, new BoundaryEventNodeVisitor());
-        this.nodesVisitors.put(EventNode.class, new EventNodeVisitor());
-        this.nodesVisitors.put(ForEachNode.class, new ForEachNodeVisitor(nodesVisitors));
-        this.nodesVisitors.put(CompositeContextNode.class, new CompositeContextNodeVisitor<>(nodesVisitors));
-        this.nodesVisitors.put(EventSubProcessNode.class, new EventSubProcessNodeVisitor(nodesVisitors));
-        this.nodesVisitors.put(TimerNode.class, new TimerNodeVisitor());
-        this.nodesVisitors.put(MilestoneNode.class, new MilestoneNodeVisitor());
-        this.nodesVisitors.put(DynamicNode.class, new DynamicNodeVisitor(nodesVisitors));
-        this.nodesVisitors.put(StateNode.class, new StateNodeVisitor(nodesVisitors));
-        this.nodesVisitors.put(CatchLinkNode.class, new CatchLinkNodeVisitor());
-        this.nodesVisitors.put(ThrowLinkNode.class, new ThrowLinkNodeVisitor());
+        nodeVisitorService = new NodeVisitorBuilderService(contextClassLoader);
+        returnValueEvaluatorBuilderService = ReturnValueEvaluatorBuilderService.instance(contextClassLoader);
     }
 
     public void visitProcess(WorkflowProcess process, MethodDeclaration processMethod, ProcessMetaData metadata) {
@@ -171,8 +140,9 @@ public class ProcessVisitor extends AbstractVisitor {
         ((org.jbpm.workflow.core.WorkflowProcess) process).getOutputValidator().ifPresent(
                 v -> body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, "outputValidator", ExpressionUtils.getLiteralExpr(v))));
 
-        visitCompensationScope(process, body);
         visitMetaData(process.getMetaData(), body, FACTORY_FIELD_NAME);
+        visitCollaboration(process, body);
+        visitCompensationScope(process, body);
         visitHeader(process, body);
 
         List<Node> processNodes = new ArrayList<>();
@@ -188,6 +158,40 @@ public class ProcessVisitor extends AbstractVisitor {
 
         MethodCallExpr getProcessMethod = new MethodCallExpr(new NameExpr(FACTORY_FIELD_NAME), "getProcess");
         body.addStatement(new ReturnStmt(getProcessMethod));
+    }
+
+    private void visitCollaboration(WorkflowProcess process, BlockStmt body) {
+        RuleFlowProcess ruleFlowProcess = (RuleFlowProcess) process;
+        CorrelationManager correlationManager = ruleFlowProcess.getCorrelationManager();
+
+        for (String messageId : correlationManager.getMessagesId()) {
+            Message message = correlationManager.findMessageById(messageId);
+            body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, "newCorrelationMessage",
+                    new StringLiteralExpr(message.getMessageRef()), new StringLiteralExpr(message.getMessageName()), new StringLiteralExpr(message.getMessageType())));
+        }
+
+        for (String correlationId : correlationManager.getCorrelationsId()) {
+            Correlation correlation = correlationManager.findCorrelationById(correlationId);
+            body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, "newCorrelationKey",
+                    new StringLiteralExpr(correlation.getId()), new StringLiteralExpr(correlation.getName())));
+
+            for (String messageId : correlationManager.getMessagesId()) {
+                CorrelationProperties properties = correlation.getMessageCorrelationFor(messageId);
+                for (String propertyName : properties.names()) {
+                    ReturnValueEvaluator evaluator = properties.getExpressionFor(propertyName);
+                    Expression returnValueEvaluator = returnValueEvaluatorBuilderService.build(ruleFlowProcess, evaluator.dialect(), evaluator.expression());
+                    body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, "newCorrelationProperty",
+                            new StringLiteralExpr(correlation.getId()), new StringLiteralExpr(messageId), new StringLiteralExpr(propertyName), returnValueEvaluator));
+                }
+            }
+            CorrelationProperties subscriptions = correlation.getProcessSubscription();
+            for (String propertyName : subscriptions.names()) {
+                ReturnValueEvaluator evaluator = subscriptions.getExpressionFor(propertyName);
+                Expression returnValueEvaluator = returnValueEvaluatorBuilderService.build(ruleFlowProcess, evaluator.dialect(), evaluator.expression());
+                body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, "newCorrelationSubscription",
+                        new StringLiteralExpr(correlation.getId()), new StringLiteralExpr(propertyName), returnValueEvaluator));
+            }
+        }
     }
 
     private void visitSubVariableScopes(org.kie.api.definition.process.Node[] nodes, BlockStmt body, Set<String> visitedVariables) {
@@ -221,12 +225,22 @@ public class ProcessVisitor extends AbstractVisitor {
 
     private <U extends org.kie.api.definition.process.Node> void visitNodes(List<U> nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         for (U node : nodes) {
-            AbstractNodeVisitor<U> visitor = (AbstractNodeVisitor<U>) nodesVisitors.get(node.getClass());
+            @SuppressWarnings("unchecked")
+            AbstractNodeVisitor<U> visitor = (AbstractNodeVisitor<U>) this.nodeVisitorService.findNodeVisitor(node.getClass());
             if (visitor == null) {
                 throw new IllegalStateException("No visitor found for node " + node.getClass().getName());
             }
             visitor.visitNode(node, body, variableScope, metadata);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private String getFieldName(ContextContainer contextContainer) {
+        AbstractNodeVisitor visitor = null;
+        if (contextContainer instanceof CompositeNode) {
+            visitor = this.nodeVisitorService.findNodeVisitor(contextContainer.getClass());
+        }
+        return visitor != null ? visitor.getNodeId(((Node) contextContainer)) : FACTORY_FIELD_NAME;
     }
 
     private void visitConnections(org.kie.api.definition.process.Node[] nodes, BlockStmt body) {
@@ -300,14 +314,6 @@ public class ProcessVisitor extends AbstractVisitor {
                                 .orElse(new NullLiteralExpr())));
             });
         }
-    }
-
-    private String getFieldName(ContextContainer contextContainer) {
-        AbstractNodeVisitor visitor = null;
-        if (contextContainer instanceof CompositeNode) {
-            visitor = this.nodesVisitors.get(contextContainer.getClass());
-        }
-        return visitor != null ? visitor.getNodeId(((Node) contextContainer)) : FACTORY_FIELD_NAME;
     }
 
     private void visitSubExceptionScope(org.kie.api.definition.process.Node[] nodes, BlockStmt body) {

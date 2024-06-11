@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -18,8 +37,10 @@
     <!-- this version property is used in plugins but also in dependencies too -->
     <version.io.quarkus>3.8.4</version.io.quarkus>
     <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>
-    <version.org.springframework.boot>3.2.4</version.org.springframework.boot>
+    <version.org.springframework.boot>3.2.6</version.org.springframework.boot>
     <version.org.apache.kafka>3.6.1</version.org.apache.kafka>
+
+    <version.org.bouncycastle.bc.jdk18on>1.78.1</version.org.bouncycastle.bc.jdk18on>
 
     <!-- dependencies versions -->
     <version.com.networknt>1.0.86</version.com.networknt>
@@ -32,7 +53,7 @@
     <version.io.quarkiverse.openapi.generator>2.4.1</version.io.quarkiverse.openapi.generator>
     <version.io.quarkiverse.asyncapi>0.3.0</version.io.quarkiverse.asyncapi>
     <version.io.quarkiverse.reactivemessaging.http>2.2.0</version.io.quarkiverse.reactivemessaging.http>
-    <version.io.quarkiverse.embedded.postgresql>0.2.1</version.io.quarkiverse.embedded.postgresql>
+    <version.io.quarkiverse.embedded.postgresql>0.2.2</version.io.quarkiverse.embedded.postgresql>
     <version.com.github.haifengl.smile>1.5.2</version.com.github.haifengl.smile>
     <version.com.github.javaparser>3.25.8</version.com.github.javaparser>
     <version.com.fasterxml.jackson.datatype>2.16.1</version.com.fasterxml.jackson.datatype>
@@ -46,7 +67,7 @@
     <version.com.sun.activation>2.0.1</version.com.sun.activation>
     <version.javax.inject>2.0.1</version.javax.inject>
     <version.org.eclipse.microprofile.openapi>3.1.1</version.org.eclipse.microprofile.openapi>
-    <version.ch.qos.logback>1.4.12</version.ch.qos.logback>
+    <version.ch.qos.logback>1.4.14</version.ch.qos.logback>
     <version.jakarta.annotation-api>2.1.1</version.jakarta.annotation-api>
     <version.jakarta.validation-api>3.0.2</version.jakarta.validation-api>
     <version.jakarta.xml.bind-api>4.0.1</version.jakarta.xml.bind-api>
@@ -107,7 +128,7 @@
     <version.org.junit.platform>1.10.2</version.org.junit.platform> <!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.mockito>5.2.0</version.org.mockito>
     <version.org.testcontainers>1.19.6</version.org.testcontainers>
-    <version.org.xmlunit-core>2.9.1</version.org.xmlunit-core>
+    <version.org.xmlunit-core>2.10.0</version.org.xmlunit-core>
     <version.io.rest-assured>5.3.2</version.io.rest-assured>
 
     <version.net.byte-buddy>1.14.11</version.net.byte-buddy>
@@ -135,6 +156,25 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- Not directly used, but a vulnerable version has been brought from com.dajudge.kindcontainer dependency -->
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk18on</artifactId>
+        <version>${version.org.bouncycastle.bc.jdk18on}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk18on</artifactId>
+        <version>${version.org.bouncycastle.bc.jdk18on}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcutil-jdk18on</artifactId>
+        <version>${version.org.bouncycastle.bc.jdk18on}</version>
+      </dependency>
+
       <!-- Guava should not be used directly by Kogito, here we are managing it to override dependency added by GRPC to fix this CVE: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-2976 -->
       <dependency>
         <groupId>com.google.guava</groupId>

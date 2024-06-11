@@ -20,6 +20,7 @@ package org.jbpm.ruleflow.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.process.instance.impl.Action;
+import org.jbpm.process.instance.impl.ReturnValueEvaluator;
 import org.jbpm.process.instance.impl.actions.CancelNodeInstanceAction;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
@@ -95,8 +97,13 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         return new RuleFlowProcessFactory(id, autoComplete);
     }
 
+    @Override
+    protected org.jbpm.workflow.core.NodeContainer getNodeContainer() {
+        return nodeContainer;
+    }
+
     protected RuleFlowProcessFactory(String id, boolean autoComplete) {
-        super(null, null, new RuleFlowProcess(), WorkflowElementIdentifierFactory.fromExternalFormat(id));
+        super(null, new RuleFlowProcess(), null, WorkflowElementIdentifierFactory.fromExternalFormat(id));
         getRuleFlowProcess().setAutoComplete(autoComplete);
     }
 
@@ -111,7 +118,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
     }
 
     protected RuleFlowProcess getRuleFlowProcess() {
-        return (RuleFlowProcess) node;
+        return (RuleFlowProcess) nodeContainer;
     }
 
     @Override
@@ -195,29 +202,30 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
 
     @Override
     public RuleFlowProcessFactory variable(String name, DataType type) {
-        return variable(name, type, null);
+        return variable(name, type, Collections.emptyMap());
     }
 
     @Override
     public RuleFlowProcessFactory variable(String name, DataType type, Object value) {
-        return variable(name, type, value, null, null);
+        return variable(name, type, value, Collections.emptyMap());
     }
 
     @Override
-    public RuleFlowProcessFactory variable(String name, DataType type, String metaDataName, Object metaDataValue) {
-        return variable(name, type, null, metaDataName, metaDataValue);
+    public RuleFlowProcessFactory variable(String name, DataType type, Map<String, Object> metadata) {
+        return this.variable(name, type, null, metadata);
     }
 
     @Override
-    public RuleFlowProcessFactory variable(String name, DataType type, Object value, String metaDataName, Object metaDataValue) {
-
+    public RuleFlowProcessFactory variable(String name, DataType type, Object value, Map<String, Object> metadata) {
         Variable variable = new Variable();
         variable.setName(name);
         variable.setType(type);
         variable.setValue(type.verifyDataType(value) ? value : type.readValue((String) value));
-        if (metaDataName != null && metaDataValue != null) {
-            variable.setMetaData(metaDataName, metaDataValue);
+
+        for (Map.Entry<String, Object> entry : metadata.entrySet()) {
+            variable.setMetaData(entry.getKey(), entry.getValue());
         }
+
         getRuleFlowProcess().getVariableScope().getVariables().add(variable);
         return this;
     }
@@ -235,6 +243,33 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         if (errors.length > 0) {
             throw new IllegalStateException("Process could not be validated !" + Arrays.toString(errors));
         }
+        return this;
+    }
+
+    public RuleFlowProcessFactory newCorrelationMessage(String messageId, String messageName, String messageType) {
+        RuleFlowProcess process = getRuleFlowProcess();
+        process.getCorrelationManager().newMessage(messageId, messageName, messageType);
+        return this;
+    }
+
+    public RuleFlowProcessFactory newCorrelationKey(String correlationKey, String correlationName) {
+        RuleFlowProcess process = getRuleFlowProcess();
+        process.getCorrelationManager().newCorrelation(correlationKey, correlationName);
+        return this;
+    }
+
+    public RuleFlowProcessFactory newCorrelationProperty(String correlationKeyId, String messageId, String propertyId, ReturnValueEvaluator evaluator) {
+        RuleFlowProcess process = getRuleFlowProcess();
+        process.getCorrelationManager().addMessagePropertyExpression(correlationKeyId, messageId, propertyId, evaluator);
+        return this;
+    }
+
+    public RuleFlowProcessFactory newCorrelationSubscription(String correlationKeyId, String propertyId, ReturnValueEvaluator evaluator) {
+        RuleFlowProcess process = getRuleFlowProcess();
+        if (!process.getCorrelationManager().isSubscribe(correlationKeyId)) {
+            process.getCorrelationManager().subscribeTo(correlationKeyId);
+        }
+        process.getCorrelationManager().addProcessSubscriptionPropertyExpression(correlationKeyId, propertyId, evaluator);
         return this;
     }
 
