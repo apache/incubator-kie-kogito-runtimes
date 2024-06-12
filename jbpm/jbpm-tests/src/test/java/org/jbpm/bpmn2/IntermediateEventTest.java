@@ -32,6 +32,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jbpm.bpmn2.activity.BoundarySignalEventOnTaskWithTransformationModel;
 import org.jbpm.bpmn2.activity.BoundarySignalEventOnTaskWithTransformationProcess;
+import org.jbpm.bpmn2.event.BoundarySignalWithNameEventOnTaskModel;
+import org.jbpm.bpmn2.event.BoundarySignalWithNameEventOnTaskProcess;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.intermediate.EventSubprocessErrorSignalEmbeddedModel;
@@ -239,15 +241,18 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testSignalBoundaryEventOnTaskWithSignalName() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-BoundarySignalWithNameEventOnTaskbpmn2.bpmn");
 
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                new TestWorkItemHandler());
-        kruntime.getProcessEventManager().addEventListener(LOGGING_EVENT_LISTENER);
-        KogitoProcessInstance processInstance = kruntime
-                .startProcess("BoundarySignalOnTask");
-        kruntime.signalEvent("MySignal", "value");
-        assertProcessInstanceFinished(processInstance, kruntime);
+        Application app = ProcessTestHelper.newApplication();
+
+        ProcessTestHelper.registerHandler(app, "Human Task", new TestWorkItemHandler());
+        ProcessTestHelper.registerProcessEventListener(app, LOGGING_EVENT_LISTENER);
+        org.kie.kogito.process.Process<BoundarySignalWithNameEventOnTaskModel> definition =
+                BoundarySignalWithNameEventOnTaskProcess.newProcess(app);
+        org.kie.kogito.process.ProcessInstance<BoundarySignalWithNameEventOnTaskModel> instance = definition.createInstance(definition.createModel());
+        instance.start();
+
+        instance.send(Sig.of("MySignal", "value"));
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
 
     }
 

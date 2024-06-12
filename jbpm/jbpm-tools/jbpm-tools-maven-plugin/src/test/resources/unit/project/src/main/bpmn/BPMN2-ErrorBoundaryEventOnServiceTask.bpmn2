@@ -28,7 +28,7 @@
       <inMessageRef>_2_InMessage</inMessageRef>
     </operation>
   </interface>
-  <process id="ErrorBoundaryEventOnServiceTask" tns:version="1" tns:packageName="org.jbpm.bpmn2.error" tns:adHoc="false" name="Default Process" isExecutable="true">
+  <process id="BPMN2-ErrorBoundaryEventOnServiceTask" tns:version="1" tns:packageName="defaultPackage" tns:adHoc="false" name="Default Process" isExecutable="true">
     <property id="s" itemSubjectRef="_sItem"/>
     <startEvent id="StartEvent_1" name="start">
       <outgoing>SequenceFlow_4</outgoing>
