@@ -19,7 +19,7 @@
   -->
 
 <definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:_1="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://www.jboss.org/drools" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="Definitions_1" targetNamespace="http://www.jboss.org/drools">
-  <error id="Error_1" errorCode="org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException"/>
+  <error id="Error_1" errorCode="java.lang.RuntimeException"/>
   <itemDefinition id="_sItem" structureRef="String"/>
   <itemDefinition id="_2_InMessageType" structureRef="java.lang.String"/>
   <message id="_2_InMessage" itemRef="_2_InMessageType" name="_2_InMessage"/>

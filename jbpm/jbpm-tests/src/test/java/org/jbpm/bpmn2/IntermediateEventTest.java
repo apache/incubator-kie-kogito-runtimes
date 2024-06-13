@@ -21,6 +21,7 @@ package org.jbpm.bpmn2;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,10 @@ import org.jbpm.bpmn2.activity.BoundarySignalEventOnTaskWithTransformationModel;
 import org.jbpm.bpmn2.activity.BoundarySignalEventOnTaskWithTransformationProcess;
 import org.jbpm.bpmn2.event.BoundarySignalWithNameEventOnTaskModel;
 import org.jbpm.bpmn2.event.BoundarySignalWithNameEventOnTaskProcess;
+import org.jbpm.bpmn2.event.BoundaryTimerCycleCronModel;
+import org.jbpm.bpmn2.event.BoundaryTimerCycleCronProcess;
+import org.jbpm.bpmn2.event.BoundaryTimerCycleCronVariableModel;
+import org.jbpm.bpmn2.event.BoundaryTimerCycleCronVariableProcess;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.intermediate.EventSubprocessErrorSignalEmbeddedModel;
@@ -68,6 +73,7 @@ import org.jbpm.process.core.datatype.impl.type.StringDataType;
 import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventListener;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
+import org.jbpm.test.util.NodeCountDownProcessEventListener;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
 import org.jbpm.test.utils.EventTrackerProcessListener;
@@ -129,6 +135,33 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     /*
      * TESTS!
      */
+
+    @Test
+    public void testBoundaryTimerCycleCron() {
+        Application app = ProcessTestHelper.newApplication();
+        NodeCountDownProcessEventListener listener = new NodeCountDownProcessEventListener("Send Update", 3);
+        ProcessTestHelper.registerProcessEventListener(app, listener);
+        org.kie.kogito.process.Process<BoundaryTimerCycleCronModel> definition = BoundaryTimerCycleCronProcess.newProcess(app);
+        org.kie.kogito.process.ProcessInstance<BoundaryTimerCycleCronModel> instance = definition.createInstance(definition.createModel());
+        instance.start();
+        listener.waitTillCompleted();
+        ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+    }
+
+    @Test
+    public void testBoundaryTimerCycleCronVariable() {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessCompletedCountDownProcessEventListener listener = new ProcessCompletedCountDownProcessEventListener();
+        ProcessTestHelper.registerProcessEventListener(app, listener);
+        org.kie.kogito.process.Process<BoundaryTimerCycleCronVariableModel> definition = BoundaryTimerCycleCronVariableProcess.newProcess(app);
+        BoundaryTimerCycleCronVariableModel model = definition.createModel();
+        model.setCronStr("PT1S");
+        org.kie.kogito.process.ProcessInstance<BoundaryTimerCycleCronVariableModel> instance = definition.createInstance(model);
+        instance.start();
+        listener.waitTillCompleted();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+    }
 
     @Test
     public void testSignalBoundaryEvent() throws Exception {
