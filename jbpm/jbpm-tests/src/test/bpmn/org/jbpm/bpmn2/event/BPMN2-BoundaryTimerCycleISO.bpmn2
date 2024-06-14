@@ -69,7 +69,7 @@
     <bpmn2:boundaryEvent id="_8B5EE6E3-73EE-477D-8CC5-96F7C01DA7F0" drools:bgcolor="#f5deb3" drools:selectable="true" drools:bordercolor="#a0522d" drools:boundaryca="false" name="Send Update Timer" attachedToRef="_77A94B54-8B7C-4F8A-84EE-C1D310A343A6" cancelActivity="false">
       <bpmn2:outgoing>_1206D165-6704-439E-99E6-7A02989A8C3C</bpmn2:outgoing>
       <bpmn2:timerEventDefinition id="_erIyiJZ7EeSDh8PHobjSSA">
-        <bpmn2:timeCycle xsi:type="bpmn2:tFormalExpression" id="_erIyiZZ7EeSDh8PHobjSSA">R3/PT1S</bpmn2:timeCycle>
+        <bpmn2:timeCycle xsi:type="bpmn2:tFormalExpression" id="_erIyiZZ7EeSDh8PHobjSSA">R3/PT0.1S</bpmn2:timeCycle>
       </bpmn2:timerEventDefinition>
     </bpmn2:boundaryEvent>
   </bpmn2:process>

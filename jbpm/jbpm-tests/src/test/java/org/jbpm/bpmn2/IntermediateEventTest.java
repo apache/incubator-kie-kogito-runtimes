@@ -155,7 +155,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         ProcessTestHelper.registerProcessEventListener(app, listener);
         org.kie.kogito.process.Process<BoundaryTimerCycleISOVariableModel> definition = BoundaryTimerCycleISOVariableProcess.newProcess(app);
         BoundaryTimerCycleISOVariableModel model = definition.createModel();
-        model.setCronStr("R3/PT1S");
+        model.setCronStr("R3/PT0.1S");
         org.kie.kogito.process.ProcessInstance<BoundaryTimerCycleISOVariableModel> instance = definition.createInstance(model);
         instance.start();
         listener.waitTillCompleted();
