@@ -20,12 +20,21 @@ package org.jbpm.test.util;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.kie.api.event.process.ProcessNodeTriggeredEvent;
+
 public class NodeCountDownProcessEventListener extends DefaultCountDownProcessEventListener {
 
     protected String nodeName;
 
     public NodeCountDownProcessEventListener() {
 
+    }
+
+    @Override
+    public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
+        if (nodeName.equals(event.getNodeInstance().getNodeName())) {
+            countDown();
+        }
     }
 
     public NodeCountDownProcessEventListener(String nodeName, int threads) {

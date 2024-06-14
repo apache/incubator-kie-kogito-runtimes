@@ -35,10 +35,10 @@ import org.jbpm.bpmn2.activity.BoundarySignalEventOnTaskWithTransformationModel;
 import org.jbpm.bpmn2.activity.BoundarySignalEventOnTaskWithTransformationProcess;
 import org.jbpm.bpmn2.event.BoundarySignalWithNameEventOnTaskModel;
 import org.jbpm.bpmn2.event.BoundarySignalWithNameEventOnTaskProcess;
-import org.jbpm.bpmn2.event.BoundaryTimerCycleCronModel;
-import org.jbpm.bpmn2.event.BoundaryTimerCycleCronProcess;
-import org.jbpm.bpmn2.event.BoundaryTimerCycleCronVariableModel;
-import org.jbpm.bpmn2.event.BoundaryTimerCycleCronVariableProcess;
+import org.jbpm.bpmn2.event.BoundaryTimerCycleISOModel;
+import org.jbpm.bpmn2.event.BoundaryTimerCycleISOProcess;
+import org.jbpm.bpmn2.event.BoundaryTimerCycleISOVariableModel;
+import org.jbpm.bpmn2.event.BoundaryTimerCycleISOVariableProcess;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.intermediate.EventSubprocessErrorSignalEmbeddedModel;
@@ -76,7 +76,6 @@ import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeCountDownProcessEventListener;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
-import org.jbpm.test.utils.EventTrackerProcessListener;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.jbpm.test.utils.ProcessTestHelper.CompletionKogitoEventListener;
 import org.junit.jupiter.api.Disabled;
@@ -137,12 +136,12 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
      */
 
     @Test
-    public void testBoundaryTimerCycleCron() {
+    public void testBoundaryTimerCycleISO() {
         Application app = ProcessTestHelper.newApplication();
         NodeCountDownProcessEventListener listener = new NodeCountDownProcessEventListener("Send Update", 3);
         ProcessTestHelper.registerProcessEventListener(app, listener);
-        org.kie.kogito.process.Process<BoundaryTimerCycleCronModel> definition = BoundaryTimerCycleCronProcess.newProcess(app);
-        org.kie.kogito.process.ProcessInstance<BoundaryTimerCycleCronModel> instance = definition.createInstance(definition.createModel());
+        org.kie.kogito.process.Process<BoundaryTimerCycleISOModel> definition = BoundaryTimerCycleISOProcess.newProcess(app);
+        org.kie.kogito.process.ProcessInstance<BoundaryTimerCycleISOModel> instance = definition.createInstance(definition.createModel());
         instance.start();
         listener.waitTillCompleted();
         ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
@@ -150,16 +149,17 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testBoundaryTimerCycleCronVariable() {
+    public void testBoundaryTimerCycleISOVariable() {
         Application app = ProcessTestHelper.newApplication();
-        ProcessCompletedCountDownProcessEventListener listener = new ProcessCompletedCountDownProcessEventListener();
+        NodeCountDownProcessEventListener listener = new NodeCountDownProcessEventListener("Send Update", 3);
         ProcessTestHelper.registerProcessEventListener(app, listener);
-        org.kie.kogito.process.Process<BoundaryTimerCycleCronVariableModel> definition = BoundaryTimerCycleCronVariableProcess.newProcess(app);
-        BoundaryTimerCycleCronVariableModel model = definition.createModel();
-        model.setCronStr("PT1S");
-        org.kie.kogito.process.ProcessInstance<BoundaryTimerCycleCronVariableModel> instance = definition.createInstance(model);
+        org.kie.kogito.process.Process<BoundaryTimerCycleISOVariableModel> definition = BoundaryTimerCycleISOVariableProcess.newProcess(app);
+        BoundaryTimerCycleISOVariableModel model = definition.createModel();
+        model.setCronStr("R3/PT1S");
+        org.kie.kogito.process.ProcessInstance<BoundaryTimerCycleISOVariableModel> instance = definition.createInstance(model);
         instance.start();
         listener.waitTillCompleted();
+        ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
