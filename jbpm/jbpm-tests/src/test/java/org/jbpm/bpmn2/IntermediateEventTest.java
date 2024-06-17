@@ -73,7 +73,6 @@ import org.jbpm.process.core.datatype.impl.type.StringDataType;
 import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventListener;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
-import org.jbpm.test.util.NodeCountDownProcessEventListener;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
 import org.jbpm.test.utils.ProcessTestHelper;
@@ -138,7 +137,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testBoundaryTimerCycleISO() {
         Application app = ProcessTestHelper.newApplication();
-        NodeCountDownProcessEventListener listener = new NodeCountDownProcessEventListener("Send Update", 3);
+        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update", 3);
         ProcessTestHelper.registerProcessEventListener(app, listener);
         org.kie.kogito.process.Process<BoundaryTimerCycleISOModel> definition = BoundaryTimerCycleISOProcess.newProcess(app);
         org.kie.kogito.process.ProcessInstance<BoundaryTimerCycleISOModel> instance = definition.createInstance(definition.createModel());
@@ -151,7 +150,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testBoundaryTimerCycleISOVariable() {
         Application app = ProcessTestHelper.newApplication();
-        NodeCountDownProcessEventListener listener = new NodeCountDownProcessEventListener("Send Update", 3);
+        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update", 3);
         ProcessTestHelper.registerProcessEventListener(app, listener);
         org.kie.kogito.process.Process<BoundaryTimerCycleISOVariableModel> definition = BoundaryTimerCycleISOVariableProcess.newProcess(app);
         BoundaryTimerCycleISOVariableModel model = definition.createModel();
