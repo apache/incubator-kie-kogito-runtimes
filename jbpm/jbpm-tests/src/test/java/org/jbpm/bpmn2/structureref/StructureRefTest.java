@@ -280,10 +280,14 @@ public class StructureRefTest extends JbpmBpmn2TestCase {
         instance.start();
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
-        // in this case it should not be mapped so there won't be no error
-        ProcessTestHelper.completeWorkItem(instance, "john", Collections.singletonMap(wrongDataOutput, true));
+        try {
+            ProcessTestHelper.completeWorkItem(instance, "john", Collections.singletonMap(wrongDataOutput, true));
+            fail("it should not work!");
+        } catch (IllegalArgumentException e) {
+            assertThat(e.getMessage()).isEqualTo("Data output '" + wrongDataOutput + "' is not defined in process 'IntegerStructureRef' for task 'User Task'");
+        }
 
-        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
     }
 }
