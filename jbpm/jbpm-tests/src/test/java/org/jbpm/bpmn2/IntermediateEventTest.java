@@ -75,6 +75,7 @@ import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
+import org.jbpm.test.utils.EventTrackerProcessListener;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.jbpm.test.utils.ProcessTestHelper.CompletionKogitoEventListener;
 import org.junit.jupiter.api.Disabled;
@@ -137,7 +138,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testBoundaryTimerCycleISO() {
         Application app = ProcessTestHelper.newApplication();
-        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update", 3);
+        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update Timer", 3);
         ProcessTestHelper.registerProcessEventListener(app, listener);
         org.kie.kogito.process.Process<BoundaryTimerCycleISOModel> definition = BoundaryTimerCycleISOProcess.newProcess(app);
         org.kie.kogito.process.ProcessInstance<BoundaryTimerCycleISOModel> instance = definition.createInstance(definition.createModel());
@@ -150,7 +151,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testBoundaryTimerCycleISOVariable() {
         Application app = ProcessTestHelper.newApplication();
-        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update", 3);
+        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update Timer", 3);
         ProcessTestHelper.registerProcessEventListener(app, listener);
         org.kie.kogito.process.Process<BoundaryTimerCycleISOVariableModel> definition = BoundaryTimerCycleISOVariableProcess.newProcess(app);
         BoundaryTimerCycleISOVariableModel model = definition.createModel();
