@@ -874,8 +874,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 
                                         String type = ((EventTypeFilter) filter).getType();
                                         if (type.startsWith("Error-") || type.startsWith("Escalation")) {
-                                            String faultCode = (String) subNode.getMetaData().get("FaultCode");
-                                            String replaceRegExp = "Error-|Escalation-";
+                                            String faultCode = (String) subNode.getMetaData().get(Metadata.FAULT_CODE);
                                             final String signalType = type;
 
                                             ExceptionScope exceptionScope =
@@ -895,13 +894,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                                             action.setMetaData("Action", new SignalProcessInstanceAction(signalType, faultVariable, null, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
                                             exceptionHandler.setAction(action);
                                             exceptionHandler.setFaultVariable(faultVariable);
-                                            if (faultCode != null) {
-                                                String trimmedType = type.replaceFirst(replaceRegExp, "");
-                                                exceptionScope.setExceptionHandler(trimmedType, exceptionHandler);
-                                                eventSubProcessHandlers.add(trimmedType);
-                                            } else {
-                                                exceptionScope.setExceptionHandler(faultCode, exceptionHandler);
-                                            }
+                                            eventSubProcessHandlers.add(faultCode);
+                                            exceptionScope.setExceptionHandler(faultCode, exceptionHandler);
                                         } else if (type.equals("Compensation")) {
                                             // 1. Find the parent sub-process to this event sub-process
                                             NodeContainer parentSubProcess = null;

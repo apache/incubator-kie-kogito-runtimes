@@ -56,6 +56,7 @@ import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_MESSAGE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_NONE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_TIMER;
+import static org.jbpm.ruleflow.core.Metadata.FAULT_CODE;
 import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;
 import static org.jbpm.ruleflow.core.Metadata.MESSAGE_REF;
 import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
@@ -176,7 +177,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     if (error == null) {
                         throw new ProcessParsingValidationException("Could not find error " + errorRef);
                     }
-                    startNode.setMetaData("FaultCode", error.getErrorCode());
+                    startNode.setMetaData(FAULT_CODE, error.getErrorCode());
                     startNode.setMetaData(MESSAGE_TYPE, error.getErrorCode());
                     startNode.setMetaData(TRIGGER_REF, error.getErrorCode());
                     startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.Signal.name());
@@ -195,6 +196,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     if (escalation == null) {
                         throw new ProcessParsingValidationException("Could not find escalation " + escalationRef);
                     }
+                    startNode.setMetaData(FAULT_CODE, escalation.getEscalationCode());
                     startNode.setMetaData(TRIGGER_REF, "Escalation-" + escalation.getEscalationCode());
                     addTriggerWithInMappings(startNode, "Escalation-" + escalation.getEscalationCode());
                 } else {

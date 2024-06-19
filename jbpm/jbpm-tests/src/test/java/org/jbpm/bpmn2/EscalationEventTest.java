@@ -28,6 +28,10 @@ import org.jbpm.bpmn2.escalation.EscalationBoundaryEventWithTaskModel;
 import org.jbpm.bpmn2.escalation.EscalationBoundaryEventWithTaskProcess;
 import org.jbpm.bpmn2.escalation.EventSubprocessEscalationModel;
 import org.jbpm.bpmn2.escalation.EventSubprocessEscalationProcess;
+import org.jbpm.bpmn2.escalation.MultiEscalationModel;
+import org.jbpm.bpmn2.escalation.MultiEscalationProcess;
+import org.jbpm.bpmn2.escalation.TopLevelEscalationModel;
+import org.jbpm.bpmn2.escalation.TopLevelEscalationProcess;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.test.utils.EventTrackerProcessListener;
 import org.jbpm.test.utils.ProcessTestHelper;
@@ -35,6 +39,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
+import org.kie.api.event.process.ProcessStartedEvent;
+import org.kie.api.event.process.SignalEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.Application;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
@@ -42,6 +48,7 @@ import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.process.impl.Sig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jbpm.test.utils.ProcessTestHelper.left;
@@ -72,6 +79,41 @@ public class EscalationEventTest extends JbpmBpmn2TestCase {
         }
 
     };
+
+    @Test
+    public void testMultiEscalation() throws Exception {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerProcessEventListener(app, new DefaultKogitoProcessEventListener() {
+            @Override
+            public void onSignal(SignalEvent event) {
+                logger.info("on signal {}", event);
+            }
+        });
+        org.kie.kogito.process.Process<MultiEscalationModel> definition = MultiEscalationProcess.newProcess(app);
+        MultiEscalationModel model = definition.createModel();
+        model.setData("data");
+        model.setEnddata("end_data");
+        org.kie.kogito.process.ProcessInstance<MultiEscalationModel> instance = definition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
+    }
+
+    @Test
+    public void testTopLevelEscalation() throws Exception {
+        Application app = ProcessTestHelper.newApplication();
+        List<String> instances = new ArrayList<>();
+        ProcessTestHelper.registerProcessEventListener(app, new DefaultKogitoProcessEventListener() {
+            @Override
+            public void beforeProcessStarted(ProcessStartedEvent event) {
+                instances.add(event.getProcessInstance().getId());
+            }
+        });
+        org.kie.kogito.process.Process<TopLevelEscalationModel> definition = TopLevelEscalationProcess.newProcess(app);
+        TopLevelEscalationModel model = definition.createModel();
+        model.setData("data");
+        definition.send(Sig.of("Escalation-START_NEW", "data"));
+        assertThat(instances).hasSize(1);
+    }
 
     @Test
     public void testEventSubprocessEscalation() throws Exception {
