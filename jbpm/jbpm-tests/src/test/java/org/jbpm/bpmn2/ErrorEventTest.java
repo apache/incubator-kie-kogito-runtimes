@@ -359,7 +359,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         String input = "this is my service input";
 
         Application app = ProcessTestHelper.newApplication();
-        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.ExceptionService_throwException__3_Handler", new ExceptionService_throwException__3_Handler());
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.ExceptionService_throwException__2_Handler", new ExceptionService_throwException__3_Handler());
         org.kie.kogito.process.Process<ExceptionServiceProcessSignallingModel> definition = ExceptionServiceProcessSignallingProcess.newProcess(app);
 
         ExceptionServiceProcessSignallingModel model = definition.createModel();

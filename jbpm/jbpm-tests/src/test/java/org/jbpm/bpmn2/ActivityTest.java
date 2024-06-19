@@ -59,7 +59,6 @@ import org.jbpm.bpmn2.flow.XORSameTargetModel;
 import org.jbpm.bpmn2.flow.XORSameTargetProcess;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
-import org.jbpm.bpmn2.handler.ServiceTaskHandler;
 import org.jbpm.bpmn2.objects.Account;
 import org.jbpm.bpmn2.objects.Address;
 import org.jbpm.bpmn2.objects.HelloService;
@@ -168,7 +167,6 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
@@ -822,12 +820,12 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         Application app = ProcessTestHelper.newApplication();
         ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.HelloService_hello__2_Handler", new HelloService_hello__2_Handler());
         org.kie.kogito.process.Process<ServiceProcessModel> definition = ServiceProcessProcess.newProcess(app);
-        
+
         ServiceProcessModel model = definition.createModel();
         model.setS("john");
         org.kie.kogito.process.ProcessInstance<ServiceProcessModel> instance = definition.createInstance(model);
         instance.start();
-        
+
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
         assertThat(instance.variables().getS()).isEqualTo("Hello john!");
 
@@ -838,11 +836,11 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         Application app = ProcessTestHelper.newApplication();
         ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.services.Interface1_operation1_ServiceTask_2_Handler", new Interface1_operation1_ServiceTask_2_Handler());
         org.kie.kogito.process.Process<ServiceTaskWebServiceModel> definition = ServiceTaskWebServiceProcess.newProcess(app);
-        
+
         ServiceTaskWebServiceModel model = definition.createModel();
         org.kie.kogito.process.ProcessInstance<ServiceTaskWebServiceModel> instance = definition.createInstance(model);
         instance.start();
-        
+
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
 
     }
