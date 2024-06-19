@@ -41,6 +41,10 @@ import org.jbpm.bpmn2.objects.ExceptionOnPurposeHandler;
 import org.jbpm.bpmn2.objects.MyError;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
+import org.jbpm.bpmn2.service.ExceptionServiceProcessErrorSignallingModel;
+import org.jbpm.bpmn2.service.ExceptionServiceProcessErrorSignallingProcess;
+import org.jbpm.bpmn2.subprocess.ExceptionServiceProcessSignallingModel;
+import org.jbpm.bpmn2.subprocess.ExceptionServiceProcessSignallingProcess;
 import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventListener;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
@@ -52,6 +56,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.kogito.Application;
 import org.kie.kogito.handlers.AlwaysThrowingComponent_throwException__8DA0CD88_0714_43C1_B492_A70FADE42361_Handler;
+import org.kie.kogito.handlers.ExceptionService_throwException__3_Handler;
 import org.kie.kogito.handlers.HelloService_helloException_ServiceTask_2_Handler;
 import org.kie.kogito.handlers.LoggingComponent_logException__E5B0E78B_0112_42F4_89FF_0DCC4FCB6BCD_Handler;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
@@ -61,6 +66,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -331,16 +337,40 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testErrorSignallingExceptionServiceTask() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ExceptionServiceProcess-ErrorSignalling.bpmn2");
+        String input = "this is my service input";
 
-        StandaloneBPMNProcessTest.runTestErrorSignallingExceptionServiceTask(kruntime);
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.ExceptionService_throwException__3_Handler", new ExceptionService_throwException__3_Handler());
+        org.kie.kogito.process.Process<ExceptionServiceProcessErrorSignallingModel> definition = ExceptionServiceProcessErrorSignallingProcess.newProcess(app);
+
+        ExceptionServiceProcessErrorSignallingModel model = definition.createModel();
+        model.setServiceInputItem(input);
+        org.kie.kogito.process.ProcessInstance<ExceptionServiceProcessErrorSignallingModel> instance = definition.createInstance(model);
+        instance.start();
+
+        ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ERROR);
+        assertThat(instance.error()).isPresent().get().extracting(ProcessError::errorMessage).isEqualTo("java.lang.RuntimeException - " + input);
+
     }
 
     @Test
     public void testSignallingExceptionServiceTask() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ExceptionServiceProcess-Signalling.bpmn2");
+        String input = "this is my service input";
 
-        StandaloneBPMNProcessTest.runTestSignallingExceptionServiceTask(kruntime);
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.ExceptionService_throwException__3_Handler", new ExceptionService_throwException__3_Handler());
+        org.kie.kogito.process.Process<ExceptionServiceProcessSignallingModel> definition = ExceptionServiceProcessSignallingProcess.newProcess(app);
+
+        ExceptionServiceProcessSignallingModel model = definition.createModel();
+        model.setServiceInputItem(input);
+        org.kie.kogito.process.ProcessInstance<ExceptionServiceProcessSignallingModel> instance = definition.createInstance(model);
+        instance.start();
+
+        ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ERROR);
+        assertThat(instance.error()).isPresent().get().extracting(ProcessError::errorMessage).isEqualTo("java.lang.RuntimeException - " + input);
+
     }
 
     @Test
