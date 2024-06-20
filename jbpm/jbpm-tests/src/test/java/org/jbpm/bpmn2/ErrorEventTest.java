@@ -38,6 +38,7 @@ import org.jbpm.bpmn2.event.BoundaryErrorEventSubProcessExceptionMappingModel;
 import org.jbpm.bpmn2.event.BoundaryErrorEventSubProcessExceptionMappingProcess;
 import org.jbpm.bpmn2.handler.SignallingTaskHandlerDecorator;
 import org.jbpm.bpmn2.objects.ExceptionOnPurposeHandler;
+import org.jbpm.bpmn2.objects.ExceptionService;
 import org.jbpm.bpmn2.objects.MyError;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
@@ -56,6 +57,8 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.kogito.Application;
 import org.kie.kogito.handlers.AlwaysThrowingComponent_throwException__8DA0CD88_0714_43C1_B492_A70FADE42361_Handler;
+import org.kie.kogito.handlers.ExceptionService_handleException__X_2_Handler;
+import org.kie.kogito.handlers.ExceptionService_throwException__2_Handler;
 import org.kie.kogito.handlers.ExceptionService_throwException__3_Handler;
 import org.kie.kogito.handlers.HelloService_helloException_ServiceTask_2_Handler;
 import org.kie.kogito.handlers.LoggingComponent_logException__E5B0E78B_0112_42F4_89FF_0DCC4FCB6BCD_Handler;
@@ -66,7 +69,6 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -340,7 +342,14 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         String input = "this is my service input";
 
         Application app = ProcessTestHelper.newApplication();
-        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.ExceptionService_throwException__3_Handler", new ExceptionService_throwException__3_Handler());
+        SignallingTaskHandlerDecorator signallingTaskWrapper = new SignallingTaskHandlerDecorator(ExceptionService_throwException__3_Handler.class, "Error-code");
+        signallingTaskWrapper.setWorkItemExceptionParameterName(ExceptionService.exceptionParameterName);
+        Object[] caughtEventObjectHolder = new Object[1];
+        caughtEventObjectHolder[0] = null;
+        ExceptionService.setCaughtEventObjectHolder(caughtEventObjectHolder);
+
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.ExceptionService_throwException__3_Handler", signallingTaskWrapper);
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.ExceptionService_handleException__X_2_Handler", new ExceptionService_handleException__X_2_Handler());
         org.kie.kogito.process.Process<ExceptionServiceProcessErrorSignallingModel> definition = ExceptionServiceProcessErrorSignallingProcess.newProcess(app);
 
         ExceptionServiceProcessErrorSignallingModel model = definition.createModel();
@@ -349,17 +358,23 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         instance.start();
 
         ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
-        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ERROR);
-        assertThat(instance.error()).isPresent().get().extracting(ProcessError::errorMessage).isEqualTo("java.lang.RuntimeException - " + input);
-
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
+        assertThat(caughtEventObjectHolder[0] != null && caughtEventObjectHolder[0] instanceof KogitoWorkItem).withFailMessage("Event was not passed to Event Subprocess.").isTrue();
     }
 
     @Test
     public void testSignallingExceptionServiceTask() throws Exception {
         String input = "this is my service input";
 
+        SignallingTaskHandlerDecorator signallingTaskWrapper = new SignallingTaskHandlerDecorator(ExceptionService_throwException__2_Handler.class, "exception-signal");
+        signallingTaskWrapper.setWorkItemExceptionParameterName(ExceptionService.exceptionParameterName);
+        Object[] caughtEventObjectHolder = new Object[1];
+        caughtEventObjectHolder[0] = null;
+        ExceptionService.setCaughtEventObjectHolder(caughtEventObjectHolder);
+
         Application app = ProcessTestHelper.newApplication();
-        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.ExceptionService_throwException__2_Handler", new ExceptionService_throwException__3_Handler());
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.ExceptionService_throwException__2_Handler", signallingTaskWrapper);
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.ExceptionService_handleException__X_2_Handler", new ExceptionService_handleException__X_2_Handler());
         org.kie.kogito.process.Process<ExceptionServiceProcessSignallingModel> definition = ExceptionServiceProcessSignallingProcess.newProcess(app);
 
         ExceptionServiceProcessSignallingModel model = definition.createModel();
@@ -368,8 +383,8 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         instance.start();
 
         ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
-        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ERROR);
-        assertThat(instance.error()).isPresent().get().extracting(ProcessError::errorMessage).isEqualTo("java.lang.RuntimeException - " + input);
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(caughtEventObjectHolder[0] != null && caughtEventObjectHolder[0] instanceof KogitoWorkItem).withFailMessage("Event was not passed to Event Subprocess.").isTrue();
 
     }
 
