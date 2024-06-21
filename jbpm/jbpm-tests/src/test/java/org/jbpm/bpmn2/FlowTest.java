@@ -28,6 +28,16 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.jbpm.bpmn2.flow.ExclusiveSplitDefaultModel;
+import org.jbpm.bpmn2.flow.ExclusiveSplitDefaultProcess;
+import org.jbpm.bpmn2.flow.ExclusiveSplitXPathAdvancedModel;
+import org.jbpm.bpmn2.flow.ExclusiveSplitXPathAdvancedProcess;
+import org.jbpm.bpmn2.flow.ExclusiveSplitXPathAdvancedVarsNotSignaledModel;
+import org.jbpm.bpmn2.flow.ExclusiveSplitXPathAdvancedVarsNotSignaledProcess;
+import org.jbpm.bpmn2.flow.ExclusiveSplitXPathAdvancedWithVarsModel;
+import org.jbpm.bpmn2.flow.ExclusiveSplitXPathAdvancedWithVarsProcess;
+import org.jbpm.bpmn2.flow.GatewayTestModel;
+import org.jbpm.bpmn2.flow.GatewayTestProcess;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.InternalProcessRuntime;
@@ -35,6 +45,7 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
+import org.jbpm.test.utils.ProcessTestHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.CompositeContextNodeInstance;
@@ -53,11 +64,14 @@ import org.kie.api.runtime.Context;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.internal.command.RegistryContext;
+import org.kie.kogito.Application;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.process.Process;
+import org.kie.kogito.process.ProcessInstance;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -80,7 +94,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
     @Test
     public void testExclusiveSplitWithNoConditions() throws Exception {
         try {
-            createKogitoProcessRuntime("BPMN2-ExclusiveGatewayWithNoConditionsDefined.bpmn2");
+            createKogitoProcessRuntime("org/jbpm/bpmn2/flow/BPMN2-ExclusiveGatewayWithNoConditionsDefined.bpmn2");
             fail("Should fail as XOR gateway does not have conditions defined");
         } catch (RuntimeException e) {
             assertThat(e.getMessage()).contains("does not have a constraint for Connection");
@@ -104,10 +118,12 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testExclusiveSplitXPathAdvanced() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ExclusiveSplitXPath-advanced.bpmn2");
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email",
-                new SystemOutWorkItemHandler());
-        Map<String, Object> params = new HashMap<>();
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Email", new SystemOutWorkItemHandler());
+
+        Process<ExclusiveSplitXPathAdvancedModel> definition = ExclusiveSplitXPathAdvancedProcess.newProcess(app);
+        ExclusiveSplitXPathAdvancedModel model = definition.createModel();
+
         Document doc = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder().newDocument();
         Element hi = doc.createElement("hi");
@@ -116,20 +132,26 @@ public class FlowTest extends JbpmBpmn2TestCase {
         Attr attr = doc.createAttribute("value");
         ho.setAttributeNode(attr);
         attr.setValue("a");
-        params.put("x", hi);
-        params.put("y", "Second");
-        KogitoProcessInstance processInstance = kruntime.startProcess(
-                "com.sample.test", params);
-        assertProcessInstanceCompleted(processInstance);
+
+        model.setX(hi);
+        model.setY("Second");
+
+        ProcessInstance<ExclusiveSplitXPathAdvancedModel> instance = definition.createInstance(model);
+        instance.start();
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
 
     }
 
     @Test
     public void testExclusiveSplitXPathAdvanced2() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ExclusiveSplitXPath-advanced-vars-not-signaled.bpmn2");
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email",
-                new SystemOutWorkItemHandler());
-        Map<String, Object> params = new HashMap<>();
+
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Email", new SystemOutWorkItemHandler());
+
+        Process<ExclusiveSplitXPathAdvancedVarsNotSignaledModel> definition = ExclusiveSplitXPathAdvancedVarsNotSignaledProcess.newProcess(app);
+        ExclusiveSplitXPathAdvancedVarsNotSignaledModel model = definition.createModel();
+
         Document doc = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder().newDocument();
         Element hi = doc.createElement("hi");
@@ -138,20 +160,25 @@ public class FlowTest extends JbpmBpmn2TestCase {
         Attr attr = doc.createAttribute("value");
         ho.setAttributeNode(attr);
         attr.setValue("a");
-        params.put("x", hi);
-        params.put("y", "Second");
-        KogitoProcessInstance processInstance = kruntime.startProcess(
-                "com.sample.test", params);
-        assertProcessInstanceCompleted(processInstance);
+
+        model.setX(hi);
+        model.setY("Second");
+
+        ProcessInstance<ExclusiveSplitXPathAdvancedVarsNotSignaledModel> instance = definition.createInstance(model);
+        instance.start();
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
 
     }
 
     @Test
     public void testExclusiveSplitXPathAdvancedWithVars() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ExclusiveSplitXPath-advanced-with-vars.bpmn2");
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email",
-                new SystemOutWorkItemHandler());
-        Map<String, Object> params = new HashMap<>();
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Email", new SystemOutWorkItemHandler());
+
+        Process<ExclusiveSplitXPathAdvancedWithVarsModel> definition = ExclusiveSplitXPathAdvancedWithVarsProcess.newProcess(app);
+        ExclusiveSplitXPathAdvancedWithVarsModel model = definition.createModel();
+
         Document doc = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder().newDocument();
         Element hi = doc.createElement("hi");
@@ -160,11 +187,14 @@ public class FlowTest extends JbpmBpmn2TestCase {
         Attr attr = doc.createAttribute("value");
         ho.setAttributeNode(attr);
         attr.setValue("a");
-        params.put("x", hi);
-        params.put("y", "Second");
-        KogitoProcessInstance processInstance = kruntime.startProcess(
-                "com.sample.test", params);
-        assertProcessInstanceCompleted(processInstance);
+
+        model.setX(hi);
+        model.setY("Second");
+
+        ProcessInstance<ExclusiveSplitXPathAdvancedWithVarsModel> instance = definition.createInstance(model);
+        instance.start();
+
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
 
     }
 
@@ -184,40 +214,45 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testExclusiveSplitDefault() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ExclusiveSplitDefault.bpmn2");
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email",
-                new SystemOutWorkItemHandler());
-        Map<String, Object> params = new HashMap<>();
-        params.put("x", "NotFirst");
-        params.put("y", "Second");
-        KogitoProcessInstance processInstance = kruntime.startProcess(
-                "ExclusiveSplitDefault", params);
-        assertProcessInstanceCompleted(processInstance);
+
+        Application app = ProcessTestHelper.newApplication();
+
+        ProcessTestHelper.registerHandler(app, "Email", new SystemOutWorkItemHandler());
+        org.kie.kogito.process.Process<ExclusiveSplitDefaultModel> definition = ExclusiveSplitDefaultProcess.newProcess(app);
+        ExclusiveSplitDefaultModel model = definition.createModel();
+        model.setX("NotFirst");
+        model.setY("Second");
+        org.kie.kogito.process.ProcessInstance<ExclusiveSplitDefaultModel> instance = definition.createInstance(model);
+        instance.start();
+
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
 
     }
 
     @Test
     public void testExclusiveXORGateway() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-gatewayTest.bpmn2");
         Document document = DocumentBuilderFactory
                 .newInstance()
                 .newDocumentBuilder()
                 .parse(new ByteArrayInputStream(
                         "<instanceMetadata><user approved=\"false\" /></instanceMetadata>"
                                 .getBytes()));
-        Map<String, Object> params = new HashMap<>();
-        params.put("instanceMetadata", document);
-        params.put(
-                "startMessage",
-                DocumentBuilderFactory
-                        .newInstance()
-                        .newDocumentBuilder()
-                        .parse(new ByteArrayInputStream(
-                                "<task subject='foobar2'/>".getBytes()))
-                        .getFirstChild());
-        KogitoProcessInstance processInstance = kruntime.startProcess("process",
-                params);
-        assertProcessInstanceCompleted(processInstance);
+
+        Application app = ProcessTestHelper.newApplication();
+
+        org.kie.kogito.process.Process<GatewayTestModel> definition = GatewayTestProcess.newProcess(app);
+        GatewayTestModel model = definition.createModel();
+        model.setInstanceMetadata(document);
+        model.setStartMessage(DocumentBuilderFactory
+                .newInstance()
+                .newDocumentBuilder()
+                .parse(new ByteArrayInputStream(
+                        "<task subject='foobar2'/>".getBytes()))
+                .getFirstChild());
+        org.kie.kogito.process.ProcessInstance<GatewayTestModel> instance = definition.createInstance(model);
+        instance.start();
+
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
 
     }
 
@@ -1326,6 +1361,8 @@ public class FlowTest extends JbpmBpmn2TestCase {
     @Test
     public void testConditionalFlow() throws Exception {
         System.setProperty("jbpm.enable.multi.con", "true");
+        Application app = ProcessTestHelper.newApplication();
+
         String processId = "designer.conditional-flow";
 
         kruntime = createKogitoProcessRuntime("BPMN2-ConditionalFlowWithoutGateway.bpmn2");

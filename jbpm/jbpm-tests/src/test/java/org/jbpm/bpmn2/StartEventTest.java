@@ -29,11 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jbpm.bpmn2.event.ConditionalStartModel;
+import org.jbpm.bpmn2.event.ConditionalStartProcess;
 import org.jbpm.bpmn2.objects.NotAvailableGoodsReport;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.start.SignalStartWithTransformationModel;
 import org.jbpm.bpmn2.start.SignalStartWithTransformationProcess;
+import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.Test;
@@ -58,6 +61,19 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testConditionalStart() throws Exception {
+        Application app = ProcessTestHelper.newApplication();
+
+        ProcessTestHelper.registerHandler(app, "Email", new SystemOutWorkItemHandler());
+        org.kie.kogito.process.Process<ConditionalStartModel> definition = ConditionalStartProcess.newProcess(app);
+        ConditionalStartModel model = definition.createModel();
+        org.kie.kogito.process.ProcessInstance<ConditionalStartModel> instance = definition.createInstance(model);
+        instance.start();
+
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        
+        
+        
+        
         kruntime = createKogitoProcessRuntime("BPMN2-ConditionalStart.bpmn2");
         final List<String> startedInstances = new ArrayList<>();
         kruntime.getProcessEventManager().addEventListener(new DefaultKogitoProcessEventListener() {
