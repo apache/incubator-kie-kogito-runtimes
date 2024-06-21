@@ -38,6 +38,8 @@ import org.jbpm.bpmn2.flow.ExclusiveSplitXPathAdvancedWithVarsModel;
 import org.jbpm.bpmn2.flow.ExclusiveSplitXPathAdvancedWithVarsProcess;
 import org.jbpm.bpmn2.flow.GatewayTestModel;
 import org.jbpm.bpmn2.flow.GatewayTestProcess;
+import org.jbpm.bpmn2.flow.InclusiveSplitDefaultModel;
+import org.jbpm.bpmn2.flow.InclusiveSplitDefaultProcess;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.InternalProcessRuntime;
@@ -520,12 +522,14 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testInclusiveSplitDefault() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-InclusiveSplitDefault.bpmn2");
-        Map<String, Object> params = new HashMap<>();
-        params.put("x", -5);
-        KogitoProcessInstance processInstance = kruntime.startProcess(
-                "InclusiveSplitDefault", params);
-        assertProcessInstanceCompleted(processInstance);
+        Application app = ProcessTestHelper.newApplication();
+
+        org.kie.kogito.process.Process<InclusiveSplitDefaultModel> definition = InclusiveSplitDefaultProcess.newProcess(app);
+        InclusiveSplitDefaultModel model = definition.createModel();
+        model.setX(-5);
+        org.kie.kogito.process.ProcessInstance<InclusiveSplitDefaultModel> instance = definition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
 
     }
 
