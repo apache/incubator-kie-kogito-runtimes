@@ -170,7 +170,7 @@
       <id>reproducible-build</id>
       <activation>
         <property>
-          <name>full</name>
+          <name>reproducible</name>
         </property>
       </activation>
       <build>
