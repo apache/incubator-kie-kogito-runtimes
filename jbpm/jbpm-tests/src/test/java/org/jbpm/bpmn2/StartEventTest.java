@@ -29,12 +29,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jbpm.bpmn2.event.ConditionalStartModel;
+import org.jbpm.bpmn2.event.ConditionalStartProcess;
 import org.jbpm.bpmn2.objects.NotAvailableGoodsReport;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.start.SignalStartWithTransformationModel;
 import org.jbpm.bpmn2.start.SignalStartWithTransformationProcess;
+import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
+import org.jbpm.test.utils.EventTrackerProcessListener;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieServices;
@@ -58,9 +62,11 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testConditionalStart() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ConditionalStart.bpmn2");
-        final List<String> startedInstances = new ArrayList<>();
-        kruntime.getProcessEventManager().addEventListener(new DefaultKogitoProcessEventListener() {
+        Application app = ProcessTestHelper.newApplication();
+        List<String> startedInstances = new ArrayList<>();
+        EventTrackerProcessListener listener = new EventTrackerProcessListener();
+        ProcessTestHelper.registerProcessEventListener(app, listener);
+        ProcessTestHelper.registerProcessEventListener(app, new DefaultKogitoProcessEventListener() {
 
             @Override
             public void afterProcessStarted(ProcessStartedEvent event) {
@@ -68,17 +74,21 @@ public class StartEventTest extends JbpmBpmn2TestCase {
             }
 
         });
+        ProcessTestHelper.registerHandler(app, "Email", new SystemOutWorkItemHandler());
+        org.kie.kogito.process.Process<ConditionalStartModel> definition = ConditionalStartProcess.newProcess(app);
+        ConditionalStartModel model = definition.createModel();
+
         Person person = new Person();
         person.setName("jack");
-        kruntime.getKieSession().insert(person);
-        assertThat(startedInstances).isEmpty();
 
-        person = new Person();
-        person.setName("john");
-        kruntime.getKieSession().insert(person);
+        definition.send(Sig.of("Conditional", person));
+
         assertThat(startedInstances).hasSize(1);
 
-        assertNodeTriggered(startedInstances.get(0), "StartProcess", "Hello", "EndProcess");
+        assertThat(listener.tracked())
+                .anyMatch(ProcessTestHelper.triggered("StartProcess"))
+                .anyMatch(ProcessTestHelper.triggered("Hello"))
+                .anyMatch(ProcessTestHelper.triggered("EndProcess"));
     }
 
     @Test
