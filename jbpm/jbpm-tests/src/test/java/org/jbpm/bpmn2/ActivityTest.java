@@ -171,6 +171,9 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 
+import com.sample.RuleTaskModel;
+import com.sample.RuleTaskProcess;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
@@ -321,16 +324,20 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testRuleTask() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-RuleTask.bpmn2",
-                "BPMN2-RuleTask.drl");
-
+    public void testRuleTask() {
+        /*
+        Getting compilation error for this test case
+        com/sample/RuleTaskProcess.java:[85,94] package org.drools.project.model.ProjectRuntime does not exist
+         */
+        Application application = ProcessTestHelper.newApplication();
+        org.kie.kogito.process.Process<RuleTaskModel> process = RuleTaskProcess.newProcess(application);
+        RuleTaskModel model = process.createModel();
+        ProcessInstance<RuleTaskModel> instance = process.createInstance(model);
         List<String> list = new ArrayList<>();
-        kruntime.getKieSession().setGlobal("list", list);
-        KogitoProcessInstance processInstance = kruntime.startProcess("RuleTask");
-        kruntime.getKieSession().setGlobal("list", list);
+        instance.start(Map.of("list", list));
+        System.out.println("list: " + list);
         assertThat(list).hasSize(1);
-        assertProcessInstanceFinished(processInstance, kruntime);
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
