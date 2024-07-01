@@ -41,7 +41,9 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.drools.codegen.common.DroolsModelBuildContext.KOGITO_GENERATE_REST;
 import static org.kie.kogito.codegen.api.Generator.REST_TYPE;
+import static org.kie.kogito.codegen.api.context.KogitoBuildContext.generateRESTConfigurationKeyForResource;
 import static org.kie.kogito.codegen.core.CustomDashboardGeneratedUtils.loadCustomGrafanaDashboardsList;
 
 public class ApplicationGenerator {
@@ -49,7 +51,8 @@ public class ApplicationGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGenerator.class);
 
     public static final String APPLICATION_CLASS_NAME = "Application";
-    private static final GeneratedFileType APPLICATION_SECTION_TYPE = GeneratedFileType.of("APPLICATION_SECTION", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType APPLICATION_SECTION_TYPE = GeneratedFileType.of("APPLICATION_SECTION",
+            GeneratedFileType.Category.SOURCE);
 
     private final ApplicationContainerGenerator applicationMainGenerator;
     private ApplicationConfigGenerator applicationConfigGenerator;
@@ -95,8 +98,11 @@ public class ApplicationGenerator {
 
     public List<GeneratedFile> generateComponents() {
         return generators.stream()
-                .flatMap(gen -> gen.generate().stream())
-                .filter(this::filterGeneratedFile)
+                .flatMap(gen -> {
+                    boolean keepRestFile = keepRestFile(gen);
+                    return gen.generate().stream()
+                            .filter(generatedFile -> filterGeneratedFile(generatedFile, keepRestFile));
+                })
                 .collect(Collectors.toList());
     }
 
@@ -112,8 +118,12 @@ public class ApplicationGenerator {
         return applicationMainGenerator.generate();
     }
 
-    private boolean filterGeneratedFile(GeneratedFile generatedFile) {
-        boolean keepFile = context.hasRESTGloballyAvailable() || !REST_TYPE.equals(generatedFile.type());
+    boolean keepRestFile(Generator generator) {
+        return context.hasRESTForGenerator(generator);
+    }
+
+    private boolean filterGeneratedFile(GeneratedFile generatedFile, boolean keepRestFile) {
+        boolean keepFile = keepRestFile || !REST_TYPE.equals(generatedFile.type());
         if (!keepFile) {
             LOGGER.warn("Skipping file because REST is disabled: " + generatedFile.relativePath());
         }
@@ -134,7 +144,7 @@ public class ApplicationGenerator {
 
     /**
      * Method to wire Generator with ApplicationGenerator if enabled
-     *
+     * 
      * @param generator
      * @param <G>
      * @return
