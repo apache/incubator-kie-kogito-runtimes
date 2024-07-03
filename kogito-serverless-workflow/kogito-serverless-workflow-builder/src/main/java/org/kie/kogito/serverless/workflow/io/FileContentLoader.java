@@ -20,7 +20,6 @@ package org.kie.kogito.serverless.workflow.io;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -29,9 +28,9 @@ public class FileContentLoader extends CachedContentLoader {
 
     private final Path path;
 
-    FileContentLoader(URI uri, URIContentLoader... fallbackContentLoaders) {
+    FileContentLoader(String uri, URIContentLoader... fallbackContentLoaders) {
         super(uri, fallbackContentLoaders);
-        this.path = uri.getScheme() == null ? Path.of(getPath(uri)) : Path.of(uri);
+        this.path = Path.of(uriToPath(uri));
     }
 
     @Override
@@ -45,7 +44,7 @@ public class FileContentLoader extends CachedContentLoader {
     }
 
     @Override
-    protected byte[] loadURI(URI uri) {
+    protected byte[] loadURI() {
         try {
             return Files.readAllBytes(path);
         } catch (IOException io) {
@@ -53,7 +52,7 @@ public class FileContentLoader extends CachedContentLoader {
         }
     }
 
-    static String getPath(URI uri) {
-        return uri.getPath();
+    static String uriToPath(String uri) {
+        return trimScheme(uri, URIContentLoaderType.FILE.scheme());
     }
 }

@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Optional;
 
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
@@ -49,29 +48,17 @@ public class URIContentLoaderFactory {
         return new String(readAllBytes(loader));
     }
 
-    public static String getFileName(URI uri) {
+    public static String getFileName(String uri) {
         URIContentLoaderType type = URIContentLoaderType.from(uri);
-        String path = uriToPath(type, uri);
+        String path = type.uriToPath(uri);
         return type.lastPart(path);
-    }
-
-    private static String uriToPath(URIContentLoaderType type, URI uri) {
-        switch (type) {
-            case CLASSPATH:
-                return ClassPathContentLoader.getPath(uri);
-            case FILE:
-                return FileContentLoader.getPath(uri);
-            case HTTP:
-            default:
-                return uri.getPath();
-        }
     }
 
     public static String readString(Builder builder) {
         return readString(builder.build());
     }
 
-    public static URIContentLoader buildLoader(URI uri, Workflow workflow, Optional<ParserContext> context, String authRef) {
+    public static URIContentLoader buildLoader(String uri, Workflow workflow, Optional<ParserContext> context, String authRef) {
         Builder builder = new Builder(uri).withWorkflow(workflow).withAuthRef(authRef);
         context.map(c -> c.getContext().getClassLoader()).ifPresent(builder::withClassloader);
         getBaseURI(workflow).ifPresent(builder::withBaseURI);
@@ -83,7 +70,7 @@ public class URIContentLoaderFactory {
     }
 
     public static byte[] readBytes(String uriStr, Workflow workflow, Optional<ParserContext> parserContext) {
-        return readAllBytes(buildLoader(URI.create(uriStr), workflow, parserContext, null));
+        return readAllBytes(buildLoader(uriStr, workflow, parserContext, null));
     }
 
     public static Builder builder(URI uri) {
@@ -95,13 +82,17 @@ public class URIContentLoaderFactory {
     }
 
     public static class Builder {
-        private URI uri;
+        private String uri;
         private ClassLoader cl;
         private Workflow workflow;
         private String authRef;
-        private URI baseURI;
+        private String baseURI;
 
         private Builder(URI uri) {
+            this.uri = uri.toString();
+        }
+
+        private Builder(String uri) {
             this.uri = uri;
         }
 
@@ -120,19 +111,21 @@ public class URIContentLoaderFactory {
             return this;
         }
 
-        public Builder withBaseURI(URI baseURI) {
+        public Builder withBaseURI(String baseURI) {
             this.baseURI = baseURI;
             return this;
         }
 
         public URIContentLoader build() {
-            final URI finalURI = baseURI != null ? compoundURI(baseURI, uri) : uri;
+            final String finalURI = baseURI != null ? compoundURI(baseURI, uri) : uri;
             switch (URIContentLoaderType.from(finalURI)) {
                 default:
                 case FILE:
                     return new FileContentLoader(finalURI, new ClassPathContentLoader(uri, Optional.ofNullable(cl)));
                 case HTTP:
-                    return new HttpContentLoader(finalURI, Optional.ofNullable(workflow), authRef);
+                    return new HttpContentLoader(finalURI, Optional.ofNullable(workflow), authRef, URIContentLoaderType.HTTP);
+                case HTTPS:
+                    return new HttpContentLoader(finalURI, Optional.ofNullable(workflow), authRef, URIContentLoaderType.HTTPS);
                 case CLASSPATH:
                     Optional<ClassLoader> optionalCl = Optional.ofNullable(cl);
                     return finalURI == uri ? new ClassPathContentLoader(finalURI, optionalCl) : new ClassPathContentLoader(finalURI, optionalCl, new ClassPathContentLoader(uri, optionalCl));
@@ -140,24 +133,12 @@ public class URIContentLoaderFactory {
         }
     }
 
-    public static URI compoundURI(URI baseURI, URI uri) {
-        if (uri.getScheme() != null) {
+    public static String compoundURI(String baseURI, String uri) {
+        if (URIContentLoaderType.scheme(uri).isPresent()) {
             return uri;
         }
-        URIContentLoaderType type = URIContentLoaderType.from(baseURI);
-        String basePath = type.trimLast(uriToPath(type, baseURI));
-        String additionalPath = uriToPath(type, uri);
-        String path;
-        if (type.isAbsolutePath(additionalPath)) {
-            path = additionalPath;
-        } else {
-            path = type.concat(basePath, additionalPath);
-        }
-        try {
-            return new URI(type.toString().toLowerCase(), baseURI.getAuthority(), path, uri.getQuery(), uri.getFragment());
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e.getMessage(), e);
-        }
+        final URIContentLoaderType baseType = URIContentLoaderType.from(baseURI);
+        return baseType.addScheme(baseType.isAbsolutePath(uri) ? uri : baseType.concat(baseType.trimLast(baseType.uriToPath(baseURI)), uri));
     }
 
     private URIContentLoaderFactory() {

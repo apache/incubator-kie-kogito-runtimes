@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.serverless.workflow.operationid;
 
-import java.net.URI;
 import java.util.Optional;
 import java.util.Set;
 
@@ -32,7 +31,7 @@ public class SpecWorkflowOperationIdFactory extends AbstractWorkflowOperationIdF
     public static final String SPEC_PROP_VALUE = "SPEC_TITLE";
 
     @Override
-    public String getFileName(Workflow workflow, FunctionDefinition function, Optional<ParserContext> context, URI uri, String operation, String service) {
+    public String getFileName(Workflow workflow, FunctionDefinition function, Optional<ParserContext> context, String uri, String operation, String service) {
         return OpenAPIFactory.getOpenAPI(uri, workflow, function, context).getInfo()
                 .getTitle();
     }

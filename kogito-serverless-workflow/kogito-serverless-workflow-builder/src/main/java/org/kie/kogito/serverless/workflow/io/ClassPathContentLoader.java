@@ -21,7 +21,6 @@ package org.kie.kogito.serverless.workflow.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -32,22 +31,10 @@ public class ClassPathContentLoader extends CachedContentLoader {
     private final Optional<URL> resource;
     private final String classpath;
 
-    ClassPathContentLoader(URI uri, Optional<ClassLoader> cl, URIContentLoader... fallbackContentLoaders) {
+    ClassPathContentLoader(String uri, Optional<ClassLoader> cl, URIContentLoader... fallbackContentLoaders) {
         super(uri, fallbackContentLoaders);
-        this.classpath = getPath(uri);
+        this.classpath = uriToPath(uri);
         this.resource = Optional.ofNullable(cl.orElse(Thread.currentThread().getContextClassLoader()).getResource(classpath));
-    }
-
-    static String getPath(URI uri) {
-        final String classPathPrefix = "classpath:";
-        String str = uri.toString();
-        if (str.toLowerCase().startsWith(classPathPrefix)) {
-            str = str.substring(classPathPrefix.length());
-            while (str.startsWith("/")) {
-                str = str.substring(1);
-            }
-        }
-        return str;
     }
 
     public Optional<URL> getResource() {
@@ -72,7 +59,7 @@ public class ClassPathContentLoader extends CachedContentLoader {
     }
 
     @Override
-    protected byte[] loadURI(URI uri) {
+    protected byte[] loadURI() {
         return resource.map(this::loadBytes).orElseThrow(() -> new IllegalArgumentException("cannot find classpath resource " + classpath));
     }
 
@@ -82,6 +69,10 @@ public class ClassPathContentLoader extends CachedContentLoader {
         } catch (IOException io) {
             throw new UncheckedIOException(io);
         }
+    }
+
+    static String uriToPath(String uri) {
+        return removeSlash(trimScheme(uri, URIContentLoaderType.CLASSPATH.scheme()));
     }
 
     @Override
