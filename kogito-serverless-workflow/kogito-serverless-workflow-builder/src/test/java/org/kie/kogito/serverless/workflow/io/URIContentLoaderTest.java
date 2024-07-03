@@ -52,7 +52,7 @@ class URIContentLoaderTest {
     @Test
     void testNotExistingClasspath() {
         Builder builder = builder("classpath:/noPepe.txt");
-        assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(() -> readString(builder));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> readString(builder));
     }
 
     @Test

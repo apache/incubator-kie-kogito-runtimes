@@ -31,7 +31,7 @@ public class FileContentLoader extends CachedContentLoader {
 
     FileContentLoader(URI uri, URIContentLoader... fallbackContentLoaders) {
         super(uri, fallbackContentLoaders);
-        this.path = Path.of(getPath(uri));
+        this.path = uri.getScheme() == null ? Path.of(getPath(uri)) : Path.of(uri);
     }
 
     @Override
