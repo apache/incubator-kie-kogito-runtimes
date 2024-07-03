@@ -46,6 +46,7 @@ public enum URIContentLoaderType {
     public static URIContentLoaderType from(String uri) {
         return scheme(uri).map(scheme -> {
             switch (scheme) {
+                default:
                 case "file":
                     return FILE;
                 case "classpath":
@@ -54,15 +55,8 @@ public enum URIContentLoaderType {
                     return HTTP;
                 case "https":
                     return HTTPS;
-                default:
-                    throw new IllegalArgumentException("Unrecognized protocol " + scheme + "for uri " + uri);
             }
         }).orElse(FILE);
-    }
-
-    public String addScheme(String path) {
-        String lowerCasePath = path.toLowerCase();
-        return lowerCasePath.startsWith(scheme) ? path : scheme + path;
     }
 
     public boolean isAbsolutePath(String path) {
@@ -78,16 +72,19 @@ public enum URIContentLoaderType {
     }
 
     public String concat(String basePath, String additionalPath) {
-        char separator = separator();
-        if (!basePath.isBlank() && !isAbsolutePath(basePath)) {
-            basePath = separator + basePath;
+        if (isAbsolutePath(additionalPath)) {
+            return keepSchemaIfPresent(basePath, additionalPath);
         }
-        return basePath + separator + additionalPath;
+        int indexOf = lastIndexOf(basePath);
+        if (indexOf != -1) {
+            return keepSchemaIfPresent(basePath, basePath.substring(0, indexOf + 1) + additionalPath);
+        } else {
+            return keepSchemaIfPresent(basePath, additionalPath);
+        }
     }
 
-    public String trimLast(String path) {
-        int indexOf = lastIndexOf(path);
-        return indexOf != -1 ? path.substring(0, indexOf) : "";
+    private String keepSchemaIfPresent(String basePath, String resultPath) {
+        return basePath.startsWith(scheme) && !resultPath.startsWith(scheme) ? scheme + resultPath : resultPath;
     }
 
     public String lastPart(String path) {
@@ -110,10 +107,6 @@ public enum URIContentLoaderType {
             indexOf = path.lastIndexOf(additionalSeparators[i++]);
         }
         return indexOf;
-    }
-
-    private char separator() {
-        return additionalSeparators.length > 0 ? additionalSeparators[0] : '/';
     }
 
 }

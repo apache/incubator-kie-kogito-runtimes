@@ -20,22 +20,39 @@ package org.kie.kogito.serverless.workflow.io;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FileContentLoader extends CachedContentLoader {
 
     private final Path path;
 
+    private static final Logger logger = LoggerFactory.getLogger(FileContentLoader.class);
+
     FileContentLoader(String uri, URIContentLoader... fallbackContentLoaders) {
         super(uri, fallbackContentLoaders);
-        this.path = Path.of(uriToPath(uri));
+        this.path = obtainPath(uri);
     }
 
     @Override
     public URIContentLoaderType type() {
         return URIContentLoaderType.FILE;
+    }
+
+    private static Path obtainPath(String uri) {
+        if (uri.startsWith(URIContentLoaderType.FILE.scheme())) {
+            try {
+                return Path.of(URI.create(uri));
+            } catch (Exception ex) {
+                logger.info("URI {} is not valid one according to Java, trying alternative approach", uri, ex);
+            }
+        }
+        return Path.of(uriToPath(uri));
     }
 
     @Override

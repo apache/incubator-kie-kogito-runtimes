@@ -74,11 +74,11 @@ public class URIContentLoaderFactory {
     }
 
     public static Builder builder(URI uri) {
-        return new Builder(uri);
+        return new Builder(uri.toString());
     }
 
     public static Builder builder(String uri) {
-        return new Builder(URI.create(uri));
+        return new Builder(uri);
     }
 
     public static class Builder {
@@ -134,11 +134,7 @@ public class URIContentLoaderFactory {
     }
 
     public static String compoundURI(String baseURI, String uri) {
-        if (URIContentLoaderType.scheme(uri).isPresent()) {
-            return uri;
-        }
-        final URIContentLoaderType baseType = URIContentLoaderType.from(baseURI);
-        return baseType.addScheme(baseType.isAbsolutePath(uri) ? uri : baseType.concat(baseType.trimLast(baseType.uriToPath(baseURI)), uri));
+        return URIContentLoaderType.scheme(uri).isPresent() ? uri : URIContentLoaderType.from(baseURI).concat(baseURI, uri);
     }
 
     private URIContentLoaderFactory() {
