@@ -25,31 +25,44 @@ import org.jbpm.compiler.canonical.AbstractNodeVisitor;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.workflow.core.Constraint;
 
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.UnknownType;
 
-public class JavaConstraintEvaluatorBuilder implements ConstraintEvaluatorBuilder {
+public class JavaConstraintEvaluatorBuilder implements ReturnValueEvaluatorBuilder {
 
     @Override
-    public boolean accept(Constraint constraint) {
-        return constraint.getDialect().contains("java");
+    public boolean accept(String dialect) {
+        return dialect.toLowerCase().contains("java");
     }
 
     @Override
-    public Expression build(ContextResolver resolver, Constraint constraint) {
+    public Expression build(ContextResolver resolver, String expression, Class<?> type, String rootName) {
         BlockStmt actionBody = new BlockStmt();
         LambdaExpr lambda = new LambdaExpr(
                 new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->
                 actionBody);
 
-        BlockStmt blockStmt = StaticJavaParser.parseBlock("{" + constraint.getConstraint() + "}");
+        BlockStmt blockStmt = parseIdentifier(expression);
+
+        if (blockStmt == null) {
+            blockStmt = parseExpression(expression);
+        }
+
+        if (blockStmt == null) {
+            blockStmt = parseStatement(expression);
+        }
+
+        if (blockStmt == null) {
+            blockStmt = StaticJavaParser.parseBlock("{" + expression + "}");
+        }
         Set<NameExpr> identifiers = new HashSet<>(blockStmt.findAll(NameExpr.class));
 
         for (NameExpr v : identifiers) {
@@ -58,7 +71,7 @@ public class JavaConstraintEvaluatorBuilder implements ConstraintEvaluatorBuilde
                 continue;
             }
             Variable variable = variableScope.findVariable(v.getNameAsString());
-            actionBody.addStatement(AbstractNodeVisitor.makeAssignment(variable));
+            actionBody.addStatement(0, AbstractNodeVisitor.makeAssignment(variable));
         }
 
         blockStmt.getStatements().forEach(actionBody::addStatement);
@@ -66,4 +79,33 @@ public class JavaConstraintEvaluatorBuilder implements ConstraintEvaluatorBuilde
         return lambda;
     }
 
+    private BlockStmt parseStatement(String expression) {
+        try {
+            BlockStmt block = new BlockStmt();
+            block.addStatement(StaticJavaParser.parseStatement(expression));
+            return block;
+        } catch (ParseProblemException e) {
+            return null;
+        }
+    }
+
+    private BlockStmt parseExpression(String expression) {
+        try {
+            BlockStmt block = new BlockStmt();
+            block.addStatement(new ReturnStmt(StaticJavaParser.parseExpression(expression)));
+            return block;
+        } catch (ParseProblemException e) {
+            return null;
+        }
+    }
+
+    private BlockStmt parseIdentifier(String expression) {
+        try {
+            BlockStmt block = new BlockStmt();
+            block.addStatement(new ReturnStmt(new NameExpr(StaticJavaParser.parseSimpleName(expression.trim()))));
+            return block;
+        } catch (ParseProblemException e) {
+            return null;
+        }
+    }
 }

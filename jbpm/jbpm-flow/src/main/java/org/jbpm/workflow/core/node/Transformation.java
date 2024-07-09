@@ -20,24 +20,24 @@ package org.jbpm.workflow.core.node;
 
 import java.io.Serializable;
 
+import org.jbpm.process.instance.impl.ReturnValueEvaluator;
+
 public class Transformation implements Serializable {
 
     private static final long serialVersionUID = 1641905060375832661L;
 
-    private String source;
     private String language;
     private String expression;
-    private Object compiledExpression;
+    private ReturnValueEvaluator compiledExpression;
 
     public Transformation(String lang, String expression) {
-        this.language = lang;
-        this.expression = expression;
+        this(lang, expression, null);
     }
 
-    public Transformation(String lang, String expression, String source) {
+    public Transformation(String lang, String expression, ReturnValueEvaluator compiledExpression) {
         this.language = lang;
         this.expression = expression;
-        this.source = source;
+        this.compiledExpression = compiledExpression;
     }
 
     public String getLanguage() {
@@ -56,20 +56,12 @@ public class Transformation implements Serializable {
         this.expression = expression;
     }
 
-    public Object getCompiledExpression() {
+    public ReturnValueEvaluator getCompiledExpression() {
         return compiledExpression;
     }
 
-    public void setCompiledExpression(Object compliedExpression) {
+    public void setCompiledExpression(ReturnValueEvaluator compliedExpression) {
         this.compiledExpression = compliedExpression;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
     }
 
 }

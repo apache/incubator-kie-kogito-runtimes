@@ -45,6 +45,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.MESSAGE_REF;
 
 public class BoundaryEventHandler extends AbstractNodeHandler {
 
@@ -140,6 +141,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
         while (xmlNode != null) {
             String nodeName = xmlNode.getNodeName();
             if ("escalationEventDefinition".equals(nodeName)) {
+                String type = null;
                 String escalationRef = ((Element) xmlNode).getAttribute("escalationRef");
                 if (escalationRef != null && escalationRef.trim().length() > 0) {
                     Map<String, Escalation> escalations = (Map<String, Escalation>) ((ProcessBuildData) parser.getData()).getMetaData(ProcessHandler.ESCALATIONS);
@@ -150,16 +152,15 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                     if (escalation == null) {
                         throw new ProcessParsingValidationException("Could not find escalation " + escalationRef);
                     }
-                    List<EventFilter> eventFilters = new ArrayList<>();
-                    EventTypeFilter eventFilter = new EventTypeFilter();
-                    String type = escalation.getEscalationCode();
-                    eventFilter.setType("Escalation-" + attachedTo + "-" + type);
-                    eventFilters.add(eventFilter);
-                    eventNode.setEventFilters(eventFilters);
-                    eventNode.setMetaData("EscalationEvent", type);
-                } else {
-                    throw new UnsupportedOperationException("General escalation is not yet supported.");
+                    type = escalation.getEscalationCode();
                 }
+                List<EventFilter> eventFilters = new ArrayList<>();
+                EventTypeFilter eventFilter = new EventTypeFilter();
+
+                eventFilter.setType("Escalation-" + attachedTo + (type != null ? "-" + type : ""));
+                eventFilters.add(eventFilter);
+                eventNode.setEventFilters(eventFilters);
+                eventNode.setMetaData("EscalationEvent", type);
             }
             xmlNode = xmlNode.getNextSibling();
         }
@@ -408,6 +409,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                 eventNode.setMetaData("MessageType", message.getType());
                 eventNode.setMetaData("TriggerType", "ConsumeMessage");
                 eventNode.setMetaData("TriggerRef", message.getName());
+                eventNode.setMetaData(MESSAGE_REF, message.getId());
                 List<EventFilter> eventFilters = new ArrayList<>();
                 EventTypeFilter eventFilter = new EventTypeFilter();
                 eventFilter.setCorrelationManager(((RuleFlowProcess) parser.getMetaData().get("CurrentProcessDefinition")).getCorrelationManager());

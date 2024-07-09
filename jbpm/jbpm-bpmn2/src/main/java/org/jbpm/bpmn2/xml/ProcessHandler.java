@@ -59,9 +59,10 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.correlation.CorrelationManager;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
-import org.jbpm.process.core.event.MVELMessageExpressionEvaluator;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.process.instance.impl.Action;
+import org.jbpm.process.instance.impl.MVELInterpretedReturnValueEvaluator;
+import org.jbpm.process.instance.impl.ReturnValueEvaluator;
 import org.jbpm.process.instance.impl.actions.CancelNodeInstanceAction;
 import org.jbpm.process.instance.impl.actions.ProcessInstanceCompensationAction;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
@@ -240,7 +241,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                     correlationProperty.getMessageRefs().forEach(messageRef -> {
 
                         // for now only MVEL expressions
-                        MVELMessageExpressionEvaluator evaluator = new MVELMessageExpressionEvaluator(correlationProperty.getRetrievalExpression(messageRef).getScript());
+                        ReturnValueEvaluator evaluator = new MVELInterpretedReturnValueEvaluator(correlationProperty.getRetrievalExpression(messageRef).getScript());
                         correlationManager.addMessagePropertyExpression(key.getId(), messageRef, correlationProperty.getId(), evaluator);
                     });
                 }
@@ -251,7 +252,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         for (CorrelationSubscription subscription : HandlerUtil.correlationSubscription(process).values()) {
             correlationManager.subscribeTo(subscription.getCorrelationKeyRef());
             for (Map.Entry<String, Expression> binding : subscription.getPropertyExpressions().entrySet()) {
-                MVELMessageExpressionEvaluator evaluator = new MVELMessageExpressionEvaluator(binding.getValue().getScript());
+
+                ReturnValueEvaluator evaluator = new MVELInterpretedReturnValueEvaluator(binding.getValue().getScript());
                 correlationManager.addProcessSubscriptionPropertyExpression(subscription.getCorrelationKeyRef(), binding.getKey(), evaluator);
             }
         }
@@ -478,8 +480,9 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 
         String variable = ((EventNode) node).getVariableName();
         ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
+        String signalName = "Escalation-" + attachedTo + (escalationCode != null ? "-" + escalationCode : "");
         DroolsConsequenceAction action =
-                createJavaAction(new SignalProcessInstanceAction("Escalation-" + attachedTo + "-" + escalationCode, variable, null, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                createJavaAction(new SignalProcessInstanceAction(signalName, variable, null, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
         exceptionHandler.setAction(action);
         exceptionHandler.setFaultVariable(variable);
         exceptionScope.setExceptionHandler(escalationCode, exceptionHandler);
@@ -871,8 +874,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 
                                         String type = ((EventTypeFilter) filter).getType();
                                         if (type.startsWith("Error-") || type.startsWith("Escalation")) {
-                                            String faultCode = (String) subNode.getMetaData().get("FaultCode");
-                                            String replaceRegExp = "Error-|Escalation-";
+                                            String faultCode = (String) subNode.getMetaData().get(Metadata.FAULT_CODE);
                                             final String signalType = type;
 
                                             ExceptionScope exceptionScope =
@@ -892,13 +894,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                                             action.setMetaData("Action", new SignalProcessInstanceAction(signalType, faultVariable, null, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
                                             exceptionHandler.setAction(action);
                                             exceptionHandler.setFaultVariable(faultVariable);
-                                            if (faultCode != null) {
-                                                String trimmedType = type.replaceFirst(replaceRegExp, "");
-                                                exceptionScope.setExceptionHandler(trimmedType, exceptionHandler);
-                                                eventSubProcessHandlers.add(trimmedType);
-                                            } else {
-                                                exceptionScope.setExceptionHandler(faultCode, exceptionHandler);
-                                            }
+                                            eventSubProcessHandlers.add(faultCode);
+                                            exceptionScope.setExceptionHandler(faultCode, exceptionHandler);
                                         } else if (type.equals("Compensation")) {
                                             // 1. Find the parent sub-process to this event sub-process
                                             NodeContainer parentSubProcess = null;

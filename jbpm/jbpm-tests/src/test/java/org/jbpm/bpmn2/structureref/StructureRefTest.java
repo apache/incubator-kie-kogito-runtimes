@@ -19,16 +19,29 @@
 package org.jbpm.bpmn2.structureref;
 
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jbpm.bpmn2.JbpmBpmn2TestCase;
+import org.jbpm.bpmn2.flow.BooleanStructureRefModel;
+import org.jbpm.bpmn2.flow.BooleanStructureRefProcess;
+import org.jbpm.bpmn2.flow.DefaultObjectStructureRefModel;
+import org.jbpm.bpmn2.flow.DefaultObjectStructureRefProcess;
+import org.jbpm.bpmn2.flow.FloatStructureRefModel;
+import org.jbpm.bpmn2.flow.FloatStructureRefProcess;
+import org.jbpm.bpmn2.flow.IntegerStructureRefModel;
+import org.jbpm.bpmn2.flow.IntegerStructureRefProcess;
+import org.jbpm.bpmn2.flow.ObjectStructureRefModel;
+import org.jbpm.bpmn2.flow.ObjectStructureRefProcess;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
-import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.coverter.TypeConverterRegistry;
+import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.Application;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.process.bpmn2.BpmnVariables;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -59,62 +72,67 @@ public class StructureRefTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testBooleanStructureRef() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-BooleanStructureRef.bpmn2");
+        Application app = ProcessTestHelper.newApplication();
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-        KogitoProcessInstance processInstance = kruntime.startProcess("StructureRef");
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<BooleanStructureRefModel> definition = BooleanStructureRefProcess.newProcess(app);
 
-        Map<String, Object> res = new HashMap<>();
-        res.put("testHT", "true");
-        kruntime.getKogitoWorkItemManager().completeWorkItem(
-                workItemHandler.getWorkItem().getStringId(), res);
+        org.kie.kogito.process.ProcessInstance<BooleanStructureRefModel> instance = definition.createInstance(definition.createModel());
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
-        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
+        ProcessTestHelper.completeWorkItem(instance, "john", Collections.singletonMap("testHT", "true"));
+
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
     public void testIntegerStructureRef() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-IntegerStructureRef.bpmn2");
+        String value = "25";
 
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-        KogitoProcessInstance processInstance = kruntime.startProcess("StructureRef");
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        IntegerStructureRefProcess definition = (IntegerStructureRefProcess) IntegerStructureRefProcess.newProcess(app);
 
-        Map<String, Object> res = new HashMap<>();
-        res.put("testHT", "25");
-        kruntime.getKogitoWorkItemManager().completeWorkItem(
-                workItemHandler.getWorkItem().getStringId(), res);
+        IntegerStructureRefModel model = definition.createModel();
+        org.kie.kogito.process.ProcessInstance<IntegerStructureRefModel> instance = definition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
-        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
+        ProcessTestHelper.completeWorkItem(instance, "john", Collections.singletonMap("testHT", value));
+
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(instance.variables().getTest()).isEqualTo(Integer.valueOf(value));
+
     }
 
     @Test
     public void testFloatStructureRef() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-FloatStructureRef.bpmn2");
+        String value = "5.5";
 
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-        KogitoProcessInstance processInstance = kruntime.startProcess("StructureRef");
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        FloatStructureRefProcess definition = (FloatStructureRefProcess) FloatStructureRefProcess.newProcess(app);
 
-        Map<String, Object> res = new HashMap<>();
-        res.put("testHT", "5.5");
-        kruntime.getKogitoWorkItemManager().completeWorkItem(
-                workItemHandler.getWorkItem().getStringId(), res);
+        FloatStructureRefModel model = definition.createModel();
+        org.kie.kogito.process.ProcessInstance<FloatStructureRefModel> instance = definition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
-        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
+        ProcessTestHelper.completeWorkItem(instance, "john", Collections.singletonMap("testHT", value));
+
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(instance.variables().getTest()).isEqualTo(Float.valueOf(value));
+
     }
 
     @Test
     public void testObjectStructureRef() throws Exception {
         JAXBContext context = JAXBContext.newInstance(Person.class);
-        String personAsXml = "<person><id>1</id><name>john</name></person>";
+
         TypeConverterRegistry.get().register("org.jbpm.bpmn2.objects.Person", (s) -> {
             try {
                 return context.createUnmarshaller().unmarshal(new StringReader(s));
@@ -122,86 +140,89 @@ public class StructureRefTest extends JbpmBpmn2TestCase {
                 throw new RuntimeException(e);
             }
         });
-        kruntime = createKogitoProcessRuntime("BPMN2-ObjectStructureRef.bpmn2");
 
+        String value = "<person><id>1</id><name>john</name></person>";
+
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-        KogitoProcessInstance processInstance = kruntime.startProcess("StructureRef");
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        ObjectStructureRefProcess definition = (ObjectStructureRefProcess) ObjectStructureRefProcess.newProcess(app);
 
-        Map<String, Object> res = new HashMap<>();
-        res.put("testHT", personAsXml);
-        kruntime.getKogitoWorkItemManager().completeWorkItem(
-                workItemHandler.getWorkItem().getStringId(), res);
+        ObjectStructureRefModel model = definition.createModel();
+        org.kie.kogito.process.ProcessInstance<ObjectStructureRefModel> instance = definition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
-        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
+        ProcessTestHelper.completeWorkItem(instance, "john", Collections.singletonMap("testHT", value));
+
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(instance.variables().getTest()).isEqualTo(new Person(1, "john"));
+
     }
 
     @Test
     public void testDefaultObjectStructureRef() throws Exception {
-
         String value = "simple text for testing";
 
-        kruntime = createKogitoProcessRuntime("BPMN2-DefaultObjectStructureRef.bpmn2");
-
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-        KogitoProcessInstance processInstance = kruntime.startProcess("StructureRef");
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        DefaultObjectStructureRefProcess definition = (DefaultObjectStructureRefProcess) DefaultObjectStructureRefProcess.newProcess(app);
 
-        Map<String, Object> res = new HashMap<>();
-        res.put("testHT", value);
-        kruntime.getKogitoWorkItemManager().completeWorkItem(
-                workItemHandler.getWorkItem().getStringId(), res);
+        DefaultObjectStructureRefModel model = definition.createModel();
+        org.kie.kogito.process.ProcessInstance<DefaultObjectStructureRefModel> instance = definition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
-        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
+        ProcessTestHelper.completeWorkItem(instance, "john", Collections.singletonMap("testHT", value));
+
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(instance.variables().getTest()).isEqualTo(value);
+
     }
 
     @Test
     public void testNotExistingVarBooleanStructureRefOnStart() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-BooleanStructureRef.bpmn2");
+        Application app = ProcessTestHelper.newApplication();
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("not existing", "invalid boolean");
-        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> kruntime.startProcess("StructureRef", params));
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<BooleanStructureRefModel> definition = BooleanStructureRefProcess.newProcess(app);
+        org.kie.kogito.Model model = BpmnVariables.create(Collections.singletonMap("not existing", "invalid boolean"));
+        org.kie.kogito.process.ProcessInstance<? extends org.kie.kogito.Model> instance = definition.createInstance(model);
+        assertThat(instance.variables().toMap()).doesNotContainKey("non existing");
 
     }
 
     @Test
     public void testInvalidBooleanStructureRefOnStart() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-BooleanStructureRef.bpmn2");
+        Application app = ProcessTestHelper.newApplication();
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<BooleanStructureRefModel> definition = BooleanStructureRefProcess.newProcess(app);
+        org.kie.kogito.Model model = BpmnVariables.create(Collections.singletonMap("test", "invalid boolean"));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("test", "invalid boolean");
-        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> kruntime.startProcess("StructureRef", params));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
+            org.kie.kogito.process.ProcessInstance<? extends org.kie.kogito.Model> instance = definition.createInstance(model);
+        });
     }
 
     @Test
     public void testInvalidBooleanStructureRefOnWIComplete() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-IntegerStructureRef.bpmn2");
 
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        IntegerStructureRefProcess definition = (IntegerStructureRefProcess) IntegerStructureRefProcess.newProcess(app);
 
-        KogitoProcessInstance processInstance = kruntime.startProcess("StructureRef");
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-
-        Map<String, Object> res = new HashMap<>();
-        res.put("testHT", true);
+        IntegerStructureRefModel model = definition.createModel();
+        org.kie.kogito.process.ProcessInstance<IntegerStructureRefModel> instance = definition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
         try {
-            kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItem().getStringId(), res);
+            ProcessTestHelper.completeWorkItem(instance, "john", Collections.singletonMap("testHT", true));
             fail("");
         } catch (IllegalArgumentException iae) {
             logger.info("Expected IllegalArgumentException caught: " + iae);
@@ -209,67 +230,48 @@ public class StructureRefTest extends JbpmBpmn2TestCase {
             fail("");
         }
 
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
     }
 
     @Test
     public void testInvalidBooleanStructureRefOnStartVerifyErrorMsg() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-BooleanStructureRef.bpmn2");
+        Application app = ProcessTestHelper.newApplication();
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<BooleanStructureRefModel> definition = BooleanStructureRefProcess.newProcess(app);
+        org.kie.kogito.Model model = BpmnVariables.create(Collections.singletonMap("test", "invalid boolean"));
+
         try {
-            Map<String, Object> params = new HashMap<>();
-            params.put("test", "invalid boolean");
-            kruntime.startProcess("StructureRef", params);
+            definition.createInstance(model);
         } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage()).isEqualTo("Variable 'test' has incorrect data type expected:java.lang.Boolean actual:java.lang.String");
+            assertThat(e.getMessage()).isEqualTo("Can not set java.lang.Boolean field org.jbpm.bpmn2.flow.BooleanStructureRefModel.test to java.lang.String");
         }
 
-    }
-
-    @Test
-    public void testInvalidBooleanStructureRefOnStartWithDisabledCheck() throws Exception {
-        // Temporarily disable check for variables strict that is enabled by default for tests
-        VariableScope.setVariableStrictOption(false);
-        kruntime = createKogitoProcessRuntime("BPMN2-BooleanStructureRef.bpmn2");
-
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("test", "invalid boolean");
-        kruntime.startProcess("StructureRef", params);
-        // enable it back for other tests
-        VariableScope.setVariableStrictOption(true);
     }
 
     @Test
     public void testNotExistingBooleanStructureRefOnWIComplete() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-IntegerStructureRef.bpmn2");
-
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-
-        KogitoProcessInstance processInstance = kruntime.startProcess("StructureRef");
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-
         String wrongDataOutput = "not existing";
 
-        Map<String, Object> res = new HashMap<>();
-        res.put(wrongDataOutput, true);
+        Application app = ProcessTestHelper.newApplication();
+        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        IntegerStructureRefProcess definition = (IntegerStructureRefProcess) IntegerStructureRefProcess.newProcess(app);
+
+        IntegerStructureRefModel model = definition.createModel();
+        org.kie.kogito.process.ProcessInstance<IntegerStructureRefModel> instance = definition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
         try {
-            kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItem().getStringId(), res);
-            fail("");
-        } catch (IllegalArgumentException iae) {
-            System.out.println("Expected IllegalArgumentException catched: " + iae);
-            assertThat(iae.getMessage()).isEqualTo("Data output '" + wrongDataOutput + "' is not defined in process 'StructureRef' for task 'User Task'");
-        } catch (Exception e) {
-            fail("");
+            ProcessTestHelper.completeWorkItem(instance, "john", Collections.singletonMap(wrongDataOutput, true));
+            fail("it should not work!");
+        } catch (IllegalArgumentException e) {
+            assertThat(e.getMessage()).isEqualTo("Data output '" + wrongDataOutput + "' is not defined in process 'IntegerStructureRef' for task 'User Task'");
         }
+
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
     }
 }
