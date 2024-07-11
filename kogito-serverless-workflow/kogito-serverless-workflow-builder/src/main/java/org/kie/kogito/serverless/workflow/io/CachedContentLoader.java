@@ -98,12 +98,5 @@ public abstract class CachedContentLoader implements URIContentLoader {
         return str;
     }
 
-    protected static String removeSlash(String str) {
-        while (str.startsWith("/")) {
-            str = str.substring(1);
-        }
-        return str;
-    }
-
     protected abstract byte[] loadURI();
 }

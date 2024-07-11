@@ -48,12 +48,6 @@ public class URIContentLoaderFactory {
         return new String(readAllBytes(loader));
     }
 
-    public static String getFileName(String uri) {
-        URIContentLoaderType type = URIContentLoaderType.from(uri);
-        String path = type.uriToPath(uri);
-        return type.lastPart(path);
-    }
-
     public static String readString(Builder builder) {
         return readString(builder.build());
     }

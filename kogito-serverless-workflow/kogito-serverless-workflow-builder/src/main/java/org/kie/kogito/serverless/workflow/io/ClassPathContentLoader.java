@@ -75,6 +75,13 @@ public class ClassPathContentLoader extends CachedContentLoader {
         return removeSlash(trimScheme(uri, URIContentLoaderType.CLASSPATH.scheme()));
     }
 
+    private static String removeSlash(String str) {
+        while (str.startsWith("/")) {
+            str = str.substring(1);
+        }
+        return str;
+    }
+
     @Override
     public URIContentLoaderType type() {
         return URIContentLoaderType.CLASSPATH;
