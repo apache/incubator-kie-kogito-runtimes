@@ -18,8 +18,7 @@
  */
 package org.jbpm.test.utils;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -69,13 +68,18 @@ public class ProcessTestHelper {
         ((DefaultWorkItemHandlerConfig) app.config().get(ProcessConfig.class).workItemHandlers()).register(handlerName, handler);
     }
 
-    public static void completeWorkItem(ProcessInstance<? extends Model> processInstance, String userName, Map<String, Object> outputVars) {
-        completeWorkItem(processInstance, userName, outputVars, item -> {
-        });
+    public static void completeWorkItem(ProcessInstance<? extends Model> processInstance, Map<String, Object> outputVars) {
+        completeWorkItem(processInstance, outputVars, item -> {
+        }, null, Collections.emptyList());
     }
 
-    public static void completeWorkItem(ProcessInstance<? extends Model> processInstance, String userName, Map<String, Object> outputVars, Consumer<WorkItem> workItem) {
-        List<WorkItem> workItems = processInstance.workItems(SecurityPolicy.of(userName, emptyList()));
+    public static void completeWorkItem(ProcessInstance<? extends Model> processInstance, Map<String, Object> outputVars, String userName, String... groups) {
+        completeWorkItem(processInstance, outputVars, item -> {
+        }, userName, Arrays.asList(groups));
+    }
+
+    public static void completeWorkItem(ProcessInstance<? extends Model> processInstance, Map<String, Object> outputVars, Consumer<WorkItem> workItem, String userName, Collection<String> groups) {
+        List<WorkItem> workItems = processInstance.workItems(SecurityPolicy.of(userName, groups));
         workItems.stream().findFirst().ifPresent(e -> {
             workItem.accept(e);
             processInstance.completeWorkItem(e.getId(), outputVars, SecurityPolicy.of(userName, emptyList()));
