@@ -41,9 +41,7 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.drools.codegen.common.DroolsModelBuildContext.KOGITO_GENERATE_REST;
 import static org.kie.kogito.codegen.api.Generator.REST_TYPE;
-import static org.kie.kogito.codegen.api.context.KogitoBuildContext.generateRESTConfigurationKeyForResource;
 import static org.kie.kogito.codegen.core.CustomDashboardGeneratedUtils.loadCustomGrafanaDashboardsList;
 
 public class ApplicationGenerator {
