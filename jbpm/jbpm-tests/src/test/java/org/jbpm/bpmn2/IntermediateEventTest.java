@@ -739,7 +739,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             @Override
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 if (event.getNodeInstance().getNodeName().equals("Script Task 1")) {
-                    executednodes.add(((KogitoNodeInstance) event.getNodeInstance()).getStringId());
+                    executednodes.add(((KogitoNodeInstance) event.getNodeInstance()).getNodeId().toExternalFormat());
                 }
             }
 
@@ -754,9 +754,10 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         org.kie.kogito.process.ProcessInstance<EventSubprocessMessageModel> instance = definition
                 .createInstance(definition.createModel());
 
+        instance.start();
         Set<EventDescription<?>> eventDescriptions = instance.events();
-        assertThat(eventDescriptions).hasSize(2).extracting("event").contains("Message-HelloMessage",
-                "workItemCompleted");
+        assertThat(eventDescriptions).hasSize(3).extracting("event").contains("Message-HelloMessage",
+                "workItemCompleted", "HelloMessage");
         assertThat(eventDescriptions).extracting("eventType").contains("signal", "workItem");
         assertThat(eventDescriptions).extracting("processInstanceId").contains(instance.id());
 
@@ -773,8 +774,8 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         assertThat(trackerListener.tracked()).anyMatch(ProcessTestHelper.triggered("start"))
                 .anyMatch(ProcessTestHelper.triggered("User Task 1")).anyMatch(ProcessTestHelper.triggered("end"))
-                .anyMatch(ProcessTestHelper.triggered("Sub Process 1"))
-                .anyMatch(ProcessTestHelper.triggered("start-sub"))
+                .anyMatch(ProcessTestHelper.left("Sub Process 1"))
+                .anyMatch(ProcessTestHelper.left("start-sub"))
                 .anyMatch(ProcessTestHelper.triggered("Script Task 1"))
                 .anyMatch(ProcessTestHelper.triggered("end-sub"));
 
@@ -1886,8 +1887,9 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         assertThat(trackerListener.tracked()).anyMatch(ProcessTestHelper.triggered("start"))
                 .anyMatch(ProcessTestHelper.triggered("User Task 1"))
-                .anyMatch(ProcessTestHelper.triggered("Sub Process 1"))
-                .anyMatch(ProcessTestHelper.triggered("start-sub")).anyMatch(ProcessTestHelper.triggered("end-sub"));
+                .anyMatch(ProcessTestHelper.left("Sub Process 1"))
+                .anyMatch(ProcessTestHelper.left("start-sub"))
+                .anyMatch(ProcessTestHelper.triggered("end-sub"));
 
         assertThat(instance.variables().getX()).isNotNull().isEqualTo("JOHN");
     }
