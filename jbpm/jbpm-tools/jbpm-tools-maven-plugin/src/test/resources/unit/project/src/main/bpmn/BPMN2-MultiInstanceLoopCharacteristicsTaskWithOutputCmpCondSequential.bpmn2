@@ -53,7 +53,6 @@
         <dataInput id="_2_input" name="MultiInstanceInput" />
         <dataInput id="_2_item" name="Item" />
         <dataOutput id="_2_listOutOutput" name="listOut"/>
-        <dataOutput id="_2_itemOut" name="itemOut"/>
         <inputSet>
           <dataInputRefs>_2_item</dataInputRefs>
         </inputSet>
