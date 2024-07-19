@@ -80,7 +80,6 @@ public class SubProcessHandler extends AbstractNodeHandler {
         Node outcome = compositeNode;
         if (compositeNode.getMultiInstanceSpecification().hasMultiInstanceInput()) {
             ForEachNode forEachNode = (ForEachNode) decorateMultiInstanceSpecificationSubProcess(compositeNode, compositeNode.getMultiInstanceSpecification());
-            nodeContainer.addNode(forEachNode);
 
             handleScript(forEachNode, element, "onEntry");
             handleScript(forEachNode, element, "onExit");
@@ -95,10 +94,11 @@ public class SubProcessHandler extends AbstractNodeHandler {
             List<Association> associations = (List<Association>) forEachNode.getMetaData(ProcessHandler.ASSOCIATIONS);
             ProcessHandler.linkAssociations((Definitions) forEachNode.getMetaData("Definitions"), forEachNode, associations);
             applyAsync(node, Boolean.parseBoolean((String) compositeNode.getMetaData().get("customAsync")));
-
+            outcome = forEachNode;
+            nodeContainer.addNode(outcome);
         } else {
+            nodeContainer.addNode(outcome);
             RuleFlowProcess process = (RuleFlowProcess) ((ProcessBuildData) parser.getData()).getMetaData(ProcessHandler.CURRENT_PROCESS);
-            nodeContainer.addNode(compositeNode);
             handleCompositeContextNode(process, compositeNode);
         }
 

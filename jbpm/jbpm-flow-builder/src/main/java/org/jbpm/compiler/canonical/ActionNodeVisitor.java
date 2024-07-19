@@ -21,6 +21,7 @@ package org.jbpm.compiler.canonical;
 import java.util.List;
 import java.util.Optional;
 
+import org.jbpm.compiler.canonical.builtin.ReturnValueEvaluatorBuilderService;
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -54,6 +55,12 @@ public class ActionNodeVisitor extends AbstractNodeVisitor<ActionNode> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionNodeVisitor.class);
 
     private static final String INTERMEDIATE_COMPENSATION_TYPE = "IntermediateThrowEvent-None";
+
+    private ReturnValueEvaluatorBuilderService returnValueEvaluatorBuilderService;
+
+    public ActionNodeVisitor(ReturnValueEvaluatorBuilderService returnValueEvaluatorBuilderService) {
+        this.returnValueEvaluatorBuilderService = returnValueEvaluatorBuilderService;
+    }
 
     @Override
     protected String getNodeKey() {
