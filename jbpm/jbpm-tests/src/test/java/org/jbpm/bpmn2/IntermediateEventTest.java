@@ -1944,6 +1944,8 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertThat(workItems).isNotNull().hasSize(3);
 
         ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
+        ProcessTestHelper.completeWorkItem(instance, "mary", Collections.emptyMap());
+        ProcessTestHelper.completeWorkItem(instance, "krisv", Collections.emptyMap());
 
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
