@@ -52,7 +52,11 @@
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-client-hotrod-jakarta</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>jbpm-deps-group-engine</artifactId>
+      <type>pom</type>
+    </dependency>
     <!-- test dependencies -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
