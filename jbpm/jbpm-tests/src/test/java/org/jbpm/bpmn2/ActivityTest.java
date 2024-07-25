@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1463,9 +1464,27 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     public void testErrorBetweenProcessesProcess() {
         Application app = ProcessTestHelper.newApplication();
         org.kie.kogito.process.Process<ErrorsBetweenSubProcessModel> errorsBetweenSubProcessProcess = ErrorsBetweenSubProcessProcess.newProcess(app);
-        ProcessInstance<ErrorsBetweenSubProcessModel> subProcessInstance = errorsBetweenSubProcessProcess
-                .createInstance(errorsBetweenSubProcessProcess.createModel());
+
         org.kie.kogito.process.Process<ErrorsBetweenProcessModel> process = ErrorsBetweenProcessProcess.newProcess(app);
+        final Set<String> processInstanceIdSet = new HashSet<>();
+        DefaultKogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
+
+            @Override
+            public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
+                logger.info("Node triggered: {}, {}", event.getNodeInstance().getNodeName(), event.getNodeInstance().getProcessInstance().getId());
+            }
+
+            @Override
+            public void beforeProcessStarted(ProcessStartedEvent event) {
+                logger.info("sub process id: {}, process id: {}", errorsBetweenSubProcessProcess.id(), process.id());
+                logger.info("Process Instance process id: {}, instance id: {}", event.getProcessInstance().getProcessId(), event.getProcessInstance().getId());
+
+                if (event.getProcessInstance().getProcessId().equals(errorsBetweenSubProcessProcess.id())) {
+                    processInstanceIdSet.add(event.getProcessInstance().getId());
+                }
+            }
+        };
+        ProcessTestHelper.registerProcessEventListener(app, listener);
         ErrorsBetweenProcessModel model = process.createModel();
         model.setTipoEvento("error");
         model.setPasoVariable(3);
@@ -1473,7 +1492,12 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         //expected state of sub process should be aborted. But we are getting state pending
-        assertThat(subProcessInstance.status()).isEqualTo(ProcessInstance.STATE_ABORTED);
+        //assertThat(subProcessInstance.status()).isEqualTo(ProcessInstance.STATE_ABORTED);
+        assertThat(processInstanceIdSet.size()).isEqualTo(1);
+        Optional<String> subProcessInstanceId = processInstanceIdSet.stream().findFirst();
+        assertThat(subProcessInstanceId.isPresent()).isEqualTo(true);
+        assertThat(errorsBetweenSubProcessProcess.instances().findById(subProcessInstanceId.get()).isPresent()).isTrue();
+        assertThat(errorsBetweenSubProcessProcess.instances().findById(subProcessInstanceId.get()).get().status()).isEqualTo(ProcessInstance.STATE_ABORTED);
         Assertions.assertEquals("error desde Subproceso", processInstance.variables().getEvent());
     }
 
