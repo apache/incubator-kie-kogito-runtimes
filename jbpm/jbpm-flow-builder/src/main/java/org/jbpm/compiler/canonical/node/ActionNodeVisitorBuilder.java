@@ -20,7 +20,6 @@ package org.jbpm.compiler.canonical.node;
 
 import org.jbpm.compiler.canonical.AbstractNodeVisitor;
 import org.jbpm.compiler.canonical.ActionNodeVisitor;
-import org.jbpm.compiler.canonical.builtin.ReturnValueEvaluatorBuilderService;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.kie.api.definition.process.Node;
 
@@ -33,7 +32,7 @@ public class ActionNodeVisitorBuilder implements NodeVisitorBuilder {
 
     @Override
     public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService, ClassLoader classLoader) {
-        return new ActionNodeVisitor(ReturnValueEvaluatorBuilderService.instance(classLoader));
+        return new ActionNodeVisitor();
     }
 
 }

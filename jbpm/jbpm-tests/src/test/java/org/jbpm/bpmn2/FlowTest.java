@@ -54,6 +54,7 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
+import org.jbpm.test.utils.EventTrackerProcessListener;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
@@ -1380,13 +1381,19 @@ public class FlowTest extends JbpmBpmn2TestCase {
     @Test
     public void testConditionalFlow() throws Exception {
         Application app = ProcessTestHelper.newApplication();
-
+        EventTrackerProcessListener listener = new EventTrackerProcessListener();
+        ProcessTestHelper.registerProcessEventListener(app, listener);
         org.kie.kogito.process.Process<ConditionalFlowWithoutGatewayModel> definition = ConditionalFlowWithoutGatewayProcess.newProcess(app);
         org.kie.kogito.process.ProcessInstance<ConditionalFlowWithoutGatewayModel> instance = definition.createInstance(definition.createModel());
         instance.start();
 
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
-
+        assertThat(listener.tracked())
+                .anyMatch(ProcessTestHelper.triggered("start"))
+                .anyMatch(ProcessTestHelper.triggered("script"))
+                .anyMatch(ProcessTestHelper.triggered("end1"));
+        assertThat(listener.tracked())
+                .noneMatch(ProcessTestHelper.triggered("end2"));
     }
 
     @Test
