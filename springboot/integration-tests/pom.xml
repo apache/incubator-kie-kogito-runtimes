@@ -187,20 +187,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-artifact-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>compare</id>
-            <goals>
-              <goal>compare</goal>
-             </goals>
-             <!-- Disable comparison for this module. This is Integration test module, it is not part of the delivery -->
-             <phase/>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 </project>
