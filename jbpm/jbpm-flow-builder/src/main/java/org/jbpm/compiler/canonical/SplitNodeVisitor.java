@@ -45,6 +45,7 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_TYPE, new IntegerLiteralExpr(node.getType())));
 
         visitMetaData(node.getMetaData(), body, getNodeId(node));
+        addConstraints(node, getReturnValueEvaluatorBuilderService(), body);
         body.addStatement(getDoneMethod(getNodeId(node)));
     }
 
