@@ -769,7 +769,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
-        ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
+        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john");
 
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
 
@@ -891,13 +891,15 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
+        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john");
 
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
 
         assertThat(trackerListener.tracked()).anyMatch(ProcessTestHelper.triggered("start"))
-                .anyMatch(ProcessTestHelper.triggered("User Task 1")).anyMatch(ProcessTestHelper.triggered("end"))
-                .anyMatch(ProcessTestHelper.left("Sub Process 1")).anyMatch(ProcessTestHelper.left("start-sub"))
+                .anyMatch(ProcessTestHelper.triggered("User Task 1"))
+                .anyMatch(ProcessTestHelper.triggered("end"))
+                .anyMatch(ProcessTestHelper.left("Sub Process 1"))
+                .anyMatch(ProcessTestHelper.left("start-sub"))
                 .anyMatch(ProcessTestHelper.triggered("Script Task 1"))
                 .anyMatch(ProcessTestHelper.triggered("end-sub"));
 
