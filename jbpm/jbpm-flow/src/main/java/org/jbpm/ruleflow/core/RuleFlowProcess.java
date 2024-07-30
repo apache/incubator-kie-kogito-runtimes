@@ -184,18 +184,6 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
 
         private static final long serialVersionUID = 510l;
 
-        @Override
-        protected void validateAddNode(Node node) {
-            super.validateAddNode(node);
-            StartNode startNode = getStart(null, null);
-            if ((node instanceof StartNode) && (startNode != null && startNode.getTriggers() == null && startNode.getTimer() == null)) {
-                // ignore start nodes that are event based
-                if ((((StartNode) node).getTriggers() == null || ((StartNode) node).getTriggers().isEmpty()) && ((StartNode) node).getTimer() == null) {
-                    throw new ValidationException(getId(), new ProcessValidationErrorImpl(RuleFlowProcess.this, "A process cannot have more than one start node!"));
-                }
-            }
-        }
-
     }
 
 }
