@@ -450,8 +450,6 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         definition.send(Sig.of("startSignal"));
 
         assertThat(list).hasSize(1);
-        System.out.println("Process has started " + list.get(list.size() - 1));
-        definition.instances().stream().forEach(System.out::println);
         for (String processInstanceId : list) {
             MultipleStartEventProcessDifferentPathsProcess p =
                     (MultipleStartEventProcessDifferentPathsProcess) app.get(Processes.class).processByProcessInstanceId(processInstanceId).get();
@@ -460,7 +458,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
             assertThat(pi.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
 
             assertThat(tracked.tracked())
-                    .anyMatch(ProcessTestHelper.triggered("StartSignal"))
+                    .anyMatch(ProcessTestHelper.left("StartSignal"))
                     .anyMatch(ProcessTestHelper.triggered("Script 3"))
                     .anyMatch(ProcessTestHelper.triggered("User task"))
                     .anyMatch(ProcessTestHelper.triggered("End"));

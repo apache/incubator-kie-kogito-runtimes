@@ -62,7 +62,7 @@ public class ProcessTestHelper {
         return new StaticApplication(new StaticConfig(null, staticConfig), bpmnProcesses);
     }
 
-    public static void registerProcessEventListener(Application app, KogitoProcessEventListener ...kogitoProcessEventListeners) {
+    public static void registerProcessEventListener(Application app, KogitoProcessEventListener... kogitoProcessEventListeners) {
         for (KogitoProcessEventListener kogitoProcessEventListener : kogitoProcessEventListeners) {
             ((DefaultProcessEventListenerConfig) app.config().get(ProcessConfig.class).processEventListeners()).register(kogitoProcessEventListener);
         }
