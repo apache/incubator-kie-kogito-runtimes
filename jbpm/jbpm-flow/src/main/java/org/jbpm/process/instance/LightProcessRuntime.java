@@ -52,6 +52,7 @@ import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.Application;
+import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.jobs.DurationExpirationTime;
@@ -61,6 +62,7 @@ import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.services.jobs.impl.InMemoryJobService;
+import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
@@ -130,6 +132,11 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
 
     public ProcessInstance startProcess(String processId, Map<String, Object> parameters, String trigger) {
         return startProcess(processId, parameters, trigger, null);
+    }
+
+    @Override
+    public KogitoProcessInstance startProcess(String processId, String trigger, Map<String, Object> parameters) {
+        return (KogitoProcessInstance) startProcess(processId, parameters, trigger, null);
     }
 
     @Override
@@ -287,7 +294,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         }
 
         @Override
-        public void signalEvent(final String type, Object event) {
+        public void signalEvent(String type, Object event) {
             for (EventFilter filter : eventFilters) {
                 if (!filter.acceptsEvent(type, event, varName -> null)) {
                     return;
@@ -313,7 +320,14 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
             }
 
             Map<String, Object> parameters = NodeIoHelper.processOutputs(trigger.getInAssociations(), key -> outputSet.get(key));
-            startProcessWithParamsAndTrigger(processId, parameters, type);
+
+            UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
+                org.kie.kogito.process.Process<? extends Model> process = getApplication().get(Processes.class).processById(processId);
+                org.kie.kogito.process.ProcessInstance<?> pi = process.createInstance(process.createModel());
+                pi.trigger(type, type, parameters);
+                return null;
+            });
+
         }
     }
 
@@ -519,4 +533,5 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
     public ProcessInstance getProcessInstance(CorrelationKey correlationKey) {
         throw new UnsupportedOperationException();
     }
+
 }

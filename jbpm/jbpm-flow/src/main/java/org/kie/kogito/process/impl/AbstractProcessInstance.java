@@ -266,6 +266,28 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     @Override
+    public void trigger(String trigger, String referenceId, Map<String, Object> payload) {
+        if (this.status != KogitoProcessInstance.STATE_PENDING) {
+            throw new IllegalStateException("Impossible to start process instance that already has started");
+        }
+        this.status = KogitoProcessInstance.STATE_ACTIVE;
+
+        getProcessRuntime().getProcessInstanceManager().setLock(((MutableProcessInstances<T>) process.instances()).lock());
+        getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
+        this.id = processInstance.getStringId();
+        addCompletionEventListener();
+        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).create(id, this));
+        KogitoProcessInstance kogitoProcessInstance = getProcessRuntime().getKogitoProcessRuntime().triggerProcessInstance(this.id, trigger, payload, null);
+        if (kogitoProcessInstance.getState() != STATE_ABORTED && kogitoProcessInstance.getState() != STATE_COMPLETED) {
+            addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
+        }
+        unbind(variables, kogitoProcessInstance.getVariables());
+        if (this.processInstance != null) {
+            this.status = this.processInstance.getState();
+        }
+    }
+
+    @Override
     public void start(String trigger, String referenceId, Map<String, List<String>> headers) {
         if (this.status != KogitoProcessInstance.STATE_PENDING) {
             throw new IllegalStateException("Impossible to start process instance that already has started");

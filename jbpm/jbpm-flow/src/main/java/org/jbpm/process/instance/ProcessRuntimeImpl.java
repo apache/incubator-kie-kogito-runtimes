@@ -153,6 +153,11 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
     }
 
     @Override
+    public KogitoProcessInstance startProcess(String processId, String trigger, Map<String, Object> parameters) {
+        return kogitoProcessRuntime.startProcess(processId, parameters, trigger, null);
+    }
+
+    @Override
     public ProcessInstance startProcess(String processId, AgendaFilter agendaFilter) {
         return kogitoProcessRuntime.startProcess(processId, null, null, agendaFilter);
     }
@@ -558,4 +563,5 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
             signalEvent(type, event);
         }
     }
+
 }
