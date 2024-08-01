@@ -52,7 +52,7 @@ public class RestTypeHandler extends WorkItemTypeHandler {
             FunctionDefinition functionDef) {
         String url = null;
         String method = null;
-        // try extracting from operation (format method:url)
+        // try extracting from operation (format method:uri)
         String operation = trimCustomOperation(functionDef);
         int indexOf = operation.indexOf(METHOD_SEPARATOR);
         if (indexOf != -1) {
