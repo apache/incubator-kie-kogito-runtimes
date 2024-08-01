@@ -1375,7 +1375,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
     @Test
     public void testMultipleInOutgoingSequenceFlowsDisable() throws Exception {
         try {
-            createKogitoProcessRuntime("BPMN2-MultipleInOutgoingSequenceFlows.bpmn2");
+            createKogitoProcessRuntime("org/jbpm/bpmn2/flow/BPMN2-MultipleInOutgoingSequenceFlowsDisabled.bpmn2");
             fail("Should fail as multiple outgoing and incoming connections are disabled by default");
         } catch (Exception e) {
             assertThat(e.getMessage()).contains("This type of node [ScriptTask_1, Script Task] cannot have more than one outgoing connection!");

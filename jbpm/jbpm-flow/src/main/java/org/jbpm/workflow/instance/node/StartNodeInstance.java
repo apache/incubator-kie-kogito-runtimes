@@ -59,11 +59,13 @@ public class StartNodeInstance extends NodeInstanceImpl {
         if (triggerTime == null) {
             triggerTime = new Date();
         }
+
         String variableName = (String) getStartNode().getMetaData(TRIGGER_MAPPING_INPUT);
-        if (variableName != null) {
-            Map<String, Object> outputSet = Collections.singletonMap(variableName, event);
-            NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
+        if (variableName == null) {
+            variableName = "event";
         }
+        Map<String, Object> outputSet = Collections.singletonMap(variableName, event);
+        NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
         triggerCompleted();
     }
 
