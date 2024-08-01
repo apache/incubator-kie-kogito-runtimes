@@ -421,7 +421,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
             assertThat(tracked.tracked())
                     .filteredOn(e -> e.getProcessInstance().getId().equals(pi.id()))
-                    .anyMatch(ProcessTestHelper.triggered("StartTimer"))
+                    .anyMatch(ProcessTestHelper.left("StartTimer"))
                     .anyMatch(ProcessTestHelper.triggered("Script 2"))
                     .anyMatch(ProcessTestHelper.triggered("User task"))
                     .anyMatch(ProcessTestHelper.triggered("End"));

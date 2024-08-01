@@ -37,7 +37,7 @@ public class RuleFlowProcessInstance extends WorkflowProcessInstanceImpl {
 
     @Override
     public void internalStart(String trigger, Object payload) {
-        StartNode startNode = getRuleFlowProcess().getStart(trigger, varName -> getVariable(varName));
+        StartNode startNode = getRuleFlowProcess().getStart(trigger, payload);
         if (startNode != null) {
             if (Metadata.EVENT_TYPE_NONE.equals(startNode.getMetaData(Metadata.EVENT_TYPE))) {
                 getNodeInstance(startNode).trigger(null, null);
@@ -52,4 +52,5 @@ public class RuleFlowProcessInstance extends WorkflowProcessInstanceImpl {
         List<Node> autoStartNodes = getRuleFlowProcess().getAutoStartNodes();
         autoStartNodes.forEach(autoStartNode -> signalEvent(autoStartNode.getName(), null));
     }
+
 }

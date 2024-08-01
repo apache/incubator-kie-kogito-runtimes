@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.jbpm.process.core.context.exception.CompensationScope;
@@ -113,55 +111,35 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
         return endNodes;
     }
 
-    public StartNode getStart(String trigger, Function<String, Object> varResolver) {
+    public StartNode getStart(String trigger, Object payload) {
         Node[] nodes = getNodes();
 
         for (int i = 0; i < nodes.length; i++) {
-            if (nodes[i] instanceof StartNode) {
-
-                StartNode start = ((StartNode) nodes[i]);
-
-                // return start node that is not event based node
-                if (trigger == null && ((start.getTriggers() == null
-                        || start.getTriggers().isEmpty())
-                        && start.getTimer() == null)) {
+            if (nodes[i] instanceof StartNode start) {
+                // no events
+                if (trigger == null && ((start.getTriggers() == null || start.getTriggers().isEmpty()) && start.getTimer() == null)) {
                     return start;
-                } else {
-                    if (start.getTriggers() != null) {
-                        for (Trigger t : start.getTriggers()) {
-                            if (t instanceof EventTrigger) {
-                                EventTrigger eventTrigger = (EventTrigger) t;
-                                Map<String, String> mappings = eventTrigger.getInMappings();
-                                Object event = null;
-                                if (varResolver != null) {
-                                    switch (mappings.size()) {
-                                        case 0:
-                                            event = null;
-                                            break;
-                                        case 1:
-                                            event = varResolver.apply(mappings.values().iterator().next());
-                                            break;
-                                        default:
-                                            event = varResolver.apply("event");
-                                            break;
-                                    }
-                                }
+                }
 
-                                for (EventFilter filter : eventTrigger.getEventFilters()) {
-                                    if (filter.acceptsEvent(trigger, event, varResolver)) {
-                                        return start;
-                                    }
+                // there is a timer
+                if (start.getTimer() != null && "timer".equals(trigger)) {
+                    return start;
+                }
+
+                // there is an event trigger
+                if (start.getTriggers() != null) {
+                    for (Trigger t : start.getTriggers()) {
+                        if (t instanceof EventTrigger eventTrigger) {
+                            for (EventFilter filter : eventTrigger.getEventFilters()) {
+                                if (filter.acceptsEvent(trigger, payload, key -> null)) {
+                                    return start;
                                 }
-                            } else if (t instanceof ConstraintTrigger && "conditional".equals(trigger)) {
-                                return start;
                             }
-                        }
-                    } else if (start.getTimer() != null) {
-
-                        if ("timer".equals(trigger)) {
+                        } else if (t instanceof ConstraintTrigger && "conditional".equals(trigger)) {
                             return start;
                         }
                     }
+
                 }
             }
         }

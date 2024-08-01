@@ -271,17 +271,18 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
         this.start(trigger, null);
     }
 
-    public void start(String trigger, Object payload) {
+    @Override
+    public void start(String trigger, Object data) {
         synchronized (this) {
             if (getState() != KogitoProcessInstance.STATE_PENDING) {
                 throw new IllegalArgumentException("A process instance can only be started once");
             }
             setState(KogitoProcessInstance.STATE_ACTIVE);
-            internalStart(trigger, payload);
+            internalStart(trigger, data);
         }
     }
 
-    protected abstract void internalStart(String trigger, Object payload);
+    protected abstract void internalStart(String trigger, Object data);
 
     @Override
     public void disconnect() {

@@ -19,7 +19,6 @@
 package org.jbpm.process.instance;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +34,6 @@ import org.jbpm.process.core.timer.BusinessCalendar;
 import org.jbpm.process.core.timer.DateTimeUtils;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.impl.DataAssociation;
-import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.EventTrigger;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.Trigger;
@@ -65,8 +62,6 @@ import org.kie.kogito.services.jobs.impl.InMemoryJobService;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
-
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING_INPUT;
 
 public class LightProcessRuntime extends AbstractProcessRuntime {
     private ProcessRuntimeContext runtimeContext;
@@ -263,7 +258,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
                                         type = eventTypeFilter.getType();
                                     }
                                 }
-                                StartProcessEventListener listener = new StartProcessEventListener(startNode, trigger, process.getId(), filters);
+                                StartProcessEventListener listener = new StartProcessEventListener(process.getId(), filters);
                                 signalManager.addEventListener(type, listener);
                                 ruleFlowProcess.getRuntimeMetaData().put("StartProcessEventType", type);
                                 ruleFlowProcess.getRuntimeMetaData().put("StartProcessEventListener", listener);
@@ -278,12 +273,8 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
     private class StartProcessEventListener implements EventListener {
         private String processId;
         private List<EventFilter> eventFilters;
-        private Trigger trigger;
-        private StartNode startNode;
 
-        public StartProcessEventListener(StartNode startNode, Trigger trigger, String processId, List<EventFilter> eventFilters) {
-            this.startNode = startNode;
-            this.trigger = trigger;
+        public StartProcessEventListener(String processId, List<EventFilter> eventFilters) {
             this.processId = processId;
             this.eventFilters = eventFilters;
         }
@@ -300,31 +291,11 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
                     return;
                 }
             }
-            Map<String, Object> outputSet = new HashMap<>();
-            for (Map.Entry<String, String> entry : trigger.getInMappings().entrySet()) {
-                outputSet.put(entry.getKey(), entry.getKey());
-            }
-            // data association needs to be corrected as it is not input mapping but output mapping
-            boolean eventFound = false;
-            for (DataAssociation dataAssociation : trigger.getInAssociations()) {
-                if ("event".equals(dataAssociation.getSources().get(0).getLabel())) {
-                    eventFound = true;
-                }
-            }
-
-            if (!eventFound && !trigger.getInAssociations().isEmpty()) {
-                String inputLabel = (String) startNode.getMetaData(TRIGGER_MAPPING_INPUT);
-                outputSet.put(inputLabel, event);
-            } else {
-                outputSet.put("event", event);
-            }
-
-            Map<String, Object> parameters = NodeIoHelper.processOutputs(trigger.getInAssociations(), key -> outputSet.get(key));
 
             UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                 org.kie.kogito.process.Process<? extends Model> process = getApplication().get(Processes.class).processById(processId);
                 org.kie.kogito.process.ProcessInstance<?> pi = process.createInstance(process.createModel());
-                pi.trigger(type, type, parameters);
+                pi.trigger(type, type, event);
                 return null;
             });
 

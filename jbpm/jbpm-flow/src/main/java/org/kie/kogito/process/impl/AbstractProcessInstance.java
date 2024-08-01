@@ -266,7 +266,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     @Override
-    public void trigger(String trigger, String referenceId, Map<String, Object> payload) {
+    public void trigger(String trigger, String referenceId, Object payload) {
         if (this.status != KogitoProcessInstance.STATE_PENDING) {
             throw new IllegalStateException("Impossible to start process instance that already has started");
         }
