@@ -96,7 +96,7 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
             M payload = eventMarshaller.marshall(event.getData());
             return metadata.isPresent() ? Message.of(payload, Metadata.of(metadata.orElseThrow())) : Message.of(payload);
         } else {
-            throw new IllegalStateException("Not marshaller has been set for emitter " + this);
+            throw new IllegalStateException("No marshaller has been set for emitter " + this);
         }
     }
 
