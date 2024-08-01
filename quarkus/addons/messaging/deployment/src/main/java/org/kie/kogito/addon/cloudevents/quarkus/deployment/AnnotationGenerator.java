@@ -36,7 +36,7 @@ public class AnnotationGenerator implements ClassGenerator {
         template = TemplatedGenerator.builder()
                 .withTargetTypeName(className)
                 .build(context, TEMPLATE_NAME);
-        generator = template.compilationUnitOrThrow("Cannot generate " + TEMPLATE_NAME);
+        generator = template.compilationUnitOrThrow("Cannot generate template" + TEMPLATE_NAME);
         AnnotationDeclaration clazz = generator.findFirst(AnnotationDeclaration.class).orElseThrow(() -> new InvalidTemplateException(template, "Cannot find class declaration"));
         clazz.setName(className);
     }
