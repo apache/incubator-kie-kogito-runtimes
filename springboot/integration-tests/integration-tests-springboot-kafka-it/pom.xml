@@ -28,7 +28,7 @@
     <version>999-SNAPSHOT</version>
   </parent>
 
-  <artifactId>integration-tests-springboot-kakfa-it</artifactId>
+  <artifactId>integration-tests-springboot-kafka-it</artifactId>
 
   <properties>
     <java.module.name>integration.tests.springboot.kakfa.it</java.module.name>
@@ -136,6 +136,13 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
