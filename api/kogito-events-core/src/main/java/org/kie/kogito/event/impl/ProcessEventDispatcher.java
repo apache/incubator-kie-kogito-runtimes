@@ -151,9 +151,14 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
     private ProcessInstance<M> startNewInstance(String trigger, DataEvent<D> event) {
         return modelConverter.map(m -> {
             LOGGER.info("Starting new process instance with signal '{}'", trigger);
-            return processService.createProcessInstance(process, event.getKogitoBusinessKey(), m.apply(dataResolver.apply(event)),
-                    headersFromEvent(event), event.getKogitoStartFromNode(), trigger,
-                    event.getKogitoProcessInstanceId(), compositeCorrelation(event).orElse(null));
+            return processService.createProcessInstanceBySignal(
+                    process,
+                    event.getKogitoBusinessKey(),
+                    m.apply(dataResolver.apply(event)),
+                    headersFromEvent(event),
+                    trigger,
+                    event.getKogitoProcessInstanceId(),
+                    compositeCorrelation(event).orElse(null));
         }).orElseGet(() -> {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info("No matches found for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
