@@ -191,12 +191,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
         return eventType != null && !Objects.equals(trigger, eventType);
     }
 
-    private boolean isSourceNotMatched(String trigger, DataEvent<?> event) {
-        String source = event.getSource() == null ? null : event.getSource().toString();
-        return source != null && !Objects.equals(event.getClass().getSimpleName(), source) && !Objects.equals(trigger, source);
-    }
-
     private boolean shouldSkipMessage(String trigger, DataEvent<?> event) {
-        return isEventTypeNotMatched(trigger, event) && isSourceNotMatched(trigger, event);
+        return isEventTypeNotMatched(trigger, event);
     }
 }

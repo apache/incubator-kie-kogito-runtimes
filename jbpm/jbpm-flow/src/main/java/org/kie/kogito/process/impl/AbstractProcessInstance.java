@@ -72,8 +72,12 @@ import org.kie.kogito.process.flexible.Milestone;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
 import org.kie.kogito.services.uow.ProcessInstanceWorkUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractProcessInstance<T extends Model> implements ProcessInstance<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractProcessInstance.class);
 
     private static final String KOGITO_PROCESS_INSTANCE = "KogitoProcessInstance";
 
@@ -342,6 +346,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         if (signal.referenceId() != null) {
             processInstance().setReferenceId(signal.referenceId());
         }
+        logger.info("Send signal to {} with trigger {} and payload {}", id(), signal.channel(), signal.payload());
         processInstance().signalEvent(signal.channel(), signal.payload());
         removeOnFinish();
     }
