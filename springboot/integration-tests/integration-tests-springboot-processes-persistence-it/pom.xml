@@ -157,19 +157,6 @@
             </execution>
           </executions>
         </plugin>
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <configuration>
-            <filesets>
-              <fileset>
-                <directory>${project.basedir}/src/main/</directory>
-                <includes>
-                  <include>**/*.bpmn</include>
-                </includes>
-              </fileset>
-            </filesets>
-          </configuration>
-        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>

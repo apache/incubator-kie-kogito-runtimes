@@ -114,6 +114,20 @@
     <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${project.basedir}/src/main/resources</directory>
+              <includes>
+                <include>**/*.bpmn</include>
+                <include>**/*.wid</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>${version.resources.plugin}</version>
         <executions>
@@ -123,10 +137,10 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>src/main/resources</outputDirectory>
+              <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
               <resources>
                 <resource>
-                  <directory>${project.basedir}/src/it/integration-tests-springboot-processes-persistence-it/integration-tests-springboot-processes-persistence-common/src/main/resources</directory>
+                  <directory>${project.parent.basedir}/integration-tests-springboot-processes-persistence-common/src/main/resources</directory>
                   <includes>
                     <include>**/*.bpmn</include>
                     <include>**/*.wid</include>
