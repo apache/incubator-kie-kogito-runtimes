@@ -63,9 +63,13 @@ import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.ProcessVersionResolver;
 import org.kie.kogito.process.Signal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractProcess<T extends Model> implements Process<T>, ProcessSupplier {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcess.class);
 
     protected final ProcessRuntimeServiceProvider services;
     protected ProcessInstancesFactory processInstancesFactory;
@@ -170,6 +174,10 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
 
     @Override
     public <S> void send(Signal<S> signal) {
+        instances().stream().forEach(pi -> {
+            LOGGER.debug("Signaling process instance {} with signal {}", pi.id(), signal);
+            pi.send(signal);
+        });
         getProcessRuntime().signalEvent(signal.channel(), signal.payload());
     }
 
