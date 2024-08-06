@@ -346,7 +346,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         if (signal.referenceId() != null) {
             processInstance().setReferenceId(signal.referenceId());
         }
-        logger.info("Send signal to {} with trigger {} and payload {}", id(), signal.channel(), signal.payload());
+        logger.debug("Send signal to {} with trigger {} and payload {}", id(), signal.channel(), signal.payload());
         processInstance().signalEvent(signal.channel(), signal.payload());
         removeOnFinish();
     }

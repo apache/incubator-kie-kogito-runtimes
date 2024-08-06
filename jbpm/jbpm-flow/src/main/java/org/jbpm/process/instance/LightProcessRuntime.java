@@ -62,8 +62,12 @@ import org.kie.kogito.services.jobs.impl.InMemoryJobService;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LightProcessRuntime extends AbstractProcessRuntime {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LightProcessRuntime.class);
+
     private ProcessRuntimeContext runtimeContext;
     private final InternalKnowledgeRuntime knowledgeRuntime;
 
@@ -381,10 +385,12 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
 
     @Override
     public void signalEvent(String type, Object event) {
+        LOGGER.info("container signaling with {} and {}", type, event);
         signalManager.signalEvent(type, event);
     }
 
     public void signalEvent(String type, Object event, String processInstanceId) {
+        LOGGER.info("process instance {} signaling with {} and {}", processInstanceId, type, event);
         signalManager.signalEvent(processInstanceId, type, event);
     }
 

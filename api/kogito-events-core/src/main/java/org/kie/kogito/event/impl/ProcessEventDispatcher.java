@@ -39,7 +39,9 @@ import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventDispatcher;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstanceNotFoundException;
 import org.kie.kogito.process.ProcessService;
+import org.kie.kogito.process.Signal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,38 +70,76 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
     @Override
     public CompletableFuture<ProcessInstance<M>> dispatch(String trigger, DataEvent<D> event) {
         if (shouldSkipMessage(trigger, event)) {
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Ignoring message for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Ignoring message for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
             }
             return CompletableFuture.completedFuture(null);
         }
+        class EventDispatcherSignal implements Signal<D> {
+            private String trigger;
+            private DataEvent<D> event;
+
+            public EventDispatcherSignal(String trigger, DataEvent<D> event) {
+                this.trigger = trigger;
+                this.event = event;
+            }
+
+            @Override
+            public String channel() {
+                return trigger;
+            }
+
+            @Override
+            public D payload() {
+                return dataResolver.apply(event);
+            }
+
+            @Override
+            public String referenceId() {
+                return event.getKogitoReferenceId();
+            }
+
+            @Override
+            public String toString() {
+                return "Signal trigger={" + trigger + "} payload={" + payload() + "}";
+            }
+        }
+        LOGGER.debug("dispatch trigger {} and event {}", trigger, event);
         return resolveCorrelationId(event)
-                .map(kogitoReferenceId -> asCompletable(trigger, event, findById(kogitoReferenceId)))
+                .map(kogitoReferenceId -> asTargetedProcessInstanceCompletable(trigger, event))
                 .orElseGet(() -> {
-                    // check processInstanceId
-                    String processInstanceId = event.getKogitoReferenceId();
-                    if (processInstanceId != null) {
-                        return asCompletable(trigger, event, findById(processInstanceId));
-                    }
-                    // check businessKey
-                    String businessKey = event.getKogitoBusinessKey();
-                    if (businessKey != null) {
-                        return asCompletable(trigger, event, findByBusinessKey(businessKey));
-                    }
                     // try to start a new instance if possible
-                    return CompletableFuture.supplyAsync(() -> startNewInstance(trigger, event), executor);
+                    return CompletableFuture.supplyAsync(() -> {
+                        // we send the signal/message to all the active instances
+                        process.send(new EventDispatcherSignal(trigger, event));
+                        process.send(new EventDispatcherSignal("Message-" + trigger, event));
+                        return null;
+                    }, executor);
                 });
     }
 
-    private CompletableFuture<ProcessInstance<M>> asCompletable(String trigger, DataEvent<D> event, Optional<ProcessInstance<M>> processInstance) {
+    private CompletableFuture<ProcessInstance<M>> asTargetedProcessInstanceCompletable(String trigger, DataEvent<D> event) {
+        // check processInstanceId
+        String processInstanceId = event.getKogitoReferenceId();
+        if (processInstanceId != null) {
+            return asCompletable(trigger, event, findById(processInstanceId));
+        }
+        // check businessKey
+        String businessKey = event.getKogitoBusinessKey();
+        if (businessKey != null) {
+            return asCompletable(trigger, event, findByBusinessKey(businessKey));
+        }
+        throw new ProcessInstanceNotFoundException(processInstanceId);
+    }
 
+    private CompletableFuture<ProcessInstance<M>> asCompletable(String trigger, DataEvent<D> event, Optional<ProcessInstance<M>> processInstance) {
         return CompletableFuture.supplyAsync(() -> processInstance.map(pi -> {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Sending signal {} to process instance id '{}'", trigger, pi.id());
             }
             signalProcessInstance(trigger, pi.id(), event);
             return pi;
-        }).orElseGet(() -> startNewInstance(trigger, event)), executor);
+        }).orElseThrow());
     }
 
     private Optional<ProcessInstance<M>> findById(String id) {
@@ -145,7 +185,9 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
     }
 
     private Optional<M> signalProcessInstance(String trigger, String id, DataEvent<D> event) {
-        return processService.signalProcessInstance((Process) process, id, dataResolver.apply(event), "Message-" + trigger);
+        D data = dataResolver.apply(event);
+        LOGGER.info("signalProcessInstance '{}' with data {} and resolver {}", trigger, event, data);
+        return processService.signalProcessInstance((Process) process, id, data, "Message-" + trigger);
     }
 
     private ProcessInstance<M> startNewInstance(String trigger, DataEvent<D> event) {
@@ -187,7 +229,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
     }
 
     private boolean isEventTypeNotMatched(String trigger, DataEvent<?> event) {
-        final String eventType = event.getType();
+        String eventType = event.getType();
         return eventType != null && !Objects.equals(trigger, eventType);
     }
 
