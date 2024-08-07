@@ -106,7 +106,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
         }
         LOGGER.debug("dispatch trigger {} and event {}", trigger, event);
         return resolveCorrelationId(event)
-                .map(kogitoReferenceId -> asTargetedProcessInstanceCompletable(trigger, event))
+                .map(kogitoReferenceId -> asTargetedProcessInstanceCompletable(kogitoReferenceId, trigger, event))
                 .orElseGet(() -> {
                     // try to start a new instance if possible
                     return CompletableFuture.supplyAsync(() -> {
@@ -118,7 +118,10 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
                 });
     }
 
-    private CompletableFuture<ProcessInstance<M>> asTargetedProcessInstanceCompletable(String trigger, DataEvent<D> event) {
+    private CompletableFuture<ProcessInstance<M>> asTargetedProcessInstanceCompletable(String correlationId, String trigger, DataEvent<D> event) {
+        if (correlationId != null) {
+            return asCompletable(trigger, event, findById(correlationId));
+        }
         // check processInstanceId
         String processInstanceId = event.getKogitoReferenceId();
         if (processInstanceId != null) {
