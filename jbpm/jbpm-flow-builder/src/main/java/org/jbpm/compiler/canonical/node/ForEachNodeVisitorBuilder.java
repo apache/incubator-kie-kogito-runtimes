@@ -32,7 +32,7 @@ public class ForEachNodeVisitorBuilder implements NodeVisitorBuilder {
 
     @Override
     public AbstractNodeVisitor<? extends Node> visitor(NodeVisitorBuilderService nodeVisitorService, ClassLoader classLoader) {
-        return new ForEachNodeVisitor(nodeVisitorService);
+        return new ForEachNodeVisitor(classLoader);
     }
 
 }

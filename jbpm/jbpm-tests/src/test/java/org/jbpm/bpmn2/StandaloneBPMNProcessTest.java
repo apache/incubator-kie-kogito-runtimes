@@ -205,34 +205,12 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testExclusiveSplitDefault() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ExclusiveSplitDefault.bpmn2");
-
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email", new SystemOutWorkItemHandler());
-        Map<String, Object> params = new HashMap<>();
-        params.put("x", "NotFirst");
-        params.put("y", "Second");
-        KogitoProcessInstance processInstance = kruntime.startProcess("ExclusiveSplitDefault", params);
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
-    }
-
-    @Test
     public void testInclusiveSplit() throws Exception {
         kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/flow/BPMN2-InclusiveSplit.bpmn2");
 
         Map<String, Object> params = new HashMap<>();
         params.put("x", 15);
         KogitoProcessInstance processInstance = kruntime.startProcess("InclusiveSplit", params);
-        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
-    }
-
-    @Test
-    public void testInclusiveSplitDefault() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-InclusiveSplitDefault.bpmn2");
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("x", -5);
-        KogitoProcessInstance processInstance = kruntime.startProcess("InclusiveSplitDefault", params);
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
@@ -528,7 +506,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
 
         // adhoc we need to trigger the human task
         instance.triggerNode("_2-1");
-        ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
+        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john");
 
         assertThat(instance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
@@ -547,7 +525,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
 
         // adhoc we need to trigger the human task
         instance.triggerNode("_2-1");
-        ProcessTestHelper.completeWorkItem(instance, "john", Collections.singletonMap("testHT", 0));
+        ProcessTestHelper.completeWorkItem(instance, Collections.singletonMap("testHT", 0), "john");
 
         assertThat(instance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
@@ -566,7 +544,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
 
         // adhoc we need to trigger the human task
         instance.triggerNode("_560E157E-3173-4CFD-9CC6-26676D8B0A02");
-        ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
+        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john");
 
         assertThat(instance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
