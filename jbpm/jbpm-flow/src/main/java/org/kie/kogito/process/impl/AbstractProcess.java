@@ -184,7 +184,6 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
             getProcessRuntime().signalEvent(signal.channel(), signal.payload());
             instances.stream().forEach(pi -> {
                 pi.removeOnFinish();
-                ((MutableProcessInstances<T>) instances()).update(pi.id(), pi);
             });
             return null;
         });
