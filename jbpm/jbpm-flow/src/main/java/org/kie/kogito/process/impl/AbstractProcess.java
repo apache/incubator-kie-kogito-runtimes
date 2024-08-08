@@ -59,10 +59,12 @@ import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.ProcessVersionResolver;
 import org.kie.kogito.process.Signal;
+import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,11 +176,19 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
 
     @Override
     public <S> void send(Signal<S> signal) {
-        instances().stream().forEach(pi -> {
-            LOGGER.debug("Signaling process instance {} with signal {}", pi.id(), signal);
-            pi.send(signal);
+        UnitOfWorkExecutor.<Void> executeInUnitOfWork(services.getUnitOfWorkManager(), () -> {
+            // this allows to register the external listeners (we don't have event table yet)
+            List<AbstractProcessInstance> instances = instances().stream(ProcessInstanceReadMode.MUTABLE).map(AbstractProcessInstance.class::cast).toList();
+            instances.stream().forEach(AbstractProcessInstance::reconnect);
+
+            getProcessRuntime().signalEvent(signal.channel(), signal.payload());
+            instances.stream().forEach(pi -> {
+                pi.removeOnFinish();
+                ((MutableProcessInstances<T>) instances()).update(pi.id(), pi);
+            });
+            return null;
         });
-        getProcessRuntime().signalEvent(signal.channel(), signal.payload());
+
     }
 
     public Process<T> configure() {

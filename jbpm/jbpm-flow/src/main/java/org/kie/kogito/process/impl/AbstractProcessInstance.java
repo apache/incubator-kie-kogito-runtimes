@@ -158,7 +158,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.removed = new AtomicBoolean(false);
     }
 
-    protected void reconnect() {
+    public void reconnect() {
         //set correlation
         if (correlationInstance.isEmpty()) {
             correlationInstance = process().correlations().findByCorrelatedId(id());
@@ -606,7 +606,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         return processInstance.adHocFragments();
     }
 
-    protected void removeOnFinish() {
+    public void removeOnFinish() {
         if (processInstance.getState() != KogitoProcessInstance.STATE_ACTIVE && processInstance.getState() != KogitoProcessInstance.STATE_ERROR) {
             removeCompletionListener();
             syncProcessInstance(processInstance);
