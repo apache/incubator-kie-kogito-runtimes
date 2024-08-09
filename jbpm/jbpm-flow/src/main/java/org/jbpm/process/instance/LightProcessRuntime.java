@@ -385,12 +385,12 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
 
     @Override
     public void signalEvent(String type, Object event) {
-        LOGGER.info("container signaling with {} and {}", type, event);
+        LOGGER.debug("container signaling with {} and {}", type, event);
         signalManager.signalEvent(type, event);
     }
 
     public void signalEvent(String type, Object event, String processInstanceId) {
-        LOGGER.info("process instance {} signaling with {} and {}", processInstanceId, type, event);
+        LOGGER.debug("process instance {} signaling with {} and {}", processInstanceId, type, event);
         signalManager.signalEvent(processInstanceId, type, event);
     }
 
