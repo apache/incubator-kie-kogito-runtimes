@@ -60,7 +60,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
 
     @Override
     public void signalEvent(String type, Object event, Function<String, Object> varResolver) {
-        logger.info("event node triggered {} with event {}", type, event);
+        logger.debug("event node triggered {} with event {}", type, event);
         if (TIMER_TRIGGERED_EVENT.equals(type)) {
             TimerInstance timerInstance = (TimerInstance) event;
             if (timerInstance.getId().equals(slaTimerId)) {

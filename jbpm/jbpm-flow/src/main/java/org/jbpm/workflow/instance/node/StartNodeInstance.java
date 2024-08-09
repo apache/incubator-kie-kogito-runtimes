@@ -70,14 +70,10 @@ public class StartNodeInstance extends NodeInstanceImpl {
             triggerTime = new Date();
         }
         Map<String, Object> outputSet = Collections.singletonMap(variableName, payload);
-        logger.info("Start Node Instance signaled with {} and payload {} -> output set {}", type, payload, outputSet);
+        logger.debug("Start Node Instance signaled with {} and payload {} -> output set {}", type, payload, outputSet);
         this.getStartNode().getOutAssociations().forEach(System.out::println);
         NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
 
-        VariableScopeInstance vsi = (VariableScopeInstance) this.getProcessInstance().getContextInstance(VariableScope.VARIABLE_SCOPE);
-        for (Map.Entry<String, Object> entry : vsi.getVariables().entrySet()) {
-            logger.info("variable {} with data {}", entry.getKey(), entry.getValue());
-        }
         triggerCompleted();
     }
 
