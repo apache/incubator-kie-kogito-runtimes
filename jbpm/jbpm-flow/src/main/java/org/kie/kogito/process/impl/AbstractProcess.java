@@ -179,7 +179,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         UnitOfWorkExecutor.<Void> executeInUnitOfWork(services.getUnitOfWorkManager(), () -> {
             // this allows to register the external listeners (we don't have event table yet)
             List<AbstractProcessInstance> instances = instances().stream(ProcessInstanceReadMode.MUTABLE).map(AbstractProcessInstance.class::cast).toList();
-            //            instances.stream().forEach(AbstractProcessInstance::reconnect);
+            instances.stream().forEach(AbstractProcessInstance::reconnect);
 
             getProcessRuntime().signalEvent(signal.channel(), signal.payload());
             instances.stream().forEach(pi -> {
