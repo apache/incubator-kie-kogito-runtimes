@@ -182,12 +182,9 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
             instances.stream().forEach(AbstractProcessInstance::reconnect);
 
             getProcessRuntime().signalEvent(signal.channel(), signal.payload());
-            instances.stream().forEach(pi -> {
-                pi.removeOnFinish();
-            });
+            instances.stream().forEach(AbstractProcessInstance::removeOnFinish);
             return null;
         });
-
     }
 
     public Process<T> configure() {

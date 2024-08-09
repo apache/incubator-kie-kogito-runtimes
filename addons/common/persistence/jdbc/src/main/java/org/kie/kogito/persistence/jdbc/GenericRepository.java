@@ -170,10 +170,11 @@ public class GenericRepository extends Repository {
             if (processVersion != null) {
                 statement.setString(2, processVersion);
             }
-            ResultSet resultSet = statement.executeQuery();
             List<Record> record = new ArrayList<>();
-            while (resultSet.next()) {
-                record.add(from(resultSet));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    record.add(from(resultSet));
+                }
             }
 
             return StreamSupport.stream(new Spliterators.AbstractSpliterator<Record>(Long.MAX_VALUE, Spliterator.ORDERED) {

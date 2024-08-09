@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.StartNode;
@@ -67,10 +69,15 @@ public class StartNodeInstance extends NodeInstanceImpl {
         if (triggerTime == null) {
             triggerTime = new Date();
         }
-
-        logger.info("Start Node Instance signaled with {} and payload {}", type, payload);
         Map<String, Object> outputSet = Collections.singletonMap(variableName, payload);
+        logger.info("Start Node Instance signaled with {} and payload {} -> output set {}", type, payload, outputSet);
+        this.getStartNode().getOutAssociations().forEach(System.out::println);
         NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
+
+        VariableScopeInstance vsi = (VariableScopeInstance) this.getProcessInstance().getContextInstance(VariableScope.VARIABLE_SCOPE);
+        for (Map.Entry<String, Object> entry : vsi.getVariables().entrySet()) {
+            logger.info("variable {} with data {}", entry.getKey(), entry.getValue());
+        }
         triggerCompleted();
     }
 
