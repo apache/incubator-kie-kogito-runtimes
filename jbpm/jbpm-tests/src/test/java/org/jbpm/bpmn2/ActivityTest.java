@@ -89,6 +89,10 @@ import org.jbpm.bpmn2.subprocess.CallActivityWithBoundaryEventModel;
 import org.jbpm.bpmn2.subprocess.CallActivityWithBoundaryEventProcess;
 import org.jbpm.bpmn2.subprocess.CallActivityWithIOexpressionModel;
 import org.jbpm.bpmn2.subprocess.CallActivityWithIOexpressionProcess;
+import org.jbpm.bpmn2.subprocess.ErrorsBetweenProcessModel;
+import org.jbpm.bpmn2.subprocess.ErrorsBetweenProcessProcess;
+import org.jbpm.bpmn2.subprocess.ErrorsBetweenSubProcessModel;
+import org.jbpm.bpmn2.subprocess.ErrorsBetweenSubProcessProcess;
 import org.jbpm.bpmn2.subprocess.InputMappingUsingValueModel;
 import org.jbpm.bpmn2.subprocess.InputMappingUsingValueProcess;
 import org.jbpm.bpmn2.subprocess.MainGroupAssignmentModel;
@@ -1454,21 +1458,23 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 
     }
 
+    //This test fails
     @Test
-    public void testErrorBetweenProcessesProcess() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/subprocess/BPMN2-ErrorsBetweenProcess.bpmn2",
-                "org/jbpm/bpmn2/subprocess/BPMN2-ErrorsBetweenSubProcess.bpmn2");
-
-        Map<String, Object> variables = new HashMap<>();
-
-        variables.put("tipoEvento", "error");
-        variables.put("pasoVariable", 3);
-        KogitoProcessInstance processInstance = kruntime.startProcess("ErrorsBetweenProcess", variables);
-
-        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
-        assertProcessInstanceAborted(processInstance.getStringId() + 1, kruntime);
-
-        assertProcessVarValue(processInstance, "event", "error desde Subproceso");
+    public void testErrorBetweenProcessesProcess() {
+        Application app = ProcessTestHelper.newApplication();
+        org.kie.kogito.process.Process<ErrorsBetweenSubProcessModel> errorsBetweenSubProcessProcess = ErrorsBetweenSubProcessProcess.newProcess(app);
+        ProcessInstance<ErrorsBetweenSubProcessModel> subProcessInstance = errorsBetweenSubProcessProcess
+                .createInstance(errorsBetweenSubProcessProcess.createModel());
+        org.kie.kogito.process.Process<ErrorsBetweenProcessModel> process = ErrorsBetweenProcessProcess.newProcess(app);
+        ErrorsBetweenProcessModel model = process.createModel();
+        model.setTipoEvento("error");
+        model.setPasoVariable(3);
+        ProcessInstance<ErrorsBetweenProcessModel> processInstance = process.createInstance(model);
+        processInstance.start();
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        //expected state of sub process should be aborted. But we are getting state pending
+        assertThat(subProcessInstance.status()).isEqualTo(ProcessInstance.STATE_ABORTED);
+        Assertions.assertEquals("error desde Subproceso", processInstance.variables().getEvent());
     }
 
     @Test
