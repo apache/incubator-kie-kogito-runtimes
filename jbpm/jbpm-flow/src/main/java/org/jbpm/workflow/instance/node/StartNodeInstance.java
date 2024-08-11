@@ -22,8 +22,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.StartNode;
