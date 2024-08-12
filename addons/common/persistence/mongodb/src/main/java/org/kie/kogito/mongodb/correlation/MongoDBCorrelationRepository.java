@@ -70,7 +70,7 @@ public class MongoDBCorrelationRepository {
             InsertOneResult insertOneResult = this.collection.insertOne(Document.parse(json));
             return insertOneResult.getInsertedId() != null ? correlationInstance : null;
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
