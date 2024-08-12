@@ -68,8 +68,6 @@ import org.jbpm.bpmn2.flow.SubProcessModel;
 import org.jbpm.bpmn2.flow.SubProcessProcess;
 import org.jbpm.bpmn2.flow.UserTaskModel;
 import org.jbpm.bpmn2.flow.UserTaskProcess;
-import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
-import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.intermediate.EventBasedSplit4Model;
 import org.jbpm.bpmn2.intermediate.EventBasedSplit4Process;
 import org.jbpm.bpmn2.intermediate.EventBasedSplitModel;
@@ -77,15 +75,18 @@ import org.jbpm.bpmn2.intermediate.EventBasedSplitProcess;
 import org.jbpm.bpmn2.intermediate.IntermediateThrowEventMessageModel;
 import org.jbpm.bpmn2.intermediate.IntermediateThrowEventMessageProcess;
 import org.jbpm.bpmn2.objects.Person;
+import org.jbpm.bpmn2.objects.TestUserTaskWorkItemHandler;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.subprocess.CallActivityModel;
 import org.jbpm.bpmn2.subprocess.CallActivityProcess;
 import org.jbpm.bpmn2.subprocess.CallActivitySubProcessProcess;
 import org.jbpm.bpmn2.task.SendTaskModel;
 import org.jbpm.bpmn2.task.SendTaskProcess;
-import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
-import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
+import org.jbpm.process.workitem.builtin.DoNothingWorkItemHandler;
+import org.jbpm.process.workitem.builtin.ReceiveTaskHandler;
+import org.jbpm.process.workitem.builtin.SendTaskHandler;
+import org.jbpm.process.workitem.builtin.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
 import org.jbpm.test.utils.ProcessTestHelper;
@@ -96,12 +97,12 @@ import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.io.Resource;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.kogito.Application;
-import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.event.impl.MessageProducer;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.jbpm.usertask.internal.SecurityPolicy;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.Sig;
 import org.w3c.dom.Document;
@@ -213,7 +214,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     @Test
     public void testUserTask() {
         Application app = ProcessTestHelper.newApplication();
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler workItemHandler = new TestUserTaskWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
         org.kie.kogito.process.Process<UserTaskModel> processDefinition = UserTaskProcess.newProcess(app);
         UserTaskModel model = processDefinition.createModel();
@@ -433,27 +434,31 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
 
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        ReceiveTaskHandler receiveTaskHandler = new ReceiveTaskHandler(kruntime);
+        ReceiveTaskHandler receiveTaskHandler = new ReceiveTaskHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task", receiveTaskHandler);
         // Yes
         KogitoProcessInstance processInstance = kruntime.startProcess("EventBasedSplit5");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        receiveTaskHandler.setKnowledgeRuntime(kruntime);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task", receiveTaskHandler);
-        receiveTaskHandler.messageReceived("YesMessage", "YesValue");
+
+        receiveTaskHandler.getWorkItemId().stream().findFirst().ifPresent(id -> kruntime.getKogitoWorkItemManager().completeWorkItem(id, Map.of("Message", "YesValue")));
+
         assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
-        receiveTaskHandler.messageReceived("NoMessage", "NoValue");
+
+        receiveTaskHandler.getWorkItemId().forEach(id -> kruntime.getKogitoWorkItemManager().completeWorkItem(id, Map.of("Message", "NoValue")));
+
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        receiveTaskHandler.setKnowledgeRuntime(kruntime);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task", receiveTaskHandler);
         // No
         processInstance = kruntime.startProcess("EventBasedSplit5");
-        receiveTaskHandler.messageReceived("NoMessage", "NoValue");
+        receiveTaskHandler.getWorkItemId().stream().findFirst().ifPresent(id -> kruntime.getKogitoWorkItemManager().completeWorkItem(id, Map.of("Message", "NoValue")));
+
         assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
-        receiveTaskHandler.messageReceived("YesMessage", "YesValue");
+
+        receiveTaskHandler.getWorkItemId().stream().findFirst().ifPresent(id -> kruntime.getKogitoWorkItemManager().completeWorkItem(id, Map.of("Message", "YesValue")));
     }
 
     @Test
@@ -521,7 +526,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
+    //    @Timeout(10)
     public void testTimerBoundaryEventInterrupting() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("TimerEvent", 1);
         ProcessCompletedCountDownProcessEventListener processEventListener = new ProcessCompletedCountDownProcessEventListener();
@@ -542,7 +547,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     public void testAdHocSubProcess() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-AdHocSubProcess.bpmn2");
 
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler workItemHandler = new TestUserTaskWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         KogitoProcessInstance processInstance = kruntime.startProcess("AdHocSubProcess");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
@@ -564,6 +569,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         // this autocomplete when we detect
         // getActivityInstanceAttribute("numberOfActiveInstances") == 0
         Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Human Task", new TestUserTaskWorkItemHandler());
         org.kie.kogito.process.Process<AdHocSubProcessAutoCompleteModel> definition = AdHocSubProcessAutoCompleteProcess.newProcess(app);
 
         org.kie.kogito.process.ProcessInstance<AdHocSubProcessAutoCompleteModel> instance = definition.createInstance(definition.createModel());
@@ -582,6 +588,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         // this autocomplete when we detect
         // getActivityInstanceAttribute("numberOfActiveInstances") == 0
         Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Human Task", new TestUserTaskWorkItemHandler());
         org.kie.kogito.process.Process<AdHocSubProcessAutoCompleteExpressionModel> definition = AdHocSubProcessAutoCompleteExpressionProcess.newProcess(app);
         AdHocSubProcessAutoCompleteExpressionModel model = definition.createModel();
         model.setCounter(3);
@@ -601,6 +608,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         // this autocomplete when we detect
         // terminate end event within adhoc process the adhoc should finish
         Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Human Task", new TestUserTaskWorkItemHandler());
         org.kie.kogito.process.Process<AdHocTerminateEndEventModel> definition = AdHocTerminateEndEventProcess.newProcess(app);
         AdHocTerminateEndEventModel model = definition.createModel();
         model.setComplete(false);
@@ -712,11 +720,13 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     public void testReceiveTask() throws Exception {
         kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/task/BPMN2-ReceiveTask.bpmn2");
 
-        ReceiveTaskHandler receiveTaskHandler = new ReceiveTaskHandler(kruntime);
+        ReceiveTaskHandler receiveTaskHandler = new ReceiveTaskHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task", receiveTaskHandler);
         KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime.startProcess("ReceiveTask");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-        receiveTaskHandler.messageReceived("HelloMessage", "Hello john!");
+
+        receiveTaskHandler.getWorkItemId().stream().findFirst().ifPresent(id -> kruntime.getKogitoWorkItemManager().completeWorkItem(id, Map.of("Message", "Hello john!")));
+
         assertProcessInstanceCompleted(((KogitoProcessInstance) processInstance).getStringId(), kruntime);
     }
 

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -39,8 +40,6 @@ import org.jbpm.bpmn2.event.BoundaryTimerCycleISOModel;
 import org.jbpm.bpmn2.event.BoundaryTimerCycleISOProcess;
 import org.jbpm.bpmn2.event.BoundaryTimerCycleISOVariableModel;
 import org.jbpm.bpmn2.event.BoundaryTimerCycleISOVariableProcess;
-import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
-import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.intermediate.EventSubprocessErrorSignalEmbeddedModel;
 import org.jbpm.bpmn2.intermediate.EventSubprocessErrorSignalEmbeddedProcess;
 import org.jbpm.bpmn2.intermediate.IntermediateCatchEventMessageWithTransformationModel;
@@ -77,6 +76,7 @@ import org.jbpm.bpmn2.loop.MultiInstanceLoopCharacteristicsTaskSequentialProcess
 import org.jbpm.bpmn2.loop.MultiInstanceLoopCharacteristicsTaskWithOutputCmpCondSequentialModel;
 import org.jbpm.bpmn2.loop.MultiInstanceLoopCharacteristicsTaskWithOutputCmpCondSequentialProcess;
 import org.jbpm.bpmn2.objects.Person;
+import org.jbpm.bpmn2.objects.TestUserTaskWorkItemHandler;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.start.IntermediateThrowEventSignalModel;
 import org.jbpm.bpmn2.start.IntermediateThrowEventSignalProcess;
@@ -89,8 +89,10 @@ import org.jbpm.bpmn2.subprocess.EventSubprocessSignalWithTransformationProcess;
 import org.jbpm.bpmn2.test.RequirePersistence;
 import org.jbpm.process.core.datatype.impl.type.StringDataType;
 import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventListener;
-import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
-import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
+import org.jbpm.process.workitem.builtin.DoNothingWorkItemHandler;
+import org.jbpm.process.workitem.builtin.ReceiveTaskHandler;
+import org.jbpm.process.workitem.builtin.SendTaskHandler;
+import org.jbpm.process.workitem.builtin.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
 import org.jbpm.test.utils.EventTrackerProcessListener;
@@ -110,15 +112,18 @@ import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
+import org.kie.kogito.internal.process.workitem.WorkItemTransition;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.Sig;
+import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
@@ -156,8 +161,8 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testBoundaryTimerCycleISO() {
         Application app = ProcessTestHelper.newApplication();
-        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update Timer",
-                3);
+        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update Timer", 3);
+        ProcessTestHelper.registerHandler(app, "Human Task", new TestUserTaskWorkItemHandler());
         ProcessTestHelper.registerProcessEventListener(app, listener);
         org.kie.kogito.process.Process<BoundaryTimerCycleISOModel> definition = BoundaryTimerCycleISOProcess
                 .newProcess(app);
@@ -174,6 +179,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         Application app = ProcessTestHelper.newApplication();
         NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update Timer",
                 3);
+        ProcessTestHelper.registerHandler(app, "Human Task", new TestUserTaskWorkItemHandler());
         ProcessTestHelper.registerProcessEventListener(app, listener);
         org.kie.kogito.process.Process<BoundaryTimerCycleISOVariableModel> definition = BoundaryTimerCycleISOVariableProcess
                 .newProcess(app);
@@ -231,12 +237,9 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("BoundaryEventWithNonEffectiveSignal");
 
         // outer human work
-        kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), emptyMap());
 
         kruntime.signalEvent(signal, signal);
-
-        // inner human task
-        kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
 
         assertProcessInstanceFinished(processInstance, kruntime);
         assertThat(eventAfterNodeLeftTriggered).isTrue();
@@ -535,27 +538,31 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        ReceiveTaskHandler receiveTaskHandler = new ReceiveTaskHandler(kruntime);
+        ReceiveTaskHandler receiveTaskHandler = new ReceiveTaskHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task", receiveTaskHandler);
         // Yes
         KogitoProcessInstance processInstance = kruntime.startProcess("EventBasedSplit5");
-        assertProcessInstanceActive(processInstance);
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        receiveTaskHandler.setKnowledgeRuntime(kruntime);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task", receiveTaskHandler);
-        receiveTaskHandler.messageReceived("YesMessage", "YesValue");
-        assertProcessInstanceFinished(processInstance, kruntime);
-        receiveTaskHandler.messageReceived("NoMessage", "NoValue");
+
+        receiveTaskHandler.getWorkItemId().stream().findFirst().ifPresent(id -> kruntime.getKogitoWorkItemManager().completeWorkItem(id, Map.of("Message", "YesValue")));
+
+        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
+
+        receiveTaskHandler.getWorkItemId().forEach(id -> kruntime.getKogitoWorkItemManager().completeWorkItem(id, Map.of("Message", "NoValue")));
+
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        receiveTaskHandler.setKnowledgeRuntime(kruntime);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task", receiveTaskHandler);
         // No
         processInstance = kruntime.startProcess("EventBasedSplit5");
-        receiveTaskHandler.messageReceived("NoMessage", "NoValue");
-        assertProcessInstanceFinished(processInstance, kruntime);
-        receiveTaskHandler.messageReceived("YesMessage", "YesValue");
+        receiveTaskHandler.getWorkItemId().stream().findFirst().ifPresent(id -> kruntime.getKogitoWorkItemManager().completeWorkItem(id, Map.of("Message", "NoValue")));
+
+        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
+
+        receiveTaskHandler.getWorkItemId().forEach(id -> kruntime.getKogitoWorkItemManager().completeWorkItem(id, Map.of("Message", "YesValue")));
 
     }
 
@@ -743,7 +750,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     public void testEventSubprocessMessage() throws Exception {
         Application app = ProcessTestHelper.newApplication();
 
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler workItemHandler = new TestUserTaskWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
         List<String> executednodes = new ArrayList<>();
         KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
@@ -882,7 +889,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         ProcessTestHelper.registerProcessEventListener(app, listener);
         EventTrackerProcessListener trackerListener = new EventTrackerProcessListener();
         ProcessTestHelper.registerProcessEventListener(app, trackerListener);
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler workItemHandler = new TestUserTaskWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
 
         org.kie.kogito.process.Process<EventSubprocessConditionalModel> definition = EventSubprocessConditionalProcess
@@ -1687,7 +1694,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("BoundaryEventWithSignals");
         assertProcessInstanceActive(processInstance);
 
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
         // now signal process instance
         kruntime.signalEvent("moveon", "", processInstance.getStringId());
         assertProcessInstanceActive(processInstance);
@@ -1726,6 +1732,8 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testSignalBoundaryEventWithTransformation() throws Exception {
         Application application = ProcessTestHelper.newApplication();
+        TestWorkItemHandler handler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(application, "Human Task", handler);
         org.kie.kogito.process.Process<BoundarySignalEventOnTaskWithTransformationModel> processBoundary = BoundarySignalEventOnTaskWithTransformationProcess
                 .newProcess(application);
         org.kie.kogito.process.Process<IntermediateThrowEventSignalModel> processIntermediate = IntermediateThrowEventSignalProcess
@@ -1942,7 +1950,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         Application app = ProcessTestHelper.newApplication();
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("timer", 3);
         ProcessTestHelper.registerProcessEventListener(app, countDownListener);
-        TestWorkItemHandler handler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler handler = new TestUserTaskWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", handler);
 
         org.kie.kogito.process.Process<MultiInstanceLoopBoundaryTimerModel> definition = MultiInstanceLoopBoundaryTimerProcess.newProcess(app);
@@ -1966,7 +1974,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testMultiInstanceLoopCharacteristicsProcessSequential() throws Exception {
         Application app = ProcessTestHelper.newApplication();
-        TestWorkItemHandler handler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler handler = new TestUserTaskWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", handler);
 
         org.kie.kogito.process.Process<MultiInstanceLoopCharacteristicsProcessSequentialModel> definition = MultiInstanceLoopCharacteristicsProcessSequentialProcess.newProcess(app);
@@ -2010,7 +2018,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testMultiInstanceLoopCharacteristicsTask() throws Exception {
         Application app = ProcessTestHelper.newApplication();
-        TestWorkItemHandler handler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler handler = new TestUserTaskWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", handler);
 
         org.kie.kogito.process.Process<MultiInstanceLoopCharacteristicsTaskModel> definition = MultiInstanceLoopCharacteristicsTaskProcess.newProcess(app);
@@ -2035,7 +2043,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testMultiInstanceLoopCharacteristicsTaskSequential() throws Exception {
         Application app = ProcessTestHelper.newApplication();
-        TestWorkItemHandler handler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler handler = new TestUserTaskWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", handler);
 
         org.kie.kogito.process.Process<MultiInstanceLoopCharacteristicsTaskSequentialModel> definition = MultiInstanceLoopCharacteristicsTaskSequentialProcess.newProcess(app);
@@ -2067,7 +2075,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testMultiInstanceLoopCharacteristicsTaskWithOutputCmpCondSequential() throws Exception {
         Application app = ProcessTestHelper.newApplication();
-        TestWorkItemHandler handler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler handler = new TestUserTaskWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", handler);
 
         org.kie.kogito.process.Process<MultiInstanceLoopCharacteristicsTaskWithOutputCmpCondSequentialModel> definition =
@@ -2214,20 +2222,15 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime = createKogitoProcessRuntime(
                 "org/jbpm/bpmn2/intermediate/BPMN2-IntermediateThrowEventExternalScope.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();
-        KogitoWorkItemHandler externalHandler = new KogitoWorkItemHandler() {
+        KogitoWorkItemHandler externalHandler = new DefaultKogitoWorkItemHandler() {
 
             @Override
-            public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+            public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
                 String signal = (String) workItem.getParameter("Signal");
                 kruntime.signalEvent(signal, null);
-
-                manager.completeWorkItem(workItem.getStringId(), null);
-
+                return Optional.of(this.workItemLifeCycle.newTransition("complete", workItem.getPhaseStatus(), Collections.emptyMap()));
             }
 
-            @Override
-            public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
-            }
         };
 
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);

@@ -30,11 +30,8 @@ import org.jbpm.workflow.core.node.HumanTaskNode;
 import org.kie.kogito.Application;
 import org.kie.kogito.MappableToModel;
 import org.kie.kogito.Model;
-import org.kie.kogito.auth.IdentityProviders;
-import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.processes.*;
-import org.kie.kogito.incubation.processes.services.contexts.Policy;
 import org.kie.kogito.incubation.processes.services.contexts.ProcessMetaDataContext;
 import org.kie.kogito.incubation.processes.services.contexts.TaskMetaDataContext;
 import org.kie.kogito.incubation.processes.services.humantask.HumanTaskService;
@@ -62,7 +59,7 @@ class HumanTaskServiceImpl implements HumanTaskService {
     @Override
     public ExtendedDataContext get(LocalId id, MetaDataContext meta) {
         TaskMetaDataContext metaCtx = meta.as(TaskMetaDataContext.class);
-        SecurityPolicy securityPolicy = convertPolicyObject(metaCtx.policy());
+
         try {
             TaskIds taskIds = ProcessIdParser.select(id, TaskIds.class); // /tasks
             ProcessInstanceId instanceId = taskIds.processInstanceId();
@@ -72,7 +69,7 @@ class HumanTaskServiceImpl implements HumanTaskService {
             List<String> tasks = svc.getTasks(
                     process,
                     processInstanceIdString,
-                    securityPolicy).orElseThrow().stream()
+                    metaCtx.policy()).orElseThrow().stream()
                     .map(wi -> taskIds.get(wi.getName()).instances().get(wi.getId()).asLocalUri().path())
                     .collect(Collectors.toList());
             MapDataContext mdc = MapDataContext.create();
@@ -92,7 +89,7 @@ class HumanTaskServiceImpl implements HumanTaskService {
                             process,
                             processInstanceIdString,
                             taskInstanceIdString,
-                            securityPolicy, Function.identity()).orElseThrow(() -> new IllegalArgumentException("Cannot find ID " + id.asLocalUri().path()));
+                            metaCtx.policy(), Function.identity()).orElseThrow(() -> new IllegalArgumentException("Cannot find ID " + id.asLocalUri().path()));
             return ExtendedDataContext.ofData(MapDataContext.of(workItem.getResults()));
         }
     }
@@ -105,9 +102,8 @@ class HumanTaskServiceImpl implements HumanTaskService {
 
         ExtendedDataContext edc = dataContext.as(ExtendedDataContext.class);
         TaskMetaDataContext mdc = edc.meta().as(TaskMetaDataContext.class);
-        SecurityPolicy securityPolicy = convertPolicyObject(mdc.policy());
 
-        WorkItem workItem = svc.signalTask(process, instanceId.processInstanceId(), taskId.taskId(), securityPolicy)
+        WorkItem workItem = svc.signalTask(process, instanceId.processInstanceId(), taskId.taskId(), mdc.policy())
                 .orElseThrow();
 
         return ExtendedDataContext.of(ProcessMetaDataContext.of(taskId), MapDataContext.from(workItem));
@@ -134,7 +130,6 @@ class HumanTaskServiceImpl implements HumanTaskService {
     public ExtendedDataContext transition(LocalId id, DataContext dataContext) {
         ExtendedDataContext edc = dataContext.as(ExtendedDataContext.class);
         TaskMetaDataContext mdc = edc.meta().as(TaskMetaDataContext.class);
-        SecurityPolicy securityPolicy = convertPolicyObject(mdc.policy());
         String phase = mdc.phase();
         Objects.requireNonNull(phase, "Phase must be specified");
 
@@ -164,7 +159,7 @@ class HumanTaskServiceImpl implements HumanTaskService {
                 processInstanceIdString,
                 taskInstanceIdString,
                 phase,
-                securityPolicy,
+                mdc.policy(),
                 model)
                 .orElseThrow();
 
@@ -175,7 +170,6 @@ class HumanTaskServiceImpl implements HumanTaskService {
     public ExtendedDataContext update(LocalId id, DataContext dataContext) {
         ExtendedDataContext edc = dataContext.as(ExtendedDataContext.class);
         TaskMetaDataContext mdc = edc.meta().as(TaskMetaDataContext.class);
-        SecurityPolicy securityPolicy = convertPolicyObject(mdc.policy());
 
         TaskInstanceId taskInstanceId = ProcessIdParser.select(id, TaskInstanceId.class);
 
@@ -194,7 +188,7 @@ class HumanTaskServiceImpl implements HumanTaskService {
                         .map(pi -> {
                             pi.updateWorkItem(
                                     taskInstanceIdString,
-                                    wi -> HumanTaskHelper.updateContent(wi, map), securityPolicy);
+                                    wi -> HumanTaskHelper.updateContent(wi, map), mdc.policy());
                             return pi.variables().toModel();
                         }))
                 .orElseThrow().toMap();
@@ -202,7 +196,4 @@ class HumanTaskServiceImpl implements HumanTaskService {
         return ExtendedDataContext.ofData(MapDataContext.of(result));
     }
 
-    private SecurityPolicy convertPolicyObject(Policy policy) {
-        return SecurityPolicy.of(IdentityProviders.of(policy.user(), policy.groups()));
-    }
 }

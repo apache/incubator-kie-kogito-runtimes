@@ -25,15 +25,15 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
-import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
+import org.jbpm.process.workitem.builtin.SystemOutWorkItemHandler;
 import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.SLAViolatedEvent;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

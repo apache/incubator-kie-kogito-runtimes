@@ -18,14 +18,10 @@
  */
 package org.jbpm.flow.serialization.impl.marshallers.state;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.MarshallerReaderContext;
@@ -33,17 +29,13 @@ import org.jbpm.flow.serialization.NodeInstanceReader;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerException;
 import org.jbpm.flow.serialization.impl.ProtobufVariableReader;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent;
-import org.jbpm.flow.serialization.protobuf.KogitoWorkItemsProtobuf;
 import org.jbpm.flow.serialization.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData;
 import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
 import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
-import org.jbpm.process.instance.impl.humantask.Reassignment;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.workflow.instance.node.HumanTaskNodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
-import org.kie.kogito.process.workitem.Attachment;
-import org.kie.kogito.process.workitem.Comment;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 
@@ -75,10 +67,6 @@ public class WorkItemNodeInstanceReader implements NodeInstanceReader {
                 Any workItemDataMessage = content.getWorkItemData();
                 if (workItemDataMessage.is(HumanTaskWorkItemData.class)) {
                     HumanTaskWorkItemData workItemData = workItemDataMessage.unpack(HumanTaskWorkItemData.class);
-                    humanTaskNodeInstance.getNotCompletedDeadlineTimers().putAll(buildDeadlines(workItemData.getCompletedDeadlinesMap()));
-                    humanTaskNodeInstance.getNotCompletedReassigments().putAll(buildReassignments(workItemData.getCompletedReassigmentsMap()));
-                    humanTaskNodeInstance.getNotStartedDeadlineTimers().putAll(buildDeadlines(workItemData.getStartDeadlinesMap()));
-                    humanTaskNodeInstance.getNotStartedReassignments().putAll(buildReassignments(workItemData.getStartReassigmentsMap()));
 
                     if (workItemData.hasTaskName()) {
                         workItem.setTaskName(workItemData.getTaskName());
@@ -100,8 +88,6 @@ public class WorkItemNodeInstanceReader implements NodeInstanceReader {
                     workItem.getPotentialUsers().addAll(workItemData.getPotUsersList());
                     workItem.getPotentialGroups().addAll(workItemData.getPotGroupsList());
                     workItem.getExcludedUsers().addAll(workItemData.getExcludedUsersList());
-                    workItem.getComments().putAll(workItemData.getCommentsList().stream().map(this::buildComment).collect(Collectors.toMap(Comment::getId, Function.identity())));
-                    workItem.getAttachments().putAll(workItemData.getAttachmentsList().stream().map(this::buildAttachment).collect(Collectors.toMap(Attachment::getId, Function.identity())));
 
                 }
 
@@ -156,41 +142,5 @@ public class WorkItemNodeInstanceReader implements NodeInstanceReader {
             nodeInstance.internalSetWorkItem(workItem);
             return nodeInstance;
         }
-    }
-
-    private Comment buildComment(KogitoWorkItemsProtobuf.Comment comment) {
-        Comment result = new Comment(comment.getId(), comment.getUpdatedBy());
-        result.setContent(comment.getContent());
-        result.setUpdatedAt(new Date(comment.getUpdatedAt()));
-        return result;
-    }
-
-    private Attachment buildAttachment(KogitoWorkItemsProtobuf.Attachment attachment) {
-        Attachment result = new Attachment(attachment.getId(), attachment.getUpdatedBy());
-        result.setContent(URI.create(attachment.getContent()));
-        result.setUpdatedAt(new Date(attachment.getUpdatedAt()));
-        result.setName(attachment.getName());
-        return result;
-    }
-
-    private Map<String, Map<String, Object>> buildDeadlines(Map<String, KogitoWorkItemsProtobuf.Deadline> deadlinesProtobuf) {
-        Map<String, Map<String, Object>> deadlines = new HashMap<>();
-        for (Map.Entry<String, KogitoWorkItemsProtobuf.Deadline> entry : deadlinesProtobuf.entrySet()) {
-            Map<String, Object> notification = new HashMap<>();
-            for (Map.Entry<String, String> pair : entry.getValue().getContentMap().entrySet()) {
-                notification.put(pair.getKey(), pair.getValue());
-            }
-            deadlines.put(entry.getKey(), notification);
-        }
-        return deadlines;
-    }
-
-    private Map<String, Reassignment> buildReassignments(Map<String, KogitoWorkItemsProtobuf.Reassignment> reassignmentsProtobuf) {
-        Map<String, Reassignment> reassignments = new HashMap<>();
-        for (Map.Entry<String, KogitoWorkItemsProtobuf.Reassignment> entry : reassignmentsProtobuf.entrySet()) {
-            reassignments.put(entry.getKey(), new Reassignment(entry.getValue().getUsersList().stream().collect(Collectors
-                    .toSet()), entry.getValue().getGroupsList().stream().collect(Collectors.toSet())));
-        }
-        return reassignments;
     }
 }

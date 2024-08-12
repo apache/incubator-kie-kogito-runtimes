@@ -57,6 +57,7 @@ import org.kie.api.runtime.EnvironmentName;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.EventListener;
 import org.kie.api.runtime.process.ProcessWorkItemHandlerException;
+import org.kie.api.runtime.process.WorkItem;
 import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
@@ -105,13 +106,9 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     @Override
     public InternalKogitoWorkItem getWorkItem() {
         if (workItem == null && workItemId != null) {
-            workItem = decorate(((InternalKogitoWorkItemManager) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).getWorkItem(workItemId));
+            workItem = ((InternalKogitoWorkItemManager) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).getWorkItem(workItemId);
         }
         return workItem;
-    }
-
-    protected InternalKogitoWorkItem decorate(InternalKogitoWorkItem kogitoWorkItem) {
-        return kogitoWorkItem;
     }
 
     public String getWorkItemId() {
@@ -123,7 +120,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     }
 
     public void internalSetWorkItem(InternalKogitoWorkItem workItem) {
-        this.workItem = decorate(workItem);
+        this.workItem = workItem;
         this.workItem.setProcessInstance(getProcessInstance());
         this.workItem.setNodeInstance(this);
     }
@@ -336,13 +333,14 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     @Override
     public void signalEvent(String type, Object event) {
         if ("workItemCompleted".equals(type)) {
-            workItemCompleted((InternalKogitoWorkItem) event);
+            InternalKogitoWorkItem item = (InternalKogitoWorkItem) event;
+            workItemCompleted(item);
         } else if ("workItemAborted".equals(type)) {
-            workItemAborted((InternalKogitoWorkItem) event);
+            InternalKogitoWorkItem item = (InternalKogitoWorkItem) event;
+            workItemAborted(item);
         } else if (("processInstanceCompleted:" + exceptionHandlingProcessInstanceId).equals(type)) {
             exceptionHandlingCompleted((WorkflowProcessInstance) event, null);
         } else if (type.equals("RuleFlow-Activate" + getProcessInstance().getProcessId() + "-" + getNode().getUniqueId())) {
-
             trigger(null, Node.CONNECTION_DEFAULT_TYPE);
         } else {
             super.signalEvent(type, event);
@@ -360,6 +358,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
 
     public void workItemAborted(InternalKogitoWorkItem workItem) {
         if (workItem.getStringId().equals(workItemId) || (workItemId == null && getWorkItem().getStringId().equals(workItem.getStringId()))) {
+            workItem.setState(WorkItem.ABORTED);
             removeEventListeners();
             triggerCompleted(workItem);
         }
@@ -367,6 +366,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
 
     public void workItemCompleted(InternalKogitoWorkItem workItem) {
         if (workItem.getStringId().equals(workItemId) || (workItemId == null && getWorkItem().getStringId().equals(workItem.getStringId()))) {
+            workItem.setState(WorkItem.COMPLETED);
             removeEventListeners();
             triggerCompleted(workItem);
         }

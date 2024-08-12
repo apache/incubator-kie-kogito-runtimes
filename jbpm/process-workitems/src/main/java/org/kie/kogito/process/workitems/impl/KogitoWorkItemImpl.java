@@ -112,12 +112,13 @@ public class KogitoWorkItemImpl implements InternalKogitoWorkItem, Serializable 
     @Override
     public void setResults(Map<String, Object> results) {
         if (results != null) {
-            this.results = results;
+            this.results.clear();
+            this.results.putAll(results);
         }
     }
 
     @Override
-    public void setResult(String name, Object value) {
+    public void setOutput(String name, Object value) {
         results.put(name, value);
     }
 
