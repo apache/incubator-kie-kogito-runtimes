@@ -69,7 +69,6 @@ public class StartNodeInstance extends NodeInstanceImpl {
         }
         Map<String, Object> outputSet = Collections.singletonMap(variableName, payload);
         logger.debug("Start Node Instance signaled with {} and payload {} -> output set {}", type, payload, outputSet);
-        this.getStartNode().getOutAssociations().forEach(System.out::println);
         NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
 
         triggerCompleted();
