@@ -22,12 +22,12 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.*;
 
-@QuarkusIntegrationTest
+@QuarkusTest
 public class DynamicCallResourceTest {
 
     @Test

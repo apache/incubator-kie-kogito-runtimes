@@ -20,15 +20,11 @@ package org.kie.kogito.process.dynamic;
 
 import java.util.Map;
 
-import jakarta.validation.constraints.NotNull;
-
 public class RestCallInfo {
 
-    @NotNull
     private String endpoint;
     private String host;
     private Integer port;
-    @NotNull
     private String method;
     private Map<String, Object> arguments;
     private String outputExpression;
