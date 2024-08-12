@@ -34,7 +34,7 @@ import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.kogito.workitem.rest.bodybuilders.DefaultWorkItemHandlerBodyBuilder;
@@ -173,7 +173,7 @@ public class RestWorkItemHandlerTest {
         parameters.put(RestWorkItemHandler.METHOD, "GET");
         parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
 
-        handler.executeWorkItem(workItem, manager);
+        handler.activateWorkItemHandler(manager, handler, workItem, handler.startingTransition(parameters));
 
         assertResult(manager, argCaptor);
     }
@@ -186,7 +186,7 @@ public class RestWorkItemHandlerTest {
 
         when(ioSpecification.getOutputMappingBySources()).thenReturn(Collections.singletonMap(RestWorkItemHandler.RESULT, DEFAULT_WORKFLOW_VAR));
 
-        handler.executeWorkItem(workItem, manager);
+        handler.transitionToPhase(manager, workItem, handler.startingTransition(parameters));
 
         verify(manager).completeWorkItem(anyString(), argCaptor.capture());
         Map<String, Object> results = argCaptor.getValue();
@@ -200,7 +200,7 @@ public class RestWorkItemHandlerTest {
         parameters.put(RestWorkItemHandler.METHOD, "POST");
         parameters.put(BODY_BUILDER, new DefaultWorkItemHandlerBodyBuilder());
 
-        handler.executeWorkItem(workItem, manager);
+        handler.transitionToPhase(manager, workItem, handler.startingTransition(parameters));
 
         verify(request).sendJsonAndAwait(bodyCaptor.capture());
         Map<String, Object> bodyMap = bodyCaptor.getValue();
@@ -216,7 +216,7 @@ public class RestWorkItemHandlerTest {
         parameters.put(BODY_BUILDER, new DefaultWorkItemHandlerBodyBuilder());
         parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
 
-        handler.executeWorkItem(workItem, manager);
+        handler.transitionToPhase(manager, workItem, handler.startingTransition(parameters));
 
         ArgumentCaptor<ObjectNode> bodyCaptor = ArgumentCaptor.forClass(ObjectNode.class);
         verify(request).sendJsonAndAwait(bodyCaptor.capture());
@@ -250,7 +250,7 @@ public class RestWorkItemHandlerTest {
         parameters.put(customParameter, workflowData);
         Optional.ofNullable(bodyBuilderClass).ifPresent(builder -> parameters.put(BODY_BUILDER, builder));
 
-        handler.executeWorkItem(workItem, manager);
+        handler.transitionToPhase(manager, workItem, handler.startingTransition(parameters));
 
         verify(request).sendJsonAndAwait(bodyCaptor.capture());
 
@@ -268,7 +268,7 @@ public class RestWorkItemHandlerTest {
         parameters.put(RestWorkItemHandler.METHOD, "POST");
         parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
 
-        handler.executeWorkItem(workItem, manager);
+        handler.transitionToPhase(manager, workItem, handler.startingTransition(parameters));
 
         ArgumentCaptor<ObjectNode> bodyCaptor = ArgumentCaptor.forClass(ObjectNode.class);
         verify(request).sendJsonAndAwait(bodyCaptor.capture());

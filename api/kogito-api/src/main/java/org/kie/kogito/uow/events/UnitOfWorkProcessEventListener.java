@@ -29,17 +29,11 @@ import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
 import org.kie.api.event.process.SLAViolatedEvent;
 import org.kie.api.event.process.SignalEvent;
-import org.kie.api.event.usertask.UserTaskAssignmentEvent;
-import org.kie.api.event.usertask.UserTaskAttachmentEvent;
-import org.kie.api.event.usertask.UserTaskCommentEvent;
-import org.kie.api.event.usertask.UserTaskDeadlineEvent;
-import org.kie.api.event.usertask.UserTaskEvent;
-import org.kie.api.event.usertask.UserTaskStateEvent;
-import org.kie.api.event.usertask.UserTaskVariableEvent;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.ProcessWorkItemTransitionEvent;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.uow.WorkUnit;
+import org.kie.kogito.usertask.events.UserTaskEvent;
 
 public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventListener {
 
@@ -140,62 +134,6 @@ public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventLis
 
     @Override
     public void onMigration(ProcessMigrationEvent event) {
-        intercept(event);
-    }
-
-    // user tasks
-    @Override
-    public void onUserTaskDeadline(UserTaskDeadlineEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void onUserTaskState(UserTaskStateEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void onUserTaskAssignment(UserTaskAssignmentEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void onUserTaskAttachmentAdded(UserTaskAttachmentEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void onUserTaskAttachmentChange(UserTaskAttachmentEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void onUserTaskAttachmentDeleted(UserTaskAttachmentEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void onUserTaskCommentAdded(UserTaskCommentEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void onUserTaskCommentChange(UserTaskCommentEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void onUserTaskCommentDeleted(UserTaskCommentEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void onUserTaskInputVariable(UserTaskVariableEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void onUserTaskOutputVariable(UserTaskVariableEvent event) {
         intercept(event);
     }
 

@@ -112,6 +112,7 @@ public class SignalProcessInstanceAction implements Action, Serializable {
             workItem.setName("External Send Task");
             workItem.setNodeInstanceId(context.getNodeInstance().getStringId());
             workItem.setProcessInstanceId(context.getProcessInstance().getStringId());
+            workItem.setProcessInstance(processInstance);
             workItem.setNodeId(context.getNodeInstance().getNodeId());
 
             workItem.getParameters().putAll(inputSet);

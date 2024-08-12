@@ -21,10 +21,10 @@ package org.jbpm.process.instance.impl.humantask;
 
 import java.util.Set;
 
-import org.kie.kogito.process.workitem.Attachment;
-import org.kie.kogito.process.workitem.Comment;
-import org.kie.kogito.process.workitem.HumanTaskWorkItem;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
+import org.kie.kogito.usertask.Attachment;
+import org.kie.kogito.usertask.Comment;
+import org.kie.kogito.usertask.HumanTaskWorkItem;
 
 public interface InternalHumanTaskWorkItem extends HumanTaskWorkItem, InternalKogitoWorkItem {
 

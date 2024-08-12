@@ -18,12 +18,11 @@
  */
 package org.kie.kogito.process.impl;
 
-import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
-import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemHandler;
+import static org.kie.kogito.internal.process.workitem.KogitoWorkItemHandlerFactory.findAllKogitoWorkItemHandlersRegistered;
 
 public class DefaultWorkItemHandlerConfig extends CachedWorkItemHandlerConfig {
-    {
-        register("Log", new SystemOutWorkItemHandler());
-        register("Human Task", new HumanTaskWorkItemHandler());
+
+    public DefaultWorkItemHandlerConfig() {
+        findAllKogitoWorkItemHandlersRegistered().forEach(e -> register(e.getName(), e));
     }
 }

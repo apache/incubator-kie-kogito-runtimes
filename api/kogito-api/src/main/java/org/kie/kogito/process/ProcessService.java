@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.process;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +27,8 @@ import java.util.function.Function;
 import org.kie.kogito.MapOutput;
 import org.kie.kogito.MappableToModel;
 import org.kie.kogito.Model;
-import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.correlation.CompositeCorrelation;
-import org.kie.kogito.process.workitem.Attachment;
-import org.kie.kogito.process.workitem.AttachmentInfo;
-import org.kie.kogito.process.workitem.Comment;
+import org.kie.kogito.internal.process.workitem.Policy;
 
 public interface ProcessService {
 
@@ -65,6 +61,8 @@ public interface ProcessService {
 
     <T extends MappableToModel<R>, R> Optional<R> findById(Process<T> process, String id);
 
+    <T extends MappableToModel<R>, R> Optional<R> signalProcessInstance(Process<T> process, String id, Object data, String signalName);
+
     <T> void migrateProcessInstances(Process<T> process, String targetProcessId, String targetProcessVersion, String... id) throws UnsupportedOperationException;
 
     <T> long migrateAll(Process<T> process, String targetProcessId, String targetProcessVersion) throws UnsupportedOperationException;
@@ -75,97 +73,35 @@ public interface ProcessService {
 
     <T extends MappableToModel<R>, R> Optional<R> updatePartial(Process<T> process, String id, T resource);
 
-    <T extends Model> Optional<List<WorkItem>> getTasks(Process<T> process, String id, SecurityPolicy policy);
+    <T extends Model> Optional<List<WorkItem>> getWorkItems(Process<T> process, String id, Policy... policy);
 
-    <T extends Model> Optional<WorkItem> signalTask(Process<T> process, String id, String taskNodeName, SecurityPolicy policy);
+    <T extends Model> Optional<WorkItem> signalWorkItem(Process<T> process, String id, String taskNodeName, Policy... policy);
 
-    <T extends Model, R extends MapOutput> Optional<R> saveTask(Process<T> process,
+    <T extends Model, R extends MapOutput> Optional<R> setWorkItemOutput(Process<T> process,
             String id,
             String taskId,
-            SecurityPolicy policy,
+            Policy policy,
             MapOutput model,
             Function<Map<String, Object>, R> mapper);
 
-    <T extends MappableToModel<R>, R> Optional<R> taskTransition(
+    <T extends MappableToModel<R>, R> Optional<R> transitionWorkItem(
             Process<T> process,
             String id,
             String taskId,
             String phase,
-            SecurityPolicy policy,
+            Policy policy,
             MapOutput model);
 
-    <T extends MappableToModel<?>, R> Optional<R> getTask(Process<T> process,
+    <T extends MappableToModel<?>, R> Optional<R> getWorkItem(Process<T> process,
             String id,
             String taskId,
-            SecurityPolicy policy,
+            Policy policy,
             Function<WorkItem, R> mapper);
 
-    <T extends Model> Optional<Comment> addComment(Process<T> process,
-            String id,
-            String taskId,
-            SecurityPolicy policy,
-            String commentInfo);
-
-    <T extends Model> Optional<Comment> updateComment(Process<T> process,
-            String id,
-            String taskId,
-            String commentId,
-            SecurityPolicy policy,
-            String commentInfo);
-
-    <T extends Model> Optional<Boolean> deleteComment(Process<T> process,
-            String id,
-            String taskId,
-            String commentId,
-            SecurityPolicy policy);
-
-    <T extends Model> Optional<Attachment> addAttachment(Process<T> process,
-            String id,
-            String taskId,
-            SecurityPolicy policy,
-            AttachmentInfo attachmentInfo);
-
-    <T extends Model> Optional<Attachment> updateAttachment(Process<T> process,
-            String id,
-            String taskId,
-            String attachmentId,
-            SecurityPolicy policy,
-            AttachmentInfo attachment);
-
-    <T extends Model> Optional<Boolean> deleteAttachment(Process<T> process,
-            String id,
-            String taskId,
-            String attachmentId,
-            SecurityPolicy policy);
-
-    <T extends Model> Optional<Attachment> getAttachment(Process<T> process,
-            String id,
-            String taskId,
-            String attachmentId,
-            SecurityPolicy policy);
-
-    <T extends Model> Optional<Collection<Attachment>> getAttachments(Process<T> process,
-            String id,
-            String taskId,
-            SecurityPolicy policy);
-
-    <T extends Model> Optional<Comment> getComment(Process<T> process,
-            String id,
-            String taskId,
-            String commentId,
-            SecurityPolicy policy);
-
-    <T extends Model> Optional<Collection<Comment>> getComments(Process<T> process,
-            String id,
-            String taskId,
-            SecurityPolicy policy);
-
-    <T extends MappableToModel<R>, R> Optional<R> signalProcessInstance(Process<T> process, String id, Object data, String signalName);
-
     //Schema
-    <T extends Model> Map<String, Object> getSchemaAndPhases(Process<T> process,
+    <T extends Model> Map<String, Object> getWorkItemSchemaAndPhases(Process<T> process,
             String id,
             String taskId,
             String taskName,
-            SecurityPolicy policy);
+            Policy policy);
 }

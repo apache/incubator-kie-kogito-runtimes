@@ -18,26 +18,18 @@
  */
 package org.jbpm.process.instance.impl.humantask;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.kie.kogito.auth.IdentityProvider;
-import org.kie.kogito.auth.SecurityPolicy;
-import org.kie.kogito.process.workitem.Attachment;
-import org.kie.kogito.process.workitem.Comment;
-import org.kie.kogito.process.workitem.NotAuthorizedException;
-import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.kie.kogito.usertask.Attachment;
+import org.kie.kogito.usertask.Comment;
 
 public class HumanTaskWorkItemImpl extends KogitoWorkItemImpl implements InternalHumanTaskWorkItem {
 
     private static final long serialVersionUID = 6168927742199190604L;
-    private static final Logger logger = LoggerFactory.getLogger(HumanTaskWorkItemImpl.class);
 
     private String taskName;
     private String taskDescription;
@@ -141,61 +133,6 @@ public class HumanTaskWorkItemImpl extends KogitoWorkItemImpl implements Interna
 
     public void setAdminGroups(Set<String> adminGroups) {
         this.adminGroups = adminGroups;
-    }
-
-    @Override
-    public boolean enforce(Policy<?>... policies) {
-        for (Policy<?> policy : policies) {
-            if (policy instanceof SecurityPolicy) {
-                try {
-                    enforceAuthorization(((SecurityPolicy) policy).value());
-
-                    return true;
-                } catch (NotAuthorizedException e) {
-                    return false;
-                }
-            }
-        }
-        boolean authorized = true;
-        // there might have not been any policies given so let's ensure task is protected if any assignments is set
-        String currentOwner = getActualOwner();
-        if ((currentOwner != null && !currentOwner.trim().isEmpty()) || !getPotentialUsers().isEmpty()) {
-            authorized = false;
-        }
-
-        return authorized;
-    }
-
-    protected void enforceAuthorization(IdentityProvider identity) {
-
-        if (identity != null) {
-            logger.debug("Identity information provided, enforcing security restrictions, user '{}' with roles '{}'", identity.getName(), identity.getRoles());
-            // in case identity/auth info is given enforce security restrictions
-            String user = identity.getName();
-            String currentOwner = getActualOwner();
-            // if actual owner is already set always enforce same user
-            if (currentOwner != null && !currentOwner.trim().isEmpty() && !user.equals(currentOwner) &&
-                    (getAdminUsers() == null || !getAdminUsers().contains(user))) {
-                logger.debug("Work item {} has already owner assigned so requesting user must match - owner '{}' == requestor '{}'", getStringId(), currentOwner, user);
-                throw new NotAuthorizedException("User " + user + " is not authorized to access task instance with id " + getStringId());
-            }
-
-            checkAssignedOwners(user, identity.getRoles());
-        }
-    }
-
-    protected void checkAssignedOwners(String user, Collection<String> roles) {
-        // is not in the excluded users
-        if (getExcludedUsers().contains(user)) {
-            logger.debug("Requesting user '{}' is excluded from the potential workers on work item {}", user, getStringId());
-            throw new NotAuthorizedException("User " + user + " is not authorized to access task instance with id " + getStringId());
-        }
-
-        // check if user is in potential users or groups 
-        if (!getPotentialUsers().contains(user) &&
-                getPotentialGroups().stream().noneMatch(roles::contains)) {
-            throw new NotAuthorizedException("User " + user + " is not authorized to access task instance with id " + getStringId());
-        }
     }
 
     @Override
