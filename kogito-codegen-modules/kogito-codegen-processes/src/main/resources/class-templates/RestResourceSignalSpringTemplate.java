@@ -43,7 +43,7 @@ public class $Type$Resource {
         this.processService.createProcessInstanceBySignal(process,
                 businessKey,
                 model,
-                httpHeaders.getRequestHeaders(),
+                httpHeaders,
                 "$signalName$",
                 httpHeaders.getOrEmpty("X-KOGITO-ReferenceId").stream().findFirst().orElse(null),
                 null);
