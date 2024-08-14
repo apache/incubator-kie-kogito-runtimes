@@ -19,7 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Testcontainers
-class CorrelationRecordServiceIT {
+class InfinispanCorrelationServiceIT {
 
     @Container
     final static KogitoInfinispanContainer inifinispanContainer = new KogitoInfinispanContainer();

@@ -12,8 +12,6 @@ import org.kie.kogito.correlation.CorrelationInstance;
 import org.kie.kogito.correlation.SimpleCorrelation;
 import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,13 +19,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class InfinispanCorrelationRepository {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InfinispanCorrelationRepository.class);
-
-    private static final String ENCODED_CORRELATION_ID_FIELD = "encodedCorrelationId";
-    private static final String CORRELATED_ID_FIELD = "correlatedId";
-    private static final String CORRELATION_FIELD = "correlation";
     public static final String CORRELATIONS_CACHE_NAME = "correlations";
 
+    // TODO: I would like to use <String, CorrelationType>
     private final RemoteCache<String, String> cache;
     private final ObjectMapper objectMapper;
 
@@ -48,10 +42,11 @@ public class InfinispanCorrelationRepository {
         CorrelationInstance correlationInstance = new CorrelationInstance(encodedCorrelationId, correlatedId, correlation);
 
         try {
+//            TODO: I would like to remove 2 calls for writeValueAsString
             String json = this.objectMapper.writeValueAsString(correlation);
-            CorrelationRecord correlationRecord = new CorrelationRecord(
+            CorrelationType correlationType = new CorrelationType(
                     encodedCorrelationId, correlatedId, json);
-            String value = this.objectMapper.writeValueAsString(correlationRecord);
+            String value = this.objectMapper.writeValueAsString(correlationType);
             this.cache.put(encodedCorrelationId, value);
             return correlationInstance;
         } catch (JsonProcessingException e) {
@@ -65,7 +60,7 @@ public class InfinispanCorrelationRepository {
             return null;
         }
         try {
-            CorrelationRecord correlation = this.objectMapper.readValue(json, CorrelationRecord.class);
+            CorrelationType correlation = this.objectMapper.readValue(json, CorrelationType.class);
             CompositeCorrelation compositeCorrelation = this.objectMapper.readValue(correlation.correlation(), CompositeCorrelation.class);
             return new CorrelationInstance(
                     correlation.encodedCorrelationId(),
@@ -85,11 +80,11 @@ public class InfinispanCorrelationRepository {
         }
 
         try {
-            CorrelationRecord correlationRecord = this.objectMapper.readValue(first.get(), CorrelationRecord.class);
-            CompositeCorrelation compositeCorrelation = this.objectMapper.readValue(correlationRecord.correlation(), CompositeCorrelation.class);
+            CorrelationType correlationType = this.objectMapper.readValue(first.get(), CorrelationType.class);
+            CompositeCorrelation compositeCorrelation = this.objectMapper.readValue(correlationType.correlation(), CompositeCorrelation.class);
             return new CorrelationInstance(
-                    correlationRecord.encodedCorrelationId(),
-                    correlationRecord.correlatedId(),
+                    correlationType.encodedCorrelationId(),
+                    correlationType.correlatedId(),
                     compositeCorrelation);
         } catch (JsonProcessingException e) {
             throw new UncheckedIOException(e);
