@@ -25,6 +25,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,6 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -160,6 +160,7 @@ public abstract class PersistenceTest {
         final String pId = given().contentType(ContentType.JSON)
                 .pathParam("processId", PROCESS_EMBEDDED_ID)
                 .when()
+                .body(Map.of())
                 .post("/{processId}")
                 .then()
                 .statusCode(201)
@@ -167,32 +168,32 @@ public abstract class PersistenceTest {
                 .extract()
                 .path("id");
 
-        String taskId = given()
+        given()
                 .contentType(ContentType.JSON)
-                .queryParam("user", "admin")
-                .queryParam("group", "managers")
                 .pathParam("pId", pId)
                 .pathParam("processId", PROCESS_EMBEDDED_ID)
                 .when()
-                .get("/{processId}/{pId}/tasks")
-                .then()
-                .statusCode(200)
-                .body("$.size()", is(1))
-                .body("[0].id", not(emptyOrNullString()))
-                .extract()
-                .path("[0].id");
-
-        given().contentType(ContentType.JSON)
-                .pathParam("pId", pId)
-                .pathParam("taskId", taskId)
-                .pathParam("processId", PROCESS_EMBEDDED_ID)
-                .queryParam("user", "test")
-                .queryParam("group", "test")
-                .body("{}")
-                .when()
-                .post("/{processId}/{pId}/Task/{taskId}/phases/complete")
+                .get("/{processId}/{pId}")
                 .then()
                 .statusCode(200);
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("pId", pId)
+                .pathParam("processId", PROCESS_EMBEDDED_ID)
+                .when()
+                .delete("/{processId}/{pId}")
+                .then()
+                .statusCode(200);
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("pId", pId)
+                .pathParam("processId", PROCESS_EMBEDDED_ID)
+                .when()
+                .get("/{processId}/{pId}")
+                .then()
+                .statusCode(404);
 
     }
 
@@ -201,6 +202,7 @@ public abstract class PersistenceTest {
         String pId = given().contentType(ContentType.JSON)
                 .pathParam("processId", PROCESS_MULTIPLE_INSTANCES_EMBEDDED_ID)
                 .when()
+                .body(Map.of("myList", Arrays.asList("John", "Smith")))
                 .post("/{processId}")
                 .then()
                 .statusCode(201)
@@ -248,6 +250,7 @@ public abstract class PersistenceTest {
         String pId = given().contentType(ContentType.JSON)
                 .pathParam("processId", PROCESS_MULTIPLE_INSTANCES_ID)
                 .when()
+                .body(Map.of("myList", Arrays.asList("John", "Smith")))
                 .post("/{processId}")
                 .then()
                 .statusCode(201)
@@ -268,6 +271,7 @@ public abstract class PersistenceTest {
     void testAsyncWIH() {
         String pId = given().contentType(ContentType.JSON)
                 .pathParam("processId", PROCESS_ASYNC_WIH)
+                .body(Map.of())
                 .when()
                 .post("/{processId}")
                 .then()
@@ -299,29 +303,19 @@ public abstract class PersistenceTest {
                 .extract()
                 .path("id");
 
-        String location = given().contentType(ContentType.JSON)
+        given().contentType(ContentType.JSON)
                 .pathParam("pId", pId)
                 .when()
-                .post("/AdHocProcess/{pId}/CloseTask")
+                .get("/AdHocProcess/{pId}")
                 .then()
-                .log().everything()
-                .statusCode(201)
-                .header("Location", notNullValue())
-                .extract()
-                .header("Location");
+                .statusCode(200);
 
-        String taskId = location.substring(location.lastIndexOf("/") + 1);
-
-        given()
-                .queryParam("user", "user")
-                .queryParam("group", "agroup")
-                .contentType(ContentType.JSON)
+        given().contentType(ContentType.JSON)
+                .pathParam("pId", pId)
                 .when()
-                .body(Map.of("status", "closed"))
-                .post("/AdHocProcess/{pId}/CloseTask/{taskId}", pId, taskId)
+                .delete("/AdHocProcess/{pId}")
                 .then()
-                .statusCode(200)
-                .body("status", equalTo("closed"));
+                .statusCode(200);
 
         given().contentType(ContentType.JSON)
                 .pathParam("pId", pId)

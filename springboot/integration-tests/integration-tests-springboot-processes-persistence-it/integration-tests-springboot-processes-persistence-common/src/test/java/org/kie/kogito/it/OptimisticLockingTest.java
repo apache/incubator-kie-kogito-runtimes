@@ -18,6 +18,8 @@
  */
 package org.kie.kogito.it;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import io.restassured.http.ContentType;
@@ -33,6 +35,7 @@ public abstract class OptimisticLockingTest extends PersistenceTest {
     void testParallelPersistence() {
         final String pid = given().contentType(ContentType.JSON)
                 .when()
+                .body(Map.of())
                 .post("/parallel")
                 .then()
                 .statusCode(201)
