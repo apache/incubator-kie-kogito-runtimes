@@ -1,7 +1,6 @@
 pom.xml;kogito-maven-plugin,springboot
 addons/common/pom.xml;events,explainability,human-task-prediction,mail,tracing,task-management,marshallers
 addons/common/persistence/pom.xml;infinispan,filesystem,mongodb,postgresql,rocksdb
-addons/common/monitoring/pom.xml;elastic
 api/pom.xml;kogito-api-incubation-common,kogito-api-incubation-common-objectmapper,kogito-api-incubation-application,kogito-api-incubation-processes,kogito-api-incubation-processes-services,kogito-api-incubation-predictions,kogito-api-incubation-predictions-services,kogito-api-incubation-decisions,kogito-api-incubation-decisions-services,kogito-api-incubation-rules,kogito-api-incubation-rules-services
 drools/pom.xml;kogito-pmml-api-dependencies,kogito-efesto-drl,kogito-pmml-dependencies,kogito-pmml-openapi,kogito-pmml,kogito-scenario-simulation
 jbpm/pom.xml;jbpm-tools,jbpm-tests
@@ -10,7 +9,6 @@ kogito-serverless-workflow/pom.xml;kogito-serverless-workflow-executor-tests
 quarkus/addons/pom.xml;explainability,mail,process-svg,task-notification,task-management,marshallers,process-definitions
 quarkus/addons/events/pom.xml;decisions,predictions,rules,mongodb
 quarkus/addons/jobs/pom.xml;messaging
-quarkus/addons/monitoring/pom.xml;elastic
 quarkus/addons/persistence/pom.xml;infinispan,kafka,filesystem,mongodb,postgresql,rocksdb
 quarkus/extensions/pom.xml;kogito-quarkus-extension,kogito-quarkus-incubation-common,kogito-quarkus-processes-extension,kogito-quarkus-rules-extension,kogito-quarkus-decisions-extension,kogito-quarkus-predictions-extension
 quarkus/extensions/kogito-quarkus-extension/pom.xml;kogito-quarkus-integration-test,kogito-quarkus-integration-test-maven-devmode
