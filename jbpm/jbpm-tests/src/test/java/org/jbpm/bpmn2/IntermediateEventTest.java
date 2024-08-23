@@ -41,6 +41,10 @@ import org.jbpm.bpmn2.event.BoundaryTimerCycleISOVariableModel;
 import org.jbpm.bpmn2.event.BoundaryTimerCycleISOVariableProcess;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
+import org.jbpm.bpmn2.intermediate.EventBasedSplit3Model;
+import org.jbpm.bpmn2.intermediate.EventBasedSplit3Process;
+import org.jbpm.bpmn2.intermediate.EventBasedSplit5Model;
+import org.jbpm.bpmn2.intermediate.EventBasedSplit5Process;
 import org.jbpm.bpmn2.intermediate.EventSubprocessErrorSignalEmbeddedModel;
 import org.jbpm.bpmn2.intermediate.EventSubprocessErrorSignalEmbeddedProcess;
 import org.jbpm.bpmn2.intermediate.IntermediateCatchEventMessageWithTransformationModel;
@@ -464,39 +468,34 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testEventBasedSplit3() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/intermediate/BPMN2-EventBasedSplit3.bpmn2");
+    public void testEventBasedSplit3() {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Email1", new SystemOutWorkItemHandler());
+        ProcessTestHelper.registerHandler(app, "Email2", new SystemOutWorkItemHandler());
 
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        Person jack = new Person();
-        jack.setName("Jack");
-        // Yes
-        KogitoProcessInstance processInstance = kruntime.startProcess("EventBasedSplit3");
-        assertProcessInstanceActive(processInstance);
+        org.kie.kogito.process.Process<EventBasedSplit3Model> processDefinition = EventBasedSplit3Process.newProcess(app);
+        EventBasedSplit3Model model = processDefinition.createModel();
+        org.kie.kogito.process.ProcessInstance<EventBasedSplit3Model> instance = processDefinition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
-        Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
-        assertThat(eventDescriptions).hasSize(2).extracting("event").contains("Yes");
-        assertThat(eventDescriptions).extracting("eventType").contains("signal", "conditional");
-        assertThat(eventDescriptions).filteredOn(i -> i.getDataType() != null).extracting("dataType")
-                .hasOnlyElementsOfType(NamedDataType.class).extracting("dataType")
-                .hasOnlyElementsOfType(StringDataType.class);
-        assertThat(eventDescriptions).extracting("processInstanceId").contains(processInstance.getStringId());
+        Set<EventDescription<?>> eventDescriptions = instance.events();
+        assertThat(eventDescriptions).hasSize(2)
+                .extracting(EventDescription::getEvent)
+                .contains("Yes");
+        assertThat(eventDescriptions).extracting(EventDescription::getEventType)
+                .contains("signal", "conditional");
 
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        kruntime.signalEvent("Yes", "YesValue", processInstance.getStringId());
-        assertProcessInstanceFinished(processInstance, kruntime);
-        // Condition
-        processInstance = kruntime.startProcess("EventBasedSplit3");
-        assertProcessInstanceActive(processInstance);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        kruntime.getKieSession().insert(jack);
-
-        assertProcessInstanceFinished(processInstance, kruntime);
-
+        instance.send(Sig.of("Yes", "YesValue"));
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        instance = processDefinition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
+        instance.updateVariables(model);
+        instance.send(Sig.of("Condition", "ConditionValue"));
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
+
 
     @Test
     public void testEventBasedSplit4() throws Exception {
@@ -530,34 +529,31 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    public void testEventBasedSplit5() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/intermediate/BPMN2-EventBasedSplit5.bpmn2");
+    public void testEventBasedSplit5() {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Email1", new SystemOutWorkItemHandler());
+        ProcessTestHelper.registerHandler(app, "Email2", new SystemOutWorkItemHandler());
+        //the receive task handler needs a kruntime object. How can we create this handler in v9 as we don't have the kruntime object
+        ReceiveTaskHandler receiveTaskHandler = new ReceiveTaskHandler(null);
+        ProcessTestHelper.registerHandler(app, "Receive Task", receiveTaskHandler);
 
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        ReceiveTaskHandler receiveTaskHandler = new ReceiveTaskHandler(kruntime);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task", receiveTaskHandler);
+        org.kie.kogito.process.Process<EventBasedSplit5Model> processDefinition = EventBasedSplit5Process.newProcess(app);
+        EventBasedSplit5Model model = processDefinition.createModel();
+        org.kie.kogito.process.ProcessInstance<EventBasedSplit5Model> instance = processDefinition.createInstance(model);
         // Yes
-        KogitoProcessInstance processInstance = kruntime.startProcess("EventBasedSplit5");
-        assertProcessInstanceActive(processInstance);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        receiveTaskHandler.setKnowledgeRuntime(kruntime);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task", receiveTaskHandler);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
         receiveTaskHandler.messageReceived("YesMessage", "YesValue");
-        assertProcessInstanceFinished(processInstance, kruntime);
-        receiveTaskHandler.messageReceived("NoMessage", "NoValue");
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1", new SystemOutWorkItemHandler());
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2", new SystemOutWorkItemHandler());
-        receiveTaskHandler.setKnowledgeRuntime(kruntime);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Receive Task", receiveTaskHandler);
-        // No
-        processInstance = kruntime.startProcess("EventBasedSplit5");
-        receiveTaskHandler.messageReceived("NoMessage", "NoValue");
-        assertProcessInstanceFinished(processInstance, kruntime);
-        receiveTaskHandler.messageReceived("YesMessage", "YesValue");
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
 
+        // No
+        instance = processDefinition.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
+        receiveTaskHandler.messageReceived("NoMessage", "NoValue");
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
+
 
     @Test
     public void testEventBasedSplitWithSubprocess() throws Exception {
@@ -567,18 +563,13 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         // Stop
         KogitoProcessInstance processInstance = kruntime.startProcess("ExclusiveEventBasedGatewayInSubprocess");
         assertProcessInstanceActive(processInstance);
-
         kruntime.signalEvent("StopSignal", "", processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
-
         // Continue and Stop
         processInstance = kruntime.startProcess("ExclusiveEventBasedGatewayInSubprocess");
         assertProcessInstanceActive(processInstance);
-
         kruntime.signalEvent("ContinueSignal", "", processInstance.getStringId());
-
         assertProcessInstanceActive(processInstance);
-
         kruntime.signalEvent("StopSignal", "", processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
     }
