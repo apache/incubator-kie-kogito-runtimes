@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.kie.kogito.Application;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
@@ -31,16 +32,27 @@ import org.kie.kogito.internal.process.workitem.WorkItemLifeCyclePhase;
 import org.kie.kogito.internal.process.workitem.WorkItemPhaseState;
 import org.kie.kogito.internal.process.workitem.WorkItemTerminationType;
 import org.kie.kogito.internal.process.workitem.WorkItemTransition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toSet;
 
 public class DefaultKogitoWorkItemHandler implements KogitoWorkItemHandler {
 
-    public static final WorkItemPhaseState initialized = WorkItemPhaseState.initialized();
-    public static final WorkItemPhaseState completed = WorkItemPhaseState.of("Completed", WorkItemTerminationType.COMPLETE);
-    public static final WorkItemPhaseState aborted = WorkItemPhaseState.of("Aborted", WorkItemTerminationType.ABORT);
-    public static final WorkItemPhaseState activated = WorkItemPhaseState.of("Activated");
+    public static final String TRANSITION_COMPLETE = "complete";
+    public static final String TRANSITION_ABORT = "abort";
+    public static final String TRANSITION_ACTIVATE = "activate";
+    public static final String TRANSITION_SKIP = "skip";
+
+    private static Logger LOG = LoggerFactory.getLogger(DefaultKogitoWorkItemHandler.class);
+
+    private WorkItemPhaseState initialized = WorkItemPhaseState.initialized();
+    private WorkItemPhaseState completed = WorkItemPhaseState.of("Completed", WorkItemTerminationType.COMPLETE);
+    private WorkItemPhaseState aborted = WorkItemPhaseState.of("Aborted", WorkItemTerminationType.ABORT);
+    private WorkItemPhaseState activated = WorkItemPhaseState.of("Activated");
+
+    protected Application application;
 
     protected WorkItemLifeCycle workItemLifeCycle;
 
@@ -49,14 +61,24 @@ public class DefaultKogitoWorkItemHandler implements KogitoWorkItemHandler {
     }
 
     public DefaultKogitoWorkItemHandler() {
-        this.workItemLifeCycle = init();
+        this.workItemLifeCycle = initialize();
     }
 
-    public WorkItemLifeCycle init() {
-        DefaultWorkItemLifeCyclePhase complete = new DefaultWorkItemLifeCyclePhase("complete", activated, completed, this::completeWorkItemHandler);
-        DefaultWorkItemLifeCyclePhase abort = new DefaultWorkItemLifeCyclePhase("abort", activated, aborted, this::abortWorkItemHandler);
-        DefaultWorkItemLifeCyclePhase active = new DefaultWorkItemLifeCyclePhase("activate", initialized, activated, this::activateWorkItemHandler);
-        return new DefaultWorkItemLifeCycle(active, abort, complete);
+    public WorkItemLifeCycle initialize() {
+        DefaultWorkItemLifeCyclePhase complete = new DefaultWorkItemLifeCyclePhase(TRANSITION_COMPLETE, activated, completed, this::completeWorkItemHandler);
+        DefaultWorkItemLifeCyclePhase abort = new DefaultWorkItemLifeCyclePhase(TRANSITION_ABORT, activated, aborted, this::abortWorkItemHandler);
+        DefaultWorkItemLifeCyclePhase active = new DefaultWorkItemLifeCyclePhase(TRANSITION_ACTIVATE, initialized, activated, this::activateWorkItemHandler);
+        DefaultWorkItemLifeCyclePhase skip = new DefaultWorkItemLifeCyclePhase(TRANSITION_SKIP, activated, completed, this::skipWorkItemHandler);
+        return new DefaultWorkItemLifeCycle(active, skip, abort, complete);
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
+    }
+
+    @Override
+    public Application getApplication() {
+        return this.application;
     }
 
     @Override
@@ -76,7 +98,13 @@ public class DefaultKogitoWorkItemHandler implements KogitoWorkItemHandler {
 
     @Override
     public Optional<WorkItemTransition> transitionToPhase(KogitoWorkItemManager manager, KogitoWorkItem workItem, WorkItemTransition transition) {
-        return workItemLifeCycle.transitionTo(manager, this, workItem, transition);
+        LOG.debug("workItem {} handled by {} transition {}", workItem, this.getName(), transition);
+        try {
+            return workItemLifeCycle.transitionTo(manager, this, workItem, transition);
+        } catch (RuntimeException e) {
+            LOG.info("error workItem {} handled by {} transition {} ", workItem, this.getName(), transition, e);
+            throw e;
+        }
     }
 
     @Override
@@ -101,4 +129,7 @@ public class DefaultKogitoWorkItemHandler implements KogitoWorkItemHandler {
         return Optional.empty();
     }
 
+    public Optional<WorkItemTransition> skipWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workitem, WorkItemTransition transition) {
+        return Optional.empty();
+    }
 }

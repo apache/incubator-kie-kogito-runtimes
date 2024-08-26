@@ -68,4 +68,9 @@ public class DefaultWorkItemTransitionImpl implements WorkItemTransition {
         return Optional.ofNullable(this.termination);
     }
 
+    @Override
+    public String toString() {
+        return "DefaultWorkItemTransitionImpl [id=" + id + ", data=" + data + ", policies=" + policies + ", termination=" + termination + "]";
+    }
+
 }

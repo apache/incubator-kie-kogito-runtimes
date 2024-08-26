@@ -71,6 +71,7 @@ import org.kie.kogito.process.Signal;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.Milestone;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.services.uow.ProcessInstanceWorkUnit;
 
 public abstract class AbstractProcessInstance<T extends Model> implements ProcessInstance<T> {
@@ -524,16 +525,19 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     private WorkItem toBaseWorkItem(WorkItemNodeInstance workItemNodeInstance) {
+        InternalKogitoWorkItem workItem = workItemNodeInstance.getWorkItem();
         return new BaseWorkItem(
                 workItemNodeInstance.getStringId(),
                 workItemNodeInstance.getWorkItemId(),
                 workItemNodeInstance.getNode().getId(),
-                (String) workItemNodeInstance.getWorkItem().getParameters().getOrDefault("TaskName", workItemNodeInstance.getNodeName()),
-                workItemNodeInstance.getWorkItem().getState(),
-                workItemNodeInstance.getWorkItem().getPhaseId(),
-                workItemNodeInstance.getWorkItem().getPhaseStatus(),
-                workItemNodeInstance.getWorkItem().getParameters(),
-                workItemNodeInstance.getWorkItem().getResults());
+                (String) workItem.getParameters().getOrDefault("TaskName", workItemNodeInstance.getNodeName()),
+                workItem.getName(),
+                workItem.getState(),
+                workItem.getPhaseId(),
+                workItem.getPhaseStatus(),
+                workItem.getParameters(),
+                workItem.getResults(),
+                workItem.getParameter("id") + ":" + workItem.getExternalReferenceId());
     }
 
     private boolean enforce(KogitoWorkItem kogitoWorkItem, Policy... policies) {

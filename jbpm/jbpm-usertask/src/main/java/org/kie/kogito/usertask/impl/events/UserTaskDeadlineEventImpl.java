@@ -20,50 +20,35 @@ package org.kie.kogito.usertask.impl.events;
 
 import java.util.Map;
 
+import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.events.UserTaskDeadlineEvent;
 
 public class UserTaskDeadlineEventImpl extends UserTaskEventImpl implements UserTaskDeadlineEvent {
 
+    private static final long serialVersionUID = 510l;
+
+    private Map<String, Object> notification;
+    private DeadlineType type;
+
+    public UserTaskDeadlineEventImpl(UserTaskInstance userTaskInstance, Map<String, Object> notification, DeadlineType type, String user) {
+        super(userTaskInstance, user);
+        this.notification = notification;
+        this.type = type;
+    }
+
     @Override
     public Map<String, Object> getNotification() {
-        // TODO Auto-generated method stub
-        return null;
+        return notification;
     }
 
     @Override
     public DeadlineType getType() {
-        // TODO Auto-generated method stub
-        return null;
+        return type;
     }
 
-    //    
-    //    private static final long serialVersionUID = 510l;
-    //
-    //    private HumanTaskWorkItem workItem;
-    //    private Map<String, Object> notification;
-    //    private DeadlineType type;
-    //
-    //    public UserTaskDeadlineEventImpl(ProcessInstance instance, HumanTaskNodeInstance humanTaskNodeInstance, HumanTaskWorkItem workItem,
-    //            Map<String, Object> notification, DeadlineType type, KieRuntime kruntime, String identity) {
-    //        super(instance, humanTaskNodeInstance, kruntime, identity);
-    //        this.workItem = workItem;
-    //        this.notification = notification;
-    //        this.type = type;
-    //    }
-    //
-    //    @Override
-    //    public Map<String, Object> getNotification() {
-    //        return notification;
-    //    }
-    //
-    //    @Override
-    //    public DeadlineType getType() {
-    //        return type;
-    //    }
-    //
-    //    @Override
-    //    public String toString() {
-    //        return "HumanTaskDeadlineEventImpl [workItem=" + workItem + ", notification=" + notification + ", type=" +
-    //                type + "]";
-    //    }
+    @Override
+    public String toString() {
+        return "HumanTaskDeadlineEventImpl [notification=" + notification + ", type=" +
+                type + "]";
+    }
 }

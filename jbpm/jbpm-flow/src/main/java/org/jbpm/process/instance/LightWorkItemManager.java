@@ -18,6 +18,7 @@
  */
 package org.jbpm.process.instance;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +59,11 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
     }
 
     @Override
+    public KogitoWorkItemHandler getKogitoWorkItemHandler(String name) {
+        return this.workItemHandlers.get(name);
+    }
+
+    @Override
     public void registerWorkItemHandler(String workItemName, KogitoWorkItemHandler handler) {
         this.workItemHandlers.put(workItemName, handler);
     }
@@ -85,7 +91,7 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
         transitionWorkItem(workItem, transition, true);
     }
 
-    private KogitoWorkItemHandler getWorkItemHandler(String workItemId) throws KogitoWorkItemHandlerNotFoundException {
+    public KogitoWorkItemHandler getWorkItemHandler(String workItemId) throws KogitoWorkItemHandlerNotFoundException {
         InternalKogitoWorkItem workItem = workItems.get(workItemId);
         if (workItem == null) {
             throw new WorkItemNotFoundException(workItemId);
@@ -93,7 +99,7 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
         return getWorkItemHandler(workItem);
     }
 
-    private KogitoWorkItemHandler getWorkItemHandler(InternalKogitoWorkItem workItem) throws KogitoWorkItemHandlerNotFoundException {
+    public KogitoWorkItemHandler getWorkItemHandler(InternalKogitoWorkItem workItem) throws KogitoWorkItemHandlerNotFoundException {
         KogitoWorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
         if (handler == null) {
             throw new KogitoWorkItemHandlerNotFoundException(workItem.getName());
@@ -177,6 +183,11 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
             throw new WorkItemNotFoundException("Work Item (" + workItemId + ") does not exist", workItemId);
         }
         transitionWorkItem(workItem, transition, true);
+    }
+
+    @Override
+    public Collection<String> getHandlerIds() {
+        return this.workItemHandlers.keySet();
     }
 
     private void transitionWorkItem(InternalKogitoWorkItem workItem, WorkItemTransition transition, boolean signal) {

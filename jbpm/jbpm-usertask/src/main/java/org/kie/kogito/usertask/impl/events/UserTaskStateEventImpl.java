@@ -18,53 +18,37 @@
  */
 package org.kie.kogito.usertask.impl.events;
 
+import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.events.UserTaskStateEvent;
 
 public class UserTaskStateEventImpl extends UserTaskEventImpl implements UserTaskStateEvent {
 
+    private static final long serialVersionUID = 4556236095420836309L;
+    private String oldStatus;
+    private String newStatus;
+
+    public UserTaskStateEventImpl(UserTaskInstance userTaskInstance, String oldStatus, String newStatus, String user) {
+        super(userTaskInstance, user);
+    }
+
+    public void setOldStatus(String oldStatus) {
+        this.oldStatus = oldStatus;
+
+    }
+
+    public void setNewStatus(String newStatus) {
+        this.newStatus = newStatus;
+
+    }
+
     @Override
     public String getNewStatus() {
-        // TODO Auto-generated method stub
-        return null;
+        return newStatus;
     }
 
     @Override
     public String getOldStatus() {
-        // TODO Auto-generated method stub
-        return null;
+        return oldStatus;
     }
 
-    //
-    //    private static final long serialVersionUID = 4556236095420836309L;
-    //    private String oldStatus;
-    //    private String newStatus;
-    //
-    //    public UserTaskStateEventImpl(ProcessInstance instance, HumanTaskNodeInstance nodeInstance, KieRuntime kruntime, String identity) {
-    //        super(instance, nodeInstance, kruntime, identity);
-    //    }
-    //
-    //    @Override
-    //    public String getUserTaskDefinitionId() {
-    //        return getHumanTaskNodeInstance().getNodeDefinitionId();
-    //    }
-    //
-    //    public void setOldStatus(String oldStatus) {
-    //        this.oldStatus = oldStatus;
-    //
-    //    }
-    //
-    //    public void setNewStatus(String newStatus) {
-    //        this.newStatus = newStatus;
-    //
-    //    }
-    //
-    //    @Override
-    //    public String getNewStatus() {
-    //        return newStatus;
-    //    }
-    //
-    //    @Override
-    //    public String getOldStatus() {
-    //        return oldStatus;
-    //    }
 }

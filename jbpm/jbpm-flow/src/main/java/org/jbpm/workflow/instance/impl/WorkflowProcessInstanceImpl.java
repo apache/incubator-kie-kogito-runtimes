@@ -686,6 +686,9 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                             if (!getNodeInstances(id, currentView).isEmpty()) {
                                 EventNodeInstance eventNodeInstance = (EventNodeInstance) getNodeInstance(node);
                                 eventNodeInstance.signalEvent(type, event, getResolver(node, currentView));
+                            } else if (type.startsWith("Error-") || type.startsWith("Compensation-") || type.startsWith("implicit:compensation")) {
+                                EventNodeInstance eventNodeInstance = (EventNodeInstance) getNodeInstance(node);
+                                eventNodeInstance.signalEvent(type, event, getResolver(node, currentView));
                             }
                         } else {
                             if (node instanceof EventSubProcessNode && (resolveVariables(((EventSubProcessNode) node).getEvents()).contains(type))) {

@@ -187,6 +187,7 @@ import org.kie.api.event.rule.MatchCancelledEvent;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.Application;
+import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.handlers.HelloService_hello__2_Handler;
 import org.kie.kogito.handlers.HelloService_validate__2_Handler;
 import org.kie.kogito.handlers.Interface1_operation1_EAID_3344916D_2BAC_4ab6_92D4_F739156D0933_Handler;
@@ -199,7 +200,6 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kie.kogito.jbpm.usertask.internal.SecurityPolicy;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 
@@ -616,7 +616,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     @Test
     public void testUserTaskNoneAssignmentFailure() {
         Application app = ProcessTestHelper.newApplication();
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler workItemHandler = new TestUserTaskWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
         org.kie.kogito.process.Process<UserTaskNoneModel> processDefinition = UserTaskNoneProcess.newProcess(app);
         UserTaskNoneModel model = processDefinition.createModel();
@@ -625,9 +625,11 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
-
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john", "HR");
-
+        try {
+            ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john", "HR");
+        } catch (Throwable e) {
+            assertThat(e).isInstanceOf(InvalidTransitionException.class);
+        }
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
 

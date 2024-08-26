@@ -31,6 +31,10 @@ public interface KogitoWorkItem extends WorkItem {
     @Deprecated
     long getId();
 
+    String getExternalReferenceId();
+
+    String getActualOwner();
+
     String getStringId();
 
     /**
@@ -84,6 +88,8 @@ public interface KogitoWorkItem extends WorkItem {
      * @return the related process instance
      */
     KogitoProcessInstance getProcessInstance();
+
+    void removeOutput(String name);
 
     void setOutput(String name, Object value);
 

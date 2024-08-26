@@ -39,4 +39,8 @@ public class SystemOutWorkItemHandler extends DefaultKogitoWorkItemHandler {
         return Optional.of(this.workItemLifeCycle.newTransition("abort", workItem.getPhaseStatus(), workItem.getResults()));
     }
 
+    @Override
+    public String getName() {
+        return "Log";
+    }
 }

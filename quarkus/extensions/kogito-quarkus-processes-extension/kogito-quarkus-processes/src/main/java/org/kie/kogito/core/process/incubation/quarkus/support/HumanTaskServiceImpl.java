@@ -25,19 +25,33 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.jbpm.process.instance.impl.humantask.HumanTaskHelper;
 import org.jbpm.workflow.core.node.HumanTaskNode;
 import org.kie.kogito.Application;
 import org.kie.kogito.MappableToModel;
 import org.kie.kogito.Model;
-import org.kie.kogito.incubation.common.*;
-import org.kie.kogito.incubation.processes.*;
+import org.kie.kogito.auth.IdentityProviders;
+import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.incubation.common.DataContext;
+import org.kie.kogito.incubation.common.EmptyDataContext;
+import org.kie.kogito.incubation.common.ExtendedDataContext;
+import org.kie.kogito.incubation.common.LocalId;
+import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.common.MetaDataContext;
+import org.kie.kogito.incubation.processes.LocalProcessId;
+import org.kie.kogito.incubation.processes.ProcessIdParser;
+import org.kie.kogito.incubation.processes.ProcessInstanceId;
+import org.kie.kogito.incubation.processes.TaskId;
+import org.kie.kogito.incubation.processes.TaskIds;
+import org.kie.kogito.incubation.processes.TaskInstanceId;
+import org.kie.kogito.incubation.processes.services.contexts.Policy;
 import org.kie.kogito.incubation.processes.services.contexts.ProcessMetaDataContext;
 import org.kie.kogito.incubation.processes.services.contexts.TaskMetaDataContext;
 import org.kie.kogito.incubation.processes.services.humantask.HumanTaskService;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
-import org.kie.kogito.process.*;
 import org.kie.kogito.process.Process;
+import org.kie.kogito.process.ProcessService;
+import org.kie.kogito.process.Processes;
+import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 class HumanTaskServiceImpl implements HumanTaskService {
@@ -66,10 +80,7 @@ class HumanTaskServiceImpl implements HumanTaskService {
             Process<MappableToModel<Model>> process = parseProcess(instanceId.processId());
             String processInstanceIdString = instanceId.processInstanceId();
 
-            List<String> tasks = svc.getTasks(
-                    process,
-                    processInstanceIdString,
-                    metaCtx.policy()).orElseThrow().stream()
+            List<String> tasks = svc.getWorkItems(process, processInstanceIdString, convertPolicyObject(metaCtx.policy())).orElseThrow().stream()
                     .map(wi -> taskIds.get(wi.getName()).instances().get(wi.getId()).asLocalUri().path())
                     .collect(Collectors.toList());
             MapDataContext mdc = MapDataContext.create();
@@ -84,12 +95,11 @@ class HumanTaskServiceImpl implements HumanTaskService {
 
             String taskInstanceIdString = taskInstanceId.taskInstanceId();
             String processInstanceIdString = instanceId.processInstanceId();
-            WorkItem workItem =
-                    svc.getTask(
-                            process,
-                            processInstanceIdString,
-                            taskInstanceIdString,
-                            metaCtx.policy(), Function.identity()).orElseThrow(() -> new IllegalArgumentException("Cannot find ID " + id.asLocalUri().path()));
+            WorkItem workItem = svc.getWorkItem(
+                    process,
+                    processInstanceIdString,
+                    taskInstanceIdString,
+                    convertPolicyObject(metaCtx.policy()), Function.identity()).orElseThrow(() -> new IllegalArgumentException("Cannot find ID " + id.asLocalUri().path()));
             return ExtendedDataContext.ofData(MapDataContext.of(workItem.getResults()));
         }
     }
@@ -103,8 +113,7 @@ class HumanTaskServiceImpl implements HumanTaskService {
         ExtendedDataContext edc = dataContext.as(ExtendedDataContext.class);
         TaskMetaDataContext mdc = edc.meta().as(TaskMetaDataContext.class);
 
-        WorkItem workItem = svc.signalTask(process, instanceId.processInstanceId(), taskId.taskId(), mdc.policy())
-                .orElseThrow();
+        WorkItem workItem = svc.signalWorkItem(process, instanceId.processInstanceId(), taskId.taskId(), convertPolicyObject(mdc.policy())).orElseThrow();
 
         return ExtendedDataContext.of(ProcessMetaDataContext.of(taskId), MapDataContext.from(workItem));
     }
@@ -154,12 +163,12 @@ class HumanTaskServiceImpl implements HumanTaskService {
 
         MappableToModel<Model> model = process.createModel();
         model.fromMap(map);
-        Model result = svc.taskTransition(
+        Model result = svc.transitionWorkItem(
                 process,
                 processInstanceIdString,
                 taskInstanceIdString,
                 phase,
-                mdc.policy(),
+                convertPolicyObject(mdc.policy()),
                 model)
                 .orElseThrow();
 
@@ -186,9 +195,10 @@ class HumanTaskServiceImpl implements HumanTaskService {
                         .instances()
                         .findById(processInstanceIdString)
                         .map(pi -> {
-                            pi.updateWorkItem(
-                                    taskInstanceIdString,
-                                    wi -> HumanTaskHelper.updateContent(wi, map), mdc.policy());
+                            pi.updateWorkItem(taskInstanceIdString, wi -> {
+                                wi.setOutputs(map);
+                                return null;
+                            }, convertPolicyObject(mdc.policy()));
                             return pi.variables().toModel();
                         }))
                 .orElseThrow().toMap();
@@ -196,4 +206,7 @@ class HumanTaskServiceImpl implements HumanTaskService {
         return ExtendedDataContext.ofData(MapDataContext.of(result));
     }
 
+    private SecurityPolicy convertPolicyObject(Policy policy) {
+        return SecurityPolicy.of(IdentityProviders.of(policy.user(), policy.groups()));
+    }
 }

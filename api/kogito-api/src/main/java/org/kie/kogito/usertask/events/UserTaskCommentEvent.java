@@ -19,6 +19,8 @@
 
 package org.kie.kogito.usertask.events;
 
+import org.kie.kogito.usertask.model.Comment;
+
 public interface UserTaskCommentEvent extends UserTaskEvent {
 
     Comment getOldComment();

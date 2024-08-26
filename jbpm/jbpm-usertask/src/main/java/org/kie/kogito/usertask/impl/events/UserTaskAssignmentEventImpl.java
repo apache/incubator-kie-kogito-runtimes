@@ -18,68 +18,52 @@
  */
 package org.kie.kogito.usertask.impl.events;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.events.UserTaskAssignmentEvent;
 
 public class UserTaskAssignmentEventImpl extends UserTaskEventImpl implements UserTaskAssignmentEvent {
 
-    @Override
-    public String getAssignmentType() {
-        // TODO Auto-generated method stub
-        return null;
+    private static final long serialVersionUID = 3388030428744037024L;
+    private String assignmentType;
+    private Set<String> oldUsersId;
+    private Set<String> newUsersId;
+
+    public UserTaskAssignmentEventImpl(UserTaskInstance userTaskInstance, String assignmentType, Set<String> oldUserId, Set<String> newUserId, String user) {
+        super(userTaskInstance, user);
+        this.assignmentType = assignmentType;
+        this.oldUsersId = oldUserId;
+        this.newUsersId = newUserId;
+    }
+
+    public void setAssignmentType(String name) {
+        this.assignmentType = name;
+
+    }
+
+    public void setOldUsersId(Set<String> oldUsersId) {
+        this.oldUsersId = new HashSet<>(oldUsersId);
+
+    }
+
+    public void setNewUsersId(Set<String> newUsersId) {
+        this.newUsersId = new HashSet<>(newUsersId);
     }
 
     @Override
-    public String[] getNewUsersId() {
-        // TODO Auto-generated method stub
-        return null;
+    public String getAssignmentType() {
+        return assignmentType;
     }
 
     @Override
     public String[] getOldUsersId() {
-        // TODO Auto-generated method stub
-        return null;
+        return oldUsersId.toArray(String[]::new);
     }
-    //
-    //    private static final long serialVersionUID = 1964525156416025043L;
-    //    private String assignmentType;
-    //    private String[] oldUsersId;
-    //    private String[] newUsersId;
-    //
-    //    public UserTaskAssignmentEventImpl(ProcessInstance instance, HumanTaskNodeInstance nodeInstance, KieRuntime kruntime, String identity) {
-    //        super(instance, nodeInstance, kruntime, identity);
-    //    }
-    //
-    //    @Override
-    //    public String getUserTaskId() {
-    //        return getHumanTaskNodeInstance().getWorkItemId();
-    //    }
-    //
-    //    public void setAssignmentType(String name) {
-    //        this.assignmentType = name;
-    //
-    //    }
-    //
-    //    public void setOldUsersId(Set<String> oldUsersId) {
-    //        this.oldUsersId = oldUsersId.toArray(String[]::new);
-    //
-    //    }
-    //
-    //    public void setNewUsersId(Set<String> newUsersId) {
-    //        this.newUsersId = newUsersId.toArray(String[]::new);
-    //    }
-    //
-    //    @Override
-    //    public String getAssignmentType() {
-    //        return assignmentType;
-    //    }
-    //
-    //    @Override
-    //    public String[] getOldUsersId() {
-    //        return oldUsersId;
-    //    }
-    //
-    //    @Override
-    //    public String[] getNewUsersId() {
-    //        return newUsersId;
-    //    }
+
+    @Override
+    public String[] getNewUsersId() {
+        return newUsersId.toArray(String[]::new);
+    }
 }

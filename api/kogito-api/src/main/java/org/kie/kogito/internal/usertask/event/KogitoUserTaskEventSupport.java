@@ -21,14 +21,10 @@ package org.kie.kogito.internal.usertask.event;
 import java.util.Map;
 import java.util.Set;
 
-import org.kie.api.runtime.KieRuntime;
-import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.internal.usertask.event.KogitoUserTaskEventSupport.AssignmentType;
-import org.kie.kogito.usertask.Attachment;
-import org.kie.kogito.usertask.Comment;
-import org.kie.kogito.usertask.HumanTaskWorkItem;
 import org.kie.kogito.usertask.UserTaskEventListener;
+import org.kie.kogito.usertask.UserTaskInstance;
+import org.kie.kogito.usertask.model.Attachment;
+import org.kie.kogito.usertask.model.Comment;
 
 public interface KogitoUserTaskEventSupport {
     enum AssignmentType {
@@ -40,80 +36,54 @@ public interface KogitoUserTaskEventSupport {
     };
 
     void fireOneUserTaskStateChange(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            KieRuntime kruntime,
+            UserTaskInstance instance,
             String oldPhaseStatus, String newPhaseStatus);
 
     void fireOnUserTaskNotStartedDeadline(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            HumanTaskWorkItem workItem,
-            Map<String, Object> notification,
-            KieRuntime kruntime);
+            UserTaskInstance instance,
+            Map<String, Object> notification);
 
     void fireOnUserTaskNotCompletedDeadline(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            HumanTaskWorkItem workItem,
-            Map<String, Object> notification,
-            KieRuntime kruntime);
+            UserTaskInstance instance,
+            Map<String, Object> notification);
 
     void fireOnUserTaskAssignmentChange(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            KieRuntime kruntime,
+            UserTaskInstance instance,
             AssignmentType assignmentType,
             Set<String> oldUsersId, Set<String> newUsersId);
 
     void fireOnUserTaskInputVariableChange(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            KieRuntime kruntime,
+            UserTaskInstance instance,
             String variableName,
             Object newValue, Object oldValue);
 
     void fireOnUserTaskOutputVariableChange(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            KieRuntime kruntime,
+            UserTaskInstance instance,
             String variableName,
             Object newValue, Object oldValue);
 
     void fireOnUserTaskAttachmentAdded(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            KieRuntime kruntime,
+            UserTaskInstance instance,
             Attachment addedAttachment);
 
     void fireOnUserTaskAttachmentDeleted(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            KieRuntime kruntime,
+            UserTaskInstance instance,
             Attachment deletedAttachment);
 
     void fireOnUserTaskAttachmentChange(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            KieRuntime kruntime,
+            UserTaskInstance instance,
             Attachment oldAttachment, Attachment newAttachment);
 
     void fireOnUserTaskCommentChange(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            KieRuntime kruntime,
+            UserTaskInstance instance,
             Comment oldComment, Comment newComment);
 
     void fireOnUserTaskCommentDeleted(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            KieRuntime kruntime,
+            UserTaskInstance instance,
             Comment deletedComment);
 
     void fireOnUserTaskCommentAdded(
-            KogitoProcessInstance instance,
-            KogitoNodeInstance nodeInstance,
-            KieRuntime kruntime,
+            UserTaskInstance instance,
             Comment addedComment);
 
     void reset();

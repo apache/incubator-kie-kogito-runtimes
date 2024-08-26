@@ -25,14 +25,10 @@ import org.jbpm.flow.serialization.MarshallerWriterContext;
 import org.jbpm.flow.serialization.NodeInstanceWriter;
 import org.jbpm.flow.serialization.impl.ProtobufVariableWriter;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent;
-import org.jbpm.flow.serialization.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData;
-import org.jbpm.workflow.instance.node.HumanTaskNodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kie.kogito.usertask.HumanTaskWorkItem;
 
-import com.google.protobuf.Any;
 import com.google.protobuf.GeneratedMessageV3.Builder;
 
 public class WorkItemNodeInstanceWriter implements NodeInstanceWriter {
@@ -73,55 +69,15 @@ public class WorkItemNodeInstanceWriter implements NodeInstanceWriter {
             builder.setCompleteDate(workItem.getCompleteDate().getTime());
         }
 
-        if (nodeInstance instanceof HumanTaskNodeInstance) {
-            builder.setWorkItemData(Any.pack(buildHumanTaskWorkItemData((HumanTaskNodeInstance) nodeInstance, (HumanTaskWorkItem) nodeInstance.getWorkItem())));
-        }
-        return builder;
-    }
-
-    private HumanTaskWorkItemData buildHumanTaskWorkItemData(HumanTaskNodeInstance nodeInstance, HumanTaskWorkItem workItem) {
-        HumanTaskWorkItemData.Builder builder = HumanTaskWorkItemData.newBuilder();
-
-        if (workItem.getTaskPriority() != null) {
-            builder.setTaskPriority(workItem.getTaskPriority());
-        }
-
-        if (workItem.getReferenceName() != null) {
-            builder.setTaskReferenceName(workItem.getReferenceName());
-        }
-        if (workItem.getTaskDescription() != null) {
-            builder.setTaskDescription(workItem.getTaskDescription());
-        }
-
         if (workItem.getActualOwner() != null) {
             builder.setActualOwner(workItem.getActualOwner());
         }
 
-        if (workItem.getTaskName() != null) {
-            builder.setTaskName(workItem.getTaskName());
+        if (workItem.getExternalReferenceId() != null) {
+            builder.setExternalReferenceId(workItem.getExternalReferenceId());
         }
 
-        if (workItem.getPotentialUsers() != null) {
-            builder.addAllPotUsers(workItem.getPotentialUsers());
-        }
-
-        if (workItem.getPotentialGroups() != null) {
-            builder.addAllPotGroups(workItem.getPotentialGroups());
-        }
-
-        if (workItem.getExcludedUsers() != null) {
-            builder.addAllExcludedUsers(workItem.getExcludedUsers());
-        }
-
-        if (workItem.getAdminUsers() != null) {
-            builder.addAllAdminUsers(workItem.getAdminUsers());
-        }
-
-        if (workItem.getAdminGroups() != null) {
-            builder.addAllAdminGroups(workItem.getAdminGroups());
-        }
-
-        return builder.build();
+        return builder;
     }
 
 }

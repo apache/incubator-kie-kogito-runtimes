@@ -19,80 +19,36 @@
 
 package org.kie.kogito.usertask.impl.events;
 
-import org.kie.kogito.usertask.Attachment;
+import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.events.UserTaskAttachmentEvent;
+import org.kie.kogito.usertask.model.Attachment;
 
 public class UserTaskAttachmentEventImpl extends UserTaskEventImpl implements UserTaskAttachmentEvent {
 
-    @Override
-    public org.kie.kogito.usertask.events.Attachment getOldAttachment() {
-        // TODO Auto-generated method stub
-        return null;
+    private static final long serialVersionUID = 3956348350804141924L;
+    private Attachment oldAttachment;
+    private Attachment newAttachment;
+
+    public UserTaskAttachmentEventImpl(UserTaskInstance userTaskInstance, String user) {
+        super(userTaskInstance, user);
+    }
+
+    public void setOldAttachment(Attachment oldAttachment) {
+        this.oldAttachment = oldAttachment;
+    }
+
+    public void setNewAttachment(Attachment newAttachment) {
+        this.newAttachment = newAttachment;
     }
 
     @Override
-    public org.kie.kogito.usertask.events.Attachment getNewAttachment() {
-        // TODO Auto-generated method stub
-        return null;
+    public Attachment getOldAttachment() {
+        return oldAttachment;
     }
 
-    //    private static final long serialVersionUID = 3956348350804141924L;
-    //    private Attachment oldAttachment;
-    //    private Attachment newAttachment;
-    //
-    //    public UserTaskAttachmentEventImpl(ProcessInstance instance, HumanTaskNodeInstance nodeInstance, KieRuntime kruntime, String user) {
-    //        super(instance, nodeInstance, kruntime, user);
-    //    }
-    //
-    //    public void setOldAttachment(Attachment oldAttachment) {
-    //        this.oldAttachment = oldAttachment;
-    //    }
-    //
-    //    public void setNewAttachment(Attachment newAttachment) {
-    //        this.newAttachment = newAttachment;
-    //    }
-    //
-    //    @Override
-    //    public org.kie.kogito.usertask.Attachment getOldAttachment() {
-    //        return wrap(oldAttachment);
-    //    }
-    //
-    //    @Override
-    //    public org.kie.kogito.usertask.Attachment getNewAttachment() {
-    //        return wrap(newAttachment);
-    //    }
-    //
-    //    private org.kie.kogito.usertask.Attachment wrap(Attachment attachment) {
-    //        if (attachment == null) {
-    //            return null;
-    //        }
-    //        return new org.kie.kogito.usertask.usertask.Attachment() {
-    //
-    //            @Override
-    //            public String getAttachmentId() {
-    //                return attachment.getId();
-    //            }
-    //
-    //            @Override
-    //            public String getAttachmentName() {
-    //                return attachment.getName();
-    //            }
-    //
-    //            @Override
-    //            public URI getAttachmentURI() {
-    //                return attachment.getContent();
-    //            }
-    //
-    //            @Override
-    //            public String getUpdatedBy() {
-    //                return attachment.getUpdatedBy();
-    //            }
-    //
-    //            @Override
-    //            public Date getUpdatedAt() {
-    //                return attachment.getUpdatedAt();
-    //            }
-    //
-    //        };
-    //    }
+    @Override
+    public Attachment getNewAttachment() {
+        return newAttachment;
+    }
+
 }

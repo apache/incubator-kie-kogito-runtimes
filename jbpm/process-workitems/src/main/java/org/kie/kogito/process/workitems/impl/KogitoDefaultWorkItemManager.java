@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.process.workitems.impl;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,6 +85,16 @@ public class KogitoDefaultWorkItemManager implements InternalKogitoWorkItemManag
         Stream.of(policies).forEach(p -> p.enforce(workItem));
         return updater.apply(workItem);
 
+    }
+
+    @Override
+    public Collection<String> getHandlerIds() {
+        return this.workItemHandlers.keySet();
+    }
+
+    @Override
+    public KogitoWorkItemHandler getKogitoWorkItemHandler(String name) {
+        return this.workItemHandlers.get(name);
     }
 
     @Override

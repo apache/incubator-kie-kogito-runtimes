@@ -76,6 +76,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.jbpm.process.core.context.variable.VariableScope.VARIABLE_SCOPE;
 import static org.kie.api.runtime.process.WorkItem.ABORTED;
+import static org.kie.api.runtime.process.WorkItem.ACTIVE;
 import static org.kie.api.runtime.process.WorkItem.COMPLETED;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ABORTED;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
@@ -209,6 +210,8 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         }
         // workItemId must be set otherwise cancel activity will not find the right work item
         this.workItemId = workItem.getStringId();
+        Collection<String> strings = exceptionScopeInstance.getExceptionScope().getExceptionHandlers().keySet();
+        logger.info("exception scope {} with exception handlers {}", context, strings, e);
         return exceptionScopeInstance;
     }
 
@@ -226,6 +229,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         workItem.setNodeInstance(this);
         workItem.setNodeInstanceId(this.getId());
         workItem.setStartDate(new Date());
+        workItem.setState(ACTIVE);
 
         Map<String, Object> resolvedParameters = new HashMap<>();
 
@@ -287,7 +291,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     @Override
     public void cancel(CancelType cancelType) {
         InternalKogitoWorkItem item = getWorkItem();
-        if (item != null && item.getState() != COMPLETED && item.getState() != ABORTED) {
+        if (item != null && !List.of(COMPLETED, ABORTED).contains(item.getState())) {
             try {
                 ((InternalKogitoWorkItemManager) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).internalAbortWorkItem(item.getStringId());
             } catch (WorkItemHandlerNotFoundException wihnfe) {

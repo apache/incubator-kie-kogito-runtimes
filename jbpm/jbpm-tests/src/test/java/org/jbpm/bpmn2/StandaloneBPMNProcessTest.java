@@ -92,7 +92,6 @@ import org.jbpm.bpmn2.intermediate.IntermediateThrowEventSignalModel;
 import org.jbpm.bpmn2.intermediate.IntermediateThrowEventSignalProcess;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestUserTaskWorkItemHandler;
-import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.start.MessageStartModel;
 import org.jbpm.bpmn2.start.MessageStartProcess;
 import org.jbpm.bpmn2.start.SignalStartModel;
@@ -109,7 +108,6 @@ import org.jbpm.bpmn2.timer.TimerBoundaryEventDurationModel;
 import org.jbpm.bpmn2.timer.TimerBoundaryEventDurationProcess;
 import org.jbpm.bpmn2.timer.TimerBoundaryEventInterruptingModel;
 import org.jbpm.bpmn2.timer.TimerBoundaryEventInterruptingProcess;
-import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.process.workitem.builtin.DoNothingWorkItemHandler;
 import org.jbpm.process.workitem.builtin.ReceiveTaskHandler;
 import org.jbpm.process.workitem.builtin.SendTaskHandler;
@@ -131,6 +129,7 @@ import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.jbpm.usertask.internal.SecurityPolicy;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.Sig;
+import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.w3c.dom.Document;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -259,18 +258,16 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     public void testLane() throws Exception {
         kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/flow/BPMN2-Lane.bpmn2");
 
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler workItemHandler = new TestUserTaskWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         KogitoProcessInstance processInstance = kruntime.startProcess("Lane");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("ActorId")).isEqualTo("john");
         Map<String, Object> results = new HashMap<>();
-        ((InternalHumanTaskWorkItem) workItem).setActualOwner("mary");
+        ((KogitoWorkItemImpl) workItem).setParameter("ActorId", "mary");
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), results);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("SwimlaneActorId")).isEqualTo("mary");

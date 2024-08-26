@@ -33,7 +33,6 @@ import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.ProcessWorkItemTransitionEvent;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.uow.WorkUnit;
-import org.kie.kogito.usertask.events.UserTaskEvent;
 
 public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventListener {
 
@@ -44,11 +43,6 @@ public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventLis
     }
 
     private void intercept(ProcessEvent event) {
-        unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
-        }));
-    }
-
-    private void intercept(UserTaskEvent event) {
         unitOfWorkManager.currentUnitOfWork().intercept(WorkUnit.create(event, e -> {
         }));
     }

@@ -23,8 +23,6 @@ import java.util.Map;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceCommentDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceCommentEventBody;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
-import org.kie.kogito.usertask.HumanTaskWorkItem;
 import org.kie.kogito.usertask.events.UserTaskCommentEvent;
 
 public class UserTaskCommentEventDataEventAdapter extends AbstractDataEventAdapter {
@@ -36,9 +34,7 @@ public class UserTaskCommentEventDataEventAdapter extends AbstractDataEventAdapt
     @Override
     public DataEvent<?> adapt(Object payload) {
         UserTaskCommentEvent event = (UserTaskCommentEvent) payload;
-        Map<String, Object> metadata = AdapterHelper.buildUserTaskMetadata((HumanTaskWorkItem) event.getWorkItem());
-        metadata.putAll(AdapterHelper.buildProcessMetadata((KogitoWorkflowProcessInstance) event.getProcessInstance()));
-        KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
+        Map<String, Object> metadata = AdapterHelper.buildUserTaskMetadata(event.getUserTaskInstance());
 
         int eventType = UserTaskInstanceCommentEventBody.EVENT_TYPE_ADDED;
         if (event.getOldComment() != null && event.getNewComment() == null) {
@@ -49,22 +45,22 @@ public class UserTaskCommentEventDataEventAdapter extends AbstractDataEventAdapt
 
         UserTaskInstanceCommentEventBody.Builder builder = UserTaskInstanceCommentEventBody.create()
                 .eventType(eventType)
-                .userTaskDefinitionId(event.getUserTaskDefinitionId())
-                .userTaskInstanceId(((HumanTaskWorkItem) event.getWorkItem()).getStringId())
-                .userTaskName(((HumanTaskWorkItem) event.getWorkItem()).getTaskName());
+                .userTaskDefinitionId(event.getUserTask().id())
+                .userTaskInstanceId(event.getUserTaskInstance().getId())
+                .userTaskName(event.getUserTaskInstance().getTaskName());
 
         String updatedBy = null;
         switch (eventType) {
             case UserTaskInstanceCommentEventBody.EVENT_TYPE_ADDED:
             case UserTaskInstanceCommentEventBody.EVENT_TYPE_CHANGE:
-                builder.commentContent(event.getNewComment().getCommentContent())
-                        .commentId(event.getNewComment().getCommentId())
+                builder.commentContent(event.getNewComment().getContent())
+                        .commentId(event.getNewComment().getId())
                         .eventDate(event.getNewComment().getUpdatedAt())
                         .eventUser(event.getNewComment().getUpdatedBy());
                 updatedBy = event.getNewComment().getUpdatedBy();
                 break;
             case UserTaskInstanceCommentEventBody.EVENT_TYPE_DELETED:
-                builder.commentId(event.getOldComment().getCommentId())
+                builder.commentId(event.getOldComment().getId())
                         .eventDate(event.getOldComment().getUpdatedAt())
                         .eventUser(event.getOldComment().getUpdatedBy());
 
@@ -73,9 +69,9 @@ public class UserTaskCommentEventDataEventAdapter extends AbstractDataEventAdapt
         }
 
         UserTaskInstanceCommentEventBody body = builder.build();
-        UserTaskInstanceCommentDataEvent utEvent = new UserTaskInstanceCommentDataEvent(AdapterHelper.buildSource(getConfig().service(), event.getProcessInstance().getProcessId()),
+        UserTaskInstanceCommentDataEvent utEvent = new UserTaskInstanceCommentDataEvent(AdapterHelper.buildSource(getConfig().service(), event.getUserTaskInstance().getExternalReferenceId()),
                 getConfig().addons().toString(), updatedBy, metadata, body);
-        utEvent.setKogitoBusinessKey(pi.getBusinessKey());
+
         return utEvent;
     }
 

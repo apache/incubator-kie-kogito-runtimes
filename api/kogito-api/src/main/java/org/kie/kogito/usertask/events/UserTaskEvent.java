@@ -21,29 +21,22 @@ package org.kie.kogito.usertask.events;
 
 import java.util.Date;
 
-import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.usertask.UserTask;
+import org.kie.kogito.usertask.UserTaskInstance;
 
 /**
  * A runtime event related to the execution of process instances.
  */
 public interface UserTaskEvent {
 
+    UserTask getUserTask();
+
     /**
-     * The ProcessInstance this event relates to.
-     *
-     * @return the process instance
+     * Retrive the user task instance triggering this event
+     * 
+     * @return
      */
-    KogitoProcessInstance getProcessInstance();
-
-    KogitoNodeInstance getNodeInstance();
-
-    KogitoWorkItem getWorkItem();
-
-    String getUserTaskId();
-
-    String getUserTaskDefinitionId();
+    UserTaskInstance getUserTaskInstance();
 
     /**
      * Returns exact date when the event was created

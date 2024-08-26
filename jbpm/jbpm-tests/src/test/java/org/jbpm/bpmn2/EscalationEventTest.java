@@ -52,12 +52,12 @@ import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.SignalEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.Application;
+import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kie.kogito.jbpm.usertask.internal.SecurityPolicy;
 import org.kie.kogito.process.impl.Sig;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -19,6 +19,8 @@
 
 package org.kie.kogito.usertask.events;
 
+import org.kie.kogito.usertask.model.Attachment;
+
 public interface UserTaskAttachmentEvent extends UserTaskEvent {
 
     Attachment getOldAttachment();

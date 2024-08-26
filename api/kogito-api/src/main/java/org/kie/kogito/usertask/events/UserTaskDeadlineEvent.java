@@ -21,8 +21,6 @@ package org.kie.kogito.usertask.events;
 
 import java.util.Map;
 
-import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-
 /**
  * An event when a dealine for task has expired
  */
@@ -32,13 +30,6 @@ public interface UserTaskDeadlineEvent extends UserTaskEvent {
         Started,
         Completed
     }
-
-    /**
-     * Returns work item which timeout expires
-     * 
-     * @return work item
-     */
-    KogitoWorkItem getWorkItem();
 
     /**
      * Returns notification data

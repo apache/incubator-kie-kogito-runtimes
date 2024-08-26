@@ -25,7 +25,7 @@ import java.util.Map;
 import org.kie.kogito.event.process.ProcessInstanceEventMetadata;
 import org.kie.kogito.event.usertask.UserTaskInstanceEventMetadata;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
-import org.kie.kogito.usertask.HumanTaskWorkItem;
+import org.kie.kogito.usertask.UserTaskInstance;
 
 public class AdapterHelper {
 
@@ -42,11 +42,11 @@ public class AdapterHelper {
         return metadata;
     }
 
-    public static Map<String, Object> buildUserTaskMetadata(HumanTaskWorkItem pi) {
+    public static Map<String, Object> buildUserTaskMetadata(UserTaskInstance pi) {
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_ID_META_DATA, pi.getStringId());
-        metadata.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_REFERENCE_ID_META_DATA, pi.getReferenceName());
-        metadata.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_STATE_META_DATA, pi.getPhaseStatus());
+        metadata.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_ID_META_DATA, pi.getId());
+        metadata.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_REFERENCE_ID_META_DATA, pi.getUserTask().getReferenceName());
+        metadata.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_STATE_META_DATA, pi.getStatus().getName());
 
         return metadata;
     }

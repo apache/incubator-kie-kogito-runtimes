@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.internal.process.workitem;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -67,4 +68,19 @@ public interface KogitoWorkItemManager {
      * @param transition actual transition to apply to work item
      */
     void transitionWorkItem(String id, WorkItemTransition transition);
+
+    /**
+     * retrieves the handlers names registered in the work item handler
+     * 
+     * @return
+     */
+    Collection<String> getHandlerIds();
+
+    /**
+     * retrieeves the handle registered by the name
+     * 
+     * @param name
+     * @return
+     */
+    KogitoWorkItemHandler getKogitoWorkItemHandler(String name);
 }
