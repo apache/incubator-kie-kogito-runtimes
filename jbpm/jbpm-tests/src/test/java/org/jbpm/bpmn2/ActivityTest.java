@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,7 +45,34 @@ import org.jbpm.bpmn2.activity.UserTaskWithSimulationMetaDataModel;
 import org.jbpm.bpmn2.activity.UserTaskWithSimulationMetaDataProcess;
 import org.jbpm.bpmn2.adhoc.SubProcessInAdHocProcessModel;
 import org.jbpm.bpmn2.adhoc.SubProcessInAdHocProcessProcess;
-import org.jbpm.bpmn2.flow.*;
+import org.jbpm.bpmn2.flow.CompositeWithDIGraphicalModel;
+import org.jbpm.bpmn2.flow.CompositeWithDIGraphicalProcess;
+import org.jbpm.bpmn2.flow.MinimalImplicitModel;
+import org.jbpm.bpmn2.flow.MinimalImplicitProcess;
+import org.jbpm.bpmn2.flow.MinimalModel;
+import org.jbpm.bpmn2.flow.MinimalProcess;
+import org.jbpm.bpmn2.flow.MinimalWithDIGraphicalModel;
+import org.jbpm.bpmn2.flow.MinimalWithDIGraphicalProcess;
+import org.jbpm.bpmn2.flow.MinimalWithGraphicalModel;
+import org.jbpm.bpmn2.flow.MinimalWithGraphicalProcess;
+import org.jbpm.bpmn2.flow.ProcessCustomDescriptionMetaDataModel;
+import org.jbpm.bpmn2.flow.ProcessCustomDescriptionMetaDataProcess;
+import org.jbpm.bpmn2.flow.ProcessVariableCustomDescriptionMetaDataModel;
+import org.jbpm.bpmn2.flow.ProcessVariableCustomDescriptionMetaDataProcess;
+import org.jbpm.bpmn2.flow.ProcessWithVariableNameModel;
+import org.jbpm.bpmn2.flow.ProcessWithVariableNameProcess;
+import org.jbpm.bpmn2.flow.UserTaskActorGroupModel;
+import org.jbpm.bpmn2.flow.UserTaskActorGroupProcess;
+import org.jbpm.bpmn2.flow.UserTaskActorModel;
+import org.jbpm.bpmn2.flow.UserTaskActorProcess;
+import org.jbpm.bpmn2.flow.UserTaskGroupModel;
+import org.jbpm.bpmn2.flow.UserTaskGroupProcess;
+import org.jbpm.bpmn2.flow.UserTaskModel;
+import org.jbpm.bpmn2.flow.UserTaskNoneModel;
+import org.jbpm.bpmn2.flow.UserTaskNoneProcess;
+import org.jbpm.bpmn2.flow.UserTaskProcess;
+import org.jbpm.bpmn2.flow.XORSameTargetModel;
+import org.jbpm.bpmn2.flow.XORSameTargetProcess;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.objects.Account;
@@ -90,10 +116,6 @@ import org.jbpm.bpmn2.subprocess.CallActivityWithBoundaryEventModel;
 import org.jbpm.bpmn2.subprocess.CallActivityWithBoundaryEventProcess;
 import org.jbpm.bpmn2.subprocess.CallActivityWithIOexpressionModel;
 import org.jbpm.bpmn2.subprocess.CallActivityWithIOexpressionProcess;
-import org.jbpm.bpmn2.subprocess.ErrorsBetweenProcessModel;
-import org.jbpm.bpmn2.subprocess.ErrorsBetweenProcessProcess;
-import org.jbpm.bpmn2.subprocess.ErrorsBetweenSubProcessModel;
-import org.jbpm.bpmn2.subprocess.ErrorsBetweenSubProcessProcess;
 import org.jbpm.bpmn2.subprocess.InputMappingUsingValueModel;
 import org.jbpm.bpmn2.subprocess.InputMappingUsingValueProcess;
 import org.jbpm.bpmn2.subprocess.MainGroupAssignmentModel;
@@ -1458,7 +1480,6 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(instance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
 
     }
-
 
     @Test
     public void testErrorBetweenProcessesProcess() throws Exception {
