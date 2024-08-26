@@ -154,10 +154,10 @@ pipeline {
                         }
                         if (isRelease()) {
                             releaseUtils.gpgImportKeyFromStringWithoutPassword(getReleaseGpgSignKeyCredsId())
-                            mavenCommand.withProfiles(['apache-release'])
+                            mvnCmd.withProfiles(['apache-release'])
                         }
                         configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]) {
-                            mavenCommand.withSettingsXmlFile(MAVEN_SETTINGS_FILE)
+                            mvnCmd.withSettingsXmlFile(MAVEN_SETTINGS_FILE)
                                 .run("clean $installOrDeploy")
                         }
                     }
