@@ -41,7 +41,7 @@ import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.jbpm.usertask.internal.Policies;
+import org.kie.kogito.jbpm.usertask.handler.Policies;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
 
 import jakarta.xml.bind.JAXBContext;

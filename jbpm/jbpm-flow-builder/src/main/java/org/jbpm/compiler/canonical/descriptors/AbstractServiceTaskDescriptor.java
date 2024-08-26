@@ -57,6 +57,7 @@ import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
@@ -102,7 +103,7 @@ public abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
                     .addArgument(new StringLiteralExpr("500"))
                     .addArgument(new NameExpr(EXCEPTION_NAME));
 
-            BlockStmt throwBlockStmt = new BlockStmt().addStatement(newExceptionExpression);
+            BlockStmt throwBlockStmt = new BlockStmt().addStatement(new ThrowStmt(newExceptionExpression));
             CatchClause catchClause = new CatchClause(new Parameter(processException(exceptions), new SimpleName(EXCEPTION_NAME)), throwBlockStmt);
             NodeList<CatchClause> clauses = NodeList.nodeList(catchClause);
             return new BlockStmt().addStatement(new TryStmt().setTryBlock(blockStmt).setCatchClauses(clauses));

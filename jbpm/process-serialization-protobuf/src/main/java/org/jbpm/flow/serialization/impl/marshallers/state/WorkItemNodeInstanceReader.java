@@ -29,11 +29,7 @@ import org.jbpm.flow.serialization.NodeInstanceReader;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerException;
 import org.jbpm.flow.serialization.impl.ProtobufVariableReader;
 import org.jbpm.flow.serialization.protobuf.KogitoNodeInstanceContentsProtobuf.WorkItemNodeInstanceContent;
-import org.jbpm.flow.serialization.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData;
-import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
-import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
-import org.jbpm.workflow.instance.node.HumanTaskNodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
@@ -61,38 +57,6 @@ public class WorkItemNodeInstanceReader implements NodeInstanceReader {
             ProtobufVariableReader varReader = new ProtobufVariableReader(context);
             WorkItemNodeInstanceContent content = value.unpack(WorkItemNodeInstanceContent.class);
             WorkItemNodeInstance nodeInstance = instanceWorkItem(content);
-            if (nodeInstance instanceof HumanTaskNodeInstance) {
-                HumanTaskNodeInstance humanTaskNodeInstance = (HumanTaskNodeInstance) nodeInstance;
-                InternalHumanTaskWorkItem workItem = humanTaskNodeInstance.getWorkItem();
-                Any workItemDataMessage = content.getWorkItemData();
-                if (workItemDataMessage.is(HumanTaskWorkItemData.class)) {
-                    HumanTaskWorkItemData workItemData = workItemDataMessage.unpack(HumanTaskWorkItemData.class);
-
-                    if (workItemData.hasTaskName()) {
-                        workItem.setTaskName(workItemData.getTaskName());
-                    }
-                    if (workItemData.hasTaskDescription()) {
-                        workItem.setTaskDescription(workItemData.getTaskDescription());
-                    }
-                    if (workItemData.hasTaskPriority()) {
-                        workItem.setTaskPriority(workItemData.getTaskPriority());
-                    }
-                    if (workItemData.hasTaskReferenceName()) {
-                        workItem.setReferenceName(workItemData.getTaskReferenceName());
-                    }
-                    if (workItemData.hasActualOwner()) {
-                        workItem.setActualOwner(workItemData.getActualOwner());
-                    }
-                    workItem.getAdminUsers().addAll(workItemData.getAdminUsersList());
-                    workItem.getAdminGroups().addAll(workItemData.getAdminGroupsList());
-                    workItem.getPotentialUsers().addAll(workItemData.getPotUsersList());
-                    workItem.getPotentialGroups().addAll(workItemData.getPotGroupsList());
-                    workItem.getExcludedUsers().addAll(workItemData.getExcludedUsersList());
-
-                }
-
-            }
-
             RuleFlowProcessInstance ruleFlowProcessInstance = context.get(MarshallerContextName.MARSHALLER_PROCESS_INSTANCE);
             nodeInstance.internalSetWorkItemId(content.getWorkItemId());
             InternalKogitoWorkItem workItem = (InternalKogitoWorkItem) nodeInstance.getWorkItem();
@@ -125,22 +89,10 @@ public class WorkItemNodeInstanceReader implements NodeInstanceReader {
     }
 
     private WorkItemNodeInstance instanceWorkItem(WorkItemNodeInstanceContent content) {
-        if (content.hasWorkItemData()) {
-            Any workItemDataMessage = content.getWorkItemData();
-            if (workItemDataMessage.is(HumanTaskWorkItemData.class)) {
-                HumanTaskNodeInstance nodeInstance = new HumanTaskNodeInstance();
-                HumanTaskWorkItemImpl workItem = new HumanTaskWorkItemImpl();
-                nodeInstance.internalSetWorkItem(workItem);
-                return nodeInstance;
-            } else {
-                throw new ProcessInstanceMarshallerException("Don't know which type of work item is");
-            }
-        } else {
-            WorkItemNodeInstance nodeInstance = new WorkItemNodeInstance();
-            KogitoWorkItemImpl workItem = new KogitoWorkItemImpl();
-            workItem.setId(UUID.randomUUID().toString());
-            nodeInstance.internalSetWorkItem(workItem);
-            return nodeInstance;
-        }
+        WorkItemNodeInstance nodeInstance = new WorkItemNodeInstance();
+        KogitoWorkItemImpl workItem = new KogitoWorkItemImpl();
+        workItem.setId(UUID.randomUUID().toString());
+        nodeInstance.internalSetWorkItem(workItem);
+        return nodeInstance;
     }
 }

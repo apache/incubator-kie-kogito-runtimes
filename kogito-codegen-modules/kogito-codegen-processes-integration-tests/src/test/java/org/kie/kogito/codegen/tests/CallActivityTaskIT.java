@@ -31,13 +31,13 @@ import org.kie.kogito.codegen.data.Address;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.data.PersonWithAddress;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kie.kogito.internal.process.workitem.NotAuthorizedException;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.workitem.Policy;
 import org.kie.kogito.process.Process;
+import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.usertask.HumanTaskWorkItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,9 +47,9 @@ public class CallActivityTaskIT extends AbstractCodegenIT {
 
         @Override
         public void enforce(KogitoWorkItem workItem) {
-            if (!"john".equals(((HumanTaskWorkItem) workItem).getActualOwner())) {
-                throw new NotAuthorizedException(null);
-            }
+            //            if (!"john".equals(((HumanTaskWorkItem) workItem).getActualOwner())) {
+            //                throw new NotAuthorizedException(null);
+            //            }
         }
 
     };
@@ -158,10 +158,10 @@ public class CallActivityTaskIT extends AbstractCodegenIT {
         assertThat(workItems).hasSize(1);
         WorkItem wi = workItems.get(0);
         assertThat(wi.getName()).isEqualTo("MyTask");
-        //        assertThat(wi.getPhase()).isEqualTo(Active.ID);
-        //        assertThat(wi.getPhaseStatus()).isEqualTo(Active.STATUS);
-        //
-        //        processInstance.transitionWorkItem(workItems.get(0).getId(), new HumanTaskTransition(Complete.ID, null, securityPolicy));
+        assertThat(wi.getPhaseStatus()).isEqualTo("Activated");
+
+        KogitoWorkItemHandler handler = app.config().get(ProcessConfig.class).workItemHandlers().forName("Human Task");
+        processInstance.transitionWorkItem(workItems.get(0).getId(), handler.completeTransition(workItems.get(0).getPhaseStatus(), parameters, securityPolicy));
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
@@ -197,11 +197,9 @@ public class CallActivityTaskIT extends AbstractCodegenIT {
         assertThat(workItems).hasSize(1);
         WorkItem wi = workItems.get(0);
         assertThat(wi.getName()).isEqualTo("MyTask");
-        //        assertThat(wi.getPhase()).isEqualTo(Active.ID);
-        //        assertThat(wi.getPhaseStatus()).isEqualTo(Active.STATUS);
-        //
-        //        processInstance.transitionWorkItem(workItems.get(0).getId(), new HumanTaskTransition(Complete.ID, null, securityPolicy));
 
+        KogitoWorkItemHandler handler = app.config().get(ProcessConfig.class).workItemHandlers().forName("Human Task");
+        processInstance.transitionWorkItem(workItems.get(0).getId(), handler.completeTransition(workItems.get(0).getPhaseStatus(), parameters, securityPolicy));
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 

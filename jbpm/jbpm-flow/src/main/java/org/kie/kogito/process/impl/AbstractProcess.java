@@ -64,6 +64,8 @@ import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.ProcessVersionResolver;
 import org.kie.kogito.process.Signal;
 
+import static org.kie.kogito.internal.process.workitem.KogitoWorkItemHandlerFactory.findAllKogitoWorkItemHandlersRegistered;
+
 @SuppressWarnings("unchecked")
 public abstract class AbstractProcess<T extends Model> implements Process<T>, ProcessSupplier {
 
@@ -84,16 +86,15 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
     private ProcessVersionResolver versionResolver;
 
     protected AbstractProcess() {
-        this(new LightProcessRuntimeServiceProvider());
+        this(null, new LightProcessRuntimeServiceProvider());
     }
 
     protected AbstractProcess(ProcessConfig config, Application application) {
-        this(new ConfiguredProcessServices(config));
-        this.app = application;
+        this(application, new ConfiguredProcessServices(config));
     }
 
-    protected AbstractProcess(ProcessRuntimeServiceProvider services) {
-        this(services, Collections.emptyList(), null, null, null);
+    protected AbstractProcess(Application application, ProcessRuntimeServiceProvider services) {
+        this(application, services, Collections.emptyList(), null, null, null);
     }
 
     protected AbstractProcess(Application app, Collection<KogitoWorkItemHandler> handlers, CorrelationService correlations) {
@@ -101,18 +102,26 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
     }
 
     protected AbstractProcess(Application app, Collection<KogitoWorkItemHandler> handlers, CorrelationService correlations, ProcessInstancesFactory factory) {
-        this(new ConfiguredProcessServices(app.config().get(ProcessConfig.class)), handlers, correlations, factory, app.config().get(ProcessConfig.class).versionResolver());
-        this.app = app;
+        this(app, new ConfiguredProcessServices(app.config().get(ProcessConfig.class)), handlers, correlations, factory, app.config().get(ProcessConfig.class).versionResolver());
+
     }
 
-    protected AbstractProcess(ProcessRuntimeServiceProvider services, Collection<KogitoWorkItemHandler> handlers, CorrelationService correlations, ProcessInstancesFactory factory,
+    protected AbstractProcess(Application app, ProcessRuntimeServiceProvider services, Collection<KogitoWorkItemHandler> handlers, CorrelationService correlations, ProcessInstancesFactory factory,
             ProcessVersionResolver versionResolver) {
+        this.app = app;
         this.services = services;
         this.instances = new MapProcessInstances<>();
         this.processInstancesFactory = factory;
         this.correlations = Optional.ofNullable(correlations).orElseGet(() -> new DefaultCorrelationService());
         this.versionResolver = Optional.ofNullable(versionResolver).orElse(p -> get().getVersion());
         KogitoWorkItemManager workItemManager = services.getKogitoWorkItemManager();
+
+        // loading defaults
+        findAllKogitoWorkItemHandlersRegistered().forEach(workItemHandler -> {
+            workItemHandler.setApplication(app);
+            workItemManager.registerWorkItemHandler(workItemHandler.getName(), workItemHandler);
+        });
+        // overriding kogito work item handlers
         for (KogitoWorkItemHandler handler : handlers) {
             workItemManager.registerWorkItemHandler(handler.getName(), handler);
         }

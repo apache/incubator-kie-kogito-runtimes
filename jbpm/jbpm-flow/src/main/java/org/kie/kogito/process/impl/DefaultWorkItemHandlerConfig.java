@@ -18,11 +18,6 @@
  */
 package org.kie.kogito.process.impl;
 
-import static org.kie.kogito.internal.process.workitem.KogitoWorkItemHandlerFactory.findAllKogitoWorkItemHandlersRegistered;
-
 public class DefaultWorkItemHandlerConfig extends CachedWorkItemHandlerConfig {
 
-    public DefaultWorkItemHandlerConfig() {
-        findAllKogitoWorkItemHandlersRegistered().forEach(e -> register(e.getName(), e));
-    }
 }

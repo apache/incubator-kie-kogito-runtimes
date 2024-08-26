@@ -69,8 +69,9 @@ public class $Type$Resource {
                                      @RequestParam("user") final String user,
                                      @RequestParam("group") final List<String> groups,
                                      @RequestBody(required = false) final $TaskOutput$ model) {
-        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(user, groups), model)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return null;
+        //processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(user, groups), model)
+        //        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping(value = "/{id}/$taskName$/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -79,8 +80,9 @@ public class $Type$Resource {
                                  @RequestParam(value = "user", required = false) final String user,
                                  @RequestParam(value = "group", required = false) final List<String> groups,
                                  @RequestBody(required = false) final $TaskOutput$ model) {
-        return processService.saveTask(process, id, taskId, SecurityPolicy.of(user, groups), model, $TaskOutput$::fromMap)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return null;
+//                processService.saveTask(process, id, taskId, SecurityPolicy.of(user, groups), model, $TaskOutput$::fromMap)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping(value = "/{id}/$taskName$/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE,
@@ -94,8 +96,9 @@ public class $Type$Resource {
                                        @RequestParam(value = "group",
                                                required = false) final List<String> groups,
                                        @RequestBody(required = false) final $TaskOutput$ model) {
-        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(user, groups), model)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return null;
+        //processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(user, groups), model)
+        //        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(value = "/{id}/$taskName$/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -104,8 +107,9 @@ public class $Type$Resource {
                                @RequestParam(value = "user", required = false) final String user,
                                @RequestParam(value = "group",
                                        required = false) final List<String> groups) {
-        return processService.getTask(process, id, taskId, SecurityPolicy.of(user, groups), $TaskModel$::from)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return null;
+        //processService.getTask(process, id, taskId, SecurityPolicy.of(user, groups), $TaskModel$::from)
+        //        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping(value = "/{id}/$taskName$/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -116,8 +120,9 @@ public class $Type$Resource {
                                   @RequestParam(value = "user", required = false) final String user,
                                   @RequestParam(value = "group",
                                           required = false) final List<String> groups) {
-        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(user, groups), null)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return null;
+        //processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(user, groups), null)
+        //        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(value = "$taskName$/schema", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -125,141 +130,141 @@ public class $Type$Resource {
         return JsonSchemaUtil.load(this.getClass().getClassLoader(), process.id(), "$taskName$");
     }
 
-    @GetMapping(value = "/{id}/$taskName$/{taskId}/schema", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getSchemaAndPhases(@PathVariable("id") final String id,
-                                                  @PathVariable("taskId") final String taskId,
-                                                  @RequestParam(value = "user", required = false) final String user,
-                                                  @RequestParam(value = "group",
-                                                          required = false) final List<String> groups) {
-        return processService.getSchemaAndPhases(process, id, taskId, "$taskName$", SecurityPolicy.of(user, groups));
-    }
-
-    @PostMapping(value = "/{id}/$taskName$/{taskId}/comments", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<Comment> addComment(@PathVariable("id") final String id,
-                                              @PathVariable("taskId") final String taskId,
-                                              @RequestParam(value = "user", required = false) final String user,
-                                              @RequestParam(value = "group",
-                                                      required = false) final List<String> groups,
-                                              @RequestBody String commentInfo,
-                                              UriComponentsBuilder uriComponentsBuilder) {
-        return processService.addComment(process, id, taskId, SecurityPolicy.of(user, groups), commentInfo)
-                .map(comment -> ResponseEntity
-                        .created(uriComponentsBuilder.path("/$name$/{id}/$taskName$/{taskId}/comments/{commentId}")
-                                         .buildAndExpand(id, taskId, comment.getId().toString()).toUri())
-                        .body(comment))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
-    @PutMapping(value = "/{id}/$taskName$/{taskId}/comments/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.TEXT_PLAIN_VALUE)
-    public Comment updateComment(@PathVariable("id") final String id,
-                                 @PathVariable("taskId") final String taskId,
-                                 @PathVariable("commentId") final String commentId,
-                                 @RequestParam(value = "user", required = false) final String user,
-                                 @RequestParam(value = "group",
-                                         required = false) final List<String> groups,
-                                 @RequestBody String comment) {
-        return processService.updateComment(process, id, taskId, commentId, SecurityPolicy.of(user, groups), comment)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
-    @DeleteMapping(value = "/{id}/$taskName$/{taskId}/comments/{commentId}")
-    public ResponseEntity deleteComment(@PathVariable("id") final String id,
-                                        @PathVariable("taskId") final String taskId,
-                                        @PathVariable("commentId") final String commentId,
-                                        @RequestParam(value = "user", required = false) final String user,
-                                        @RequestParam(value = "group", required = false) final List<String> groups) {
-        return processService.deleteComment(process, id, taskId, commentId, SecurityPolicy.of(user, groups))
-                .map(removed -> (removed ? ResponseEntity.ok().build() : ResponseEntity.notFound().build()))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
-    @PostMapping(value = "/{id}/$taskName$/{taskId}/attachments", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Attachment> addAttachment(@PathVariable("id") final String id,
-                                                    @PathVariable("taskId") final String taskId,
-                                                    @RequestParam(value = "user", required = false) final String user,
-                                                    @RequestParam(value = "group",
-                                                            required = false) final List<String> groups,
-                                                    @RequestBody AttachmentInfo attachmentInfo,
-                                                    UriComponentsBuilder uriComponentsBuilder) {
-        return processService.addAttachment(process, id, taskId, SecurityPolicy.of(user, groups), attachmentInfo)
-                .map(attachment -> ResponseEntity
-                        .created(uriComponentsBuilder.path(
-                                "/$name$/{id}/$taskName$/{taskId}/attachments/{attachmentId}")
-                                         .buildAndExpand(id,
-                                                         taskId, attachment.getId()).toUri())
-                        .body(attachment))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
-    @PutMapping(value = "/{id}/$taskName$/{taskId}/attachments/{attachmentId}",
-            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Attachment updateAttachment(@PathVariable("id") final String id,
-                                       @PathVariable("taskId") final String taskId,
-                                       @PathVariable("attachmentId") final String attachmentId,
-                                       @RequestParam(value = "user",
-                                               required = false) final String user,
-                                       @RequestParam(value = "group",
-                                               required = false) final List<String> groups,
-                                       @RequestBody AttachmentInfo attachment) {
-        return processService.updateAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(user, groups), attachment)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
-    @DeleteMapping(value = "/{id}/$taskName$/{taskId}/attachments/{attachmentId}")
-    public ResponseEntity deleteAttachment(@PathVariable("id") final String id,
-                                           @PathVariable("taskId") final String taskId,
-                                           @PathVariable("attachmentId") final String attachmentId,
-                                           @RequestParam(value = "user", required = false) final String user,
-                                           @RequestParam(value = "group", required = false) final List<String> groups) {
-
-        return processService.deleteAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(user, groups))
-                .map(removed -> (removed ? ResponseEntity.ok() : ResponseEntity.notFound()).build())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
-    @GetMapping(value = "/{id}/$taskName$/{taskId}/attachments/{attachmentId}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public Attachment getAttachment(@PathVariable("id") final String id,
-                                    @PathVariable("taskId") final String taskId,
-                                    @PathVariable("attachmentId") final String attachmentId,
-                                    @RequestParam(value = "user", required = false) final String user,
-                                    @RequestParam(value = "group",
-                                            required = false) final List<String> groups) {
-        return processService.getAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(user, groups))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment " + attachmentId + " not found"));
-    }
-
-    @GetMapping(value = "/{id}/$taskName$/{taskId}/attachments", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Collection<Attachment> getAttachments(@PathVariable("id") final String id,
-                                                 @PathVariable("taskId") final String taskId,
-                                                 @RequestParam(value = "user") final String user,
-                                                 @RequestParam(value = "group") final List<String> groups) {
-        return processService.getAttachments(process, id, taskId, SecurityPolicy.of(user, groups))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
-    @GetMapping(value = "/{id}/$taskName$/{taskId}/comments/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Comment getComment(@PathVariable("id") final String id,
-                              @PathVariable("taskId") final String taskId,
-                              @PathVariable("commentId") final String commentId,
-                              @RequestParam(value = "user", required = false) final String user,
-                              @RequestParam(value = "group",
-                                      required = false) final List<String> groups) {
-        return processService.getComment(process, id, taskId, commentId, SecurityPolicy.of(user, groups))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment " + commentId + " not found"));
-    }
-
-    @GetMapping(value = "/{id}/$taskName$/{taskId}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Collection<Comment> getComments(@PathVariable("id") final String id,
-                                           @PathVariable("taskId") final String taskId,
-                                           @RequestParam(value = "user",
-                                                   required = false) final String user,
-                                           @RequestParam(value = "group",
-                                                   required = false) final List<String> groups) {
-        return processService.getComments(process, id, taskId, SecurityPolicy.of(user, groups))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
+//    @GetMapping(value = "/{id}/$taskName$/{taskId}/schema", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public Map<String, Object> getSchemaAndPhases(@PathVariable("id") final String id,
+//                                                  @PathVariable("taskId") final String taskId,
+//                                                  @RequestParam(value = "user", required = false) final String user,
+//                                                  @RequestParam(value = "group",
+//                                                          required = false) final List<String> groups) {
+//        return processService.getSchemaAndPhases(process, id, taskId, "$taskName$", SecurityPolicy.of(user, groups));
+//    }
+//
+//    @PostMapping(value = "/{id}/$taskName$/{taskId}/comments", produces = MediaType.APPLICATION_JSON_VALUE,
+//            consumes = MediaType.TEXT_PLAIN_VALUE)
+//    public ResponseEntity<Comment> addComment(@PathVariable("id") final String id,
+//                                              @PathVariable("taskId") final String taskId,
+//                                              @RequestParam(value = "user", required = false) final String user,
+//                                              @RequestParam(value = "group",
+//                                                      required = false) final List<String> groups,
+//                                              @RequestBody String commentInfo,
+//                                              UriComponentsBuilder uriComponentsBuilder) {
+//        return processService.addComment(process, id, taskId, SecurityPolicy.of(user, groups), commentInfo)
+//                .map(comment -> ResponseEntity
+//                        .created(uriComponentsBuilder.path("/$name$/{id}/$taskName$/{taskId}/comments/{commentId}")
+//                                         .buildAndExpand(id, taskId, comment.getId().toString()).toUri())
+//                        .body(comment))
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//    }
+//
+//    @PutMapping(value = "/{id}/$taskName$/{taskId}/comments/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE,
+//            consumes = MediaType.TEXT_PLAIN_VALUE)
+//    public Comment updateComment(@PathVariable("id") final String id,
+//                                 @PathVariable("taskId") final String taskId,
+//                                 @PathVariable("commentId") final String commentId,
+//                                 @RequestParam(value = "user", required = false) final String user,
+//                                 @RequestParam(value = "group",
+//                                         required = false) final List<String> groups,
+//                                 @RequestBody String comment) {
+//        return processService.updateComment(process, id, taskId, commentId, SecurityPolicy.of(user, groups), comment)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//    }
+//
+//    @DeleteMapping(value = "/{id}/$taskName$/{taskId}/comments/{commentId}")
+//    public ResponseEntity deleteComment(@PathVariable("id") final String id,
+//                                        @PathVariable("taskId") final String taskId,
+//                                        @PathVariable("commentId") final String commentId,
+//                                        @RequestParam(value = "user", required = false) final String user,
+//                                        @RequestParam(value = "group", required = false) final List<String> groups) {
+//        return processService.deleteComment(process, id, taskId, commentId, SecurityPolicy.of(user, groups))
+//                .map(removed -> (removed ? ResponseEntity.ok().build() : ResponseEntity.notFound().build()))
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//    }
+//
+//    @PostMapping(value = "/{id}/$taskName$/{taskId}/attachments", produces = MediaType.APPLICATION_JSON_VALUE,
+//            consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<Attachment> addAttachment(@PathVariable("id") final String id,
+//                                                    @PathVariable("taskId") final String taskId,
+//                                                    @RequestParam(value = "user", required = false) final String user,
+//                                                    @RequestParam(value = "group",
+//                                                            required = false) final List<String> groups,
+//                                                    @RequestBody AttachmentInfo attachmentInfo,
+//                                                    UriComponentsBuilder uriComponentsBuilder) {
+//        return processService.addAttachment(process, id, taskId, SecurityPolicy.of(user, groups), attachmentInfo)
+//                .map(attachment -> ResponseEntity
+//                        .created(uriComponentsBuilder.path(
+//                                "/$name$/{id}/$taskName$/{taskId}/attachments/{attachmentId}")
+//                                         .buildAndExpand(id,
+//                                                         taskId, attachment.getId()).toUri())
+//                        .body(attachment))
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//    }
+//
+//    @PutMapping(value = "/{id}/$taskName$/{taskId}/attachments/{attachmentId}",
+//            produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public Attachment updateAttachment(@PathVariable("id") final String id,
+//                                       @PathVariable("taskId") final String taskId,
+//                                       @PathVariable("attachmentId") final String attachmentId,
+//                                       @RequestParam(value = "user",
+//                                               required = false) final String user,
+//                                       @RequestParam(value = "group",
+//                                               required = false) final List<String> groups,
+//                                       @RequestBody AttachmentInfo attachment) {
+//        return processService.updateAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(user, groups), attachment)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//    }
+//
+//    @DeleteMapping(value = "/{id}/$taskName$/{taskId}/attachments/{attachmentId}")
+//    public ResponseEntity deleteAttachment(@PathVariable("id") final String id,
+//                                           @PathVariable("taskId") final String taskId,
+//                                           @PathVariable("attachmentId") final String attachmentId,
+//                                           @RequestParam(value = "user", required = false) final String user,
+//                                           @RequestParam(value = "group", required = false) final List<String> groups) {
+//
+//        return processService.deleteAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(user, groups))
+//                .map(removed -> (removed ? ResponseEntity.ok() : ResponseEntity.notFound()).build())
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//    }
+//
+//    @GetMapping(value = "/{id}/$taskName$/{taskId}/attachments/{attachmentId}",
+//            produces = MediaType.APPLICATION_JSON_VALUE)
+//    public Attachment getAttachment(@PathVariable("id") final String id,
+//                                    @PathVariable("taskId") final String taskId,
+//                                    @PathVariable("attachmentId") final String attachmentId,
+//                                    @RequestParam(value = "user", required = false) final String user,
+//                                    @RequestParam(value = "group",
+//                                            required = false) final List<String> groups) {
+//        return processService.getAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(user, groups))
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment " + attachmentId + " not found"));
+//    }
+//
+//    @GetMapping(value = "/{id}/$taskName$/{taskId}/attachments", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public Collection<Attachment> getAttachments(@PathVariable("id") final String id,
+//                                                 @PathVariable("taskId") final String taskId,
+//                                                 @RequestParam(value = "user") final String user,
+//                                                 @RequestParam(value = "group") final List<String> groups) {
+//        return processService.getAttachments(process, id, taskId, SecurityPolicy.of(user, groups))
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//    }
+//
+//    @GetMapping(value = "/{id}/$taskName$/{taskId}/comments/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public Comment getComment(@PathVariable("id") final String id,
+//                              @PathVariable("taskId") final String taskId,
+//                              @PathVariable("commentId") final String commentId,
+//                              @RequestParam(value = "user", required = false) final String user,
+//                              @RequestParam(value = "group",
+//                                      required = false) final List<String> groups) {
+//        return processService.getComment(process, id, taskId, commentId, SecurityPolicy.of(user, groups))
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment " + commentId + " not found"));
+//    }
+//
+//    @GetMapping(value = "/{id}/$taskName$/{taskId}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public Collection<Comment> getComments(@PathVariable("id") final String id,
+//                                           @PathVariable("taskId") final String taskId,
+//                                           @RequestParam(value = "user",
+//                                                   required = false) final String user,
+//                                           @RequestParam(value = "group",
+//                                                   required = false) final List<String> groups) {
+//        return processService.getComments(process, id, taskId, SecurityPolicy.of(user, groups))
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//    }
 }

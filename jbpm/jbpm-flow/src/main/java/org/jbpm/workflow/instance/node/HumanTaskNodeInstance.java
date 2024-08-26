@@ -18,17 +18,13 @@
  */
 package org.jbpm.workflow.instance.node;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.jbpm.process.core.context.swimlane.SwimlaneContext;
 import org.jbpm.process.instance.context.swimlane.SwimlaneContextInstance;
-import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
-import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.workflow.core.node.HumanTaskNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
-import org.kie.kogito.usertask.HumanTaskWorkItem;
 
 public class HumanTaskNodeInstance extends WorkItemNodeInstance {
 
@@ -39,6 +35,7 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
     private static final String TASK_NAME = "TaskName";
     private String separator = System.getProperty("org.jbpm.ht.user.separator", ",");
 
+    private static final String ACTUAL_OWNER = "ActualOwner";
     private static final String ACTOR_ID = "ActorId";
     private static final String GROUP_ID = "GroupId";
     private static final String BUSINESSADMINISTRATOR_ID = "BusinessAdministratorId";
@@ -53,27 +50,12 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
     }
 
     @Override
-    public InternalHumanTaskWorkItem getWorkItem() {
-        return (InternalHumanTaskWorkItem) super.getWorkItem();
-    }
-
-    @Override
-    protected InternalKogitoWorkItem newWorkItem() {
-        return new HumanTaskWorkItemImpl();
-    }
-
-    @Override
     protected InternalKogitoWorkItem createWorkItem(WorkItemNode workItemNode) {
-        InternalHumanTaskWorkItem workItem = (InternalHumanTaskWorkItem) super.createWorkItem(workItemNode);
+        InternalKogitoWorkItem workItem = super.createWorkItem(workItemNode);
         String actorId = assignWorkItem(workItem);
         if (actorId != null) {
             workItem.setParameter(ACTOR_ID, actorId);
         }
-
-        workItem.setTaskName((String) workItem.getParameter(TASK_NAME));
-        workItem.setTaskDescription((String) workItem.getParameter(DESCRIPTION));
-        workItem.setTaskPriority((String) workItem.getParameter(PRIORITY));
-        workItem.setReferenceName((String) workItem.getParameter(NODE_NAME));
         return workItem;
     }
 
@@ -109,28 +91,6 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
             }
         }
 
-        InternalHumanTaskWorkItem hunanWorkItem = (InternalHumanTaskWorkItem) workItem;
-
-        Set<String> newPUValue = new HashSet<>(hunanWorkItem.getPotentialUsers());
-        processAssigment(ACTOR_ID, workItem, newPUValue);
-        hunanWorkItem.setPotentialUsers(newPUValue);
-
-        Set<String> newPGValue = new HashSet<>(hunanWorkItem.getPotentialGroups());
-        processAssigment(GROUP_ID, workItem, newPGValue);
-        hunanWorkItem.setPotentialGroups(newPGValue);
-
-        Set<String> newEUValue = new HashSet<>(hunanWorkItem.getExcludedUsers());
-        processAssigment(EXCLUDED_OWNER_ID, workItem, newEUValue);
-        hunanWorkItem.setExcludedUsers(newEUValue);
-
-        Set<String> newAUValue = new HashSet<>(hunanWorkItem.getAdminUsers());
-        processAssigment(BUSINESSADMINISTRATOR_ID, workItem, newAUValue);
-        hunanWorkItem.setAdminGroups(newAUValue);
-
-        Set<String> newAGValue = new HashSet<>(hunanWorkItem.getAdminGroups());
-        processAssigment(BUSINESSADMINISTRATOR_GROUP_ID, workItem, newAGValue);
-        hunanWorkItem.setAdminGroups(newAGValue);
-
         // always return ActorId from workitem as SwimlaneActorId is kept as separate parameter
         return (String) workItem.getParameter(ACTOR_ID);
     }
@@ -157,7 +117,7 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
         String swimlaneName = getHumanTaskNode().getSwimlane();
         SwimlaneContextInstance swimlaneContextInstance = getSwimlaneContextInstance(swimlaneName);
         if (swimlaneContextInstance != null) {
-            String newActorId = (workItem instanceof HumanTaskWorkItem) ? ((HumanTaskWorkItem) workItem).getActualOwner() : (String) workItem.getParameter(ACTOR_ID);
+            String newActorId = (String) workItem.getParameter(ACTOR_ID);
             if (newActorId != null) {
                 swimlaneContextInstance.setActorId(swimlaneName, newActorId);
             }

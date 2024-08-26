@@ -99,7 +99,6 @@ import org.jbpm.bpmn2.timer.ParallelSplitWithTimerProcessProcess;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
-import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.process.workitem.builtin.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.utils.EventTrackerProcessListener;
@@ -132,6 +131,7 @@ import org.kie.kogito.internal.process.workitem.WorkItemTransition;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.Sig;
+import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -1357,7 +1357,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertThat(KogitoWorkItem).isNotNull();
         assertThat(KogitoWorkItem.getParameter("ActorId")).isEqualTo("john");
         Map<String, Object> results = new HashMap<>();
-        ((InternalHumanTaskWorkItem) KogitoWorkItem).setActualOwner("mary");
+        ((KogitoWorkItemImpl) KogitoWorkItem).setParameter("ACTUA_OWNER", "mary");
         kruntime.getKogitoWorkItemManager().completeWorkItem(KogitoWorkItem.getStringId(),
                 results);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",

@@ -45,6 +45,7 @@ import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.codegen.process.ProcessCodegen;
+import org.kie.kogito.codegen.usertask.UserTaskCodegen;
 import org.kie.memorycompiler.CompilationResult;
 import org.kie.memorycompiler.JavaCompiler;
 import org.kie.memorycompiler.JavaCompilerFactory;
@@ -64,6 +65,7 @@ public abstract class AbstractCodegenIT {
      * {@link ApplicationGenerator#registerGeneratorIfEnabled(Generator) }
      */
     protected enum TYPE {
+        USER_TASK,
         PROCESS,
         RULES,
         DECISION,
@@ -116,6 +118,7 @@ public abstract class AbstractCodegenIT {
 
     static {
         generatorTypeMap.put(TYPE.PROCESS, (context, strings) -> ProcessCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
+        generatorTypeMap.put(TYPE.USER_TASK, (context, strings) -> UserTaskCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
     }
 
     public static Collection<CollectedResource> toCollectedResources(String basePath, List<String> strings) {
@@ -133,6 +136,7 @@ public abstract class AbstractCodegenIT {
     protected Application generateCodeProcessesOnly(String... processes) throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Arrays.asList(processes));
+        resourcesTypeMap.put(TYPE.USER_TASK, Arrays.asList(processes));
         return generateCode(resourcesTypeMap);
     }
 
@@ -170,9 +174,9 @@ public abstract class AbstractCodegenIT {
             srcMfs.write("org/drools/project/model/ProjectRuntime.java", DUMMY_PROCESS_RUNTIME.getBytes());
         }
 
-        if (LOGGER.isDebugEnabled()) {
+        if (LOGGER.isInfoEnabled()) {
             Path temp = Files.createTempDirectory("KOGITO_TESTS");
-            LOGGER.debug("Dumping generated files in " + temp);
+            LOGGER.info("Dumping generated files in " + temp);
             for (GeneratedFile entry : generatedFiles) {
                 Path fpath = temp.resolve(entry.relativePath());
                 fpath.getParent().toFile().mkdirs();

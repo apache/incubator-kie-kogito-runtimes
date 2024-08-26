@@ -32,10 +32,6 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
 
     private static final long serialVersionUID = -4958054074031174180L;
 
-    public BoundaryEventNodeInstance() {
-        System.out.println("HOLA");
-    }
-    
     @Override
     public void signalEvent(String type, Object event, Function<String, Object> varResolver) {
         if (triggerTime == null) {

@@ -24,8 +24,6 @@ import java.util.Map;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceDeadlineDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceDeadlineEventBody;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
-import org.kie.kogito.usertask.HumanTaskWorkItem;
 import org.kie.kogito.usertask.events.UserTaskDeadlineEvent;
 
 public class UserTaskDeadlineEventDataEventAdapter extends AbstractDataEventAdapter {
@@ -37,22 +35,21 @@ public class UserTaskDeadlineEventDataEventAdapter extends AbstractDataEventAdap
     @Override
     public DataEvent<?> adapt(Object payload) {
         UserTaskDeadlineEvent event = (UserTaskDeadlineEvent) payload;
-        Map<String, Object> metadata = AdapterHelper.buildUserTaskMetadata((HumanTaskWorkItem) event.getWorkItem());
-        metadata.putAll(AdapterHelper.buildProcessMetadata((KogitoWorkflowProcessInstance) event.getProcessInstance()));
-        KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
+        Map<String, Object> metadata = AdapterHelper.buildUserTaskMetadata(event.getUserTaskInstance());
+
         UserTaskInstanceDeadlineEventBody.Builder builder = UserTaskInstanceDeadlineEventBody.create()
                 .eventDate(new Date())
                 .eventUser(event.getEventUser())
-                .userTaskDefinitionId(event.getUserTaskDefinitionId())
-                .userTaskInstanceId(((HumanTaskWorkItem) event.getWorkItem()).getStringId())
-                .userTaskName(((HumanTaskWorkItem) event.getWorkItem()).getTaskName())
+                .userTaskDefinitionId(event.getUserTask().id())
+                .userTaskInstanceId(event.getUserTaskInstance().id())
+                .userTaskName(event.getUserTaskModel().getTaskName())
                 .notification(event.getNotification());
 
         UserTaskInstanceDeadlineEventBody body = builder.build();
         UserTaskInstanceDeadlineDataEvent utEvent =
-                new UserTaskInstanceDeadlineDataEvent(AdapterHelper.buildSource(getConfig().service(), event.getProcessInstance().getProcessId()), getConfig().addons().toString(),
+                new UserTaskInstanceDeadlineDataEvent(AdapterHelper.buildSource(getConfig().service(), event.getUserTaskModel().getExternalReferenceId()), getConfig().addons().toString(),
                         event.getEventUser(), metadata, body);
-        utEvent.setKogitoBusinessKey(pi.getBusinessKey());
+
         return utEvent;
     }
 

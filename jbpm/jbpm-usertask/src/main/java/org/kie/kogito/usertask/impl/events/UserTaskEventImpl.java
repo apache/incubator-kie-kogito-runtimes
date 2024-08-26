@@ -22,120 +22,59 @@ package org.kie.kogito.usertask.impl.events;
 import java.util.Date;
 import java.util.EventObject;
 
-import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.usertask.UserTask;
+import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.events.UserTaskEvent;
+import org.kie.kogito.usertask.model.UserTaskModel;
 
 public class UserTaskEventImpl extends EventObject implements UserTaskEvent {
 
-    public UserTaskEventImpl() {
-        super(null);
+    private static final long serialVersionUID = 5290126847252514783L;
+
+    public UserTaskEventImpl(UserTaskInstance userTaskInstance, String user) {
+        super(userTaskInstance);
+        this.userTaskInstance = userTaskInstance;
+        this.eventDate = new Date();
+        this.eventUser = user;
+    }
+
+    private UserTaskInstance userTaskInstance;
+    private final Date eventDate;
+    private final String eventUser;
+
+    @Override
+    public UserTask getUserTask() {
+        return userTaskInstance.getUserTask();
     }
 
     @Override
-    public KogitoProcessInstance getProcessInstance() {
-        // TODO Auto-generated method stub
-        return null;
+    public UserTaskInstance getSource() {
+        return (UserTaskInstance) super.getSource();
     }
 
     @Override
-    public KogitoNodeInstance getNodeInstance() {
-        // TODO Auto-generated method stub
-        return null;
+    public UserTaskInstance getUserTaskInstance() {
+        return userTaskInstance;
     }
 
     @Override
-    public KogitoWorkItem getWorkItem() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getUserTaskId() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getUserTaskDefinitionId() {
-        // TODO Auto-generated method stub
-        return null;
+    public UserTaskModel getUserTaskModel() {
+        return userTaskInstance.getUserTaskModel();
     }
 
     @Override
     public Date getEventDate() {
-        // TODO Auto-generated method stub
-        return null;
+        return eventDate;
     }
 
     @Override
     public String getEventUser() {
-        // TODO Auto-generated method stub
-        return null;
+        return eventUser;
     }
-    //
-    //    private static final long serialVersionUID = 510l;
-    //
-    //    private final KieRuntime kruntime;
-    //    private final Date eventDate;
-    //    private final String eventUser;
-    //
-    //    private HumanTaskNodeInstance humanTaskNodeInstance;
-    //
-    //    public UserTaskEventImpl(ProcessInstance instance, HumanTaskNodeInstance nodeInstance, KieRuntime kruntime) {
-    //        this(instance, nodeInstance, kruntime, null);
-    //    }
-    //
-    //    public UserTaskEventImpl(ProcessInstance instance, HumanTaskNodeInstance nodeInstance, KieRuntime kruntime, String user) {
-    //        super(instance);
-    //        this.humanTaskNodeInstance = nodeInstance;
-    //        this.kruntime = kruntime;
-    //        this.eventDate = new Date();
-    //        this.eventUser = user;
-    //    }
-    //
-    //    public ProcessInstance getProcessInstance() {
-    //        return (ProcessInstance) getSource();
-    //    }
-    //
-    //    @Override
-    //    public HumanTaskNodeInstance getNodeInstance() {
-    //        return humanTaskNodeInstance;
-    //    }
-    //
-    //    @Override
-    //    public InternalHumanTaskWorkItem getWorkItem() {
-    //        return humanTaskNodeInstance.getWorkItem();
-    //    }
-    //
-    //    @Override
-    //    public String getUserTaskId() {
-    //        return getWorkItem().getStringId();
-    //    }
-    //
-    //    @Override
-    //    public KieRuntime getKieRuntime() {
-    //        return kruntime;
-    //    }
-    //
-    //    public HumanTaskNodeInstance getHumanTaskNodeInstance() {
-    //        return humanTaskNodeInstance;
-    //    }
-    //
-    //    @Override
-    //    public Date getEventDate() {
-    //        return this.eventDate;
-    //    }
-    //
-    //    @Override
-    //    public String getEventUser() {
-    //        return eventUser;
-    //    }
-    //
-    //    @Override
-    //    public String getUserTaskDefinitionId() {
-    //        return getHumanTaskNodeInstance().getNodeDefinitionId();
-    //    }
+
+    @Override
+    public String toString() {
+        return "UserTaskEventImpl [userTaskInstance=" + userTaskInstance + ", eventDate=" + eventDate + ", eventUser=" + eventUser + "]";
+    }
 
 }

@@ -25,8 +25,6 @@ import java.util.Objects;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceStateEventBody;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
-import org.kie.kogito.usertask.HumanTaskWorkItem;
 import org.kie.kogito.usertask.events.UserTaskStateEvent;
 
 public class UserTaskStateEventDataEventAdapter extends AbstractDataEventAdapter {
@@ -43,28 +41,28 @@ public class UserTaskStateEventDataEventAdapter extends AbstractDataEventAdapter
     @Override
     public DataEvent<?> adapt(Object payload) {
         UserTaskStateEvent event = (UserTaskStateEvent) payload;
-        Map<String, Object> metadata = AdapterHelper.buildUserTaskMetadata((HumanTaskWorkItem) event.getWorkItem());
-        metadata.putAll(AdapterHelper.buildProcessMetadata((KogitoWorkflowProcessInstance) event.getProcessInstance()));
-        KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
+        Map<String, Object> metadata = AdapterHelper.buildUserTaskMetadata(event.getUserTaskInstance());
+
         UserTaskInstanceStateEventBody.Builder builder = UserTaskInstanceStateEventBody.create()
                 .eventDate(new Date())
                 .eventUser(event.getEventUser())
-                .userTaskDefinitionId(event.getUserTaskDefinitionId())
-                .userTaskInstanceId(((HumanTaskWorkItem) event.getWorkItem()).getStringId())
-                .userTaskName(((HumanTaskWorkItem) event.getWorkItem()).getTaskName())
-                .userTaskDescription(((HumanTaskWorkItem) event.getWorkItem()).getTaskDescription())
-                .userTaskPriority(((HumanTaskWorkItem) event.getWorkItem()).getTaskPriority())
-                .userTaskReferenceName(((HumanTaskWorkItem) event.getWorkItem()).getReferenceName())
+                .userTaskDefinitionId(event.getUserTask().id())
+                .userTaskInstanceId(event.getUserTaskInstance().id())
+                .userTaskName(event.getUserTaskModel().getTaskName())
+                .userTaskDescription(event.getUserTaskModel().getTaskDescription())
+                .userTaskPriority(event.getUserTaskModel().getTaskPriority())
+                .userTaskReferenceName(event.getUserTask().getReferenceName())
                 .state(event.getNewStatus())
-                .actualOwner(((HumanTaskWorkItem) event.getWorkItem()).getActualOwner())
+                .actualOwner(event.getUserTaskInstance().getActualOwner())
                 .eventType(isTransition(event) ? event.getNewStatus() : "Modify")
-                .processInstanceId(event.getProcessInstance().getId());
+                .processInstanceId(event.getUserTaskModel().getExternalReferenceId());
 
         UserTaskInstanceStateEventBody body = builder.build();
         UserTaskInstanceStateDataEvent utEvent =
-                new UserTaskInstanceStateDataEvent(AdapterHelper.buildSource(getConfig().service(), event.getProcessInstance().getProcessId()), getConfig().addons().toString(), event.getEventUser(),
+                new UserTaskInstanceStateDataEvent(AdapterHelper.buildSource(getConfig().service(), event.getUserTaskModel().getExternalReferenceId()), getConfig().addons().toString(),
+                        event.getEventUser(),
                         metadata, body);
-        utEvent.setKogitoBusinessKey(pi.getBusinessKey());
+
         return utEvent;
     }
 

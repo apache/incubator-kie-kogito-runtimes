@@ -23,11 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.drools.io.ClassPathResource;
-import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Model;
-import org.kie.kogito.prediction.api.PredictionAwareHumanTaskLifeCycle;
 import org.kie.kogito.prediction.api.PredictionService;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
@@ -64,7 +62,7 @@ public class SmileRandomForestPredictionTest {
 
         predictionService = new SmileRandomForest(configuration);
         CachedWorkItemHandlerConfig wiConfig = new CachedWorkItemHandlerConfig();
-        wiConfig.register("Human Task", new HumanTaskWorkItemHandler(new PredictionAwareHumanTaskLifeCycle(predictionService)));
+        //        wiConfig.register("Human Task", new UserTaskKogitoWorkItemHandler(new PredictionAwareHumanTaskLifeCycle(predictionService)));
         config = new StaticProcessConfig(wiConfig, new DefaultProcessEventListenerConfig(), new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()));
 
         for (int i = 0; i < 10; i++) {

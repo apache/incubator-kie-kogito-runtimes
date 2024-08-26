@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.kie.kogito.Application;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
@@ -42,6 +43,8 @@ public class DefaultKogitoWorkItemHandler implements KogitoWorkItemHandler {
     public static final WorkItemPhaseState aborted = WorkItemPhaseState.of("Aborted", WorkItemTerminationType.ABORT);
     public static final WorkItemPhaseState activated = WorkItemPhaseState.of("Activated");
 
+    protected Application application;
+
     protected WorkItemLifeCycle workItemLifeCycle;
 
     public DefaultKogitoWorkItemHandler(WorkItemLifeCycle workItemLifeCycle) {
@@ -49,14 +52,23 @@ public class DefaultKogitoWorkItemHandler implements KogitoWorkItemHandler {
     }
 
     public DefaultKogitoWorkItemHandler() {
-        this.workItemLifeCycle = init();
+        this.workItemLifeCycle = initialize();
     }
 
-    public WorkItemLifeCycle init() {
+    public WorkItemLifeCycle initialize() {
         DefaultWorkItemLifeCyclePhase complete = new DefaultWorkItemLifeCyclePhase("complete", activated, completed, this::completeWorkItemHandler);
         DefaultWorkItemLifeCyclePhase abort = new DefaultWorkItemLifeCyclePhase("abort", activated, aborted, this::abortWorkItemHandler);
         DefaultWorkItemLifeCyclePhase active = new DefaultWorkItemLifeCyclePhase("activate", initialized, activated, this::activateWorkItemHandler);
         return new DefaultWorkItemLifeCycle(active, abort, complete);
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
+    }
+
+    @Override
+    public Application getApplication() {
+        return this.application;
     }
 
     @Override

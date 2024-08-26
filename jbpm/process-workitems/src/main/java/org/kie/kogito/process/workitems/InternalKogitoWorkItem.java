@@ -25,6 +25,8 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 public interface InternalKogitoWorkItem extends org.drools.core.process.WorkItem, org.kie.kogito.internal.process.workitem.KogitoWorkItem {
 
+    void setExternalReferenceId(String id);
+
     void setProcessInstanceId(String processInstanceId);
 
     void setNodeInstanceId(String deploymentId);

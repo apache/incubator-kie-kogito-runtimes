@@ -187,6 +187,7 @@ import org.kie.api.event.rule.MatchCancelledEvent;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.Application;
+import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.handlers.HelloService_hello__2_Handler;
 import org.kie.kogito.handlers.HelloService_validate__2_Handler;
 import org.kie.kogito.handlers.Interface1_operation1_EAID_3344916D_2BAC_4ab6_92D4_F739156D0933_Handler;
@@ -199,7 +200,6 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kie.kogito.jbpm.usertask.internal.SecurityPolicy;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 

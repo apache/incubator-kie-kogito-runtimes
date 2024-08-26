@@ -19,83 +19,64 @@
 
 package org.kie.kogito.usertask.impl.events;
 
+import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.events.UserTaskVariableEvent;
 
 public class UserTaskVariableEventImpl extends UserTaskEventImpl implements UserTaskVariableEvent {
 
+    private static final long serialVersionUID = -1160081990418929010L;
+    private String variableName;
+    private Object oldValue;
+    private Object newValue;
+    private VariableEventType variableType;
+
+    public UserTaskVariableEventImpl(UserTaskInstance usertaskInstance, String varName, Object oldValue, Object newValue, VariableEventType variableType, String user) {
+        super(usertaskInstance, user);
+        this.variableName = varName;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
+        this.variableType = variableType;
+    }
+
+    public void setVariableName(String variableName) {
+        this.variableName = variableName;
+    }
+
+    public void setOldValue(Object oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public void setNewValue(Object newValue) {
+        this.newValue = newValue;
+    }
+
     @Override
     public String getVariableName() {
-        // TODO Auto-generated method stub
-        return null;
+        return variableName;
     }
 
     @Override
     public Object getOldValue() {
-        // TODO Auto-generated method stub
-        return null;
+        return oldValue;
     }
 
     @Override
     public Object getNewValue() {
-        // TODO Auto-generated method stub
-        return null;
+        return newValue;
+    }
+
+    public void setVariableType(VariableEventType variableType) {
+        this.variableType = variableType;
     }
 
     @Override
     public VariableEventType getVariableType() {
-        // TODO Auto-generated method stub
-        return null;
+        return variableType;
     }
-    //
-    //    private static final long serialVersionUID = -1160081990418929010L;
-    //    private String variableName;
-    //    private Object oldValue;
-    //    private Object newValue;
-    //    private VariableEventType variableType;
-    //
-    //    public UserTaskVariableEventImpl(ProcessInstance instance, HumanTaskNodeInstance nodeInstance, KieRuntime kruntime, String identity) {
-    //        super(instance, nodeInstance, kruntime, identity);
-    //    }
-    //
-    //    public void setVariableName(String variableName) {
-    //        this.variableName = variableName;
-    //    }
-    //
-    //    public void setOldValue(Object oldValue) {
-    //        this.oldValue = oldValue;
-    //    }
-    //
-    //    public void setNewValue(Object newValue) {
-    //        this.newValue = newValue;
-    //    }
-    //
-    //    @Override
-    //    public String getVariableName() {
-    //        return variableName;
-    //    }
-    //
-    //    @Override
-    //    public Object getOldValue() {
-    //        return oldValue;
-    //    }
-    //
-    //    @Override
-    //    public Object getNewValue() {
-    //        return newValue;
-    //    }
-    //
-    //    public void setVariableType(VariableEventType variableType) {
-    //        this.variableType = variableType;
-    //    }
-    //
-    //    @Override
-    //    public VariableEventType getVariableType() {
-    //        return variableType;
-    //    }
-    //
-    //    @Override
-    //    public String toString() {
-    //        return "UserTaskVariableEventImpl [variableName=" + variableName + ", oldValue=" + oldValue + ", newValue=" + newValue + ", variableType=" + variableType + "]";
-    //    }
+
+    @Override
+    public String toString() {
+        return "UserTaskVariableEventImpl [variableName=" + variableName + ", oldValue=" + oldValue + ", newValue=" + newValue + ", variableType=" + variableType + "]";
+    }
 
 }

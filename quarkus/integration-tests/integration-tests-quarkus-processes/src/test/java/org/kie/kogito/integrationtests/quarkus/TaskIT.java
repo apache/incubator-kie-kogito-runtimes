@@ -28,8 +28,8 @@ import java.util.Set;
 
 import org.acme.travels.Traveller;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.task.management.service.TaskInfo;
+import org.kie.kogito.usertask.model.AttachmentInfo;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;

@@ -30,6 +30,7 @@ import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.internal.process.workitem.Policy;
 import org.kie.kogito.persistence.jdbc.JDBCProcessInstances;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.WorkItem;
@@ -56,7 +57,7 @@ import static org.mockito.Mockito.verify;
 abstract class AbstractProcessInstancesIT {
 
     public static final String TEST_ID = "02ac3854-46ee-42b7-8b63-5186c9889d96";
-    public static SecurityPolicy securityPolicy = SecurityPolicy.of(IdentityProviders.of("john"));
+    public static Policy securityPolicy = SecurityPolicy.of(IdentityProviders.of("john"));
 
     DataSource dataSource;
 

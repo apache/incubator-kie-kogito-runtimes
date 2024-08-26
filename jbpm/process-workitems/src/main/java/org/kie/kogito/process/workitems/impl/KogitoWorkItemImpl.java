@@ -55,6 +55,8 @@ public class KogitoWorkItemImpl implements InternalKogitoWorkItem, Serializable 
     private transient KogitoProcessInstance processInstance;
     private transient KogitoNodeInstance nodeInstance;
 
+    private String externalReferenceId;
+
     public void setId(String id) {
         this.id = id;
     }
@@ -526,6 +528,16 @@ public class KogitoWorkItemImpl implements InternalKogitoWorkItem, Serializable 
 
     private <T> Object processValue(T obj) {
         return obj instanceof WorkItemParamResolver ? ((WorkItemParamResolver) obj).apply(this) : obj;
+    }
+
+    @Override
+    public String getExternalReferenceId() {
+        return externalReferenceId;
+    }
+
+    @Override
+    public void setExternalReferenceId(String externalReferenceId) {
+        this.externalReferenceId = id;
     }
 
 }

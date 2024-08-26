@@ -23,8 +23,6 @@ import java.util.Map;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceAttachmentDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceAttachmentEventBody;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
-import org.kie.kogito.usertask.HumanTaskWorkItem;
 import org.kie.kogito.usertask.events.UserTaskAttachmentEvent;
 
 public class UserTastAttachmentEventDataEventAdapter extends AbstractDataEventAdapter {
@@ -36,9 +34,7 @@ public class UserTastAttachmentEventDataEventAdapter extends AbstractDataEventAd
     @Override
     public DataEvent<?> adapt(Object payload) {
         UserTaskAttachmentEvent event = (UserTaskAttachmentEvent) payload;
-        Map<String, Object> metadata = AdapterHelper.buildUserTaskMetadata((HumanTaskWorkItem) event.getWorkItem());
-        metadata.putAll(AdapterHelper.buildProcessMetadata((KogitoWorkflowProcessInstance) event.getProcessInstance()));
-        KogitoWorkflowProcessInstance pi = (KogitoWorkflowProcessInstance) event.getProcessInstance();
+        Map<String, Object> metadata = AdapterHelper.buildUserTaskMetadata(event.getUserTaskInstance());
 
         int eventType = UserTaskInstanceAttachmentEventBody.EVENT_TYPE_ADDED;
         if (event.getOldAttachment() != null && event.getNewAttachment() == null) {
@@ -49,24 +45,24 @@ public class UserTastAttachmentEventDataEventAdapter extends AbstractDataEventAd
 
         UserTaskInstanceAttachmentEventBody.Builder builder = UserTaskInstanceAttachmentEventBody.create()
                 .eventType(eventType)
-                .userTaskDefinitionId(event.getUserTaskDefinitionId())
-                .userTaskInstanceId(((HumanTaskWorkItem) event.getWorkItem()).getStringId())
-                .userTaskName(((HumanTaskWorkItem) event.getWorkItem()).getTaskName());
+                .userTaskDefinitionId(event.getUserTask().id())
+                .userTaskInstanceId(event.getUserTaskInstance().id())
+                .userTaskName(event.getUserTaskModel().getTaskName());
 
         String updatedBy = null;
         switch (eventType) {
             case UserTaskInstanceAttachmentEventBody.EVENT_TYPE_ADDED:
             case UserTaskInstanceAttachmentEventBody.EVENT_TYPE_CHANGE:
-                builder.attachmentName(event.getNewAttachment().getAttachmentName())
-                        .attachmentId(event.getNewAttachment().getAttachmentId())
-                        .attachmentURI(event.getNewAttachment().getAttachmentURI())
+                builder.attachmentName(event.getNewAttachment().getName())
+                        .attachmentId(event.getNewAttachment().getId())
+                        .attachmentURI(event.getNewAttachment().getContent())
                         .eventDate(event.getNewAttachment().getUpdatedAt())
                         .eventUser(event.getNewAttachment().getUpdatedBy());
                 updatedBy = event.getNewAttachment().getUpdatedBy();
 
                 break;
             case UserTaskInstanceAttachmentEventBody.EVENT_TYPE_DELETED:
-                builder.attachmentId(event.getOldAttachment().getAttachmentId())
+                builder.attachmentId(event.getOldAttachment().getId())
                         .eventDate(event.getOldAttachment().getUpdatedAt())
                         .eventUser(event.getOldAttachment().getUpdatedBy());
                 updatedBy = event.getOldAttachment().getUpdatedBy();
@@ -74,9 +70,9 @@ public class UserTastAttachmentEventDataEventAdapter extends AbstractDataEventAd
         }
 
         UserTaskInstanceAttachmentEventBody body = builder.build();
-        UserTaskInstanceAttachmentDataEvent utEvent = new UserTaskInstanceAttachmentDataEvent(AdapterHelper.buildSource(getConfig().service(), event.getProcessInstance().getProcessId()),
+        UserTaskInstanceAttachmentDataEvent utEvent = new UserTaskInstanceAttachmentDataEvent(AdapterHelper.buildSource(getConfig().service(), event.getUserTaskModel().getExternalReferenceId()),
                 getConfig().addons().toString(), updatedBy, metadata, body);
-        utEvent.setKogitoBusinessKey(pi.getBusinessKey());
+
         return utEvent;
     }
 

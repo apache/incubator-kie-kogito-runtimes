@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
@@ -35,20 +34,20 @@ import org.kie.kogito.process.workitems.impl.DefaultWorkItemLifeCycle;
 import org.kie.kogito.process.workitems.impl.DefaultWorkItemLifeCyclePhase;
 
 public class TestUserTaskWorkItemHandler extends DefaultKogitoWorkItemHandler {
-    public static final WorkItemPhaseState initialized = WorkItemPhaseState.initialized();
-    public static final WorkItemPhaseState completed = WorkItemPhaseState.of("Completed", WorkItemTerminationType.COMPLETE);
-    public static final WorkItemPhaseState aborted = WorkItemPhaseState.of("Aborted", WorkItemTerminationType.ABORT);
-    public static final WorkItemPhaseState activated = WorkItemPhaseState.of("Activated");
-    public static final WorkItemPhaseState reserved = WorkItemPhaseState.of("Reserved");
+    public static final WorkItemPhaseState INACTIVE = WorkItemPhaseState.initialized();
+    public static final WorkItemPhaseState COMPLETE = WorkItemPhaseState.of("Completed", WorkItemTerminationType.COMPLETE);
+    public static final WorkItemPhaseState ABORT = WorkItemPhaseState.of("Aborted", WorkItemTerminationType.ABORT);
+    public static final WorkItemPhaseState ACTIVE = WorkItemPhaseState.of("Activated");
+    public static final WorkItemPhaseState RESERVE = WorkItemPhaseState.of("Reserved");
 
     private List<KogitoWorkItem> workItems = new ArrayList<>();
 
     @Override
-    public WorkItemLifeCycle init() {
-        DefaultWorkItemLifeCyclePhase complete = new DefaultWorkItemLifeCyclePhase("complete", reserved, completed, this::completeWorkItemHandler);
-        DefaultWorkItemLifeCyclePhase abort = new DefaultWorkItemLifeCyclePhase("abort", reserved, aborted, this::abortWorkItemHandler);
-        DefaultWorkItemLifeCyclePhase claim = new DefaultWorkItemLifeCyclePhase("claim", activated, reserved, this::claimWorkItemHandler);
-        DefaultWorkItemLifeCyclePhase active = new DefaultWorkItemLifeCyclePhase("activate", initialized, activated, this::activateWorkItemHandler);
+    public WorkItemLifeCycle initialize() {
+        DefaultWorkItemLifeCyclePhase complete = new DefaultWorkItemLifeCyclePhase("complete", RESERVE, COMPLETE, this::completeWorkItemHandler);
+        DefaultWorkItemLifeCyclePhase abort = new DefaultWorkItemLifeCyclePhase("abort", RESERVE, ABORT, this::abortWorkItemHandler);
+        DefaultWorkItemLifeCyclePhase claim = new DefaultWorkItemLifeCyclePhase("claim", ACTIVE, RESERVE, this::claimWorkItemHandler);
+        DefaultWorkItemLifeCyclePhase active = new DefaultWorkItemLifeCyclePhase("activate", INACTIVE, ACTIVE, this::activateWorkItemHandler);
 
         return new DefaultWorkItemLifeCycle(active, claim, abort, complete);
     }
@@ -61,13 +60,14 @@ public class TestUserTaskWorkItemHandler extends DefaultKogitoWorkItemHandler {
     public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
         workItems.add(workItem);
 
-        if (workItem instanceof HumanTaskWorkItemImpl humanTaskWorkItem) {
-            Optional<String> user = humanTaskWorkItem.getPotentialUsers().stream().findFirst();
-            if (user.isPresent()) {
-                humanTaskWorkItem.setActualOwner(user.get());
-                return Optional.of(workItemLifeCycle.newTransition("claim", workItem.getPhaseStatus(), workItem.getResults()));
-            }
+        String potentialOwners = (String) workItem.getParameter("ACTOR_ID");
+
+        if (potentialOwners != null) {
+            String[] owners = potentialOwners.split(",");
+            workItem.setOutput("ACTUAL_OWNER", owners[0]);
+            return Optional.of(workItemLifeCycle.newTransition("claim", workItem.getPhaseStatus(), workItem.getResults()));
         }
+
         return Optional.empty();
     }
 

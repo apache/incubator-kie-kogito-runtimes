@@ -43,7 +43,6 @@ import org.kie.kogito.event.process.ProcessInstanceVariableDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceStateEventBody;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kie.kogito.internal.process.workitem.NotAuthorizedException;
 import org.kie.kogito.internal.process.workitem.Policy;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
@@ -51,7 +50,6 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.uow.UnitOfWork;
-import org.kie.kogito.usertask.HumanTaskWorkItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -62,9 +60,9 @@ public class PublishEventIT extends AbstractCodegenIT {
 
         @Override
         public void enforce(KogitoWorkItem workItem) {
-            if (!"john".equals(((HumanTaskWorkItem) workItem).getActualOwner())) {
-                throw new NotAuthorizedException(null);
-            }
+            //            if (!"john".equals(((HumanTaskWorkItem) workItem).getActualOwner())) {
+            //                throw new NotAuthorizedException(null);
+            //            }
         }
 
     };

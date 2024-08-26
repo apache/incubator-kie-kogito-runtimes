@@ -22,7 +22,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.kie.kogito.Application;
+
 public interface KogitoWorkItemHandler {
+
+    /**
+     * This will allow access other part of the system.
+     * 
+     * @return
+     */
+    Application getApplication();
+
+    void setApplication(Application app);
 
     /**
      * Returns name that it should be registered with, by default simple class name;

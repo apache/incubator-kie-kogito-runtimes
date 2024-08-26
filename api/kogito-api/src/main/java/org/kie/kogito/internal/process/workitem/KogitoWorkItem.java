@@ -31,6 +31,8 @@ public interface KogitoWorkItem extends WorkItem {
     @Deprecated
     long getId();
 
+    String getExternalReferenceId();
+
     String getStringId();
 
     /**

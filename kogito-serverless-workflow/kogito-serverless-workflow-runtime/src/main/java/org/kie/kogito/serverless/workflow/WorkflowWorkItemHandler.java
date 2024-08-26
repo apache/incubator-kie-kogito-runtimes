@@ -41,7 +41,7 @@ public abstract class WorkflowWorkItemHandler extends DefaultKogitoWorkItemHandl
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
         parameters.remove(SWFConstants.MODEL_WORKFLOW_VAR);
         logger.debug("Workflow workitem {} will be invoked with parameters {}", workItem.getName(), parameters);
-    
+
         Map<String, Object> params = Collections.singletonMap("Result", JsonObjectUtils.fromValue(internalExecute(workItem, parameters)));
         return Optional.of(this.workItemLifeCycle.newTransition("complete", workItem.getPhaseStatus(), params));
     }
