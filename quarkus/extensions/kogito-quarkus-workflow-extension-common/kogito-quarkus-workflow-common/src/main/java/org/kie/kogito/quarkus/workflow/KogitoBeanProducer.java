@@ -28,7 +28,6 @@ import org.kie.kogito.process.ProcessVersionResolver;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.version.ProjectVersionProcessVersionResolver;
 import org.kie.kogito.services.jobs.impl.InMemoryJobService;
-import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
@@ -56,7 +55,7 @@ public class KogitoBeanProducer {
     @DefaultBean
     @Produces
     UnitOfWorkManager unitOfWorkManager() {
-        return new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
+        return DefaultUnitOfWorkManager.get();
     }
 
     @DefaultBean
