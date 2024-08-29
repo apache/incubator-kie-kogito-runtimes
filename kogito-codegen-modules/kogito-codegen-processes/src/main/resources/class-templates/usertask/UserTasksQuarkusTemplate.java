@@ -18,11 +18,14 @@
  */
 package org.kie.kogito.usertask.impl;
 
+import org.kie.kogito.usertask.UserTaskEventListenerConfig;
 import org.kie.kogito.usertask.impl.DefaultUserTasks;
 
+@jakarta.enterprise.context.ApplicationScoped
 public class UserTasks extends DefaultUserTasks {
 
-    public UserTasks(Application application) {
+    @jakarta.inject.Inject
+    public UserTasks(org.kie.kogito.Application application) {
         super(application);
     }
 

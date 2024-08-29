@@ -20,9 +20,12 @@ package org.kie.kogito.usertask.impl;
 
 import org.kie.kogito.usertask.impl.DefaultUserTasks;
 
+@org.springframework.web.context.annotation.ApplicationScope
+@org.springframework.stereotype.Component
 public class UserTasks extends DefaultUserTasks {
 
-    public UserTasks(Application application) {
+    @org.springframework.beans.factory.annotation.Autowired
+    public UserTasks(org.kie.kogito.Application application) {
         super(application);
     }
 

@@ -46,6 +46,15 @@ public class DefaultUserTaskConfig implements UserTaskConfig {
     }
 
     public DefaultUserTaskConfig(
+            Iterable<UserTaskEventListenerConfig> userTaskEventListenerConfig,
+            Iterable<UnitOfWorkManager> unitOfWorkManager,
+            Iterable<JobsService> jobService,
+            Iterable<IdentityProvider> identityProvider,
+            Iterable<UserTaskLifeCycle> userTaskLifeCycle) {
+
+    }
+
+    public DefaultUserTaskConfig(
             UserTaskEventListenerConfig userTaskEventListenerConfig,
             UnitOfWorkManager unitOfWorkManager,
             JobsService jobService,

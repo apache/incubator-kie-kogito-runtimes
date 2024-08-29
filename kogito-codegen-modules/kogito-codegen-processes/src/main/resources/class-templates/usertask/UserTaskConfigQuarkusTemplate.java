@@ -16,13 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import org.kie.api.event.process.ProcessEventListener;
+import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.event.EventPublisher;
+import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.process.ProcessEventListenerConfig;
+import org.kie.kogito.process.ProcessVersionResolver;
+import org.kie.kogito.process.WorkItemHandlerConfig;
+import org.kie.kogito.uow.UnitOfWorkManager;
+import org.kie.kogito.uow.events.UnitOfWorkEventListener;
 import org.kie.kogito.usertask.impl.DefaultUserTaskConfig;
+import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
+import org.kie.kogito.usertask.UserTaskEventListenerConfig;
 
+import jakarta.enterprise.inject.Instance;
 
+@jakarta.inject.Singleton
 public class UserTaskConfig extends DefaultUserTaskConfig {
     
-    public UserTaskConfig() {
-        
+    
+    @jakarta.inject.Inject
+    public UserTaskConfig(
+            Instance<UserTaskEventListenerConfig> workItemHandlerConfig,
+            Instance<UnitOfWorkManager> unitOfWorkManager,
+            Instance<JobsService> jobsService,
+            Instance<IdentityProvider> identityProvider,
+            Instance<UserTaskLifeCycle> userTaskLifeCycle) {
+        super(workItemHandlerConfig, 
+                unitOfWorkManager,
+                jobsService,
+                identityProvider,
+                userTaskLifeCycle);
     }
     
 }

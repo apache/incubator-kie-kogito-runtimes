@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.kie.kogito.usertask.impl.DefaultUserTask;
 
+@jakarta.enterprise.context.ApplicationScoped
 public class UserTaskTemplate extends DefaultUserTask {
 
     public DefaultUserTask() {

@@ -22,9 +22,11 @@ import java.util.Set;
 
 import org.kie.kogito.usertask.impl.DefaultUserTask;
 
+@org.springframework.web.context.annotation.ApplicationScope
+@org.springframework.stereotype.Component
 public class UserTaskTemplate extends DefaultUserTask {
 
-    public DefaultUserTask() {
+    public UserTaskTemplate() {
 
     }
 
