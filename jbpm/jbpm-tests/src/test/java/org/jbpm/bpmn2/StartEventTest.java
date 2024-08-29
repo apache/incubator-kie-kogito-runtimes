@@ -34,6 +34,8 @@ import org.jbpm.bpmn2.event.ConditionalStartProcess;
 import org.jbpm.bpmn2.objects.NotAvailableGoodsReport;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
+import org.jbpm.bpmn2.start.MultipleStartEventProcessLongIntervalModel;
+import org.jbpm.bpmn2.start.MultipleStartEventProcessLongIntervalProcess;
 import org.jbpm.bpmn2.start.SignalStartWithTransformationModel;
 import org.jbpm.bpmn2.start.SignalStartWithTransformationProcess;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
@@ -279,19 +281,18 @@ public class StartEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testMultipleStartEventsRegularStart() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/start/BPMN2-MultipleStartEventProcessLongInterval.bpmn2");
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
-        KogitoProcessInstance processInstance = kruntime
-                .startProcess("MultipleStartEventProcessLongInterval");
-        assertProcessInstanceActive(processInstance);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<MultipleStartEventProcessLongIntervalModel> process = MultipleStartEventProcessLongIntervalProcess.newProcess(app);
+        org.kie.kogito.process.ProcessInstance<MultipleStartEventProcessLongIntervalModel> processInstance = process.createInstance(process.createModel());
+        processInstance.start();
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("ActorId")).isEqualTo("john");
-        kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
-        assertProcessInstanceFinished(processInstance, kruntime);
-
+        processInstance.completeWorkItem(workItem.getStringId(), null);
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -311,9 +312,15 @@ public class StartEventTest extends JbpmBpmn2TestCase {
             }
         });
         assertThat(list).isEmpty();
-        // Timer in the process takes 500ms, so after 1 second, there should be 2 process IDs in the list.
         countDownListener.waitTillCompleted();
         assertThat(getNumberOfProcessInstances("MultipleStartEventProcess")).isEqualTo(2);
+
+        /*
+         * org.kie.kogito.process.validation.ValidationException: A process cannot have more than one start node!
+         * BPMN process definition includes multiple start events
+         * but I've encountered an issue where Kogito seems to only support a single start node per process.
+         * Could you please clarify if there's a way to handle multiple start events within a single Kogito process definition, or suggest an alternative approach to achieve similar functionality?"
+         */
 
     }
 
