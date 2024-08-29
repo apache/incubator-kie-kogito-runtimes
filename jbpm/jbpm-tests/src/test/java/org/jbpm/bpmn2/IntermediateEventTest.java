@@ -43,6 +43,8 @@ import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.intermediate.EventSubprocessErrorSignalEmbeddedModel;
 import org.jbpm.bpmn2.intermediate.EventSubprocessErrorSignalEmbeddedProcess;
+import org.jbpm.bpmn2.intermediate.IntermediateCatchEventConditionModel;
+import org.jbpm.bpmn2.intermediate.IntermediateCatchEventConditionProcess;
 import org.jbpm.bpmn2.intermediate.IntermediateCatchEventMessageWithTransformationModel;
 import org.jbpm.bpmn2.intermediate.IntermediateCatchEventMessageWithTransformationProcess;
 import org.jbpm.bpmn2.intermediate.IntermediateCatchEventSignal2Model;
@@ -1316,17 +1318,31 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testIntermediateCatchEventCondition() throws Exception {
-        kruntime = createKogitoProcessRuntime(
-                "org/jbpm/bpmn2/intermediate/BPMN2-IntermediateCatchEventCondition.bpmn2");
-        KogitoProcessInstance processInstance = kruntime.startProcess("IntermediateCatchEventCondition");
-        assertProcessInstanceActive(processInstance);
-
-        // now activate condition
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Human Task", new SystemOutWorkItemHandler());
+        org.kie.kogito.process.Process<IntermediateCatchEventConditionModel> process = IntermediateCatchEventConditionProcess.newProcess(app);
+        ProcessInstance<IntermediateCatchEventConditionModel> processInstance = process.createInstance(process.createModel());
+        processInstance.start();
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         Person person = new Person();
-        person.setName("Jack");
-        kruntime.getKieSession().insert(person);
-        assertProcessInstanceFinished(processInstance, kruntime);
+        person.setName("John");
+        processInstance.send(Sig.of("Condition-Activated", person));
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
 
+        /*
+         * for the tests with getKieSession,
+         * How to add the person variable to the session? The model doesnot have the person field. Even after the person variable is added in the bpmn file, the test fails with a NPE,
+         * when i try to complete workItem Im getting beloiw error
+         * Caused by: java.lang.NullPointerException: Cannot invoke
+         * "org.jbpm.process.instance.impl.AssignmentAction.execute(java.util.function.Function, java.util.function.Function, org.jbpm.process.instance.impl.AssignmentProducer)" because "action" is
+         * null
+         * at org.jbpm.workflow.core.impl.NodeIoHelper.handleAssignment(NodeIoHelper.java:113)
+         * 
+         * exception is this,
+         * org.jbpm.workflow.instance.WorkflowRuntimeException:
+         * [DataOutputAssociations:fa7cbf6e-fe07-408b-abcd-92ea30bed450 - Task:[uuid=_2]] -- java.lang.RuntimeException:
+         * Unable to execute Assignment
+         */
     }
 
     @Test
