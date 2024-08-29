@@ -1346,22 +1346,19 @@ public class FlowTest extends JbpmBpmn2TestCase {
     public void testLane() throws Exception {
         kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/flow/BPMN2-Lane.bpmn2");
 
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler workItemHandler = new TestUserTaskWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 workItemHandler);
         KogitoProcessInstance processInstance = kruntime.startProcess("Lane");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
+
         KogitoWorkItem KogitoWorkItem = workItemHandler.getWorkItem();
         assertThat(KogitoWorkItem).isNotNull();
         assertThat(KogitoWorkItem.getParameter("ActorId")).isEqualTo("john");
         Map<String, Object> results = new HashMap<>();
-        ((KogitoWorkItemImpl) KogitoWorkItem).setParameter("ACTUA_OWNER", "mary");
+        ((KogitoWorkItemImpl) KogitoWorkItem).setParameter("ActorId", "mary");
         kruntime.getKogitoWorkItemManager().completeWorkItem(KogitoWorkItem.getStringId(),
                 results);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                workItemHandler);
         KogitoWorkItem = workItemHandler.getWorkItem();
         assertThat(KogitoWorkItem).isNotNull();
         assertThat(KogitoWorkItem.getParameter("SwimlaneActorId")).isEqualTo("mary");

@@ -18,10 +18,14 @@
  */
 package org.kie.kogito.auth;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.internal.process.workitem.NotAuthorizedException;
 import org.kie.kogito.internal.process.workitem.Policy;
 
 /**
@@ -58,6 +62,17 @@ public class SecurityPolicy implements Policy {
 
     @Override
     public void enforce(KogitoWorkItem workItem) {
+        String actualOwner = (String) workItem.getParameter("ActorId");
+        String actualRoles = (String) workItem.getParameter("GroupId");
+        if (actualOwner != null || actualRoles != null) {
+            List<String> owners = actualOwner != null ? List.of(actualOwner.split(",")) : Collections.emptyList();
+            List<String> roles = actualRoles != null ? List.of(actualRoles.split(",")) : Collections.emptyList();
+            List<String> userRoles = new ArrayList<>(identity.getRoles());
+            userRoles.retainAll(roles);
+            if (!owners.contains(identity.getName()) && userRoles.isEmpty()) {
+                throw new NotAuthorizedException("this work item " + workItem.getStringId() + " is not allows by this owner" + actualOwner);
+            }
+        }
     }
 
 }

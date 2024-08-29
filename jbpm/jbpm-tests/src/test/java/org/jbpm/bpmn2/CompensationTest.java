@@ -56,7 +56,6 @@ import org.kie.kogito.process.impl.Sig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 public class CompensationTest extends JbpmBpmn2TestCase {
 
     private KogitoProcessEventListener LOGGING_EVENT_LISTENER = new DefaultKogitoProcessEventListener() {

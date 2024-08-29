@@ -60,7 +60,8 @@ public class TestUserTaskWorkItemHandler extends DefaultKogitoWorkItemHandler {
     public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
         workItems.add(workItem);
 
-        String potentialOwners = (String) workItem.getParameter("ACTOR_ID");
+        String potentialOwners = (String) workItem.getParameter("ActorId");
+        potentialOwners = potentialOwners == null ? (String) workItem.getParameter("SwimlaneActorId") : potentialOwners;
 
         if (potentialOwners != null) {
             String[] owners = potentialOwners.split(",");

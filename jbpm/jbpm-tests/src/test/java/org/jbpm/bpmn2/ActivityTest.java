@@ -616,7 +616,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     @Test
     public void testUserTaskNoneAssignmentFailure() {
         Application app = ProcessTestHelper.newApplication();
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler workItemHandler = new TestUserTaskWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
         org.kie.kogito.process.Process<UserTaskNoneModel> processDefinition = UserTaskNoneProcess.newProcess(app);
         UserTaskNoneModel model = processDefinition.createModel();
@@ -625,9 +625,11 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
-
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john", "HR");
-
+        try {
+            ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john", "HR");
+        } catch (Throwable e) {
+            assertThat(e).isInstanceOf(InvalidTransitionException.class);
+        }
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
 

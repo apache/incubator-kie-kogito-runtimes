@@ -40,8 +40,8 @@ import org.jbpm.process.core.datatype.impl.coverter.TypeConverterRegistry;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
+import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.jbpm.usertask.handler.Policies;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
 
 import jakarta.xml.bind.JAXBContext;
@@ -68,7 +68,7 @@ public class StructureRefTest extends JbpmBpmn2TestCase {
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(
                 workItemHandler.getWorkItem().getStringId(), res,
-                Policies.of("john"));
+                SecurityPolicy.of("john", Collections.emptyList()));
 
         assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
     }

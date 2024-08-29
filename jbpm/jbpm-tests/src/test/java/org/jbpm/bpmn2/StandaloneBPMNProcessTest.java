@@ -76,7 +76,6 @@ import org.jbpm.bpmn2.intermediate.IntermediateThrowEventMessageModel;
 import org.jbpm.bpmn2.intermediate.IntermediateThrowEventMessageProcess;
 import org.jbpm.bpmn2.objects.Person;
 import org.jbpm.bpmn2.objects.TestUserTaskWorkItemHandler;
-import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.subprocess.CallActivityModel;
 import org.jbpm.bpmn2.subprocess.CallActivityProcess;
 import org.jbpm.bpmn2.subprocess.CallActivitySubProcessProcess;
@@ -233,18 +232,16 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     public void testLane() throws Exception {
         kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/flow/BPMN2-Lane.bpmn2");
 
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        TestUserTaskWorkItemHandler workItemHandler = new TestUserTaskWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         KogitoProcessInstance processInstance = kruntime.startProcess("Lane");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("ActorId")).isEqualTo("john");
         Map<String, Object> results = new HashMap<>();
-        ((KogitoWorkItemImpl) workItem).setParameter("ACTUA_OWNER", "mary");
+        ((KogitoWorkItemImpl) workItem).setParameter("ActorId", "mary");
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), results);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("SwimlaneActorId")).isEqualTo("mary");
