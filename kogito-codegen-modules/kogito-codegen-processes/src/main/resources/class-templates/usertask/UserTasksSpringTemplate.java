@@ -18,6 +18,8 @@
  */
 package org.kie.kogito.usertask.impl;
 
+import java.util.List;
+import org.kie.kogito.usertask.UserTask;
 import org.kie.kogito.usertask.impl.DefaultUserTasks;
 
 @org.springframework.web.context.annotation.ApplicationScope
@@ -25,8 +27,8 @@ import org.kie.kogito.usertask.impl.DefaultUserTasks;
 public class UserTasks extends DefaultUserTasks {
 
     @org.springframework.beans.factory.annotation.Autowired
-    public UserTasks(org.kie.kogito.Application application) {
-        super(application);
+    public UserTasks(List<UserTask> userTasks) {
+        super(userTasks);
     }
 
 }

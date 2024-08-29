@@ -127,6 +127,9 @@ public class UserTaskCodegen extends AbstractGenerator {
             unit.getPackageDeclaration().get().setName(packageName);
 
             ClassOrInterfaceDeclaration clazzDeclaration = unit.findFirst(ClassOrInterfaceDeclaration.class).get();
+            if (context().hasDI()) {
+                context().getDependencyInjectionAnnotator().withNamed(clazzDeclaration, UserTaskCodegenHelper.className(info));
+            }
             clazzDeclaration.setName(className);
 
             ConstructorDeclaration declaration = clazzDeclaration.findFirst(ConstructorDeclaration.class).get();
@@ -135,7 +138,7 @@ public class UserTaskCodegen extends AbstractGenerator {
             BlockStmt block = declaration.getBody();
             NodeList<Expression> arguments = new NodeList<>();
             arguments.add(new StringLiteralExpr((String) info.getParameter("id")));
-            arguments.add(new StringLiteralExpr((String) info.getParameter(NODE_NAME)));
+            arguments.add(new StringLiteralExpr((String) info.getParameter(TASK_NAME)));
             arguments.add(new NullLiteralExpr());
             block.addStatement(new ExplicitConstructorInvocationStmt().setThis(false).setArguments(arguments));
             block.addStatement(new MethodCallExpr(new ThisExpr(), "setPotentialUsers", NodeList.nodeList(toStringExpression(info.getParameter(ACTOR_ID)))));
@@ -187,7 +190,10 @@ public class UserTaskCodegen extends AbstractGenerator {
                                 .toList();
 
                         data.addAll(descriptors);
-                        data.forEach(e -> e.setParameter("PackageName", process.getPackageName()));
+                        data.forEach(e -> {
+                            e.setParameter("PackageName", process.getPackageName());
+                            e.setParameter("ProcessId", process.getId());
+                        });
                     }
 
                     return data.stream();

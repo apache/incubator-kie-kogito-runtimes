@@ -35,8 +35,8 @@ import org.acme.travels.Traveller;
 import org.jbpm.util.JsonSchemaUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.task.management.service.TaskInfo;
+import org.kie.kogito.usertask.model.AttachmentInfo;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 

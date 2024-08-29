@@ -52,13 +52,15 @@ public class $Type$Resource {
                                  @RequestParam("group") final List<String> groups,
                                  final UriComponentsBuilder uriComponentsBuilder) {
 
-        return processService.signalTask(process, id, "$taskName$", SecurityPolicy.of(user, groups))
-                .map(task -> ResponseEntity
-                        .created(uriComponentsBuilder
-                                         .path("/$name$/{id}/$taskName$/{taskId}")
-                                         .buildAndExpand(id, task.getId()).toUri())
-                        .body(task.getResults()))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return null;
+                
+//                processService.signalTask(process, id, "$taskName$", SecurityPolicy.of(user, groups))
+//                .map(task -> ResponseEntity
+//                        .created(uriComponentsBuilder
+//                                         .path("/$name$/{id}/$taskName$/{taskId}")
+//                                         .buildAndExpand(id, task.getId()).toUri())
+//                        .body(task.getResults()))
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping(value = "/{id}/$taskName$/{taskId}/phases/{phase}", produces = MediaType.APPLICATION_JSON_VALUE,

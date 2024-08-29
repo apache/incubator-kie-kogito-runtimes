@@ -31,13 +31,13 @@ import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.auth.IdentityProviders;
+import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.codegen.AbstractCodegenIT;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.ProcessWorkItemTransitionEvent;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
-import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.workitem.Policy;
 import org.kie.kogito.internal.process.workitem.WorkItemTransition;
@@ -48,21 +48,13 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.VariableViolationException;
 import org.kie.kogito.process.WorkItem;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 public class UserTaskIT extends AbstractCodegenIT {
 
-    private Policy securityPolicy = new Policy() {
-
-        @Override
-        public void enforce(KogitoWorkItem workItem) {
-            //            if (!"john".equals( workItem.getParameter("ACTUAL_OWNER"))) {
-            //                throw new NotAuthorizedException(null);
-            //            }
-        }
-
-    };
+    private Policy securityPolicy = SecurityPolicy.of("john", emptyList());
 
     @Test
     public void testBasicUserTaskProcess() throws Exception {

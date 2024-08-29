@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,26 +20,33 @@ package org.kie.kogito.usertask.impl;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.kie.kogito.Application;
 import org.kie.kogito.usertask.UserTask;
 import org.kie.kogito.usertask.UserTasks;
 
 public class DefaultUserTasks implements UserTasks {
 
     private Map<String, UserTask> userTasks;
-    protected Application application;
 
-    public DefaultUserTasks(Application application, UserTask... userTasks) {
-        this.application = application;
+    public DefaultUserTasks() {
+        this.userTasks = new HashMap<>();
+    }
+
+    public DefaultUserTasks(UserTask... userTasks) {
         this.userTasks = new HashMap<>();
         Stream.of(userTasks).forEach(e -> this.userTasks.put(e.id(), e));
     }
 
-    public DefaultUserTasks(UserTask... userTasks) {
-        this(null, userTasks);
+    public DefaultUserTasks(Iterable<UserTask> userTasks) {
+        this.userTasks = new HashMap<>();
+        Iterator<UserTask> userTaskIterator = userTasks.iterator();
+        while (userTaskIterator.hasNext()) {
+            UserTask userTask = userTaskIterator.next();
+            this.userTasks.put(userTask.id(), userTask);
+        }
     }
 
     @Override

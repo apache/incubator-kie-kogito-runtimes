@@ -31,8 +31,12 @@ public final class UserTaskCodegenHelper {
         // do nothing;
     }
 
+    public static String processId(Work descriptor) {
+        return ConversionUtils.sanitizeClassName((String) descriptor.getParameter("ProcessId"));
+    }
+
     public static String className(Work descriptor) {
-        return ConversionUtils.sanitizeClassName((String) descriptor.getParameter("NodeName"));
+        return processId(descriptor) + "_" + ConversionUtils.sanitizeClassName((String) descriptor.getParameter("TaskName"));
     }
 
     public static String packageName(Work descriptor) {

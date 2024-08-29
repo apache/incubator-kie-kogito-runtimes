@@ -31,7 +31,6 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
@@ -59,7 +58,6 @@ public class UserTaskContainerGenerator extends AbstractApplicationSection {
 
         BlockStmt block = new BlockStmt();
         NodeList<Expression> arguments = new NodeList<>();
-        arguments.add(new NameExpr("application"));
         for (Work descriptor : descriptors) {
             String fqn = UserTaskCodegenHelper.fqnClassName(descriptor);
             arguments.add(new ObjectCreationExpr().setType(StaticJavaParser.parseClassOrInterfaceType(fqn)));
