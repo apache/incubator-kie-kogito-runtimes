@@ -32,6 +32,10 @@ import org.jbpm.bpmn2.activity.XPathProcessProcess;
 import org.jbpm.bpmn2.core.Association;
 import org.jbpm.bpmn2.core.DataStore;
 import org.jbpm.bpmn2.core.Definitions;
+import org.jbpm.bpmn2.data.AssociationModel;
+import org.jbpm.bpmn2.data.AssociationProcess;
+import org.jbpm.bpmn2.data.CorrelationKeyModel;
+import org.jbpm.bpmn2.data.CorrelationKeyProcess;
 import org.jbpm.bpmn2.data.DataInputAssociationsLazyCreatingModel;
 import org.jbpm.bpmn2.data.DataInputAssociationsLazyCreatingProcess;
 import org.jbpm.bpmn2.data.DataInputAssociationsModel;
@@ -50,6 +54,8 @@ import org.jbpm.bpmn2.data.DataOutputAssociationsModel;
 import org.jbpm.bpmn2.data.DataOutputAssociationsProcess;
 import org.jbpm.bpmn2.data.DataOutputAssociationsXmlNodeModel;
 import org.jbpm.bpmn2.data.DataOutputAssociationsXmlNodeProcess;
+import org.jbpm.bpmn2.data.DataStoreModel;
+import org.jbpm.bpmn2.data.DataStoreProcess;
 import org.jbpm.bpmn2.data.Evaluation2Model;
 import org.jbpm.bpmn2.data.Evaluation2Process;
 import org.jbpm.bpmn2.data.Evaluation3Model;
@@ -60,7 +66,6 @@ import org.jbpm.bpmn2.data.ImportModel;
 import org.jbpm.bpmn2.data.ImportProcess;
 import org.jbpm.bpmn2.flow.DataOutputAssociationsHumanTaskModel;
 import org.jbpm.bpmn2.flow.DataOutputAssociationsHumanTaskProcess;
-import org.jbpm.bpmn2.xml.ProcessHandler;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.utils.ProcessTestHelper;
@@ -71,7 +76,6 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.kie.kogito.process.ProcessInstance;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -106,31 +110,46 @@ public class DataTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testDataStore() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/data/BPMN2-DataStore.bpmn2");
-        KogitoProcessInstance processInstance = kruntime.startProcess("DataStore");
-        Definitions def = (Definitions) processInstance.getProcess()
-                .getMetaData().get("Definitions");
-        assertThat(def.getDataStores()).isNotNull().hasSize(1);
+        Application app = ProcessTestHelper.newApplication();
 
+        org.kie.kogito.process.Process<DataStoreModel> processDefinition = DataStoreProcess.newProcess(app);
+        DataStoreModel model = processDefinition.createModel();
+        org.kie.kogito.process.ProcessInstance<DataStoreModel> instance = processDefinition.createInstance(model);
+        instance.start();
+
+        /*
+         * metaData is not present, I think it is protected and hence cannot import.
+         * How to get process metadata from the process object(only then we can get the definition metadata)
+         */
+
+        Definitions def = (Definitions) instance.process().metaData().get("Definitions");
+        assertThat(def.getDataStores()).isNotNull().hasSize(1);
         DataStore dataStore = def.getDataStores().get(0);
         assertThat(dataStore.getId()).isEqualTo("employee");
         assertThat(dataStore.getName()).isEqualTo("employeeStore");
         assertThat(((ObjectDataType) dataStore.getType()).getClassName()).isEqualTo(String.class.getCanonicalName());
-
     }
 
     @Test
     public void testAssociation() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/data/BPMN2-Association.bpmn2");
-        KogitoProcessInstance processInstance = kruntime.startProcess("Association");
-        List<Association> associations = (List<Association>) processInstance.getProcess().getMetaData().get(ProcessHandler.ASSOCIATIONS);
-        assertThat(associations).isNotNull().hasSize(1);
+        Application app = ProcessTestHelper.newApplication();
+        org.kie.kogito.process.Process<AssociationModel> processDefinition = AssociationProcess.newProcess(app);
+        AssociationModel model = processDefinition.createModel();
+        org.kie.kogito.process.ProcessInstance<AssociationModel> instance = processDefinition.createInstance(model);
+        instance.start();
 
+        /*
+         * metaData is not present, I think it is protected and hence cannot import.
+         * How to get process metadata from the process object(only then we can get the definition metadata)
+         */
+
+        Definitions def = (Definitions) instance.process().metaData().get("Definitions");
+        List<Association> associations = def.getAssociations();
+        assertThat(associations).isNotNull().hasSize(1);
         Association assoc = associations.get(0);
         assertThat(assoc.getId()).isEqualTo("_1234");
         assertThat(assoc.getSourceRef()).isEqualTo("_1");
         assertThat(assoc.getTargetRef()).isEqualTo("_2");
-
     }
 
     @Test
@@ -482,17 +501,19 @@ public class DataTest extends JbpmBpmn2TestCase {
         instance.start();
     }
 
-    @Test
-    public void testDefaultProcessVariableValue() throws Exception {
+    public void testDefaultProcessVariableValue() {
+        Application app = ProcessTestHelper.newApplication();
+        org.kie.kogito.process.Process<CorrelationKeyModel> processDefinition = CorrelationKeyProcess.newProcess(app);
+        CorrelationKeyModel model = processDefinition.createModel();
+        org.kie.kogito.process.ProcessInstance<CorrelationKeyModel> instance = processDefinition.createInstance(model);
+        instance.start();
 
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/data/BPMN2-CorrelationKey.bpmn2");
-
-        Map<String, Object> parameters = new HashMap<String, Object>();
-
-        KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime.startProcess("CorrelationKey", parameters);
-
-        assertThat(processInstance.getVariable("procVar")).isEqualTo("defaultProc");
-        assertThat(processInstance.getVariable("intVar")).isEqualTo(1);
+        /*
+         * CorrelationKeyModel class does not have methods named getProcVar and getIntVar .
+         * This is due to acutal variables/methods being different in the CorrelationKeyModel class.
+         */
+        assertThat(model.getProcVar()).isEqualTo("defaultProc");
+        assertThat(model.getIntVar()).isEqualTo(1);
 
     }
 
