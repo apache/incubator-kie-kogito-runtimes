@@ -169,7 +169,7 @@ public abstract class AbstractCodegenIT {
             log(new String(entry.contents()));
         }
 
-        if (resourcesTypeMap.size() == 1 && resourcesTypeMap.containsKey(TYPE.PROCESS)) {
+        if (resourcesTypeMap.size() > 0 && resourcesTypeMap.containsKey(TYPE.PROCESS)) {
             sources.add("org/drools/project/model/ProjectRuntime.java");
             srcMfs.write("org/drools/project/model/ProjectRuntime.java", DUMMY_PROCESS_RUNTIME.getBytes());
         }
