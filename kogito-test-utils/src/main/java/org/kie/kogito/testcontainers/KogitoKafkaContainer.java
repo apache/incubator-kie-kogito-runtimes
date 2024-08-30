@@ -59,7 +59,7 @@ public class KogitoKafkaContainer extends KogitoGenericContainer<KogitoKafkaCont
         String command = "#!/bin/bash\n";
         command += "/usr/bin/rpk redpanda start --check=false --node-id 0 --smp 1 ";
         command += "--memory 1G --overprovisioned --reserve-memory 0M ";
-        command += "--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 ";
+        command += "--kafka-addr http://0.0.0.0:29092,http://0.0.0.0:9092 ";
         command += format("--advertise-kafka-addr %s ", String.join(",", getBootstrapServers(), brokerAdvertisedListener));
         command += "--set redpanda.enable_idempotence=true ";
         command += "--set redpanda.enable_transactions=true ";
@@ -74,11 +74,11 @@ public class KogitoKafkaContainer extends KogitoGenericContainer<KogitoKafkaCont
     }
 
     protected String brokerAdvertisedListener(InspectContainerResponse containerInfo) {
-        return String.format("PLAINTEXT://%s:29092", containerInfo.getConfig().getHostName());
+        return String.format("http://%s:29092", containerInfo.getConfig().getHostName());
     }
 
     public String getBootstrapServers() {
-        return format("OUTSIDE://%s:%d", getHost(), getMappedPort(KAFKA_PORT));
+        return format("http://%s:%d", getHost(), getMappedPort(KAFKA_PORT));
     }
 
     @Override
