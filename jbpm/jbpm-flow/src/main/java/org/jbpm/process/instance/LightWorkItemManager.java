@@ -85,7 +85,7 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
         transitionWorkItem(workItem, transition, true);
     }
 
-    private KogitoWorkItemHandler getWorkItemHandler(String workItemId) throws KogitoWorkItemHandlerNotFoundException {
+    public KogitoWorkItemHandler getWorkItemHandler(String workItemId) throws KogitoWorkItemHandlerNotFoundException {
         InternalKogitoWorkItem workItem = workItems.get(workItemId);
         if (workItem == null) {
             throw new WorkItemNotFoundException(workItemId);
@@ -93,7 +93,7 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
         return getWorkItemHandler(workItem);
     }
 
-    private KogitoWorkItemHandler getWorkItemHandler(InternalKogitoWorkItem workItem) throws KogitoWorkItemHandlerNotFoundException {
+    public KogitoWorkItemHandler getWorkItemHandler(InternalKogitoWorkItem workItem) throws KogitoWorkItemHandlerNotFoundException {
         KogitoWorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
         if (handler == null) {
             throw new KogitoWorkItemHandlerNotFoundException(workItem.getName());

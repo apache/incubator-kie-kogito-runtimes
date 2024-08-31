@@ -169,14 +169,14 @@ public abstract class AbstractCodegenIT {
             log(new String(entry.contents()));
         }
 
-        if (resourcesTypeMap.size() > 0 && resourcesTypeMap.containsKey(TYPE.PROCESS)) {
+        if (!resourcesTypeMap.isEmpty() && resourcesTypeMap.containsKey(TYPE.PROCESS) && !resourcesTypeMap.containsKey(TYPE.RULES)) {
             sources.add("org/drools/project/model/ProjectRuntime.java");
             srcMfs.write("org/drools/project/model/ProjectRuntime.java", DUMMY_PROCESS_RUNTIME.getBytes());
         }
 
         if (LOGGER.isInfoEnabled()) {
             Path temp = Files.createTempDirectory("KOGITO_TESTS");
-            LOGGER.info("Dumping generated files in " + temp);
+            LOGGER.debug("Dumping generated files in " + temp);
             for (GeneratedFile entry : generatedFiles) {
                 Path fpath = temp.resolve(entry.relativePath());
                 fpath.getParent().toFile().mkdirs();

@@ -18,6 +18,8 @@
  */
 package org.jbpm.process;
 
+import java.util.concurrent.TimeUnit;
+
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.kiesession.session.ProcessRuntimeFactory;
 import org.jbpm.process.instance.InternalProcessRuntime;
@@ -25,6 +27,7 @@ import org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
@@ -52,6 +55,7 @@ public class TimerTest extends AbstractBaseTest {
     }
 
     @Test
+    @Timeout(value = 10L, unit = TimeUnit.SECONDS)
     public void testTimer() {
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
