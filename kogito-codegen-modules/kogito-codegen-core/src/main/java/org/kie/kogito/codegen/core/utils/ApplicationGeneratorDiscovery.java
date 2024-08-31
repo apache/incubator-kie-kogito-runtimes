@@ -46,18 +46,21 @@ public class ApplicationGeneratorDiscovery {
     }
 
     public static ApplicationGenerator discover(KogitoBuildContext context) {
+        return discover(ApplicationGeneratorDiscovery.class.getClassLoader(), context);
+    }
+
+    public static ApplicationGenerator discover(ClassLoader classLoader, KogitoBuildContext context) {
         ApplicationGenerator appGen = new ApplicationGenerator(context);
 
-        loadGenerators(context)
-                .forEach(appGen::registerGeneratorIfEnabled);
+        loadGenerators(classLoader, context).forEach(appGen::registerGeneratorIfEnabled);
 
         return appGen;
     }
 
-    protected static Collection<Generator> loadGenerators(KogitoBuildContext context) {
+    protected static Collection<Generator> loadGenerators(ClassLoader classLoader, KogitoBuildContext context) {
         Collection<CollectedResource> collectedResources = CollectedResourceProducer.fromPaths(context.ignoreHiddenFiles(), context.getAppPaths().getPaths());
 
-        ServiceLoader<GeneratorFactory> generatorFactories = ServiceLoader.load(GeneratorFactory.class);
+        ServiceLoader<GeneratorFactory> generatorFactories = ServiceLoader.load(GeneratorFactory.class, classLoader);
 
         List<Generator> generators = StreamSupport.stream(generatorFactories.spliterator(), false)
                 .map(gf -> gf.create(context, collectedResources))
