@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -44,9 +46,12 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractGenerator;
+import org.kie.kogito.codegen.process.ProcessCodegenException;
 import org.kie.kogito.codegen.process.ProcessParsingException;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.process.validation.ValidationException;
+import org.kie.kogito.process.validation.ValidationLogDecorator;
 import org.xml.sax.SAXException;
 
 import com.github.javaparser.StaticJavaParser;
@@ -64,6 +69,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 
 import static java.util.stream.Collectors.toList;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.FAIL_ON_ERROR_PROPERTY;
 
 public class UserTaskCodegen extends AbstractGenerator {
     private static final String NODE_NAME = "NodeName";
@@ -175,7 +181,7 @@ public class UserTaskCodegen extends AbstractGenerator {
     }
 
     public static UserTaskCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
-
+        Map<String, Throwable> processesErrors = new HashMap<>();
         Set<String> extensions = SupportedExtensions.getBPMNExtensions();
         Predicate<Resource> supportExtensions = resource -> extensions.stream().anyMatch(resource.getSourcePath()::endsWith);
 
@@ -184,27 +190,45 @@ public class UserTaskCodegen extends AbstractGenerator {
                 .filter(supportExtensions)
                 .flatMap(resource -> {
                     List<Work> data = new ArrayList<>();
-                    for (KogitoWorkflowProcess process : parseProcessFile(resource).stream().map(KogitoWorkflowProcess.class::cast).toList()) {
-                        List<Work> descriptors = process.getNodesRecursively()
-                                .stream()
-                                .filter(HumanTaskNode.class::isInstance)
-                                .map(HumanTaskNode.class::cast)
-                                .map(HumanTaskNode::getWork)
-                                .toList();
+                    try {
+                        for (KogitoWorkflowProcess process : parseProcessFile(resource).stream().map(KogitoWorkflowProcess.class::cast).toList()) {
+                            List<Work> descriptors = process.getNodesRecursively()
+                                    .stream()
+                                    .filter(HumanTaskNode.class::isInstance)
+                                    .map(HumanTaskNode.class::cast)
+                                    .map(HumanTaskNode::getWork)
+                                    .toList();
 
-                        data.addAll(descriptors);
-                        data.forEach(e -> {
-                            e.setParameter("PackageName", process.getPackageName());
-                            e.setParameter("ProcessId", process.getId());
-                        });
+                            data.addAll(descriptors);
+                            data.forEach(e -> {
+                                e.setParameter("PackageName", process.getPackageName());
+                                e.setParameter("ProcessId", process.getId());
+                            });
+                        }
+                    } catch (ValidationException e) {
+                        processesErrors.put(resource.getSourcePath(), e);
+                    } catch (ProcessParsingException e) {
+                        processesErrors.put(resource.getSourcePath(), e.getCause());
                     }
-
                     return data.stream();
 
                 })
                 .collect(toList());
 
+        handleValidation(context, processesErrors);
+
         return ofUserTasks(context, userTasks);
+    }
+
+    private static void handleValidation(KogitoBuildContext context, Map<String, Throwable> processesErrors) {
+        if (!processesErrors.isEmpty()) {
+            ValidationLogDecorator decorator = new ValidationLogDecorator(processesErrors);
+            decorator.decorate();
+            //rethrow exception to break the flow after decoration unless property is set to false
+            if (context.getApplicationProperty(FAIL_ON_ERROR_PROPERTY, Boolean.class).orElse(true)) {
+                throw new ProcessCodegenException("Processes with errors are " + decorator.toString());
+            }
+        }
     }
 
     private static UserTaskCodegen ofUserTasks(KogitoBuildContext context, List<Work> userTasks) {
