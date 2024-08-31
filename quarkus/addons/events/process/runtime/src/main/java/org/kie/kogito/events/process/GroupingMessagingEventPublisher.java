@@ -18,27 +18,36 @@
  */
 package org.kie.kogito.events.process;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.kie.kogito.event.DataEvent;
 
-import io.quarkus.arc.properties.UnlessBuildProperty;
+import io.quarkus.arc.properties.IfBuildProperty;
 
 import jakarta.inject.Singleton;
 
 @Singleton
-@UnlessBuildProperty(name = "kogito.events.grouping", stringValue = "true", enableIfMissing = true)
-public class ReactiveMessagingEventPublisher extends AbstractMessagingEventPublisher {
+@IfBuildProperty(name = "kogito.events.grouping", stringValue = "true")
+public class GroupingMessagingEventPublisher extends AbstractMessagingEventPublisher {
 
     @Override
     public void publish(DataEvent<?> event) {
-        getConsumer(event).ifPresent(emitter -> publishToTopic(emitter, event));
+        publish(Collections.singletonList(event));
     }
 
     @Override
     public void publish(Collection<DataEvent<?>> events) {
+        Map<AbstractMessageEmitter, Collection<DataEvent<?>>> eventsByChannel = new HashMap<>();
         for (DataEvent<?> event : events) {
-            publish(event);
+            getConsumer(event).ifPresent(c -> eventsByChannel.computeIfAbsent(c, k -> new ArrayList<>()).add(event));
+        }
+        for (Entry<AbstractMessageEmitter, Collection<DataEvent<?>>> item : eventsByChannel.entrySet()) {
+            publishToTopic(item.getKey(), item.getValue());
         }
     }
 
