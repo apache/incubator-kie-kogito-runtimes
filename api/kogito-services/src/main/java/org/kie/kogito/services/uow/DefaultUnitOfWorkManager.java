@@ -37,7 +37,7 @@ import org.kie.kogito.uow.events.UnitOfWorkStartEvent;
  *
  */
 public class DefaultUnitOfWorkManager implements UnitOfWorkManager {
-    private static DefaultUnitOfWorkManager instance = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
+    private static final DefaultUnitOfWorkManager instance = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
     // uses thread local to associate unit of works to execution context/thread
     private ThreadLocal<UnitOfWork> currentUnitOfWork = new ThreadLocal<>();
     // uses pass through unit of work as fallback if no unit of work has been started
