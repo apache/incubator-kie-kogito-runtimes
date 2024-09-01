@@ -120,6 +120,13 @@
         <artifactId>kogito-maven-plugin</artifactId>
         <version>${project.version}</version> <!-- Needed, otherwise it would use the latest release found on Maven central -->
         <extensions>true</extensions>
+        <dependencies>
+            <dependency>
+              <groupId>org.kie.kogito</groupId>
+              <artifactId>kogito-codegen-processes</artifactId>
+              <version>${project.version}</version> <!-- Needed, otherwise it would use the latest release found on Maven central -->
+            </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>

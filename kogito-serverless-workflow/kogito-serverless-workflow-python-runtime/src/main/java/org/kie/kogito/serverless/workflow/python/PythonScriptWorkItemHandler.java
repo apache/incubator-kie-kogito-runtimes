@@ -24,12 +24,12 @@ import java.util.Map;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 
+import jep.Interpreter;
+
 import static org.kie.kogito.serverless.workflow.SWFConstants.PYTHON_SCRIPT;
 import static org.kie.kogito.serverless.workflow.SWFConstants.SCRIPT;
 import static org.kie.kogito.serverless.workflow.python.PythonWorkItemHandlerUtils.closeInterpreter;
 import static org.kie.kogito.serverless.workflow.python.PythonWorkItemHandlerUtils.interpreter;
-
-import jep.Interpreter;
 
 public class PythonScriptWorkItemHandler extends WorkflowWorkItemHandler {
 

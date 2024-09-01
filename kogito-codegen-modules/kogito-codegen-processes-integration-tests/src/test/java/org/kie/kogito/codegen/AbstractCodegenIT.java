@@ -36,6 +36,7 @@ import java.util.function.BiFunction;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.util.PortablePath;
+import org.junit.platform.commons.util.ClassLoaderUtils;
 import org.kie.kogito.Application;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.Generator;
@@ -184,7 +185,7 @@ public abstract class AbstractCodegenIT {
             }
         }
 
-        CompilationResult result = JAVA_COMPILER.compile(sources.toArray(new String[sources.size()]), srcMfs, trgMfs, this.getClass().getClassLoader());
+        CompilationResult result = JAVA_COMPILER.compile(sources.toArray(new String[sources.size()]), srcMfs, trgMfs, ClassLoaderUtils.getDefaultClassLoader());
         assertThat(result).isNotNull();
         assertThat(result.getErrors()).describedAs(String.join("\n\n", Arrays.toString(result.getErrors()))).isEmpty();
 
