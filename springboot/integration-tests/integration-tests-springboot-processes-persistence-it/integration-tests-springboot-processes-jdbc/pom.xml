@@ -146,13 +146,6 @@
               <goal>generateModel</goal>
             </goals>
           </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-maven-plugin</artifactId>
-        <version>${project.version}</version> <!-- Needed, otherwise it would use the latest release found on Maven central -->
-        <executions>
           <execution>
             <id>kogito-process-model-classes</id>
             <phase>process-classes</phase> <!-- Temporary hack -->
