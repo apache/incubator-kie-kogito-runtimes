@@ -52,14 +52,16 @@ public final class SourceFile {
         return uri;
     }
 
-    public static String toPosixPath(Path toNormalizePath) {
-        if (toNormalizePath == null) {
+    public static String toPosixPath(Path path) {
+        if (path == null) {
             return null;
         }
-        if (toNormalizePath.getFileSystem().getSeparator().equals("/")) {
-            return toNormalizePath.toString();
+
+        if (path.getFileSystem().getSeparator().equals("/")) {
+            return path.toString();
         }
-        return toNormalizePath.toString().replace(toNormalizePath.getFileSystem().getSeparator(), "/");
+
+        return path.toString().replace(path.getFileSystem().getSeparator(), "/");
     }
 
     public byte[] readContents() throws IOException {

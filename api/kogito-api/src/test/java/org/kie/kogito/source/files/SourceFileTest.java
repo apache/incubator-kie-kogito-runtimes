@@ -18,6 +18,8 @@
  */
 package org.kie.kogito.source.files;
 
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,21 +28,11 @@ class SourceFileTests {
 
     @Test
     void toPosixPath() {
-        SourceFile unixTestPetstoreJson = new SourceFile("test/petstore.json");
-        SourceFile deepUnixTestPetstoreJson = new SourceFile("foo/bar/test/petstore.json");
-        SourceFile windowsTestPetstoreJson = new SourceFile("test\\petstore.json");
-        SourceFile deepWindowsTestPetstoreJson = new SourceFile("foo\\bar\\test\\petstore.json");
-        SourceFile petstoreJson = new SourceFile("petstore.json");
-
-        assertThat(unixTestPetstoreJson.getUri()).isNotNull();
-        assertThat(unixTestPetstoreJson.getUri()).isEqualTo("test/petstore.json");
-        assertThat(deepUnixTestPetstoreJson.getUri()).isNotNull();
-        assertThat(deepUnixTestPetstoreJson.getUri()).isEqualTo("foo/bar/test/petstore.json");
-        assertThat(windowsTestPetstoreJson.getUri()).isNotNull();
-        assertThat(windowsTestPetstoreJson.getUri()).isEqualTo("test/petstore.json");
-        assertThat(deepWindowsTestPetstoreJson.getUri()).isNotNull();
-        assertThat(deepWindowsTestPetstoreJson.getUri()).isEqualTo("foo/bar/test/petstore.json");
-        assertThat(petstoreJson.getUri()).isNotNull();
-        assertThat(petstoreJson.getUri()).isEqualTo("petstore.json");
+        assertThat(SourceFile.toPosixPath(null)).isNull();
+        assertThat(SourceFile.toPosixPath(Path.of("test/petstore.json"))).isEqualTo("test/petstore.json");
+        assertThat(SourceFile.toPosixPath(Path.of("foo/bar/test/petstore.json"))).isEqualTo("foo/bar/test/petstore.json");
+        assertThat(SourceFile.toPosixPath(Path.of("test\\petstore.json"))).isEqualTo("test/petstore.json");
+        assertThat(SourceFile.toPosixPath(Path.of("foo\\bar\\test\\petstore.json"))).isEqualTo("foo/bar/test/petstore.json");
+        assertThat(SourceFile.toPosixPath(Path.of("petstore.json"))).isEqualTo("petstore.json");
     }
 }
