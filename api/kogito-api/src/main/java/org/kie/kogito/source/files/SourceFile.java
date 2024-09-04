@@ -40,19 +40,19 @@ public final class SourceFile {
      * @param uri the URI of the source file
      */
     public SourceFile(String uri) {
-        this.uri = normalizeToUnixPath(Path.of(Objects.requireNonNull(uri)));
+        this.uri = toPosixPath(Path.of(Objects.requireNonNull(uri)));
     }
 
     // Needed for serialization
     public void setUri(String uri) {
-        this.uri = normalizeToUnixPath(Path.of(uri));
+        this.uri = toPosixPath(Path.of(uri));
     }
 
     public String getUri() {
         return uri;
     }
 
-    public static String normalizeToUnixPath(Path toNormalizePath) {
+    public static String toPosixPath(Path toNormalizePath) {
         if (toNormalizePath == null) {
             return null;
         }
