@@ -472,6 +472,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                             .parse(new ByteArrayInputStream("<user hello='hello world' />".getBytes()));
                     Map<String, Object> params = new HashMap<>();
                     params.put("output", document.getFirstChild());
+                    documents.add(document);
                     workItems.add(workItem);
                     return Optional.of(this.workItemLifeCycle.newTransition("complete", workItem.getPhaseStatus(), params));
 
