@@ -177,7 +177,7 @@
                      execution is enabled (by specifying a phase) for full profile builds. -->
                 <phase>install</phase>
                 <configuration>
-                    <skip>true</skip>
+                    <fail>false</fail>
                 </configuration>
               </execution>
             </executions>
