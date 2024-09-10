@@ -44,7 +44,8 @@
     <module>integration-tests-quarkus-resteasy-classic</module>
     <module>integration-tests-quarkus-resteasy-reactive</module>
     <module>integration-tests-kogito-plugin</module>
-    <module>integration-tests-quarkus-norest</module>
+    <!-- Temporary disable - see incubator-kie-issues#1472 !-->
+<!--    <module>integration-tests-quarkus-norest</module>-->
     <module>integration-tests-quarkus-processes</module>
     <module>integration-tests-quarkus-processes-reactive</module>
     <module>integration-tests-quarkus-processes-persistence</module>

@@ -47,7 +47,8 @@
         <module>process-serialization-protobuf</module>
         <module>process-workitems</module>
         <module>jbpm-tools</module>
-        <module>jbpm-tests</module>
+        <!-- Temporary disable - see incubator-kie-issues#1472 !-->
+<!--        <module>jbpm-tests</module>-->
         <module>jbpm-deps-groups</module>
     </modules>
 

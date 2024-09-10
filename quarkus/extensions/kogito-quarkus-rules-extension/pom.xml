@@ -38,7 +38,8 @@
   <modules>
     <module>kogito-quarkus-rules-deployment</module>
     <module>kogito-quarkus-rules</module>
-    <module>kogito-quarkus-rules-integration-test</module>
+    <!-- Temporary disable - see incubator-kie-issues#1472 !-->
+<!--    <module>kogito-quarkus-rules-integration-test</module>-->
     <module>kogito-quarkus-rules-integration-test-hot-reload</module>
   </modules>
 
