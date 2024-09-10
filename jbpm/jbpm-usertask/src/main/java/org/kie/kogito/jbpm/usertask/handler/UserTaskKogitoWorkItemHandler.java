@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
@@ -200,7 +201,11 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             ut.transition(ut.createTransitionToken("complete", emptyMap()));
             userTask.instances().update(ut);
         });
-
+        if (workItem instanceof InternalKogitoWorkItem ikw && ikw.getActualOwner() == null) {
+            transition.policies().stream().filter(SecurityPolicy.class::isInstance).map(SecurityPolicy.class::cast).findAny().ifPresent(e -> {
+                ikw.setActualOwner(e.getUser());
+            });
+        }
         return Optional.empty();
     }
 

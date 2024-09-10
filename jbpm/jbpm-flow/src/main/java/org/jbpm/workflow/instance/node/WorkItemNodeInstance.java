@@ -273,7 +273,11 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
 
         if (workItemNode != null && workItem.getState() == COMPLETED) {
             validateWorkItemResultVariable(getProcessInstance().getProcessName(), workItemNode.getOutAssociations(), workItem);
-            NodeIoHelper.processOutputs(this, varRef -> workItem.getResult(varRef), varName -> this.getVariable(varName));
+            Map<String, Object> outputs = new HashMap<>(workItem.getResults());
+            if (workItem.getActualOwner() != null) {
+                outputs.put("ActorId", workItem.getActualOwner());
+            }
+            NodeIoHelper.processOutputs(this, varRef -> outputs.get(varRef), varName -> this.getVariable(varName));
         }
 
         if (getNode() == null) {

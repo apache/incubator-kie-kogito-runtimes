@@ -73,6 +73,9 @@ public class SecurityPolicy implements Policy {
 
     @Override
     public void enforce(KogitoWorkItem workItem) {
+        if (workItem.getActualOwner() != null && workItem.getActualOwner().equals(getUser())) {
+            return;
+        }
 
         String actualOwner = workItem.getActualOwner();
         String actualOwners = (String) workItem.getParameter("ActorId");
