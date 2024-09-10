@@ -32,6 +32,10 @@
   <artifactId>integration-tests-springboot-processes-jdbc</artifactId>
   <name>Kogito :: Integration Tests :: Spring Boot :: Processes :: Persistence :: JDBC</name>
 
+  <properties>
+    <compare.fail>false</compare.fail>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.postgresql</groupId>
@@ -154,34 +158,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin> 
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-artifact-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>check-buildplan</id>
-                <goals>
-                  <goal>check-buildplan</goal>
-                </goals>
-                <!-- The execution's configuration is part of the pluginManagement. This piece here only makes sure the
-                     execution is enabled (by specifying a phase) for full profile builds. -->
-                <phase>validate</phase>
-              </execution>
-              <execution>
-                <id>compare</id>
-                <goals>
-                  <goal>compare</goal>
-                </goals>
-                <!-- The execution's configuration is part of the pluginManagement. This piece here only makes sure the
-                     execution is enabled (by specifying a phase) for full profile builds. -->
-                <phase>install</phase>
-                <configuration>
-                    <fail>false</fail>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+      </plugin>
     </plugins>
   </build>
 
