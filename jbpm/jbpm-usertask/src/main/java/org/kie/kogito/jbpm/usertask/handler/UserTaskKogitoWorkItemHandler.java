@@ -125,7 +125,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             priority = (Integer) priority;
         }
 
-        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter("id"));
+        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
 
         DefaultUserTaskInstance instance = (DefaultUserTaskInstance) userTask.createInstance();
         ofNullable(workItem.getParameters().get(ACTOR_ID)).map(String.class::cast).map(UserTaskKogitoWorkItemHandler::toSet).ifPresent(instance::setPotentialUsers);
@@ -166,7 +166,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         workItem.removeOutput("ACTUAL_OWNER");
 
         UserTasks userTasks = handler.getApplication().get(UserTasks.class);
-        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter("id"));
+        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
         userTask.instances().findById(workItem.getExternalReferenceId()).ifPresent(ut -> {
             Map<String, Object> data = transition.data();
             if (!data.containsKey("ACTUAL_OWNER")) {
@@ -184,7 +184,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
 
     static public Optional<WorkItemTransition> userTaskReleaseWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
         UserTasks userTasks = handler.getApplication().get(UserTasks.class);
-        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter("id"));
+        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
         userTask.instances().findById(workItem.getExternalReferenceId()).ifPresent(ut -> {
             ut.setActuaOwner(null);
             ut.transition(ut.createTransitionToken("release", emptyMap()));
@@ -196,7 +196,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
 
     static public Optional<WorkItemTransition> userTaskCompleteWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
         UserTasks userTasks = handler.getApplication().get(UserTasks.class);
-        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter("id"));
+        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
         userTask.instances().findById(workItem.getExternalReferenceId()).ifPresent(ut -> {
             ut.transition(ut.createTransitionToken("complete", emptyMap()));
             userTask.instances().update(ut);
@@ -211,7 +211,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
 
     static public Optional<WorkItemTransition> userTaskAbortWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
         UserTasks userTasks = handler.getApplication().get(UserTasks.class);
-        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter("id"));
+        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
         userTask.instances().findById(workItem.getExternalReferenceId()).ifPresent(ut -> {
             ut.transition(ut.createTransitionToken("skip", emptyMap()));
             userTask.instances().update(ut);

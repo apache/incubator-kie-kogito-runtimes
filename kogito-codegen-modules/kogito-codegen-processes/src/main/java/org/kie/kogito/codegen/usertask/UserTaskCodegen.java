@@ -150,7 +150,7 @@ public class UserTaskCodegen extends AbstractGenerator {
             if (!context().hasDI()) {
                 arguments.add(new NameExpr("application"));
             }
-            arguments.add(new StringLiteralExpr((String) info.getParameter("id")));
+            arguments.add(new StringLiteralExpr((String) info.getParameter(Work.PARAMETER_UNIQUE_TASK_ID)));
             arguments.add(taskNameExpression);
             block.addStatement(new ExplicitConstructorInvocationStmt().setThis(false).setArguments(arguments));
             block.addStatement(new MethodCallExpr(new ThisExpr(), "setPotentialUsers", NodeList.nodeList(toStringExpression(info.getParameter(ACTOR_ID)))));
@@ -211,8 +211,8 @@ public class UserTaskCodegen extends AbstractGenerator {
                                         Work w = e.getWork();
                                         w.setParameter("PackageName", process.getPackageName());
                                         w.setParameter("ProcessId", process.getId());
-                                        if (w.getParameter("id") == null) {
-                                            w.setParameter("id", e.getUniqueId());
+                                        if (w.getParameter(Work.PARAMETER_UNIQUE_TASK_ID) == null) {
+                                            w.setParameter(Work.PARAMETER_UNIQUE_TASK_ID, e.getUniqueId());
                                         }
                                         return w;
                                     })

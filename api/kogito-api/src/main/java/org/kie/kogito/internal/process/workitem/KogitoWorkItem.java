@@ -27,6 +27,8 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 public interface KogitoWorkItem extends WorkItem {
 
+    static final String PARAMETER_UNIQUE_TASK_ID = "UNIQUE_TASK_ID";
+
     @Override
     @Deprecated
     long getId();

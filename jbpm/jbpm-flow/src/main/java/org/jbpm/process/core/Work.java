@@ -25,6 +25,8 @@ import org.kie.kogito.process.workitems.WorkParametersFactory;
 
 public interface Work {
 
+    static final String PARAMETER_UNIQUE_TASK_ID = "UNIQUE_TASK_ID";
+
     void setName(String name);
 
     String getName();
