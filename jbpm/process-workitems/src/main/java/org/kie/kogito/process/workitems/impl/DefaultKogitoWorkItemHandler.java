@@ -47,11 +47,6 @@ public class DefaultKogitoWorkItemHandler implements KogitoWorkItemHandler {
 
     private static Logger LOG = LoggerFactory.getLogger(DefaultKogitoWorkItemHandler.class);
 
-    private WorkItemPhaseState initialized = WorkItemPhaseState.initialized();
-    private WorkItemPhaseState completed = WorkItemPhaseState.of("Completed", WorkItemTerminationType.COMPLETE);
-    private WorkItemPhaseState aborted = WorkItemPhaseState.of("Aborted", WorkItemTerminationType.ABORT);
-    private WorkItemPhaseState activated = WorkItemPhaseState.of("Activated");
-
     protected Application application;
 
     protected WorkItemLifeCycle workItemLifeCycle;
@@ -65,6 +60,11 @@ public class DefaultKogitoWorkItemHandler implements KogitoWorkItemHandler {
     }
 
     public WorkItemLifeCycle initialize() {
+        WorkItemPhaseState initialized = WorkItemPhaseState.initialized();
+        WorkItemPhaseState completed = WorkItemPhaseState.of("Completed", WorkItemTerminationType.COMPLETE);
+        WorkItemPhaseState aborted = WorkItemPhaseState.of("Aborted", WorkItemTerminationType.ABORT);
+        WorkItemPhaseState activated = WorkItemPhaseState.of("Activated");
+
         DefaultWorkItemLifeCyclePhase complete = new DefaultWorkItemLifeCyclePhase(TRANSITION_COMPLETE, activated, completed, this::completeWorkItemHandler);
         DefaultWorkItemLifeCyclePhase abort = new DefaultWorkItemLifeCyclePhase(TRANSITION_ABORT, activated, aborted, this::abortWorkItemHandler);
         DefaultWorkItemLifeCyclePhase active = new DefaultWorkItemLifeCyclePhase(TRANSITION_ACTIVATE, initialized, activated, this::activateWorkItemHandler);
