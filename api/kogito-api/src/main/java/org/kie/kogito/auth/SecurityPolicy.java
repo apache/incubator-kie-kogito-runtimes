@@ -88,13 +88,13 @@ public class SecurityPolicy implements Policy {
             List<String> roles = actualRoles != null ? List.of(actualRoles.split(",")) : new ArrayList<>();
             List<String> userRoles = new ArrayList<>(identity.getRoles());
             userRoles.retainAll(roles);
-            LOGGER.info("enforcing identity {} and roles {} with potential owners {} and potential groups {} and exclude groups {}",
+            LOGGER.debug("enforcing identity {} and roles {} with potential owners {} and potential groups {} and exclude groups {}",
                     identity.getName(), identity.getRoles(), owners, roles, excluded);
             if (!owners.contains(identity.getName()) && userRoles.isEmpty()) {
-                LOGGER.error("not authorized with owner {} against identity {}", actualOwner, identity.getName());
+                LOGGER.debug("not authorized with owner {} against identity {}", actualOwner, identity.getName());
                 throw new NotAuthorizedException("this work item " + workItem.getStringId() + " is not allows by this owner " + actualOwners + " or " + actualRoles);
             } else if (userRoles.isEmpty() && actualOwner != null && !identity.getName().equals(actualOwner)) {
-                LOGGER.error("identity {} with roles {} not authorized in {}", identity.getName(), identity.getRoles(), roles);
+                LOGGER.debug("identity {} with roles {} not authorized in {}", identity.getName(), identity.getRoles(), roles);
                 throw new NotAuthorizedException("this work item " + workItem.getStringId() + " is not allows by this owner " + actualOwner);
             }
         }

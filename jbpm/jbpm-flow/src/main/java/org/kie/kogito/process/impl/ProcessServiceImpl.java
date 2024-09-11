@@ -229,10 +229,7 @@ public class ProcessServiceImpl implements ProcessService {
             return process.instances()
                     .findById(processInstanceId)
                     .map(pi -> {
-                        WorkItem workItem = pi.workItems(policy).stream()
-                                .filter(wi -> wi.getId().equals(workItemId))
-                                .findFirst()
-                                .orElseThrow(() -> new WorkItemNotFoundException(workItemId));
+                        WorkItem workItem = pi.workItem(workItemId, policy);
                         pi.transitionWorkItem(workItemId, process.newTransition(workItem, phaseId, model.toMap(), policy));
                         return pi.variables().toModel();
                     });

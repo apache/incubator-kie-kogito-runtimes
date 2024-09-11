@@ -501,11 +501,16 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         return processInstance().getNodeInstances(true).stream()
                 .filter(WorkItemNodeInstance.class::isInstance)
                 .map(WorkItemNodeInstance.class::cast)
-                .filter(w -> enforce(w.getWorkItem(), policies))
+                .filter(w -> enforceException(w.getWorkItem(), policies))
                 .filter(ni -> ni.getWorkItemId().equals(workItemId))
                 .map(this::toBaseWorkItem)
                 .findAny()
                 .orElseThrow(() -> new WorkItemNotFoundException("Work item with id " + workItemId + " was not found in process instance " + id(), workItemId));
+    }
+
+    private boolean enforceException(KogitoWorkItem kogitoWorkItem, Policy... policies) {
+        Stream.of(policies).forEach(p -> p.enforce(kogitoWorkItem));
+        return true;
     }
 
     @Override

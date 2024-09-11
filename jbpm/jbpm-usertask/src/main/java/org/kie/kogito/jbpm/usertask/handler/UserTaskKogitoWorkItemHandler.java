@@ -42,7 +42,6 @@ import org.kie.kogito.usertask.UserTasks;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
 import static java.util.Optional.ofNullable;
 
 /**
@@ -72,6 +71,8 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             new DefaultWorkItemLifeCyclePhase("activate", INACTIVE, ACTIVATED, UserTaskKogitoWorkItemHandler::userTaskActivateWorkItemHandler);
     public static final WorkItemLifeCyclePhase TRANSITION_RESERVED_RELEASE =
             new DefaultWorkItemLifeCyclePhase("release", RESERVED, ACTIVATED, UserTaskKogitoWorkItemHandler::userTaskReleaseWorkItemHandler);
+    public static final WorkItemLifeCyclePhase TRANSITION_ACTIVATED_COMPLETED =
+            new DefaultWorkItemLifeCyclePhase("skip", ACTIVATED, COMPLETED, UserTaskKogitoWorkItemHandler::userTaskCompleteWorkItemHandler);
 
     private static final String DESCRIPTION = "Description";
     private static final String PRIORITY = "Priority";
@@ -96,7 +97,8 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
                 TRANSITION_ACTIVATED_COMPLETE,
                 TRANSITION_RESERVED_RELEASE,
                 TRANSITION_RESERVED_ABORT,
-                TRANSITION_RESERVED_COMPLETE);
+                TRANSITION_RESERVED_COMPLETE,
+                TRANSITION_ACTIVATED_COMPLETED);
     }
 
     @Override
@@ -148,11 +150,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             ikw.setExternalReferenceId(instance.getId());
             ikw.setActualOwner(instance.getActualOwner());
         }
-        if (instance.getActualOwner() == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(handler.newTransition(TRANSITION_ACTIVATED_CLAIM.id(), workItem.getPhaseStatus(), singletonMap("ACTUAL_OWNER", instance.getActualOwner())));
-        }
+        return Optional.empty();
     }
 
     static protected Set<String> toSet(String value) {
@@ -169,13 +167,16 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
         userTask.instances().findById(workItem.getExternalReferenceId()).ifPresent(ut -> {
             Map<String, Object> data = transition.data();
-            if (!data.containsKey("ACTUAL_OWNER")) {
-                throw new InvalidTransitionException("transition claim does not contain ACTUAL_OWNER");
-            }
-            ut.setActuaOwner((String) data.get("ACTUAL_OWNER"));
             if (workItem instanceof InternalKogitoWorkItem ikw) {
-                ikw.setActualOwner(ut.getActualOwner());
+                getUserFromTransition(transition).ifPresent(ikw::setActualOwner);
+                if (data.containsKey("ACTUAL_OWNER") && ikw.getActualOwner() == null) {
+                    ut.setActuaOwner((String) data.get("ACTUAL_OWNER"));
+                }
+                if (ikw.getActualOwner() == null) {
+                    throw new InvalidTransitionException("transition claim does not contain user id");
+                }
             }
+            ut.setActuaOwner(workItem.getActualOwner());
             ut.transition(ut.createTransitionToken("claim", emptyMap()));
             userTask.instances().update(ut);
         });
@@ -202,9 +203,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             userTask.instances().update(ut);
         });
         if (workItem instanceof InternalKogitoWorkItem ikw && ikw.getActualOwner() == null) {
-            transition.policies().stream().filter(SecurityPolicy.class::isInstance).map(SecurityPolicy.class::cast).findAny().ifPresent(e -> {
-                ikw.setActualOwner(e.getUser());
-            });
+            getUserFromTransition(transition).ifPresent(ikw::setActualOwner);
         }
         return Optional.empty();
     }
@@ -216,6 +215,14 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             ut.transition(ut.createTransitionToken("skip", emptyMap()));
             userTask.instances().update(ut);
         });
+        return Optional.empty();
+    }
+
+    private static Optional<String> getUserFromTransition(WorkItemTransition transition) {
+        Optional<SecurityPolicy> securityPolicy = transition.policies().stream().filter(SecurityPolicy.class::isInstance).map(SecurityPolicy.class::cast).findAny();
+        if (securityPolicy.isPresent()) {
+            return Optional.ofNullable(securityPolicy.get().getUser());
+        }
         return Optional.empty();
     }
 }
