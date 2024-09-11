@@ -64,7 +64,7 @@ jobs:
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           # TODO RESTORE ORIGINAL
-          definition-file: https://raw.githubusercontent.com/apache/incubator-kie-kogito-pipelines/6ce17b62d8cbf1b44b25965aaf15b3094b0ceff0/.ci/pull-request-config.yaml
+          definition-file: https://raw.githubusercontent.com/apache/incubator-kie-kogito-pipelines/499fcdd4c11631331b567abbb21aa1a6c6ddc844/.ci/pull-request-config.yaml
         env:
           BUILD_MVN_OPTS_CURRENT: '-Dvalidate-formatting'
       - name: Junit Report
