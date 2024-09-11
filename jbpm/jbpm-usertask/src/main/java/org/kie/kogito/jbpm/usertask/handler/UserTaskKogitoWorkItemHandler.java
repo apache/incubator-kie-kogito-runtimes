@@ -60,7 +60,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
     public static final WorkItemLifeCyclePhase TRANSITION_RESERVED_COMPLETE =
             new DefaultWorkItemLifeCyclePhase("complete", RESERVED, COMPLETED, UserTaskKogitoWorkItemHandler::userTaskCompleteWorkItemHandler);
     public static final WorkItemLifeCyclePhase TRANSITION_ACTIVATED_COMPLETE =
-            new DefaultWorkItemLifeCyclePhase("complete", ACTIVATED, COMPLETED, UserTaskKogitoWorkItemHandler::userTaskCompleteWorkItemHandler);
+            new DefaultWorkItemLifeCyclePhase("complete", ACTIVATED, COMPLETED, UserTaskKogitoWorkItemHandler::userTaskCompleteFromActiveWorkItemHandler);
     public static final WorkItemLifeCyclePhase TRANSITION_RESERVED_ABORT =
             new DefaultWorkItemLifeCyclePhase("abort", RESERVED, ABORTED, UserTaskKogitoWorkItemHandler::userTaskAbortWorkItemHandler);
     public static final WorkItemLifeCyclePhase TRANSITION_ACTIVATED_ABORT =
@@ -184,6 +184,9 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
     }
 
     static public Optional<WorkItemTransition> userTaskReleaseWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
+        if (workItem instanceof InternalKogitoWorkItem ikw) {
+            ikw.setActualOwner(null);
+        }
         UserTasks userTasks = handler.getApplication().get(UserTasks.class);
         UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
         userTask.instances().findById(workItem.getExternalReferenceId()).ifPresent(ut -> {
@@ -203,7 +206,25 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             userTask.instances().update(ut);
         });
         if (workItem instanceof InternalKogitoWorkItem ikw && ikw.getActualOwner() == null) {
-            getUserFromTransition(transition).ifPresent(ikw::setActualOwner);
+            getUserFromTransition(transition).ifPresent(user -> {
+                ikw.setActualOwner(user);
+            });
+        }
+        return Optional.empty();
+    }
+
+    static public Optional<WorkItemTransition> userTaskCompleteFromActiveWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem,
+            WorkItemTransition transition) {
+        UserTasks userTasks = handler.getApplication().get(UserTasks.class);
+        UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
+        userTask.instances().findById(workItem.getExternalReferenceId()).ifPresent(ut -> {
+            ut.transition(ut.createTransitionToken("complete", emptyMap()));
+            userTask.instances().update(ut);
+        });
+        if (workItem instanceof InternalKogitoWorkItem ikw) {
+            getUserFromTransition(transition).ifPresent(user -> {
+                ikw.setActualOwner(user);
+            });
         }
         return Optional.empty();
     }
