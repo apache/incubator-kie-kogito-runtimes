@@ -6,7 +6,7 @@
     <parent>
         <artifactId>jbpm-deps-groups</artifactId>
         <groupId>org.kie.kogito</groupId>
-        <version>999-SNAPSHOT</version>
+        <version>999-20240912-SNAPSHOT</version>
     </parent>
 
     <artifactId>jbpm-deps-group-compiler</artifactId>
