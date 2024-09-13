@@ -66,4 +66,9 @@ public class UserTaskAssignmentEventImpl extends UserTaskEventImpl implements Us
     public String[] getNewUsersId() {
         return newUsersId.toArray(String[]::new);
     }
+
+    @Override
+    public String toString() {
+        return "UserTaskAssignmentEventImpl [assignmentType=" + assignmentType + ", oldUsersId=" + oldUsersId + ", newUsersId=" + newUsersId + "]";
+    }
 }

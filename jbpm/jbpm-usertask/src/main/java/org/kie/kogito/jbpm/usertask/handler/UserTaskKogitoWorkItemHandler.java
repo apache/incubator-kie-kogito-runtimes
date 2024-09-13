@@ -130,26 +130,34 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
 
         DefaultUserTaskInstance instance = (DefaultUserTaskInstance) userTask.createInstance();
+        instance.setId(workItem.getStringId());
+        instance.setTaskName((String) workItem.getParameter(TASK_NAME));
+        instance.setTaskDescription((String) workItem.getParameter(DESCRIPTION));
+        instance.setTaskPriority(priorityInteger);
+        instance.setExternalReferenceId(workItem.getStringId());
+        instance.setMetadata("ProcessId", workItem.getProcessInstance().getProcessId());
+        instance.setMetadata("ProcessType", workItem.getProcessInstance().getProcess().getType());
+        instance.setMetadata("ProcessVersion", workItem.getProcessInstance().getProcessVersion());
+        instance.setMetadata("ProcessInstanceId", workItem.getProcessInstance().getStringId());
+        instance.setMetadata("ProcessInstanceState", workItem.getProcessInstance().getState());
+        instance.setMetadata("RootProcessId", workItem.getProcessInstance().getRootProcessId());
+        instance.setMetadata("RootProcessInstanceId", workItem.getProcessInstance().getRootProcessId());
+        instance.setMetadata("ParentProcessInstanceId", workItem.getProcessInstance().getRootProcessId());
+
         ofNullable(workItem.getParameters().get(ACTOR_ID)).map(String.class::cast).map(UserTaskKogitoWorkItemHandler::toSet).ifPresent(instance::setPotentialUsers);
         ofNullable(workItem.getParameters().get(GROUP_ID)).map(String.class::cast).map(UserTaskKogitoWorkItemHandler::toSet).ifPresent(instance::setPotentialGroups);
         ofNullable(workItem.getParameters().get(BUSINESSADMINISTRATOR_ID)).map(String.class::cast).map(UserTaskKogitoWorkItemHandler::toSet).ifPresent(instance::setAdminUsers);
         ofNullable(workItem.getParameters().get(BUSINESSADMINISTRATOR_GROUP_ID)).map(String.class::cast).map(UserTaskKogitoWorkItemHandler::toSet).ifPresent(instance::setAdminGroups);
         ofNullable(workItem.getParameters().get(EXCLUDED_OWNER_ID)).map(String.class::cast).map(UserTaskKogitoWorkItemHandler::toSet).ifPresent(instance::setExcludedUsers);
 
-        instance.setTaskName((String) workItem.getParameter(TASK_NAME));
-        instance.setTaskDescription((String) workItem.getParameter(DESCRIPTION));
-        instance.setTaskPriority(priorityInteger);
-        instance.setExternalReferenceId(workItem.getStringId());
-        instance.setMetadata("ProcessId", workItem.getProcessInstance().getProcessId());
-
-        instance.setExternalReferenceId(workItem.getStringId());
         instance.assign();
         instance.transition(instance.createTransitionToken("activate", emptyMap()));
-        userTask.instances().update(instance);
+
         if (workItem instanceof InternalKogitoWorkItem ikw) {
             ikw.setExternalReferenceId(instance.getId());
             ikw.setActualOwner(instance.getActualOwner());
         }
+        userTask.instances().create(instance);
         return Optional.empty();
     }
 

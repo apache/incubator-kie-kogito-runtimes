@@ -43,8 +43,18 @@ public class AdapterHelper {
     }
 
     public static Map<String, Object> buildUserTaskMetadata(UserTaskInstance pi) {
+
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_ID_META_DATA, pi.getId());
+        metadata.put(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA, pi.getMetadata().get("ProcessInstanceId"));
+        metadata.put(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA, pi.getMetadata().get("ProcessVersion"));
+        metadata.put(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA, pi.getMetadata().get("ProcessId"));
+        metadata.put(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA, String.valueOf(pi.getMetadata().get("ProcessInstanceState")));
+        metadata.put(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA, pi.getMetadata().get("ProcessType"));
+        metadata.put(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA, pi.getMetadata().get("ParentProcessInstanceId"));
+        metadata.put(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA, pi.getMetadata().get("RootProcessId"));
+        metadata.put(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA, pi.getMetadata().get("RootProcessInstanceId"));
+
+        metadata.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_ID_META_DATA, pi.getExternalReferenceId());
         metadata.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_REFERENCE_ID_META_DATA, pi.getUserTask().getReferenceName());
         metadata.put(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_STATE_META_DATA, pi.getStatus().getName());
 

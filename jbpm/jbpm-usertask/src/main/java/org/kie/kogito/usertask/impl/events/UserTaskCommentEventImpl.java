@@ -51,4 +51,9 @@ public class UserTaskCommentEventImpl extends UserTaskEventImpl implements UserT
         return oldComment;
     }
 
+    @Override
+    public String toString() {
+        return "UserTaskCommentEventImpl [oldComment=" + oldComment + ", newComment=" + newComment + "]";
+    }
+
 }

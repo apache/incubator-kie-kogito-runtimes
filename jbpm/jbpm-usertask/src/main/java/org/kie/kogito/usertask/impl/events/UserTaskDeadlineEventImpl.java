@@ -48,7 +48,7 @@ public class UserTaskDeadlineEventImpl extends UserTaskEventImpl implements User
 
     @Override
     public String toString() {
-        return "HumanTaskDeadlineEventImpl [notification=" + notification + ", type=" +
-                type + "]";
+        return "HumanTaskDeadlineEventImpl [notification=" + notification + ", type=" + type + "]";
     }
+
 }

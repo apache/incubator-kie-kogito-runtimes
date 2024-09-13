@@ -51,4 +51,9 @@ public class UserTaskAttachmentEventImpl extends UserTaskEventImpl implements Us
         return newAttachment;
     }
 
+    @Override
+    public String toString() {
+        return "UserTaskAttachmentEventImpl [oldAttachment=" + oldAttachment + ", newAttachment=" + newAttachment + "]";
+    }
+
 }

@@ -289,7 +289,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         Set<String> oldValues = new HashSet<>(this.potentialUsers);
         this.potentialUsers = potentialUsers;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.USER_OWNERS, oldValues, excludedUsers);
+            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.USER_OWNERS, oldValues, potentialUsers);
         }
     }
 
@@ -307,7 +307,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         Set<String> oldValues = new HashSet<>(this.potentialGroups);
         this.potentialGroups = potentialGroups;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.USER_GROUPS, oldValues, excludedUsers);
+            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.USER_GROUPS, oldValues, potentialGroups);
         }
     }
 
@@ -325,7 +325,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         Set<String> oldValues = new HashSet<>(this.adminUsers);
         this.adminUsers = adminUsers;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.ADMIN_USERS, oldValues, excludedUsers);
+            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.ADMIN_USERS, oldValues, adminUsers);
         }
     }
 
@@ -343,7 +343,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         Set<String> oldValues = new HashSet<>(this.adminGroups);
         this.adminGroups = adminGroups;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.ADMIN_GROUPS, oldValues, excludedUsers);
+            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.ADMIN_GROUPS, oldValues, adminGroups);
         }
     }
 
@@ -470,6 +470,12 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     @Override
     public Comment findCommentById(String commentId) {
         return this.comments.stream().filter(e -> e.getId().equals(commentId)).findAny().orElse(null);
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultUserTaskInstance [id=" + id + ", status=" + status + ", actualOwner=" + actualOwner + ", taskName=" + taskName + ", taskDescription=" + taskDescription + ", taskPriority="
+                + taskPriority + "]";
     }
 
 }

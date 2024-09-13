@@ -51,4 +51,9 @@ public class UserTaskStateEventImpl extends UserTaskEventImpl implements UserTas
         return oldStatus;
     }
 
+    @Override
+    public String toString() {
+        return "UserTaskStateEventImpl [oldStatus=" + oldStatus + ", newStatus=" + newStatus + "]";
+    }
+
 }

@@ -103,7 +103,8 @@ public class DefaultUserTask implements UserTask {
         instance.setAdminUsers(getAdminUsers());
         instance.setPotentialGroups(getPotentialGroups());
         instance.setExcludedUsers(getExcludedUsers());
-        return userTaskInstances.create(instance);
+        connect(instance);
+        return instance;
     }
 
     private UserTaskInstance disconnect(UserTaskInstance userTaskInstance) {

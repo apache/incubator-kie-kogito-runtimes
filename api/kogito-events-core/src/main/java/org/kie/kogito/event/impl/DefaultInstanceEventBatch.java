@@ -32,8 +32,12 @@ import org.kie.kogito.event.impl.adapter.DataEventAdapter;
 import org.kie.kogito.event.impl.adapter.DataEventAdapter.DataEventAdapterConfig;
 import org.kie.kogito.event.process.ProcessInstanceStateDataEvent;
 import org.kie.kogito.event.process.ProcessInstanceStateEventBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultInstanceEventBatch implements EventBatch {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultInstanceEventBatch.class);
 
     private String service;
     private Addons addons;
@@ -64,6 +68,7 @@ public class DefaultInstanceEventBatch implements EventBatch {
 
     @Override
     public void append(Object event) {
+        LOG.info("event generated {}", event);
         this.dataEventAdapters.stream().filter(a -> a.accept(event)).map(a -> a.adapt(event)).forEach(this.processedEvents::add);
     }
 
