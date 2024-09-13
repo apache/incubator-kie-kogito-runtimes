@@ -26,8 +26,8 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import org.drools.io.ClassPathResource;
-import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
+import org.kie.flyway.KieFlywayInitializer;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.workitem.Policy;
@@ -62,14 +62,12 @@ abstract class AbstractProcessInstancesIT {
     public static final String TEST_ID = "02ac3854-46ee-42b7-8b63-5186c9889d96";
     public static Policy securityPolicy = SecurityPolicy.of(IdentityProviders.of("john"));
 
-    DataSource dataSource;
-
-    public static void initMigration(JdbcDatabaseContainer container, String dbKind) {
-        Flyway flyway = Flyway.configure().dataSource(container.getJdbcUrl(),
-                container.getUsername(),
-                container.getPassword())
-                .locations("classpath:db/" + dbKind).load();
-        flyway.migrate();
+    public static void initMigration(DataSource dataSource, String dbKind) {
+        KieFlywayInitializer.Builder.get()
+                .withDatasource(dataSource)
+                .withDbType(dbKind)
+                .build()
+                .migrate();
     }
 
     public static BpmnProcess createProcess(TestProcessInstancesFactory factory, String fileName) {
