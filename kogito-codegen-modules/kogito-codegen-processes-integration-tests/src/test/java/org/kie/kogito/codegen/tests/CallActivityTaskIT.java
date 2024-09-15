@@ -151,7 +151,7 @@ public class CallActivityTaskIT extends AbstractCodegenIT {
         assertThat(workItems).hasSize(1);
         WorkItem wi = workItems.get(0);
         assertThat(wi.getName()).isEqualTo("MyTask");
-        assertThat(wi.getPhaseStatus()).isEqualTo(UserTaskKogitoWorkItemHandler.RESERVED.getName());
+        assertThat(wi.getPhaseStatus()).isEqualTo(UserTaskKogitoWorkItemHandler.ACTIVATED.getName());
 
         KogitoWorkItemHandler handler = getWorkItemHandler(p, wi);
         WorkItemTransition transition = handler.completeTransition(workItems.get(0).getPhaseStatus(), parameters, securityPolicy);

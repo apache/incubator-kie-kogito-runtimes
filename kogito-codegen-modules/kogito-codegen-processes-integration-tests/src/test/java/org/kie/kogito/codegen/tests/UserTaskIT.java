@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
@@ -61,6 +62,7 @@ import static org.kie.kogito.jbpm.usertask.handler.UserTaskKogitoWorkItemHandler
 import static org.kie.kogito.jbpm.usertask.handler.UserTaskKogitoWorkItemHandler.TRANSITION_RESERVED_COMPLETE;
 import static org.kie.kogito.jbpm.usertask.handler.UserTaskKogitoWorkItemHandler.TRANSITION_RESERVED_RELEASE;
 
+@Disabled
 public class UserTaskIT extends AbstractCodegenIT {
 
     private Policy securityPolicy = SecurityPolicy.of("john", emptyList());

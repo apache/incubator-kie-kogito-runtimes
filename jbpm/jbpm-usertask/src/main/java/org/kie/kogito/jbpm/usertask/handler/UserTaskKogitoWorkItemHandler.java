@@ -138,11 +138,11 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         instance.setMetadata("ProcessId", workItem.getProcessInstance().getProcessId());
         instance.setMetadata("ProcessType", workItem.getProcessInstance().getProcess().getType());
         instance.setMetadata("ProcessVersion", workItem.getProcessInstance().getProcessVersion());
-        instance.setMetadata("ProcessInstanceId", workItem.getProcessInstance().getStringId());
+        instance.setMetadata("ProcessInstanceId", workItem.getProcessInstance().getId());
         instance.setMetadata("ProcessInstanceState", workItem.getProcessInstance().getState());
         instance.setMetadata("RootProcessId", workItem.getProcessInstance().getRootProcessId());
-        instance.setMetadata("RootProcessInstanceId", workItem.getProcessInstance().getRootProcessId());
-        instance.setMetadata("ParentProcessInstanceId", workItem.getProcessInstance().getRootProcessId());
+        instance.setMetadata("RootProcessInstanceId", workItem.getProcessInstance().getRootProcessInstanceId());
+        instance.setMetadata("ParentProcessInstanceId", workItem.getProcessInstance().getParentProcessInstanceId());
 
         ofNullable(workItem.getParameters().get(ACTOR_ID)).map(String.class::cast).map(UserTaskKogitoWorkItemHandler::toSet).ifPresent(instance::setPotentialUsers);
         ofNullable(workItem.getParameters().get(GROUP_ID)).map(String.class::cast).map(UserTaskKogitoWorkItemHandler::toSet).ifPresent(instance::setPotentialGroups);

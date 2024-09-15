@@ -57,7 +57,7 @@ public class UserTaskStateEventDataEventAdapter extends AbstractDataEventAdapter
                 .state(event.getNewStatus())
                 .actualOwner(event.getUserTaskInstance().getActualOwner())
                 .eventType(isTransition(event) ? event.getNewStatus() : "Modify")
-                .processInstanceId(event.getUserTaskInstance().getExternalReferenceId());
+                .processInstanceId((String) event.getUserTaskInstance().getMetadata().get("ProcessInstanceId"));
 
         UserTaskInstanceStateEventBody body = builder.build();
         UserTaskInstanceStateDataEvent utEvent =
