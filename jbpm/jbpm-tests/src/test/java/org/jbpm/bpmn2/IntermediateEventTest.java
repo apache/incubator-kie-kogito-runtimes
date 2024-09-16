@@ -402,7 +402,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         KogitoWorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        signalSingleProcessInstance.completeWorkItem(workItem.getStringId(), null, SecurityPolicy.of("user", Collections.emptyList()));
+        signalSingleProcessInstance.completeWorkItem(workItem.getStringId(), null);
 
         org.kie.kogito.process.ProcessInstance<IntermediateThrowEventSignalModel> throwEventSignalProcessInstance = throwEventSignalProcess.createInstance(throwEventSignalProcess.createModel());
         throwEventSignalProcessInstance.start();

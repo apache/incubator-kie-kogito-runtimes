@@ -766,7 +766,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         org.kie.kogito.process.ProcessInstance<ReceiveTaskModel> instance = processDefinition.createInstance(model);
         instance.start();
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-        ProcessTestHelper.completeWorkItem(instance, Collections.singletonMap("MessageId", "Hello john!"), "john");
+        ProcessTestHelper.completeWorkItem(instance, Collections.singletonMap("Message", "Hello john!"), "john");
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
