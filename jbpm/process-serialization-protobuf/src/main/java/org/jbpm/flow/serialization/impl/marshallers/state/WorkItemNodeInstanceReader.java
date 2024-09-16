@@ -56,10 +56,10 @@ public class WorkItemNodeInstanceReader implements NodeInstanceReader {
         try {
             ProtobufVariableReader varReader = new ProtobufVariableReader(context);
             WorkItemNodeInstanceContent content = value.unpack(WorkItemNodeInstanceContent.class);
-            WorkItemNodeInstance nodeInstance = instanceWorkItem(content);
+            WorkItemNodeInstance nodeInstance = instanceWorkItem();
             RuleFlowProcessInstance ruleFlowProcessInstance = context.get(MarshallerContextName.MARSHALLER_PROCESS_INSTANCE);
             nodeInstance.internalSetWorkItemId(content.getWorkItemId());
-            InternalKogitoWorkItem workItem = (InternalKogitoWorkItem) nodeInstance.getWorkItem();
+            InternalKogitoWorkItem workItem = nodeInstance.getWorkItem();
             workItem.setId(content.getWorkItemId());
             workItem.setProcessInstanceId(ruleFlowProcessInstance.getStringId());
             workItem.setName(content.getName());
@@ -94,7 +94,7 @@ public class WorkItemNodeInstanceReader implements NodeInstanceReader {
         }
     }
 
-    private WorkItemNodeInstance instanceWorkItem(WorkItemNodeInstanceContent content) {
+    private WorkItemNodeInstance instanceWorkItem() {
         WorkItemNodeInstance nodeInstance = new WorkItemNodeInstance();
         KogitoWorkItemImpl workItem = new KogitoWorkItemImpl();
         workItem.setId(UUID.randomUUID().toString());
