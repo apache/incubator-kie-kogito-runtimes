@@ -20,6 +20,7 @@ package com.myspace.demo;
 
 import java.util.List;
 
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
@@ -40,6 +41,7 @@ public class $Type$Resource {
     @Path("/{id}/$taskName$")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response signal(@PathParam("id") final String id,
                            @QueryParam("user") final String user,
                            @QueryParam("group") final List<String> groups,
@@ -56,6 +58,7 @@ public class $Type$Resource {
     @Path("/{id}/$taskName$/{taskId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public $Type$Output completeTask(@PathParam("id") final String id,
                                      @PathParam("taskId") final String taskId,
                                      @QueryParam("phase") @DefaultValue("complete") final String phase,
@@ -69,6 +72,7 @@ public class $Type$Resource {
     @PUT
     @Path("/{id}/$taskName$/{taskId}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
     public $TaskOutput$ saveTask(@PathParam("id") final String id,
                                  @PathParam("taskId") final String taskId,
                                  @QueryParam("user") final String user,
@@ -82,6 +86,7 @@ public class $Type$Resource {
     @Path("/{id}/$taskName$/{taskId}/phases/{phase}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public $Type$Output taskTransition(
             @PathParam("id") final String id,
             @PathParam("taskId") final String taskId,
@@ -96,6 +101,7 @@ public class $Type$Resource {
     @GET
     @Path("/{id}/$taskName$/{taskId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public $TaskModel$ getTask(@PathParam("id") String id,
                                @PathParam("taskId") String taskId,
                                @QueryParam("user") final String user,
@@ -107,6 +113,7 @@ public class $Type$Resource {
     @DELETE
     @Path("/{id}/$taskName$/{taskId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public $Type$Output abortTask(@PathParam("id") final String id,
                                   @PathParam("taskId") final String taskId,
                                   @QueryParam("phase") @DefaultValue("abort") final String phase,
@@ -119,6 +126,7 @@ public class $Type$Resource {
     @GET
     @Path("$taskName$/schema")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Map<String, Object> getSchema() {
         return JsonSchemaUtil.load(this.getClass().getClassLoader(), process.id(), "$taskName$");
     }
@@ -126,6 +134,7 @@ public class $Type$Resource {
     @GET
     @Path("/{id}/$taskName$/{taskId}/schema")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Map<String, Object> getSchemaAndPhases(@PathParam("id") final String id,
                                                   @PathParam("taskId") final String taskId,
                                                   @QueryParam("user") final String user,
@@ -137,6 +146,7 @@ public class $Type$Resource {
     @Path("/{id}/$taskName$/{taskId}/comments")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response addComment(@PathParam("id") final String id,
                                @PathParam("taskId") final String taskId,
                                @QueryParam("user") final String user,
@@ -153,6 +163,7 @@ public class $Type$Resource {
     @Path("/{id}/$taskName$/{taskId}/comments/{commentId}")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Comment updateComment(@PathParam("id") final String id,
                                  @PathParam("taskId") final String taskId,
                                  @PathParam("commentId") final String commentId,
@@ -165,6 +176,7 @@ public class $Type$Resource {
 
     @DELETE
     @Path("/{id}/$taskName$/{taskId}/comments/{commentId}")
+    @Transactional
     public Response deleteComment(@PathParam("id") final String id,
                                   @PathParam("taskId") final String taskId,
                                   @PathParam("commentId") final String commentId,
@@ -179,6 +191,7 @@ public class $Type$Resource {
     @Path("/{id}/$taskName$/{taskId}/attachments")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response addAttachment(@PathParam("id") final String id,
                                   @PathParam("taskId") final String taskId,
                                   @QueryParam("user") final String user,
@@ -196,6 +209,7 @@ public class $Type$Resource {
     @Path("/{id}/$taskName$/{taskId}/attachments/{attachmentId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Attachment updateAttachment(@PathParam("id") final String id,
                                        @PathParam("taskId") final String taskId,
                                        @PathParam("attachmentId") final String attachmentId,
@@ -208,6 +222,7 @@ public class $Type$Resource {
 
     @DELETE
     @Path("/{id}/$taskName$/{taskId}/attachments/{attachmentId}")
+    @Transactional
     public Response deleteAttachment(@PathParam("id") final String id,
                                      @PathParam("taskId") final String taskId,
                                      @PathParam("attachmentId") final String attachmentId,
@@ -221,6 +236,7 @@ public class $Type$Resource {
     @GET
     @Path("/{id}/$taskName$/{taskId}/attachments/{attachmentId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Attachment getAttachment(@PathParam("id") final String id,
                                     @PathParam("taskId") final String taskId,
                                     @PathParam("attachmentId") final String attachmentId,
@@ -233,6 +249,7 @@ public class $Type$Resource {
     @GET
     @Path("/{id}/$taskName$/{taskId}/attachments")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Collection<Attachment> getAttachments(@PathParam("id") final String id,
                                                  @PathParam("taskId") final String taskId,
                                                  @QueryParam("user") final String user,
@@ -244,6 +261,7 @@ public class $Type$Resource {
     @GET
     @Path("/{id}/$taskName$/{taskId}/comments/{commentId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Comment getComment(@PathParam("id") final String id,
                               @PathParam("taskId") final String taskId,
                               @PathParam("commentId") final String commentId,
@@ -256,6 +274,7 @@ public class $Type$Resource {
     @GET
     @Path("/{id}/$taskName$/{taskId}/comments")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Collection<Comment> getComments(@PathParam("id") final String id,
                                            @PathParam("taskId") final String taskId,
                                            @QueryParam("user") final String user,

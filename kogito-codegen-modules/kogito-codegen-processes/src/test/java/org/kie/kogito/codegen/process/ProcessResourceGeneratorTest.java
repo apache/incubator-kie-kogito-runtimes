@@ -32,6 +32,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.definition.process.Process;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import com.github.javaparser.StaticJavaParser;
@@ -45,11 +48,18 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.codegen.process.ProcessResourceGenerator.JAKARTA_REST_ANNOTATIONS;
+import static org.kie.kogito.codegen.process.ProcessResourceGenerator.JAKARTA_TRANSACTIONAL_IMPORT;
+import static org.kie.kogito.codegen.process.ProcessResourceGenerator.SPRING_REST_ANNOTATIONS;
+import static org.kie.kogito.codegen.process.ProcessResourceGenerator.SPRING_TRANSACTIONAL_IMPORT;
+import static org.kie.kogito.codegen.process.ProcessResourceGenerator.TRANSACTIONAL_ANNOTATION;
 
 class ProcessResourceGeneratorTest {
+
     private static final String SIGNAL_METHOD = "signal_";
     private static final List<String> JAVA_AND_QUARKUS_REST_ANNOTATIONS = List.of("DELETE", "GET", "POST");
-    private static final List<String> SPRING_BOOT_REST_ANNOTATIONS = List.of("DeleteMapping", "GetMapping", "PostMapping");
+    private static final List<String> SPRING_BOOT_REST_ANNOTATIONS = List.of("DeleteMapping", "GetMapping",
+            "PostMapping");
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
@@ -152,31 +162,139 @@ class ProcessResourceGeneratorTest {
                 .forEach(method -> assertMethodOutputModelType(method, outputType));
     }
 
-    void testOpenApiDocumentation(KogitoBuildContext.Builder contextBuilder, String fileName, String expectedSummary, String expectedDescription) {
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    void testTransactionEnabled(KogitoBuildContext.Builder contextBuilder) {
+        String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
+
+        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName, true);
+        CompilationUnit compilationUnit =
+                processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
+        assertThat(compilationUnit).isNotNull();
+        Optional<ClassOrInterfaceDeclaration> classOrInterfaceDeclarationOptional = compilationUnit.getChildNodes().stream()
+                .filter(ClassOrInterfaceDeclaration.class::isInstance)
+                .map(ClassOrInterfaceDeclaration.class::cast)
+                .findFirst();
+        assertThat(classOrInterfaceDeclarationOptional).isPresent();
+        ClassOrInterfaceDeclaration classOrInterfaceDeclaration = classOrInterfaceDeclarationOptional.get();
+        switch (contextBuilder.build().name()) {
+            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    JAKARTA_REST_ANNOTATIONS);
+            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, SPRING_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    SPRING_REST_ANNOTATIONS);
+            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    JAKARTA_REST_ANNOTATIONS);
+        }
+        processResourceGenerator.manageTransactional(compilationUnit);
+        switch (contextBuilder.build().name()) {
+            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    JAKARTA_REST_ANNOTATIONS);
+            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, SPRING_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    SPRING_REST_ANNOTATIONS);
+            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    JAKARTA_REST_ANNOTATIONS);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    void testTransactionDisabled(KogitoBuildContext.Builder contextBuilder) {
+        String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
+
+        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName,
+                false);
+        CompilationUnit compilationUnit =
+                processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
+        assertThat(compilationUnit).isNotNull();
+        Optional<ClassOrInterfaceDeclaration> classOrInterfaceDeclarationOptional = compilationUnit.getChildNodes().stream()
+                .filter(ClassOrInterfaceDeclaration.class::isInstance)
+                .map(ClassOrInterfaceDeclaration.class::cast)
+                .findFirst();
+        assertThat(classOrInterfaceDeclarationOptional).isPresent();
+        ClassOrInterfaceDeclaration classOrInterfaceDeclaration = classOrInterfaceDeclarationOptional.get();
+        switch (contextBuilder.build().name()) {
+            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    JAKARTA_REST_ANNOTATIONS);
+            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, SPRING_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    SPRING_REST_ANNOTATIONS);
+            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    JAKARTA_REST_ANNOTATIONS);
+        }
+        processResourceGenerator.manageTransactional(compilationUnit);
+        switch (contextBuilder.build().name()) {
+            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransactionDisabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    JAKARTA_REST_ANNOTATIONS);
+            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransactionDisabled(compilationUnit, classOrInterfaceDeclaration, SPRING_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    SPRING_REST_ANNOTATIONS);
+            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransactionDisabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
+                    JAKARTA_REST_ANNOTATIONS);
+        }
+    }
+
+    void testTransactionEnabled(CompilationUnit toTest,
+            ClassOrInterfaceDeclaration classOrInterfaceDeclaration,
+            String transactionalImport, String transactionalAnnotation,
+            List<String> restMappings) {
+        assertThat(toTest.getImports().stream().filter(importDeclaration -> importDeclaration.getName().toString().equals(transactionalImport))).hasSize(1);
+        classOrInterfaceDeclaration.getMethods().stream()
+                .filter(methodDeclaration -> methodDeclaration.getAnnotations().stream().anyMatch(annotationExpr -> restMappings.contains(annotationExpr.getNameAsString())))
+                .forEach(methodDeclaration -> assertThat(
+                        methodDeclaration.getAnnotations().stream().filter(annotationExpr -> annotationExpr.getNameAsString().equals(transactionalAnnotation))).hasSize(1));
+    }
+
+    void testTransactionDisabled(CompilationUnit toTest,
+            ClassOrInterfaceDeclaration classOrInterfaceDeclaration,
+            String transactionalImport,
+            String transactionalAnnotation,
+            List<String> restMappings) {
+        assertThat(toTest.getImports().stream().filter(importDeclaration -> importDeclaration.getName().toString().equals(transactionalImport))).isEmpty();
+        classOrInterfaceDeclaration.getMethods().stream()
+                .filter(methodDeclaration -> methodDeclaration.getAnnotations().stream().anyMatch(annotationExpr -> restMappings.contains(annotationExpr.getNameAsString())))
+                .forEach(methodDeclaration -> assertThat(
+                        methodDeclaration.getAnnotations().stream().filter(annotationExpr -> annotationExpr.getNameAsString().equals(transactionalAnnotation))).isEmpty());
+    }
+
+    void testOpenApiDocumentation(KogitoBuildContext.Builder contextBuilder, String fileName, String expectedSummary,
+            String expectedDescription) {
         ClassOrInterfaceDeclaration classDeclaration = getResourceClassDeclaration(contextBuilder, fileName);
 
         classDeclaration.getMethods().stream()
                 .filter(this::isRestMethod)
-                .forEach(method -> assertThatMethodHasOpenApiDocumentation(method, expectedSummary, expectedDescription));
+                .forEach(method -> assertThatMethodHasOpenApiDocumentation(method, expectedSummary,
+                        expectedDescription));
     }
 
-    private ClassOrInterfaceDeclaration getResourceClassDeclaration(KogitoBuildContext.Builder contextBuilder, String fileName) {
+    private ClassOrInterfaceDeclaration getResourceClassDeclaration(KogitoBuildContext.Builder contextBuilder,
+            String fileName) {
         KogitoWorkflowProcess process = parseProcess(fileName);
         CompilationUnit compilationUnit = getCompilationUnit(contextBuilder, process);
-        Optional<ClassOrInterfaceDeclaration> classDeclaration = compilationUnit.getClassByName(process.getId() + "Resource");
+        Optional<ClassOrInterfaceDeclaration> classDeclaration = compilationUnit.getClassByName(process.getId() +
+                "Resource");
         assertThat(classDeclaration).isNotEmpty();
         return classDeclaration.orElseThrow();
     }
 
-    private CompilationUnit getCompilationUnit(KogitoBuildContext.Builder contextBuilder, KogitoWorkflowProcess process) {
+    private CompilationUnit getCompilationUnit(KogitoBuildContext.Builder contextBuilder,
+            KogitoWorkflowProcess process) {
+        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, process, true);
+        return StaticJavaParser.parse(processResourceGenerator.generate());
+    }
+
+    private ProcessResourceGenerator getProcessResourceGenerator(KogitoBuildContext.Builder contextBuilder,
+            String fileName, boolean withTransaction) {
+        return getProcessResourceGenerator(contextBuilder, parseProcess(fileName), withTransaction);
+    }
+
+    private ProcessResourceGenerator getProcessResourceGenerator(KogitoBuildContext.Builder contextBuilder,
+            KogitoWorkflowProcess process,
+            boolean withTransaction) {
         KogitoBuildContext context = createContext(contextBuilder);
 
         ProcessExecutableModelGenerator execModelGen =
                 new ProcessExecutableModelGenerator(process, new ProcessToExecModelGenerator(context.getClassLoader()));
 
         KogitoWorkflowProcess workFlowProcess = execModelGen.process();
-
-        ProcessResourceGenerator processResourceGenerator = new ProcessResourceGenerator(
+        ProcessResourceGenerator toReturn = new ProcessResourceGenerator(
                 context,
                 workFlowProcess,
                 new ModelClassGenerator(context, workFlowProcess).className(),
@@ -185,11 +303,11 @@ class ProcessResourceGeneratorTest {
 
         ProcessMetaData metaData = execModelGen.generate();
 
-        processResourceGenerator
+        toReturn
                 .withSignals(metaData.getSignals())
-                .withTriggers(metaData.isStartable(), metaData.isDynamic(), metaData.getTriggers());
-
-        return StaticJavaParser.parse(processResourceGenerator.generate());
+                .withTriggers(metaData.isStartable(), metaData.isDynamic(), metaData.getTriggers())
+                .withTransaction(withTransaction);
+        return toReturn;
     }
 
     private void assertThatMethodHasOpenApiDocumentation(MethodDeclaration method, String summary, String description) {
@@ -203,7 +321,8 @@ class ProcessResourceGeneratorTest {
         assertThat(method.getType().asString()).isEqualTo(outputType);
     }
 
-    private void assertThatAnnotationHasSummaryAndDescription(AnnotationExpr annotation, String summary, String description) {
+    private void assertThatAnnotationHasSummaryAndDescription(AnnotationExpr annotation, String summary,
+            String description) {
         NodeList<MemberValuePair> pairs = ((NormalAnnotationExpr) annotation).getPairs();
 
         assertThat(pairs).containsExactlyInAnyOrder(

@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.codegen.process;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,16 +38,21 @@ import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.node.StartNode;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.codegen.core.GeneratorConfig;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.internal.utils.ConversionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -73,6 +79,15 @@ import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeJavaName;
  */
 public class ProcessResourceGenerator {
 
+    public static final String TRANSACTION_ENABLED = "transactionEnabled";
+    static final List<String> JAKARTA_REST_ANNOTATIONS = Arrays.asList("POST", "GET", "DELETE", "PUT", "PATCH");
+    static final List<String> SPRING_REST_ANNOTATIONS = Arrays.asList("PostMapping", "GetMapping", "DeleteMapping", "PutMapping", "PatchMapping");
+    static final String TRANSACTIONAL_ANNOTATION = "Transactional";
+    static final String JAKARTA_TRANSACTIONAL_IMPORT = String.format("jakarta.transaction.%s", TRANSACTIONAL_ANNOTATION);
+    static final String SPRING_TRANSACTIONAL_IMPORT = String.format("org.springframework.transaction.annotation.%s", TRANSACTIONAL_ANNOTATION);
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProcessResourceGenerator.class);
+
     private static final String REST_TEMPLATE_NAME = "RestResource";
     private static final String REACTIVE_REST_TEMPLATE_NAME = "ReactiveRestResource";
     private static final String REST_USER_TASK_TEMPLATE_NAME = "RestResourceUserTask";
@@ -93,6 +108,7 @@ public class ProcessResourceGenerator {
 
     private boolean startable;
     private boolean dynamic;
+    private boolean transactionEnabled;
     private List<TriggerMetaData> triggers;
 
     private List<UserTaskModelMetaData> userTasks;
@@ -134,6 +150,11 @@ public class ProcessResourceGenerator {
         return this;
     }
 
+    public ProcessResourceGenerator withTransaction(boolean transactionEnabled) {
+        this.transactionEnabled = transactionEnabled;
+        return this;
+    }
+
     public String getTaskModelFactory() {
         return taskModelFactoryUnit.toString();
     }
@@ -147,29 +168,106 @@ public class ProcessResourceGenerator {
     }
 
     protected String getRestTemplateName() {
-        boolean isReactiveGenerator = "reactive".equals(context.getApplicationProperty(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP)
-                .orElse(""));
+        boolean isReactiveGenerator =
+                "reactive".equals(context.getApplicationProperty(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP)
+                        .orElse(""));
         boolean isQuarkus = context.name().equals(QuarkusKogitoBuildContext.CONTEXT_NAME);
 
         return isQuarkus && isReactiveGenerator ? REACTIVE_REST_TEMPLATE_NAME : REST_TEMPLATE_NAME;
     }
 
     public String generate() {
-        TemplatedGenerator.Builder templateBuilder = TemplatedGenerator.builder()
-                .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME);
-        CompilationUnit clazz = templateBuilder.build(context, getRestTemplateName())
-                .compilationUnitOrThrow();
-        clazz.setPackageDeclaration(process.getPackageName());
-        clazz.addImport(modelfqcn);
-        clazz.addImport(modelfqcn + "Output");
-        clazz.addImport(modelfqcn + "Input");
-        ClassOrInterfaceDeclaration template = clazz
+        return getCompilationUnit().toString();
+    }
+
+    protected CompilationUnit getCompilationUnit() {
+        TemplatedGenerator.Builder templateBuilder = createTemplatedGeneratorBuilder();
+        CompilationUnit toReturn = createCompilationUnit(templateBuilder);
+        addPackageAndImports(toReturn);
+        ClassOrInterfaceDeclaration template = toReturn
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface " +
+                        "declaration!"));
 
         template.setName(resourceClazzName);
         AtomicInteger index = new AtomicInteger(0);
         //Generate signals endpoints
+        generateSignalsEndpoints(templateBuilder, template, index);
+
+        // security must be applied before user tasks are added to make sure that user task
+        // endpoints are not security annotated as they should restrict access based on user assignments
+        securityAnnotated(template);
+
+        Map<String, String> typeInterpolations = new HashMap<>();
+        taskModelFactoryUnit = parse(this.getClass().getResourceAsStream("/class-templates/TaskModelFactoryTemplate" +
+                ".java"));
+        String taskModelFactorySimpleClassName =
+                sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + "TaskModelFactory");
+        taskModelFactoryUnit.setPackageDeclaration(process.getPackageName());
+        taskModelFactoryClassName = process.getPackageName() + "." + taskModelFactorySimpleClassName;
+        ClassOrInterfaceDeclaration taskModelFactoryClass =
+                taskModelFactoryUnit.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(IllegalStateException::new);
+        taskModelFactoryClass.setName(taskModelFactorySimpleClassName);
+        typeInterpolations.put("$TaskModelFactory$", taskModelFactoryClassName);
+
+        manageUserTasks(templateBuilder, template, taskModelFactoryClass, index);
+
+        typeInterpolations.put("$Clazz$", resourceClazzName);
+        typeInterpolations.put("$Type$", dataClazzName);
+        template.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
+        template.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, typeInterpolations));
+
+        TagResourceGenerator.addTags(toReturn, process, context);
+
+        template.findAll(MethodDeclaration.class).forEach(this::interpolateMethods);
+
+        if (context.hasDI()) {
+            template.findAll(FieldDeclaration.class,
+                    CodegenUtils::isProcessField).forEach(fd -> context.getDependencyInjectionAnnotator().withNamedInjection(fd, processId));
+        } else {
+            template.findAll(FieldDeclaration.class,
+                    CodegenUtils::isProcessField).forEach(this::initializeProcessField);
+        }
+
+        // if triggers are not empty remove createResource method as there is another trigger to start process instances
+        if ((!startable && !dynamic) || !isPublic()) {
+            Optional<MethodDeclaration> createResourceMethod =
+                    template.findFirst(MethodDeclaration.class).filter(md -> md.getNameAsString().equals(
+                            "createResource_" + processName));
+            createResourceMethod.ifPresent(template::remove);
+        }
+
+        if (context.hasDI()) {
+            context.getDependencyInjectionAnnotator().withApplicationComponent(template);
+        }
+
+        enableValidation(template);
+
+        manageTransactional(toReturn);
+
+        template.getMembers().sort(new BodyDeclarationComparator());
+        return toReturn;
+    }
+
+    protected TemplatedGenerator.Builder createTemplatedGeneratorBuilder() {
+        return TemplatedGenerator.builder()
+                .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME);
+    }
+
+    protected CompilationUnit createCompilationUnit(TemplatedGenerator.Builder templateBuilder) {
+        return templateBuilder.build(context, getRestTemplateName())
+                .compilationUnitOrThrow();
+    }
+
+    protected void addPackageAndImports(CompilationUnit compilationUnit) {
+        compilationUnit.setPackageDeclaration(process.getPackageName());
+        compilationUnit.addImport(modelfqcn);
+        compilationUnit.addImport(modelfqcn + "Output");
+        compilationUnit.addImport(modelfqcn + "Input");
+    }
+
+    protected void generateSignalsEndpoints(TemplatedGenerator.Builder templateBuilder,
+            ClassOrInterfaceDeclaration template, AtomicInteger index) {
         Optional.ofNullable(signals)
                 .ifPresent(signalsMap -> {
                     //using template class to the endpoints generation
@@ -182,11 +280,13 @@ public class ProcessResourceGenerator {
 
                     MethodDeclaration signalProcessDeclaration = signalTemplate
                             .findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("signalProcess"))
-                            .orElseThrow(() -> new NoSuchElementException("signalProcess method not found in SignalResourceTemplate"));
+                            .orElseThrow(() -> new NoSuchElementException("signalProcess method not found in " +
+                                    "SignalResourceTemplate"));
 
                     MethodDeclaration signalInstanceDeclaration = signalTemplate
                             .findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("signalInstance"))
-                            .orElseThrow(() -> new NoSuchElementException("signalInstance method not found in SignalResourceTemplate"));
+                            .orElseThrow(() -> new NoSuchElementException("signalInstance method not found in " +
+                                    "SignalResourceTemplate"));
 
                     Collection<TriggerMetaData> startSignalTriggers = getStartSignalTriggers();
 
@@ -207,15 +307,19 @@ public class ProcessResourceGenerator {
                                     MethodDeclaration signalProcessDeclarationClone = signalProcessDeclaration.clone();
 
                                     BlockStmt signalProcessBody = signalProcessDeclarationClone.getBody()
-                                            .orElseThrow(() -> new RuntimeException("signalProcessDeclaration doesn't have body"));
+                                            .orElseThrow(() -> new RuntimeException("signalProcessDeclaration doesn't" +
+                                                    " have body"));
 
-                                    MethodCallExpr setterMethod = signalProcessBody.findAll(MethodCallExpr.class, m -> m.getName().getIdentifier().contains("$SetModelMethodName$"))
+                                    MethodCallExpr setterMethod = signalProcessBody.findAll(MethodCallExpr.class,
+                                            m -> m.getName().getIdentifier().contains("$SetModelMethodName$"))
                                             .stream()
                                             .findFirst()
-                                            .orElseThrow(() -> new RuntimeException("signalProcessDeclaration doesn't have model setter"));
+                                            .orElseThrow(() -> new RuntimeException("signalProcessDeclaration doesn't" +
+                                                    " have model setter"));
 
                                     if (signalType == null) {
-                                        // if there's no type we should remove the payload references form the method declaration and body
+                                        // if there's no type we should remove the payload references form the method
+                                        // declaration and body
                                         signalProcessDeclarationClone.getParameters()
                                                 .stream()
                                                 .filter(parameter -> parameter.getNameAsString().equals("data"))
@@ -223,8 +327,10 @@ public class ProcessResourceGenerator {
                                                 .ifPresent(Parameter::removeForced);
                                         setterMethod.removeForced();
                                     } else {
-                                        String name = Optional.ofNullable((String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE)).orElseGet(trigger::getModelRef);
-                                        setterMethod.setName(setterMethod.getNameAsString().replace("$SetModelMethodName$", StringUtils.ucFirst(name)));
+                                        String name =
+                                                Optional.ofNullable((String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE)).orElseGet(trigger::getModelRef);
+                                        setterMethod.setName(setterMethod.getNameAsString().replace(
+                                                "$SetModelMethodName$", StringUtils.ucFirst(name)));
                                     }
 
                                     template.addMethod(SIGNAL_METHOD_PREFFIX + signalName, Keyword.PUBLIC)
@@ -237,10 +343,12 @@ public class ProcessResourceGenerator {
                                 // Create endpoint to signal process instances
                                 MethodDeclaration signalInstanceDeclarationClone = signalInstanceDeclaration.clone();
                                 BlockStmt signalInstanceBody = signalInstanceDeclarationClone.getBody()
-                                        .orElseThrow(() -> new RuntimeException("signalInstanceDeclaration doesn't have body"));
+                                        .orElseThrow(() -> new RuntimeException("signalInstanceDeclaration doesn't " +
+                                                "have body"));
 
                                 if (signalType == null) {
-                                    signalInstanceBody.findAll(NameExpr.class, nameExpr -> "data".equals(nameExpr.getNameAsString())).forEach(name -> name.replace(new NullLiteralExpr()));
+                                    signalInstanceBody.findAll(NameExpr.class,
+                                            nameExpr -> "data".equals(nameExpr.getNameAsString())).forEach(name -> name.replace(new NullLiteralExpr()));
                                 }
 
                                 template.addMethod(SIGNAL_METHOD_PREFFIX + index.getAndIncrement(), Keyword.PUBLIC)
@@ -265,32 +373,25 @@ public class ProcessResourceGenerator {
                                 });
                             });
                 });
+    }
 
-        // security must be applied before user tasks are added to make sure that user task
-        // endpoints are not security annotated as they should restrict access based on user assignments
-        securityAnnotated(template);
-
-        Map<String, String> typeInterpolations = new HashMap<>();
-        taskModelFactoryUnit = parse(this.getClass().getResourceAsStream("/class-templates/TaskModelFactoryTemplate.java"));
-        String taskModelFactorySimpleClassName = sanitizeClassName(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + "TaskModelFactory");
-        taskModelFactoryUnit.setPackageDeclaration(process.getPackageName());
-        taskModelFactoryClassName = process.getPackageName() + "." + taskModelFactorySimpleClassName;
-        ClassOrInterfaceDeclaration taskModelFactoryClass = taskModelFactoryUnit.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(IllegalStateException::new);
-        taskModelFactoryClass.setName(taskModelFactorySimpleClassName);
-        typeInterpolations.put("$TaskModelFactory$", taskModelFactoryClassName);
-
+    protected void manageUserTasks(TemplatedGenerator.Builder templateBuilder, ClassOrInterfaceDeclaration template,
+            ClassOrInterfaceDeclaration taskModelFactoryClass, AtomicInteger index) {
         if (userTasks != null && !userTasks.isEmpty()) {
 
-            CompilationUnit userTaskClazz = templateBuilder.build(context, REST_USER_TASK_TEMPLATE_NAME).compilationUnitOrThrow();
+            CompilationUnit userTaskClazz =
+                    templateBuilder.build(context, REST_USER_TASK_TEMPLATE_NAME).compilationUnitOrThrow();
 
             ClassOrInterfaceDeclaration userTaskTemplate = userTaskClazz
                     .findFirst(ClassOrInterfaceDeclaration.class)
-                    .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                    .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or " +
+                            "interface declaration!"));
 
             MethodDeclaration taskModelFactoryMethod = taskModelFactoryClass
                     .findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("from"))
                     .orElseThrow(IllegalStateException::new);
-            SwitchStmt switchExpr = taskModelFactoryMethod.getBody().map(b -> b.findFirst(SwitchStmt.class).orElseThrow(IllegalStateException::new)).orElseThrow(IllegalStateException::new);
+            SwitchStmt switchExpr =
+                    taskModelFactoryMethod.getBody().map(b -> b.findFirst(SwitchStmt.class).orElseThrow(IllegalStateException::new)).orElseThrow(IllegalStateException::new);
 
             for (UserTaskModelMetaData userTask : userTasks) {
                 String methodSuffix = sanitizeName(userTask.getName()) + "_" + index.getAndIncrement();
@@ -314,40 +415,72 @@ public class ProcessResourceGenerator {
                 }
                 switchExpr.getEntries().add(0, userTask.getModelSwitchEntry());
             }
-
         }
+    }
 
-        typeInterpolations.put("$Clazz$", resourceClazzName);
-        typeInterpolations.put("$Type$", dataClazzName);
-        template.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
-        template.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, typeInterpolations));
-
-        TagResourceGenerator.addTags(clazz, process, context);
-
-        template.findAll(MethodDeclaration.class).forEach(this::interpolateMethods);
-
-        if (context.hasDI()) {
-            template.findAll(FieldDeclaration.class,
-                    CodegenUtils::isProcessField).forEach(fd -> context.getDependencyInjectionAnnotator().withNamedInjection(fd, processId));
-        } else {
-            template.findAll(FieldDeclaration.class,
-                    CodegenUtils::isProcessField).forEach(this::initializeProcessField);
+    protected void manageTransactional(CompilationUnit compilationUnit) {
+        if (!transactionEnabled) {
+            LOG.info("Transaction is disabled, removing from template...");
+            switch (context.name()) {
+                case QuarkusKogitoBuildContext.CONTEXT_NAME -> removeTransactionalFromQuarkus(compilationUnit);
+                case SpringBootKogitoBuildContext.CONTEXT_NAME -> removeTransactionFromSpring(compilationUnit);
+                case JavaKogitoBuildContext.CONTEXT_NAME -> removeTransactionFromJava(compilationUnit);
+            }
         }
+    }
 
-        // if triggers are not empty remove createResource method as there is another trigger to start process instances
-        if ((!startable && !dynamic) || !isPublic()) {
-            Optional<MethodDeclaration> createResourceMethod = template.findFirst(MethodDeclaration.class).filter(md -> md.getNameAsString().equals("createResource_" + processName));
-            createResourceMethod.ifPresent(template::remove);
-        }
+    protected void removeTransactionalFromQuarkus(CompilationUnit compilationUnit) {
+        LOG.debug("Removing transaction-related code from Quarkus {}", compilationUnit);
+        removeTransactionalImport(compilationUnit, JAKARTA_TRANSACTIONAL_IMPORT);
+        compilationUnit.getChildNodes().stream()
+                .filter(ClassOrInterfaceDeclaration.class::isInstance)
+                .map(ClassOrInterfaceDeclaration.class::cast)
+                .forEach(classOrInterfaceDeclaration -> removeTransactionalAnnotationsFromMethod(classOrInterfaceDeclaration, TRANSACTIONAL_ANNOTATION, JAKARTA_REST_ANNOTATIONS));
+    }
 
-        if (context.hasDI()) {
-            context.getDependencyInjectionAnnotator().withApplicationComponent(template);
-        }
+    protected void removeTransactionFromSpring(CompilationUnit compilationUnit) {
+        LOG.debug("Removing transaction-related code from Spring {}", compilationUnit);
+        removeTransactionalImport(compilationUnit, SPRING_TRANSACTIONAL_IMPORT);
+        compilationUnit.getChildNodes().stream()
+                .filter(ClassOrInterfaceDeclaration.class::isInstance)
+                .map(ClassOrInterfaceDeclaration.class::cast)
+                .forEach(classOrInterfaceDeclaration -> removeTransactionalAnnotationsFromMethod(classOrInterfaceDeclaration, TRANSACTIONAL_ANNOTATION, SPRING_REST_ANNOTATIONS));
+    }
 
-        enableValidation(template);
+    protected void removeTransactionFromJava(CompilationUnit compilationUnit) {
+        LOG.debug("Removing transaction-related code from Java {}", compilationUnit);
+        removeTransactionalImport(compilationUnit, JAKARTA_TRANSACTIONAL_IMPORT);
+        compilationUnit.getChildNodes().stream()
+                .filter(ClassOrInterfaceDeclaration.class::isInstance)
+                .map(ClassOrInterfaceDeclaration.class::cast)
+                .forEach(classOrInterfaceDeclaration -> removeTransactionalAnnotationsFromMethod(classOrInterfaceDeclaration, TRANSACTIONAL_ANNOTATION, JAKARTA_REST_ANNOTATIONS));
+    }
 
-        template.getMembers().sort(new BodyDeclarationComparator());
-        return clazz.toString();
+    private void removeTransactionalImport(CompilationUnit compilationUnit, String transactionalImport) {
+        Optional<Node> toRemove = compilationUnit.getImports().stream().filter(importDeclaration -> {
+            return importDeclaration.getName().toString().equals(transactionalImport); // do not use
+            // direct class name to avoid dependency
+        })
+                .map(Node.class::cast)
+                .findFirst();
+        toRemove.ifPresent(compilationUnit::remove);
+    }
+
+    private void removeTransactionalAnnotationsFromMethod(ClassOrInterfaceDeclaration classOrInterfaceDeclaration, String transactionalAnnotation, List<String> restMappings) {
+        classOrInterfaceDeclaration.getMethods().stream()
+                .filter(methodDeclaration -> isRest(methodDeclaration, restMappings))
+                .forEach(methodDeclaration -> removeTransactionalAnnotationsFromMethod(methodDeclaration, transactionalAnnotation));
+    }
+
+    private void removeTransactionalAnnotationsFromMethod(MethodDeclaration methodDeclaration, String transactionalAnnotation) {
+        Optional<Node> toRemove = methodDeclaration.getAnnotations().stream().filter(annotationExpr -> annotationExpr.getNameAsString().equals(transactionalAnnotation))
+                .map(Node.class::cast)
+                .findFirst();
+        toRemove.ifPresent(methodDeclaration::remove);
+    }
+
+    private boolean isRest(MethodDeclaration methodDeclaration, List<String> restMappings) {
+        return methodDeclaration.getAnnotations().stream().anyMatch(annotationExpr -> restMappings.contains(annotationExpr.getNameAsString()));
     }
 
     private void securityAnnotated(ClassOrInterfaceDeclaration template) {
