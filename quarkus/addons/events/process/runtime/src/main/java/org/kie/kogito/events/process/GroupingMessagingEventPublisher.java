@@ -44,6 +44,9 @@ public class GroupingMessagingEventPublisher extends AbstractMessagingEventPubli
     public void publish(Collection<DataEvent<?>> events) {
         Map<AbstractMessageEmitter, Collection<DataEvent<?>>> eventsByChannel = new HashMap<>();
         for (DataEvent<?> event : events) {
+            if (event == null) {
+                continue;
+            }
             getConsumer(event).ifPresent(c -> eventsByChannel.computeIfAbsent(c, k -> new ArrayList<>()).add(event));
         }
         for (Entry<AbstractMessageEmitter, Collection<DataEvent<?>>> item : eventsByChannel.entrySet()) {
