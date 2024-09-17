@@ -151,7 +151,6 @@ import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.Application;
-import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.event.impl.MessageProducer;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
