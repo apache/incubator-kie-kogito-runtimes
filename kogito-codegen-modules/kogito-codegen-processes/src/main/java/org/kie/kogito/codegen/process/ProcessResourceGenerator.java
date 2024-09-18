@@ -424,7 +424,7 @@ public class ProcessResourceGenerator {
      */
     protected void manageTransactional(CompilationUnit compilationUnit) {
         if (transactionEnabled && context.hasDI()) {
-            LOG.info("Transaction is enabled, adding annotations...");
+            LOG.debug("Transaction is enabled, adding annotations...");
             DependencyInjectionAnnotator dependencyInjectionAnnotator = context.getDependencyInjectionAnnotator();
             getRestMethods(compilationUnit)
                     .forEach(dependencyInjectionAnnotator::withTransactional);
