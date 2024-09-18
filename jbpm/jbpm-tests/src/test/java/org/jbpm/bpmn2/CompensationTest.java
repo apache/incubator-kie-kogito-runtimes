@@ -27,6 +27,8 @@ import org.jbpm.bpmn2.compensation.BookResourceProcess;
 import org.jbpm.bpmn2.compensation.BookingModel;
 import org.jbpm.bpmn2.compensation.BookingProcess;
 import org.jbpm.bpmn2.compensation.CancelResourceProcess;
+import org.jbpm.bpmn2.compensation.InSubSubProcessModel;
+import org.jbpm.bpmn2.compensation.InSubSubProcessProcess;
 import org.jbpm.bpmn2.compensation.IntermediateThrowEventModel;
 import org.jbpm.bpmn2.compensation.IntermediateThrowEventProcess;
 import org.jbpm.bpmn2.compensation.ParallelOrderedCompensationIntermediateThrowEventModel;
@@ -195,22 +197,36 @@ public class CompensationTest extends JbpmBpmn2TestCase {
 
     @Test
     public void compensationInSubSubProcesses() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/compensation/BPMN2-InSubSubProcess.bpmn2");
+        Application app = ProcessTestHelper.newApplication();
+
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
-        Map<String, Object> params = new HashMap<>();
-        params.put("x", "0");
-        KogitoProcessInstance processInstance = kruntime.startProcess("InSubSubProcess", params);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
 
-        kruntime.signalEvent("Compensation", "_C-2", processInstance.getStringId());
+        org.kie.kogito.process.Process<InSubSubProcessModel> definition = InSubSubProcessProcess.newProcess(app);
+        InSubSubProcessModel model = definition.createModel();
+        model.setX("0");
 
-        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);
-        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);
-        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);
+        ProcessInstance<InSubSubProcessModel> processInstance = definition.createInstance(model);
+        processInstance.start();
 
-        // compensation activity (assoc. with script task) signaled *after* script task
-        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
-        assertProcessVarValue(processInstance, "x", "2");
+        processInstance.send(Sig.of("Compensation", "_C-2"));
+
+        processInstance.completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);
+        processInstance.completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);
+        processInstance.completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);
+
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(processInstance.variables().getX()).isEqualTo("2");
+
+        /*the nodes have no connection in the bpmn file,
+        java.lang.IllegalStateException: Process could not be validated ![Process 'Default Process' [InSubSubProcess]: Node 'Boundary Compensate 3' [_X-1] Event has no outgoing connection
+        Process 'Default Process' [InSubSubProcess]: Node 'Compensate Handler 3' [_X-2] Action has no incoming connection.,
+        Process 'Default Process' [InSubSubProcess]: Node 'Boundary Compensate 2' [_Y-1] Event has no outgoing connection,
+        Process 'Default Process' [InSubSubProcess]: Node 'Compensate Handler 2' [_Y-2] Action has no incoming connection.,
+        Process 'Default Process' [InSubSubProcess]: Node 'Compensate Handler 3' [_X-2] Has no connection to the start node.,
+        Process 'Default Process' [InSubSubProcess]: Node 'Compensate Handler 2' [_Y-2] Has no connection to the start node.]*/
+        */
+
     }
 
     @Test
