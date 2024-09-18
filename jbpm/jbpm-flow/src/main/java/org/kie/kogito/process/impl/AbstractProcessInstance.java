@@ -167,7 +167,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
         addCompletionEventListener();
 
-        for (org.kie.api.runtime.process.NodeInstance nodeInstance : processInstance.getNodeInstances()) {
+        for (org.kie.api.runtime.process.NodeInstance nodeInstance : processInstance.getNodeInstances(true)) {
             if (nodeInstance instanceof WorkItemNodeInstance) {
                 ((WorkItemNodeInstance) nodeInstance).internalRegisterWorkItem();
             }
