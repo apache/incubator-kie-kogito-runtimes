@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -74,7 +73,6 @@ public class $Type$Resource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public Response createResource_$name$(@Context HttpHeaders httpHeaders,
                                           @Context UriInfo uriInfo,
                                           @QueryParam("businessKey") @DefaultValue("") String businessKey,
@@ -92,7 +90,6 @@ public class $Type$Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public List<$Type$Output> getResources_$name$() {
         return processService.getProcessInstanceOutput(process);
     }
@@ -101,7 +98,6 @@ public class $Type$Resource {
     @Path("schema")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public Map<String, Object> getResourceSchema_$name$() {
         return JsonSchemaUtil.load(this.getClass().getClassLoader(), process.id());
     }
@@ -111,7 +107,6 @@ public class $Type$Resource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public $Type$Output getResource_$name$(@PathParam("id") String id) {
         return processService.findById(process, id).orElseThrow(NotFoundException::new);
     }
@@ -120,7 +115,6 @@ public class $Type$Resource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public $Type$Output deleteResource_$name$(@PathParam("id") final String id) {
         return processService.delete(process, id).orElseThrow(NotFoundException::new);
     }
@@ -130,7 +124,6 @@ public class $Type$Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public $Type$Output updateModel_$name$(@PathParam("id") String id, $Type$Input resource) {
         return processService.update(process, id, resource.toModel()).orElseThrow(NotFoundException::new);
     }
@@ -140,7 +133,6 @@ public class $Type$Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public $Type$Output updateModelPartial_$name$(@PathParam("id") String id, $Type$Input resource) {
         return processService.updatePartial(process, id, resource.toModel()).orElseThrow(NotFoundException::new);
     }
@@ -149,7 +141,6 @@ public class $Type$Resource {
     @Path("/{id}/tasks")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public List<TaskModel> getTasks_$name$(@PathParam("id") String id,
                                           @QueryParam("user") final String user,
                                           @QueryParam("group") final List<String> groups) {

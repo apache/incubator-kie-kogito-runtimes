@@ -18,7 +18,6 @@
  */
 package com.myspace.demo;
 
-import jakarta.transaction.Transactional;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 
@@ -30,7 +29,6 @@ public class $Type$Resource {
     @Path("/$signalPath$")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public Response signalProcess(@Context HttpHeaders httpHeaders,
                                   @Context UriInfo uriInfo,
                                   @QueryParam("businessKey") @DefaultValue("") String businessKey,
@@ -52,7 +50,6 @@ public class $Type$Resource {
     @Path("/{id}/$signalPath$")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public $Type$Output signalInstance(@PathParam("id") final String id, final $signalType$ data) {
         return processService.signalProcessInstance(process, id, data, "$signalName$")
                 .orElseThrow(() -> new NotFoundException());

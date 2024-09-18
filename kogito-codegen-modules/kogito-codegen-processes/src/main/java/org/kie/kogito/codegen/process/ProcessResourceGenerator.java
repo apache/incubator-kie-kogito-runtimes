@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.drools.codegen.common.di.DependencyInjectionAnnotator;
 import org.drools.util.StringUtils;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.TriggerMetaData;
@@ -52,7 +53,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -79,12 +79,13 @@ import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeJavaName;
  */
 public class ProcessResourceGenerator {
 
+    /**
+     * Flag used to configure transaction enablement. Default to <code>true</code>
+     */
     public static final String TRANSACTION_ENABLED = "transactionEnabled";
     static final List<String> JAKARTA_REST_ANNOTATIONS = Arrays.asList("POST", "GET", "DELETE", "PUT", "PATCH");
-    static final List<String> SPRING_REST_ANNOTATIONS = Arrays.asList("PostMapping", "GetMapping", "DeleteMapping", "PutMapping", "PatchMapping");
-    static final String TRANSACTIONAL_ANNOTATION = "Transactional";
-    static final String JAKARTA_TRANSACTIONAL_IMPORT = String.format("jakarta.transaction.%s", TRANSACTIONAL_ANNOTATION);
-    static final String SPRING_TRANSACTIONAL_IMPORT = String.format("org.springframework.transaction.annotation.%s", TRANSACTIONAL_ANNOTATION);
+    static final List<String> SPRING_REST_ANNOTATIONS = Arrays.asList("PostMapping", "GetMapping", "DeleteMapping",
+            "PutMapping", "PatchMapping");
 
     private static final Logger LOG = LoggerFactory.getLogger(ProcessResourceGenerator.class);
 
@@ -418,68 +419,47 @@ public class ProcessResourceGenerator {
         }
     }
 
+    /**
+     * Conditionally add the <code>Transactional</code> annotation
+     * 
+     * @param compilationUnit
+     */
     protected void manageTransactional(CompilationUnit compilationUnit) {
-        if (!transactionEnabled) {
-            LOG.info("Transaction is disabled, removing from template...");
-            switch (context.name()) {
-                case QuarkusKogitoBuildContext.CONTEXT_NAME -> removeTransactionalFromQuarkus(compilationUnit);
-                case SpringBootKogitoBuildContext.CONTEXT_NAME -> removeTransactionFromSpring(compilationUnit);
-                case JavaKogitoBuildContext.CONTEXT_NAME -> removeTransactionFromJava(compilationUnit);
-            }
+        if (transactionEnabled && context.hasDI()) {
+            LOG.info("Transaction is enabled, adding annotations...");
+            DependencyInjectionAnnotator dependencyInjectionAnnotator = context.getDependencyInjectionAnnotator();
+            getRestMethods(compilationUnit)
+                    .forEach(dependencyInjectionAnnotator::withTransactional);
         }
     }
 
-    protected void removeTransactionalFromQuarkus(CompilationUnit compilationUnit) {
-        LOG.debug("Removing transaction-related code from Quarkus {}", compilationUnit);
-        removeTransactionalImport(compilationUnit, JAKARTA_TRANSACTIONAL_IMPORT);
-        compilationUnit.getChildNodes().stream()
-                .filter(ClassOrInterfaceDeclaration.class::isInstance)
-                .map(ClassOrInterfaceDeclaration.class::cast)
-                .forEach(classOrInterfaceDeclaration -> removeTransactionalAnnotationsFromMethod(classOrInterfaceDeclaration, TRANSACTIONAL_ANNOTATION, JAKARTA_REST_ANNOTATIONS));
+    /**
+     * Retrieves all the <b>Rest endpoint</b> <code>MethodDeclaration</code>s
+     * 
+     * @param compilationUnit
+     * @return
+     */
+    protected Collection<MethodDeclaration> getRestMethods(CompilationUnit compilationUnit) {
+        return compilationUnit.findAll(MethodDeclaration.class)
+                .stream()
+                .filter(this::isRest)
+                .toList();
     }
 
-    protected void removeTransactionFromSpring(CompilationUnit compilationUnit) {
-        LOG.debug("Removing transaction-related code from Spring {}", compilationUnit);
-        removeTransactionalImport(compilationUnit, SPRING_TRANSACTIONAL_IMPORT);
-        compilationUnit.getChildNodes().stream()
-                .filter(ClassOrInterfaceDeclaration.class::isInstance)
-                .map(ClassOrInterfaceDeclaration.class::cast)
-                .forEach(classOrInterfaceDeclaration -> removeTransactionalAnnotationsFromMethod(classOrInterfaceDeclaration, TRANSACTIONAL_ANNOTATION, SPRING_REST_ANNOTATIONS));
-    }
-
-    protected void removeTransactionFromJava(CompilationUnit compilationUnit) {
-        LOG.debug("Removing transaction-related code from Java {}", compilationUnit);
-        removeTransactionalImport(compilationUnit, JAKARTA_TRANSACTIONAL_IMPORT);
-        compilationUnit.getChildNodes().stream()
-                .filter(ClassOrInterfaceDeclaration.class::isInstance)
-                .map(ClassOrInterfaceDeclaration.class::cast)
-                .forEach(classOrInterfaceDeclaration -> removeTransactionalAnnotationsFromMethod(classOrInterfaceDeclaration, TRANSACTIONAL_ANNOTATION, JAKARTA_REST_ANNOTATIONS));
-    }
-
-    private void removeTransactionalImport(CompilationUnit compilationUnit, String transactionalImport) {
-        Optional<Node> toRemove = compilationUnit.getImports().stream().filter(importDeclaration -> {
-            return importDeclaration.getName().toString().equals(transactionalImport); // do not use
-            // direct class name to avoid dependency
-        })
-                .map(Node.class::cast)
-                .findFirst();
-        toRemove.ifPresent(compilationUnit::remove);
-    }
-
-    private void removeTransactionalAnnotationsFromMethod(ClassOrInterfaceDeclaration classOrInterfaceDeclaration, String transactionalAnnotation, List<String> restMappings) {
-        classOrInterfaceDeclaration.getMethods().stream()
-                .filter(methodDeclaration -> isRest(methodDeclaration, restMappings))
-                .forEach(methodDeclaration -> removeTransactionalAnnotationsFromMethod(methodDeclaration, transactionalAnnotation));
-    }
-
-    private void removeTransactionalAnnotationsFromMethod(MethodDeclaration methodDeclaration, String transactionalAnnotation) {
-        Optional<Node> toRemove = methodDeclaration.getAnnotations().stream().filter(annotationExpr -> annotationExpr.getNameAsString().equals(transactionalAnnotation))
-                .map(Node.class::cast)
-                .findFirst();
-        toRemove.ifPresent(methodDeclaration::remove);
-    }
-
-    private boolean isRest(MethodDeclaration methodDeclaration, List<String> restMappings) {
+    /**
+     * Detect if a given <code>MethodDeclaration</code> represents a <b>Rest endpoint</b> reading its annotations.
+     * 
+     * @param methodDeclaration
+     * @return
+     */
+    protected boolean isRest(MethodDeclaration methodDeclaration) {
+        List<String> restMappings;
+        switch (context.name()) {
+            case QuarkusKogitoBuildContext.CONTEXT_NAME -> restMappings = JAKARTA_REST_ANNOTATIONS;
+            case SpringBootKogitoBuildContext.CONTEXT_NAME -> restMappings = SPRING_REST_ANNOTATIONS;
+            case JavaKogitoBuildContext.CONTEXT_NAME -> restMappings = JAKARTA_REST_ANNOTATIONS;
+            default -> throw new IllegalStateException("Unexpected value: " + context.name());
+        }
         return methodDeclaration.getAnnotations().stream().anyMatch(annotationExpr -> restMappings.contains(annotationExpr.getNameAsString()));
     }
 

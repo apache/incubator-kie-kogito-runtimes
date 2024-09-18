@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -65,7 +64,6 @@ public class $Type$ReactiveResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Transactional
     public CompletionStage<$Type$Output> createResource_$name$(@Context HttpHeaders httpHeaders,
                                                                @QueryParam("businessKey") String businessKey,
                                                                $Type$Input resource) {
@@ -84,7 +82,6 @@ public class $Type$ReactiveResource {
 
     @GET()
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public CompletionStage<List<$Type$Output>> getResources_$name$() {
         return CompletableFuture.supplyAsync(() -> processService.getProcessInstanceOutput(process));
     }
@@ -92,7 +89,6 @@ public class $Type$ReactiveResource {
     @GET()
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public CompletionStage<$Type$Output> getResource_$name$(@PathParam("id") String id) {
         return CompletableFuture.supplyAsync(() -> processService.findById(process, id).orElseThrow(NotFoundException::new));
     }
@@ -100,7 +96,6 @@ public class $Type$ReactiveResource {
     @DELETE()
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public CompletionStage<$Type$Output> deleteResource_$name$(@PathParam("id") final String id) {
         return CompletableFuture.supplyAsync(() -> processService.delete(process, id).orElseThrow(NotFoundException::new));
     }
@@ -109,7 +104,6 @@ public class $Type$ReactiveResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public CompletionStage<$Type$Output> updateModel_$name$(@PathParam("id") String id, $Type$ resource) {
         return CompletableFuture.supplyAsync(() -> processService.update(process, id, resource).orElseThrow(NotFoundException::new));
     }
@@ -117,7 +111,6 @@ public class $Type$ReactiveResource {
     @GET()
     @Path("/{id}/tasks")
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public CompletionStage<List<TaskModel>> getTasks_$name$(@PathParam("id") String id,
                                                            @QueryParam("user") final String user,
                                                            @QueryParam("group") final List<String> groups) {

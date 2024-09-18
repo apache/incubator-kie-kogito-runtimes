@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import org.assertj.core.api.ListAssert;
 import org.drools.io.FileSystemResource;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
@@ -48,11 +49,6 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.codegen.process.ProcessResourceGenerator.JAKARTA_REST_ANNOTATIONS;
-import static org.kie.kogito.codegen.process.ProcessResourceGenerator.JAKARTA_TRANSACTIONAL_IMPORT;
-import static org.kie.kogito.codegen.process.ProcessResourceGenerator.SPRING_REST_ANNOTATIONS;
-import static org.kie.kogito.codegen.process.ProcessResourceGenerator.SPRING_TRANSACTIONAL_IMPORT;
-import static org.kie.kogito.codegen.process.ProcessResourceGenerator.TRANSACTIONAL_ANNOTATION;
 
 class ProcessResourceGeneratorTest {
 
@@ -60,6 +56,13 @@ class ProcessResourceGeneratorTest {
     private static final List<String> JAVA_AND_QUARKUS_REST_ANNOTATIONS = List.of("DELETE", "GET", "POST");
     private static final List<String> SPRING_BOOT_REST_ANNOTATIONS = List.of("DeleteMapping", "GetMapping",
             "PostMapping");
+
+    private static final String TRANSACTIONAL = "Transactional";
+    private static final String JAKARTA_TRANSACTIONAL_ANNOTATION = String.format("jakarta.transaction.%s",
+            TRANSACTIONAL);
+    private static final String SPRING_TRANSACTIONAL_ANNOTATION = String.format("org.springframework.transaction" +
+            ".annotation.%s",
+            TRANSACTIONAL);
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
@@ -167,32 +170,25 @@ class ProcessResourceGeneratorTest {
     void testTransactionEnabled(KogitoBuildContext.Builder contextBuilder) {
         String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
 
-        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName, true);
+        boolean transactionEnabled = true;
+        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName, transactionEnabled);
         CompilationUnit compilationUnit =
                 processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
         assertThat(compilationUnit).isNotNull();
-        Optional<ClassOrInterfaceDeclaration> classOrInterfaceDeclarationOptional = compilationUnit.getChildNodes().stream()
-                .filter(ClassOrInterfaceDeclaration.class::isInstance)
-                .map(ClassOrInterfaceDeclaration.class::cast)
-                .findFirst();
-        assertThat(classOrInterfaceDeclarationOptional).isPresent();
-        ClassOrInterfaceDeclaration classOrInterfaceDeclaration = classOrInterfaceDeclarationOptional.get();
-        switch (contextBuilder.build().name()) {
-            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    JAKARTA_REST_ANNOTATIONS);
-            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, SPRING_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    SPRING_REST_ANNOTATIONS);
-            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    JAKARTA_REST_ANNOTATIONS);
+        KogitoBuildContext kogitoBuildContext = contextBuilder.build();
+        Collection<MethodDeclaration> restEndpoints = processResourceGenerator.getRestMethods(compilationUnit);
+        switch (kogitoBuildContext.name()) {
+            // before processResourceGenerator.manageTransactional, the annotation is not there
+            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
+            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, SPRING_TRANSACTIONAL_ANNOTATION, false);
+            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
         }
         processResourceGenerator.manageTransactional(compilationUnit);
-        switch (contextBuilder.build().name()) {
-            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    JAKARTA_REST_ANNOTATIONS);
-            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, SPRING_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    SPRING_REST_ANNOTATIONS);
-            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    JAKARTA_REST_ANNOTATIONS);
+        switch (kogitoBuildContext.name()) {
+            // the annotation is (conditionally) add after processResourceGenerator.manageTransactional
+            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, transactionEnabled);
+            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, SPRING_TRANSACTIONAL_ANNOTATION, transactionEnabled);
+            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
         }
     }
 
@@ -200,58 +196,41 @@ class ProcessResourceGeneratorTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     void testTransactionDisabled(KogitoBuildContext.Builder contextBuilder) {
         String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
-
+        boolean transactionEnabled = false;
         ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName,
-                false);
+                                                                                        transactionEnabled);
         CompilationUnit compilationUnit =
                 processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
         assertThat(compilationUnit).isNotNull();
-        Optional<ClassOrInterfaceDeclaration> classOrInterfaceDeclarationOptional = compilationUnit.getChildNodes().stream()
-                .filter(ClassOrInterfaceDeclaration.class::isInstance)
-                .map(ClassOrInterfaceDeclaration.class::cast)
-                .findFirst();
-        assertThat(classOrInterfaceDeclarationOptional).isPresent();
-        ClassOrInterfaceDeclaration classOrInterfaceDeclaration = classOrInterfaceDeclarationOptional.get();
-        switch (contextBuilder.build().name()) {
-            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    JAKARTA_REST_ANNOTATIONS);
-            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, SPRING_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    SPRING_REST_ANNOTATIONS);
-            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransactionEnabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    JAKARTA_REST_ANNOTATIONS);
+        KogitoBuildContext kogitoBuildContext = contextBuilder.build();
+        Collection<MethodDeclaration> restEndpoints = processResourceGenerator.getRestMethods(compilationUnit);
+        switch (kogitoBuildContext.name()) {
+            // before processResourceGenerator.manageTransactional, the annotation is not there
+            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
+            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, SPRING_TRANSACTIONAL_ANNOTATION, false);
+            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
         }
         processResourceGenerator.manageTransactional(compilationUnit);
-        switch (contextBuilder.build().name()) {
-            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransactionDisabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    JAKARTA_REST_ANNOTATIONS);
-            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransactionDisabled(compilationUnit, classOrInterfaceDeclaration, SPRING_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    SPRING_REST_ANNOTATIONS);
-            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransactionDisabled(compilationUnit, classOrInterfaceDeclaration, JAKARTA_TRANSACTIONAL_IMPORT, TRANSACTIONAL_ANNOTATION,
-                    JAKARTA_REST_ANNOTATIONS);
+        switch (kogitoBuildContext.name()) {
+            // the annotation is (conditionally) add after processResourceGenerator.manageTransactional
+            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, transactionEnabled);
+            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, SPRING_TRANSACTIONAL_ANNOTATION, transactionEnabled);
+            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
         }
     }
 
-    void testTransactionEnabled(CompilationUnit toTest,
-            ClassOrInterfaceDeclaration classOrInterfaceDeclaration,
-            String transactionalImport, String transactionalAnnotation,
-            List<String> restMappings) {
-        assertThat(toTest.getImports().stream().filter(importDeclaration -> importDeclaration.getName().toString().equals(transactionalImport))).hasSize(1);
-        classOrInterfaceDeclaration.getMethods().stream()
-                .filter(methodDeclaration -> methodDeclaration.getAnnotations().stream().anyMatch(annotationExpr -> restMappings.contains(annotationExpr.getNameAsString())))
-                .forEach(methodDeclaration -> assertThat(
-                        methodDeclaration.getAnnotations().stream().filter(annotationExpr -> annotationExpr.getNameAsString().equals(transactionalAnnotation))).hasSize(1));
-    }
-
-    void testTransactionDisabled(CompilationUnit toTest,
-            ClassOrInterfaceDeclaration classOrInterfaceDeclaration,
-            String transactionalImport,
+    void testTransaction(Collection<MethodDeclaration> restEndpoints,
             String transactionalAnnotation,
-            List<String> restMappings) {
-        assertThat(toTest.getImports().stream().filter(importDeclaration -> importDeclaration.getName().toString().equals(transactionalImport))).isEmpty();
-        classOrInterfaceDeclaration.getMethods().stream()
-                .filter(methodDeclaration -> methodDeclaration.getAnnotations().stream().anyMatch(annotationExpr -> restMappings.contains(annotationExpr.getNameAsString())))
-                .forEach(methodDeclaration -> assertThat(
-                        methodDeclaration.getAnnotations().stream().filter(annotationExpr -> annotationExpr.getNameAsString().equals(transactionalAnnotation))).isEmpty());
+            boolean enabled) {
+        restEndpoints.forEach(methodDeclaration -> {
+            ListAssert<?> assertion = assertThat(
+                    methodDeclaration.getAnnotations().stream().filter(annotationExpr -> annotationExpr.getNameAsString().equals(transactionalAnnotation)));
+            if (enabled) {
+                assertion.hasSize(1);
+            } else {
+                assertion.isEmpty();
+            }
+        });
     }
 
     void testOpenApiDocumentation(KogitoBuildContext.Builder contextBuilder, String fileName, String expectedSummary,

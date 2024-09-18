@@ -44,7 +44,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,7 +72,6 @@ public class $Type$Resource {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public ResponseEntity<$Type$Output> createResource_$name$(@RequestHeader HttpHeaders httpHeaders,
                                                               @RequestParam(value = "businessKey", required = false) String businessKey,
                                                               @RequestBody(required = false) $Type$Input resource,
@@ -89,28 +87,24 @@ public class $Type$Resource {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public List<$Type$Output> getResources_$name$() {
         return processService.getProcessInstanceOutput(process);
     }
 
     @GetMapping(value = "/schema", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public Map<String, Object> getResourceSchema_$name$() {
         return JsonSchemaUtil.load(this.getClass().getClassLoader(), process.id());
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public $Type$Output getResource_$name$(@PathVariable("id") String id) {
         return processService.findById(process, id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public $Type$Output deleteResource_$name$(@PathVariable("id") final String id) {
         return processService.delete(process, id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
@@ -118,7 +112,6 @@ public class $Type$Resource {
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public $Type$Output updateModel_$name$(@PathVariable("id") String id, @RequestBody(required = false) $Type$Input resource) {
         return processService.update(process, id, resource.toModel()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
@@ -126,14 +119,12 @@ public class $Type$Resource {
     @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public $Type$Output updateModelPartial_$name$(@PathVariable("id") String id, @RequestBody(required = false) $Type$Input resource) {
         return processService.updatePartial(process, id, resource.toModel()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(value = "/{id}/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    @Transactional
     public List<TaskModel> getTasks_$name$(@PathVariable("id") String id,
                                            @RequestParam(value = "user", required = false) final String user,
                                            @RequestParam(value = "group", required = false) final List<String> groups) {

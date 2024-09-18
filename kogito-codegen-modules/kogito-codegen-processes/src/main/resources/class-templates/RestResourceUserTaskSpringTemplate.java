@@ -32,7 +32,6 @@ import org.kie.kogito.process.workitem.TaskMetaInfo;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,7 +45,6 @@ public class $Type$Resource {
 
     @PostMapping(value = "/{id}/$taskName$", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public ResponseEntity signal(@PathVariable("id") final String id,
             @RequestParam("user") final String user,
             @RequestParam("group") final List<String> groups,
@@ -63,7 +61,6 @@ public class $Type$Resource {
 
     @PostMapping(value = "/{id}/$taskName$/{taskId}/phases/{phase}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public $Type$Output completeTask(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @PathVariable("phase") final String phase,
@@ -75,7 +72,6 @@ public class $Type$Resource {
     }
 
     @PutMapping(value = "/{id}/$taskName$/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public $TaskOutput$ saveTask(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @RequestParam(value = "user", required = false) final String user,
@@ -87,7 +83,6 @@ public class $Type$Resource {
 
     @PostMapping(value = "/{id}/$taskName$/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public $Type$Output taskTransition(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @RequestParam(value = "phase", required = false,
@@ -102,7 +97,6 @@ public class $Type$Resource {
     }
 
     @GetMapping(value = "/{id}/$taskName$/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public $TaskModel$ getTask(@PathVariable("id") String id,
             @PathVariable("taskId") String taskId,
             @RequestParam(value = "user", required = false) final String user,
@@ -113,7 +107,6 @@ public class $Type$Resource {
     }
 
     @DeleteMapping(value = "/{id}/$taskName$/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public $Type$Output abortTask(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @RequestParam(value = "phase", required = false,
@@ -126,13 +119,11 @@ public class $Type$Resource {
     }
 
     @GetMapping(value = "$taskName$/schema", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public Map<String, Object> getSchema() {
         return JsonSchemaUtil.load(this.getClass().getClassLoader(), process.id(), "$taskName$");
     }
 
     @GetMapping(value = "/{id}/$taskName$/{taskId}/schema", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public Map<String, Object> getSchemaAndPhases(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @RequestParam(value = "user", required = false) final String user,
@@ -143,7 +134,6 @@ public class $Type$Resource {
 
     @PostMapping(value = "/{id}/$taskName$/{taskId}/comments", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.TEXT_PLAIN_VALUE)
-    @Transactional
     public ResponseEntity<Comment> addComment(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @RequestParam(value = "user", required = false) final String user,
@@ -161,7 +151,6 @@ public class $Type$Resource {
 
     @PutMapping(value = "/{id}/$taskName$/{taskId}/comments/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.TEXT_PLAIN_VALUE)
-    @Transactional
     public Comment updateComment(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @PathVariable("commentId") final String commentId,
@@ -174,7 +163,6 @@ public class $Type$Resource {
     }
 
     @DeleteMapping(value = "/{id}/$taskName$/{taskId}/comments/{commentId}")
-    @Transactional
     public ResponseEntity deleteComment(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @PathVariable("commentId") final String commentId,
@@ -187,7 +175,6 @@ public class $Type$Resource {
 
     @PostMapping(value = "/{id}/$taskName$/{taskId}/attachments", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public ResponseEntity<Attachment> addAttachment(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @RequestParam(value = "user", required = false) final String user,
@@ -208,7 +195,6 @@ public class $Type$Resource {
 
     @PutMapping(value = "/{id}/$taskName$/{taskId}/attachments/{attachmentId}",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public Attachment updateAttachment(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @PathVariable("attachmentId") final String attachmentId,
@@ -222,7 +208,6 @@ public class $Type$Resource {
     }
 
     @DeleteMapping(value = "/{id}/$taskName$/{taskId}/attachments/{attachmentId}")
-    @Transactional
     public ResponseEntity deleteAttachment(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @PathVariable("attachmentId") final String attachmentId,
@@ -235,7 +220,6 @@ public class $Type$Resource {
     }
 
     @GetMapping(value = "/{id}/$taskName$/{taskId}/attachments/{attachmentId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public Attachment getAttachment(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @PathVariable("attachmentId") final String attachmentId,
@@ -246,7 +230,6 @@ public class $Type$Resource {
     }
 
     @GetMapping(value = "/{id}/$taskName$/{taskId}/attachments", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public Collection<Attachment> getAttachments(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @RequestParam(value = "user") final String user,
@@ -256,7 +239,6 @@ public class $Type$Resource {
     }
 
     @GetMapping(value = "/{id}/$taskName$/{taskId}/comments/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public Comment getComment(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @PathVariable("commentId") final String commentId,
@@ -267,7 +249,6 @@ public class $Type$Resource {
     }
 
     @GetMapping(value = "/{id}/$taskName$/{taskId}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public Collection<Comment> getComments(@PathVariable("id") final String id,
             @PathVariable("taskId") final String taskId,
             @RequestParam(value = "user", required = false) final String user,
