@@ -368,21 +368,23 @@ public class ProcessCodegen extends AbstractGenerator {
 
             ProcessMetaData metaData = processIdToMetadata.get(workFlowProcess.getId());
 
-            //Creating and adding the ResourceGenerator
-            ProcessResourceGenerator processResourceGenerator = new ProcessResourceGenerator(
-                    context(),
-                    workFlowProcess,
-                    modelClassGenerator.className(),
-                    execModelGen.className(),
-                    applicationCanonicalName());
+            //Creating and adding the ResourceGenerator for REST generation
+            if (!context().name().equals("Java")) {
+                ProcessResourceGenerator processResourceGenerator = new ProcessResourceGenerator(
+                        context(),
+                        workFlowProcess,
+                        modelClassGenerator.className(),
+                        execModelGen.className(),
+                        applicationCanonicalName());
 
-            processResourceGenerator
-                    .withUserTasks(processIdToUserTaskModel.get(workFlowProcess.getId()))
-                    .withSignals(metaData.getSignals())
-                    .withTriggers(metaData.isStartable(), metaData.isDynamic(), metaData.getTriggers())
-                    .withTransaction(isTransactionEnabled());
+                processResourceGenerator
+                        .withUserTasks(processIdToUserTaskModel.get(workFlowProcess.getId()))
+                        .withSignals(metaData.getSignals())
+                        .withTriggers(metaData.isStartable(), metaData.isDynamic(), metaData.getTriggers())
+                        .withTransaction(isTransactionEnabled());
 
-            rgs.add(processResourceGenerator);
+                rgs.add(processResourceGenerator);
+            }
 
             if (metaData.getTriggers() != null) {
 
@@ -493,7 +495,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     "/" + key + ".svg", svgs.get(key)));
         }
 
-        if (context().hasRESTForGenerator(this)) {
+        if (!context().name().equals("Java") && context().hasRESTForGenerator(this)) {
             final ProcessCloudEventMetaFactoryGenerator topicsGenerator =
                     new ProcessCloudEventMetaFactoryGenerator(context(), processExecutableModelGenerators);
             storeFile(REST_TYPE, topicsGenerator.generatedFilePath(), topicsGenerator.generate());

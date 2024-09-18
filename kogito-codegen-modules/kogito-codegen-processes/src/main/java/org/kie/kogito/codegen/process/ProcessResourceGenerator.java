@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.codegen.process;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.drools.codegen.common.di.DependencyInjectionAnnotator;
+import org.drools.codegen.common.rest.RestAnnotator;
 import org.drools.util.StringUtils;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.TriggerMetaData;
@@ -39,9 +39,7 @@ import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.node.StartNode;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.codegen.core.CodegenUtils;
@@ -83,9 +81,6 @@ public class ProcessResourceGenerator {
      * Flag used to configure transaction enablement. Default to <code>true</code>
      */
     public static final String TRANSACTION_ENABLED = "transactionEnabled";
-    static final List<String> JAKARTA_REST_ANNOTATIONS = Arrays.asList("POST", "GET", "DELETE", "PUT", "PATCH");
-    static final List<String> SPRING_REST_ANNOTATIONS = Arrays.asList("PostMapping", "GetMapping", "DeleteMapping",
-            "PutMapping", "PatchMapping");
 
     private static final Logger LOG = LoggerFactory.getLogger(ProcessResourceGenerator.class);
 
@@ -123,6 +118,9 @@ public class ProcessResourceGenerator {
             String modelfqcn,
             String processfqcn,
             String appCanonicalName) {
+        if (context.name().equals("Java")) {
+            throw new IllegalArgumentException("ProcessResourceGenerator can't be used for Java context");
+        }
         this.context = context;
         this.process = process;
         this.processId = process.getId();
@@ -421,7 +419,7 @@ public class ProcessResourceGenerator {
 
     /**
      * Conditionally add the <code>Transactional</code> annotation
-     * 
+     *
      * @param compilationUnit
      */
     protected void manageTransactional(CompilationUnit compilationUnit) {
@@ -434,33 +432,18 @@ public class ProcessResourceGenerator {
     }
 
     /**
-     * Retrieves all the <b>Rest endpoint</b> <code>MethodDeclaration</code>s
-     * 
+     * Retrieves all the <b>Rest endpoint</b> <code>MethodDeclaration</code>s from the given
+     * <code>CompilationUnit</code>
+     *
      * @param compilationUnit
      * @return
      */
     protected Collection<MethodDeclaration> getRestMethods(CompilationUnit compilationUnit) {
+        RestAnnotator restAnnotator = context.getRestAnnotator();
         return compilationUnit.findAll(MethodDeclaration.class)
                 .stream()
-                .filter(this::isRest)
+                .filter(restAnnotator::isRestAnnotated)
                 .toList();
-    }
-
-    /**
-     * Detect if a given <code>MethodDeclaration</code> represents a <b>Rest endpoint</b> reading its annotations.
-     * 
-     * @param methodDeclaration
-     * @return
-     */
-    protected boolean isRest(MethodDeclaration methodDeclaration) {
-        List<String> restMappings;
-        switch (context.name()) {
-            case QuarkusKogitoBuildContext.CONTEXT_NAME -> restMappings = JAKARTA_REST_ANNOTATIONS;
-            case SpringBootKogitoBuildContext.CONTEXT_NAME -> restMappings = SPRING_REST_ANNOTATIONS;
-            case JavaKogitoBuildContext.CONTEXT_NAME -> restMappings = JAKARTA_REST_ANNOTATIONS;
-            default -> throw new IllegalStateException("Unexpected value: " + context.name());
-        }
-        return methodDeclaration.getAnnotations().stream().anyMatch(annotationExpr -> restMappings.contains(annotationExpr.getNameAsString()));
     }
 
     private void securityAnnotated(ClassOrInterfaceDeclaration template) {

@@ -44,6 +44,12 @@ public class KogitoContextTestUtils {
                 Arguments.of(SpringBootKogitoBuildContext.builder()));
     }
 
+    public static Stream<Arguments> restContextBuilders() {
+        return Stream.of(
+                Arguments.of(QuarkusKogitoBuildContext.builder()),
+                Arguments.of(SpringBootKogitoBuildContext.builder()));
+    }
+
     public static Predicate<String> mockClassAvailabilityResolver(Collection<String> includedClasses, Collection<String> excludedClasses) {
         return mockClassAvailabilityResolver(includedClasses, excludedClasses, KogitoContextTestUtils.class.getClassLoader());
     }

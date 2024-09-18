@@ -28,14 +28,13 @@ import org.assertj.core.api.ListAssert;
 import org.drools.io.FileSystemResource;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.definition.process.Process;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import com.github.javaparser.StaticJavaParser;
@@ -49,6 +48,7 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ProcessResourceGeneratorTest {
 
@@ -57,15 +57,19 @@ class ProcessResourceGeneratorTest {
     private static final List<String> SPRING_BOOT_REST_ANNOTATIONS = List.of("DeleteMapping", "GetMapping",
             "PostMapping");
 
-    private static final String TRANSACTIONAL = "Transactional";
-    private static final String JAKARTA_TRANSACTIONAL_ANNOTATION = String.format("jakarta.transaction.%s",
-            TRANSACTIONAL);
-    private static final String SPRING_TRANSACTIONAL_ANNOTATION = String.format("org.springframework.transaction" +
-            ".annotation.%s",
-            TRANSACTIONAL);
+    @Test
+    void testProcessResourceGeneratorForJava() {
+        KogitoBuildContext.Builder contextBuilder = JavaKogitoBuildContext.builder();
+        String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2"; // not relevant
+        boolean transactionEnabled = true; // not relevant
+        assertThatThrownBy(() -> getProcessResourceGenerator(contextBuilder, fileName,
+                transactionEnabled))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessageContaining("ProcessResourceGenerator can't be used for Java context");
+    }
 
     @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testGenerateProcessWithDocumentation(KogitoBuildContext.Builder contextBuilder) {
         String fileName = "src/test/resources/ProcessWithDocumentation.bpmn";
         String expectedSummary = "This is the documentation";
@@ -75,7 +79,7 @@ class ProcessResourceGeneratorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testGenerateProcessWithoutDocumentation(KogitoBuildContext.Builder contextBuilder) {
         String fileName = "src/test/resources/ProcessWithoutDocumentation.bpmn";
         String expectedSummary = "ProcessWithoutDocumentation";
@@ -85,7 +89,7 @@ class ProcessResourceGeneratorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testGenerateBoundarySignalEventOnTask(KogitoBuildContext.Builder contextBuilder) {
         String fileName = "src/test/resources/signalevent/BoundarySignalEventOnTask.bpmn2";
 
@@ -101,7 +105,7 @@ class ProcessResourceGeneratorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testGenerateStartSignalEventStringPayload(KogitoBuildContext.Builder contextBuilder) {
         String fileName = "src/test/resources/startsignal/StartSignalEventStringPayload.bpmn2";
         String signalName = "start";
@@ -134,7 +138,7 @@ class ProcessResourceGeneratorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testGenerateStartSignalEventNoPayload(KogitoBuildContext.Builder contextBuilder) {
         String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
         String signalName = "start";
@@ -166,62 +170,49 @@ class ProcessResourceGeneratorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
-    void testTransactionEnabled(KogitoBuildContext.Builder contextBuilder) {
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
+    void testManageTransactionalEnabled(KogitoBuildContext.Builder contextBuilder) {
         String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
 
         boolean transactionEnabled = true;
-        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName, transactionEnabled);
+        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName,
+                transactionEnabled);
         CompilationUnit compilationUnit =
                 processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
         assertThat(compilationUnit).isNotNull();
         KogitoBuildContext kogitoBuildContext = contextBuilder.build();
         Collection<MethodDeclaration> restEndpoints = processResourceGenerator.getRestMethods(compilationUnit);
-        switch (kogitoBuildContext.name()) {
-            // before processResourceGenerator.manageTransactional, the annotation is not there
-            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
-            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, SPRING_TRANSACTIONAL_ANNOTATION, false);
-            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
-        }
+        // before processResourceGenerator.manageTransactional, the annotation is not there
+        testTransaction(restEndpoints, kogitoBuildContext, false);
         processResourceGenerator.manageTransactional(compilationUnit);
-        switch (kogitoBuildContext.name()) {
-            // the annotation is (conditionally) add after processResourceGenerator.manageTransactional
-            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, transactionEnabled);
-            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, SPRING_TRANSACTIONAL_ANNOTATION, transactionEnabled);
-            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
-        }
+        // the annotation is (conditionally) add after processResourceGenerator.manageTransactional
+        testTransaction(restEndpoints, kogitoBuildContext, transactionEnabled);
     }
 
     @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
-    void testTransactionDisabled(KogitoBuildContext.Builder contextBuilder) {
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
+    void testManageTransactionalDisabled(KogitoBuildContext.Builder contextBuilder) {
         String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
         boolean transactionEnabled = false;
         ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName,
-                                                                                        transactionEnabled);
+                transactionEnabled);
         CompilationUnit compilationUnit =
                 processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
         assertThat(compilationUnit).isNotNull();
         KogitoBuildContext kogitoBuildContext = contextBuilder.build();
         Collection<MethodDeclaration> restEndpoints = processResourceGenerator.getRestMethods(compilationUnit);
-        switch (kogitoBuildContext.name()) {
-            // before processResourceGenerator.manageTransactional, the annotation is not there
-            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
-            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, SPRING_TRANSACTIONAL_ANNOTATION, false);
-            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
-        }
+        // before processResourceGenerator.manageTransactional, the annotation is not there
+        testTransaction(restEndpoints, kogitoBuildContext, false);
         processResourceGenerator.manageTransactional(compilationUnit);
-        switch (kogitoBuildContext.name()) {
-            // the annotation is (conditionally) add after processResourceGenerator.manageTransactional
-            case QuarkusKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, transactionEnabled);
-            case SpringBootKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, SPRING_TRANSACTIONAL_ANNOTATION, transactionEnabled);
-            case JavaKogitoBuildContext.CONTEXT_NAME -> testTransaction(restEndpoints, JAKARTA_TRANSACTIONAL_ANNOTATION, false);
-        }
+        // the annotation is (conditionally) add after processResourceGenerator.manageTransactional
+        testTransaction(restEndpoints, kogitoBuildContext, transactionEnabled);
     }
 
     void testTransaction(Collection<MethodDeclaration> restEndpoints,
-            String transactionalAnnotation,
+            KogitoBuildContext kogitoBuildContext,
             boolean enabled) {
+        String transactionalAnnotation =
+                kogitoBuildContext.getDependencyInjectionAnnotator().getTransactionalAnnotation();
         restEndpoints.forEach(methodDeclaration -> {
             ListAssert<?> assertion = assertThat(
                     methodDeclaration.getAnnotations().stream().filter(annotationExpr -> annotationExpr.getNameAsString().equals(transactionalAnnotation)));
