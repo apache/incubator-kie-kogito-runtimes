@@ -35,13 +35,6 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${path.to.persistence.modules}/jdbc/src/main/resources/db/persistence-jdbc/oracle</directory>
-      <outputDirectory>oracle</outputDirectory>
-      <includes>
-        <include>*.sql</include>
-      </includes>
-    </fileSet>
-    <fileSet>
       <directory>${path.to.persistence.modules}/jdbc/src/main/resources/db/persistence-jdbc/ansi</directory>
       <outputDirectory>ansi</outputDirectory>
       <includes>
