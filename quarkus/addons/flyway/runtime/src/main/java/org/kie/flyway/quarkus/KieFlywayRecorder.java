@@ -55,7 +55,7 @@ public class KieFlywayRecorder {
                 .map(Map.Entry::getKey)
                 .toList();
 
-        KieFlywayInitializer.Builder.get()
+        KieFlywayInitializer.builder()
                 .withDatasource(dataSource)
                 .withDbType(dbKind)
                 .withClassLoader(Thread.currentThread().getContextClassLoader())

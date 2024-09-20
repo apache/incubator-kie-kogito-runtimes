@@ -57,12 +57,12 @@ public abstract class AbstractKieFlywayInitializerTest {
 
     @Test
     public void testTestKieFlywayInitializerBuilderValidations() {
-        Assertions.assertThatThrownBy(() -> KieFlywayInitializer.Builder.get()
+        Assertions.assertThatThrownBy(() -> KieFlywayInitializer.builder()
                 .withDbType(getDbType())
                 .build()).isInstanceOf(KieFlywayException.class)
                 .hasMessage("Cannot create KieFlywayInitializer migration, dataSource is null.");
 
-        Assertions.assertThatThrownBy(() -> KieFlywayInitializer.Builder.get()
+        Assertions.assertThatThrownBy(() -> KieFlywayInitializer.builder()
                 .withDatasource(getDataSource())
                 .build()).isInstanceOf(KieFlywayException.class)
                 .hasMessage("Cannot create KieFlywayInitializer migration, database type is null.");
@@ -77,7 +77,7 @@ public abstract class AbstractKieFlywayInitializerTest {
         classLoader.addModuleConfig(classLoader.getResource("initializers/kie-flyway.duplicated2.properties"));
 
         Assertions.assertThatThrownBy(() -> {
-            KieFlywayInitializer.Builder.get()
+            KieFlywayInitializer.builder()
                     .withDbType(getDbType())
                     .withDatasource(getDataSource())
                     .withClassLoader(classLoader)
@@ -90,7 +90,7 @@ public abstract class AbstractKieFlywayInitializerTest {
 
     @Test
     public void testFlywayMigrations() {
-        KieFlywayInitializer.Builder.get()
+        KieFlywayInitializer.builder()
                 .withDbType(getDbType())
                 .withDatasource(getDataSource())
                 .build()

@@ -106,15 +106,15 @@ public class KieFlywayInitializer {
         LOGGER.debug("Flyway migration complete.");
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder {
         private KieModuleFlywayConfigLoader configLoader;
         private DataSource dataSource;
         private String databaseType;
         private List<String> moduleExclusions = new ArrayList<>();
-
-        public static Builder get() {
-            return new Builder();
-        }
 
         public Builder withClassLoader(ClassLoader classLoader) {
             this.configLoader = new DefaultKieModuleFlywayConfigLoader(classLoader);

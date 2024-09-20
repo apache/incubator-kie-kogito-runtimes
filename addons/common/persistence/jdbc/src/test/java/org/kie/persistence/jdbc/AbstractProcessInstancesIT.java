@@ -62,7 +62,7 @@ abstract class AbstractProcessInstancesIT {
     public static Policy securityPolicy = SecurityPolicy.of(IdentityProviders.of("john"));
 
     public static void initMigration(DataSource dataSource, String dbKind) {
-        KieFlywayInitializer.Builder.get()
+        KieFlywayInitializer.builder()
                 .withDatasource(dataSource)
                 .withDbType(dbKind)
                 .build()

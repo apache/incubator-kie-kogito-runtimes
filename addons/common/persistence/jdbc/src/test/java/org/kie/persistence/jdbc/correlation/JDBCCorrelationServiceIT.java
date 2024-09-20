@@ -56,7 +56,7 @@ public class JDBCCorrelationServiceIT {
     }
 
     public static void initMigration(DataSource dataSource, String dbKind) {
-        KieFlywayInitializer.Builder.get()
+        KieFlywayInitializer.builder()
                 .withDatasource(dataSource)
                 .withDbType(dbKind)
                 .build()

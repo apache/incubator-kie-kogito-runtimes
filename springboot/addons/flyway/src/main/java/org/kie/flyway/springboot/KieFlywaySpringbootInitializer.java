@@ -60,7 +60,7 @@ public class KieFlywaySpringbootInitializer implements InitializingBean, Ordered
                 .map(Map.Entry::getKey)
                 .toList();
 
-        KieFlywayInitializer.Builder.get()
+        KieFlywayInitializer.builder()
                 .withClassLoader(Thread.currentThread().getContextClassLoader())
                 .withDatasource(dataSource)
                 .withDbType(dbType)

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.kie.flyway.KieFlywayException;
 import org.kie.flyway.KieModuleFlywayConfigLoader;
@@ -36,8 +37,9 @@ public class DefaultKieModuleFlywayConfigLoader implements KieModuleFlywayConfig
 
     public static String KIE_FLYWAY_DESCRIPTOR_FILE_LOCATION = "META-INF" + File.separator + KIE_FLYWAY_DESCRIPTOR_FILE_NAME;
 
-    public static final String MODULE_KEY = "module";
-    public static final String LOCATIONS_KEY = "locations";
+    public static final String MODULE_PREFIX = "module.";
+    public static final String MODULE_NAME_KEY = MODULE_PREFIX + "name";
+    public static final String MODULE_LOCATIONS_KEY = MODULE_PREFIX + "locations";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKieModuleFlywayConfigLoader.class);
 
@@ -66,30 +68,36 @@ public class DefaultKieModuleFlywayConfigLoader implements KieModuleFlywayConfig
             Properties properties = new Properties();
             properties.load(inputStream);
 
-            String moduleName = properties.getProperty(MODULE_KEY);
+            String moduleName = properties.getProperty(MODULE_NAME_KEY);
 
             if (Objects.isNull(moduleName)) {
-                LOGGER.warn("Could not load module name from file {}", resourceUrl);
-                throw new KieFlywayException("Could not load module name from " + resourceUrl.getPath());
+                LOGGER.warn("Could not load module name from file `{}`", resourceUrl);
+                throw new KieFlywayException("Could not load module name from `" + resourceUrl + "`");
             }
 
             LOGGER.debug("Loading Kie Flyway Module {}", moduleName);
 
-            KieFlywayModuleConfig module = new KieFlywayModuleConfig(moduleName);
-
-            properties.keySet()
+            Map<String, String[]> locations = properties.keySet()
                     .stream()
                     .map(String::valueOf)
-                    .filter(key -> key.startsWith(LOCATIONS_KEY))
-                    .forEach(key -> {
-                        LOGGER.debug("Loading location: {}", key);
-                        String[] splitKey = key.split("\\.");
-                        if (splitKey.length != 2) {
+                    .filter(moduleProperty -> moduleProperty.startsWith(MODULE_LOCATIONS_KEY))
+                    .map(dbLocationsProperty -> {
+                        LOGGER.debug("Loading location: {}", dbLocationsProperty);
+                        // Splitting the key (`module.locations.<dbType>`) to obtain the dbType
+                        String[] dbLocationsPropertyArray = dbLocationsProperty.split("\\.");
+                        if (dbLocationsPropertyArray.length != 3) {
                             throw new KieFlywayException("Cannot load module `" + moduleName + "` config, file has wrong format");
                         }
-                        String[] locations = properties.getProperty(key).split(",");
-                        module.addDBScriptLocation(splitKey[1], locations);
-                    });
+                        String[] locationsArray = properties.getProperty(dbLocationsProperty).split(",");
+
+                        return Map.entry(dbLocationsPropertyArray[2], locationsArray);
+                    }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            if (locations.isEmpty()) {
+                LOGGER.warn("Kie Flyway module `{}` has no locations ", moduleName);
+            }
+
+            KieFlywayModuleConfig module = new KieFlywayModuleConfig(moduleName, locations);
 
             LOGGER.debug("Successfully loaded configuration for module {}", module.getModule());
 

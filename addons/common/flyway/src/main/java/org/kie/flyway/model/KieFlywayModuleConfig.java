@@ -29,16 +29,17 @@ public class KieFlywayModuleConfig {
     private final String module;
     private final Map<String, String[]> locations = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-    public KieFlywayModuleConfig(String module) {
+    public KieFlywayModuleConfig(String module, Map<String, String[]> locations) {
         this.module = module;
+        this.locations.putAll(locations);
     }
 
     public String getModule() {
         return module;
     }
 
-    public void addDBScriptLocation(String dbType, String[] locations) {
-        this.locations.put(dbType, locations);
+    public Map<String, String[]> getLocations() {
+        return Map.copyOf(locations);
     }
 
     public String[] getDBScriptLocations(String dbType) {

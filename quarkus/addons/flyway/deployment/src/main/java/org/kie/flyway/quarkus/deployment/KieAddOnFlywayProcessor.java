@@ -31,7 +31,7 @@ import io.quarkus.deployment.annotations.*;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-public class KogitoAddOnFlywayProcessor {
+public class KieAddOnFlywayProcessor {
 
     private static final String FEATURE = "kie-flyway";
 

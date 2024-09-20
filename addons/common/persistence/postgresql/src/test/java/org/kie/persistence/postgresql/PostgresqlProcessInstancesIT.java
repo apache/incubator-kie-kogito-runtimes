@@ -85,8 +85,7 @@ class PostgresqlProcessInstancesIT {
         ds.setUser(container.getUsername());
         ds.setPassword(container.getPassword());
 
-        KieFlywayInitializer.Builder
-                .get()
+        KieFlywayInitializer.builder()
                 .withDatasource(ds)
                 .withDbType("postgresql")
                 .build()

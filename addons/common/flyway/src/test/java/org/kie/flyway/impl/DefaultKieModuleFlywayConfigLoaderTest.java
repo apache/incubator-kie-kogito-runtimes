@@ -66,7 +66,10 @@ public class DefaultKieModuleFlywayConfigLoaderTest {
 
         Assertions.assertThatThrownBy(() -> flywayConfigLoader.loadModuleConfigs())
                 .isInstanceOf(KieFlywayException.class)
-                .hasMessage("Could not load ModuleFlywayConfig");
+                .hasMessage("Could not load ModuleFlywayConfig")
+                .cause()
+                .isInstanceOf(KieFlywayException.class)
+                .hasMessageStartingWith("Could not load module name from");
     }
 
     @Test
