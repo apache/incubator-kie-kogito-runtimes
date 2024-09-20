@@ -73,6 +73,9 @@ public class RuleFlowGroupRuleTypeEngineImpl implements RuleFlowGroupRuleTypeEng
             rsni.removeEventListeners();
             rsni.retractFacts(kruntime);
             rsni.triggerCompleted();
+            if (kruntime instanceof org.drools.kiesession.session.StatefulKnowledgeSessionImpl) {
+                ((KieSession) kruntime).dispose();
+            }
         }
     }
 
