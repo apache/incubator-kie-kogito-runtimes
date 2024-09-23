@@ -30,8 +30,8 @@ import io.smallrye.config.WithDefaults;
  * Configuration for the Kie Flyway initializer
  */
 @ConfigMapping(prefix = "kie.flyway")
-@ConfigRoot(phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
-public interface KieFlywayQuarkusConfig {
+@ConfigRoot(phase = ConfigPhase.RUN_TIME)
+public interface KieFlywayQuarkusRuntimeConfig {
 
     /**
      * Enables the execution of the Flyway initializer during the application startup

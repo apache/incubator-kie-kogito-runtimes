@@ -26,7 +26,7 @@
         <version>999-SNAPSHOT</version>
     </parent>
     <artifactId>kie-addons-quarkus-flyway-deployment</artifactId>
-    <name>Kie :: Add-Ons :: Quarkus :: Flyway ::  Deployment</name>
+    <name>Kie :: Add-Ons :: Quarkus :: Flyway :: Deployment</name>
 
     <properties>
         <java.module.name>org.kie.flyway.quarkus.deployment</java.module.name>

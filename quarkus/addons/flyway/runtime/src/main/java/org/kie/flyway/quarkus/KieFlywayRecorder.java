@@ -32,24 +32,39 @@ import org.slf4j.LoggerFactory;
 
 import io.quarkus.agroal.runtime.DataSources;
 import io.quarkus.arc.Arc;
+import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 
 @Recorder
 public class KieFlywayRecorder {
 
+    private final RuntimeValue<KieFlywayQuarkusRuntimeConfig> config;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(KieFlywayRecorder.class);
 
-    public void run(KieFlywayQuarkusConfig config, String defaultDSName, String dbKind) {
+    public KieFlywayRecorder(RuntimeValue<KieFlywayQuarkusRuntimeConfig> config) {
+        this.config = config;
+    }
 
-        assertValue(config, "Cannot run Kie Flyway migration: configuration is null.");
-        assertValue(dbKind, "Cannot run Kie Flyway migration: `quarkus.datasource.dbKind` is null.");
+    public void run(String defaultDSName, String dbKind) {
+
+        KieFlywayQuarkusRuntimeConfig runtimeConfig = this.config.getValue();
+
+        assertValue(runtimeConfig, "Kie Flyway: Cannot run Kie Flyway migration configuration is null.");
+
+        if (!runtimeConfig.enabled()) {
+            LOGGER.warn("Kie Flyway is disabled, skipping default Data Base initialization.");
+            return;
+        }
+
+        assertValue(dbKind, "Cannot run Kie Flyway: `quarkus.datasource.dbKind` is null.");
 
         DataSources agroalDatasourceS = Arc.container().select(DataSources.class).get();
         DataSource dataSource = agroalDatasourceS.getDataSource(defaultDSName);
 
         assertValue(dataSource, "Cannot run Kie Flyway migration: default datasource not found.");
 
-        Collection<String> excludedModules = config.modules()
+        Collection<String> excludedModules = runtimeConfig.modules()
                 .entrySet()
                 .stream().filter(entry -> !entry.getValue().enabled())
                 .map(Map.Entry::getKey)

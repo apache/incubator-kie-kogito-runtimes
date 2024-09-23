@@ -21,7 +21,6 @@ package org.kie.flyway.quarkus.deployment;
 import java.util.List;
 import java.util.Optional;
 
-import org.kie.flyway.quarkus.KieFlywayQuarkusConfig;
 import org.kie.flyway.quarkus.KieFlywayRecorder;
 
 import io.quarkus.agroal.spi.JdbcDataSourceBuildItem;
@@ -47,12 +46,7 @@ public class KieAddOnFlywayProcessor {
     @Record(ExecutionTime.RUNTIME_INIT)
     void runMigration(
             KieFlywayRecorder recorder,
-            KieFlywayQuarkusConfig config,
             List<JdbcDataSourceBuildItem> jdbcDataSourceBuildItems) {
-
-        if (!config.enabled()) {
-            return;
-        }
 
         Optional<JdbcDataSourceBuildItem> jdbcDataSourceOptional = jdbcDataSourceBuildItems.stream()
                 .filter(JdbcDataSourceBuildItem::isDefault)
@@ -63,6 +57,6 @@ public class KieAddOnFlywayProcessor {
         }
 
         JdbcDataSourceBuildItem jdbcDataSource = jdbcDataSourceOptional.get();
-        recorder.run(config, jdbcDataSource.getName(), jdbcDataSource.getDbKind());
+        recorder.run(jdbcDataSource.getName(), jdbcDataSource.getDbKind());
     }
 }
