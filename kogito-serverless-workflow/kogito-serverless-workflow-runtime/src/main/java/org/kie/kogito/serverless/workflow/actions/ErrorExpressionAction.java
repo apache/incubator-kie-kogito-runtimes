@@ -40,7 +40,7 @@ public class ErrorExpressionAction extends BaseExpressionAction {
                 }
             }
         } else {
-            setError(context, expr.toString());
+            setError(context, "The expression used for generating error message is not a valid one: " + expr.asString());
         }
     }
 

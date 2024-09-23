@@ -1163,8 +1163,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         this.nodeIdInError = nodeInstanceInError.getNodeDefinitionId();
         this.nodeInstanceIdInError = nodeInstanceInError.getId();
         this.errorCause = Optional.of(e);
-        Throwable rootException = getRootException(e);
-        this.errorMessage = rootException.getClass().getCanonicalName() + " - " + rootException.getMessage();
+        this.errorMessage = getRootException(e).getMessage();
         setState(STATE_ERROR);
         logger.error("Unexpected error while executing node {} in process instance {}", nodeInstanceInError.getNode().getName(), this.getStringId(), e);
         ((InternalProcessRuntime) getKnowledgeRuntime().getProcessRuntime()).getProcessEventSupport().fireOnError(this, nodeInstanceInError, getKnowledgeRuntime(), e);
