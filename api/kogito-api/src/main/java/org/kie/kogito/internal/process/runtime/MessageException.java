@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.workflow.instance.impl;
+package org.kie.kogito.internal.process.runtime;
 
-public class MessageException extends IllegalArgumentException {
+public class MessageException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     public MessageException(String message) {

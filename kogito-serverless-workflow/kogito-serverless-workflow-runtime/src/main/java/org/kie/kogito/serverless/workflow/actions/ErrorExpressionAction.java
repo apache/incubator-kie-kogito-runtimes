@@ -20,8 +20,8 @@ package org.kie.kogito.serverless.workflow.actions;
 
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.workflow.instance.NodeInstance;
-import org.jbpm.workflow.instance.impl.MessageException;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.kie.kogito.internal.process.runtime.MessageException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
