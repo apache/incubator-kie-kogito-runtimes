@@ -20,6 +20,7 @@ package org.kie.kogito.serverless.workflow.actions;
 
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.workflow.instance.NodeInstance;
+import org.jbpm.workflow.instance.impl.MessageException;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,7 +45,7 @@ public class ErrorExpressionAction extends BaseExpressionAction {
         }
     }
 
-    private void setError(KogitoProcessContext context, String error) {
-        ((ProcessInstance) context.getProcessInstance()).setErrorState((NodeInstance) context.getNodeInstance(), new IllegalArgumentException(error));
+    private void setError(KogitoProcessContext context, String message) {
+        ((ProcessInstance) context.getProcessInstance()).setErrorState((NodeInstance) context.getNodeInstance(), new MessageException(message));
     }
 }
