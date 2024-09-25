@@ -90,23 +90,16 @@ public class ProcessCodegen extends AbstractGenerator {
     public static final String GENERATOR_NAME = "processes";
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessCodegen.class);
 
-    private static final GeneratedFileType PROCESS_TYPE = GeneratedFileType.of("PROCESS",
-            GeneratedFileType.Category.SOURCE);
-    private static final GeneratedFileType PROCESS_INSTANCE_TYPE = GeneratedFileType.of("PROCESS_INSTANCE",
-            GeneratedFileType.Category.SOURCE);
-    private static final GeneratedFileType MESSAGE_PRODUCER_TYPE = GeneratedFileType.of("MESSAGE_PRODUCER",
-            GeneratedFileType.Category.SOURCE);
-    private static final GeneratedFileType MESSAGE_CONSUMER_TYPE = GeneratedFileType.of("MESSAGE_CONSUMER",
-            GeneratedFileType.Category.SOURCE);
-    private static final GeneratedFileType PRODUCER_TYPE = GeneratedFileType.of("PRODUCER",
-            GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType PROCESS_TYPE = GeneratedFileType.of("PROCESS", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType PROCESS_INSTANCE_TYPE = GeneratedFileType.of("PROCESS_INSTANCE", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType MESSAGE_PRODUCER_TYPE = GeneratedFileType.of("MESSAGE_PRODUCER", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType MESSAGE_CONSUMER_TYPE = GeneratedFileType.of("MESSAGE_CONSUMER", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType PRODUCER_TYPE = GeneratedFileType.of("PRODUCER", GeneratedFileType.Category.SOURCE);
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
     public static final String SVG_EXPORT_NAME_EXPRESION = "%s-svg.svg";
 
-    private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global" +
-            "-operational-dashboard-template.json";
-    private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes" +
-            "/process-operational-dashboard-template.json";
+    private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global-operational-dashboard-template.json";
+    private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/process-operational-dashboard-template.json";
 
     static {
         ProcessValidatorRegistry.getInstance().registerAdditonalValidator(JavaRuleFlowProcessValidator.getInstance());
@@ -117,8 +110,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private final List<ProcessGenerator> processGenerators = new ArrayList<>();
 
-    public static ProcessCodegen ofCollectedResources(KogitoBuildContext context,
-            Collection<CollectedResource> resources) {
+    public static ProcessCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         Map<String, byte[]> processSVGMap = new HashMap<>();
         Map<String, Throwable> processesErrors = new HashMap<>();
         boolean useSvgAddon = context.getAddonsConfig().useProcessSVG();
