@@ -17,4 +17,4 @@
 # under the License.
 ###
 
-/src/main/resources/db/persistence-postgresql/postgresql/*
+/src/main/resources/kie-flyway/db/persistence-postgresql/postgresql/*

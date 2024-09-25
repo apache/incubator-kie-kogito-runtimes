@@ -31,7 +31,7 @@
   <description>PostgreSQL based persistence for KIE</description>
   <properties>
     <path.to.jdbc.addon>../jdbc</path.to.jdbc.addon>
-    <path.to.script.folder>src/main/resources/db/</path.to.script.folder>
+    <path.to.script.folder>src/main/resources/kie-flyway/db/</path.to.script.folder>
     <path.to.migration.scripts.from>${path.to.jdbc.addon}/${path.to.script.folder}/persistence-jdbc/postgresql</path.to.migration.scripts.from>
     <path.to.migration.scripts.to>${path.to.script.folder}/persistence-postgresql/postgresql</path.to.migration.scripts.to>
     <java.module.name>org.kie.kogito.persistence.postgresql</java.module.name>
