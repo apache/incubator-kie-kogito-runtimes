@@ -27,6 +27,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.addon.quarkus.common.reactive.messaging.MessageDecoratorProvider;
 import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.process.MultipleProcessInstanceDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceDataEvent;
+import org.kie.kogito.event.usertask.MultipleUserTaskInstanceDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceDataEvent;
 import org.kie.kogito.events.config.EventsRuntimeConfig;
 import org.kie.kogito.events.process.AbstractMessagingEventPublisher.AbstractMessageEmitter;
 import org.mockito.ArgumentCaptor;
@@ -149,10 +153,10 @@ public class GroupingMessagingEventPublisherTest {
     @Test
     public void testPublishGroupingByChannel() {
         // Create mock events
-        DataEvent<String> processInstanceEvent = mock(DataEvent.class);
+        DataEvent<String> processInstanceEvent = mock(ProcessInstanceDataEvent.class);
         when(processInstanceEvent.getType()).thenReturn("ProcessInstanceStateDataEvent");
 
-        DataEvent<String> userTaskEvent = mock(DataEvent.class);
+        DataEvent<String> userTaskEvent = mock(UserTaskInstanceDataEvent.class);
         when(userTaskEvent.getType()).thenReturn("UserTaskInstanceStateDataEvent");
 
         // Mock getConsumer() to return different emitters based on event type
@@ -169,17 +173,17 @@ public class GroupingMessagingEventPublisherTest {
         groupingMessagingEventPublisher.publish(events);
 
         // Capture and verify that the correct emitter was used for each event
-        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(processInstanceConsumer), anyCollection());
-        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(userTaskConsumer), anyCollection());
+        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(processInstanceConsumer), any(MultipleProcessInstanceDataEvent.class));
+        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(userTaskConsumer), any(MultipleUserTaskInstanceDataEvent.class));
     }
 
     @Test
     public void testPublishMultipleEventsGroupedByChannel() {
         // Create multiple events of different types
-        DataEvent<String> processInstanceEvent1 = mock(DataEvent.class);
-        DataEvent<String> processInstanceEvent2 = mock(DataEvent.class);
-        DataEvent<String> userTaskEvent1 = mock(DataEvent.class);
-        DataEvent<String> userTaskEvent2 = mock(DataEvent.class);
+        DataEvent<String> processInstanceEvent1 = mock(ProcessInstanceDataEvent.class);
+        DataEvent<String> processInstanceEvent2 = mock(ProcessInstanceDataEvent.class);
+        DataEvent<String> userTaskEvent1 = mock(UserTaskInstanceDataEvent.class);
+        DataEvent<String> userTaskEvent2 = mock(UserTaskInstanceDataEvent.class);
 
         when(processInstanceEvent1.getType()).thenReturn("ProcessInstanceStateDataEvent");
         when(processInstanceEvent2.getType()).thenReturn("ProcessInstanceStateDataEvent");
@@ -202,19 +206,21 @@ public class GroupingMessagingEventPublisherTest {
         groupingMessagingEventPublisher.publish(events);
 
         // Verify that two grouped publishToTopic calls are made: one for processInstanceConsumer, one for userTaskConsumer
-        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(processInstanceConsumer), anyCollection());
-        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(userTaskConsumer), anyCollection());
+        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(processInstanceConsumer), any(MultipleProcessInstanceDataEvent.class));
+        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(userTaskConsumer), any(MultipleUserTaskInstanceDataEvent.class));
 
         // Verify that the right number of events was grouped and passed to each emitter
-        ArgumentCaptor<Collection<DataEvent<?>>> captor = ArgumentCaptor.forClass(Collection.class);
+        ArgumentCaptor<MultipleProcessInstanceDataEvent> captorPI = ArgumentCaptor.forClass(MultipleProcessInstanceDataEvent.class);
 
-        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(processInstanceConsumer), captor.capture());
-        Collection<DataEvent<?>> groupedProcessInstanceEvents = captor.getValue();
-        assertEquals(2, groupedProcessInstanceEvents.size()); // both processInstanceEvents are grouped
+        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(processInstanceConsumer), captorPI.capture());
+        MultipleProcessInstanceDataEvent groupedProcessInstanceEvents = captorPI.getValue();
+        assertEquals(2, groupedProcessInstanceEvents.getData().size()); // both processInstanceEvents are grouped
 
-        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(userTaskConsumer), captor.capture());
-        Collection<DataEvent<?>> groupedUserTaskEvents = captor.getValue();
-        assertEquals(2, groupedUserTaskEvents.size()); // both userTaskEvents are grouped
+        ArgumentCaptor<MultipleUserTaskInstanceDataEvent> captorUT = ArgumentCaptor.forClass(MultipleUserTaskInstanceDataEvent.class);
+
+        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(userTaskConsumer), captorUT.capture());
+        MultipleUserTaskInstanceDataEvent groupedUserTaskEvents = captorUT.getValue();
+        assertEquals(2, groupedUserTaskEvents.getData().size()); // both userTaskEvents are grouped
     }
 
     @Test
@@ -310,7 +316,7 @@ public class GroupingMessagingEventPublisherTest {
 
     @Test
     public void testNullEventInCollection() {
-        DataEvent<String> validEvent = mock(DataEvent.class);
+        DataEvent<String> validEvent = mock(ProcessInstanceDataEvent.class);
         when(validEvent.getType()).thenReturn("ProcessInstanceStateDataEvent");
 
         Collection<DataEvent<?>> events = Arrays.asList(validEvent, null); // One valid event and one null event
@@ -322,7 +328,7 @@ public class GroupingMessagingEventPublisherTest {
         groupingMessagingEventPublisher.publish(events);
 
         // Verify the valid event is processed
-        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(processInstanceConsumer), anyCollection());
+        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(processInstanceConsumer), any(MultipleProcessInstanceDataEvent.class));
     }
 
     @Test
@@ -361,7 +367,7 @@ public class GroupingMessagingEventPublisherTest {
 
     @Test
     public void testPublishWithMultipleEventTypesSomeWithoutConsumers() {
-        DataEvent<String> processInstanceEvent = mock(DataEvent.class);
+        DataEvent<String> processInstanceEvent = mock(ProcessInstanceDataEvent.class);
         when(processInstanceEvent.getType()).thenReturn("ProcessInstanceStateDataEvent");
 
         DataEvent<String> unsupportedEvent = mock(DataEvent.class);
@@ -375,7 +381,7 @@ public class GroupingMessagingEventPublisherTest {
         groupingMessagingEventPublisher.publish(events);
 
         // Ensure that only the supported event was published
-        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(processInstanceConsumer), anyCollection());
+        verify(groupingMessagingEventPublisher, times(1)).publishToTopic(eq(processInstanceConsumer), any(MultipleProcessInstanceDataEvent.class));
         verify(groupingMessagingEventPublisher, never()).publishToTopic(any(), eq(Collections.singletonList(unsupportedEvent)));
     }
 

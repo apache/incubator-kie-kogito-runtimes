@@ -86,6 +86,9 @@ public abstract class AbstractMessagingEventPublisher implements EventPublisher 
     }
 
     protected Optional<AbstractMessageEmitter> getConsumer(DataEvent<?> event) {
+        if (event == null) {
+            return Optional.empty();
+        }
         switch (event.getType()) {
             case "ProcessDefinitionEvent":
                 return eventsRuntimeConfig.isProcessDefinitionEventsEnabled() ? Optional.of(processDefinitionConsumer) : Optional.empty();

@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.events.process;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.process.MultipleProcessInstanceDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceDataEvent;
+import org.kie.kogito.event.usertask.MultipleUserTaskInstanceDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceDataEvent;
 
 import io.quarkus.arc.properties.IfBuildProperty;
 
@@ -40,18 +45,28 @@ public class GroupingMessagingEventPublisher extends AbstractMessagingEventPubli
         publish(Collections.singletonList(event));
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void publish(Collection<DataEvent<?>> events) {
-        Map<AbstractMessageEmitter, Collection<DataEvent<?>>> eventsByChannel = new HashMap<>();
+        Map<AbstractMessageEmitter, Collection> eventsByChannel = new HashMap<>();
         for (DataEvent<?> event : events) {
-            if (event == null) {
-                continue;
-            }
             getConsumer(event).ifPresent(c -> eventsByChannel.computeIfAbsent(c, k -> new ArrayList<>()).add(event));
         }
-        for (Entry<AbstractMessageEmitter, Collection<DataEvent<?>>> item : eventsByChannel.entrySet()) {
-            publishToTopic(item.getKey(), item.getValue());
-        }
+        eventsByChannel.entrySet().forEach(this::publishEvents);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private void publishEvents(Map.Entry<AbstractMessageEmitter, Collection> entry) {
+        DataEvent<?> firstEvent = (DataEvent<?>) entry.getValue().iterator().next();
+        URI source = firstEvent.getSource();
+        if (firstEvent instanceof UserTaskInstanceDataEvent) {
+            publishToTopic(entry.getKey(), new MultipleUserTaskInstanceDataEvent(source, (Collection<UserTaskInstanceDataEvent<?>>) entry.getValue()));
+        } else if (firstEvent instanceof ProcessInstanceDataEvent) {
+            publishToTopic(entry.getKey(), new MultipleProcessInstanceDataEvent(source, (Collection<ProcessInstanceDataEvent<?>>) entry.getValue()));
+        } else {
+            for (DataEvent<?> event : (Collection<DataEvent<?>>) entry.getValue()) {
+                publishToTopic(entry.getKey(), event);
+            }
+        }
+    }
 }
