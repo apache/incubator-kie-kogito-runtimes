@@ -82,17 +82,6 @@ public class $Type$Resource {
                                                                           Optional.ofNullable(resource).orElse(new $Type$Input()).toModel(),
                                                                           httpHeaders.getRequestHeaders(),
                                                                           httpHeaders.getHeaderString("X-KOGITO-StartFromNode"));
-        // Temporary workaround to avoid
-        // ARJUNA016053: Could not commit transaction
-        //....
-        //Enlisted connection used without active transaction
-        // when there is unb underlying thread (e.g. Kafka publishing)
-        // not fully completed at time of commit
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return Response.created(uriInfo.getAbsolutePathBuilder().path(pi.id()).build())
                 .entity(pi.checkError().variables().toModel())
                 .build();

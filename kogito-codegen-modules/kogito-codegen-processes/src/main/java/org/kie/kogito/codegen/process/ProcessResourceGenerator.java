@@ -49,6 +49,7 @@ import org.kie.kogito.internal.utils.ConversionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
@@ -56,6 +57,8 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.comments.Comment;
+import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
@@ -63,6 +66,7 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
@@ -170,9 +174,11 @@ public class ProcessResourceGenerator {
         boolean isReactiveGenerator =
                 "reactive".equals(context.getApplicationProperty(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP)
                         .orElse(""));
-        boolean isQuarkus = context.name().equals(QuarkusKogitoBuildContext.CONTEXT_NAME);
+        return isQuarkus() && isReactiveGenerator ? REACTIVE_REST_TEMPLATE_NAME : REST_TEMPLATE_NAME;
+    }
 
-        return isQuarkus && isReactiveGenerator ? REACTIVE_REST_TEMPLATE_NAME : REST_TEMPLATE_NAME;
+    protected boolean isQuarkus() {
+        return context.name().equals(QuarkusKogitoBuildContext.CONTEXT_NAME);
     }
 
     public String generate() {
@@ -419,22 +425,53 @@ public class ProcessResourceGenerator {
 
     /**
      * Conditionally add the <code>Transactional</code> annotation
-     *
+     * 
      * @param compilationUnit
      */
     protected void manageTransactional(CompilationUnit compilationUnit) {
         if (transactionEnabled && context.hasDI()) {
             LOG.debug("Transaction is enabled, adding annotations...");
             DependencyInjectionAnnotator dependencyInjectionAnnotator = context.getDependencyInjectionAnnotator();
+            boolean isQuarkus = isQuarkus();
             getRestMethods(compilationUnit)
-                    .forEach(dependencyInjectionAnnotator::withTransactional);
+                    .forEach(method -> {
+                        dependencyInjectionAnnotator.withTransactional(method);
+                        if (isQuarkus && method.getName().toString().startsWith("createResource_")) {
+                            addThreadSleepToCreateResourceTransactionalMethods(method);
+                        }
+                    });
         }
+    }
+
+    protected void addThreadSleepToCreateResourceTransactionalMethods(MethodDeclaration method) {
+        StringBuilder commentBuilder = new StringBuilder();
+        commentBuilder.append("Temporary workaround to avoid ");
+        commentBuilder.append("ARJUNA016053: Could not commit transaction ");
+        commentBuilder.append(".... ");
+        commentBuilder.append("Enlisted connection used without active transaction ");
+        commentBuilder.append("when there is an underlying thread (e.g. Kafka publishing)");
+        commentBuilder.append("not fully completed at time of commit");
+        Comment comment = new LineComment(commentBuilder.toString());
+
+        StringBuilder tryBlockBuilder = new StringBuilder();
+        tryBlockBuilder.append("try {");
+        tryBlockBuilder.append("Thread.sleep(1000);");
+        tryBlockBuilder.append("} catch (InterruptedException e) {");
+        tryBlockBuilder.append("e.printStackTrace();");
+        tryBlockBuilder.append("}");
+        Statement tryStmt = StaticJavaParser.parseStatement(tryBlockBuilder.toString());
+        tryStmt.setComment(comment);
+        BlockStmt body = method.getBody().orElseThrow(IllegalStateException::new);
+        Statement lastStatement = body.getStatement(body.getStatements().size() - 1);
+        body.remove(lastStatement);
+        body.addStatement(tryStmt);
+        body.addStatement(lastStatement);
     }
 
     /**
      * Retrieves all the <b>Rest endpoint</b> <code>MethodDeclaration</code>s from the given
      * <code>CompilationUnit</code>
-     *
+     * 
      * @param compilationUnit
      * @return
      */

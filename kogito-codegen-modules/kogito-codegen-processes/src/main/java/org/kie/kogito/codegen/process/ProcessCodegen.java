@@ -524,7 +524,7 @@ public class ProcessCodegen extends AbstractGenerator {
     }
 
     protected boolean isTransactionEnabled() {
-        String processTransactionProperty = String.format("%s.%s", GENERATOR_NAME, TRANSACTION_ENABLED);
+        String processTransactionProperty = String.format("kogito.%s.%s", GENERATOR_NAME, TRANSACTION_ENABLED);
         return "true".equalsIgnoreCase(context().getApplicationProperty(processTransactionProperty).orElse("true"));
     }
 
