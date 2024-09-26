@@ -17,36 +17,31 @@
  * under the License.
  */
 
-package org.kie.flyway;
+package org.kie.flyway.test.dataSources;
 
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.kie.kogito.testcontainers.KogitoPostgreSqlContainer;
 import org.postgresql.ds.PGSimpleDataSource;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
-public class PostgreSQLKieFlywayInitializerTest extends AbstractKieFlywayInitializerTest {
+public class PostgreSQLTestDataSource implements TestDataSource {
 
-    @Container
-    private final static KogitoPostgreSqlContainer PG_CONTAINER = new KogitoPostgreSqlContainer();
-    private static PGSimpleDataSource PG_DATA_SOURCE;
+    private PGSimpleDataSource dataSource;
 
-    @BeforeAll
-    public static void start() {
-        PG_DATA_SOURCE = new PGSimpleDataSource();
-        PG_DATA_SOURCE.setUrl(PG_CONTAINER.getJdbcUrl());
-        PG_DATA_SOURCE.setUser(PG_CONTAINER.getUsername());
-        PG_DATA_SOURCE.setPassword(PG_CONTAINER.getPassword());
+    public PostgreSQLTestDataSource(KogitoPostgreSqlContainer pgContainer) {
+        dataSource = new PGSimpleDataSource();
+        dataSource.setUrl(pgContainer.getJdbcUrl());
+        dataSource.setUser(pgContainer.getUsername());
+        dataSource.setPassword(pgContainer.getPassword());
     }
 
-    protected DataSource getDataSource() {
-        return PostgreSQLKieFlywayInitializerTest.PG_DATA_SOURCE;
-    }
-
-    protected String getDbType() {
+    @Override
+    public String getDbType() {
         return "postgresql";
+    }
+
+    @Override
+    public DataSource getDataSource() {
+        return dataSource;
     }
 }

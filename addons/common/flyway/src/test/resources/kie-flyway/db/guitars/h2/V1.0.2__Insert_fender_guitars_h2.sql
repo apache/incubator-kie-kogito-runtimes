@@ -17,12 +17,6 @@
  * under the License.
  */
 
-package org.kie.flyway;
-
-public class FallbackKieFlywayKieFlywayMigrationInitializerTest extends H2KieFlywayKieFlywayMigrationInitializerTest {
-
-    @Override
-    protected String getDbType() {
-        return "ansi";
-    }
-}
+insert into guitars (id, brand, model, rating) values (1, 'Fender', 'Telecaster', 10);
+insert into guitars (id, brand, model, rating) values (2, 'Fender', 'Stratocaster', 9);
+insert into guitars (id, brand, model, rating) values (3, 'Fender', 'Jazzmaster', 7);

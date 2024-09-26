@@ -17,12 +17,5 @@
  * under the License.
  */
 
-package org.kie.flyway;
-
-public class H2KieFlywayKieFlywayMigrationInitializerTest extends AbstractH2KieFlywayKieFlywayMigrationInitializerTest {
-
-    @Override
-    protected String getDbType() {
-        return "H2";
-    }
-}
+insert into test_table (id, message, dbtype)
+values (1, 'Hello from Kie Flyway - test', 'postgresql');

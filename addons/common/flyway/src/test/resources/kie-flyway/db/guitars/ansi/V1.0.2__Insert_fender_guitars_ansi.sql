@@ -17,5 +17,6 @@
  * under the License.
  */
 
-insert into test_table (id, message, dbtype)
-values (1, 'Hello from Kie Flyway', 'postgresql');
+insert into guitars (id, brand, model, rating) values (1, 'Fender', 'Telecaster', 10);
+insert into guitars (id, brand, model, rating) values (2, 'Fender', 'Stratocaster', 9);
+insert into guitars (id, brand, model, rating) values (3, 'Fender', 'Jazzmaster', 7);

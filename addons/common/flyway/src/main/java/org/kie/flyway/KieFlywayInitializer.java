@@ -96,6 +96,7 @@ public class KieFlywayInitializer {
         Flyway.configure()
                 .table(KIE_FLYWAY_INDEX_TABLE_INDEX_TEMPLATE.formatted(config.getModule().replaceAll("[^A-Za-z0-9]", "_")).toLowerCase())
                 .dataSource(dataSource)
+                .createSchemas(true)
                 .baselineOnMigrate(true)
                 .baselineVersion(KIE_FLYWAY_BASELINE_VERSION)
                 .baselineDescription(KIE_FLYWAY_BASELINE_MESSAGE_TEMPLATE.formatted(config.getModule()))

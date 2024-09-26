@@ -17,5 +17,17 @@
  * under the License.
  */
 
-insert into test_table (id, message, dbtype)
-values (1, 'Hello from Kie Flyway', 'ansi');
+package org.kie.flyway.test.dataSources;
+
+import javax.sql.DataSource;
+
+public interface TestDataSource {
+
+    String getDbType();
+
+    DataSource getDataSource();
+
+    default void shutDown() {
+
+    }
+}

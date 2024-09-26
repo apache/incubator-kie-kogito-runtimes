@@ -27,13 +27,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.flyway.KieFlywayException;
 import org.kie.flyway.model.KieFlywayModuleConfig;
-import org.kie.flyway.utils.TestClassLoader;
+import org.kie.flyway.test.utils.TestClassLoader;
 
 public class DefaultKieModuleFlywayConfigLoaderTest {
 
-    private static final String H2_LOCATIONS = "classpath:db/test/h2";
-    private static final String PGSQL_LOCATIONS = "classpath:db/test/postgresql";
-    private static final String DEFAULT_LOCATIONS = "classpath:db/test/ansi";
+    private static final String H2_LOCATIONS = "classpath:kie-flyway/db/test/h2";
+    private static final String PGSQL_LOCATIONS = "classpath:kie-flyway/db/test/postgresql";
+    private static final String DEFAULT_LOCATIONS = "classpath:kie-flyway/db/test/ansi";
 
     private TestClassLoader testClassLoader;
     private DefaultKieModuleFlywayConfigLoader flywayConfigLoader;
@@ -94,7 +94,7 @@ public class DefaultKieModuleFlywayConfigLoaderTest {
     }
 
     private void loadModuleConfig(String resource) {
-        this.testClassLoader.addModuleConfig(getResourceUrl(resource));
+        this.testClassLoader.addKieFlywayModule(getResourceUrl(resource));
     }
 
     private URL getResourceUrl(String resource) {

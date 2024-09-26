@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.kie.flyway.utils;
+package org.kie.flyway.test.utils;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,24 +27,24 @@ import java.util.stream.Stream;
 import org.kie.flyway.impl.DefaultKieModuleFlywayConfigLoader;
 
 public class TestClassLoader extends ClassLoader {
-    private final List<URL> moduleConfigs = new ArrayList<>();
+    private final List<URL> modules = new ArrayList<>();
 
     public TestClassLoader(ClassLoader parent) {
         super(parent);
     }
 
-    public void addModuleConfig(URL resourceUrl) {
-        this.moduleConfigs.add(resourceUrl);
+    public void addKieFlywayModule(URL resourceUrl) {
+        this.modules.add(resourceUrl);
     }
 
     public void clearModuleConfigs() {
-        this.moduleConfigs.clear();
+        this.modules.clear();
     }
 
     @Override
     public Stream<URL> resources(String name) {
-        if (!moduleConfigs.isEmpty() && DefaultKieModuleFlywayConfigLoader.KIE_FLYWAY_DESCRIPTOR_FILE_LOCATION.equals(name)) {
-            return moduleConfigs.stream();
+        if (!modules.isEmpty() && DefaultKieModuleFlywayConfigLoader.KIE_FLYWAY_DESCRIPTOR_FILE_LOCATION.equals(name)) {
+            return modules.stream();
         }
         return super.resources(name);
     }
