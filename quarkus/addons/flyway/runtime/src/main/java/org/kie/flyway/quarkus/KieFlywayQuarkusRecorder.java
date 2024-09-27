@@ -17,35 +17,32 @@
  * under the License.
  */
 
-package org.kie.flyway.springboot;
+package org.kie.flyway.quarkus;
 
 import javax.sql.DataSource;
 
 import org.kie.flyway.integration.KieFlywayRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.Ordered;
 
-public class KieFlywaySpringbootInitializer implements InitializingBean, Ordered {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KieFlywaySpringbootInitializer.class);
+import io.quarkus.agroal.runtime.DataSources;
+import io.quarkus.arc.Arc;
+import io.quarkus.runtime.RuntimeValue;
+import io.quarkus.runtime.annotations.Recorder;
 
-    private final KieFlywaySpringbootProperties properties;
-    private final DataSource dataSource;
+@Recorder
+public class KieFlywayQuarkusRecorder {
 
-    public KieFlywaySpringbootInitializer(KieFlywaySpringbootProperties properties, DataSource dataSource) {
-        this.properties = properties;
-        this.dataSource = dataSource;
+    private final RuntimeValue<KieFlywayQuarkusRuntimeConfig> config;
+
+    public KieFlywayQuarkusRecorder(RuntimeValue<KieFlywayQuarkusRuntimeConfig> config) {
+        this.config = config;
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        KieFlywayRunner.get(properties)
+    public void run(String defaultDSName, String dbKind) {
+
+        DataSources agroalDatasourceS = Arc.container().select(DataSources.class).get();
+        DataSource dataSource = agroalDatasourceS.getDataSource(defaultDSName);
+
+        KieFlywayRunner.get(config.getValue())
                 .runFlyway(dataSource);
-    }
-
-    @Override
-    public int getOrder() {
-        return 0;
     }
 }

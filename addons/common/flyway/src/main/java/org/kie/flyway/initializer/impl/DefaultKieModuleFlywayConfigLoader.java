@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.kie.flyway.impl;
+package org.kie.flyway.initializer.impl;
 
 import java.io.File;
 import java.io.InputStream;
@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.kie.flyway.KieFlywayException;
-import org.kie.flyway.KieModuleFlywayConfigLoader;
+import org.kie.flyway.initializer.KieModuleFlywayConfigLoader;
 import org.kie.flyway.model.KieFlywayModuleConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

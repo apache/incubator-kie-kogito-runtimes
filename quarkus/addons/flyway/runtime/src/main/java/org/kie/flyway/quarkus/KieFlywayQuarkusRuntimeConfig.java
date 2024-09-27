@@ -21,39 +21,51 @@ package org.kie.flyway.quarkus;
 
 import java.util.Map;
 
+import org.kie.flyway.integration.KieFlywayConfiguration;
+import org.kie.flyway.integration.KieFlywayNamedModule;
+
 import io.quarkus.runtime.annotations.*;
-import io.smallrye.config.ConfigMapping;
-import io.smallrye.config.WithDefault;
-import io.smallrye.config.WithDefaults;
 
 /**
  * Configuration for the Kie Flyway initializer
  */
-@ConfigMapping(prefix = "kie.flyway")
-@ConfigRoot(phase = ConfigPhase.RUN_TIME)
-public interface KieFlywayQuarkusRuntimeConfig {
+@ConfigRoot(prefix = "kie", name = "flyway", phase = ConfigPhase.RUN_TIME)
+public class KieFlywayQuarkusRuntimeConfig implements KieFlywayConfiguration<KieFlywayQuarkusRuntimeConfig.KieQuarkusFlywayNamedModule> {
 
     /**
      * Enables the execution of the Flyway initializer during the application startup
      */
-    @WithDefault("false")
-    Boolean enabled();
+    @ConfigItem(name = "enabled", defaultValue = "true")
+    boolean enabled;
 
     /**
-     * List of {@link KieNamedModule} that allow to enable or disable a given module
-     * 
-     * @return a Map containing all the modules
+     * List of {@link KieQuarkusFlywayNamedModule} that allow to enable or disable a given modul
      */
-    @WithDefaults
-    Map<String, KieNamedModule> modules();
+    @ConfigItem(name = "modules")
+    Map<String, KieQuarkusFlywayNamedModule> modules;
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public Map<String, KieQuarkusFlywayNamedModule> getModules() {
+        return modules;
+    }
 
     @ConfigGroup
-    interface KieNamedModule {
+    public static class KieQuarkusFlywayNamedModule implements KieFlywayNamedModule {
 
         /**
          * Enables the execution of the Flyway initializer for a specific Kie module
          */
-        @WithDefault("true")
-        Boolean enabled();
+        @ConfigItem(name = "enabled", defaultValue = "true")
+        boolean enabled;
+
+        @Override
+        public boolean isEnabled() {
+            return enabled;
+        }
     }
 }

@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.kie.flyway.KieFlywayInitializer;
+import org.kie.flyway.initializer.KieFlywayInitializer;
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.correlation.CorrelationInstance;
 import org.kie.kogito.correlation.SimpleCorrelation;
@@ -52,13 +52,12 @@ public class JDBCCorrelationServiceIT {
         dataSource.setUser(PG_CONTAINER.getUsername());
         dataSource.setPassword(PG_CONTAINER.getPassword());
         correlationService = new JDBCCorrelationService(dataSource);
-        initMigration(dataSource, "postgresql");
+        initMigration(dataSource);
     }
 
-    public static void initMigration(DataSource dataSource, String dbKind) {
+    public static void initMigration(DataSource dataSource) {
         KieFlywayInitializer.builder()
                 .withDatasource(dataSource)
-                .withDbType(dbKind)
                 .build()
                 .migrate();
     }

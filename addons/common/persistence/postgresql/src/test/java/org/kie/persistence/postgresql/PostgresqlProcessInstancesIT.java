@@ -25,7 +25,7 @@ import org.drools.io.ClassPathResource;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.kie.flyway.KieFlywayInitializer;
+import org.kie.flyway.initializer.KieFlywayInitializer;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.persistence.postgresql.AbstractProcessInstancesFactory;
@@ -87,7 +87,6 @@ class PostgresqlProcessInstancesIT {
 
         KieFlywayInitializer.builder()
                 .withDatasource(ds)
-                .withDbType("postgresql")
                 .build()
                 .migrate();
     }

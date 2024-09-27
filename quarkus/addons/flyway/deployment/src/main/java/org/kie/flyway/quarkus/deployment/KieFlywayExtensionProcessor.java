@@ -21,7 +21,9 @@ package org.kie.flyway.quarkus.deployment;
 import java.util.List;
 import java.util.Optional;
 
-import org.kie.flyway.quarkus.KieFlywayRecorder;
+import org.kie.flyway.quarkus.KieFlywayQuarkusRecorder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.quarkus.agroal.spi.JdbcDataSourceBuildItem;
 import io.quarkus.arc.deployment.BeanContainerBuildItem;
@@ -30,7 +32,8 @@ import io.quarkus.deployment.annotations.*;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-public class KieAddOnFlywayProcessor {
+public class KieFlywayExtensionProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KieFlywayExtensionProcessor.class);
 
     private static final String FEATURE = "kie-flyway";
 
@@ -45,7 +48,7 @@ public class KieAddOnFlywayProcessor {
     @Produce(SyntheticBeansRuntimeInitBuildItem.class)
     @Record(ExecutionTime.RUNTIME_INIT)
     void runMigration(
-            KieFlywayRecorder recorder,
+            KieFlywayQuarkusRecorder recorder,
             List<JdbcDataSourceBuildItem> jdbcDataSourceBuildItems) {
 
         Optional<JdbcDataSourceBuildItem> jdbcDataSourceOptional = jdbcDataSourceBuildItems.stream()
@@ -53,6 +56,7 @@ public class KieAddOnFlywayProcessor {
                 .findFirst();
 
         if (jdbcDataSourceOptional.isEmpty()) {
+            LOGGER.warn("KIE Flyway: No default DataSource defined, Skipping KIE Flyway...");
             return;
         }
 

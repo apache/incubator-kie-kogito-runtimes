@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 
 import org.drools.io.ClassPathResource;
 import org.junit.jupiter.api.Test;
-import org.kie.flyway.KieFlywayInitializer;
+import org.kie.flyway.initializer.KieFlywayInitializer;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.workitem.Policy;
@@ -61,10 +61,9 @@ abstract class AbstractProcessInstancesIT {
     public static final String TEST_ID = "02ac3854-46ee-42b7-8b63-5186c9889d96";
     public static Policy securityPolicy = SecurityPolicy.of(IdentityProviders.of("john"));
 
-    public static void initMigration(DataSource dataSource, String dbKind) {
+    public static void initMigration(DataSource dataSource) {
         KieFlywayInitializer.builder()
                 .withDatasource(dataSource)
-                .withDbType(dbKind)
                 .build()
                 .migrate();
     }

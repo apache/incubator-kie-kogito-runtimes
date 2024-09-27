@@ -17,29 +17,13 @@
  * under the License.
  */
 
-package org.kie.flyway.model;
+package org.kie.flyway.integration;
 
 import java.util.Map;
-import java.util.TreeMap;
 
-public class KieFlywayModuleConfig {
+public interface KieFlywayConfiguration<T extends KieFlywayNamedModule> {
 
-    public static final String DEFAULT_DB = "default";
+    boolean isEnabled();
 
-    private final String module;
-    private final Map<String, String[]> locations = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-
-    public KieFlywayModuleConfig(String module, Map<String, String[]> locations) {
-        this.module = module;
-        this.locations.putAll(locations);
-    }
-
-    public String getModule() {
-        return module;
-    }
-
-    public String[] getDBScriptLocations(String dbType) {
-        return this.locations.getOrDefault(dbType, locations.get(DEFAULT_DB));
-    }
-
+    Map<String, T> getModules();
 }

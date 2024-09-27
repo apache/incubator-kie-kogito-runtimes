@@ -33,13 +33,15 @@ instead of using the Platform (Quarkus/Springboot) specific Flyway integration, 
 * Multi DB Support: a single module can provide SQL scripts for different DB vendors (and default as a fallback) that
     will be loaded depending on the application configuration
 
-> *IMPORTANT*: The usage of this add-on should be reserved only for development/test/examples purposes and not it is not recommended
+> *IMPORTANT*: The usage of this add-on should be reserved only for development/test/examples purposes, and it is not recommended
 > using it in productive environments.
+
+
 
 ## KIE Flyway Module Configuration
 
 In order to allow the *KIE Flyway Initializer* identify the DB needs of a specific component (`extensions` or `add-on`)
-the component has meet the following requirements:
+the component has to meet the following requirements:
 
 * Provide a `kie-flyway.properties` descriptor file in `/src/main/resources/META-INF/kie-flyway.properties`. The file 
   should provide the following information:
@@ -50,7 +52,8 @@ the component has meet the following requirements:
   * `module.locations.<db>`: map containing the module `.sql` scripts location paths organized by database type (`postgresql`, `h2`...) to initialize the DB 
     (ej: `module.locations.postgresql=classpath:kie-flyway/db/test-module/postgresql`), the locations can be a comma-separated list to use multiple `.sql` locations in a single migration.
     It's also possible using a `default` locations (`module.locations.default=...`) as a fallback to provide a default initialization
-    if no vendor-specific isn't available.
+    if no vendor-specific isn't available. It is important to avoid using the default flyway location (`src/main/resourcs/db/migrations`) to avoid
+    collisions with the Platform Flyway integration.
     
 Example of `kie-flyway.properties` file:
 ```properties
@@ -106,21 +109,18 @@ kie.flyway.modules."jobs-service".enabled=false
 ```
 
 ## Usage
-KIE Flyway is exposes the `KieFlywayInitializer` as entry point of the add-on and exposes a Fluent Api to configure it 
-and run it. This component will be incharge of loading all the `kie-flyway.properties` available in the application and run
+KIE Flyway exposes the `KieFlywayInitializer` as entry point of the add-on and exposes a Fluent Api to configure it 
+and run it. This component will be in charge of loading all the `kie-flyway.properties` available in the application and run
 migrations for each of them.
 
 The required information that must be provided to the initializer is:
 * DataSource (`java.sql.DataSource`) where the initialization should be executed. It should be the default application Data Source
-* Data Base Type (`java.lang.String`) to identify the which script locations should be loaded.
-
 
 ```java
-import org.kie.flyway.KieFlywayInitializer;
+import org.kie.flyway.initializer.KieFlywayInitializer;
 
 ...
-KieFlywayInitializer.builder()
-                .withDbType("postgresql")
+        KieFlywayInitializer.builder()
                 .withDatasource(dataSource)
                 .build()
                 .migrate();
@@ -131,11 +131,10 @@ Additional Parameters that can be used:
 * Module Exclusions (`Collection<String>`) t
 
 ```java
-import org.kie.flyway.KieFlywayInitializer;
+import org.kie.flyway.initializer.KieFlywayInitializer;
 
 ...
-KieFlywayInitializer.builder()
-                .withDbType("postgresql")
+        KieFlywayInitializer.builder()
                 .withDatasource(dataSource)
                 .withClassLoader(this.getClass().getClassLoader())
                 .withModuleExclusions(List.of("data-index", "jobs-service"))
@@ -143,7 +142,7 @@ KieFlywayInitializer.builder()
                 .migrate();
 ```
 
-> NOTE: The platform-specific add-ons (Quarkus/Spring-Boot) will be in charged obtain the DataSource and DataBase type 
+> NOTE: The platform-specific add-ons (Quarkus/Spring-Boot) will be in charge to obtain the DataSource and DataBase type 
 > and correctly configure the `KieFlywayInitializer` according to the `application.properties` and use it on during the application startup.
 
 

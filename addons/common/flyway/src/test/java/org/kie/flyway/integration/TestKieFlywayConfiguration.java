@@ -17,13 +17,31 @@
  * under the License.
  */
 
-package org.kie.flyway;
+package org.kie.flyway.integration;
 
-import java.util.Collection;
+import java.util.Map;
 
-import org.kie.flyway.model.KieFlywayModuleConfig;
+public class TestKieFlywayConfiguration implements KieFlywayConfiguration<TestKieFlywayNamedModule> {
 
-public interface KieModuleFlywayConfigLoader {
+    private boolean enabled;
+    private Map<String, TestKieFlywayNamedModule> modules;
 
-    Collection<KieFlywayModuleConfig> loadModuleConfigs();
+    public TestKieFlywayConfiguration(boolean enabled, Map<String, TestKieFlywayNamedModule> modules) {
+        this.enabled = enabled;
+        this.modules = modules;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public Map<String, TestKieFlywayNamedModule> getModules() {
+        return modules;
+    }
 }

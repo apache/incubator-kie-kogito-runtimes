@@ -17,9 +17,8 @@
  * under the License.
  */
 
-package org.kie.flyway.impl;
+package org.kie.flyway.initializer.impl;
 
-import java.net.URL;
 import java.util.Collection;
 
 import org.assertj.core.api.Assertions;
@@ -62,7 +61,7 @@ public class DefaultKieModuleFlywayConfigLoaderTest {
 
     @Test
     public void testEmptyConfigFile() {
-        loadModuleConfig("initializers/kie-flyway.empty.properties");
+        testClassLoader.addKieFlywayModule("initializers/kie-flyway.empty.properties");
 
         Assertions.assertThatThrownBy(() -> flywayConfigLoader.loadModuleConfigs())
                 .isInstanceOf(KieFlywayException.class)
@@ -74,7 +73,7 @@ public class DefaultKieModuleFlywayConfigLoaderTest {
 
     @Test
     public void testWrongLocationsFormat() {
-        loadModuleConfig("initializers/kie-flyway.wrong.format.properties");
+        testClassLoader.addKieFlywayModule("initializers/kie-flyway.wrong.format.properties");
 
         Assertions.assertThatThrownBy(() -> flywayConfigLoader.loadModuleConfigs())
                 .isInstanceOf(KieFlywayException.class)
@@ -86,19 +85,10 @@ public class DefaultKieModuleFlywayConfigLoaderTest {
 
     @Test
     public void testWrongResourceFile() {
-        loadModuleConfig("wrong content");
+        testClassLoader.addKieFlywayModule("wrong content");
 
         Assertions.assertThatThrownBy(() -> flywayConfigLoader.loadModuleConfigs())
                 .isInstanceOf(KieFlywayException.class)
                 .hasMessage("Could not load ModuleFlywayConfig");
     }
-
-    private void loadModuleConfig(String resource) {
-        this.testClassLoader.addKieFlywayModule(getResourceUrl(resource));
-    }
-
-    private URL getResourceUrl(String resource) {
-        return this.getClass().getClassLoader().getResource(resource);
-    }
-
 }

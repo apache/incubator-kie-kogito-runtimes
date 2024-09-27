@@ -32,20 +32,18 @@ import org.slf4j.LoggerFactory;
 public class H2TestDataSource implements TestDataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(H2TestDataSource.class);
 
-    private String name;
-    private JdbcDataSource dataSource;
+    private final JdbcDataSource dataSource;
 
-    public H2TestDataSource(String name) {
-        this.name = name;
+    public H2TestDataSource() {
         dataSource = new JdbcDataSource();
-        dataSource.setURL("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=true".formatted(name));
+        dataSource.setURL("jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=true");
         dataSource.setUser("sa");
         dataSource.setPassword("sa");
     }
 
     @Override
     public String getDbType() {
-        return name;
+        return "h2";
     }
 
     @Override

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.kie.flyway.impl.DefaultKieModuleFlywayConfigLoader;
+import org.kie.flyway.initializer.impl.DefaultKieModuleFlywayConfigLoader;
 
 public class TestClassLoader extends ClassLoader {
     private final List<URL> modules = new ArrayList<>();
@@ -33,12 +33,8 @@ public class TestClassLoader extends ClassLoader {
         super(parent);
     }
 
-    public void addKieFlywayModule(URL resourceUrl) {
-        this.modules.add(resourceUrl);
-    }
-
-    public void clearModuleConfigs() {
-        this.modules.clear();
+    public void addKieFlywayModule(String resourceUrl) {
+        this.modules.add(getResource(resourceUrl));
     }
 
     @Override
