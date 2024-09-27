@@ -46,10 +46,10 @@ public class KogitoPostgreSqlContainer extends PostgreSQLContainer<KogitoPostgre
         withStartupTimeout(Constants.CONTAINER_START_TIMEOUT);
 
         /*
-        Overriding default waitStrategy (LogMessageWaitStrategy) added by the parent to also wait for the mapped port to be available. This ensures that the PostgreSQLContainer is completely up and
-        running before and the mapped ports are ready before running any test.
-        This avoids connection issues with the container when using container managers that do the port mapping after the container has started.
-        */
+         * Overriding default waitStrategy (LogMessageWaitStrategy) added by the parent to also wait for the mapped port to be available. This ensures that the PostgreSQLContainer is completely up and
+         * running before and the mapped ports are ready before running any test.
+         * This avoids connection issues with the container when using container managers that do the port mapping after the container has started.
+         */
         this.waitStrategy = new WaitAllStrategy()
                 .withStrategy(this.waitStrategy)
                 .withStrategy(new HostPortWaitStrategy());
