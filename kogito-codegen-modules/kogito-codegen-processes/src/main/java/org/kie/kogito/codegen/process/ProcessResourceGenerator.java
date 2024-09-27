@@ -437,10 +437,46 @@ public class ProcessResourceGenerator {
                     .forEach(method -> {
                         dependencyInjectionAnnotator.withTransactional(method);
                         if (isQuarkus && method.getName().toString().startsWith("createResource_")) {
-                            addThreadSleepToCreateResourceTransactionalMethods(method);
+                            addNestedThreadToCreateResourceTransactionalMethods(method);
                         }
                     });
         }
+    }
+
+    protected void addNestedThreadToCreateResourceTransactionalMethods(MethodDeclaration method) {
+        StringBuilder commentBuilder = new StringBuilder();
+        commentBuilder.append("Temporary workaround to avoid ");
+        commentBuilder.append("ARJUNA016053: Could not commit transaction ");
+        commentBuilder.append(".... ");
+        commentBuilder.append("Enlisted connection used without active transaction ");
+        commentBuilder.append("when there is an underlying thread (e.g. Kafka publishing)");
+        commentBuilder.append("not fully completed at time of commit");
+        Comment comment = new LineComment(commentBuilder.toString());
+
+        BlockStmt body = method.getBody().orElseThrow(IllegalStateException::new);
+        Statement lastStatement = body.getStatement(body.getStatements().size() - 1);
+        body.remove(body.getStatements().get(0));
+        body.remove(lastStatement);
+        Statement statement = StaticJavaParser
+                .parseStatement(String.format("java.util.concurrent.atomic.AtomicReference<ProcessInstance<%s>> piRef = new java.util.concurrent.atomic.AtomicReference<>();", dataClazzName));
+        statement.setComment(comment);
+        body.addStatement(statement);
+        body.addStatement(StaticJavaParser.parseStatement("jakarta.ws.rs.core.MultivaluedMap<String, String> requestHeaders = httpHeaders.getRequestHeaders();"));
+        body.addStatement(StaticJavaParser.parseStatement("String headerString = httpHeaders.getHeaderString(\"X-KOGITO-StartFromNode\");"));
+        body.addStatement(StaticJavaParser.parseStatement(String.format("Runnable runnable = () -> {\n" +
+                "    ProcessInstance<%1$s> pi = processService.createProcessInstance(process, businessKey, Optional.ofNullable(resource).orElse(new %1$sInput()).toModel(), requestHeaders, headerString);\n"
+                +
+                "    piRef.set(pi);\n" +
+                "};", dataClazzName)));
+        body.addStatement(StaticJavaParser.parseStatement("Thread nestedThread = new Thread(runnable);"));
+        body.addStatement(StaticJavaParser.parseStatement("nestedThread.start();"));
+        body.addStatement(StaticJavaParser.parseStatement("try {\n" +
+                "    nestedThread.join();\n" +
+                "} catch (InterruptedException e) {\n" +
+                "    return Response.serverError().entity(e.getMessage()).build();\n" +
+                "}"));
+        body.addStatement(StaticJavaParser.parseStatement(String.format("ProcessInstance<%s> pi = piRef.get();", dataClazzName)));
+        body.addStatement(lastStatement);
     }
 
     protected void addThreadSleepToCreateResourceTransactionalMethods(MethodDeclaration method) {

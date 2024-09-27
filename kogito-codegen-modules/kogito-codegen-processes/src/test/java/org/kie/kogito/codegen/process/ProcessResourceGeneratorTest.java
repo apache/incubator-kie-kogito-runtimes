@@ -48,7 +48,6 @@ import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.TryStmt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -212,7 +211,7 @@ class ProcessResourceGeneratorTest {
     }
 
     @Test
-    void testAddThreadSleepToCreateResourceTransactionalMethods() {
+    void testaddNestedThreadToCreateResourceTransactionalMethods() {
         KogitoBuildContext.Builder contextBuilder = QuarkusKogitoBuildContext.builder();
         String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
         ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName,
@@ -230,10 +229,33 @@ class ProcessResourceGeneratorTest {
         assertThat(bodyOpt).isPresent();
         BlockStmt body = bodyOpt.get();
         assertThat(body.getStatements().size()).isEqualTo(2);
-        processResourceGenerator.addThreadSleepToCreateResourceTransactionalMethods(method);
-        assertThat(body.getStatements().size()).isEqualTo(3);
-        assertThat(body.getStatement(1)).isInstanceOf(TryStmt.class);
+        processResourceGenerator.addNestedThreadToCreateResourceTransactionalMethods(method);
+        assertThat(body.getStatements().size()).isEqualTo(9);
     }
+
+    //    @Test
+    //    void testAddThreadSleepToCreateResourceTransactionalMethods() {
+    //        KogitoBuildContext.Builder contextBuilder = QuarkusKogitoBuildContext.builder();
+    //        String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
+    //        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName,
+    //                true);
+    //        CompilationUnit compilationUnit =
+    //                processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
+    //        assertThat(compilationUnit).isNotNull();
+    //        Optional<MethodDeclaration> createResourceOptional =
+    //                processResourceGenerator.getRestMethods(compilationUnit).stream()
+    //                        .filter(method -> method.getName().toString().startsWith("createResource_"))
+    //                        .findFirst();
+    //        assertThat(createResourceOptional).isPresent();
+    //        MethodDeclaration method = createResourceOptional.get();
+    //        Optional<BlockStmt> bodyOpt = method.getBody();
+    //        assertThat(bodyOpt).isPresent();
+    //        BlockStmt body = bodyOpt.get();
+    //        assertThat(body.getStatements().size()).isEqualTo(2);
+    //        processResourceGenerator.addThreadSleepToCreateResourceTransactionalMethods(method);
+    //        assertThat(body.getStatements().size()).isEqualTo(3);
+    //        assertThat(body.getStatement(1)).isInstanceOf(TryStmt.class);
+    //    }
 
     void testTransaction(Collection<MethodDeclaration> restEndpoints,
             KogitoBuildContext kogitoBuildContext,
@@ -249,18 +271,18 @@ class ProcessResourceGeneratorTest {
                 transactionAnnotationAssert.isEmpty();
             }
             if (methodDeclaration.getName().toString().startsWith("createResource_")) {
-                ListAssert<?> sleepTryStmtAssert = assertThat(
+                ListAssert<?> stmtsAsserts = assertThat(
                         methodDeclaration.getBody()
                                 .get()
                                 .getStatements());
                 if (kogitoBuildContext instanceof QuarkusKogitoBuildContext) {
                     if (enabled) {
-                        sleepTryStmtAssert.hasSize(3);
+                        stmtsAsserts.hasSize(9);
                     } else {
-                        sleepTryStmtAssert.hasSize(2);
+                        stmtsAsserts.hasSize(2);
                     }
                 } else {
-                    sleepTryStmtAssert.hasSize(2);
+                    stmtsAsserts.hasSize(2);
                 }
             }
         });
