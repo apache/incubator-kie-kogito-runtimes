@@ -23,6 +23,9 @@ import java.util.Collection;
 
 public class MultipleProcessInstanceDataEvent extends ProcessInstanceDataEvent<Collection<ProcessInstanceDataEvent<?>>> {
 
+    public MultipleProcessInstanceDataEvent() {
+    }
+
     public MultipleProcessInstanceDataEvent(URI source, Collection<ProcessInstanceDataEvent<?>> body) {
         super("MultipleProcessInstanceDataEvent", source, body);
     }

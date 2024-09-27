@@ -23,6 +23,9 @@ import java.util.Collection;
 
 public class MultipleUserTaskInstanceDataEvent extends UserTaskInstanceDataEvent<Collection<UserTaskInstanceDataEvent<?>>> {
 
+    public MultipleUserTaskInstanceDataEvent() {
+    }
+
     public MultipleUserTaskInstanceDataEvent(URI source, Collection<UserTaskInstanceDataEvent<?>> body) {
         super("MultipleUserTaskInstanceDataEvent", source, body);
     }
