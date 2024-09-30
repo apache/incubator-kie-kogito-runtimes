@@ -49,7 +49,6 @@ import org.kie.kogito.internal.utils.ConversionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
@@ -57,8 +56,6 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.comments.Comment;
-import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
@@ -66,7 +63,6 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
@@ -416,7 +412,7 @@ public class ProcessResourceGenerator {
                     template.findAll(MethodDeclaration.class)
                             .stream()
                             .filter(md -> md.getNameAsString().equals(SIGNAL_METHOD_PREFFIX + methodSuffix))
-                            .collect(Collectors.toList()).forEach(template::remove);
+                            .forEach(template::remove);
                 }
                 switchExpr.getEntries().add(0, userTask.getModelSwitchEntry());
             }
@@ -427,81 +423,15 @@ public class ProcessResourceGenerator {
      * Conditionally add the <code>Transactional</code> annotation
      * 
      * @param compilationUnit
+     *
      */
     protected void manageTransactional(CompilationUnit compilationUnit) {
-        if (transactionEnabled && context.hasDI()/* && !process.getType().equals("SW")*/) { // enabling transaction only on bpmn @TODO {gcardosi}
+        if (transactionEnabled && context.hasDI() && !process.getType().equals("SW")) { // disabling transaction for serverless
             LOG.debug("Transaction is enabled, adding annotations...");
             DependencyInjectionAnnotator dependencyInjectionAnnotator = context.getDependencyInjectionAnnotator();
-            boolean isQuarkus = isQuarkus();
             getRestMethods(compilationUnit)
-                    .forEach(method -> {
-                        dependencyInjectionAnnotator.withTransactional(method);
-//                        if (isQuarkus && method.getName().toString().startsWith("createResource_")) {
-//                            addNestedThreadToCreateResourceTransactionalMethods(method);
-//                        }
-                    });
+                    .forEach(dependencyInjectionAnnotator::withTransactional);
         }
-    }
-
-    protected void addNestedThreadToCreateResourceTransactionalMethods(MethodDeclaration method) {
-        StringBuilder commentBuilder = new StringBuilder();
-        commentBuilder.append("Temporary workaround to avoid ");
-        commentBuilder.append("ARJUNA016053: Could not commit transaction ");
-        commentBuilder.append(".... ");
-        commentBuilder.append("Enlisted connection used without active transaction ");
-        commentBuilder.append("when there is an underlying thread (e.g. Kafka publishing)");
-        commentBuilder.append("not fully completed at time of commit");
-        Comment comment = new LineComment(commentBuilder.toString());
-
-        BlockStmt body = method.getBody().orElseThrow(IllegalStateException::new);
-        Statement lastStatement = body.getStatement(body.getStatements().size() - 1);
-        body.remove(body.getStatements().get(0));
-        body.remove(lastStatement);
-        Statement statement = StaticJavaParser
-                .parseStatement(String.format("java.util.concurrent.atomic.AtomicReference<ProcessInstance<%s>> piRef = new java.util.concurrent.atomic.AtomicReference<>();", dataClazzName));
-        statement.setComment(comment);
-        body.addStatement(statement);
-        body.addStatement(StaticJavaParser.parseStatement("jakarta.ws.rs.core.MultivaluedMap<String, String> requestHeaders = httpHeaders.getRequestHeaders();"));
-        body.addStatement(StaticJavaParser.parseStatement("String headerString = httpHeaders.getHeaderString(\"X-KOGITO-StartFromNode\");"));
-        body.addStatement(StaticJavaParser.parseStatement(String.format("Runnable runnable = () -> {\n" +
-                "    ProcessInstance<%1$s> pi = processService.createProcessInstance(process, businessKey, Optional.ofNullable(resource).orElse(new %1$sInput()).toModel(), requestHeaders, headerString);\n"
-                +
-                "    piRef.set(pi);\n" +
-                "};", dataClazzName)));
-        body.addStatement(StaticJavaParser.parseStatement("Thread nestedThread = new Thread(runnable);"));
-        body.addStatement(StaticJavaParser.parseStatement("nestedThread.start();"));
-        body.addStatement(StaticJavaParser.parseStatement("try {\n" +
-                "    nestedThread.join();\n" +
-                "} catch (InterruptedException e) {\n" +
-                "    return Response.serverError().entity(e.getMessage()).build();\n" +
-                "}"));
-        body.addStatement(StaticJavaParser.parseStatement(String.format("ProcessInstance<%s> pi = piRef.get();", dataClazzName)));
-        body.addStatement(lastStatement);
-    }
-
-    protected void addThreadSleepToCreateResourceTransactionalMethods(MethodDeclaration method) {
-        StringBuilder commentBuilder = new StringBuilder();
-        commentBuilder.append("Temporary workaround to avoid ");
-        commentBuilder.append("ARJUNA016053: Could not commit transaction ");
-        commentBuilder.append(".... ");
-        commentBuilder.append("Enlisted connection used without active transaction ");
-        commentBuilder.append("when there is an underlying thread (e.g. Kafka publishing)");
-        commentBuilder.append("not fully completed at time of commit");
-        Comment comment = new LineComment(commentBuilder.toString());
-
-        StringBuilder tryBlockBuilder = new StringBuilder();
-        tryBlockBuilder.append("try {");
-        tryBlockBuilder.append("Thread.sleep(1000);");
-        tryBlockBuilder.append("} catch (InterruptedException e) {");
-        tryBlockBuilder.append("e.printStackTrace();");
-        tryBlockBuilder.append("}");
-        Statement tryStmt = StaticJavaParser.parseStatement(tryBlockBuilder.toString());
-        tryStmt.setComment(comment);
-        BlockStmt body = method.getBody().orElseThrow(IllegalStateException::new);
-        Statement lastStatement = body.getStatement(body.getStatements().size() - 1);
-        body.remove(lastStatement);
-        body.addStatement(tryStmt);
-        body.addStatement(lastStatement);
     }
 
     /**

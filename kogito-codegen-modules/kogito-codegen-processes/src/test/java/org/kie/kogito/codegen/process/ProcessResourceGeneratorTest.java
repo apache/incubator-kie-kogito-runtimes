@@ -47,7 +47,6 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -209,53 +208,6 @@ class ProcessResourceGeneratorTest {
         // the annotation is (conditionally) add after processResourceGenerator.manageTransactional
         testTransaction(restEndpoints, kogitoBuildContext, transactionEnabled);
     }
-
-//    @Test
-//    void testaddNestedThreadToCreateResourceTransactionalMethods() {
-//        KogitoBuildContext.Builder contextBuilder = QuarkusKogitoBuildContext.builder();
-//        String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
-//        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName,
-//                true);
-//        CompilationUnit compilationUnit =
-//                processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
-//        assertThat(compilationUnit).isNotNull();
-//        Optional<MethodDeclaration> createResourceOptional =
-//                processResourceGenerator.getRestMethods(compilationUnit).stream()
-//                        .filter(method -> method.getName().toString().startsWith("createResource_"))
-//                        .findFirst();
-//        assertThat(createResourceOptional).isPresent();
-//        MethodDeclaration method = createResourceOptional.get();
-//        Optional<BlockStmt> bodyOpt = method.getBody();
-//        assertThat(bodyOpt).isPresent();
-//        BlockStmt body = bodyOpt.get();
-//        assertThat(body.getStatements().size()).isEqualTo(2);
-//        processResourceGenerator.addNestedThreadToCreateResourceTransactionalMethods(method);
-//        assertThat(body.getStatements().size()).isEqualTo(9);
-//    }
-
-    //    @Test
-    //    void testAddThreadSleepToCreateResourceTransactionalMethods() {
-    //        KogitoBuildContext.Builder contextBuilder = QuarkusKogitoBuildContext.builder();
-    //        String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
-    //        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName,
-    //                true);
-    //        CompilationUnit compilationUnit =
-    //                processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
-    //        assertThat(compilationUnit).isNotNull();
-    //        Optional<MethodDeclaration> createResourceOptional =
-    //                processResourceGenerator.getRestMethods(compilationUnit).stream()
-    //                        .filter(method -> method.getName().toString().startsWith("createResource_"))
-    //                        .findFirst();
-    //        assertThat(createResourceOptional).isPresent();
-    //        MethodDeclaration method = createResourceOptional.get();
-    //        Optional<BlockStmt> bodyOpt = method.getBody();
-    //        assertThat(bodyOpt).isPresent();
-    //        BlockStmt body = bodyOpt.get();
-    //        assertThat(body.getStatements().size()).isEqualTo(2);
-    //        processResourceGenerator.addThreadSleepToCreateResourceTransactionalMethods(method);
-    //        assertThat(body.getStatements().size()).isEqualTo(3);
-    //        assertThat(body.getStatement(1)).isInstanceOf(TryStmt.class);
-    //    }
 
     void testTransaction(Collection<MethodDeclaration> restEndpoints,
             KogitoBuildContext kogitoBuildContext,
