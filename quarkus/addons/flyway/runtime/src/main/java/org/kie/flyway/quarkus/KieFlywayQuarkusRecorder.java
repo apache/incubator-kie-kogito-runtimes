@@ -37,7 +37,7 @@ public class KieFlywayQuarkusRecorder {
         this.config = config;
     }
 
-    public void run(String defaultDSName, String dbKind) {
+    public void run(String defaultDSName) {
 
         DataSources agroalDatasourceS = Arc.container().select(DataSources.class).get();
         DataSource dataSource = agroalDatasourceS.getDataSource(defaultDSName);

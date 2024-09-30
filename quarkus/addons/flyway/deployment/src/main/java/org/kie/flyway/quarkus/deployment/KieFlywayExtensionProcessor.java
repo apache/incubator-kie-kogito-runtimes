@@ -61,6 +61,6 @@ public class KieFlywayExtensionProcessor {
         }
 
         JdbcDataSourceBuildItem jdbcDataSource = jdbcDataSourceOptional.get();
-        recorder.run(jdbcDataSource.getName(), jdbcDataSource.getDbKind());
+        recorder.run(jdbcDataSource.getName());
     }
 }

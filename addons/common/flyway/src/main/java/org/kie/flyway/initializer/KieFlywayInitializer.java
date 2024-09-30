@@ -63,7 +63,7 @@ public class KieFlywayInitializer {
 
         LOGGER.debug("Found {} configured Kie Flyway modules.", configs.size());
 
-        this.configLoader.loadModuleConfigs().forEach(this::runFlyway);
+        configs.forEach(this::runFlyway);
     }
 
     private void checkDuplicatedModuleConfigs(Collection<KieFlywayModuleConfig> configs) {
