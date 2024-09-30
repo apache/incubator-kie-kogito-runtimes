@@ -429,16 +429,16 @@ public class ProcessResourceGenerator {
      * @param compilationUnit
      */
     protected void manageTransactional(CompilationUnit compilationUnit) {
-        if (transactionEnabled && context.hasDI()) {
+        if (transactionEnabled && context.hasDI()/* && !process.getType().equals("SW")*/) { // enabling transaction only on bpmn @TODO {gcardosi}
             LOG.debug("Transaction is enabled, adding annotations...");
             DependencyInjectionAnnotator dependencyInjectionAnnotator = context.getDependencyInjectionAnnotator();
             boolean isQuarkus = isQuarkus();
             getRestMethods(compilationUnit)
                     .forEach(method -> {
                         dependencyInjectionAnnotator.withTransactional(method);
-                        if (isQuarkus && method.getName().toString().startsWith("createResource_")) {
-                            addNestedThreadToCreateResourceTransactionalMethods(method);
-                        }
+//                        if (isQuarkus && method.getName().toString().startsWith("createResource_")) {
+//                            addNestedThreadToCreateResourceTransactionalMethods(method);
+//                        }
                     });
         }
     }

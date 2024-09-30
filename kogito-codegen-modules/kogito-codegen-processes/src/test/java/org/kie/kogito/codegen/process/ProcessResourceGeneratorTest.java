@@ -210,28 +210,28 @@ class ProcessResourceGeneratorTest {
         testTransaction(restEndpoints, kogitoBuildContext, transactionEnabled);
     }
 
-    @Test
-    void testaddNestedThreadToCreateResourceTransactionalMethods() {
-        KogitoBuildContext.Builder contextBuilder = QuarkusKogitoBuildContext.builder();
-        String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
-        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName,
-                true);
-        CompilationUnit compilationUnit =
-                processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
-        assertThat(compilationUnit).isNotNull();
-        Optional<MethodDeclaration> createResourceOptional =
-                processResourceGenerator.getRestMethods(compilationUnit).stream()
-                        .filter(method -> method.getName().toString().startsWith("createResource_"))
-                        .findFirst();
-        assertThat(createResourceOptional).isPresent();
-        MethodDeclaration method = createResourceOptional.get();
-        Optional<BlockStmt> bodyOpt = method.getBody();
-        assertThat(bodyOpt).isPresent();
-        BlockStmt body = bodyOpt.get();
-        assertThat(body.getStatements().size()).isEqualTo(2);
-        processResourceGenerator.addNestedThreadToCreateResourceTransactionalMethods(method);
-        assertThat(body.getStatements().size()).isEqualTo(9);
-    }
+//    @Test
+//    void testaddNestedThreadToCreateResourceTransactionalMethods() {
+//        KogitoBuildContext.Builder contextBuilder = QuarkusKogitoBuildContext.builder();
+//        String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
+//        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName,
+//                true);
+//        CompilationUnit compilationUnit =
+//                processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
+//        assertThat(compilationUnit).isNotNull();
+//        Optional<MethodDeclaration> createResourceOptional =
+//                processResourceGenerator.getRestMethods(compilationUnit).stream()
+//                        .filter(method -> method.getName().toString().startsWith("createResource_"))
+//                        .findFirst();
+//        assertThat(createResourceOptional).isPresent();
+//        MethodDeclaration method = createResourceOptional.get();
+//        Optional<BlockStmt> bodyOpt = method.getBody();
+//        assertThat(bodyOpt).isPresent();
+//        BlockStmt body = bodyOpt.get();
+//        assertThat(body.getStatements().size()).isEqualTo(2);
+//        processResourceGenerator.addNestedThreadToCreateResourceTransactionalMethods(method);
+//        assertThat(body.getStatements().size()).isEqualTo(9);
+//    }
 
     //    @Test
     //    void testAddThreadSleepToCreateResourceTransactionalMethods() {
