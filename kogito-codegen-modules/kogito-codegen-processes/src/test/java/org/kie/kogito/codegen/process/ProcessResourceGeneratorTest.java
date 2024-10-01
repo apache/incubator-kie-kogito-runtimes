@@ -55,8 +55,7 @@ class ProcessResourceGeneratorTest {
 
     private static final String SIGNAL_METHOD = "signal_";
     private static final List<String> JAVA_AND_QUARKUS_REST_ANNOTATIONS = List.of("DELETE", "GET", "POST");
-    private static final List<String> SPRING_BOOT_REST_ANNOTATIONS = List.of("DeleteMapping", "GetMapping",
-            "PostMapping");
+    private static final List<String> SPRING_BOOT_REST_ANNOTATIONS = List.of("DeleteMapping", "GetMapping", "PostMapping");
 
     @Test
     void testProcessResourceGeneratorForJava() {
@@ -240,22 +239,18 @@ class ProcessResourceGeneratorTest {
         });
     }
 
-    void testOpenApiDocumentation(KogitoBuildContext.Builder contextBuilder, String fileName, String expectedSummary,
-            String expectedDescription) {
+    void testOpenApiDocumentation(KogitoBuildContext.Builder contextBuilder, String fileName, String expectedSummary, String expectedDescription) {
         ClassOrInterfaceDeclaration classDeclaration = getResourceClassDeclaration(contextBuilder, fileName);
 
         classDeclaration.getMethods().stream()
                 .filter(this::isRestMethod)
-                .forEach(method -> assertThatMethodHasOpenApiDocumentation(method, expectedSummary,
-                        expectedDescription));
+                .forEach(method -> assertThatMethodHasOpenApiDocumentation(method, expectedSummary, expectedDescription));
     }
 
-    private ClassOrInterfaceDeclaration getResourceClassDeclaration(KogitoBuildContext.Builder contextBuilder,
-            String fileName) {
+    private ClassOrInterfaceDeclaration getResourceClassDeclaration(KogitoBuildContext.Builder contextBuilder, String fileName) {
         KogitoWorkflowProcess process = parseProcess(fileName);
         CompilationUnit compilationUnit = getCompilationUnit(contextBuilder, process);
-        Optional<ClassOrInterfaceDeclaration> classDeclaration = compilationUnit.getClassByName(process.getId() +
-                "Resource");
+        Optional<ClassOrInterfaceDeclaration> classDeclaration = compilationUnit.getClassByName(process.getId() + "Resource");
         assertThat(classDeclaration).isNotEmpty();
         return classDeclaration.orElseThrow();
     }
@@ -307,8 +302,7 @@ class ProcessResourceGeneratorTest {
         assertThat(method.getType().asString()).isEqualTo(outputType);
     }
 
-    private void assertThatAnnotationHasSummaryAndDescription(AnnotationExpr annotation, String summary,
-            String description) {
+    private void assertThatAnnotationHasSummaryAndDescription(AnnotationExpr annotation, String summary, String description) {
         NodeList<MemberValuePair> pairs = ((NormalAnnotationExpr) annotation).getPairs();
 
         assertThat(pairs).containsExactlyInAnyOrder(

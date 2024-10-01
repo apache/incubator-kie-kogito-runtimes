@@ -167,9 +167,8 @@ public class ProcessResourceGenerator {
     }
 
     protected String getRestTemplateName() {
-        boolean isReactiveGenerator =
-                "reactive".equals(context.getApplicationProperty(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP)
-                        .orElse(""));
+        boolean isReactiveGenerator = "reactive".equals(context.getApplicationProperty(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP)
+                .orElse(""));
         return isQuarkus() && isReactiveGenerator ? REACTIVE_REST_TEMPLATE_NAME : REST_TEMPLATE_NAME;
     }
 
@@ -187,8 +186,7 @@ public class ProcessResourceGenerator {
         addPackageAndImports(toReturn);
         ClassOrInterfaceDeclaration template = toReturn
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface " +
-                        "declaration!"));
+                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
         template.setName(resourceClazzName);
         AtomicInteger index = new AtomicInteger(0);
@@ -281,13 +279,11 @@ public class ProcessResourceGenerator {
 
                     MethodDeclaration signalProcessDeclaration = signalTemplate
                             .findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("signalProcess"))
-                            .orElseThrow(() -> new NoSuchElementException("signalProcess method not found in " +
-                                    "SignalResourceTemplate"));
+                            .orElseThrow(() -> new NoSuchElementException("signalProcess method not found in SignalResourceTemplate"));
 
                     MethodDeclaration signalInstanceDeclaration = signalTemplate
                             .findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("signalInstance"))
-                            .orElseThrow(() -> new NoSuchElementException("signalInstance method not found in " +
-                                    "SignalResourceTemplate"));
+                            .orElseThrow(() -> new NoSuchElementException("signalInstance method not found in SignalResourceTemplate"));
 
                     Collection<TriggerMetaData> startSignalTriggers = getStartSignalTriggers();
 
@@ -308,19 +304,15 @@ public class ProcessResourceGenerator {
                                     MethodDeclaration signalProcessDeclarationClone = signalProcessDeclaration.clone();
 
                                     BlockStmt signalProcessBody = signalProcessDeclarationClone.getBody()
-                                            .orElseThrow(() -> new RuntimeException("signalProcessDeclaration doesn't" +
-                                                    " have body"));
+                                            .orElseThrow(() -> new RuntimeException("signalProcessDeclaration doesn't have body"));
 
-                                    MethodCallExpr setterMethod = signalProcessBody.findAll(MethodCallExpr.class,
-                                            m -> m.getName().getIdentifier().contains("$SetModelMethodName$"))
+                                    MethodCallExpr setterMethod = signalProcessBody.findAll(MethodCallExpr.class, m -> m.getName().getIdentifier().contains("$SetModelMethodName$"))
                                             .stream()
                                             .findFirst()
-                                            .orElseThrow(() -> new RuntimeException("signalProcessDeclaration doesn't" +
-                                                    " have model setter"));
+                                            .orElseThrow(() -> new RuntimeException("signalProcessDeclaration doesn't have model setter"));
 
                                     if (signalType == null) {
-                                        // if there's no type we should remove the payload references form the method
-                                        // declaration and body
+                                        // if there's no type we should remove the payload references form the method declaration and body
                                         signalProcessDeclarationClone.getParameters()
                                                 .stream()
                                                 .filter(parameter -> parameter.getNameAsString().equals("data"))
@@ -328,10 +320,8 @@ public class ProcessResourceGenerator {
                                                 .ifPresent(Parameter::removeForced);
                                         setterMethod.removeForced();
                                     } else {
-                                        String name =
-                                                Optional.ofNullable((String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE)).orElseGet(trigger::getModelRef);
-                                        setterMethod.setName(setterMethod.getNameAsString().replace(
-                                                "$SetModelMethodName$", StringUtils.ucFirst(name)));
+                                        String name = Optional.ofNullable((String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE)).orElseGet(trigger::getModelRef);
+                                        setterMethod.setName(setterMethod.getNameAsString().replace("$SetModelMethodName$", StringUtils.ucFirst(name)));
                                     }
 
                                     template.addMethod(SIGNAL_METHOD_PREFFIX + signalName, Keyword.PUBLIC)
@@ -344,12 +334,10 @@ public class ProcessResourceGenerator {
                                 // Create endpoint to signal process instances
                                 MethodDeclaration signalInstanceDeclarationClone = signalInstanceDeclaration.clone();
                                 BlockStmt signalInstanceBody = signalInstanceDeclarationClone.getBody()
-                                        .orElseThrow(() -> new RuntimeException("signalInstanceDeclaration doesn't " +
-                                                "have body"));
+                                        .orElseThrow(() -> new RuntimeException("signalInstanceDeclaration doesn't have body"));
 
                                 if (signalType == null) {
-                                    signalInstanceBody.findAll(NameExpr.class,
-                                            nameExpr -> "data".equals(nameExpr.getNameAsString())).forEach(name -> name.replace(new NullLiteralExpr()));
+                                    signalInstanceBody.findAll(NameExpr.class, nameExpr -> "data".equals(nameExpr.getNameAsString())).forEach(name -> name.replace(new NullLiteralExpr()));
                                 }
 
                                 template.addMethod(SIGNAL_METHOD_PREFFIX + index.getAndIncrement(), Keyword.PUBLIC)
@@ -380,19 +368,16 @@ public class ProcessResourceGenerator {
             ClassOrInterfaceDeclaration taskModelFactoryClass, AtomicInteger index) {
         if (userTasks != null && !userTasks.isEmpty()) {
 
-            CompilationUnit userTaskClazz =
-                    templateBuilder.build(context, REST_USER_TASK_TEMPLATE_NAME).compilationUnitOrThrow();
+            CompilationUnit userTaskClazz = templateBuilder.build(context, REST_USER_TASK_TEMPLATE_NAME).compilationUnitOrThrow();
 
             ClassOrInterfaceDeclaration userTaskTemplate = userTaskClazz
                     .findFirst(ClassOrInterfaceDeclaration.class)
-                    .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or " +
-                            "interface declaration!"));
+                    .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
             MethodDeclaration taskModelFactoryMethod = taskModelFactoryClass
                     .findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("from"))
                     .orElseThrow(IllegalStateException::new);
-            SwitchStmt switchExpr =
-                    taskModelFactoryMethod.getBody().map(b -> b.findFirst(SwitchStmt.class).orElseThrow(IllegalStateException::new)).orElseThrow(IllegalStateException::new);
+            SwitchStmt switchExpr = taskModelFactoryMethod.getBody().map(b -> b.findFirst(SwitchStmt.class).orElseThrow(IllegalStateException::new)).orElseThrow(IllegalStateException::new);
 
             for (UserTaskModelMetaData userTask : userTasks) {
                 String methodSuffix = sanitizeName(userTask.getName()) + "_" + index.getAndIncrement();
@@ -416,6 +401,7 @@ public class ProcessResourceGenerator {
                 }
                 switchExpr.getEntries().add(0, userTask.getModelSwitchEntry());
             }
+
         }
     }
 
