@@ -35,6 +35,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 
 import org.jbpm.util.PatternConstants;
+import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.timer.SessionClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
     private static final Logger logger = LoggerFactory.getLogger(BusinessCalendarImpl.class);
 
-    private Properties businessCalendarConfiguration;
+    private final Properties businessCalendarConfiguration;
 
     private static final long HOUR_IN_MILLIS = 60 * 60 * 1000;
 
@@ -103,26 +104,15 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     public static final String WEEKEND_DAYS = "business.weekend.days";
     public static final String TIMEZONE = "business.cal.timezone";
 
-    private static final String DEFAULT_PROPERTIES_NAME = "/jbpm.business.calendar.properties";
-
     public BusinessCalendarImpl() {
-        String propertiesLocation = System.getProperty("jbpm.business.calendar.properties");
 
-        if (propertiesLocation == null) {
-            propertiesLocation = DEFAULT_PROPERTIES_NAME;
-        }
         businessCalendarConfiguration = new Properties();
-
-        InputStream in = this.getClass().getResourceAsStream(propertiesLocation);
-        if (in != null) {
-
-            try {
-                businessCalendarConfiguration.load(in);
-            } catch (IOException e) {
-                logger.error("Error while loading properties for business calendar", e);
-
-            }
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("calendar.properties")) {
+            businessCalendarConfiguration.load(is);
+        } catch (IOException e) {
+            logger.warn("Error while loading properties for business calendar", e);
         }
+
         init();
 
     }
