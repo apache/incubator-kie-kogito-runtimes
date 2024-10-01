@@ -31,7 +31,6 @@ import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.phreak.PropagationEntry;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
-import org.jbpm.process.core.timer.BusinessCalendar;
 import org.jbpm.process.core.timer.DateTimeUtils;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
@@ -52,6 +51,7 @@ import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.Application;
+import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
 import org.kie.kogito.jobs.DurationExpirationTime;
@@ -64,6 +64,7 @@ import org.kie.kogito.services.jobs.impl.InMemoryJobService;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
+import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_ENVIRONMENT_KEY;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING_INPUT;
 
 public class LightProcessRuntime extends AbstractProcessRuntime {
@@ -426,8 +427,8 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
 
     protected ExpirationTime createTimerInstance(Timer timer, InternalKnowledgeRuntime kruntime) {
 
-        if (kruntime != null && kruntime.getEnvironment().get("jbpm.business.calendar") != null) {
-            BusinessCalendar businessCalendar = (BusinessCalendar) kruntime.getEnvironment().get("jbpm.business.calendar");
+        if (kruntime != null && kruntime.getEnvironment().get(BUSINESS_CALENDAR_ENVIRONMENT_KEY) != null) {
+            BusinessCalendar businessCalendar = (BusinessCalendar) kruntime.getEnvironment().get(BUSINESS_CALENDAR_ENVIRONMENT_KEY);
 
             long delay = businessCalendar.calculateBusinessTimeAsDuration(timer.getDelay());
 
