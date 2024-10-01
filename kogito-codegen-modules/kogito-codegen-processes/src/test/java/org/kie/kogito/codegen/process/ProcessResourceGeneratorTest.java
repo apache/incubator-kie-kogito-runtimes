@@ -35,7 +35,6 @@ import org.kie.api.definition.process.Process;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import com.github.javaparser.StaticJavaParser;
@@ -226,15 +225,7 @@ class ProcessResourceGeneratorTest {
                         methodDeclaration.getBody()
                                 .get()
                                 .getStatements());
-                if (kogitoBuildContext instanceof QuarkusKogitoBuildContext) {
-                    if (enabled) {
-                        stmtsAsserts.hasSize(9);
-                    } else {
-                        stmtsAsserts.hasSize(2);
-                    }
-                } else {
-                    stmtsAsserts.hasSize(2);
-                }
+                stmtsAsserts.hasSize(2);
             }
         });
     }
