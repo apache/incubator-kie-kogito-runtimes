@@ -18,7 +18,6 @@
  */
 package org.jbpm.process.core.timer;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -35,9 +34,12 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 
 import org.jbpm.util.PatternConstants;
+import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.timer.SessionClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_PATH;
 
 /**
  * Default implementation of BusinessCalendar interface that is configured with properties.
@@ -103,38 +105,26 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     public static final String WEEKEND_DAYS = "business.weekend.days";
     public static final String TIMEZONE = "business.cal.timezone";
 
-    private static final String DEFAULT_PROPERTIES_NAME = "/jbpm.business.calendar.properties";
-
     public BusinessCalendarImpl() {
-        String propertiesLocation = System.getProperty("jbpm.business.calendar.properties");
-
-        if (propertiesLocation == null) {
-            propertiesLocation = DEFAULT_PROPERTIES_NAME;
-        }
-        businessCalendarConfiguration = new Properties();
-
-        InputStream in = this.getClass().getResourceAsStream(propertiesLocation);
-        if (in != null) {
-
-            try {
-                businessCalendarConfiguration.load(in);
-            } catch (IOException e) {
-                logger.error("Error while loading properties for business calendar", e);
-
-            }
-        }
-        init();
-
+        this(null);
     }
 
     public BusinessCalendarImpl(Properties configuration) {
-        this.businessCalendarConfiguration = configuration;
-        init();
+        this(configuration, null);
     }
 
     public BusinessCalendarImpl(Properties configuration, SessionClock clock) {
-        this.businessCalendarConfiguration = configuration;
         this.clock = clock;
+        if (configuration == null) {
+            try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(BUSINESS_CALENDAR_PATH)) {
+                businessCalendarConfiguration = new Properties();
+                businessCalendarConfiguration.load(is);
+            } catch (Exception e) {
+                logger.error("Error while loading properties for business calendar", e);
+            }
+        } else {
+            this.businessCalendarConfiguration = configuration;
+        }
         init();
     }
 
