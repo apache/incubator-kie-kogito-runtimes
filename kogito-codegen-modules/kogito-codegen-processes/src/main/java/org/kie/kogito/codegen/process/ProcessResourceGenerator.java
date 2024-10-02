@@ -82,6 +82,8 @@ public class ProcessResourceGenerator {
      */
     public static final String TRANSACTION_ENABLED = "transactionEnabled";
 
+    static final String INVALID_CONTEXT_TEMPLATE = "ProcessResourceGenerator can't be used for context without Rest %s";
+
     private static final Logger LOG = LoggerFactory.getLogger(ProcessResourceGenerator.class);
 
     private static final String REST_TEMPLATE_NAME = "RestResource";
@@ -118,8 +120,8 @@ public class ProcessResourceGenerator {
             String modelfqcn,
             String processfqcn,
             String appCanonicalName) {
-        if (context.name().equals("Java")) {
-            throw new IllegalArgumentException("ProcessResourceGenerator can't be used for Java context");
+        if (!context.hasRest()) {
+            throw new IllegalArgumentException(String.format(INVALID_CONTEXT_TEMPLATE, context.name()));
         }
         this.context = context;
         this.process = process;
@@ -412,7 +414,7 @@ public class ProcessResourceGenerator {
      *
      */
     protected void manageTransactional(CompilationUnit compilationUnit) {
-        if (transactionEnabled && context.hasDI() && !process.getType().equals("SW")) { // disabling transaction for serverless
+        if (transactionEnabled && context.hasDI() && !isServerless()) { // disabling transaction for serverless
             LOG.debug("Transaction is enabled, adding annotations...");
             DependencyInjectionAnnotator dependencyInjectionAnnotator = context.getDependencyInjectionAnnotator();
             getRestMethods(compilationUnit)
@@ -552,5 +554,9 @@ public class ProcessResourceGenerator {
 
     protected boolean isPublic() {
         return KogitoWorkflowProcess.PUBLIC_VISIBILITY.equalsIgnoreCase(process.getVisibility());
+    }
+
+    protected boolean isServerless() {
+        return KogitoWorkflowProcess.SW_TYPE.equalsIgnoreCase(process.getType());
     }
 }

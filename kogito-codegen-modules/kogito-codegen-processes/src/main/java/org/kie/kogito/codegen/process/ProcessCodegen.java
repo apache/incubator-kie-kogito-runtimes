@@ -354,7 +354,7 @@ public class ProcessCodegen extends AbstractGenerator {
             ProcessMetaData metaData = processIdToMetadata.get(workFlowProcess.getId());
 
             //Creating and adding the ResourceGenerator for REST generation
-            if (!context().name().equals("Java")) {
+            if (context().hasRest()) {
                 ProcessResourceGenerator processResourceGenerator = new ProcessResourceGenerator(
                     context(),
                     workFlowProcess,
@@ -472,7 +472,7 @@ public class ProcessCodegen extends AbstractGenerator {
             svgs.keySet().stream().forEach(key -> storeFile(GeneratedFileType.INTERNAL_RESOURCE, "META-INF/processSVG/" + key + ".svg", svgs.get(key)));
         }
 
-        if (!context().name().equals("Java") && context().hasRESTForGenerator(this)) {
+        if (context().hasRest() && context().hasRESTForGenerator(this)) {
             final ProcessCloudEventMetaFactoryGenerator topicsGenerator =
                     new ProcessCloudEventMetaFactoryGenerator(context(), processExecutableModelGenerators);
             storeFile(REST_TYPE, topicsGenerator.generatedFilePath(), topicsGenerator.generate());

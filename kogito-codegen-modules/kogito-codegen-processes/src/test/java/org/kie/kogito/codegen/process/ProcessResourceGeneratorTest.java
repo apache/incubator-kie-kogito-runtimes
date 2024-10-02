@@ -49,6 +49,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.kie.kogito.codegen.process.ProcessResourceGenerator.INVALID_CONTEXT_TEMPLATE;
 
 class ProcessResourceGeneratorTest {
 
@@ -61,10 +62,11 @@ class ProcessResourceGeneratorTest {
         KogitoBuildContext.Builder contextBuilder = JavaKogitoBuildContext.builder();
         String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2"; // not relevant
         boolean transactionEnabled = true; // not relevant
+        String expectedMessage = String.format(INVALID_CONTEXT_TEMPLATE, JavaKogitoBuildContext.CONTEXT_NAME);
         assertThatThrownBy(() -> getProcessResourceGenerator(contextBuilder, fileName,
                 transactionEnabled))
                         .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessageContaining("ProcessResourceGenerator can't be used for Java context");
+                        .hasMessageContaining(expectedMessage);
     }
 
     @ParameterizedTest
