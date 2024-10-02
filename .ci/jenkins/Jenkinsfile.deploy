@@ -154,7 +154,9 @@ pipeline {
                         }
                         if (isRelease()) {
                             releaseUtils.gpgImportKeyFromStringWithoutPassword(getReleaseGpgSignKeyCredsId())
-                            mvnCmd.withProfiles(['apache-release'])
+                            mvnCmd
+                            .withProfiles(['apache-release'])
+                            .withProperty('only.reproducible')
                         }
                         configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]) {
                             mvnCmd.withSettingsXmlFile(MAVEN_SETTINGS_FILE)
