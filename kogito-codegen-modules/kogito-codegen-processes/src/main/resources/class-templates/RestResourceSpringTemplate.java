@@ -30,19 +30,20 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.process.workitem.Attachment;
-import org.kie.kogito.process.workitem.AttachmentInfo;
-import org.kie.kogito.process.workitem.Comment;
-import org.kie.kogito.process.workitem.Policies;
 import org.kie.kogito.process.workitem.TaskModel;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
 
+import org.kie.kogito.usertask.model.Attachment;
+import org.kie.kogito.usertask.model.AttachmentInfo;
+import org.kie.kogito.usertask.model.Comment;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,8 +56,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -129,7 +128,7 @@ public class $Type$Resource {
     public List<TaskModel> getTasks_$name$(@PathVariable("id") String id,
                                            @RequestParam(value = "user", required = false) final String user,
                                            @RequestParam(value = "group", required = false) final List<String> groups) {
-        return processService.getTasks(process, id, SecurityPolicy.of(IdentityProviders.of(user, groups)))
+        return processService.getWorkItems(process, id, SecurityPolicy.of(IdentityProviders.of(user, groups)))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
                 .stream()
                 .map($TaskModelFactory$::from)

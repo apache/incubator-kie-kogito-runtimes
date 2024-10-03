@@ -36,6 +36,8 @@ import java.util.function.BiFunction;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.util.PortablePath;
+import org.jbpm.process.instance.LightWorkItemManager;
+import org.junit.platform.commons.util.ClassLoaderUtils;
 import org.kie.kogito.Application;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.Generator;
@@ -45,6 +47,11 @@ import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.codegen.process.ProcessCodegen;
+import org.kie.kogito.codegen.usertask.UserTaskCodegen;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
+import org.kie.kogito.process.Process;
+import org.kie.kogito.process.WorkItem;
+import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.memorycompiler.CompilationResult;
 import org.kie.memorycompiler.JavaCompiler;
 import org.kie.memorycompiler.JavaCompilerFactory;
@@ -64,6 +71,7 @@ public abstract class AbstractCodegenIT {
      * {@link ApplicationGenerator#registerGeneratorIfEnabled(Generator) }
      */
     protected enum TYPE {
+        USER_TASK,
         PROCESS,
         RULES,
         DECISION,
@@ -86,6 +94,7 @@ public abstract class AbstractCodegenIT {
                     "import org.kie.api.KieBase;\n" +
                     "import org.kie.api.builder.model.KieBaseModel;\n" +
                     "import org.kie.api.runtime.KieSession;\n" +
+                    "import org.kie.api.runtime.StatelessKieSession;\n" +
                     "import org.drools.modelcompiler.KieBaseBuilder;\n" +
                     "\n" +
                     "\n" +
@@ -112,10 +121,21 @@ public abstract class AbstractCodegenIT {
                     "    public KieSession newKieSession(String sessionName) {\n" +
                     "        return null;\n" +
                     "    }\n" +
+                    "\n" +
+                    "    @Override\n" +
+                    "    public StatelessKieSession newStatelessKieSession() {\n" +
+                    "        return null;\n" +
+                    "    }\n" +
+                    "\n" +
+                    "    @Override\n" +
+                    "    public StatelessKieSession newStatelessKieSession(String sessionName) {\n" +
+                    "        return null;\n" +
+                    "    }\n" +
                     "}";
 
     static {
         generatorTypeMap.put(TYPE.PROCESS, (context, strings) -> ProcessCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
+        generatorTypeMap.put(TYPE.USER_TASK, (context, strings) -> UserTaskCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
     }
 
     public static Collection<CollectedResource> toCollectedResources(String basePath, List<String> strings) {
@@ -133,6 +153,7 @@ public abstract class AbstractCodegenIT {
     protected Application generateCodeProcessesOnly(String... processes) throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Arrays.asList(processes));
+        resourcesTypeMap.put(TYPE.USER_TASK, Arrays.asList(processes));
         return generateCode(resourcesTypeMap);
     }
 
@@ -165,14 +186,14 @@ public abstract class AbstractCodegenIT {
             log(new String(entry.contents()));
         }
 
-        if (resourcesTypeMap.size() == 1 && resourcesTypeMap.containsKey(TYPE.PROCESS)) {
+        if (!resourcesTypeMap.isEmpty() && resourcesTypeMap.containsKey(TYPE.PROCESS) && !resourcesTypeMap.containsKey(TYPE.RULES)) {
             sources.add("org/drools/project/model/ProjectRuntime.java");
             srcMfs.write("org/drools/project/model/ProjectRuntime.java", DUMMY_PROCESS_RUNTIME.getBytes());
         }
 
-        if (LOGGER.isDebugEnabled()) {
+        if (LOGGER.isInfoEnabled()) {
             Path temp = Files.createTempDirectory("KOGITO_TESTS");
-            LOGGER.debug("Dumping generated files in " + temp);
+            LOGGER.info("Dumping generated files in " + temp);
             for (GeneratedFile entry : generatedFiles) {
                 Path fpath = temp.resolve(entry.relativePath());
                 fpath.getParent().toFile().mkdirs();
@@ -180,7 +201,7 @@ public abstract class AbstractCodegenIT {
             }
         }
 
-        CompilationResult result = JAVA_COMPILER.compile(sources.toArray(new String[sources.size()]), srcMfs, trgMfs, this.getClass().getClassLoader());
+        CompilationResult result = JAVA_COMPILER.compile(sources.toArray(new String[sources.size()]), srcMfs, trgMfs, ClassLoaderUtils.getDefaultClassLoader());
         assertThat(result).isNotNull();
         assertThat(result.getErrors()).describedAs(String.join("\n\n", Arrays.toString(result.getErrors()))).isEmpty();
 
@@ -239,5 +260,9 @@ public abstract class AbstractCodegenIT {
             }
             return super.findClass(name);
         }
+    }
+
+    protected KogitoWorkItemHandler getWorkItemHandler(Process<?> p, WorkItem workItem) {
+        return ((LightWorkItemManager) ((AbstractProcess<?>) p).getProcessRuntime().getKogitoWorkItemManager()).getWorkItemHandler(workItem.getId());
     }
 }
