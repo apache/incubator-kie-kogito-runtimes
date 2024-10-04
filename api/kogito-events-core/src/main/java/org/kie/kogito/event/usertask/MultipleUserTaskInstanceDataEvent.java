@@ -23,10 +23,12 @@ import java.util.Collection;
 
 public class MultipleUserTaskInstanceDataEvent extends UserTaskInstanceDataEvent<Collection<UserTaskInstanceDataEvent<?>>> {
 
+    public static final String TYPE = "MultipleUserTaskInstanceDataEvent";
+
     public MultipleUserTaskInstanceDataEvent() {
     }
 
     public MultipleUserTaskInstanceDataEvent(URI source, Collection<UserTaskInstanceDataEvent<?>> body) {
-        super("MultipleUserTaskInstanceDataEvent", source, body);
+        super(TYPE, source, body);
     }
 }

@@ -23,10 +23,12 @@ import java.util.Collection;
 
 public class MultipleProcessInstanceDataEvent extends ProcessInstanceDataEvent<Collection<ProcessInstanceDataEvent<?>>> {
 
+    public static final String TYPE = "MultipleProcessInstanceDataEvent";
+
     public MultipleProcessInstanceDataEvent() {
     }
 
     public MultipleProcessInstanceDataEvent(URI source, Collection<ProcessInstanceDataEvent<?>> body) {
-        super("MultipleProcessInstanceDataEvent", source, body);
+        super(TYPE, source, body);
     }
 }
