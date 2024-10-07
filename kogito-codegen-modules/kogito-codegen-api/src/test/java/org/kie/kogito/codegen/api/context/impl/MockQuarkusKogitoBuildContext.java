@@ -16,30 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.events.process;
+package org.kie.kogito.codegen.api.context.impl;
 
-import java.util.Collection;
+/**
+ * Mocked <code>QuarkusKogitoBuildContext</code> to provide <code>hasRest() = true</code>
+ * during test
+ */
+public class MockQuarkusKogitoBuildContext extends QuarkusKogitoBuildContext {
 
-import org.kie.kogito.event.DataEvent;
+    protected MockQuarkusKogitoBuildContext(MockQuarkusKogitoBuildContextBuilder builder) {
+        super(builder);
+    }
 
-import io.quarkus.arc.properties.UnlessBuildProperty;
-
-import jakarta.inject.Singleton;
-
-@Singleton
-@UnlessBuildProperty(name = "kogito.events.grouping", stringValue = "true", enableIfMissing = true)
-public class ReactiveMessagingEventPublisher extends AbstractMessagingEventPublisher {
-
-    @Override
-    public void publish(DataEvent<?> event) {
-        getConsumer(event).ifPresent(emitter -> publishToTopic(emitter, event));
+    public static Builder builder() {
+        return new MockQuarkusKogitoBuildContextBuilder();
     }
 
     @Override
-    public void publish(Collection<DataEvent<?>> events) {
-        for (DataEvent<?> event : events) {
-            publish(event);
+    public boolean hasRest() {
+        return true;
+    }
+
+    protected static class MockQuarkusKogitoBuildContextBuilder extends QuarkusKogitoBuildContextBuilder {
+
+        protected MockQuarkusKogitoBuildContextBuilder() {
         }
-    }
 
+        @Override
+        public MockQuarkusKogitoBuildContext build() {
+            return new MockQuarkusKogitoBuildContext(this);
+        }
+
+    }
 }
