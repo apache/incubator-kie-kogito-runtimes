@@ -18,14 +18,8 @@
  */
 package org.jbpm.workflow.instance.node;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.*;
 
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -48,7 +42,7 @@ import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.kie.api.definition.process.Connection;
-import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.*;
 import org.mvel2.integration.VariableResolver;
 import org.mvel2.integration.impl.SimpleValueResolver;
 
@@ -58,6 +52,8 @@ import org.mvel2.integration.impl.SimpleValueResolver;
 public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     private static final long serialVersionUID = 510L;
+    private static final List<Class<? extends org.kie.api.runtime.process.NodeInstance>> NOT_SERIALIZABLE_CLASSES = Arrays.asList(ForEachJoinNodeInstance.class); // using Arrays.asList to allow multiple exclusions
+
     public static final String TEMP_OUTPUT_VAR = "foreach_output";
 
     private int totalInstances;
@@ -129,6 +125,11 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
     @Override
     public ContextContainer getContextContainer() {
         return getForEachNode().getCompositeNode();
+    }
+
+    @Override
+    public Collection<org.kie.api.runtime.process.NodeInstance> getSerializableNodeInstances() {
+        return getNodeInstances().stream().filter(this::isSerializable).collect(Collectors.toUnmodifiableList());
     }
 
     private boolean isSequential() {
@@ -348,6 +349,10 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
     public int getLevelForNode(String uniqueID) {
         // always 1 for for each
         return 1;
+    }
+
+    private boolean isSerializable(org.kie.api.runtime.process.NodeInstance toCheck) {
+        return !NOT_SERIALIZABLE_CLASSES.contains(toCheck.getClass());
     }
 
     private class ForEachNodeInstanceResolverFactory extends NodeInstanceResolverFactory {
