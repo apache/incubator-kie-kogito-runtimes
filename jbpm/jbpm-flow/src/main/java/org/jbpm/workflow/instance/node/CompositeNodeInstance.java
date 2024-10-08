@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.CompositeNode;
@@ -204,7 +205,12 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 
     @Override
     public Collection<org.kie.api.runtime.process.NodeInstance> getNodeInstances() {
-        return new ArrayList<>(getNodeInstances(false));
+        return Collections.unmodifiableCollection(nodeInstances);
+    }
+
+    @Override
+    public Collection<org.kie.api.runtime.process.NodeInstance> getSerializableNodeInstances() {
+        return nodeInstances.stream().filter(this::isSerializable).collect(Collectors.toUnmodifiableList());
     }
 
     @Override
@@ -471,6 +477,17 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     @Override
     public Map<String, Integer> getIterationLevels() {
         return iterationLevels;
+    }
+
+    /**
+     * Check if the given <code>org.kie.api.runtime.process.NodeInstance</code> is serializable.
+     * Every subclass should override it, if needed, to avoid polluting the parent one (this) with children details
+     * 
+     * @param toCheck
+     * @return
+     */
+    protected boolean isSerializable(org.kie.api.runtime.process.NodeInstance toCheck) {
+        return true;
     }
 
 }

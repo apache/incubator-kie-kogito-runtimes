@@ -18,8 +18,15 @@
  */
 package org.jbpm.workflow.instance.node;
 
-import java.util.*;
-import java.util.stream.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -42,7 +49,7 @@ import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.kie.api.definition.process.Connection;
-import org.kie.kogito.internal.process.runtime.*;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.mvel2.integration.VariableResolver;
 import org.mvel2.integration.impl.SimpleValueResolver;
 
@@ -125,11 +132,6 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
     @Override
     public ContextContainer getContextContainer() {
         return getForEachNode().getCompositeNode();
-    }
-
-    @Override
-    public Collection<org.kie.api.runtime.process.NodeInstance> getSerializableNodeInstances() {
-        return getNodeInstances().stream().filter(this::isSerializable).collect(Collectors.toUnmodifiableList());
     }
 
     private boolean isSequential() {
@@ -351,7 +353,8 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         return 1;
     }
 
-    private boolean isSerializable(org.kie.api.runtime.process.NodeInstance toCheck) {
+    @Override
+    protected boolean isSerializable(org.kie.api.runtime.process.NodeInstance toCheck) {
         return !NOT_SERIALIZABLE_CLASSES.contains(toCheck.getClass());
     }
 
