@@ -47,18 +47,7 @@ public class MergeUtilsTest {
 
     @Test
     void testTargetIntSrcArray() {
-        ArrayNode src = ObjectMapperFactory.get().createArrayNode().add(1).add(2).add(3);
-        JsonNode result = MergeUtils.merge(src, new IntNode(4), false);
-        assertThat(src).isSameAs(result);
-        assertThat(JsonObjectUtils.toJavaValue(result)).isEqualTo(Arrays.asList(4, 1, 2, 3));
-    }
-
-    @Test
-    void testTargetIntSrcArrayClone() {
-        ArrayNode src = ObjectMapperFactory.get().createArrayNode().add(1).add(2).add(3);
-        JsonNode result = MergeUtils.merge(src, new IntNode(4), false, true);
-        assertThat(src).isNotSameAs(result);
-        assertThat(JsonObjectUtils.toJavaValue(result)).isEqualTo(Arrays.asList(4, 1, 2, 3));
+        assertThat(JsonObjectUtils.toJavaValue(MergeUtils.merge(ObjectMapperFactory.get().createArrayNode().add(1).add(2).add(3), new IntNode(4), false))).isEqualTo(Arrays.asList(4, 1, 2, 3));
     }
 
     @Test
@@ -120,17 +109,7 @@ public class MergeUtilsTest {
     @Test
     void testNullMerge() {
         JsonNode srcNode = ObjectMapperFactory.get().createObjectNode().put("name", "javierito");
-        JsonNode result = MergeUtils.merge(srcNode, null);
-        assertThat(result).isSameAs(srcNode);
-
-    }
-
-    @Test
-    void testNullMergeClone() {
-        JsonNode srcNode = ObjectMapperFactory.get().createObjectNode().put("name", "javierito");
-        JsonNode result = MergeUtils.merge(srcNode, null, false, true);
-        assertThat(result).isNotSameAs(srcNode);
-        assertThat(result).isEqualTo(srcNode);
+        assertThat(MergeUtils.merge(srcNode, null)).isEqualTo(srcNode);
     }
 
     private static class Person {

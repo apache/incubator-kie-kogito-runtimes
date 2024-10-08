@@ -39,20 +39,13 @@ public class MergeUtils {
     }
 
     public static JsonNode merge(JsonNode src, JsonNode target, boolean mergeArray) {
-        return merge(src, target, mergeArray, false);
-    }
-
-    public static JsonNode merge(JsonNode src, JsonNode target, boolean mergeArray, boolean cloneSource) {
         if (target == null || target.isNull() || target.isObject() && target.isEmpty() && src != null && !src.isNull()) {
-            return cloneSource ? src.deepCopy() : src;
+            return src;
         } else if (target.isArray()) {
             return mergeArray(src, (ArrayNode) target, mergeArray);
         } else if (target.isObject()) {
             return mergeObject(src, (ObjectNode) target, mergeArray);
         } else {
-            if (cloneSource) {
-                src = src.deepCopy();
-            }
             if (src.isArray()) {
                 ArrayNode srcArray = (ArrayNode) src;
                 insert(srcArray, target, getExistingNodes(srcArray));
