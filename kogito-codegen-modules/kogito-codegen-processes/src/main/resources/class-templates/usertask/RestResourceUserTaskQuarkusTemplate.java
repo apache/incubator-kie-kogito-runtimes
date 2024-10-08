@@ -78,10 +78,10 @@ public class UserTasksResource {
     @Produces(MediaType.APPLICATION_JSON)
     public UserTaskView transition(
             @PathParam("taskId") String taskId,
-            @QueryParam("transitionId") String transitionId,
             @QueryParam("user") String user,
-            @QueryParam("group") List<String> groups, Map<String, Object> data) {
-        return userTaskService.transition(taskId, transitionId, data, IdentityProviders.of(user, groups)).orElseThrow(NotFoundException::new);
+            @QueryParam("group") List<String> groups, 
+            TransitionInfo transitionInfo) {
+        return userTaskService.transition(taskId, transitionInfo.getTransitionId(), transitionInfo.getData(), IdentityProviders.of(user, groups)).orElseThrow(NotFoundException::new);
     }
 
     @GET
