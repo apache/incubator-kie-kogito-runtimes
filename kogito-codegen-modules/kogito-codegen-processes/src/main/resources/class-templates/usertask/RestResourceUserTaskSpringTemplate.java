@@ -74,8 +74,8 @@ public class UserTasksResource {
             @RequestParam("transitionId") String transitionId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups, 
-            @RequestBody Map<String, Object> data) {
-        return userTaskService.transition(taskId, transitionId, data, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            @RequestBody TransitionInfo transitionInfo) {
+        return userTaskService.transition(taskId, transitionInfo.getTransitionId(), transitionInfo.getData(), IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(value = "/{taskId}/transition", produces = MediaType.APPLICATION_JSON_VALUE)
