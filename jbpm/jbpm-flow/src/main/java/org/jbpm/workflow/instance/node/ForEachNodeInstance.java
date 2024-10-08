@@ -19,7 +19,6 @@
 package org.jbpm.workflow.instance.node;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -27,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -59,7 +59,7 @@ import org.mvel2.integration.impl.SimpleValueResolver;
 public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     private static final long serialVersionUID = 510L;
-    private static final List<Class<? extends org.kie.api.runtime.process.NodeInstance>> NOT_SERIALIZABLE_CLASSES = Arrays.asList(ForEachJoinNodeInstance.class); // using Arrays.asList to allow multiple exclusions
+    private static final Set<Class<? extends org.kie.api.runtime.process.NodeInstance>> NOT_SERIALIZABLE_CLASSES = Set.of(ForEachJoinNodeInstance.class); // using Arrays.asList to allow multiple exclusions
 
     public static final String TEMP_OUTPUT_VAR = "foreach_output";
 
@@ -354,8 +354,8 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
     }
 
     @Override
-    protected boolean isSerializable(org.kie.api.runtime.process.NodeInstance toCheck) {
-        return !NOT_SERIALIZABLE_CLASSES.contains(toCheck.getClass());
+    protected Set<Class<? extends org.kie.api.runtime.process.NodeInstance>> getNotSerializableClasses() {
+        return NOT_SERIALIZABLE_CLASSES;
     }
 
     private class ForEachNodeInstanceResolverFactory extends NodeInstanceResolverFactory {
