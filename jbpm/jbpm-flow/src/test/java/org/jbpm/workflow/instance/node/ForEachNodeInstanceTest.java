@@ -71,6 +71,6 @@ class ForEachNodeInstanceTest {
         Set<Class<? extends NodeInstance>> retrieved = new ForEachNodeInstance().getNotSerializableClasses();
         assertThat(retrieved).isNotNull()
                 .hasSize(1)
-                .allMatch(cls -> cls.equals(ForEachNodeInstance.ForEachJoinNodeInstance.class));
+                .contains(ForEachNodeInstance.ForEachJoinNodeInstance.class);
     }
 }
