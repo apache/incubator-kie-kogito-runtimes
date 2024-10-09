@@ -349,7 +349,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     @Override
     public int getLevelForNode(String uniqueID) {
-        // always 1 for for each
+        // always 1 for each
         return 1;
     }
 

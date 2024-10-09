@@ -62,6 +62,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     private static final long serialVersionUID = 510l;
 
     private final List<NodeInstance> nodeInstances = new ArrayList<>();
+    private final List<NodeInstance> serializableNodeInstances = new ArrayList<>();
 
     private int state = STATE_ACTIVE;
     private Map<String, Integer> iterationLevels = new HashMap<>();
@@ -196,11 +197,15 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
             ((NodeInstanceImpl) nodeInstance).setId(UUID.randomUUID().toString());
         }
         this.nodeInstances.add(nodeInstance);
+        if (isSerializable(nodeInstance)) {
+            this.serializableNodeInstances.add(nodeInstance);
+        }
     }
 
     @Override
     public void removeNodeInstance(final NodeInstance nodeInstance) {
         this.nodeInstances.remove(nodeInstance);
+        this.serializableNodeInstances.remove(nodeInstance);
     }
 
     @Override
@@ -210,7 +215,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 
     @Override
     public Collection<org.kie.api.runtime.process.NodeInstance> getSerializableNodeInstances() {
-        return nodeInstances.stream().filter(this::isSerializable).collect(Collectors.toUnmodifiableList());
+        return Collections.unmodifiableCollection(serializableNodeInstances);
     }
 
     @Override
