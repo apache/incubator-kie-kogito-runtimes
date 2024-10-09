@@ -90,7 +90,9 @@ class CompositeNodeInstanceTest {
         }
     }
 
-    private static class SerializableNode extends CompositeNodeInstance { }
+    private static class SerializableNode extends CompositeNodeInstance {
+    }
 
-    private static class NotSerializableNode extends CompositeNodeInstance { }
+    private static class NotSerializableNode extends CompositeNodeInstance {
+    }
 }

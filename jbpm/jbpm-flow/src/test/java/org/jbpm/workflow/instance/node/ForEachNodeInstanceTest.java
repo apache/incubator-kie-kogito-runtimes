@@ -57,7 +57,7 @@ class ForEachNodeInstanceTest {
                 .isNotNull()
                 .hasSize(1)
                 .contains(compositeNodeInstance);
-        ForEachNodeInstance.ForEachJoinNodeInstance forEachJoinNodeInstance =  toTest.new ForEachJoinNodeInstance();
+        ForEachNodeInstance.ForEachJoinNodeInstance forEachJoinNodeInstance = toTest.new ForEachJoinNodeInstance();
         toTest.addNodeInstance(forEachJoinNodeInstance);
         serializableNodeInstances = toTest.getSerializableNodeInstances();
         assertThat(serializableNodeInstances)
