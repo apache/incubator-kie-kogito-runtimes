@@ -50,7 +50,7 @@ public class JsonPathExpression implements Expression {
 
     private static final String replaceMagic(String expr, String magic) {
         magic = "$" + magic;
-        return expr.replace(magic, "@." + magic);
+        return expr.replace(magic, "$." + magic);
     }
 
     private Configuration getConfiguration(KogitoProcessContext context) {
