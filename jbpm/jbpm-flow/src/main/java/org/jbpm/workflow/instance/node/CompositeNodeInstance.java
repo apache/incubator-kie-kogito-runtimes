@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -54,13 +55,13 @@ import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STAT
 
 /**
  * Runtime counterpart of a composite node.
- * 
  */
 public class CompositeNodeInstance extends StateBasedNodeInstance implements NodeInstanceContainer, EventNodeInstanceInterface, EventBasedNodeInstanceInterface {
 
     private static final long serialVersionUID = 510l;
 
     private final List<NodeInstance> nodeInstances = new ArrayList<>();
+    private final List<NodeInstance> serializableNodeInstances = new ArrayList<>();
 
     private int state = STATE_ACTIVE;
     private Map<String, Integer> iterationLevels = new HashMap<>();
@@ -195,16 +196,25 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
             ((NodeInstanceImpl) nodeInstance).setId(UUID.randomUUID().toString());
         }
         this.nodeInstances.add(nodeInstance);
+        if (isSerializable(nodeInstance)) {
+            this.serializableNodeInstances.add(nodeInstance);
+        }
     }
 
     @Override
     public void removeNodeInstance(final NodeInstance nodeInstance) {
         this.nodeInstances.remove(nodeInstance);
+        this.serializableNodeInstances.remove(nodeInstance);
     }
 
     @Override
     public Collection<org.kie.api.runtime.process.NodeInstance> getNodeInstances() {
-        return new ArrayList<>(getNodeInstances(false));
+        return Collections.unmodifiableCollection(nodeInstances);
+    }
+
+    @Override
+    public Collection<org.kie.api.runtime.process.NodeInstance> getSerializableNodeInstances() {
+        return Collections.unmodifiableCollection(serializableNodeInstances);
     }
 
     @Override
@@ -471,6 +481,26 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     @Override
     public Map<String, Integer> getIterationLevels() {
         return iterationLevels;
+    }
+
+    /**
+     * Return a Set of classes that are not serializable
+     * Every subclass should override it, if needed, to avoid polluting the parent one (this) with children details
+     *
+     * @return
+     */
+    protected Set<Class<? extends org.kie.api.runtime.process.NodeInstance>> getNotSerializableClasses() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * Check if the given <code>org.kie.api.runtime.process.NodeInstance</code> is serializable.
+     *
+     * @param toCheck
+     * @return
+     */
+    private boolean isSerializable(org.kie.api.runtime.process.NodeInstance toCheck) {
+        return !getNotSerializableClasses().contains(toCheck.getClass());
     }
 
 }
