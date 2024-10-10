@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -100,7 +101,9 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global-operational-dashboard-template.json";
     private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/process-operational-dashboard-template.json";
-
+    private static final String BUSINESS_CALENDAR_PRODUCER_TEMPLATE = "BusinessCalendarProducer";
+    private static final String BUSINESS_CALENDAR_RESOURCE_KEY = "businessCalendar";
+    private static final String BUSINESS_CALENDAR_PATH = "calendar.properties";
     static {
         ProcessValidatorRegistry.getInstance().registerAdditonalValidator(JavaRuleFlowProcessValidator.getInstance());
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNSemanticModule());
@@ -144,6 +147,8 @@ public class ProcessCodegen extends AbstractGenerator {
         if (useSvgAddon) {
             context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGMap);
         }
+        resources.stream().filter(resource -> resource.basePath().toString().equals(BUSINESS_CALENDAR_PATH))
+                .findFirst().ifPresent(resource -> context.addContextAttribute(BUSINESS_CALENDAR_RESOURCE_KEY, true));
 
         handleValidation(context, processesErrors);
 
@@ -436,10 +441,16 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         //Generating the Producer classes for Dependency Injection
-        StaticDependencyInjectionProducerGenerator.of(context())
-                .generate()
+        StaticDependencyInjectionProducerGenerator staticDependencyInjectionProducerGenerator = StaticDependencyInjectionProducerGenerator.of(context());
+
+        staticDependencyInjectionProducerGenerator.generate()
                 .entrySet()
                 .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
+        Boolean businessCalendar = context().getContextAttribute(BUSINESS_CALENDAR_RESOURCE_KEY, Boolean.class);
+        if (Objects.nonNull(businessCalendar) && businessCalendar) {
+            staticDependencyInjectionProducerGenerator.generate(BUSINESS_CALENDAR_PRODUCER_TEMPLATE)
+                    .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
+        }
 
         if (context().hasRESTForGenerator(this)) {
             for (ProcessResourceGenerator resourceGenerator : rgs) {

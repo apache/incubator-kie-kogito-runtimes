@@ -23,13 +23,18 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
@@ -99,6 +104,15 @@ class ProcessCodegenTest {
         generateTestDashboards(codeGenerator, 0);
     }
 
+    @ParameterizedTest
+    @MethodSource("contextBuildersForBusinessCalendar")
+    public void whenCalendarPropertiesFoundGenerateBusinessCalendar(KogitoBuildContext.Builder contextBuilder) {
+        KogitoBuildContext context = contextBuilder.build();
+        StaticDependencyInjectionProducerGenerator staticDependencyInjectionProducerGenerator = StaticDependencyInjectionProducerGenerator.of(context);
+        Map<String, String> businessCalendarProducer = staticDependencyInjectionProducerGenerator.generate("BusinessCalendarProducer");
+        assertThat(businessCalendarProducer.size()).isEqualTo(1);
+    }
+
     private List<GeneratedFile> generateTestDashboards(ProcessCodegen codeGenerator, int expectedDashboards) {
 
         Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
@@ -110,5 +124,11 @@ class ProcessCodegenTest {
         assertThat(dashboards).hasSize(expectedDashboards);
 
         return dashboards;
+    }
+
+    private static Stream<Arguments> contextBuildersForBusinessCalendar() {
+        return Stream.of(
+                Arguments.of(QuarkusKogitoBuildContext.builder()),
+                Arguments.of(SpringBootKogitoBuildContext.builder()));
     }
 }
