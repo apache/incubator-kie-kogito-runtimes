@@ -63,12 +63,14 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
     protected void addWorkItemListener() {
         super.addWorkItemListener();
         getProcessInstance().addEventListener(WORK_ITEM_TRANSITION, this, false);
+        getProcessInstance().addEventListener(TIMER_TRIGGERED_EVENT, this, false);
     }
 
     @Override
     protected void removeWorkItemListener() {
         super.removeWorkItemListener();
         getProcessInstance().removeEventListener(WORK_ITEM_TRANSITION, this, false);
+        getProcessInstance().removeEventListener(TIMER_TRIGGERED_EVENT, this, false);
     }
 
     protected String assignWorkItem(InternalKogitoWorkItem workItem) {
