@@ -51,6 +51,7 @@ import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.process.ProcessCodegenException;
 import org.kie.kogito.codegen.process.ProcessParsingException;
+import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.validation.ValidationException;
@@ -62,6 +63,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
@@ -99,10 +101,11 @@ public class UserTaskCodegen extends AbstractGenerator {
 
     public static final String SECTION_CLASS_NAME = "usertask";
 
-    TemplatedGenerator templateGenerator;
+    private TemplatedGenerator templateGenerator;
     private List<Work> descriptors;
     private TemplatedGenerator producerTemplateGenerator;
     private TemplatedGenerator restTemplateGenerator;
+    boolean transactionEnabled;
 
     public UserTaskCodegen(KogitoBuildContext context, List<Work> collectedResources) {
         super(context, "usertasks");
@@ -158,16 +161,19 @@ public class UserTaskCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private GeneratedFile generateRestEndpiont() {
+    public GeneratedFile generateRestEndpiont() {
         String packageName = context().getPackageName();
         CompilationUnit compilationUnit = producerTemplateGenerator.compilationUnitOrThrow("Not rest endpoints template found for user tasks");
         compilationUnit.setPackageDeclaration(packageName);
+        if (CodegenUtil.isTransactionEnabled(this, context())) {
+            compilationUnit.findAll(MethodDeclaration.class).stream().filter(MethodDeclaration::isPublic).forEach(context().getDependencyInjectionAnnotator()::withTransactional);
+        }
         String className = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get().getNameAsString();
         String urlBase = packageName.replaceAll("\\.", File.separator);
         return new GeneratedFile(GeneratedFileType.SOURCE, Path.of(urlBase).resolve(className + ".java"), compilationUnit.toString());
     }
 
-    private GeneratedFile generateProducer() {
+    public GeneratedFile generateProducer() {
         String packageName = context().getPackageName();
         CompilationUnit compilationUnit = restTemplateGenerator.compilationUnitOrThrow("No producer template found for user tasks");
         compilationUnit.setPackageDeclaration(packageName);
@@ -176,7 +182,7 @@ public class UserTaskCodegen extends AbstractGenerator {
         return new GeneratedFile(GeneratedFileType.SOURCE, Path.of(urlBase).resolve(className + ".java"), compilationUnit.toString());
     }
 
-    private List<GeneratedFile> generateUserTask() {
+    public List<GeneratedFile> generateUserTask() {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         for (Work info : descriptors) {
             CompilationUnit unit = templateGenerator.compilationUnit().get();
