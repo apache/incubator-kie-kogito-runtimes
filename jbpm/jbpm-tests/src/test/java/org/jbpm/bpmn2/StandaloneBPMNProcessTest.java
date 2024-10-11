@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -384,7 +385,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void testEventBasedSplit2() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener(2);
         Application app = ProcessTestHelper.newApplication();
@@ -537,7 +538,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void testTimerBoundaryEvent() throws Exception {
         Application app = ProcessTestHelper.newApplication();
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("TimerEvent", 1);
@@ -556,7 +557,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void testTimerBoundaryEventInterrupting() {
         Application app = ProcessTestHelper.newApplication();
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("TimerEvent", 1);
@@ -697,7 +698,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void testIntermediateCatchEventTimer() {
         Application app = ProcessTestHelper.newApplication();
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("timer", 1);
@@ -786,7 +787,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void testTimerStart() throws Exception {
         Application app = ProcessTestHelper.newApplication();
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartProcess", 5);
