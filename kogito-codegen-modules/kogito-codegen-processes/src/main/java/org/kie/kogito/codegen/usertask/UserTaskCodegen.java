@@ -105,7 +105,6 @@ public class UserTaskCodegen extends AbstractGenerator {
     private List<Work> descriptors;
     private TemplatedGenerator producerTemplateGenerator;
     private TemplatedGenerator restTemplateGenerator;
-    boolean transactionEnabled;
 
     public UserTaskCodegen(KogitoBuildContext context, List<Work> collectedResources) {
         super(context, "usertasks");

@@ -25,7 +25,7 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 public final class CodegenUtil {
     /**
-     * Flag used to configure transaction enablement. Default to <code>true</code>
+     * Flag used to configure transaction enabling. Default to <code>true</code>
      */
     public static final String TRANSACTION_ENABLED = "transactionEnabled";
 
@@ -33,25 +33,45 @@ public final class CodegenUtil {
         // do nothing
     }
 
+    /**
+     * Creates the property for a certain generator.
+     * 
+     * @param generator
+     * @param propertyName
+     * @return returns the property for certain generator
+     */
     public static String generatorProperty(Generator generator, String propertyName) {
         return String.format("kogito.%s.%s", generator.name(), propertyName);
     }
 
+    /**
+     * Creates the property for global application
+     * 
+     * @param propertyName
+     * @return
+     */
     public static String globalProperty(String propertyName) {
         return String.format("kogito.%s", propertyName);
     }
 
     /**
-     * There is a preference order about how to compute transaction enabling.
-     * 1. We check the property for the custom generator and
+     * This computes the boolean value of the transaction being enabled based on the logic specified
+     * the property. Default value it is true
+     * 
+     * @see CodegenUtil#getProperty
      */
     public static boolean isTransactionEnabled(Generator generator, KogitoBuildContext context) {
         return getProperty(generator, context, TRANSACTION_ENABLED, Boolean::parseBoolean, true);
     }
 
     /**
-     * There is a preference order about how to compute transaction enabling.
-     * 1. We check the property for the custom generator and
+     * This method is a generic method to compute certain property of the given type.
+     * 1. we compute the global property applicable for all the application.
+     * 2. we compute the property only applicable for certain generator.
+     * 
+     * @see CodegenUtil#getApplicationProperty
+     * @see CodegenUtil#globalProperty
+     * @see CodegenUtil#generatorProperty
      */
     public static <T> T getProperty(Generator generator, KogitoBuildContext context, String propertyName, Function<String, T> converter, T defaultValue) {
 
