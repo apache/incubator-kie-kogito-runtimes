@@ -28,7 +28,7 @@ public class TransitionInfo {
     private Map<String, Object> data;
 
     public TransitionInfo() {
-        
+        // do nothing
     }
 
     public TransitionInfo(String transitionId) {
