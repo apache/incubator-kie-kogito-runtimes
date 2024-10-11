@@ -22,8 +22,12 @@ import java.util.function.Function;
 
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class CodegenUtil {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CodegenUtil.class);
     /**
      * Flag used to configure transaction enabling. Default to <code>true</code>
      */
@@ -61,7 +65,9 @@ public final class CodegenUtil {
      * @see CodegenUtil#getProperty
      */
     public static boolean isTransactionEnabled(Generator generator, KogitoBuildContext context) {
-        return getProperty(generator, context, TRANSACTION_ENABLED, Boolean::parseBoolean, true);
+        boolean propertyValue = getProperty(generator, context, TRANSACTION_ENABLED, Boolean::parseBoolean, true);
+        LOG.info("trying to compute property {} for generator {} property with value {}", generator.name(), TRANSACTION_ENABLED, propertyValue);
+        return propertyValue;
     }
 
     /**
@@ -81,6 +87,7 @@ public final class CodegenUtil {
         }
 
         String globalProperty = globalProperty(propertyName);
+
         if (isApplicationPropertyDefined(context, globalProperty)) {
             return converter.apply(getApplicationProperty(context, globalProperty));
         }

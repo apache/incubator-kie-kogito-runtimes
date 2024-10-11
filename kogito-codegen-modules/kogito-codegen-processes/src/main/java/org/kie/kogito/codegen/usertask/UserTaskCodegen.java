@@ -99,7 +99,7 @@ public class UserTaskCodegen extends AbstractGenerator {
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNDISemanticModule());
     }
 
-    public static final String SECTION_CLASS_NAME = "usertask";
+    public static final String SECTION_CLASS_NAME = "usertasks";
 
     private TemplatedGenerator templateGenerator;
     private List<Work> descriptors;
@@ -162,19 +162,19 @@ public class UserTaskCodegen extends AbstractGenerator {
 
     public GeneratedFile generateRestEndpiont() {
         String packageName = context().getPackageName();
-        CompilationUnit compilationUnit = producerTemplateGenerator.compilationUnitOrThrow("Not rest endpoints template found for user tasks");
+        CompilationUnit compilationUnit = restTemplateGenerator.compilationUnitOrThrow("Not rest endpoints template found for user tasks");
         compilationUnit.setPackageDeclaration(packageName);
         if (CodegenUtil.isTransactionEnabled(this, context())) {
             compilationUnit.findAll(MethodDeclaration.class).stream().filter(MethodDeclaration::isPublic).forEach(context().getDependencyInjectionAnnotator()::withTransactional);
         }
         String className = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get().getNameAsString();
         String urlBase = packageName.replaceAll("\\.", File.separator);
-        return new GeneratedFile(GeneratedFileType.SOURCE, Path.of(urlBase).resolve(className + ".java"), compilationUnit.toString());
+        return new GeneratedFile(GeneratedFileType.REST, Path.of(urlBase).resolve(className + ".java"), compilationUnit.toString());
     }
 
     public GeneratedFile generateProducer() {
         String packageName = context().getPackageName();
-        CompilationUnit compilationUnit = restTemplateGenerator.compilationUnitOrThrow("No producer template found for user tasks");
+        CompilationUnit compilationUnit = producerTemplateGenerator.compilationUnitOrThrow("No producer template found for user tasks");
         compilationUnit.setPackageDeclaration(packageName);
         String className = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get().getNameAsString();
         String urlBase = packageName.replaceAll("\\.", File.separator);
