@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.CompositeNode;
@@ -61,7 +62,6 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     private static final long serialVersionUID = 510l;
 
     private final List<NodeInstance> nodeInstances = new ArrayList<>();
-    private final List<NodeInstance> serializableNodeInstances = new ArrayList<>();
 
     private int state = STATE_ACTIVE;
     private Map<String, Integer> iterationLevels = new HashMap<>();
@@ -191,20 +191,16 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     @Override
     public void addNodeInstance(final NodeInstance nodeInstance) {
         if (nodeInstance.getStringId() == null) {
-            // assign new id only if it does not exist as it might already be set by marshalling 
+            // assign new id only if it does not exist as it might already be set by marshalling
             // it's important to keep same ids of node instances as they might be references e.g. exclusive group
             ((NodeInstanceImpl) nodeInstance).setId(UUID.randomUUID().toString());
         }
         this.nodeInstances.add(nodeInstance);
-        if (isSerializable(nodeInstance)) {
-            this.serializableNodeInstances.add(nodeInstance);
-        }
     }
 
     @Override
     public void removeNodeInstance(final NodeInstance nodeInstance) {
         this.nodeInstances.remove(nodeInstance);
-        this.serializableNodeInstances.remove(nodeInstance);
     }
 
     @Override
@@ -214,7 +210,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 
     @Override
     public Collection<org.kie.api.runtime.process.NodeInstance> getSerializableNodeInstances() {
-        return Collections.unmodifiableCollection(serializableNodeInstances);
+        return nodeInstances.stream().filter(this::isSerializable).collect(Collectors.toUnmodifiableList());
     }
 
     @Override
