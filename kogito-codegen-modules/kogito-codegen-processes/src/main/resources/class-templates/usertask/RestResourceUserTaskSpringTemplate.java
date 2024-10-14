@@ -71,7 +71,6 @@ public class UserTasksResource {
     @PostMapping(value = "/{taskId}/transition")
     public UserTaskView transition(
             @PathVariable("taskId") String taskId,
-            @RequestParam("transitionId") String transitionId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups, 
             @RequestBody TransitionInfo transitionInfo) {
