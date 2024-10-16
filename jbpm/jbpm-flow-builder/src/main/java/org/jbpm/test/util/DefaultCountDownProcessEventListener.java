@@ -47,6 +47,7 @@ public class DefaultCountDownProcessEventListener extends DefaultKogitoProcessEv
         try {
             return latch.await(timeOut, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
+            logger.error("Interrupted thread while waiting for all triggers", e);
             Thread.currentThread().interrupt();
             logger.debug("Interrputed thread while waiting for all triggers");
             return false;
