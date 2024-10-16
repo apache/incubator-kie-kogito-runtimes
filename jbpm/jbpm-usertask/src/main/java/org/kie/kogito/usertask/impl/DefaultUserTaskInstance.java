@@ -94,7 +94,6 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         this();
         this.id = UUID.randomUUID().toString();
         this.userTask = userTask;
-        this.instances = userTask.instances();
     }
 
     public void setUserTaskEventSupport(KogitoUserTaskEventSupport userTaskEventSupport) {
@@ -185,7 +184,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     private void updatePersistenceOrRemove() {
         if (this.status.isTerminate()) {
-            this.instances.remove(this.id);
+            this.instances.remove(this);
         } else {
             this.instances.update(this);
         }
