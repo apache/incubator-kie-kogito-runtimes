@@ -60,6 +60,7 @@ import org.kie.kogito.timer.TimerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_ENVIRONMENT_KEY;
 import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
 
@@ -145,8 +146,8 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
     protected ExpirationTime createTimerInstance(Timer timer) {
 
         KieRuntime kruntime = getProcessInstance().getKnowledgeRuntime();
-        if (kruntime != null && kruntime.getEnvironment().get("jbpm.business.calendar") != null) {
-            BusinessCalendar businessCalendar = (BusinessCalendar) kruntime.getEnvironment().get("jbpm.business.calendar");
+        if (kruntime != null && kruntime.getEnvironment().get(BUSINESS_CALENDAR_ENVIRONMENT_KEY) != null) {
+            BusinessCalendar businessCalendar = (BusinessCalendar) kruntime.getEnvironment().get(BUSINESS_CALENDAR_ENVIRONMENT_KEY);
             String delay = null;
             switch (timer.getTimeType()) {
                 case Timer.TIME_CYCLE:

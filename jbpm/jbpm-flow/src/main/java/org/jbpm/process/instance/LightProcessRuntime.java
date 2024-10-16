@@ -64,6 +64,7 @@ import org.kie.kogito.services.jobs.impl.InMemoryJobService;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
+import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_ENVIRONMENT_KEY;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING_INPUT;
 
 public class LightProcessRuntime extends AbstractProcessRuntime {
@@ -426,8 +427,8 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
 
     protected ExpirationTime createTimerInstance(Timer timer, InternalKnowledgeRuntime kruntime) {
 
-        if (kruntime != null && kruntime.getEnvironment().get("jbpm.business.calendar") != null) {
-            BusinessCalendar businessCalendar = (BusinessCalendar) kruntime.getEnvironment().get("jbpm.business.calendar");
+        if (kruntime != null && kruntime.getEnvironment().get(BUSINESS_CALENDAR_ENVIRONMENT_KEY) != null) {
+            BusinessCalendar businessCalendar = (BusinessCalendar) kruntime.getEnvironment().get(BUSINESS_CALENDAR_ENVIRONMENT_KEY);
 
             long delay = businessCalendar.calculateBusinessTimeAsDuration(timer.getDelay());
 

@@ -18,7 +18,7 @@
  */
 package $Package$;
 
-import org.kie.kogito.calendar.BusinessCalendarImpl;
+import org.jbpm.process.core.timer.BusinessCalendarImpl;
 import org.kie.kogito.calendar.BusinessCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

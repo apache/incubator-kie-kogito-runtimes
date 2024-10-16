@@ -103,7 +103,7 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global-operational-dashboard-template.json";
     private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/process-operational-dashboard-template.json";
     private static final String BUSINESS_CALENDAR_PRODUCER_TEMPLATE = "BusinessCalendarProducer";
-    private static final String BUSINESS_CALENDAR_RESOURCE_KEY = "businessCalendar";
+    private static final String BUSINESS_CALENDAR_RESOURCE_KEY = "is_business_calendar_present";
     static {
         ProcessValidatorRegistry.getInstance().registerAdditonalValidator(JavaRuleFlowProcessValidator.getInstance());
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNSemanticModule());
@@ -147,8 +147,7 @@ public class ProcessCodegen extends AbstractGenerator {
         if (useSvgAddon) {
             context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGMap);
         }
-        resources.stream().filter(resource -> resource.resource().getSourcePath().equals(BUSINESS_CALENDAR_PATH))
-                .findFirst().ifPresent(resource -> context.addContextAttribute(BUSINESS_CALENDAR_RESOURCE_KEY, true));
+        context.addContextAttribute(BUSINESS_CALENDAR_RESOURCE_KEY, resources.stream().anyMatch(resource -> resource.resource().getSourcePath().endsWith(BUSINESS_CALENDAR_PATH)));
 
         handleValidation(context, processesErrors);
 
