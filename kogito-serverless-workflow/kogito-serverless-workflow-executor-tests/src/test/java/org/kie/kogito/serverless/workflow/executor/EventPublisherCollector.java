@@ -16,21 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.usertask.model;
+package org.kie.kogito.serverless.workflow.executor;
 
-public class Comment extends UserTaskEntity<String, String> {
+import java.util.ArrayList;
+import java.util.Collection;
 
-    private static final long serialVersionUID = -9106249675352498780L;
+import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.EventPublisher;
 
-    public Comment() {
-    }
+public class EventPublisherCollector implements EventPublisher {
 
-    public Comment(String id, String user) {
-        super(id, user);
+    private Collection<DataEvent<?>> events = new ArrayList<>();
+
+    @Override
+    public void publish(DataEvent<?> event) {
+        events.add(event);
     }
 
     @Override
-    public Comment clone() throws CloneNotSupportedException {
-        return (Comment) super.clone();
+    public void publish(Collection<DataEvent<?>> events) {
+        events.forEach(this::publish);
     }
+
+    public Collection<DataEvent<?>> events() {
+        return events;
+    }
+
 }

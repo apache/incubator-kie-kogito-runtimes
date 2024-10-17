@@ -16,21 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.usertask.model;
+package org.kie.kogito.resource.exceptions;
 
-public class Comment extends UserTaskEntity<String, String> {
+import org.kie.kogito.usertask.UserTaskInstanceNotFoundException;
 
-    private static final long serialVersionUID = -9106249675352498780L;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 
-    public Comment() {
-    }
-
-    public Comment(String id, String user) {
-        super(id, user);
-    }
+@Provider
+public class UserTaskInstanceNotAuthorizedExceptionMapper extends BaseExceptionMapper<UserTaskInstanceNotFoundException> {
 
     @Override
-    public Comment clone() throws CloneNotSupportedException {
-        return (Comment) super.clone();
+    public Response toResponse(UserTaskInstanceNotFoundException e) {
+        return exceptionsHandler.mapException(e);
     }
 }

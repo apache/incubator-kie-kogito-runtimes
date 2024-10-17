@@ -16,21 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.usertask.model;
+package org.kie.kogito.usertask;
 
-public class Comment extends UserTaskEntity<String, String> {
+public class UserTaskInstanceNotAuthorizedException extends RuntimeException {
 
-    private static final long serialVersionUID = -9106249675352498780L;
+    private static final long serialVersionUID = 6224742517975146469L;
 
-    public Comment() {
+    public UserTaskInstanceNotAuthorizedException() {
+        // do nothing
     }
 
-    public Comment(String id, String user) {
-        super(id, user);
-    }
-
-    @Override
-    public Comment clone() throws CloneNotSupportedException {
-        return (Comment) super.clone();
+    public UserTaskInstanceNotAuthorizedException(String msg) {
+        super(msg);
     }
 }
