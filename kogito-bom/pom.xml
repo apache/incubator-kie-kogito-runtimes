@@ -1732,6 +1732,41 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- jBPM User Task Storage JPA -->
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-usertask-storage-jpa-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-quarkus-usertask-storage-jpa-deployment</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <!-- Flyway Add-on-->
       <dependency>
         <groupId>org.kie</groupId>
@@ -1897,6 +1932,17 @@
         <groupId>org.kie.kogito</groupId>
         <artifactId>jbpm-usertask</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jbpm-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jbpm-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
