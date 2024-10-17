@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -58,6 +59,8 @@ import org.mvel2.integration.impl.SimpleValueResolver;
 public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     private static final long serialVersionUID = 510L;
+    private static final Set<Class<? extends org.kie.api.runtime.process.NodeInstance>> NOT_SERIALIZABLE_CLASSES = Set.of(ForEachJoinNodeInstance.class); // using Arrays.asList to allow multiple exclusions
+
     public static final String TEMP_OUTPUT_VAR = "foreach_output";
 
     private int totalInstances;
@@ -346,8 +349,13 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     @Override
     public int getLevelForNode(String uniqueID) {
-        // always 1 for for each
+        // always 1 for each
         return 1;
+    }
+
+    @Override
+    protected Set<Class<? extends org.kie.api.runtime.process.NodeInstance>> getNotSerializableClasses() {
+        return NOT_SERIALIZABLE_CLASSES;
     }
 
     private class ForEachNodeInstanceResolverFactory extends NodeInstanceResolverFactory {
