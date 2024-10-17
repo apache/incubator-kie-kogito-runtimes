@@ -18,7 +18,6 @@
  */
 package org.jbpm.process.core.timer;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -75,7 +74,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
     private static final Logger logger = LoggerFactory.getLogger(BusinessCalendarImpl.class);
 
-    private final Properties businessCalendarConfiguration;
+    private Properties businessCalendarConfiguration;
 
     private static final long HOUR_IN_MILLIS = 60 * 60 * 1000;
 
@@ -117,10 +116,10 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     public BusinessCalendarImpl(Properties configuration, SessionClock clock) {
         this.clock = clock;
         if (configuration == null) {
-            businessCalendarConfiguration = new Properties();
             try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(BUSINESS_CALENDAR_PATH)) {
+                businessCalendarConfiguration = new Properties();
                 businessCalendarConfiguration.load(is);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("Error while loading properties for business calendar", e);
             }
         } else {
