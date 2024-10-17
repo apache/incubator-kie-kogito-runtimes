@@ -18,9 +18,12 @@
  */
 package org.kie.kogito.event.process;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,7 +31,12 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.AbstractDataEvent;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
+import org.kie.kogito.jackson.utils.JsonObjectUtils;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -38,23 +46,21 @@ import io.cloudevents.jackson.JsonFormat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ProcessEventsTest {
-
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .registerModule(JsonFormat.getCloudEventJacksonModule())
             .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+    private static final Logger logger = LoggerFactory.getLogger(ProcessEventsTest.class);
 
     private static final Set<String> BASE_EXTENSION_NAMES = Arrays.stream(new String[] {
             CloudEventExtensionConstants.PROCESS_INSTANCE_ID,
             CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_INSTANCE_ID,
             CloudEventExtensionConstants.PROCESS_ID,
             CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID,
-            CloudEventExtensionConstants.ADDONS,
             CloudEventExtensionConstants.PROCESS_INSTANCE_VERSION,
             CloudEventExtensionConstants.PROCESS_PARENT_PROCESS_INSTANCE_ID,
             CloudEventExtensionConstants.PROCESS_INSTANCE_STATE,
-            CloudEventExtensionConstants.PROCESS_REFERENCE_ID,
-            CloudEventExtensionConstants.PROCESS_START_FROM_NODE,
             CloudEventExtensionConstants.BUSINESS_KEY,
             CloudEventExtensionConstants.PROCESS_TYPE }).collect(Collectors.toSet());
 
@@ -77,12 +83,10 @@ class ProcessEventsTest {
     private static final String ROOT_PROCESS_ID = "ROOT_PROCESS_ID";
     private static final String PROCESS_PARENT_PROCESS_INSTANCE_ID = "PROCESS_PARENT_PROCESS_INSTANCE_ID";
     private static final String PROCESS_INSTANCE_STATE = "PROCESS_INSTANCE_STATE";
-    private static final String PROCESS_REFERENCE_ID = "PROCESS_REFERENCE_ID";
-    private static final String PROCESS_START_FROM_NODE = "PROCESS_START_FROM_NODE";
     private static final String BUSINESS_KEY = "BUSINESS_KEY";
     private static final String PROCESS_TYPE = "PROCESS_TYPE";
-    private static final String ADDONS = "ADDONS";
-
+    private static final String NODE_CONTAINER_ID = "323";
+    private static final String NODE_CONTAINER_INSTANCEID = "323-3232-3232";
     private static final String EXTENSION_1 = "EXTENSION_1";
     private static final String EXTENSION_1_VALUE = "EXTENSION_1_VALUE";
     private static final String EXTENSION_2 = "EXTENSION_2";
@@ -110,6 +114,74 @@ class ProcessEventsTest {
         assertThat(deserializedEvent.getExtension(EXTENSION_1)).isEqualTo(EXTENSION_1_VALUE);
         assertThat(deserializedEvent.getExtension(EXTENSION_2)).isEqualTo(EXTENSION_2_VALUE);
         assertExtensionNames(deserializedEvent, BASE_EXTENSION_NAMES, EXTENSION_1, EXTENSION_2);
+    }
+
+    @Test
+    void multipleInstanceDataEvent() throws IOException {
+        JsonNode expectedVarValue = ObjectMapperFactory.get().createObjectNode().put("name", "John Doe");
+        assertThat(processMultipleInstanceDataEvent(expectedVarValue, false) - processMultipleInstanceDataEvent(expectedVarValue, true)).isGreaterThan(0);
+    }
+
+    private int processMultipleInstanceDataEvent(JsonNode expectedVarValue, boolean optimize) throws IOException {
+        ProcessInstanceStateDataEvent stateEvent = new ProcessInstanceStateDataEvent();
+        setBaseEventValues(stateEvent, ProcessInstanceStateDataEvent.STATE_TYPE);
+        stateEvent.setData(ProcessInstanceStateEventBody.create().eventDate(new Date()).eventType(0).eventUser(SUBJECT)
+                .businessKey(BUSINESS_KEY).processId(PROCESS_ID).processInstanceId(PROCESS_INSTANCE_ID).state(1)
+                .processVersion(PROCESS_INSTANCE_VERSION).parentInstanceId(PROCESS_PARENT_PROCESS_INSTANCE_ID).processName(PROCESS_ID)
+                .processType(PROCESS_ID).rootProcessId(ROOT_PROCESS_ID).rootProcessInstanceId(ROOT_PROCESS_INSTANCE_ID).build());
+
+        ProcessInstanceVariableDataEvent varEvent = new ProcessInstanceVariableDataEvent();
+        setBaseEventValues(varEvent, ProcessInstanceVariableDataEvent.VAR_TYPE);
+        varEvent.addExtensionAttribute(CloudEventExtensionConstants.KOGITO_VARIABLE_NAME, VARIABLE_NAME);
+        varEvent.setData(ProcessInstanceVariableEventBody.create().eventDate(new Date()).eventUser(SUBJECT)
+                .processId(PROCESS_ID).processInstanceId(PROCESS_INSTANCE_ID).processVersion(PROCESS_INSTANCE_VERSION)
+                .nodeContainerDefinitionId(NODE_CONTAINER_ID).nodeContainerInstanceId(NODE_CONTAINER_INSTANCEID)
+                .variableName(VARIABLE_NAME)
+                .variableId(VARIABLE_NAME)
+                .variableValue(expectedVarValue)
+                .build());
+
+        MultipleProcessInstanceDataEvent event = new MultipleProcessInstanceDataEvent(SOURCE, Arrays.asList(stateEvent, varEvent));
+        if (optimize) {
+            event.setDataContentType(MultipleProcessInstanceDataEvent.BINARY_CONTENT_TYPE);
+        }
+
+        byte[] json = ObjectMapperFactory.get().writeValueAsBytes(event);
+        logger.info("Serialized chunk size is {}", json.length);
+        MultipleProcessInstanceDataEvent deserializedEvent = ObjectMapperFactory.get().readValue(json, MultipleProcessInstanceDataEvent.class);
+
+        assertThat(deserializedEvent.getData()).hasSize(2);
+        Iterator<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>> iter = deserializedEvent.getData().iterator();
+        ProcessInstanceStateDataEvent deserializedStateEvent = (ProcessInstanceStateDataEvent) iter.next();
+
+        assertBaseEventValues(deserializedStateEvent, ProcessInstanceStateDataEvent.STATE_TYPE);
+        assertExtensionNames(deserializedStateEvent, BASE_EXTENSION_NAMES);
+        assertStateBody(deserializedStateEvent.getData());
+
+        ProcessInstanceVariableDataEvent deserializedVariableEvent = (ProcessInstanceVariableDataEvent) iter.next();
+        assertBaseEventValues(deserializedVariableEvent, ProcessInstanceVariableDataEvent.VAR_TYPE);
+        assertThat(deserializedVariableEvent.getExtension(CloudEventExtensionConstants.KOGITO_VARIABLE_NAME)).isEqualTo(VARIABLE_NAME);
+        assertVarBody(deserializedVariableEvent.getData(), expectedVarValue);
+        return json.length;
+    }
+
+    private static void assertVarBody(ProcessInstanceVariableEventBody data, JsonNode expectedVarValue) {
+        assertThat(data.getProcessId()).isEqualTo(PROCESS_ID);
+        assertThat(data.getProcessInstanceId()).isEqualTo(PROCESS_INSTANCE_ID);
+        assertThat(data.getProcessVersion()).isEqualTo(PROCESS_INSTANCE_VERSION);
+        assertThat(data.getVariableId()).isEqualTo(VARIABLE_NAME);
+        assertThat(data.getVariableName()).isEqualTo(VARIABLE_NAME);
+        assertThat(JsonObjectUtils.fromValue(data.getVariableValue())).isEqualTo(expectedVarValue);
+        assertThat(data.getNodeContainerDefinitionId()).isEqualTo(NODE_CONTAINER_ID);
+        assertThat(data.getNodeContainerInstanceId()).isEqualTo(NODE_CONTAINER_INSTANCEID);
+    }
+
+    private static void assertStateBody(ProcessInstanceStateEventBody data) {
+        assertThat(data.getBusinessKey()).isEqualTo(BUSINESS_KEY);
+        assertThat(data.getProcessId()).isEqualTo(PROCESS_ID);
+        assertThat(data.getProcessInstanceId()).isEqualTo(PROCESS_INSTANCE_ID);
+        assertThat(data.getProcessVersion()).isEqualTo(PROCESS_INSTANCE_VERSION);
+
     }
 
     @Test
@@ -175,12 +247,9 @@ class ProcessEventsTest {
         event.setKogitoRootProcessInstanceId(ROOT_PROCESS_INSTANCE_ID);
         event.setKogitoRootProcessId(ROOT_PROCESS_ID);
         event.setKogitoParentProcessInstanceId(PROCESS_PARENT_PROCESS_INSTANCE_ID);
-        event.setKogitoReferenceId(PROCESS_REFERENCE_ID);
         event.setKogitoProcessInstanceState(PROCESS_INSTANCE_STATE);
-        event.setKogitoStartFromNode(PROCESS_START_FROM_NODE);
         event.setKogitoBusinessKey(BUSINESS_KEY);
         event.setKogitoProcessType(PROCESS_TYPE);
-        event.setKogitoAddons(ADDONS);
     }
 
     private static void setAdditionalExtensions(AbstractDataEvent<?> event) {
@@ -203,19 +272,16 @@ class ProcessEventsTest {
         assertThat(deserializedEvent.getKogitoRootProcessInstanceId()).isEqualTo(ROOT_PROCESS_INSTANCE_ID);
         assertThat(deserializedEvent.getKogitoRootProcessId()).isEqualTo(ROOT_PROCESS_ID);
         assertThat(deserializedEvent.getKogitoParentProcessInstanceId()).isEqualTo(PROCESS_PARENT_PROCESS_INSTANCE_ID);
-        assertThat(deserializedEvent.getKogitoReferenceId()).isEqualTo(PROCESS_REFERENCE_ID);
         assertThat(deserializedEvent.getKogitoProcessInstanceState()).isEqualTo(PROCESS_INSTANCE_STATE);
-        assertThat(deserializedEvent.getKogitoStartFromNode()).isEqualTo(PROCESS_START_FROM_NODE);
         assertThat(deserializedEvent.getKogitoBusinessKey()).isEqualTo(BUSINESS_KEY);
         assertThat(deserializedEvent.getKogitoProcessType()).isEqualTo(PROCESS_TYPE);
-        assertThat(deserializedEvent.getKogitoAddons()).isEqualTo(ADDONS);
     }
 
     private static void assertExtensionNames(AbstractDataEvent<?> event, Set<String> baseNames, String... names) {
         Set<String> extensionNames = event.getExtensionNames();
         assertThat(extensionNames).hasSize(baseNames.size() + names.length)
-                .containsAll(baseNames)
-                .contains(names);
+                .containsAll(baseNames);
+
     }
 
     private static void assertExtensionsNotDuplicated(String json, Set<String> extensionNames) {

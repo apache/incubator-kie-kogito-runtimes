@@ -16,20 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.event.process;
+package org.kie.kogito.event.serializer;
 
-import java.net.URI;
-import java.util.Collection;
+import org.kie.kogito.event.process.ProcessInstanceDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceDataEvent;
 
-public class MultipleProcessInstanceDataEvent extends ProcessInstanceDataEvent<Collection<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>>> {
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
-    public static final String MULTIPLE_TYPE = "MultipleProcessInstanceDataEvent";
-    public static final String BINARY_CONTENT_TYPE = "application/octet-stream";
+public class KogitoSerializationModule extends SimpleModule {
 
-    public MultipleProcessInstanceDataEvent() {
-    }
+    private static final long serialVersionUID = 1L;
 
-    public MultipleProcessInstanceDataEvent(URI source, Collection<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>> body) {
-        super(MULTIPLE_TYPE, source, body);
+    public KogitoSerializationModule() {
+        super("KogitoSerialization");
+        setSerializerModifier(new MultipleProcessDataInstanceBeanSerializerModifier());
+        setDeserializerModifier(new MultipleProcessDataInstanceBeanDeserializerModifier());
+        addDeserializer(ProcessInstanceDataEvent.class, new JsonProcessInstanceDataEventDeserializer());
+        addDeserializer(UserTaskInstanceDataEvent.class, new JsonUserTaskInstanceDataEventDeserializer());
     }
 }

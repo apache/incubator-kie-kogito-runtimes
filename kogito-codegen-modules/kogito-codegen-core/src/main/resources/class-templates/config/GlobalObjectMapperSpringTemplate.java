@@ -29,6 +29,7 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import java.util.TimeZone;
+import io.cloudevents.jackson.JsonFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -48,7 +49,8 @@ public class GlobalObjectMapper {
                     builder.featuresToDisable (SerializationFeature.FAIL_ON_EMPTY_BEANS);
                 }
                 builder.dateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getDefault()));
-                builder.modulesToInstall(new JavaTimeModule());
+                builder.modulesToInstall(JsonFormat.getCloudEventJacksonModule());
+                builder.findModulesViaServiceLoader(true);
             }
         };
     }
