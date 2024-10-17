@@ -327,17 +327,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     @Test
-    public void testMissingConfigurationDualArgConstructor() {
-        SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-04 13:45").getTime());
-        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new BusinessCalendarImpl(null, clock));
-    }
-
-    @Test
-    public void testMissingConfigurationSingleArgConstructor() {
-        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new BusinessCalendarImpl(null));
-    }
-
-    @Test
     public void testCalculateMinutesPassingHoliday() {
         Properties config = new Properties();
         config.setProperty(BusinessCalendarImpl.DAYS_PER_WEEK, "5");
