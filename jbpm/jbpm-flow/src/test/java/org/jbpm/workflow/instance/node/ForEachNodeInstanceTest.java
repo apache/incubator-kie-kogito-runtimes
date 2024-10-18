@@ -19,7 +19,6 @@
 package org.jbpm.workflow.instance.node;
 
 import java.util.Collection;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.process.NodeInstance;

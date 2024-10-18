@@ -354,7 +354,6 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         return 1;
     }
 
-
     @Override
     public Collection<org.kie.api.runtime.process.NodeInstance> getSerializableNodeInstances() {
         return getNodeInstances().stream().filter(ForEachNodeInstance::isSerializable).collect(Collectors.toUnmodifiableList());
@@ -369,7 +368,6 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
     static boolean isSerializable(org.kie.api.runtime.process.NodeInstance toCheck) {
         return !NOT_SERIALIZABLE_CLASSES.contains(toCheck.getClass());
     }
-
 
     private class ForEachNodeInstanceResolverFactory extends NodeInstanceResolverFactory {
 
