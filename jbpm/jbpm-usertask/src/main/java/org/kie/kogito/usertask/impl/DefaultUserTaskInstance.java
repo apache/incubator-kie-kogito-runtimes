@@ -18,15 +18,7 @@
  */
 package org.kie.kogito.usertask.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.internal.usertask.event.KogitoUserTaskEventSupport;
@@ -141,7 +133,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     }
 
     @Override
-    public void setActuaOwner(String actualOwner) {
+    public void setActualOwner(String actualOwner) {
         this.actualOwner = actualOwner;
         if (this.userTaskEventSupport != null) {
             this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
@@ -204,7 +196,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     }
 
     public void setInputs(Map<String, Object> inputs) {
-        inputs.forEach(this::setInput);
+        this.inputs = inputs;
     }
 
     public Map<String, Object> getOutputs() {
@@ -212,7 +204,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     }
 
     public void setOutputs(Map<String, Object> outputs) {
-        outputs.forEach(this::setOutput);
+        this.outputs = outputs;
     }
 
     @Override
@@ -450,8 +442,6 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
-        updatePersistence();
-
     }
 
     /**
@@ -508,7 +498,6 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
-        updatePersistence();
     }
 
     public void setMetadata(String key, Object value) {
@@ -522,7 +511,6 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
-        updatePersistence();
     }
 
     @Override

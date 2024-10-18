@@ -17,9 +17,9 @@
  * under the License.
  */
 
-package org.jbpm.usertask.jpa.model.data;
+package org.jbpm.usertask.jpa.model;
 
-import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
+import java.util.Objects;
 
 import jakarta.persistence.*;
 
@@ -29,8 +29,9 @@ import jakarta.persistence.*;
         @AttributeOverride(name = "name", column = @Column(name = "output_name")),
         @AttributeOverride(name = "value", column = @Column(name = "output_value"))
 })
-public class TaskOutputEntity extends AbstractTaskDataEntity {
+public class TaskOutputEntity extends TaskDataEntity<byte[]> {
 
+    @Id
     @ManyToOne(optional = false)
     @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "jbpm_user_tasks_outputs_tid"))
     private UserTaskInstanceEntity taskInstance;
@@ -45,4 +46,20 @@ public class TaskOutputEntity extends AbstractTaskDataEntity {
         this.taskInstance = taskInstance;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        if (!super.equals(o))
+            return false;
+        TaskOutputEntity that = (TaskOutputEntity) o;
+        return Objects.equals(getTaskInstance(), that.getTaskInstance());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getTaskInstance());
+    }
 }

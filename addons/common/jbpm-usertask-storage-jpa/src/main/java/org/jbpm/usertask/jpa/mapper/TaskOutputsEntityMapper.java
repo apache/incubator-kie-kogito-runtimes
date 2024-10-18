@@ -21,13 +21,16 @@ package org.jbpm.usertask.jpa.mapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.jbpm.usertask.jpa.mapper.json.utils.JSONUtils;
+import org.jbpm.usertask.jpa.model.TaskOutputEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
-import org.jbpm.usertask.jpa.model.data.TaskOutputEntity;
 import org.jbpm.usertask.jpa.repository.TaskOutputRepository;
 import org.kie.kogito.usertask.UserTaskInstance;
+import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 
 public class TaskOutputsEntityMapper {
 
@@ -51,6 +54,7 @@ public class TaskOutputsEntityMapper {
         userTaskInstance.getOutputs().forEach((key, value) -> {
             TaskOutputEntity outputEntity = userTaskInstanceEntity.getOutputs().stream().filter(entity -> entity.getName().equals(key)).findFirst().orElseGet(() -> {
                 TaskOutputEntity entity = new TaskOutputEntity();
+                entity.setName(key);
                 userTaskInstanceEntity.addOutput(entity);
                 return entity;
             });
@@ -63,11 +67,11 @@ public class TaskOutputsEntityMapper {
     }
 
     public void mapEntityToInstance(UserTaskInstanceEntity userTaskInstanceEntity, UserTaskInstance userTaskInstance) {
-        userTaskInstance.getOutputs().clear();
-
-        userTaskInstanceEntity.getOutputs().forEach(TaskOutputEntity -> {
-            String value = TaskOutputEntity.getValue() == null ? null : new String(TaskOutputEntity.getValue(), StandardCharsets.UTF_8);
-            userTaskInstance.getOutputs().put(TaskOutputEntity.getName(), value);
+        Map<String, Object> outputs = new HashMap<>();
+        userTaskInstanceEntity.getOutputs().forEach(taskOutputEntity -> {
+            String value = taskOutputEntity.getValue() == null ? null : new String(taskOutputEntity.getValue(), StandardCharsets.UTF_8);
+            outputs.put(taskOutputEntity.getName(), JSONUtils.stringTreeToValue(value, taskOutputEntity.getJavaType()));
         });
+        ((DefaultUserTaskInstance) userTaskInstance).setOutputs(outputs);
     }
 }

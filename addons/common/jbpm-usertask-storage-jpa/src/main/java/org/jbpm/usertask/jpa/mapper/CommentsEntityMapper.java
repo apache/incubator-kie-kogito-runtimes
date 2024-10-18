@@ -20,11 +20,13 @@
 package org.jbpm.usertask.jpa.mapper;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.jbpm.usertask.jpa.model.CommentEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
 import org.jbpm.usertask.jpa.repository.CommentRepository;
 import org.kie.kogito.usertask.UserTaskInstance;
+import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.model.Comment;
 
 public class CommentsEntityMapper {
@@ -60,13 +62,14 @@ public class CommentsEntityMapper {
     }
 
     public void mapEntityToInstance(UserTaskInstanceEntity userTaskInstanceEntity, UserTaskInstance userTaskInstance) {
-        userTaskInstance.getComments().clear();
-        userTaskInstanceEntity.getComments().forEach(commentEntity -> {
+        List<Comment> comments = userTaskInstanceEntity.getComments().stream().map(commentEntity -> {
             Comment comment = new Comment(commentEntity.getId(), commentEntity.getUpdatedBy());
             comment.setId(commentEntity.getId());
             comment.setContent(commentEntity.getComment());
             comment.setUpdatedAt(commentEntity.getUpdatedAt());
-            userTaskInstance.addComment(comment);
-        });
+            return comment;
+        }).toList();
+
+        ((DefaultUserTaskInstance) userTaskInstance).setComments(comments);
     }
 }

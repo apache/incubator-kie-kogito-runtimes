@@ -83,7 +83,7 @@ public class UserTaskInstanceEntityMapper {
         UserTaskState.TerminationType terminationType = entity.getTerminationType() == null ? null : UserTaskState.TerminationType.valueOf(entity.getTerminationType());
         instance.setStatus(UserTaskState.of(entity.getStatus(), terminationType));
 
-        instance.setActuaOwner(entity.getActualOwner());
+        instance.setActualOwner(entity.getActualOwner());
         instance.setPotentialUsers(Set.copyOf(entity.getPotentialUsers()));
         instance.setPotentialGroups(Set.copyOf(entity.getPotentialGroups()));
         instance.setAdminUsers(Set.copyOf(entity.getAdminUsers()));

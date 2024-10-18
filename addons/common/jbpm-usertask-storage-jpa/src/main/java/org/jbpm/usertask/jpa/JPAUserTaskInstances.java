@@ -31,7 +31,7 @@ import org.kie.kogito.usertask.UserTaskInstances;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class JPAUserTaskInstances implements UserTaskInstances {
+public class JPAUserTaskInstances implements UserTaskInstances {
     public static final Logger LOGGER = LoggerFactory.getLogger(JPAUserTaskInstances.class);
 
     private final UserTaskInstanceRepository userTaskInstanceRepository;
@@ -68,6 +68,12 @@ public abstract class JPAUserTaskInstances implements UserTaskInstances {
 
     @Override
     public UserTaskInstance create(UserTaskInstance userTaskInstance) {
+        Optional<UserTaskInstanceEntity> optional = userTaskInstanceRepository.findById(userTaskInstance.getId());
+
+        if (optional.isPresent()) {
+            LOGGER.error("Cannot create userTaskInstance with id {}. Task Already exists.", userTaskInstance.getId());
+            throw new IllegalArgumentException("Cannot create userTaskInstance with id " + userTaskInstance.getId() + ". Task Already exists.");
+        }
 
         UserTaskInstanceEntity entity = new UserTaskInstanceEntity();
         entity.setId(userTaskInstance.getId());
@@ -75,8 +81,6 @@ public abstract class JPAUserTaskInstances implements UserTaskInstances {
         this.userTaskInstanceRepository.persist(entity);
 
         userTaskInstanceEntityMapper.mapTaskInstanceToEntity(userTaskInstance, entity);
-
-        this.userTaskInstanceRepository.update(entity);
 
         return this.reconnectUserTaskInstance.apply(userTaskInstance);
     }
