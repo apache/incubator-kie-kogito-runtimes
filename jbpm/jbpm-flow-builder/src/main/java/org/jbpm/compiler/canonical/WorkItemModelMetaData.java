@@ -80,7 +80,10 @@ public class WorkItemModelMetaData {
     private static final String PARAMS = "params";
 
     protected static final List<String> INTERNAL_FIELDS = Arrays.asList(TASK_NAME, "NodeName", "ActorId", "GroupId", "Priority", "Comment", "Skippable", "Content", "Locale",
-            "NotStartedNotify", "NotCompletedNotify", "NotCompletedReassign", "NotStartedReassign");
+            "NotStartedNotify", "NotCompletedNotify", "NotCompletedReassign", "NotStartedReassign",
+            "ExcludedOwnerId",
+            "BusinessAdministratorId",
+            "BusinessAdministratorGroupId");
 
     private final String packageName;
 

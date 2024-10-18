@@ -79,10 +79,14 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
 
         DefaultUserTaskInstance instance = (DefaultUserTaskInstance) userTask.createInstance();
+
+        instance.setExternalReferenceId(workItem.getStringId());
+
+        userTask.instances().create(instance);
+
         instance.setTaskName((String) workItem.getParameter(TASK_NAME));
         instance.setTaskDescription((String) workItem.getParameter(DESCRIPTION));
         instance.setTaskPriority(priorityInteger);
-        instance.setExternalReferenceId(workItem.getStringId());
 
         instance.setMetadata("ProcessId", workItem.getProcessInstance().getProcessId());
         instance.setMetadata("ProcessType", workItem.getProcessInstance().getProcess().getType());
@@ -93,7 +97,6 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         instance.setMetadata("RootProcessInstanceId", workItem.getProcessInstance().getRootProcessInstanceId());
         instance.setMetadata("ParentProcessInstanceId", workItem.getProcessInstance().getParentProcessInstanceId());
 
-        userTask.instances().create(instance);
         instance.fireInitialStateChange();
         workItem.getParameters().forEach(instance::setInput);
 
