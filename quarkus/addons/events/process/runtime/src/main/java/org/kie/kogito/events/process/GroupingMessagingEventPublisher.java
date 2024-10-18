@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.process.MultipleProcessInstanceDataEvent;
 import org.kie.kogito.event.process.ProcessInstanceDataEvent;
@@ -45,6 +46,9 @@ public class GroupingMessagingEventPublisher extends AbstractMessagingEventPubli
         publish(Collections.singletonList(event));
     }
 
+    @ConfigProperty(name = "kogito.events.grouping.optimize", defaultValue = "false")
+    private boolean optimize;
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void publish(Collection<DataEvent<?>> events) {
@@ -62,7 +66,11 @@ public class GroupingMessagingEventPublisher extends AbstractMessagingEventPubli
         if (firstEvent instanceof UserTaskInstanceDataEvent) {
             publishToTopic(entry.getKey(), new MultipleUserTaskInstanceDataEvent(source, (Collection<UserTaskInstanceDataEvent<?>>) entry.getValue()));
         } else if (firstEvent instanceof ProcessInstanceDataEvent) {
-            publishToTopic(entry.getKey(), new MultipleProcessInstanceDataEvent(source, (Collection<ProcessInstanceDataEvent<?>>) entry.getValue()));
+            MultipleProcessInstanceDataEvent sent = new MultipleProcessInstanceDataEvent(source, (Collection<ProcessInstanceDataEvent<?>>) entry.getValue());
+            if (optimize) {
+                sent.setDataContentType(MultipleProcessInstanceDataEvent.BINARY_CONTENT_TYPE);
+            }
+            publishToTopic(entry.getKey(), sent);
         } else {
             for (DataEvent<?> event : (Collection<DataEvent<?>>) entry.getValue()) {
                 publishToTopic(entry.getKey(), event);

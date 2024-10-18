@@ -18,18 +18,13 @@
  */
 package org.kie.kogito.event.process;
 
-import java.net.URI;
-import java.util.Collection;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-public class MultipleProcessInstanceDataEvent extends ProcessInstanceDataEvent<Collection<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>>> {
+public interface KogitoMarshallEventSupport {
 
-    public static final String MULTIPLE_TYPE = "MultipleProcessInstanceDataEvent";
-    public static final String BINARY_CONTENT_TYPE = "application/octet-stream";
+    void writeEvent(DataOutput out) throws IOException;
 
-    public MultipleProcessInstanceDataEvent() {
-    }
-
-    public MultipleProcessInstanceDataEvent(URI source, Collection<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>> body) {
-        super(MULTIPLE_TYPE, source, body);
-    }
+    void readEvent(DataInput in) throws IOException;
 }
