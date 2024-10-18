@@ -80,30 +80,27 @@ create table jbpm_user_tasks_comments (
 );
 
 create table jbpm_user_tasks_inputs (
-    id              bigint not null,
     task_id         varchar(50) not null,
     input_name      varchar(255) not null,
     input_value     bytea,
     java_type       varchar(255),
-    primary key (id)
+    primary key (task_id, input_name)
 );
 
 create table jbpm_user_tasks_outputs (
-    id              bigint not null,
     task_id         varchar(50) not null,
     output_name     varchar(255) not null,
     output_value    bytea,
     java_type       varchar(255),
-    primary key (id)
+    primary key (task_id, output_name)
 );
 
 create table jbpm_user_tasks_metadata (
-    id             bigint not null,
     task_id        varchar(50),
     metadata_name  varchar(255) not null,
     metadata_value varchar(512),
     java_type      varchar(255),
-    primary key (id)
+    primary key (task_id, metadata_name)
 );
 
 alter table if exists jbpm_user_tasks_potential_users
@@ -165,6 +162,3 @@ drop constraint if exists fk_jbpm_user_tasks_metadata_tid cascade;
 
 alter table if exists jbpm_user_tasks_metadata
 add constraint fk_jbpm_user_tasks_metadata_tid foreign key (task_id) references jbpm_user_tasks(id) on delete cascade;
-
-create sequence jbpm_user_task_data_mapping_id_seq start with 1 increment by 10;
-create sequence jbpm_user_task_metadata_id_seq start with 1 increment by 10;

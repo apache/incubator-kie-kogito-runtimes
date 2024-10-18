@@ -21,13 +21,16 @@ package org.jbpm.usertask.jpa.mapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.jbpm.usertask.jpa.mapper.json.utils.JSONUtils;
+import org.jbpm.usertask.jpa.model.TaskInputEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
-import org.jbpm.usertask.jpa.model.data.TaskInputEntity;
 import org.jbpm.usertask.jpa.repository.TaskInputRepository;
 import org.kie.kogito.usertask.UserTaskInstance;
+import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 
 public class TaskInputsEntityMapper {
 
@@ -51,6 +54,7 @@ public class TaskInputsEntityMapper {
         userTaskInstance.getInputs().forEach((key, value) -> {
             TaskInputEntity inputEntity = userTaskInstanceEntity.getInputs().stream().filter(entity -> entity.getName().equals(key)).findFirst().orElseGet(() -> {
                 TaskInputEntity entity = new TaskInputEntity();
+                entity.setName(key);
                 userTaskInstanceEntity.addInput(entity);
                 return entity;
             });
@@ -63,11 +67,11 @@ public class TaskInputsEntityMapper {
     }
 
     public void mapEntityToInstance(UserTaskInstanceEntity userTaskInstanceEntity, UserTaskInstance userTaskInstance) {
-        userTaskInstance.getInputs().clear();
-
+        Map<String, Object> inputs = new HashMap<>();
         userTaskInstanceEntity.getInputs().forEach(taskInputEntity -> {
             String value = taskInputEntity.getValue() == null ? null : new String(taskInputEntity.getValue(), StandardCharsets.UTF_8);
-            userTaskInstance.getInputs().put(taskInputEntity.getName(), value);
+            inputs.put(taskInputEntity.getName(), JSONUtils.stringTreeToValue(value, taskInputEntity.getJavaType()));
         });
+        ((DefaultUserTaskInstance) userTaskInstance).setInputs(inputs);
     }
 }

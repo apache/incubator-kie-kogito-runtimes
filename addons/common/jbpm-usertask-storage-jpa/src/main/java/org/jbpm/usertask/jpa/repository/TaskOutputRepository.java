@@ -19,7 +19,7 @@
 
 package org.jbpm.usertask.jpa.repository;
 
-import org.jbpm.usertask.jpa.model.data.TaskOutputEntity;
+import org.jbpm.usertask.jpa.model.TaskOutputEntity;
 
 public class TaskOutputRepository extends BaseRepository<TaskOutputEntity> {
 

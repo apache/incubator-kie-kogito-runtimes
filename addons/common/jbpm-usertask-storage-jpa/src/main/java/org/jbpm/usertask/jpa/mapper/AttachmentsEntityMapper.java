@@ -21,11 +21,13 @@ package org.jbpm.usertask.jpa.mapper;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 
 import org.jbpm.usertask.jpa.model.AttachmentEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
 import org.jbpm.usertask.jpa.repository.AttachmentRepository;
 import org.kie.kogito.usertask.UserTaskInstance;
+import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.model.Attachment;
 
 public class AttachmentsEntityMapper {
@@ -61,13 +63,16 @@ public class AttachmentsEntityMapper {
     }
 
     public void mapEntityToInstance(UserTaskInstanceEntity userTaskInstanceEntity, UserTaskInstance userTaskInstance) {
-        userTaskInstance.getAttachments().clear();
-        userTaskInstanceEntity.getAttachments().forEach(attachmentEntity -> {
+
+        List<Attachment> attachments = userTaskInstanceEntity.getAttachments().stream().map(attachmentEntity -> {
             Attachment attachment = new Attachment(attachmentEntity.getId(), attachmentEntity.getUpdatedBy());
             attachment.setId(attachmentEntity.getId());
+            attachment.setName(attachmentEntity.getName());
             attachment.setContent(URI.create(attachmentEntity.getUrl()));
             attachment.setUpdatedAt(attachmentEntity.getUpdatedAt());
-            userTaskInstance.addAttachment(attachment);
-        });
+            return attachment;
+        }).toList();
+
+        ((DefaultUserTaskInstance) userTaskInstance).setAttachments(attachments);
     }
 }

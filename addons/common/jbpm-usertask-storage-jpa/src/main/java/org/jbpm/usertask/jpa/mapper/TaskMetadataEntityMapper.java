@@ -20,6 +20,8 @@
 package org.jbpm.usertask.jpa.mapper;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.jbpm.usertask.jpa.mapper.json.utils.JSONUtils;
@@ -27,6 +29,7 @@ import org.jbpm.usertask.jpa.model.TaskMetadataEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
 import org.jbpm.usertask.jpa.repository.TaskMetadataRepository;
 import org.kie.kogito.usertask.UserTaskInstance;
+import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 
 public class TaskMetadataEntityMapper {
 
@@ -62,10 +65,10 @@ public class TaskMetadataEntityMapper {
     }
 
     public void mapEntityToInstance(UserTaskInstanceEntity userTaskInstanceEntity, UserTaskInstance userTaskInstance) {
-        userTaskInstance.getMetadata().clear();
-        userTaskInstanceEntity.getMetadata().forEach(metadataEntity -> {
-            Object value = JSONUtils.stringTreeToValue(metadataEntity.getValue(), metadataEntity.getJavaType());
-            userTaskInstance.getMetadata().put(metadataEntity.getName(), value);
+        Map<String, Object> metadata = new HashMap<>();
+        userTaskInstanceEntity.getMetadata().forEach(metadataEntry -> {
+            metadata.put(metadataEntry.getName(), JSONUtils.stringTreeToValue(metadataEntry.getValue(), metadataEntry.getJavaType()));
         });
+        ((DefaultUserTaskInstance) userTaskInstance).setMetadata(metadata);
     }
 }

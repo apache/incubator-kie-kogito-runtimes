@@ -21,9 +21,6 @@ package org.jbpm.usertask.jpa.model;
 
 import java.util.*;
 
-import org.jbpm.usertask.jpa.model.data.TaskInputEntity;
-import org.jbpm.usertask.jpa.model.data.TaskOutputEntity;
-
 import jakarta.persistence.*;
 
 @Entity

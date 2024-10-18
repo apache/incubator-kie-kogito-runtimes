@@ -19,7 +19,7 @@
 
 package org.jbpm.usertask.jpa.repository;
 
-import org.jbpm.usertask.jpa.model.data.TaskInputEntity;
+import org.jbpm.usertask.jpa.model.TaskInputEntity;
 
 public class TaskInputRepository extends BaseRepository<TaskInputEntity> {
 

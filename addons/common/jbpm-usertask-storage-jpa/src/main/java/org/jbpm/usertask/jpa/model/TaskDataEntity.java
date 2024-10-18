@@ -17,23 +17,22 @@
  * under the License.
  */
 
-package org.jbpm.usertask.jpa.models;
+package org.jbpm.usertask.jpa.model;
 
 import java.util.Objects;
 
-public class Person {
-    String name;
-    String lastName;
-    int age;
+import jakarta.persistence.*;
 
-    public Person() {
-    }
+@MappedSuperclass
+public abstract class TaskDataEntity<T> {
 
-    public Person(String name, String lastName, int age) {
-        this.name = name;
-        this.lastName = lastName;
-        this.age = age;
-    }
+    @Id
+    protected String name;
+
+    protected T value;
+
+    @Column(name = "java_type")
+    protected String javaType;
 
     public String getName() {
         return name;
@@ -43,21 +42,25 @@ public class Person {
         this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public T getValue() {
+        return value;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setValue(T value) {
+        this.value = value;
     }
 
-    public int getAge() {
-        return age;
+    public String getJavaType() {
+        return javaType;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setJavaType(String javaType) {
+        this.javaType = javaType;
     }
+
+    public abstract UserTaskInstanceEntity getTaskInstance();
+
+    public abstract void setTaskInstance(UserTaskInstanceEntity taskInstance);
 
     @Override
     public boolean equals(Object o) {
@@ -65,12 +68,12 @@ public class Person {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        Person person = (Person) o;
-        return age == person.age && Objects.equals(name, person.name) && Objects.equals(lastName, person.lastName);
+        TaskDataEntity<?> that = (TaskDataEntity<?>) o;
+        return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue()) && Objects.equals(getJavaType(), that.getJavaType());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, lastName, age);
+        return Objects.hash(getName(), getValue(), getJavaType());
     }
 }
