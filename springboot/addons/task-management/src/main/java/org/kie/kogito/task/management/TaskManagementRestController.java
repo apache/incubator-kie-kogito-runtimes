@@ -61,8 +61,7 @@ public class TaskManagementRestController {
     }
 
     @PatchMapping(value = "{taskId}", produces = APPLICATION_JSON_VALUE)
-    public TaskInfo partialUpdateTask(@PathVariable("processId") String processId,
-            @PathVariable("processInstanceId") String processInstanceId,
+    public TaskInfo partialUpdateTask(
             @PathVariable("taskId") String taskId,
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "group", required = false) List<String> groups,
