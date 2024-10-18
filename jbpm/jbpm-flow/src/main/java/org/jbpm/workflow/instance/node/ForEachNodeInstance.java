@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -353,10 +354,22 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         return 1;
     }
 
+
     @Override
-    protected Set<Class<? extends org.kie.api.runtime.process.NodeInstance>> getNotSerializableClasses() {
-        return NOT_SERIALIZABLE_CLASSES;
+    public Collection<org.kie.api.runtime.process.NodeInstance> getSerializableNodeInstances() {
+        return getNodeInstances().stream().filter(ForEachNodeInstance::isSerializable).collect(Collectors.toUnmodifiableList());
     }
+
+    /**
+     * Check if the given <code>org.kie.api.runtime.process.NodeInstance</code> is serializable.
+     *
+     * @param toCheck
+     * @return
+     */
+    static boolean isSerializable(org.kie.api.runtime.process.NodeInstance toCheck) {
+        return !NOT_SERIALIZABLE_CLASSES.contains(toCheck.getClass());
+    }
+
 
     private class ForEachNodeInstanceResolverFactory extends NodeInstanceResolverFactory {
 

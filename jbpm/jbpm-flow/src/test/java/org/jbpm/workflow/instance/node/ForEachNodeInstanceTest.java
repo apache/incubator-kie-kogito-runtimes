@@ -67,10 +67,10 @@ class ForEachNodeInstanceTest {
     }
 
     @Test
-    void getNotSerializableClasses() {
-        Set<Class<? extends NodeInstance>> retrieved = new ForEachNodeInstance().getNotSerializableClasses();
-        assertThat(retrieved).isNotNull()
-                .hasSize(1)
-                .contains(ForEachNodeInstance.ForEachJoinNodeInstance.class);
+    void isSerializable() {
+        assertThat(ForEachNodeInstance.isSerializable(new CompositeNodeInstance())).isTrue();
+        assertThat(ForEachNodeInstance.isSerializable(new ForEachNodeInstance())).isTrue();
+        assertThat(ForEachNodeInstance.isSerializable(new ForEachNodeInstance().new ForEachJoinNodeInstance())).isFalse();
     }
+
 }
