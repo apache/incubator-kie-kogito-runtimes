@@ -89,7 +89,7 @@ class ProtobufProcessInstanceWriterTest {
             ArgumentCaptor<List<Map.Entry<String, Integer>>> iterationlevelsCapture = ArgumentCaptor.forClass(ArrayList.class);
             verify(spiedProtobufProcessInstanceWriter).buildWorkflowContext(nodeInstancesCapture.capture(), exclusiveGroupInstancesCapture.capture(), variablesCapture.capture(),
                     iterationlevelsCapture.capture());
-            Collection<NodeInstance> expected = nodeInstance.getSerializableNodeInstances();
+            Collection<NodeInstance> expected = nodeInstance.getNodeInstances();
             List<NodeInstance> retrieved = nodeInstancesCapture.getValue();
             assertThat(retrieved).isNotNull().hasSize(expected.size()).allMatch(expected::contains);
         }

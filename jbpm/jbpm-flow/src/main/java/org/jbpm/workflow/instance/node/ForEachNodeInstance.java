@@ -354,7 +354,6 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         return 1;
     }
 
-    @Override
     public Collection<org.kie.api.runtime.process.NodeInstance> getSerializableNodeInstances() {
         return getNodeInstances().stream().filter(ForEachNodeInstance::isSerializable).collect(Collectors.toUnmodifiableList());
     }

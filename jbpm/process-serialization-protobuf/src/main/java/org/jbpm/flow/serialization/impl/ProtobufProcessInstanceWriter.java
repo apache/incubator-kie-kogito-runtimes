@@ -249,7 +249,7 @@ public class ProtobufProcessInstanceWriter {
     }
 
     protected <T extends NodeInstanceContainer & ContextInstanceContainer & ContextableInstance> WorkflowContext buildWorkflowContext(T nodeInstance) {
-        List<NodeInstance> nodeInstances = new ArrayList<>(nodeInstance.getSerializableNodeInstances());
+        List<NodeInstance> nodeInstances = new ArrayList<>(nodeInstance.getNodeInstances());
         List<ContextInstance> exclusiveGroupInstances = nodeInstance.getContextInstances(ExclusiveGroup.EXCLUSIVE_GROUP);
         VariableScopeInstance variableScopeInstance = (VariableScopeInstance) nodeInstance.getContextInstance(VariableScope.VARIABLE_SCOPE);
         List<Map.Entry<String, Object>> variables = (variableScopeInstance != null) ? new ArrayList<>(variableScopeInstance.getVariables().entrySet()) : Collections.emptyList();
