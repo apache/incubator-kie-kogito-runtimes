@@ -781,18 +781,6 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-springboot-flyway</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-springboot-flyway</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
       <!-- Grafana API     -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -1773,6 +1761,17 @@
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
 
       <!-- Flyway Add-on-->
       <dependency>
@@ -1808,7 +1807,17 @@
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
-
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-flyway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-flyway</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
 
       <!-- drools -->
       <dependency>

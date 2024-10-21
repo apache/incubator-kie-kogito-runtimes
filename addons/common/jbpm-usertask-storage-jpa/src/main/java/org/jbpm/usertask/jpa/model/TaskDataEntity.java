@@ -27,8 +27,15 @@ import jakarta.persistence.*;
 public abstract class TaskDataEntity<T> {
 
     @Id
+    @Column(name = "name")
     protected String name;
 
+    @Id
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "task_id")
+    protected UserTaskInstanceEntity taskInstance;
+
+    @Column(name = "value")
     protected T value;
 
     @Column(name = "java_type")
@@ -40,6 +47,14 @@ public abstract class TaskDataEntity<T> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public UserTaskInstanceEntity getTaskInstance() {
+        return taskInstance;
+    }
+
+    public void setTaskInstance(UserTaskInstanceEntity taskInstance) {
+        this.taskInstance = taskInstance;
     }
 
     public T getValue() {
@@ -58,10 +73,6 @@ public abstract class TaskDataEntity<T> {
         this.javaType = javaType;
     }
 
-    public abstract UserTaskInstanceEntity getTaskInstance();
-
-    public abstract void setTaskInstance(UserTaskInstanceEntity taskInstance);
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -69,11 +80,12 @@ public abstract class TaskDataEntity<T> {
         if (o == null || getClass() != o.getClass())
             return false;
         TaskDataEntity<?> that = (TaskDataEntity<?>) o;
-        return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue()) && Objects.equals(getJavaType(), that.getJavaType());
+        return Objects.equals(getName(), that.getName()) && Objects.equals(getTaskInstance(), that.getTaskInstance()) && Objects.equals(getValue(),
+                that.getValue()) && Objects.equals(getJavaType(), that.getJavaType());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getValue(), getJavaType());
+        return Objects.hash(getName(), getTaskInstance(), getValue(), getJavaType());
     }
 }

@@ -118,6 +118,9 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
 
     @Override
     public Optional<WorkItemTransition> completeWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
+        if (transition.data().containsKey("Notify")) {
+            return Optional.empty();
+        }
         UserTasks userTasks = handler.getApplication().get(UserTasks.class);
         UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
         userTask.instances().findById(workItem.getExternalReferenceId()).ifPresent(ut -> {
@@ -131,6 +134,9 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
 
     @Override
     public Optional<WorkItemTransition> abortWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
+        if (transition.data().containsKey("Notify")) {
+            return Optional.empty();
+        }
         UserTasks userTasks = handler.getApplication().get(UserTasks.class);
         UserTask userTask = userTasks.userTaskById((String) workItem.getParameter(KogitoWorkItem.PARAMETER_UNIQUE_TASK_ID));
         userTask.instances().findById(workItem.getExternalReferenceId()).ifPresent(ut -> {

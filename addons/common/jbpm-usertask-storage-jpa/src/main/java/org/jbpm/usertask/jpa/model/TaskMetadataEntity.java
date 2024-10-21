@@ -27,18 +27,9 @@ import jakarta.persistence.*;
         @AttributeOverride(name = "name", column = @Column(name = "metadata_name")),
         @AttributeOverride(name = "value", column = @Column(name = "metadata_value"))
 })
+@AssociationOverride(name = "taskInstance",
+        joinColumns = @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "jbpm_user_tasks_metadata_tid")))
+@IdClass(TaskDataEntityPK.class)
 public class TaskMetadataEntity extends TaskDataEntity<String> {
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "jbpm_user_tasks_metadata_tid"))
-    private UserTaskInstanceEntity taskInstance;
-
-    public UserTaskInstanceEntity getTaskInstance() {
-        return taskInstance;
-    }
-
-    public void setTaskInstance(UserTaskInstanceEntity taskInstance) {
-        this.taskInstance = taskInstance;
-    }
 
 }

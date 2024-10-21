@@ -19,15 +19,18 @@
 
 package org.jbpm.usertask.jpa.mapper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.jbpm.usertask.jpa.model.CommentEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
-import org.jbpm.usertask.jpa.repository.CommentRepository;
+import org.jbpm.usertask.jpa.quarkus.repository.CommentRepository;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.model.Comment;
+
+import static java.util.stream.Collectors.toCollection;
 
 public class CommentsEntityMapper {
 
@@ -68,7 +71,7 @@ public class CommentsEntityMapper {
             comment.setContent(commentEntity.getComment());
             comment.setUpdatedAt(commentEntity.getUpdatedAt());
             return comment;
-        }).toList();
+        }).collect(toCollection(ArrayList::new));
 
         ((DefaultUserTaskInstance) userTaskInstance).setComments(comments);
     }

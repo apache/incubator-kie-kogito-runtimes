@@ -19,8 +19,6 @@
 
 package org.jbpm.usertask.jpa.model;
 
-import java.util.Objects;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -29,37 +27,9 @@ import jakarta.persistence.*;
         @AttributeOverride(name = "name", column = @Column(name = "output_name")),
         @AttributeOverride(name = "value", column = @Column(name = "output_value"))
 })
+@AssociationOverride(name = "taskInstance",
+        joinColumns = @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "jbpm_user_tasks_outputs_tid")))
+@IdClass(TaskDataEntityPK.class)
 public class TaskOutputEntity extends TaskDataEntity<byte[]> {
 
-    @Id
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "jbpm_user_tasks_outputs_tid"))
-    private UserTaskInstanceEntity taskInstance;
-
-    @Override
-    public UserTaskInstanceEntity getTaskInstance() {
-        return taskInstance;
-    }
-
-    @Override
-    public void setTaskInstance(UserTaskInstanceEntity taskInstance) {
-        this.taskInstance = taskInstance;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        if (!super.equals(o))
-            return false;
-        TaskOutputEntity that = (TaskOutputEntity) o;
-        return Objects.equals(getTaskInstance(), that.getTaskInstance());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), getTaskInstance());
-    }
 }

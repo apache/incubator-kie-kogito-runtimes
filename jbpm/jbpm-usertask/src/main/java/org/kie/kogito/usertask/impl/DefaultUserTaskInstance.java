@@ -66,7 +66,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     @JsonIgnore
     private KogitoUserTaskEventSupport userTaskEventSupport;
     @JsonIgnore
-    private UserTaskLifeCycle setUserTaskLifeCycle;
+    private UserTaskLifeCycle userTaskLifeCycle;
 
     public DefaultUserTaskInstance() {
         this.inputs = new HashMap<>();
@@ -93,7 +93,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     }
 
     public void setUserTaskLifeCycle(UserTaskLifeCycle userTaskLifeCycle) {
-        this.setUserTaskLifeCycle = userTaskLifeCycle;
+        this.userTaskLifeCycle = userTaskLifeCycle;
     }
 
     public void setInstances(UserTaskInstances instances) {
@@ -157,15 +157,14 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     @Override
     public void transition(String transitionId, Map<String, Object> data, IdentityProvider identity) {
-        Optional<UserTaskTransitionToken> next = Optional.of(this.setUserTaskLifeCycle.newTransitionToken(transitionId, this, data));
+        Optional<UserTaskTransitionToken> next = Optional.of(this.userTaskLifeCycle.newTransitionToken(transitionId, this, data));
         while (next.isPresent()) {
             UserTaskTransitionToken transition = next.get();
-            next = this.setUserTaskLifeCycle.transition(this, transition, identity);
+            next = this.userTaskLifeCycle.transition(this, transition, identity);
             this.status = transition.target();
-            this.updatePersistenceOrRemove();
             this.userTaskEventSupport.fireOneUserTaskStateChange(this, transition.source(), transition.target());
         }
-
+        this.updatePersistenceOrRemove();
     }
 
     private void updatePersistence() {

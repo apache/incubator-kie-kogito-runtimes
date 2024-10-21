@@ -28,7 +28,7 @@ import java.util.Objects;
 import org.jbpm.usertask.jpa.mapper.json.utils.JSONUtils;
 import org.jbpm.usertask.jpa.model.TaskInputEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
-import org.jbpm.usertask.jpa.repository.TaskInputRepository;
+import org.jbpm.usertask.jpa.quarkus.repository.TaskInputRepository;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 

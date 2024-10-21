@@ -20,15 +20,18 @@
 package org.jbpm.usertask.jpa.mapper;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.jbpm.usertask.jpa.model.AttachmentEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
-import org.jbpm.usertask.jpa.repository.AttachmentRepository;
+import org.jbpm.usertask.jpa.quarkus.repository.AttachmentRepository;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.model.Attachment;
+
+import static java.util.stream.Collectors.toCollection;
 
 public class AttachmentsEntityMapper {
     private final AttachmentRepository repository;
@@ -71,7 +74,7 @@ public class AttachmentsEntityMapper {
             attachment.setContent(URI.create(attachmentEntity.getUrl()));
             attachment.setUpdatedAt(attachmentEntity.getUpdatedAt());
             return attachment;
-        }).toList();
+        }).collect(toCollection(ArrayList::new));
 
         ((DefaultUserTaskInstance) userTaskInstance).setAttachments(attachments);
     }

@@ -19,11 +19,15 @@
 
 package org.jbpm.usertask.jpa;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+
 import org.assertj.core.api.Assertions;
 import org.jbpm.usertask.jpa.mapper.*;
 import org.jbpm.usertask.jpa.mapper.utils.TestUtils;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
-import org.jbpm.usertask.jpa.repository.UserTaskInstanceRepository;
+import org.jbpm.usertask.jpa.quarkus.repository.UserTaskInstanceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,10 +35,6 @@ import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -127,7 +127,7 @@ public class JPAUserTaskInstancesTest {
         List<UserTaskInstance> instances = jpaUserTaskInstances.findByIdentity(IdentityProviders.of("user", "group"));
 
         Assertions.assertThat(instances)
-                        .hasSize(2);
+                .hasSize(2);
 
         verify(userTaskInstanceEntityMapper, times(2)).mapTaskEntityToInstance(any());
         verify(reconnectUserTaskInstance, times(2)).apply(any());

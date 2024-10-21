@@ -26,7 +26,7 @@ import org.assertj.core.api.Assertions;
 import org.jbpm.usertask.jpa.mapper.utils.TestUtils;
 import org.jbpm.usertask.jpa.model.AttachmentEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
-import org.jbpm.usertask.jpa.repository.AttachmentRepository;
+import org.jbpm.usertask.jpa.quarkus.repository.AttachmentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
