@@ -18,7 +18,9 @@
  */
 package org.jbpm.process.core.timer;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -29,6 +31,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -116,12 +119,17 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     public BusinessCalendarImpl(Properties configuration, SessionClock clock) {
         this.clock = clock;
         if (configuration == null) {
-            try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(BUSINESS_CALENDAR_PATH)) {
-                businessCalendarConfiguration = new Properties();
-                businessCalendarConfiguration.load(is);
-            } catch (Exception e) {
-                logger.error("Error while loading properties for business calendar", e);
+            businessCalendarConfiguration = new Properties();
+            URL resource = Thread.currentThread().getContextClassLoader().getResource(BUSINESS_CALENDAR_PATH);
+            if (Objects.nonNull(resource)) {
+                try (InputStream is = resource.openStream()) {
+                    businessCalendarConfiguration.load(is);
+                } catch (IOException e) {
+                    logger.error("Error while loading properties for business calendar", e);
+                    throw new RuntimeException("Error while loading properties for business calendar", e);
+                }
             }
+
         } else {
             this.businessCalendarConfiguration = configuration;
         }
@@ -129,10 +137,6 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     protected void init() {
-        if (this.businessCalendarConfiguration == null) {
-            throw new IllegalArgumentException("BusinessCalendar configuration was not provided.");
-        }
-
         daysPerWeek = getPropertyAsInt(DAYS_PER_WEEK, "5");
         hoursInDay = getPropertyAsInt(HOURS_PER_DAY, "8");
         startHour = getPropertyAsInt(START_HOUR, "9");
