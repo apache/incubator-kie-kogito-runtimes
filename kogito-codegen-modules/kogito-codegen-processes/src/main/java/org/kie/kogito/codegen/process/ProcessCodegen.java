@@ -48,6 +48,8 @@ import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.core.SemanticModules;
 import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.core.validation.ProcessValidatorRegistry;
+import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
+import org.jbpm.workflow.instance.WorkflowProcessParameters;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
@@ -63,7 +65,6 @@ import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMeta;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
-import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.validation.ValidationException;
@@ -79,6 +80,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_PATH;
+import static org.kie.kogito.codegen.process.util.CodegenUtil.isTransactionEnabled;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.buildDashboardName;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.generateOperationalDashboard;
 import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
@@ -297,6 +299,9 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // first we generate all the data classes from variable declarations
         for (WorkflowProcess workFlowProcess : processes.values()) {
+            if (isTransactionEnabled(this, context())) {
+                ((WorkflowProcessImpl) workFlowProcess).setMetaData(WorkflowProcessParameters.WORKFLOW_PARAM_TRANSACTIONS.getName(), "true");
+            }
             if (!skipModelGeneration(workFlowProcess)) {
                 ModelClassGenerator mcg = new ModelClassGenerator(context(), workFlowProcess);
                 processIdToModelGenerator.put(workFlowProcess.getId(), mcg);
@@ -373,7 +378,7 @@ public class ProcessCodegen extends AbstractGenerator {
                         .withWorkItems(processIdToWorkItemModel.get(workFlowProcess.getId()))
                         .withSignals(metaData.getSignals())
                         .withTriggers(metaData.isStartable(), metaData.isDynamic(), metaData.getTriggers())
-                        .withTransaction(CodegenUtil.isTransactionEnabled(this, context()));
+                        .withTransaction(isTransactionEnabled(this, context()));
 
                 rgs.add(processResourceGenerator);
             }
