@@ -31,6 +31,7 @@ import org.kie.kogito.timer.SessionPseudoClock;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class BusinessCalendarImplTest extends AbstractBaseTest {
 
@@ -323,6 +324,11 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("1m");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm:ss", result)).isEqualTo(expectedDate);
+    }
+
+    @Test
+    public void testBusinessCalendarWithoutProvidedConfiguration(){
+        assertDoesNotThrow(() -> new BusinessCalendarImpl());
     }
 
     @Test
