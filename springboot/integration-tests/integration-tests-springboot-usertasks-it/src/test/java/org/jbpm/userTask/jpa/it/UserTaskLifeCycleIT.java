@@ -26,6 +26,7 @@ import org.acme.travels.Traveller;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.it.KogitoSpringbootApplication;
 import org.kie.kogito.testcontainers.springboot.PostgreSqlSpringBootTestResource;
+import org.kie.kogito.usertask.model.TransitionInfo;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -33,7 +34,6 @@ import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
 @ContextConfiguration(initializers = PostgreSqlSpringBootTestResource.class)
@@ -85,8 +85,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .when()
                 .queryParam("user", "manager")
                 .queryParam("group", "department-managers")
-                .queryParam("transitionId", "complete")
-                .body(Map.of("approved", true))
+                .body(new TransitionInfo("complete", Map.of("approved", true)))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
                 .statusCode(200)
@@ -146,7 +145,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .body(Map.of())
                 .queryParam("user", "manager")
                 .queryParam("group", "department-managers")
-                .queryParam("transitionId", "claim")
+                .body(new TransitionInfo("claim"))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
                 .statusCode(500);
@@ -157,7 +156,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .body(Map.of())
                 .queryParam("user", "john")
                 .queryParam("group", "managers")
-                .queryParam("transitionId", "claim")
+                .body(new TransitionInfo("claim"))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
                 .statusCode(200)
@@ -178,8 +177,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .when()
                 .queryParam("user", "john")
                 .queryParam("group", "managers")
-                .queryParam("transitionId", "complete")
-                .body(Map.of("approved", true))
+                .body(new TransitionInfo("complete", Map.of("approved", true)))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
                 .statusCode(200)

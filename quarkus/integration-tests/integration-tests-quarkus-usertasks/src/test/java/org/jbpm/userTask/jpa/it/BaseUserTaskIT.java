@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.acme.travels.Traveller;
 
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
@@ -34,6 +35,10 @@ public abstract class BaseUserTaskIT {
     public static final String PROCESS_ID = "approvals";
     public static final String USER_TASKS_ENDPOINT = "/usertasks/instance";
     public static final String USER_TASKS_INSTANCE_ENDPOINT = USER_TASKS_ENDPOINT + "/{taskId}";
+
+    static {
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    }
 
     public String startProcessInstance(Traveller traveller) {
         final String pid = given().contentType(ContentType.JSON)

@@ -29,9 +29,6 @@ import org.kie.kogito.usertask.model.AttachmentInfo;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.restassured.RestAssured;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
@@ -44,15 +41,11 @@ public class UserTaskAttachmentsIT extends BaseUserTaskIT {
     public static final String USER_TASKS_INSTANCE_ATTACHMENTS_ENDPOINT = USER_TASKS_INSTANCE_ENDPOINT + "/attachments";
     public static final String USER_TASKS_INSTANCE_ATTACHMENT = USER_TASKS_INSTANCE_ATTACHMENTS_ENDPOINT + "/{attachmentId}";
 
-    static {
-        RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
-    }
-
     @Test
     public void testUserTaskAttachments() {
         Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American", new Address("main street", "Boston", "10005", "US"));
 
-        final String pid = startProcessInstance(traveller);
+        startProcessInstance(traveller);
 
         String taskId = given().contentType(ContentType.JSON)
                 .when()

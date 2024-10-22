@@ -25,26 +25,19 @@ import org.acme.travels.Address;
 import org.acme.travels.Traveller;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.testcontainers.quarkus.PostgreSqlQuarkusTestResource;
+import org.kie.kogito.usertask.model.TransitionInfo;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.restassured.RestAssured;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.equalTo;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(value = PostgreSqlQuarkusTestResource.class, restrictToAnnotatedClass = true)
 public class UserTaskLifeCycleIT extends BaseUserTaskIT {
     public static final String USER_TASKS_INSTANCE_TRANSITION_ENDPOINT = USER_TASKS_INSTANCE_ENDPOINT + "/transition";
-
-    static {
-        RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
-    }
 
     @Test
     public void testUserTaskLifeCycle() {
@@ -91,8 +84,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .when()
                 .queryParam("user", "manager")
                 .queryParam("group", "department-managers")
-                .queryParam("transitionId", "complete")
-                .body(Map.of("approved", true))
+                .body(new TransitionInfo("complete", Map.of("approved", true)))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
                 .statusCode(200)
@@ -150,7 +142,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "manager")
-                .queryParam("transitionId", "claim")
+                .body(new TransitionInfo("claim"))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
                 .statusCode(500);
@@ -160,7 +152,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .when()
                 .queryParam("user", "john")
                 .queryParam("group", "managers")
-                .queryParam("transitionId", "claim")
+                .body(new TransitionInfo("claim"))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
                 .statusCode(200)
@@ -181,8 +173,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .when()
                 .queryParam("user", "john")
                 .queryParam("group", "managers")
-                .queryParam("transitionId", "complete")
-                .body(Map.of("approved", true))
+                .body(new TransitionInfo("complete", Map.of("approved", true)))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
                 .statusCode(200)
