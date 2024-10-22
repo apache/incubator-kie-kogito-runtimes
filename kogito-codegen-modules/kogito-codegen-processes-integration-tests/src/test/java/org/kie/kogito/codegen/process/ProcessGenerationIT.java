@@ -71,6 +71,7 @@ import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenIT;
 import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcess;
@@ -82,6 +83,7 @@ import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
 import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_ENTER;
 import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
+import static org.jbpm.workflow.instance.WorkflowProcessParameters.WORKFLOW_PARAM_TRANSACTIONS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -108,7 +110,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ProcessGenerationIT extends AbstractCodegenIT {
 
     private static final Collection<String> IGNORED_PROCESS_META =
-            Arrays.asList("Definitions", "BPMN.Connections", "BPMN.Associations", "ItemDefinitions");
+            Arrays.asList("Definitions", "BPMN.Connections", "BPMN.Associations", "ItemDefinitions", WORKFLOW_PARAM_TRANSACTIONS.getName());
     private static final Path BASE_PATH = Paths.get("src/test/resources");
 
     static Stream<String> processesProvider() throws IOException {
