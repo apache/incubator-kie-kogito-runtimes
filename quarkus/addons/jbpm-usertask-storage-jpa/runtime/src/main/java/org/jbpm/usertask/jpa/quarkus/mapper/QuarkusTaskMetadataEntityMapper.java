@@ -20,7 +20,7 @@
 package org.jbpm.usertask.jpa.quarkus.mapper;
 
 import org.jbpm.usertask.jpa.mapper.TaskMetadataEntityMapper;
-import org.jbpm.usertask.jpa.quarkus.repository.TaskMetadataRepository;
+import org.jbpm.usertask.jpa.repository.TaskMetadataRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

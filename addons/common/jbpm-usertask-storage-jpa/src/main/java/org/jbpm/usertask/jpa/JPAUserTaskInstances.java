@@ -24,7 +24,7 @@ import java.util.function.Function;
 
 import org.jbpm.usertask.jpa.mapper.UserTaskInstanceEntityMapper;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
-import org.jbpm.usertask.jpa.quarkus.repository.UserTaskInstanceRepository;
+import org.jbpm.usertask.jpa.repository.UserTaskInstanceRepository;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskInstances;

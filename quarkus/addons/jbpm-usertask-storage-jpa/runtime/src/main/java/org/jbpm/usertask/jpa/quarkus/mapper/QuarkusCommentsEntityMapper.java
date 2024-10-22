@@ -20,7 +20,7 @@
 package org.jbpm.usertask.jpa.quarkus.mapper;
 
 import org.jbpm.usertask.jpa.mapper.CommentsEntityMapper;
-import org.jbpm.usertask.jpa.quarkus.repository.CommentRepository;
+import org.jbpm.usertask.jpa.repository.CommentRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

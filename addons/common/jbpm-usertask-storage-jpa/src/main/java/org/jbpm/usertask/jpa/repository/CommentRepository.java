@@ -17,18 +17,18 @@
  * under the License.
  */
 
-package org.jbpm.usertask.jpa.quarkus.repository;
+package org.jbpm.usertask.jpa.repository;
 
-import org.jbpm.usertask.jpa.model.AttachmentEntity;
+import org.jbpm.usertask.jpa.model.CommentEntity;
 
-public class AttachmentRepository extends BaseRepository<AttachmentEntity, String> {
+public class CommentRepository extends BaseRepository<CommentEntity, String> {
 
-    public AttachmentRepository(UserTaskJPAContext context) {
+    public CommentRepository(UserTaskJPAContext context) {
         super(context);
     }
 
     @Override
-    public Class<AttachmentEntity> getEntityClass() {
-        return AttachmentEntity.class;
+    public Class<CommentEntity> getEntityClass() {
+        return CommentEntity.class;
     }
 }

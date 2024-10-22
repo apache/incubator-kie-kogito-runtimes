@@ -20,7 +20,7 @@
 package org.jbpm.usertask.jpa.springboot.mapper;
 
 import org.jbpm.usertask.jpa.mapper.TaskInputsEntityMapper;
-import org.jbpm.usertask.jpa.quarkus.repository.TaskInputRepository;
+import org.jbpm.usertask.jpa.repository.TaskInputRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

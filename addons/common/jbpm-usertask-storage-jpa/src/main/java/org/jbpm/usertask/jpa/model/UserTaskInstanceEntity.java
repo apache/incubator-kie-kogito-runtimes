@@ -26,13 +26,13 @@ import jakarta.persistence.*;
 @Entity
 @NamedQuery(name = UserTaskInstanceEntity.GET_INSTANCES_BY_IDENTITY,
         query = "select userTask from UserTaskInstanceEntity userTask " +
-                "left join userTask.adminGroups ag " +
-                "left join userTask.potentialGroups pg " +
-                "where :userId not member of userTask.excludedUsers and (" +
-                "userTask.actualOwner = :userId or " +
-                "ag in (:roles) or pg in (:roles)" +
+                "left join userTask.adminGroups adminGroups " +
+                "left join userTask.potentialGroups potentialGroups " +
+                "where userTask.actualOwner = :userId " +
                 "or :userId member of userTask.adminUsers " +
-                "or :userId member of userTask.potentialUsers)")
+                "or adminGroups in (:roles) " +
+                "or (:userId member of userTask.potentialUsers and :userId not member of userTask.excludedUsers) " +
+                "or potentialGroups in (:roles)")
 @Table(name = "jbpm_user_tasks")
 public class UserTaskInstanceEntity {
     public static final String GET_INSTANCES_BY_IDENTITY = "UserTaskInstanceEntity.GetInstanceByIdentity";

@@ -20,7 +20,7 @@
 package org.jbpm.usertask.jpa.springboot.mapper;
 
 import org.jbpm.usertask.jpa.mapper.CommentsEntityMapper;
-import org.jbpm.usertask.jpa.quarkus.repository.CommentRepository;
+import org.jbpm.usertask.jpa.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

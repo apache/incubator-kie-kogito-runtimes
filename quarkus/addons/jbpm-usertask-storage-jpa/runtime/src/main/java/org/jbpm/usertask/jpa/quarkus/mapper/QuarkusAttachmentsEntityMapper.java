@@ -20,7 +20,7 @@
 package org.jbpm.usertask.jpa.quarkus.mapper;
 
 import org.jbpm.usertask.jpa.mapper.AttachmentsEntityMapper;
-import org.jbpm.usertask.jpa.quarkus.repository.AttachmentRepository;
+import org.jbpm.usertask.jpa.repository.AttachmentRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

@@ -256,11 +256,11 @@ public class TestUtils {
         instance.setStatus(UserTaskState.of("Complete", UserTaskState.TerminationType.COMPLETED));
 
         instance.setActualOwner("Homer");
-        instance.setPotentialUsers(Set.of("Bart"));
+        instance.setPotentialUsers(Set.of("Bart", "Liza"));
         instance.setPotentialGroups(Set.of("Simpson", "Family"));
         instance.setAdminUsers(Set.of("Seymour"));
         instance.setAdminGroups(Set.of("Administrators", "Managers"));
-        instance.setExcludedUsers(Set.of("Ned"));
+        instance.setExcludedUsers(Set.of("Ned", "Bart"));
 
         instance.setExternalReferenceId("external-reference-id");
 

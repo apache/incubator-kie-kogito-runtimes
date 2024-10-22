@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.jbpm.usertask.jpa.model.AttachmentEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
-import org.jbpm.usertask.jpa.quarkus.repository.AttachmentRepository;
+import org.jbpm.usertask.jpa.repository.AttachmentRepository;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.model.Attachment;

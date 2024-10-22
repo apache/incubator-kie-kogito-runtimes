@@ -19,7 +19,7 @@
 
 package org.jbpm.usertask.jpa.springboot.repository;
 
-import org.jbpm.usertask.jpa.quarkus.repository.UserTaskJPAContext;
+import org.jbpm.usertask.jpa.repository.UserTaskJPAContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

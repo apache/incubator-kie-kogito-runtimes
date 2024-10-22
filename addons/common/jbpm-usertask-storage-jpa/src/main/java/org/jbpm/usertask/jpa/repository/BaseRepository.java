@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.jbpm.usertask.jpa.quarkus.repository;
+package org.jbpm.usertask.jpa.repository;
 
 import java.util.List;
 import java.util.Optional;

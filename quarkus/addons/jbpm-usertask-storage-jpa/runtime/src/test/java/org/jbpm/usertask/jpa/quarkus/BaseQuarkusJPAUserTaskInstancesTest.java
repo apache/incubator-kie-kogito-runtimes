@@ -28,10 +28,10 @@ import org.assertj.core.api.Assertions;
 import org.jbpm.usertask.jpa.JPAUserTaskInstances;
 import org.jbpm.usertask.jpa.mapper.utils.TestUtils;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
-import org.jbpm.usertask.jpa.quarkus.repository.*;
+import org.jbpm.usertask.jpa.quarkus.repository.QuarkusUserTaskJPAContext;
+import org.jbpm.usertask.jpa.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
@@ -108,16 +108,6 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
                 .isPresent();
 
         assertEntityAndInstance(entity, persistedInstanceOptional.get());
-
-        userTaskInstances.remove(instance);
-
-        verify(disconnect, times(1)).apply(any());
-
-        Assertions.assertThat(attachmentRepository.findAll())
-                .isEmpty();
-
-        Assertions.assertThat(userTaskInstances.exists(instance.getId()))
-                .isFalse();
     }
 
     @Test
@@ -190,9 +180,7 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
 
         userTaskInstances.create(instance);
 
-        IdentityProvider identityProvider = IdentityProviders.of("Homer", "Group");
-
-        List<UserTaskInstance> result = userTaskInstances.findByIdentity(identityProvider);
+        List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Homer", "Group"));
 
         Assertions.assertThat(result)
                 .hasSize(1);
@@ -211,14 +199,19 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
 
         userTaskInstances.create(instance);
 
-        IdentityProvider identityProvider = IdentityProviders.of("Bart", "Group");
-
-        List<UserTaskInstance> result = userTaskInstances.findByIdentity(identityProvider);
+        List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Liza", "Group"));
 
         Assertions.assertThat(result)
                 .hasSize(1);
 
         verify(connect, times(2)).apply(any(UserTaskInstance.class));
+
+        List<UserTaskInstance> result2 = userTaskInstances.findByIdentity(IdentityProviders.of("Bart", "Simpson"));
+
+        Assertions.assertThat(result2)
+                .hasSize(1);
+
+        verify(connect, times(3)).apply(any(UserTaskInstance.class));
 
         userTaskInstances.remove(instance);
 
@@ -232,9 +225,7 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
 
         userTaskInstances.create(instance);
 
-        IdentityProvider identityProvider = IdentityProviders.of("Abraham", "Admin", "Simpson");
-
-        List<UserTaskInstance> result = userTaskInstances.findByIdentity(identityProvider);
+        List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Abraham", "Admin", "Simpson"));
 
         Assertions.assertThat(result)
                 .hasSize(1);
@@ -254,9 +245,7 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
 
         userTaskInstances.create(instance);
 
-        IdentityProvider identityProvider = IdentityProviders.of("Seymour", "Group");
-
-        List<UserTaskInstance> result = userTaskInstances.findByIdentity(identityProvider);
+        List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Seymour", "Group"));
 
         Assertions.assertThat(result)
                 .hasSize(1);
@@ -275,9 +264,7 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
 
         userTaskInstances.create(instance);
 
-        IdentityProvider identityProvider = IdentityProviders.of("Abraham", "Administrator", "Managers");
-
-        List<UserTaskInstance> result = userTaskInstances.findByIdentity(identityProvider);
+        List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Abraham", "Administrator", "Managers"));
 
         Assertions.assertThat(result)
                 .hasSize(1);
@@ -296,9 +283,14 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
 
         userTaskInstances.create(instance);
 
-        IdentityProvider identityProvider = IdentityProviders.of("Ned", "Simpson", "Family", "Administrators", "Managers");
+        List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Ned"));
 
-        List<UserTaskInstance> result = userTaskInstances.findByIdentity(identityProvider);
+        Assertions.assertThat(result)
+                .hasSize(0);
+
+        verify(connect, times(1)).apply(any(UserTaskInstance.class));
+
+        result = userTaskInstances.findByIdentity(IdentityProviders.of("Bart"));
 
         Assertions.assertThat(result)
                 .hasSize(0);
@@ -317,9 +309,7 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
 
         userTaskInstances.create(instance);
 
-        IdentityProvider identityProvider = IdentityProviders.of("Someone", "Group");
-
-        List<UserTaskInstance> result = userTaskInstances.findByIdentity(identityProvider);
+        List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Someone", "Group"));
 
         Assertions.assertThat(result)
                 .hasSize(0);

@@ -21,7 +21,7 @@ package org.jbpm.usertask.jpa.springboot;
 
 import org.jbpm.usertask.jpa.JPAUserTaskInstances;
 import org.jbpm.usertask.jpa.mapper.UserTaskInstanceEntityMapper;
-import org.jbpm.usertask.jpa.quarkus.repository.UserTaskInstanceRepository;
+import org.jbpm.usertask.jpa.repository.UserTaskInstanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

@@ -19,8 +19,8 @@
 
 package org.jbpm.usertask.jpa.springboot.repository;
 
-import org.jbpm.usertask.jpa.quarkus.repository.TaskMetadataRepository;
-import org.jbpm.usertask.jpa.quarkus.repository.UserTaskJPAContext;
+import org.jbpm.usertask.jpa.repository.TaskMetadataRepository;
+import org.jbpm.usertask.jpa.repository.UserTaskJPAContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

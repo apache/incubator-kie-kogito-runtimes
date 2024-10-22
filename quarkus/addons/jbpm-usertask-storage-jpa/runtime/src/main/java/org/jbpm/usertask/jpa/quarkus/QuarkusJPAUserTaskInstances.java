@@ -21,7 +21,7 @@ package org.jbpm.usertask.jpa.quarkus;
 
 import org.jbpm.usertask.jpa.JPAUserTaskInstances;
 import org.jbpm.usertask.jpa.mapper.UserTaskInstanceEntityMapper;
-import org.jbpm.usertask.jpa.quarkus.repository.UserTaskInstanceRepository;
+import org.jbpm.usertask.jpa.repository.UserTaskInstanceRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

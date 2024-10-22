@@ -20,7 +20,7 @@
 package org.jbpm.usertask.jpa.springboot.mapper;
 
 import org.jbpm.usertask.jpa.mapper.TaskMetadataEntityMapper;
-import org.jbpm.usertask.jpa.quarkus.repository.TaskMetadataRepository;
+import org.jbpm.usertask.jpa.repository.TaskMetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -17,11 +17,19 @@
  * under the License.
  */
 
-package org.jbpm.usertask.jpa.quarkus.repository;
+package org.jbpm.usertask.jpa.repository;
 
-import jakarta.persistence.EntityManager;
+import org.jbpm.usertask.jpa.model.TaskDataEntityPK;
+import org.jbpm.usertask.jpa.model.TaskMetadataEntity;
 
-public interface UserTaskJPAContext {
+public class TaskMetadataRepository extends BaseRepository<TaskMetadataEntity, TaskDataEntityPK> {
 
-    EntityManager getEntityManager();
+    public TaskMetadataRepository(UserTaskJPAContext context) {
+        super(context);
+    }
+
+    @Override
+    public Class<TaskMetadataEntity> getEntityClass() {
+        return TaskMetadataEntity.class;
+    }
 }

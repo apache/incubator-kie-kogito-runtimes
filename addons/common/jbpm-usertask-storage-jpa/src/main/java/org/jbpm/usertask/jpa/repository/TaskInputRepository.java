@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.jbpm.usertask.jpa.quarkus.repository;
+package org.jbpm.usertask.jpa.repository;
 
 import org.jbpm.usertask.jpa.model.TaskDataEntityPK;
 import org.jbpm.usertask.jpa.model.TaskInputEntity;

@@ -19,6 +19,9 @@
 
 package org.jbpm.usertask.jpa.quarkus.repository;
 
+import org.jbpm.usertask.jpa.repository.AttachmentRepository;
+import org.jbpm.usertask.jpa.repository.UserTaskJPAContext;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;

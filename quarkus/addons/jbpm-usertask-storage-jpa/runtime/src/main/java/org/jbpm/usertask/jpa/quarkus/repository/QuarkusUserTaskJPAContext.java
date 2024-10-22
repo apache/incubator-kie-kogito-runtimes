@@ -19,6 +19,8 @@
 
 package org.jbpm.usertask.jpa.quarkus.repository;
 
+import org.jbpm.usertask.jpa.repository.UserTaskJPAContext;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
