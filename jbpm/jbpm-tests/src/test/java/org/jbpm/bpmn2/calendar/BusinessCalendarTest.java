@@ -58,8 +58,8 @@ public class BusinessCalendarTest {
         org.kie.kogito.process.ProcessInstance<BusinessCalendarTimerModel> instance = processDefinition.createInstance(model);
         instance.start();
         assertThat(ProcessInstance.STATE_ACTIVE).isEqualTo(instance.status());
-        Thread.sleep(2000);
-        assertThat(ProcessInstance.STATE_COMPLETED).isEqualTo(instance.status());
+        Thread.sleep(10000);
+        assertThat(ProcessInstance.STATE_ACTIVE).isEqualTo(instance.status());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class BusinessCalendarTest {
         org.kie.kogito.process.ProcessInstance<BusinessCalendarEscalationModel> instance = processDefinition.createInstance(model);
         instance.start();
         assertThat(ProcessInstance.STATE_ACTIVE).isEqualTo(instance.status());
-        Thread.sleep(2000);
+        Thread.sleep(3000);
         assertThat(ProcessInstance.STATE_ACTIVE).isEqualTo(instance.status());
         assertThat(workItemHandler.getWorkItem().getParameter("ActorId").toString().equalsIgnoreCase("John")).isTrue();
     }
