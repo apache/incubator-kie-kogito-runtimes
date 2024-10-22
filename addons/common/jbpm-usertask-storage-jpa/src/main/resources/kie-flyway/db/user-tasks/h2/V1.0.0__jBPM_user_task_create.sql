@@ -20,7 +20,7 @@
 create table jbpm_user_tasks (
     id                    varchar(50) not null,
     user_task_id          varchar(255),
-    task_priority         integer,
+    task_priority         varchar(10),
     actual_owner          varchar(255),
     task_description      varchar(255),
     status                varchar(255),

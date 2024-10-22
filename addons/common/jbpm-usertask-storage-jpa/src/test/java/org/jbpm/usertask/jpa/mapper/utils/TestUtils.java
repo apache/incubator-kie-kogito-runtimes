@@ -252,7 +252,7 @@ public class TestUtils {
         instance.setUserTaskId("user-task-id");
         instance.setTaskName("test-task");
         instance.setTaskDescription("this is a test task description");
-        instance.setTaskPriority(1);
+        instance.setTaskPriority("1");
         instance.setStatus(UserTaskState.of("Complete", UserTaskState.TerminationType.COMPLETED));
 
         instance.setActualOwner("Homer");
@@ -299,7 +299,7 @@ public class TestUtils {
         instance.setUserTaskId("user-task-id");
         instance.setTaskName("test-task");
         instance.setTaskDescription("this is a test task description");
-        instance.setTaskPriority(1);
+        instance.setTaskPriority("1");
         instance.setStatus("Complete");
         instance.setTerminationType(UserTaskState.TerminationType.COMPLETED.name());
 

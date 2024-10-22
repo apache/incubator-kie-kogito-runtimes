@@ -50,7 +50,7 @@ public class UserTaskInstanceEntity {
     private String taskDescription;
 
     @Column(name = "task_priority")
-    private Integer taskPriority;
+    private String taskPriority;
 
     private String status;
 
@@ -137,11 +137,11 @@ public class UserTaskInstanceEntity {
         this.taskDescription = taskDescription;
     }
 
-    public Integer getTaskPriority() {
+    public String getTaskPriority() {
         return taskPriority;
     }
 
-    public void setTaskPriority(Integer taskPriority) {
+    public void setTaskPriority(String taskPriority) {
         this.taskPriority = taskPriority;
     }
 
