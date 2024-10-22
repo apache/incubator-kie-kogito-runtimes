@@ -24,7 +24,6 @@ import java.util.function.Function;
 
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
-import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.slf4j.Logger;
@@ -44,7 +43,7 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
         BoundaryEventNode boundaryNode = (BoundaryEventNode) getEventNode();
 
         String attachedTo = boundaryNode.getAttachedToNodeId();
-        Collection<NodeInstance> nodeInstances = getProcessInstance().getNodeInstances(true);
+        Collection<org.kie.api.runtime.process.NodeInstance> nodeInstances = getNodeInstanceContainer().getNodeInstances();
         if (type != null && type.startsWith(Metadata.EVENT_TYPE_COMPENSATION)) {
             // if not active && completed, signal
             if (!isAttachedToNodeActive(nodeInstances, attachedTo, type, event) && isAttachedToNodeCompleted(attachedTo)) {
@@ -66,15 +65,15 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
         this.signalEvent(type, event, varName -> this.getVariable(varName));
     }
 
-    private boolean isAttachedToNodeActive(Collection<NodeInstance> nodeInstances, String attachedTo, String type, Object event) {
+    private boolean isAttachedToNodeActive(Collection<org.kie.api.runtime.process.NodeInstance> nodeInstances, String attachedTo, String type, Object event) {
         if (nodeInstances != null && !nodeInstances.isEmpty()) {
-            for (NodeInstance nInstance : nodeInstances) {
+            for (org.kie.api.runtime.process.NodeInstance nInstance : nodeInstances) {
                 String nodeUniqueId = (String) nInstance.getNode().getUniqueId();
                 boolean isActivating = ((WorkflowProcessInstanceImpl) nInstance.getProcessInstance()).getActivatingNodeIds().contains(nodeUniqueId);
                 if (attachedTo.equals(nodeUniqueId) && !isActivating) {
                     // in case this is timer event make sure it corresponds to the proper node instance
                     if (type.startsWith("Timer-")) {
-                        if (nInstance.getStringId().equals(event)) {
+                        if (nInstance.getId().equals(event)) {
                             return true;
                         }
                     } else {

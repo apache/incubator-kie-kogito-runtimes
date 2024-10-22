@@ -43,6 +43,17 @@ public class DefaultCountDownProcessEventListener extends DefaultKogitoProcessEv
         return waitTillCompleted(10000);
     }
 
+    public void await() {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("Interrputed thread while waiting for all triggers", e);
+        } catch (Exception e) {
+            logger.error("Error during waiting state", e);
+        }
+    }
+
     public boolean waitTillCompleted(long timeOut) {
         try {
             return latch.await(timeOut, TimeUnit.MILLISECONDS);
