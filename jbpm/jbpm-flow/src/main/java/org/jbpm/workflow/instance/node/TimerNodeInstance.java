@@ -96,12 +96,14 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
                     JobsService jobService = processRuntime.getJobsService();
                     String jobId = jobService.scheduleProcessInstanceJob(jobDescription);
                     internalSetTimerId(jobId);
+                    System.out.println("Scheduled timer node " + jobDescription);
                 }, i -> {
                 }, WorkUnit.LOW_PRIORITY));
     }
 
     @Override
     public void signalEvent(String type, Object event) {
+        System.out.println("triggered ! ");
         if (TIMER_TRIGGERED_EVENT.equals(type)) {
             TimerInstance timer = (TimerInstance) event;
             if (Objects.equals(timer.getId(), getTimerId())) {
@@ -117,6 +119,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
 
     @Override
     public void triggerCompleted(boolean remove) {
+        //Deffer the timer scheduling to the end of current UnitOfWork execution chain
         Exception e = new WorkItemExecutionException("TimedOut");
         ExceptionScopeInstance esi = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, e);
         if (esi != null) {
