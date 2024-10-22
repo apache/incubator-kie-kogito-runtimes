@@ -111,7 +111,15 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     public UserTaskTransitionToken newTransitionToken(String transitionId, UserTaskState state, Map<String, Object> data) {
-        UserTaskTransition transition = transitions.stream().filter(e -> e.source().equals(state) && e.id().equals(transitionId)).findAny()
+        System.out.println("######################################################################");
+        System.out.println("#################### DefaultUserTaskLifeCycle ##################");
+        System.out.println("newTransitionToken(" + transitionId + ", " + state + ")");
+        UserTaskTransition transition = transitions.stream().filter(e -> {
+
+            boolean result = e.source().equals(state) && e.id().equals(transitionId);
+            System.out.println("Transition to check: " + e.source().getName() + " ->" + e.source().isTerminate() + " -> " + result);
+            return result;
+        }).findAny()
                 .orElseThrow(() -> new RuntimeException("Invalid transition " + transitionId + " from " + state));
         return new DefaultUserTaskTransitionToken(transition.id(), transition.source(), transition.target(), data);
     }

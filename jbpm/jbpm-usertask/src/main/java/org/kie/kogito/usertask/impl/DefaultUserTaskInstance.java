@@ -157,6 +157,9 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     @Override
     public void transition(String transitionId, Map<String, Object> data, IdentityProvider identity) {
+        System.out.println("######################################################################");
+        System.out.println("#################### DefaultUserTaskInstance ##################");
+        System.out.println("newTransitionToken(" + transitionId + ", " + this.status.getName() + " " + identity.getName() + " " + identity.getRoles() + ")");
         Optional<UserTaskTransitionToken> next = Optional.of(this.userTaskLifeCycle.newTransitionToken(transitionId, this, data));
         while (next.isPresent()) {
             UserTaskTransitionToken transition = next.get();
