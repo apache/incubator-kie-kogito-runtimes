@@ -143,7 +143,6 @@ import org.jbpm.test.utils.EventTrackerProcessListener;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.jbpm.test.utils.ProcessTestHelper.CompletionKogitoEventListener;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.kie.api.command.ExecutableCommand;
 import org.kie.api.event.process.ProcessCompletedEvent;
