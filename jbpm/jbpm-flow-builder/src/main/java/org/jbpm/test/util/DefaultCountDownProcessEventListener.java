@@ -50,7 +50,7 @@ public class DefaultCountDownProcessEventListener extends DefaultKogitoProcessEv
             Thread.currentThread().interrupt();
             logger.error("Interrputed thread while waiting for all triggers", e);
             return false;
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("Error during waiting state", e);
             return false;
         }
