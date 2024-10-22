@@ -68,14 +68,14 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
     public static InMemoryJobService get(Processes processes, UnitOfWorkManager unitOfWorkManager) {
         Objects.requireNonNull(processes);
         Objects.requireNonNull(unitOfWorkManager);
-        return INSTANCE.computeIfAbsent(processes.hashCode() + 7*unitOfWorkManager.hashCode(), k -> new InMemoryJobService(processes, unitOfWorkManager));
+        return INSTANCE.computeIfAbsent(processes.hashCode() + 7 * unitOfWorkManager.hashCode(), k -> new InMemoryJobService(processes, unitOfWorkManager));
     }
 
     public static InMemoryJobService get(Processes processes, UnitOfWorkManager unitOfWorkManager, ScheduledExecutorService scheduler) {
         Objects.requireNonNull(processes);
         Objects.requireNonNull(unitOfWorkManager);
         Objects.requireNonNull(scheduler);
-        return INSTANCE.computeIfAbsent(processes.hashCode() + 7*unitOfWorkManager.hashCode(), k -> new InMemoryJobService(processes, unitOfWorkManager, scheduler));
+        return INSTANCE.computeIfAbsent(processes.hashCode() + 7 * unitOfWorkManager.hashCode(), k -> new InMemoryJobService(processes, unitOfWorkManager, scheduler));
     }
 
     @Override
@@ -108,10 +108,10 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
 
     public Runnable getSignalProcessInstanceCommand(ProcessInstanceJobDescription description, boolean remove, int limit) {
         return new SignalProcessInstanceOnExpiredTimer(
-                description.id(), 
-                description.timerId(), 
-                description.processInstanceId(), 
-                remove, 
+                description.id(),
+                description.timerId(),
+                description.processInstanceId(),
+                remove,
                 limit);
     }
 

@@ -105,7 +105,6 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                                 .rootProcessId(getProcessInstance().getRootProcessId())
                                 .nodeInstanceId(Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null))
                                 .build();
-                logger.info("scheduling", jobDescription);
                 String jobId = jobService.scheduleProcessInstanceJob(jobDescription);
                 timerInstances.add(jobId);
                 timerInstancesReference.put(jobId, Long.toString(timer.getId()));
