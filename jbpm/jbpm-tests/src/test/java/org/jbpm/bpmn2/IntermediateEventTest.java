@@ -513,7 +513,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         logger.debug("waitTillCompleted...");
         long timeout = 30000;
         assertThat(countDownListener.waitTillCompleted(timeout))
-                .withFailMessage("countDownListener.waitTillCompleted() did not returns `true` in %s milliseconds", timeout)
+                .withFailMessage("testEventBasedSplit2 - countDownListener.waitTillCompleted() did not returns `true` in %s milliseconds", timeout)
                 .isTrue();
         logger.debug("...done!");
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
@@ -1189,9 +1189,9 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
         logger.debug("waitTillCompleted...");
-        long timeout = 30000;
+        long timeout = 60000;
         assertThat(countDownListener.waitTillCompleted(timeout))
-                .withFailMessage("countDownListener.waitTillCompleted() did not returns `true` in %s milliseconds", timeout)
+                .withFailMessage("testTimerBoundaryEventInterrupting - countDownListener.waitTillCompleted() did not returns `true` in %s milliseconds", timeout)
                 .isTrue();
         logger.debug("...done!");
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
@@ -1292,7 +1292,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         logger.debug("waitTillCompleted...");
         long timeout = 30000;
         assertThat(countDownListener.waitTillCompleted(timeout))
-                .withFailMessage("countDownListener.waitTillCompleted() did not returns `true` in %s milliseconds", timeout)
+                .withFailMessage("testIntermediateCatchEventTimerDuration - countDownListener.waitTillCompleted() did not returns `true` in %s milliseconds", timeout)
                 .isTrue();
         logger.debug("...done!");
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);

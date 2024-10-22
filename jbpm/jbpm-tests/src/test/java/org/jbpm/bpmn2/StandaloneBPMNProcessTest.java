@@ -402,7 +402,11 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         org.kie.kogito.process.ProcessInstance<EventBasedSplit2Model> instanceTimer = processDefinition.createInstance(modelTimer);
         instanceTimer.start();
         assertThat(instanceTimer.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
-        countDownListener.waitTillCompleted();
+        long timeout = 30000;
+        assertThat(countDownListener.waitTillCompleted(timeout))
+                .withFailMessage("testEventBasedSplit2 - countDownListener.waitTillCompleted() did not returns `true` in %s milliseconds", timeout)
+                .isTrue();
+        logger.debug("...done!");
         assertThat(instanceYes.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
         assertThat(instanceTimer.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
