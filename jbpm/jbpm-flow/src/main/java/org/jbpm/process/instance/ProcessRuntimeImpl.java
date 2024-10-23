@@ -62,7 +62,6 @@ import org.kie.kogito.Application;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.services.identity.NoOpIdentityProvider;
 import org.kie.kogito.services.jobs.impl.LegacyInMemoryJobService;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
