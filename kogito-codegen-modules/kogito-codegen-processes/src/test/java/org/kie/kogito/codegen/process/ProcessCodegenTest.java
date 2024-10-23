@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,12 +33,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.codegen.process.ProcessCodegen.BUSINESS_CALENDAR_PRODUCER_TEMPLATE;
 import static org.kie.kogito.grafana.utils.GrafanaDashboardUtils.DISABLED_OPERATIONAL_DASHBOARDS;
 
 class ProcessCodegenTest {
@@ -110,24 +111,28 @@ class ProcessCodegenTest {
     public void whenCalendarPropertiesFoundGenerateBusinessCalendar(KogitoBuildContext.Builder contextBuilder, String dependencyAnnotation) {
         KogitoBuildContext context = contextBuilder.build();
         StaticDependencyInjectionProducerGenerator staticDependencyInjectionProducerGenerator = StaticDependencyInjectionProducerGenerator.of(context);
-        Map<String, String> businessCalendarProducer = staticDependencyInjectionProducerGenerator.generate(List.of("BusinessCalendarProducer"));
-        assertThat(businessCalendarProducer.size()).isEqualTo(1);
-        Optional<String> generatedContent = businessCalendarProducer.values().stream().findFirst();
-        assertThat(businessCalendarProducer.keySet()).containsExactly("org/kie/kogito/app/BusinessCalendarProducer.java");
-        assertThat(generatedContent.isPresent()).isTrue();
-        assertThat(generatedContent.get().contains(dependencyAnnotation)).isTrue();
+        Map<String, String> businessCalendarProducerSourcesMap = staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE));
+        String expectedKey = "org/kie/kogito/app/BusinessCalendarProducer.java";
+        assertThat(businessCalendarProducerSourcesMap).hasSize(1).containsKey(expectedKey);
+        String generatedContent = businessCalendarProducerSourcesMap.get(expectedKey);
+        assertThat(generatedContent).isNotNull().isNotEmpty().contains(dependencyAnnotation);
+    }
+
+    @ParameterizedTest
+    @MethodSource("contextBuildersNotDI")
+    public void whenBuildingNotDIContext(KogitoBuildContext.Builder contextBuilder) {
+        KogitoBuildContext context = contextBuilder.build();
+        StaticDependencyInjectionProducerGenerator staticDependencyInjectionProducerGenerator = StaticDependencyInjectionProducerGenerator.of(context);
+        Map<String, String> businessCalendarProducer = staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE));
+        assertThat(businessCalendarProducer).isEmpty();
     }
 
     private List<GeneratedFile> generateTestDashboards(ProcessCodegen codeGenerator, int expectedDashboards) {
-
         Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
-
         List<GeneratedFile> dashboards = generatedFiles.stream()
                 .filter(x -> x.type().equals(DashboardGeneratedFileUtils.DASHBOARD_TYPE))
                 .collect(Collectors.toList());
-
         assertThat(dashboards).hasSize(expectedDashboards);
-
         return dashboards;
     }
 
@@ -135,5 +140,10 @@ class ProcessCodegenTest {
         return Stream.of(
                 Arguments.of(QuarkusKogitoBuildContext.builder(), "@Produces"),
                 Arguments.of(SpringBootKogitoBuildContext.builder(), "@Bean"));
+    }
+
+    private static Stream<Arguments> contextBuildersNotDI() {
+        return Stream.of(
+                Arguments.of(JavaKogitoBuildContext.builder()));
     }
 }

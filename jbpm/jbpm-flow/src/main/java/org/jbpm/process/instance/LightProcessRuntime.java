@@ -51,7 +51,6 @@ import org.kie.kogito.Application;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.services.jobs.impl.InMemoryJobService;
 import org.kie.kogito.signal.SignalManager;
@@ -64,8 +63,6 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
     private final InternalKnowledgeRuntime knowledgeRuntime;
 
     private ProcessInstanceManager processInstanceManager;
-    private SignalManager signalManager;
-    private JobsService jobService;
     private final KogitoWorkItemManager workItemManager;
     private UnitOfWorkManager unitOfWorkManager;
 
@@ -95,20 +92,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
     }
 
     public void initStartTimers() {
-        Collection<Process> processes = runtimeContext.getProcesses();
-        for (Process process : processes) {
-            RuleFlowProcess p = (RuleFlowProcess) process;
-            List<StartNode> startNodes = p.getTimerStart();
-            if (startNodes != null && !startNodes.isEmpty()) {
-                for (StartNode startNode : startNodes) {
-                    if (startNode != null && startNode.getTimer() != null) {
-
-                        jobService.scheduleProcessJob(ProcessJobDescription.of(createTimerInstance(startNode.getTimer(), knowledgeRuntime), p.getId()));
-
-                    }
-                }
-            }
-        }
+        initStartTimers(runtimeContext.getProcesses(), knowledgeRuntime);
     }
 
     @Override

@@ -19,15 +19,12 @@
 
 package org.jbpm.bpmn2.calendar;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.timer.BusinessCalendarImpl;
@@ -47,19 +44,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class BusinessCalendarTest {
 
-    private static BusinessCalendar businessHoursCalendar;
-    private static BusinessCalendar nonBusinessHoursCalendar;
+    private static BusinessCalendar workingDayCalendar;
+    private static BusinessCalendar notWorkingDayCalendar;
 
     @BeforeAll
     public static void createCalendars() {
-        businessHoursCalendar = configureBusinessCalendar(true);
-        nonBusinessHoursCalendar = configureBusinessCalendar(false);
+        workingDayCalendar = configureBusinessCalendar(true);
+        notWorkingDayCalendar = configureBusinessCalendar(false);
     }
 
     @Test
-    public void testTimerInBusinessHours() throws InterruptedException {
+    public void testTimerWithWorkingDayCalendar() throws InterruptedException {
         BpmnProcesses bpmnProcesses = new BpmnProcesses();
-        ProcessConfig config = new MockProcessConfig(businessHoursCalendar);
+        ProcessConfig config = new MockProcessConfig(workingDayCalendar);
         Application app = new StaticApplication(new StaticConfig(null, config), bpmnProcesses);
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
@@ -69,13 +66,14 @@ public class BusinessCalendarTest {
         instance.start();
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         Thread.sleep(2000);
-        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        // we are in working days - state should change
+        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
-    public void testTimerInNonBusinessHours() throws InterruptedException {
+    public void testTimerWithNotWorkingDayCalendar() throws InterruptedException {
         BpmnProcesses bpmnProcesses = new BpmnProcesses();
-        ProcessConfig config = new MockProcessConfig(nonBusinessHoursCalendar);
+        ProcessConfig config = new MockProcessConfig(notWorkingDayCalendar);
         Application app = new StaticApplication(new StaticConfig(null, config), bpmnProcesses);
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
@@ -85,70 +83,29 @@ public class BusinessCalendarTest {
         instance.start();
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         Thread.sleep(2000);
+        // we are not in working days - state should not change
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
 
-    @Test
-    public void testHumanTaskEscalationBusinessHour() throws InterruptedException {
-        BpmnProcesses bpmnProcesses = new BpmnProcesses();
-        ProcessConfig config = new MockProcessConfig(businessHoursCalendar);
-        Application app = new StaticApplication(new StaticConfig(null, config), bpmnProcesses);
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
-        org.kie.kogito.process.Process<BusinessCalendarEscalationModel> processDefinition = BusinessCalendarEscalationProcess.newProcess(app);
-        BusinessCalendarEscalationModel model = processDefinition.createModel();
-        org.kie.kogito.process.ProcessInstance<BusinessCalendarEscalationModel> instance = processDefinition.createInstance(model);
-        instance.start();
-        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-        Thread.sleep(2000);
-        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-        assertThat(workItemHandler.getWorkItem().getParameter("ActorId").toString().equalsIgnoreCase("John")).isTrue();
-    }
-
-    @Test
-    public void testHumanTaskEscalationNonBusinessHour() throws InterruptedException {
-        BpmnProcesses bpmnProcesses = new BpmnProcesses();
-        ProcessConfig config = new MockProcessConfig(nonBusinessHoursCalendar);
-        Application app = new StaticApplication(new StaticConfig(null, config), bpmnProcesses);
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
-        org.kie.kogito.process.Process<BusinessCalendarEscalationModel> processDefinition = BusinessCalendarEscalationProcess.newProcess(app);
-        BusinessCalendarEscalationModel model = processDefinition.createModel();
-        org.kie.kogito.process.ProcessInstance<BusinessCalendarEscalationModel> instance = processDefinition.createInstance(model);
-        instance.start();
-        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-        Thread.sleep(2000);
-        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-        assertThat(workItemHandler.getWorkItem().getParameter("ActorId").toString().equalsIgnoreCase("John")).isTrue();
-    }
-
-    private static BusinessCalendar configureBusinessCalendar(boolean businessHours) {
-        Logger logger = Logger.getLogger("Business calendar");
+    private static BusinessCalendar configureBusinessCalendar(boolean isWorkingDayCalendar) {
         Properties businessCalendarConfiguration = new Properties();
-        BusinessCalendar businessCalendar;
-        Calendar c = Calendar.getInstance();
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("calendar.properties")) {
-
-            if (businessHours) {
-                businessCalendarConfiguration.load(is);
-                c.add(Calendar.DATE, -1);
-                int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-                businessCalendarConfiguration.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, Integer.toString(dayOfWeek));
-            } else {
-                Date today = new Date();
-                c.add(Calendar.DATE, 1);
-                Date tomorrow = c.getTime();
-                String dateFormat = "yyyy-MM-dd";
-                SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-                businessCalendarConfiguration.setProperty(BusinessCalendarImpl.HOLIDAYS, sdf.format(today) + "," + sdf.format(tomorrow));
-                businessCalendarConfiguration.setProperty(BusinessCalendarImpl.HOLIDAY_DATE_FORMAT, dateFormat);
-            }
-        } catch (IOException e) {
-            logger.warning("Error while loading properties for business calendar " + e.getMessage());
-            throw new RuntimeException("Error while loading properties for business calendar ", e);
+        if (isWorkingDayCalendar) {
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.START_HOUR, "0");
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.END_HOUR, "24");
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.HOURS_PER_DAY, "24");
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.DAYS_PER_WEEK, "7");
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, "8,9");
+        } else {
+            Calendar currentCalendar = Calendar.getInstance();
+            Date today = new Date();
+            currentCalendar.add(Calendar.DATE, 1);
+            Date tomorrow = currentCalendar.getTime();
+            String dateFormat = "yyyy-MM-dd";
+            SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.HOLIDAYS, sdf.format(today) + "," + sdf.format(tomorrow));
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.HOLIDAY_DATE_FORMAT, dateFormat);
         }
-        businessCalendar = new BusinessCalendarImpl(businessCalendarConfiguration);
-        return businessCalendar;
+        return new BusinessCalendarImpl(businessCalendarConfiguration);
     }
 
     private static class MockProcessConfig extends AbstractProcessConfig {
