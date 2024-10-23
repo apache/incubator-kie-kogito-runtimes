@@ -31,7 +31,7 @@ import static org.kie.kogito.event.process.KogitoEventBodySerializationHelper.*;
 
 class ProcessInstanceDataEventExtensionRecord implements KogitoMarshallEventSupport {
 
-    // addons, referenceId, and starFromNode are not used by process instance events
+    // referenceId and startFromNode are not used by process instance events
     private String id;
     private String instanceId;
     private String version;
@@ -44,6 +44,7 @@ class ProcessInstanceDataEventExtensionRecord implements KogitoMarshallEventSupp
     private String identity;
     private URI source;
     private OffsetDateTime time;
+    private String addons;
     private transient int ordinal;
 
     public ProcessInstanceDataEventExtensionRecord() {
@@ -63,6 +64,7 @@ class ProcessInstanceDataEventExtensionRecord implements KogitoMarshallEventSupp
         identity = dataEvent.getKogitoIdentity();
         time = dataEvent.getTime();
         source = dataEvent.getSource();
+        addons = dataEvent.getKogitoAddons();
     }
 
     public int getOrdinal() {
@@ -117,6 +119,10 @@ class ProcessInstanceDataEventExtensionRecord implements KogitoMarshallEventSupp
         return source;
     }
 
+    public String getAddons() {
+        return addons;
+    }
+
     @Override
     public void writeEvent(DataOutput out) throws IOException {
         out.writeUTF(id);
@@ -131,6 +137,7 @@ class ProcessInstanceDataEventExtensionRecord implements KogitoMarshallEventSupp
         writeUTF(out, identity);
         writeTime(out, time);
         out.writeUTF(source.toString());
+        writeUTF(out, addons);
     }
 
     @Override
@@ -147,5 +154,6 @@ class ProcessInstanceDataEventExtensionRecord implements KogitoMarshallEventSupp
         identity = readUTF(in);
         time = readTime(in);
         source = URI.create(in.readUTF());
+        addons = readUTF(in);
     }
 }

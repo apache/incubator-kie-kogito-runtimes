@@ -58,6 +58,7 @@ class ProcessEventsTest {
             CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_INSTANCE_ID,
             CloudEventExtensionConstants.PROCESS_ID,
             CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID,
+            CloudEventExtensionConstants.ADDONS,
             CloudEventExtensionConstants.PROCESS_INSTANCE_VERSION,
             CloudEventExtensionConstants.PROCESS_PARENT_PROCESS_INSTANCE_ID,
             CloudEventExtensionConstants.PROCESS_INSTANCE_STATE,
@@ -86,6 +87,7 @@ class ProcessEventsTest {
     private static final String PROCESS_INSTANCE_STATE = "PROCESS_INSTANCE_STATE";
     private static final String BUSINESS_KEY = "BUSINESS_KEY";
     private static final String PROCESS_TYPE = "PROCESS_TYPE";
+    private static final String ADDONS = "ADDONS";
     private static final int PROCESS_STATE = 1;
     private static final String NODE_CONTAINER_ID = "323";
     private static final String NODE_CONTAINER_INSTANCEID = "323-3232-3232";
@@ -350,6 +352,7 @@ class ProcessEventsTest {
         event.setKogitoProcessInstanceState(PROCESS_INSTANCE_STATE);
         event.setKogitoBusinessKey(BUSINESS_KEY);
         event.setKogitoProcessType(PROCESS_TYPE);
+        event.setKogitoAddons(ADDONS);
         event.setKogitoIdentity(SUBJECT);
     }
 
@@ -376,13 +379,16 @@ class ProcessEventsTest {
         assertThat(deserializedEvent.getKogitoBusinessKey()).isEqualTo(BUSINESS_KEY);
         assertThat(deserializedEvent.getKogitoProcessType()).isEqualTo(PROCESS_TYPE);
         assertThat(deserializedEvent.getKogitoIdentity()).isEqualTo(SUBJECT);
+        assertThat(deserializedEvent.getKogitoAddons()).isEqualTo(ADDONS);
     }
 
     private static void assertExtensionNames(AbstractDataEvent<?> event, Set<String> baseNames, String... names) {
         Set<String> extensionNames = event.getExtensionNames();
         assertThat(extensionNames).hasSize(baseNames.size() + names.length)
                 .containsAll(baseNames);
-
+        if (names.length > 0) {
+            assertThat(extensionNames).contains(names);
+        }
     }
 
     private static void assertExtensionsNotDuplicated(String json, Set<String> extensionNames) {

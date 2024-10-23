@@ -65,6 +65,7 @@ public class KogitoDataEventSerializationHelper {
         event.setKogitoRootProcessInstanceId(info.getRootInstanceId());
         event.setKogitoIdentity(info.getIdentity());
         event.setSource(info.getSource());
+        event.setKogitoAddons(info.getAddons());
     }
 
 }

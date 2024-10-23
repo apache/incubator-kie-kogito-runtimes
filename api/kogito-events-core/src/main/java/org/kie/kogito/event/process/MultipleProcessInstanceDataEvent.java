@@ -25,7 +25,7 @@ public class MultipleProcessInstanceDataEvent extends ProcessInstanceDataEvent<C
 
     public static final String MULTIPLE_TYPE = "MultipleProcessInstanceDataEvent";
     public static final String BINARY_CONTENT_TYPE = "application/octet-stream";
-    public static final String COMPRESS_DATA = "CompressData";
+    public static final String COMPRESS_DATA = "compressdata";
 
     public MultipleProcessInstanceDataEvent() {
     }
