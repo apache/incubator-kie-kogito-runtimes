@@ -20,6 +20,7 @@ package com.myspace.demo;
 
 import java.util.List;
 import java.util.Map;
+import java.io.IOException;
 import java.util.Collection;
 
 import org.jbpm.util.JsonSchemaUtil;
@@ -47,6 +48,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator.Validity;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.kie.kogito.usertask.model.*;
@@ -57,6 +71,42 @@ public class UserTasksResource {
 
     @Autowired
     UserTaskService userTaskService;
+
+    ObjectMapper mapper;
+
+    @Autowired
+    public UserTasksResource(ObjectMapper objectMapper) {
+        mapper = objectMapper.copy();
+        mapper = objectMapper.copy();
+        SimpleModule module = new SimpleModule();
+        mapper.addHandler(new DeserializationProblemHandler() {
+            @Override
+            public JavaType handleMissingTypeId(DeserializationContext ctxt, JavaType baseType, TypeIdResolver idResolver, String failureMsg) throws IOException {
+                return baseType;
+            }
+        });
+        mapper.registerModule(module);
+
+        PolymorphicTypeValidator validator = new PolymorphicTypeValidator() {
+
+            @Override
+            public Validity validateBaseType(MapperConfig<?> config, JavaType baseType) {
+                return Validity.ALLOWED;
+            }
+
+            @Override
+            public Validity validateSubClassName(MapperConfig<?> config, JavaType baseType, String subClassName) throws JsonMappingException {
+                return Validity.ALLOWED;
+            }
+
+            @Override
+            public Validity validateSubType(MapperConfig<?> config, JavaType baseType, JavaType subType) throws JsonMappingException {
+                return Validity.ALLOWED;
+            }
+            
+        };
+        mapper.activateDefaultTypingAsProperty(validator, DefaultTyping.NON_FINAL, "@type");
+    }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserTaskView> list(@RequestParam("user") String user, @RequestParam("group") List<String> groups) {
@@ -84,22 +134,24 @@ public class UserTasksResource {
             @RequestParam("group") List<String> groups) {
         return userTaskService.allowedTransitions(taskId, IdentityProviders.of(user, groups));
     }
-    
+
     @PutMapping("/{taskId}/outputs")
     public UserTaskView setOutput(
             @PathVariable("taskId") String taskId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups,
-            @RequestBody Map<String, Object> data) {
+            @RequestBody String body) throws Exception {
+        Map<String, Object> data = mapper.readValue(body, Map.class);
         return userTaskService.setOutputs(taskId, data, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{taskId}/inputs")
-    public UserTaskView setOutput(@PathVariable("id") String id,
+    public UserTaskView setInputs(
             @PathVariable("taskId") String taskId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups,
-            @RequestBody Map<String, Object> data) {
+            @RequestBody String body) throws Exception {
+        Map<String, Object> data = mapper.readValue(body, Map.class);
         return userTaskService.setInputs(taskId, data, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
