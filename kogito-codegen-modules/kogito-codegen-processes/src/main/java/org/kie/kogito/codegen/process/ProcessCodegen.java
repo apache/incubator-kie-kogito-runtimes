@@ -103,7 +103,7 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global-operational-dashboard-template.json";
     private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/process-operational-dashboard-template.json";
     private static final String BUSINESS_CALENDAR_PRODUCER_TEMPLATE = "BusinessCalendarProducer";
-    private static final String BUSINESS_CALENDAR_RESOURCE_KEY = "is_business_calendar_present";
+    private static final String IS_BUSINESS_CALENDAR_PRESENT = "isBusinessCalendarPresent";
     static {
         ProcessValidatorRegistry.getInstance().registerAdditonalValidator(JavaRuleFlowProcessValidator.getInstance());
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNSemanticModule());
@@ -147,7 +147,7 @@ public class ProcessCodegen extends AbstractGenerator {
         if (useSvgAddon) {
             context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGMap);
         }
-        context.addContextAttribute(BUSINESS_CALENDAR_RESOURCE_KEY, resources.stream().anyMatch(resource -> resource.resource().getSourcePath().endsWith(BUSINESS_CALENDAR_PATH)));
+        context.addContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, resources.stream().anyMatch(resource -> resource.resource().getSourcePath().endsWith(BUSINESS_CALENDAR_PATH)));
 
         handleValidation(context, processesErrors);
 
@@ -445,8 +445,8 @@ public class ProcessCodegen extends AbstractGenerator {
         staticDependencyInjectionProducerGenerator.generate()
                 .entrySet()
                 .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
-        Boolean businessCalendar = context().getContextAttribute(BUSINESS_CALENDAR_RESOURCE_KEY, Boolean.class);
-        if (Objects.nonNull(businessCalendar) && businessCalendar) {
+        Boolean isBusinessCalendarPresent = context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class);
+        if (Objects.nonNull(isBusinessCalendarPresent) && isBusinessCalendarPresent) {
             staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE))
                     .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
         }
