@@ -43,7 +43,6 @@ import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.EventTrigger;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.Trigger;
-import org.kie.api.KieBase;
 import org.kie.api.command.ExecutableCommand;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
@@ -77,8 +76,6 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
 
     private InternalKnowledgeRuntime kruntime;
     private ProcessInstanceManager processInstanceManager;
-    private SignalManager signalManager;
-    private JobsService jobService;
     private UnitOfWorkManager unitOfWorkManager;
 
     public ProcessRuntimeImpl(Application application, InternalWorkingMemory workingMemory) {
@@ -102,20 +99,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
     }
 
     public void initStartTimers() {
-        KieBase kbase = kruntime.getKieBase();
-        Collection<Process> processes = kbase.getProcesses();
-        for (Process process : processes) {
-            RuleFlowProcess p = (RuleFlowProcess) process;
-            List<StartNode> startNodes = p.getTimerStart();
-            if (startNodes != null && !startNodes.isEmpty()) {
-
-                for (StartNode startNode : startNodes) {
-                    if (startNode != null && startNode.getTimer() != null) {
-                        jobService.scheduleProcessJob(ProcessJobDescription.of(createTimerInstance(startNode.getTimer(), kruntime), p.getId()));
-                    }
-                }
-            }
-        }
+        initStartTimers(kruntime.getKieBase().getProcesses(), kruntime);
     }
 
     private void initProcessInstanceManager() {

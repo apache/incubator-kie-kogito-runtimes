@@ -18,6 +18,7 @@
  */
 package org.jbpm.process.instance;
 
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,9 @@ import org.jbpm.process.core.timer.DateTimeUtils;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.process.instance.event.KogitoProcessEventListenerAdapter;
 import org.jbpm.process.instance.event.KogitoProcessEventSupportImpl;
+import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.workflow.core.node.StartNode;
+import org.kie.api.definition.process.Process;
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.Application;
 import org.kie.kogito.calendar.BusinessCalendar;
@@ -37,6 +41,9 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
+import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.jobs.ProcessJobDescription;
+import org.kie.kogito.signal.SignalManager;
 
 import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_ENVIRONMENT_KEY;
 
@@ -44,6 +51,10 @@ public abstract class AbstractProcessRuntime implements InternalProcessRuntime {
 
     protected KogitoProcessEventSupport processEventSupport;
     protected KogitoProcessRuntimeImpl kogitoProcessRuntime = new KogitoProcessRuntimeImpl(this);
+
+    protected SignalManager signalManager;
+    protected JobsService jobService;
+
     private final Application application;
 
     private final Map<ProcessEventListener, KogitoProcessEventListener> listenersMap = new IdentityHashMap<>();
@@ -80,6 +91,20 @@ public abstract class AbstractProcessRuntime implements InternalProcessRuntime {
     @Override
     public List<ProcessEventListener> getProcessEventListeners() {
         return (List<ProcessEventListener>) (Object) ((KogitoProcessEventSupportImpl) this.processEventSupport).getEventListeners();
+    }
+
+    protected void initStartTimers( Collection<Process> processes, InternalKnowledgeRuntime kruntime) {
+        for (Process process : processes) {
+            RuleFlowProcess p = (RuleFlowProcess) process;
+            List<StartNode> startNodes = p.getTimerStart();
+            if (startNodes != null && !startNodes.isEmpty()) {
+                for (StartNode startNode : startNodes) {
+                    if (startNode != null && startNode.getTimer() != null) {
+                        jobService.scheduleProcessJob(ProcessJobDescription.of(createTimerInstance(startNode.getTimer(), kruntime), p.getId()));
+                    }
+                }
+            }
+        }
     }
 
     private KogitoProcessEventListener asKogitoProcessEventListener(ProcessEventListener processEventListener) {
