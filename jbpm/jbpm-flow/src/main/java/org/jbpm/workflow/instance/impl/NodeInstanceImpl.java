@@ -67,6 +67,8 @@ import org.slf4j.LoggerFactory;
 import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
 import static org.jbpm.ruleflow.core.Metadata.INCOMING_CONNECTION;
 import static org.jbpm.ruleflow.core.Metadata.OUTGOING_CONNECTION;
+import static org.jbpm.workflow.instance.WorkflowProcessParameters.WORKFLOW_PARAM_MULTIPLE_CONNECTIONS;
+import static org.jbpm.workflow.instance.WorkflowProcessParameters.WORKFLOW_PARAM_TRANSACTIONS;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 
 /**
@@ -248,10 +250,14 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         try {
             internalTrigger(from, type);
         } catch (Exception e) {
-            logger.debug("Node instance causing process instance error in id {}", this.getStringId(), e);
-            captureError(e);
+            logger.error("Node instance causing process instance error in id {}", this.getStringId(), e);
+            if (!WORKFLOW_PARAM_TRANSACTIONS.get(getProcessInstance().getProcess())) {
+                captureError(e);
+                return;
+            } else {
+                throw e;
+            }
             // stop after capturing error
-            return;
         }
         if (!hidden) {
             ((InternalProcessRuntime) kruntime.getProcessRuntime())
@@ -260,8 +266,6 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     }
 
     protected void captureError(Exception e) {
-        logger.error("capture error", e);
-        e.printStackTrace();
         getProcessInstance().setErrorState(this, e);
     }
 
@@ -317,7 +321,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
 
         List<Connection> connections = null;
         if (node != null) {
-            if (Boolean.parseBoolean((String) getProcessInstance().getProcess().getMetaData().get("jbpm.enable.multi.con")) && !((NodeImpl) node).getConstraints().isEmpty()) {
+            if (WORKFLOW_PARAM_MULTIPLE_CONNECTIONS.get(getProcessInstance().getProcess()) && !((NodeImpl) node).getConstraints().isEmpty()) {
                 int priority;
                 connections = ((NodeImpl) node).getDefaultOutgoingConnections();
                 boolean found = false;
