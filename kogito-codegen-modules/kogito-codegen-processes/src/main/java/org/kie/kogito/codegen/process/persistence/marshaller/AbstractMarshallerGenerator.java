@@ -20,14 +20,8 @@ package org.kie.kogito.codegen.process.persistence.marshaller;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -36,11 +30,7 @@ import org.infinispan.protostream.EnumMarshaller;
 import org.infinispan.protostream.FileDescriptorSource;
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.config.Configuration;
-import org.infinispan.protostream.descriptors.Descriptor;
-import org.infinispan.protostream.descriptors.EnumDescriptor;
-import org.infinispan.protostream.descriptors.FieldDescriptor;
-import org.infinispan.protostream.descriptors.FileDescriptor;
-import org.infinispan.protostream.descriptors.Option;
+import org.infinispan.protostream.descriptors.*;
 import org.infinispan.protostream.impl.SerializationContextImpl;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
@@ -54,25 +44,8 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.BinaryExpr;
-import com.github.javaparser.ast.expr.CastExpr;
-import com.github.javaparser.ast.expr.ClassExpr;
-import com.github.javaparser.ast.expr.EnclosedExpr;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.SwitchEntry;
-import com.github.javaparser.ast.stmt.SwitchStmt;
-import com.github.javaparser.ast.stmt.ThrowStmt;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static com.github.javaparser.ast.Modifier.Keyword.PUBLIC;
@@ -228,7 +201,7 @@ public abstract class AbstractMarshallerGenerator<T> implements MarshallerGenera
                         }
 
                         if (customTypeName.equals(Serializable.class.getName())) {
-                            String fieldClazz = (String) field.getOptionByName(KOGITO_JAVA_CLASS_OPTION);
+                            String fieldClazz = field.getOptionByName(KOGITO_JAVA_CLASS_OPTION).getName();
                             if (fieldClazz == null) {
                                 throw new IllegalArgumentException(format("Serializable proto field '%s' is missing value for option %s", field.getName(), KOGITO_JAVA_CLASS_OPTION));
                             } else {
@@ -317,7 +290,11 @@ public abstract class AbstractMarshallerGenerator<T> implements MarshallerGenera
     }
 
     protected String packageFromOption(FileDescriptor d, Descriptor msg) {
-        return packageFromOption(d, msg.getOption(JAVA_PACKAGE_OPTION));
+        Option option = msg.getOptions().stream()
+                .filter(o -> JAVA_PACKAGE_OPTION.equals(o.getName()))
+                .findAny()
+                .orElse(null);
+        return packageFromOption(d, option);
     }
 
     protected String packageFromOption(FileDescriptor d, EnumDescriptor msg) {
