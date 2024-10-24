@@ -72,10 +72,13 @@ public class UserTasksResource {
     @Autowired
     UserTaskService userTaskService;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     ObjectMapper mapper;
 
-    @Autowired
-    public UserTasksResource(ObjectMapper objectMapper) {
+    @jakarta.annotation.PostConstruct
+    public void init() {
         mapper = objectMapper.copy();
         mapper = objectMapper.copy();
         SimpleModule module = new SimpleModule();

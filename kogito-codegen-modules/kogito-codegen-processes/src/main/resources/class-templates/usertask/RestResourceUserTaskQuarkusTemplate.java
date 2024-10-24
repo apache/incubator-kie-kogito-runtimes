@@ -73,10 +73,13 @@ public class UserTasksResource {
     @Inject
     UserTaskService userTaskService;
 
+    @Inject
+    ObjectMapper objectMapper;
+
     ObjectMapper mapper;
 
-    @Inject
-    public UserTasksResource(ObjectMapper objectMapper) {
+    @jakarta.annotation.PostConstruct
+    public void init() {
         mapper = objectMapper.copy();
         SimpleModule module = new SimpleModule();
         mapper.addHandler(new DeserializationProblemHandler() {
