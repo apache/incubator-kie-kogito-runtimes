@@ -33,7 +33,7 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.jobs.ProcessInstanceJobDescription;
+import org.kie.kogito.jobs.descriptiors.ProcessInstanceJobDescription;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.services.uow.BaseWorkUnit;
 import org.kie.kogito.timer.TimerInstance;
@@ -99,7 +99,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
                 new BaseWorkUnit<>(this, instance -> {
                     ExpirationTime expirationTime = ExactExpirationTime.of(ZonedDateTime.now().plus(1, ChronoUnit.MILLIS));
                     ProcessInstanceJobDescription jobDescription =
-                            ProcessInstanceJobDescription.builder()
+                            ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
                                     .id(getJobId())
                                     .timerId("-1")
                                     .expirationTime(expirationTime)

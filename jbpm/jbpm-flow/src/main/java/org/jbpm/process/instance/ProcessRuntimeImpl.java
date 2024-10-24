@@ -70,7 +70,7 @@ import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.jobs.ProcessJobDescription;
+import org.kie.kogito.jobs.descriptiors.ProcessJobDescription;
 import org.kie.kogito.services.identity.NoOpIdentityProvider;
 import org.kie.kogito.services.jobs.impl.LegacyInMemoryJobService;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;

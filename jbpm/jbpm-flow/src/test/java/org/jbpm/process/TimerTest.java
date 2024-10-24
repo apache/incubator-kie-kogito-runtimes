@@ -33,7 +33,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.jobs.ProcessInstanceJobDescription;
+import org.kie.kogito.jobs.descriptiors.ProcessInstanceJobDescription;
 import org.kie.kogito.services.jobs.impl.LegacyInMemoryJobService;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
@@ -80,7 +80,7 @@ public class TimerTest extends AbstractBaseTest {
         new Thread(() -> kruntime.getKieSession().fireUntilHalt()).start();
         JobsService jobService = new LegacyInMemoryJobService(kruntime, new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()));
 
-        ProcessInstanceJobDescription desc = ProcessInstanceJobDescription.builder()
+        ProcessInstanceJobDescription desc = ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
                 .expirationTime(ExactExpirationTime.now())
                 .processInstanceId(processInstance.getStringId())
                 .processId("test")
@@ -97,7 +97,7 @@ public class TimerTest extends AbstractBaseTest {
         assertThat(counter).isEqualTo(1);
 
         counter = 0;
-        desc = ProcessInstanceJobDescription.builder()
+        desc = ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
                 .expirationTime(DurationExpirationTime.after(500))
                 .processInstanceId(processInstance.getStringId())
                 .processId("test")
@@ -114,7 +114,7 @@ public class TimerTest extends AbstractBaseTest {
         assertThat(counter).isEqualTo(1);
 
         counter = 0;
-        desc = ProcessInstanceJobDescription.builder()
+        desc = ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
                 .expirationTime(DurationExpirationTime.repeat(500, 300L))
                 .processInstanceId(processInstance.getStringId())
                 .processId("test")

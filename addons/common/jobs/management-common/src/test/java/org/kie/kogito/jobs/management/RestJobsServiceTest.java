@@ -25,9 +25,9 @@ import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.jobs.ExactExpirationTime;
-import org.kie.kogito.jobs.ProcessInstanceJobDescription;
-import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.jobs.api.JobCallbackPayload;
+import org.kie.kogito.jobs.descriptiors.ProcessInstanceJobDescription;
+import org.kie.kogito.jobs.descriptiors.ProcessJobDescription;
 import org.kie.kogito.jobs.service.api.Job;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipient;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientJsonPayloadData;
@@ -64,7 +64,7 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
 
     @Test
     void testGetCallbackEndpoint() {
-        ProcessInstanceJobDescription description = ProcessInstanceJobDescription.builder()
+        ProcessInstanceJobDescription description = ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
                 .id(JOB_ID)
                 .timerId(TIMER_ID)
                 .expirationTime(ExactExpirationTime.now())
@@ -96,7 +96,7 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
     }
 
     protected ProcessInstanceJobDescription buildProcessInstanceJobDescription() {
-        return ProcessInstanceJobDescription.builder()
+        return ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
                 .id(JOB_ID)
                 .timerId(TIMER_ID)
                 .expirationTime(ExactExpirationTime.of(EXPIRATION_TIME))

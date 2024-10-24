@@ -16,9 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.jobs;
+package org.kie.kogito.jobs.descriptiors;
 
 import java.util.UUID;
+
+import org.kie.kogito.jobs.ExpirationTime;
 
 public class ProcessInstanceJobDescriptionBuilder {
 

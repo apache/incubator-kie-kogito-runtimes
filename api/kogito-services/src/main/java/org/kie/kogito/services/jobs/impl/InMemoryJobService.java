@@ -31,8 +31,8 @@ import java.util.concurrent.TimeUnit;
 import org.kie.kogito.Model;
 import org.kie.kogito.jobs.JobDescription;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.jobs.ProcessInstanceJobDescription;
-import org.kie.kogito.jobs.ProcessJobDescription;
+import org.kie.kogito.jobs.descriptiors.ProcessInstanceJobDescription;
+import org.kie.kogito.jobs.descriptiors.ProcessJobDescription;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstanceOptimisticLockingException;
 import org.kie.kogito.process.Processes;
@@ -79,7 +79,7 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
     }
 
     @Override
-    public String scheduleProcessJob(ProcessJobDescription description) {
+    public String scheduleProcessJob(JobDescription description) {
         LOGGER.debug("ScheduleProcessJob: {}", description);
         ScheduledFuture<?> future;
         if (description.expirationTime().repeatInterval() != null) {
@@ -92,7 +92,7 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
     }
 
     @Override
-    public String scheduleProcessInstanceJob(ProcessInstanceJobDescription description) {
+    public String scheduleProcessInstanceJob(JobDescription description) {
         ScheduledFuture<?> future;
         if (description.expirationTime().repeatInterval() != null) {
             future = scheduler.scheduleAtFixedRate(

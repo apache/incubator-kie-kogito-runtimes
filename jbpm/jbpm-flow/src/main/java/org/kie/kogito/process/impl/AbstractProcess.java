@@ -57,7 +57,7 @@ import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
-import org.kie.kogito.jobs.ProcessJobDescription;
+import org.kie.kogito.jobs.descriptiors.ProcessJobDescription;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;

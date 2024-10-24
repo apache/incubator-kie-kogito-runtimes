@@ -89,7 +89,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.internal.process.runtime.MessageException;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.jobs.ProcessInstanceJobDescription;
+import org.kie.kogito.jobs.descriptiors.ProcessInstanceJobDescription;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
@@ -590,7 +590,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     private TimerInstance registerTimer(TimerInstance timerInstance) {
         ProcessInstanceJobDescription description =
-                ProcessInstanceJobDescription.builder()
+                ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
                         .id(timerInstance.getId())
                         .timerId(timerInstance.getTimerId())
                         .expirationTime(DurationExpirationTime.after(timerInstance.getDelay()))

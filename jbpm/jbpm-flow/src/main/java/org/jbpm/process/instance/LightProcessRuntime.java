@@ -57,8 +57,9 @@ import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
+import org.kie.kogito.jobs.JobDescription;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.jobs.ProcessJobDescription;
+import org.kie.kogito.jobs.descriptiors.ProcessJobDescription;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.services.jobs.impl.InMemoryJobService;
 import org.kie.kogito.signal.SignalManager;
@@ -109,9 +110,8 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
             if (startNodes != null && !startNodes.isEmpty()) {
                 for (StartNode startNode : startNodes) {
                     if (startNode != null && startNode.getTimer() != null) {
-
-                        jobService.scheduleProcessJob(ProcessJobDescription.of(createTimerInstance(startNode.getTimer(), knowledgeRuntime), p.getId()));
-
+                        JobDescription jobDescription = ProcessJobDescription.of(createTimerInstance(startNode.getTimer(), knowledgeRuntime), p.getId());
+                        jobService.scheduleProcessJob(jobDescription);
                     }
                 }
             }
@@ -167,9 +167,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
     @Override
     public KogitoProcessInstance createProcessInstance(String processId, CorrelationKey correlationKey, Map<String, Object> parameters) {
         return createProcessInstance(
-                runtimeContext.findProcess(processId)
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Unknown process ID: " + processId)),
+                runtimeContext.findProcess(processId).orElseThrow(() -> new IllegalArgumentException("Unknown process ID: " + processId)),
                 correlationKey, parameters);
     }
 

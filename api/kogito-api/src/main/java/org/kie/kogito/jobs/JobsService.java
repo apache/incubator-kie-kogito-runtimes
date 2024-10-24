@@ -32,7 +32,7 @@ public interface JobsService {
      * @param description defines what kind of process should be started upon expiration time
      * @return returns unique id of the job
      */
-    String scheduleProcessJob(ProcessJobDescription description);
+    String scheduleProcessJob(JobDescription description);
 
     /**
      * Schedules process instance related job that will signal exact same process instance
@@ -41,7 +41,7 @@ public interface JobsService {
      * @param description defines the context of the process instance that should be signaled
      * @return returns unique id of the job
      */
-    String scheduleProcessInstanceJob(ProcessInstanceJobDescription description);
+    String scheduleProcessInstanceJob(JobDescription description);
 
     /**
      * Cancels given job

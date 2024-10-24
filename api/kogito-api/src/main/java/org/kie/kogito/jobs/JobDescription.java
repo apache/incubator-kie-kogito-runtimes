@@ -20,9 +20,13 @@ package org.kie.kogito.jobs;
 
 public interface JobDescription {
 
+    static final String JOBS_CALLBACK_URI = "/management/jobs";
+
     String id();
 
     ExpirationTime expirationTime();
 
     Integer priority();
+
+    String path();
 }
