@@ -16,11 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package $Package$;
+package org.kie.kogito.services.jobs.impl;
 
-public class ApplicationConfig extends org.kie.kogito.StaticConfig {
+import java.util.Set;
 
-    public ApplicationConfig() {
-        init($Addons$ /* additional values provided during codegen */);
+import org.kie.kogito.jobs.JobDescription;
+import org.kie.kogito.jobs.JobsService;
+
+public interface JobExecutorFactory {
+
+    Set<Class<? extends JobDescription>> types();
+
+    default boolean accept(JobDescription jobDescription) {
+        return types().contains(jobDescription.getClass());
     }
+
+    Runnable createNewRunnable(JobsService jobService, JobDescription jobDescription);
+
+    Runnable createNewRepeteableRunnable(JobsService jobService, JobDescription jobDescription);
+
 }

@@ -23,7 +23,7 @@ import java.net.URI;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
-import org.kie.kogito.jobs.ProcessInstanceJobDescription;
+import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipient;
 import org.kie.kogito.jobs.service.api.schedule.timer.TimerSchedule;
 import org.kie.kogito.jobs.service.api.serlialization.SerializationUtils;
@@ -71,13 +71,8 @@ class JobCallbackResourceDefTest {
         assertThat(httpRecipient.getMethod()).isEqualTo("POST");
         assertThat(httpRecipient.getUrl()).isEqualTo(CALLBACK);
         assertThat(httpRecipient.getHeaders())
-                .hasSize(6)
-                .containsEntry(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .containsEntry("processId", PROCESS_ID)
-                .containsEntry("processInstanceId", PROCESS_INSTANCE_ID)
-                .containsEntry("rootProcessId", ROOT_PROCESS_ID)
-                .containsEntry("rootProcessInstanceId", ROOT_PROCESS_INSTANCE_ID)
-                .containsEntry("nodeInstanceId", NODE_INSTANCE_ID);
+                .hasSize(1)
+                .containsEntry(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
         assertThat(httpRecipient.getPayload()).isNotNull();
         assertThat(httpRecipient.getPayload().getData()).isNotNull();
         assertThat(httpRecipient.getPayload().getData()).isInstanceOf(JsonNode.class);
@@ -91,7 +86,7 @@ class JobCallbackResourceDefTest {
     }
 
     private ProcessInstanceJobDescription mockProcessInstanceJobDescription() {
-        return ProcessInstanceJobDescription.builder()
+        return ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
                 .id(JOB_ID)
                 .timerId(TIMER_ID)
                 .expirationTime(EXPIRATION_TIME)

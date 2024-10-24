@@ -16,11 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package $Package$;
+package org.kie.kogito.services.jobs.impl;
 
-public class ApplicationConfig extends org.kie.kogito.StaticConfig {
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.process.Processes;
+import org.kie.kogito.uow.UnitOfWorkManager;
+import org.kie.kogito.usertask.UserTasks;
 
-    public ApplicationConfig() {
-        init($Addons$ /* additional values provided during codegen */);
-    }
+public record InMemoryJobContext(KogitoProcessRuntime runtime, UnitOfWorkManager unitOfWorkManager, Processes processes, UserTasks userTasks) {
+
 }

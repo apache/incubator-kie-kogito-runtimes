@@ -16,11 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package $Package$;
+package org.kie.kogito.services.jobs.impl;
 
-public class ApplicationConfig extends org.kie.kogito.StaticConfig {
+public class StaticJobService {
 
-    public ApplicationConfig() {
-        init($Addons$ /* additional values provided during codegen */);
+    private static InMemoryJobService INSTANCE;
+
+    public static InMemoryJobService staticJobService() {
+        if (INSTANCE == null) {
+            INSTANCE = new InMemoryJobService();
+        }
+        return INSTANCE;
     }
 }

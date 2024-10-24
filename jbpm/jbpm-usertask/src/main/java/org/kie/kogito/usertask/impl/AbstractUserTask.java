@@ -20,13 +20,13 @@ package org.kie.kogito.usertask.impl;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.kie.kogito.usertask.UserTask;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.impl.model.DeadlineHelper;
 import org.kie.kogito.usertask.model.DeadlineInfo;
+import org.kie.kogito.usertask.model.Notification;
 import org.kie.kogito.usertask.model.Reassignment;
 
 public abstract class AbstractUserTask implements UserTask {
@@ -44,8 +44,8 @@ public abstract class AbstractUserTask implements UserTask {
     private Set<String> adminUsers;
     private Set<String> adminGroups;
     private Set<String> excludedUsers;
-    private Collection<DeadlineInfo<Map<String, Object>>> startDeadlines;
-    private Collection<DeadlineInfo<Map<String, Object>>> endDeadlines;
+    private Collection<DeadlineInfo<Notification>> startDeadlines;
+    private Collection<DeadlineInfo<Notification>> endDeadlines;
     private Collection<DeadlineInfo<Reassignment>> startReassigments;
     private Collection<DeadlineInfo<Reassignment>> endReassigments;
 
@@ -77,6 +77,10 @@ public abstract class AbstractUserTask implements UserTask {
         instance.setAdminGroups(getAdminGroups());
         instance.setExcludedUsers(getExcludedUsers());
         instance.setInstances(this.instances());
+        instance.setNotCompletedDeadlines(this.getNotCompletedDeadlines());
+        instance.setNotCompletedReassigments(this.getNotCompletedReassigments());
+        instance.setNotStartedDeadlines(this.getNotStartedDeadlines());
+        instance.setNotStartedReassignments(this.getNotStartedReassignments());
         return instance;
     }
 
@@ -200,7 +204,7 @@ public abstract class AbstractUserTask implements UserTask {
     }
 
     @Override
-    public Collection<DeadlineInfo<Map<String, Object>>> getNotStartedDeadlines() {
+    public Collection<DeadlineInfo<Notification>> getNotStartedDeadlines() {
         return startDeadlines;
     }
 
@@ -209,7 +213,7 @@ public abstract class AbstractUserTask implements UserTask {
     }
 
     @Override
-    public Collection<DeadlineInfo<Map<String, Object>>> getNotCompletedDeadlines() {
+    public Collection<DeadlineInfo<Notification>> getNotCompletedDeadlines() {
         return endDeadlines;
     }
 

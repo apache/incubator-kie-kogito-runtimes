@@ -16,11 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package $Package$;
+package org.kie.kogito.usertask.model;
 
-public class ApplicationConfig extends org.kie.kogito.StaticConfig {
+import java.util.HashMap;
+import java.util.Map;
 
-    public ApplicationConfig() {
-        init($Addons$ /* additional values provided during codegen */);
+public class Notification {
+
+    private Map<String, Object> data;
+
+    public Notification() {
+        data = new HashMap<>();
     }
+
+    public Notification(Map<String, Object> data) {
+        this.data = data;
+    }
+
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "Notification [data=" + data + "]";
+    }
+
 }

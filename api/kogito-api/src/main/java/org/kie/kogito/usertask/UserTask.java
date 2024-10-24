@@ -19,10 +19,10 @@
 package org.kie.kogito.usertask;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 import org.kie.kogito.usertask.model.DeadlineInfo;
+import org.kie.kogito.usertask.model.Notification;
 import org.kie.kogito.usertask.model.Reassignment;
 
 /**
@@ -101,9 +101,9 @@ public interface UserTask {
      */
     Set<String> getExcludedUsers();
 
-    Collection<DeadlineInfo<Map<String, Object>>> getNotStartedDeadlines();
+    Collection<DeadlineInfo<Notification>> getNotStartedDeadlines();
 
-    Collection<DeadlineInfo<Map<String, Object>>> getNotCompletedDeadlines();
+    Collection<DeadlineInfo<Notification>> getNotCompletedDeadlines();
 
     Collection<DeadlineInfo<Reassignment>> getNotStartedReassignments();
 
