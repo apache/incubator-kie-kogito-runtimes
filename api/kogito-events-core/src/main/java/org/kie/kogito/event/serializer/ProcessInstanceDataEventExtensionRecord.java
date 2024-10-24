@@ -156,4 +156,13 @@ class ProcessInstanceDataEventExtensionRecord implements KogitoMarshallEventSupp
         source = URI.create(in.readUTF());
         addons = readUTF(in);
     }
+
+    @Override
+    public String toString() {
+        return "ProcessInstanceDataEventExtensionRecord [id=" + id + ", instanceId=" + instanceId + ", version="
+                + version + ", state=" + state + ", type=" + type + ", parentInstanceId=" + parentInstanceId
+                + ", rootId=" + rootId + ", rootInstanceId=" + rootInstanceId + ", businessKey=" + businessKey
+                + ", identity=" + identity + ", source=" + source + ", time=" + time + ", addons=" + addons + "]";
+    }
+
 }

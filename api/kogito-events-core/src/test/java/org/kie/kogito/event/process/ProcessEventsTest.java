@@ -28,17 +28,18 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.AbstractDataEvent;
+import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
+import org.kie.kogito.event.serializer.MultipleProcessDataInstanceConverterFactory;
 import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
-import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.cloudevents.CloudEvent;
 import io.cloudevents.SpecVersion;
 import io.cloudevents.jackson.JsonFormat;
 
@@ -47,9 +48,9 @@ import static org.kie.kogito.event.process.KogitoEventBodySerializationHelper.to
 
 class ProcessEventsTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
             .registerModule(JsonFormat.getCloudEventJacksonModule())
-            .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .findAndRegisterModules();
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessEventsTest.class);
 
@@ -128,7 +129,7 @@ class ProcessEventsTest {
 
     @Test
     void multipleInstanceDataEvent() throws IOException {
-        JsonNode expectedVarValue = ObjectMapperFactory.get().createObjectNode().put("name", "John Doe");
+        JsonNode expectedVarValue = OBJECT_MAPPER.createObjectNode().put("name", "John Doe");
         int standard = processMultipleInstanceDataEvent(expectedVarValue, false, false);
         int binary = processMultipleInstanceDataEvent(expectedVarValue, true, false);
         int binaryCompressed = processMultipleInstanceDataEvent(expectedVarValue, true, true);
@@ -184,10 +185,23 @@ class ProcessEventsTest {
             event.setCompressed(compress);
         }
 
-        byte[] json = ObjectMapperFactory.get().writeValueAsBytes(event);
+        byte[] json = OBJECT_MAPPER.writeValueAsBytes(event);
         logger.info("Serialized chunk size is {}", json.length);
-        MultipleProcessInstanceDataEvent deserializedEvent = ObjectMapperFactory.get().readValue(json, MultipleProcessInstanceDataEvent.class);
+
+        // cloud event structured mode check
+        MultipleProcessInstanceDataEvent deserializedEvent = OBJECT_MAPPER.readValue(json, MultipleProcessInstanceDataEvent.class);
         assertThat(deserializedEvent.getData()).hasSize(event.getData().size());
+        assertMultipleIntance(deserializedEvent, expectedVarValue);
+
+        // cloud event binary mode check
+        CloudEvent cloudEvent = OBJECT_MAPPER.readValue(json, CloudEvent.class);
+        deserializedEvent = DataEventFactory.from(new MultipleProcessInstanceDataEvent(), cloudEvent, MultipleProcessDataInstanceConverterFactory.fromCloudEvent(cloudEvent, OBJECT_MAPPER));
+        assertThat(deserializedEvent.getData()).hasSize(event.getData().size());
+        assertMultipleIntance(deserializedEvent, expectedVarValue);
+        return json.length;
+    }
+
+    private void assertMultipleIntance(MultipleProcessInstanceDataEvent deserializedEvent, JsonNode expectedVarValue) {
 
         Iterator<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>> iter = deserializedEvent.getData().iterator();
         ProcessInstanceStateDataEvent deserializedStateEvent = (ProcessInstanceStateDataEvent) iter.next();
@@ -215,8 +229,6 @@ class ProcessEventsTest {
         assertBaseEventValues(deserializedSLAEvent, ProcessInstanceSLADataEvent.SLA_TYPE);
         assertExtensionNames(deserializedSLAEvent, BASE_EXTENSION_NAMES);
         assertSLABody(deserializedSLAEvent.getData());
-
-        return json.length;
     }
 
     private void assertSLABody(ProcessInstanceSLAEventBody data) {

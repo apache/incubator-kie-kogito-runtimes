@@ -31,7 +31,7 @@ import io.cloudevents.SpecVersion;
 
 import static org.kie.kogito.event.process.KogitoEventBodySerializationHelper.*;
 
-public class KogitoDataEventSerializationHelper {
+class KogitoDataEventSerializationHelper {
 
     private KogitoDataEventSerializationHelper() {
     }
@@ -49,7 +49,10 @@ public class KogitoDataEventSerializationHelper {
         data.setId(in.readUTF());
         data.setSubject(readUTF(in));
         data.setDataContentType(readUTF(in));
-        data.setDataSchema(URI.create(readUTF(in)));
+        String dataSchema = readUTF(in);
+        if (dataSchema != null) {
+            data.setDataSchema(URI.create(dataSchema));
+        }
         return data;
     }
 

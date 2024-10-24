@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 
 public class MultipleProcessDataInstanceBeanDeserializerModifier extends BeanDeserializerModifier {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     public JsonDeserializer<?> modifyDeserializer(
             DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {

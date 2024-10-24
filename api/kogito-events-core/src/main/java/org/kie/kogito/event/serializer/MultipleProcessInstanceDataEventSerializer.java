@@ -26,16 +26,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
-import org.kie.kogito.event.process.KogitoEventBodySerializationHelper;
 import org.kie.kogito.event.process.KogitoMarshallEventSupport;
 import org.kie.kogito.event.process.MultipleProcessInstanceDataEvent;
 import org.kie.kogito.event.process.ProcessInstanceDataEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
+import static org.kie.kogito.event.process.KogitoEventBodySerializationHelper.writeInt;
+
 public class MultipleProcessInstanceDataEventSerializer extends JsonSerializer<MultipleProcessInstanceDataEvent> {
+
+    private static final Logger logger = LoggerFactory.getLogger(MultipleProcessInstanceDataEventDeserializer.class);
 
     private JsonSerializer<Object> defaultSerializer;
 
@@ -67,23 +72,41 @@ public class MultipleProcessInstanceDataEventSerializer extends JsonSerializer<M
     private byte[] dataAsBytes(JsonGenerator gen, Collection<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>> data, boolean compress) throws IOException {
         ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
         try (DataOutputStream out = new DataOutputStream(compress ? new GZIPOutputStream(bytesOut) : bytesOut)) {
-            out.writeShort(data.size());
+            logger.trace("Writing size {}", data.size());
+            writeInt(out, data.size());
             Map<String, ProcessInstanceDataEventExtensionRecord> infos = new HashMap<>();
             for (ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport> cloudEvent : data) {
                 String key = cloudEvent.getKogitoProcessInstanceId();
                 ProcessInstanceDataEventExtensionRecord info = infos.get(key);
                 if (info == null) {
-                    out.writeByte(-1);
+                    logger.trace("Writing marker byte -1");
+                    out.writeByte((byte) -1);
                     info = new ProcessInstanceDataEventExtensionRecord(infos.size(), cloudEvent);
+                    logger.trace("Writing info", info);
                     info.writeEvent(out);
                     infos.put(key, info);
                 } else {
+                    logger.trace("Writing marker byte {}", info.getOrdinal());
                     out.writeByte((byte) info.getOrdinal());
                 }
+                logger.trace("Writing type {}", cloudEvent.getType());
                 out.writeUTF(cloudEvent.getType());
-                KogitoEventBodySerializationHelper.writeInteger(out, cloudEvent.getTime().compareTo(info.getTime()));
+                int timeDelta = cloudEvent.getTime().compareTo(info.getTime());
+                logger.trace("Writing time delta {}", timeDelta);
+                writeInt(out, timeDelta);
+                logger.trace("Writing cloud event attrs {}", cloudEvent);
                 KogitoDataEventSerializationHelper.writeCloudEventAttrs(out, cloudEvent);
-                cloudEvent.getData().writeEvent(out);
+                KogitoMarshallEventSupport itemData = cloudEvent.getData();
+                if (itemData != null) {
+                    logger.trace("Writing data not null boolean");
+                    out.writeBoolean(true);
+                    logger.trace("Writing cloud event body {}", itemData);
+                    itemData.writeEvent(out);
+                } else {
+                    logger.trace("Writing data null boolean");
+                    out.writeBoolean(false);
+                }
+                logger.trace("individual event writing completed");
             }
         }
         return bytesOut.toByteArray();

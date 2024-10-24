@@ -42,5 +42,4 @@ public class MultipleProcessInstanceDataEvent extends ProcessInstanceDataEvent<C
     public void setCompressed(boolean compressed) {
         addExtensionAttribute(COMPRESS_DATA, compressed);
     }
-
 }

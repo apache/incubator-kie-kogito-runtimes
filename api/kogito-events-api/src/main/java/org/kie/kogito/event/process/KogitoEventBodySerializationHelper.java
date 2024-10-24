@@ -237,10 +237,9 @@ public class KogitoEventBodySerializationHelper {
     public static Integer readInteger(DataInput in) throws IOException {
         SerType type = readType(in);
         return type == SerType.NULL ? null : readInt(in, type);
-
     }
 
-    private static void writeInt(DataOutput out, int size) throws IOException {
+    public static void writeInt(DataOutput out, int size) throws IOException {
         if (size < Byte.MAX_VALUE) {
             writeType(out, SerType.BYTE);
             out.writeByte((byte) size);
@@ -253,7 +252,7 @@ public class KogitoEventBodySerializationHelper {
         }
     }
 
-    private static int readInt(DataInput in) throws IOException {
+    public static int readInt(DataInput in) throws IOException {
         SerType type = readType(in);
         return readInt(in, type);
     }
