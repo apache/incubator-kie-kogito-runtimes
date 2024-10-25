@@ -66,7 +66,6 @@ public class BusinessCalendarTest {
         instance.start();
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         Thread.sleep(2000);
-        // we are in working days - state should change
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
@@ -83,7 +82,6 @@ public class BusinessCalendarTest {
         instance.start();
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         Thread.sleep(2000);
-        // we are not in working days - state should not change
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
 
