@@ -71,11 +71,10 @@ public class UserTasksResource {
     @PostMapping(value = "/{taskId}/transition")
     public UserTaskView transition(
             @PathVariable("taskId") String taskId,
-            @RequestParam("transitionId") String transitionId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups, 
-            @RequestBody Map<String, Object> data) {
-        return userTaskService.transition(taskId, transitionId, data, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            @RequestBody TransitionInfo transitionInfo) {
+        return userTaskService.transition(taskId, transitionInfo.getTransitionId(), transitionInfo.getData(), IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(value = "/{taskId}/transition", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -145,7 +144,7 @@ public class UserTasksResource {
         return userTaskService.updateComment(taskId, comment, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping("/{taskId}/comments/{commentId}")
+    @DeleteMapping(value = "/{taskId}/comments/{commentId}", consumes = MediaType.ALL_VALUE)
     public Comment deleteComment(
             @PathVariable("taskId") String taskId,
             @PathVariable("commentId") String commentId,
@@ -188,7 +187,7 @@ public class UserTasksResource {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping("/{taskId}/attachments/{attachmentId}")
+    @DeleteMapping(value = "/{taskId}/attachments/{attachmentId}", consumes = MediaType.ALL_VALUE)
     public Attachment deleteAttachment(
             @PathVariable("taskId") String taskId,
             @PathVariable("attachmentId") String attachmentId,
