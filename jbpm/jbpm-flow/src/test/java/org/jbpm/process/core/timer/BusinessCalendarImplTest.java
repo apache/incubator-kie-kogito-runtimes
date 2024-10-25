@@ -327,7 +327,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     @Test
-    public void testBusinessCalendarWithoutProvidedConfiguration(){
+    public void testBusinessCalendarWithoutProvidedConfiguration() {
         assertDoesNotThrow(() -> new BusinessCalendarImpl());
     }
 
