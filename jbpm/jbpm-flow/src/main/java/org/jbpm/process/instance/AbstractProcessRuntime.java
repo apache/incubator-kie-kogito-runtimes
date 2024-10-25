@@ -93,7 +93,7 @@ public abstract class AbstractProcessRuntime implements InternalProcessRuntime {
         return (List<ProcessEventListener>) (Object) ((KogitoProcessEventSupportImpl) this.processEventSupport).getEventListeners();
     }
 
-    protected void initStartTimers( Collection<Process> processes, InternalKnowledgeRuntime kruntime) {
+    protected void initStartTimers(Collection<Process> processes, InternalKnowledgeRuntime kruntime) {
         for (Process process : processes) {
             RuleFlowProcess p = (RuleFlowProcess) process;
             List<StartNode> startNodes = p.getTimerStart();
