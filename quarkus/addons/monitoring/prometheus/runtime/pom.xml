@@ -45,8 +45,30 @@
      <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-grpc</artifactId>
+       <exclusions>
+         <exclusion>
+           <groupId>io.vertx</groupId>
+           <artifactId>vertx-grpc-server</artifactId>
+         </exclusion>
+         <exclusion>
+           <groupId>io.vertx</groupId>
+           <artifactId>vertx-grpc-client</artifactId>
+         </exclusion>
+       </exclusions>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-grpc-server</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-grpc-client</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-micrometer-registry-prometheus</artifactId>

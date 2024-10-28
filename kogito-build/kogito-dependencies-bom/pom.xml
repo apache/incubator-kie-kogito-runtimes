@@ -90,7 +90,7 @@
 
     <version.io.smallrye.reactive.mutiny-vertx-web-client>3.11.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
 
-    <version.io.vertx>4.5.7</version.io.vertx>
+    <version.io.vertx>4.5.10</version.io.vertx>
     <version.io.grpc>1.59.1</version.io.grpc>
 
     <version.io.quarkus.camel>3.9.0</version.io.quarkus.camel> <!-- TODO: quarkus version mismatch -->
@@ -881,6 +881,22 @@
         <groupId>black.ninia</groupId>
         <artifactId>jep</artifactId>
         <version>${version.black.ninia}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-grpc-server</artifactId>
+        <version>${version.io.vertx}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-grpc-client</artifactId>
+        <version>${version.io.vertx}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-grpc-common</artifactId>
+        <version>${version.io.vertx}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
