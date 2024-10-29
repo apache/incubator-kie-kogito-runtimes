@@ -31,6 +31,8 @@ import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.Sig;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.usertask.UserTaskService;
+import org.kie.kogito.usertask.impl.json.SimpleDeserializationProblemHandler;
+import org.kie.kogito.usertask.impl.json.SimplePolymorphicTypeValidator;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
 import org.kie.kogito.usertask.view.UserTaskView;
 import org.springframework.http.HttpStatus;
@@ -80,35 +82,10 @@ public class UserTasksResource {
     @jakarta.annotation.PostConstruct
     public void init() {
         mapper = objectMapper.copy();
-        mapper = objectMapper.copy();
         SimpleModule module = new SimpleModule();
-        mapper.addHandler(new DeserializationProblemHandler() {
-            @Override
-            public JavaType handleMissingTypeId(DeserializationContext ctxt, JavaType baseType, TypeIdResolver idResolver, String failureMsg) throws IOException {
-                return baseType;
-            }
-        });
+        mapper.addHandler(new SimpleDeserializationProblemHandler());
         mapper.registerModule(module);
-
-        PolymorphicTypeValidator validator = new PolymorphicTypeValidator() {
-
-            @Override
-            public Validity validateBaseType(MapperConfig<?> config, JavaType baseType) {
-                return Validity.ALLOWED;
-            }
-
-            @Override
-            public Validity validateSubClassName(MapperConfig<?> config, JavaType baseType, String subClassName) throws JsonMappingException {
-                return Validity.ALLOWED;
-            }
-
-            @Override
-            public Validity validateSubType(MapperConfig<?> config, JavaType baseType, JavaType subType) throws JsonMappingException {
-                return Validity.ALLOWED;
-            }
-            
-        };
-        mapper.activateDefaultTypingAsProperty(validator, DefaultTyping.NON_FINAL, "@type");
+        mapper.activateDefaultTypingAsProperty(new SimplePolymorphicTypeValidator(), DefaultTyping.NON_FINAL, "@type");
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -125,9 +102,10 @@ public class UserTasksResource {
     public UserTaskView transition(
             @PathVariable("taskId") String taskId,
             @RequestParam("user") String user,
-            @RequestParam("group") List<String> groups, 
+            @RequestParam("group") List<String> groups,
             @RequestBody TransitionInfo transitionInfo) {
-        return userTaskService.transition(taskId, transitionInfo.getTransitionId(), transitionInfo.getData(), IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userTaskService.transition(taskId, transitionInfo.getTransitionId(), transitionInfo.getData(), IdentityProviders.of(user, groups))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(value = "/{taskId}/transition", produces = MediaType.APPLICATION_JSON_VALUE)
