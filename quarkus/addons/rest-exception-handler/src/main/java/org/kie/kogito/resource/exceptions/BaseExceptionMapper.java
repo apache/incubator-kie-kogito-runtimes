@@ -30,6 +30,5 @@ public abstract class BaseExceptionMapper<E extends Throwable> implements Except
     }
 
     @Override
-    @SuppressWarnings("squid:S3038")
     public abstract Response toResponse(E e);
 }

@@ -22,50 +22,50 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-public class ExceptionsHandler extends BaseExceptionsHandler<Response> {
+public class ExceptionsHandler extends AbstractExceptionsHandler<Response> {
 
     @Override
-    protected <R> Response badRequest(R body) {
+    protected Response badRequest(ExceptionBodyMessage body) {
         return Response
                 .status(Response.Status.BAD_REQUEST)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .entity(body)
+                .entity(body.getBody())
                 .build();
     }
 
     @Override
-    protected <R> Response conflict(R body) {
+    protected Response conflict(ExceptionBodyMessage body) {
         return Response
                 .status(Response.Status.CONFLICT)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .entity(body)
+                .entity(body.getBody())
                 .build();
     }
 
     @Override
-    protected <R> Response internalError(R body) {
+    protected Response internalError(ExceptionBodyMessage body) {
         return Response
                 .status(Response.Status.INTERNAL_SERVER_ERROR)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .entity(body)
+                .entity(body.getBody())
                 .build();
     }
 
     @Override
-    protected <R> Response notFound(R body) {
+    protected Response notFound(ExceptionBodyMessage body) {
         return Response
                 .status(Response.Status.NOT_FOUND)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .entity(body)
+                .entity(body.getBody())
                 .build();
     }
 
     @Override
-    protected <R> Response forbidden(R body) {
+    protected Response forbidden(ExceptionBodyMessage body) {
         return Response
                 .status(Response.Status.FORBIDDEN)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .entity(body)
+                .entity(body.getBody())
                 .build();
     }
 }
