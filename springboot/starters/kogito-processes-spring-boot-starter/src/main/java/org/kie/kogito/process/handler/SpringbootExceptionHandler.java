@@ -40,11 +40,14 @@ public class SpringbootExceptionHandler implements ExceptionHandler {
     @Autowired
     UnitOfWorkManager unitOfWorkManager;
 
-    @Autowired
+    @Autowired(required = false)
     Processes processes;
 
     @Override
     public void handle(Exception th) {
+        if (processes == null) {
+            return;
+        }
         if (th instanceof ProcessInstanceExecutionException processInstanceExecutionException) {
             UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                 String processInstanceId = processInstanceExecutionException.getProcessInstanceId();

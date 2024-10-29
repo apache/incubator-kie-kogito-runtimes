@@ -33,6 +33,7 @@ import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
@@ -42,15 +43,19 @@ public class QuarkusExceptionHandler implements ExceptionHandler {
     UnitOfWorkManager unitOfWorkManager;
 
     @Inject
-    Processes processes;
+    Instance<Processes> processes;
 
     @Override
     public void handle(Exception th) {
+        if (!processes.isResolvable()) {
+            return;
+        }
+
         if (th instanceof ProcessInstanceExecutionException processInstanceExecutionException) {
             UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                 String processInstanceId = processInstanceExecutionException.getProcessInstanceId();
                 String nodeInstanceId = processInstanceExecutionException.getFailedNodeId();
-                Optional<Process<? extends Model>> processDefinition = processes.processByProcessInstanceId(processInstanceId);
+                Optional<Process<? extends Model>> processDefinition = processes.get().processByProcessInstanceId(processInstanceId);
                 if (processDefinition.isEmpty()) {
                     return null;
                 }
