@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.resource.exceptions.springboot;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +52,7 @@ class ExceptionsHandlerTest {
 
     @BeforeEach
     void setUp() {
-        tested = spy(new ExceptionsHandler());
+        tested = spy(new ExceptionsHandler(new ArrayList<>()));
     }
 
     @Test

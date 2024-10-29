@@ -18,11 +18,17 @@
  */
 package org.kie.kogito.resource.exceptions;
 
+import org.kie.kogito.handler.ExceptionHandler;
+
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 public class ExceptionsHandler extends AbstractExceptionsHandler<Response> {
+
+    public ExceptionsHandler(Iterable<ExceptionHandler> handlers) {
+        super(handlers);
+    }
 
     @Override
     protected Response badRequest(ExceptionBodyMessage body) {

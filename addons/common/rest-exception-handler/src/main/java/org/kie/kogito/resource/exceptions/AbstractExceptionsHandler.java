@@ -18,11 +18,13 @@
  */
 package org.kie.kogito.resource.exceptions;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
+import org.kie.kogito.handler.ExceptionHandler;
 import org.kie.kogito.internal.process.runtime.MessageException;
 import org.kie.kogito.internal.process.workitem.InvalidLifeCyclePhaseException;
 import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
@@ -47,23 +49,22 @@ import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.p
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.variableViolationMessageException;
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.workItemExecutionMessageException;
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.workItemNotFoundMessageException;
-import static org.kie.kogito.resource.exceptions.ExceptionHandler.newExceptionHandler;
+import static org.kie.kogito.resource.exceptions.RestExceptionHandler.newExceptionHandler;
 
 public abstract class AbstractExceptionsHandler<T> {
 
-    ExceptionHandler<? extends Exception, T> DEFAULT_HANDLER = newExceptionHandler(Exception.class, this::badRequest);
+    RestExceptionHandler<? extends Exception, T> DEFAULT_HANDLER = newExceptionHandler(Exception.class, this::badRequest);
 
-    private Map<Class<? extends Throwable>, ExceptionHandler<? extends Throwable, T>> mapper;
+    private Map<Class<? extends Throwable>, RestExceptionHandler<? extends Throwable, T>> mapper;
 
-    private Consumer<Throwable> runPostErrorHandling;
+    private List<ExceptionHandler> errorHandlers;
 
     protected AbstractExceptionsHandler() {
-        this(throwable -> {
-        });
+        this(Collections.emptyList());
     }
 
-    protected AbstractExceptionsHandler(Consumer<Throwable> runPostErrorHandling) {
-        List<ExceptionHandler<? extends Throwable, T>> handlers = List.<ExceptionHandler<? extends Throwable, T>> of(
+    protected AbstractExceptionsHandler(Iterable<ExceptionHandler> errorHandlers) {
+        List<RestExceptionHandler<? extends Throwable, T>> handlers = List.<RestExceptionHandler<? extends Throwable, T>> of(
                 newExceptionHandler(InvalidLifeCyclePhaseException.class, this::badRequest),
                 newExceptionHandler(UserTaskTransitionException.class, this::badRequest),
                 newExceptionHandler(UserTaskInstanceNotFoundException.class, this::notFound),
@@ -82,10 +83,11 @@ public abstract class AbstractExceptionsHandler<T> {
                 newExceptionHandler(MessageException.class, this::badRequest));
 
         this.mapper = new HashMap<>();
-        for (ExceptionHandler<? extends Throwable, T> handler : handlers) {
+        for (RestExceptionHandler<? extends Throwable, T> handler : handlers) {
             this.mapper.put(handler.getType(), handler);
         }
-        this.runPostErrorHandling = runPostErrorHandling;
+        this.errorHandlers = new ArrayList<>();
+        errorHandlers.iterator().forEachRemaining(this.errorHandlers::add);
 
     }
 
@@ -114,7 +116,8 @@ public abstract class AbstractExceptionsHandler<T> {
 
     protected abstract T forbidden(ExceptionBodyMessage body);
 
-    public T mapException(Throwable exception) {
+    public T mapException(Throwable exceptionThrown) {
+        Throwable exception = exceptionThrown;
         var handler = mapper.getOrDefault(exception.getClass(), DEFAULT_HANDLER);
 
         Throwable rootCause = exception.getCause();
@@ -125,7 +128,8 @@ public abstract class AbstractExceptionsHandler<T> {
             }
             rootCause = rootCause.getCause();
         }
-        runPostErrorHandling.accept(exception);
+        // we invoked the error handlers
+        errorHandlers.forEach(e -> e.handle(exceptionThrown));
         return handler.buildResponse(exception);
     }
 }

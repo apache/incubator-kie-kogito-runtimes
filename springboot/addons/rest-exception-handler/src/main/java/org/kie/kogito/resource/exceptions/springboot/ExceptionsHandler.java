@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.resource.exceptions.springboot;
 
+import java.util.List;
 import java.util.Map;
 
 import org.kie.kogito.internal.process.workitem.InvalidLifeCyclePhaseException;
@@ -33,6 +34,7 @@ import org.kie.kogito.process.ProcessInstanceNotFoundException;
 import org.kie.kogito.process.VariableViolationException;
 import org.kie.kogito.resource.exceptions.AbstractExceptionsHandler;
 import org.kie.kogito.resource.exceptions.ExceptionBodyMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ExceptionsHandler extends AbstractExceptionsHandler<ResponseEntity<Map<String, String>>> {
+
+    @Autowired
+    public ExceptionsHandler(List<org.kie.kogito.handler.ExceptionHandler> handlers) {
+        super(handlers);
+    }
 
     @Override
     protected ResponseEntity<Map<String, String>> badRequest(ExceptionBodyMessage body) {
@@ -141,4 +148,5 @@ public class ExceptionsHandler extends AbstractExceptionsHandler<ResponseEntity<
     public ResponseEntity<Map<String, String>> toResponse(IllegalArgumentException exception) {
         return mapException(exception);
     }
+
 }

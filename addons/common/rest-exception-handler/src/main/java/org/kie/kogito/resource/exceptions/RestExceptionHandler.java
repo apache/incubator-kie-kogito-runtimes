@@ -22,14 +22,14 @@ import java.util.function.Function;
 
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.defaultMessageException;
 
-public class ExceptionHandler<EXCEPTION extends Throwable, RESPONSE> {
+public class RestExceptionHandler<EXCEPTION extends Throwable, RESPONSE> {
     private final Function<EXCEPTION, ExceptionBodyMessage> messageConverter;
 
     private final Function<ExceptionBodyMessage, RESPONSE> responseConverter;
 
     private Class<EXCEPTION> type;
 
-    public ExceptionHandler(Class<EXCEPTION> type, Function<EXCEPTION, ExceptionBodyMessage> messageConverter, Function<ExceptionBodyMessage, RESPONSE> responseConverter) {
+    public RestExceptionHandler(Class<EXCEPTION> type, Function<EXCEPTION, ExceptionBodyMessage> messageConverter, Function<ExceptionBodyMessage, RESPONSE> responseConverter) {
         this.type = type;
         this.messageConverter = messageConverter;
         this.responseConverter = responseConverter;
@@ -47,12 +47,12 @@ public class ExceptionHandler<EXCEPTION extends Throwable, RESPONSE> {
         return responseConverter.apply(getContent(getType().cast(exception)));
     }
 
-    public static <TYPE extends Exception, RES> ExceptionHandler<TYPE, RES> newExceptionHandler(Class<TYPE> type, Function<TYPE, ExceptionBodyMessage> contentGenerator,
+    public static <TYPE extends Exception, RES> RestExceptionHandler<TYPE, RES> newExceptionHandler(Class<TYPE> type, Function<TYPE, ExceptionBodyMessage> contentGenerator,
             Function<ExceptionBodyMessage, RES> responseGenerator) {
-        return new ExceptionHandler<TYPE, RES>(type, contentGenerator, responseGenerator);
+        return new RestExceptionHandler<TYPE, RES>(type, contentGenerator, responseGenerator);
     }
 
-    public static <F extends Exception, R> ExceptionHandler<F, R> newExceptionHandler(Class<F> type, Function<ExceptionBodyMessage, R> responseGenerator) {
-        return new ExceptionHandler<F, R>(type, defaultMessageException(), responseGenerator);
+    public static <F extends Exception, R> RestExceptionHandler<F, R> newExceptionHandler(Class<F> type, Function<ExceptionBodyMessage, R> responseGenerator) {
+        return new RestExceptionHandler<F, R>(type, defaultMessageException(), responseGenerator);
     }
 }

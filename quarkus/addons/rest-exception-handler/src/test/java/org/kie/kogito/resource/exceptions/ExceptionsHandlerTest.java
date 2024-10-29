@@ -18,21 +18,23 @@
  */
 package org.kie.kogito.resource.exceptions;
 
+import java.util.ArrayList;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.RuntimeDelegate;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 @ExtendWith(MockitoExtension.class)
 class ExceptionsHandlerTest {
@@ -40,7 +42,7 @@ class ExceptionsHandlerTest {
     private ExceptionsHandler tested;
 
     @Mock
-    private Object body;
+    private ExceptionBodyMessage body;
 
     @Mock
     private RuntimeDelegate runtimeDelegate;
@@ -53,7 +55,7 @@ class ExceptionsHandlerTest {
 
     @BeforeEach
     void setUp() {
-        tested = new ExceptionsHandler();
+        tested = new ExceptionsHandler(new ArrayList<>());
         RuntimeDelegate.setInstance(runtimeDelegate);
         when(runtimeDelegate.createResponseBuilder()).thenReturn(builder);
         when(builder.status(any(Response.StatusType.class))).thenReturn(builder);
@@ -71,7 +73,7 @@ class ExceptionsHandlerTest {
     private void assertRequest(Response.Status status) {
         verify(builder).header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
         verify(builder).status((Response.StatusType) status);
-        verify(builder).entity(body);
+        verify(builder).entity(body.getBody());
     }
 
     @Test

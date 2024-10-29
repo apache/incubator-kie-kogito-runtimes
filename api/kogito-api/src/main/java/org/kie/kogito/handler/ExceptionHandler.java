@@ -16,28 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.resource.exceptions;
+package org.kie.kogito.handler;
 
-import org.kie.kogito.handler.ExceptionHandler;
+public interface ExceptionHandler {
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.ExceptionMapper;
+    void handle(Throwable th);
 
-public abstract class BaseExceptionMapper<E extends Throwable> implements ExceptionMapper<E> {
-
-    protected ExceptionsHandler exceptionsHandler;
-
-    @Inject
-    Instance<ExceptionHandler> handlers;
-
-    @PostConstruct
-    protected void init() {
-        this.exceptionsHandler = new ExceptionsHandler(handlers);
-    }
-
-    @Override
-    public abstract Response toResponse(E e);
 }
