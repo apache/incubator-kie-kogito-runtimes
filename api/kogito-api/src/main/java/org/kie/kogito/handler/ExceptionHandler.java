@@ -20,6 +20,6 @@ package org.kie.kogito.handler;
 
 public interface ExceptionHandler {
 
-    void handle(Throwable th);
+    void handle(Exception th);
 
 }
