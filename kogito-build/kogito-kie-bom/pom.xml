@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-build</artifactId>
-    <version>999-SNAPSHOT</version>
+    <version>999-20241027-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -37,7 +37,7 @@
   </description>
 
   <properties>
-    <version.org.kie>999-SNAPSHOT</version.org.kie>
+    <version.org.kie>999-20241027-SNAPSHOT</version.org.kie>
   </properties>
 
   <dependencyManagement>
