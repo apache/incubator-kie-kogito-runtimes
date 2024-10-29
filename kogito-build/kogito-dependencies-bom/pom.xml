@@ -885,6 +885,11 @@
 
       <dependency>
         <groupId>io.vertx</groupId>
+        <artifactId>vertx-grpc</artifactId>
+        <version>${version.io.vertx}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
         <artifactId>vertx-grpc-server</artifactId>
         <version>${version.io.vertx}</version>
       </dependency>
