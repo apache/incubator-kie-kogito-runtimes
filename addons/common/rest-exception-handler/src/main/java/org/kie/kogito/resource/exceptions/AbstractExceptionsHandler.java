@@ -116,7 +116,7 @@ public abstract class AbstractExceptionsHandler<T> {
 
     protected abstract T forbidden(ExceptionBodyMessage body);
 
-    public T mapException(Throwable exceptionThrown) {
+    public T mapException(Exception exceptionThrown) {
         Throwable exception = exceptionThrown;
         var handler = mapper.getOrDefault(exception.getClass(), DEFAULT_HANDLER);
 
