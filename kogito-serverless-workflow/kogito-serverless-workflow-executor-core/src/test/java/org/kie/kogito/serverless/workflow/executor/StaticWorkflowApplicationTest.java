@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.kie.kogito.process.validation.ValidationException;
 import org.kie.kogito.serverless.workflow.actions.SysoutAction;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 import org.kie.kogito.serverless.workflow.utils.WorkflowFormat;
@@ -50,6 +51,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getWorkflow;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.writeWorkflow;
 
@@ -104,6 +106,15 @@ class StaticWorkflowApplicationTest {
             application.execute(workflow, Collections.emptyMap());
             assertThat(listAppender.list).isNotEmpty();
             assertThat(listAppender.list.get(0).getMessage()).isEqualTo("Model is {}");
+        }
+    }
+
+    @Test
+    void testValidationError() throws IOException {
+        try (Reader reader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("wrong.sw.json"));
+                StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow workflow = getWorkflow(reader, WorkflowFormat.JSON);
+            assertThatThrownBy(() -> application.process(workflow)).isInstanceOf(ValidationException.class).hasMessageContaining("error").hasMessageContaining("function");
         }
     }
 
