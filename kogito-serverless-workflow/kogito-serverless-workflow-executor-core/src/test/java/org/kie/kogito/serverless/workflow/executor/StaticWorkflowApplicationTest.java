@@ -51,7 +51,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getWorkflow;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.writeWorkflow;
 
@@ -114,7 +114,9 @@ class StaticWorkflowApplicationTest {
         try (Reader reader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("wrong.sw.json"));
                 StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             Workflow workflow = getWorkflow(reader, WorkflowFormat.JSON);
-            assertThatThrownBy(() -> application.process(workflow)).isInstanceOf(ValidationException.class).hasMessageContaining("error").hasMessageContaining("function");
+            ValidationException validationException = catchThrowableOfType(() -> application.process(workflow), ValidationException.class);
+            assertThat(validationException.getErrors()).hasSizeGreaterThanOrEqualTo(3);
+            assertThat(validationException).hasMessageContaining("error").hasMessageContaining("function").hasMessageContaining("connect");
         }
     }
 

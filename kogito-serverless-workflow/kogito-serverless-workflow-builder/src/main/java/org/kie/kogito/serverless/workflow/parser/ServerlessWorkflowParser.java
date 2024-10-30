@@ -23,14 +23,18 @@ import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.process.core.validation.ProcessValidationError;
+import org.jbpm.process.core.validation.impl.ProcessValidationErrorImpl;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
+import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.workflow.core.WorkflowModelValidator;
 import org.kie.kogito.codegen.api.GeneratedInfo;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -147,10 +151,6 @@ public class ServerlessWorkflowParser {
         handlers.forEach(StateHandler::handleTransitions);
         handlers.forEach(StateHandler::handleConnections);
 
-        if (!parserContext.validationErrors().isEmpty()) {
-            throw new ValidationException(workflow.getId(), parserContext.validationErrors().stream().collect(Collectors.joining()));
-        }
-
         if (parserContext.isCompensation()) {
             factory.metaData(Metadata.COMPENSATION, true);
             factory.metaData(Metadata.COMPENSATE_WHEN_ABORTED, true);
@@ -176,8 +176,13 @@ public class ServerlessWorkflowParser {
         if (!annotations.isEmpty()) {
             factory.metaData(Metadata.ANNOTATIONS, annotations);
         }
-
-        return new GeneratedInfo<>(factory.validate().getProcess(), parserContext.generatedFiles());
+        factory.link();
+        List<ProcessValidationError> errors = RuleFlowProcessValidator.getInstance().validateProcess(factory.getProcess(), new ArrayList<>());
+        parserContext.validationErrors().forEach(m -> errors.add(new ProcessValidationErrorImpl(factory.getProcess(), m)));
+        if (!errors.isEmpty()) {
+            throw new ValidationException(factory.getProcess().getId(), errors);
+        }
+        return new GeneratedInfo<>(factory.getProcess(), parserContext.generatedFiles());
     }
 
     private Optional<WorkflowModelValidator> modelValidator(ParserContext parserContext, Optional<DataInputSchema> schema) {
