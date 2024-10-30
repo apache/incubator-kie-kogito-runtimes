@@ -40,6 +40,8 @@ import org.kie.kogito.process.VariableViolationException;
 import org.kie.kogito.usertask.UserTaskInstanceNotAuthorizedException;
 import org.kie.kogito.usertask.UserTaskInstanceNotFoundException;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.nodeInstanceNotFoundMessageException;
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.nodeNotFoundMessageException;
@@ -52,6 +54,8 @@ import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.w
 import static org.kie.kogito.resource.exceptions.RestExceptionHandler.newExceptionHandler;
 
 public abstract class AbstractExceptionsHandler<T> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractExceptionsHandler.class);
 
     RestExceptionHandler<? extends Exception, T> DEFAULT_HANDLER = newExceptionHandler(Exception.class, this::badRequest);
 
@@ -117,6 +121,7 @@ public abstract class AbstractExceptionsHandler<T> {
     protected abstract T forbidden(ExceptionBodyMessage body);
 
     public T mapException(Exception exceptionThrown) {
+
         Throwable exception = exceptionThrown;
         var handler = mapper.getOrDefault(exception.getClass(), DEFAULT_HANDLER);
 
@@ -130,6 +135,8 @@ public abstract class AbstractExceptionsHandler<T> {
         }
         // we invoked the error handlers
         errorHandlers.forEach(e -> e.handle(exceptionThrown));
-        return handler.buildResponse(exception);
+        T response = handler.buildResponse(exception);
+        LOG.debug("mapping exception {} with response {}", exceptionThrown, response);
+        return response;
     }
 }

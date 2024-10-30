@@ -31,6 +31,8 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.uow.UnitOfWorkManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class SpringbootExceptionHandler implements ExceptionHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SpringbootExceptionHandler.class);
 
     @Autowired
     UnitOfWorkManager unitOfWorkManager;
@@ -52,6 +56,7 @@ public class SpringbootExceptionHandler implements ExceptionHandler {
             return;
         }
         if (th instanceof ProcessInstanceExecutionException processInstanceExecutionException) {
+            LOG.info("handling exception {} by the handler {}", th, this.getClass().getName());
             UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                 String processInstanceId = processInstanceExecutionException.getProcessInstanceId();
                 String nodeInstanceId = processInstanceExecutionException.getFailedNodeId();

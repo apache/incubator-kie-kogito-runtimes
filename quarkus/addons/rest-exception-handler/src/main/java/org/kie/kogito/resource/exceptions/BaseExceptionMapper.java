@@ -18,25 +18,10 @@
  */
 package org.kie.kogito.resource.exceptions;
 
-import org.kie.kogito.handler.ExceptionHandler;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 
 public abstract class BaseExceptionMapper<E extends Throwable> implements ExceptionMapper<E> {
-
-    protected ExceptionsHandler exceptionsHandler;
-
-    @Inject
-    Instance<ExceptionHandler> handlers;
-
-    @PostConstruct
-    protected void init() {
-        this.exceptionsHandler = new ExceptionsHandler(handlers);
-    }
 
     @Override
     public abstract Response toResponse(E e);

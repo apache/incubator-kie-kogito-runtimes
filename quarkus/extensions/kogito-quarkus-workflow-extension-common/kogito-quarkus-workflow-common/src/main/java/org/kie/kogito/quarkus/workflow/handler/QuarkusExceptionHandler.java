@@ -31,6 +31,8 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.uow.UnitOfWorkManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
@@ -40,6 +42,8 @@ import jakarta.transaction.Transactional.TxType;
 
 @ApplicationScoped
 public class QuarkusExceptionHandler implements ExceptionHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(QuarkusExceptionHandler.class);
 
     @Inject
     UnitOfWorkManager unitOfWorkManager;
@@ -53,8 +57,8 @@ public class QuarkusExceptionHandler implements ExceptionHandler {
         if (!processes.isResolvable()) {
             return;
         }
-
         if (th instanceof ProcessInstanceExecutionException processInstanceExecutionException) {
+            LOG.info("handling exception {} by the handler {}", th, this.getClass().getName());
             UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                 String processInstanceId = processInstanceExecutionException.getProcessInstanceId();
                 String nodeInstanceId = processInstanceExecutionException.getFailedNodeId();
