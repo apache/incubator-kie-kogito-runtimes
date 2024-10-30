@@ -386,7 +386,12 @@ public abstract class StateHandler<S extends State> {
                 targetState.connectSource(actionNode);
             }
         } else {
-            callback.ifPresent(HandleTransitionCallBack::onEmptyTarget);
+            callback.ifPresentOrElse(HandleTransitionCallBack::onEmptyTarget,
+                    () -> {
+                        if (transition != null) {
+                            parserContext.addValidationError(String.format("There is no state for transition %s originated in %s", transition.getNextState(), state.getName()));
+                        }
+                    });
         }
     }
 
