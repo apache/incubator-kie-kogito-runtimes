@@ -256,7 +256,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
                 captureError(e);
                 return;
             } else {
-                throw new ProcessInstanceExecutionException(this.getProcessInstance().getId(), this.id, e.getMessage(), e);
+                throw new ProcessInstanceExecutionException(this.getProcessInstance().getId(), this.getNodeDefinitionId(), e.getMessage(), e);
             }
             // stop after capturing error
         }

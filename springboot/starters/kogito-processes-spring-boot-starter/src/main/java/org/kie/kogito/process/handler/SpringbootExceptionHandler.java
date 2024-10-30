@@ -23,7 +23,6 @@ import java.util.Optional;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.kogito.Model;
 import org.kie.kogito.handler.ExceptionHandler;
-import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstanceExecutionException;
@@ -59,7 +58,6 @@ public class SpringbootExceptionHandler implements ExceptionHandler {
             LOG.info("handling exception {} by the handler {}", th, this.getClass().getName());
             UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                 String processInstanceId = processInstanceExecutionException.getProcessInstanceId();
-                String nodeInstanceId = processInstanceExecutionException.getFailedNodeId();
                 Optional<Process<? extends Model>> processDefinition = processes.processByProcessInstanceId(processInstanceId);
                 if (processDefinition.isEmpty()) {
                     return null;
@@ -71,9 +69,7 @@ public class SpringbootExceptionHandler implements ExceptionHandler {
                 }
 
                 AbstractProcessInstance<? extends Model> processInstance = ((AbstractProcessInstance<? extends Model>) instance.get());
-                KogitoNodeInstance nodeIntsance = processInstance.internalGetProcessInstance().getNodeInstance(nodeInstanceId);
-                ((WorkflowProcessInstanceImpl) processInstance.internalGetProcessInstance()).setErrorState((org.jbpm.workflow.instance.NodeInstance) nodeIntsance, th);
-
+                ((WorkflowProcessInstanceImpl) processInstance.internalGetProcessInstance()).internalSetError(processInstanceExecutionException);
                 ((MutableProcessInstances) processDefinition.get().instances()).update(processInstanceId, processInstance);
                 return null;
             });
