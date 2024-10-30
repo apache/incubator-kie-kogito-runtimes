@@ -69,7 +69,7 @@ public final class CodegenUtil {
         boolean propertyValue = getProperty(generator, context, TRANSACTION_ENABLED, Boolean::parseBoolean, true);
         LOG.debug("Compute property {} for generator {} property with value {}", TRANSACTION_ENABLED, generator.name(), propertyValue);
         // java implementation does not have transactions
-        return JavaKogitoBuildContext.CONTEXT_NAME.equals(context.name()) && propertyValue;
+        return !JavaKogitoBuildContext.CONTEXT_NAME.equals(context.name()) && propertyValue;
     }
 
     /**

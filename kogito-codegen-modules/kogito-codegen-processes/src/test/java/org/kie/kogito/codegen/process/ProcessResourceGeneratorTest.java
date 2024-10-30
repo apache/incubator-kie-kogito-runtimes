@@ -52,7 +52,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.kie.kogito.codegen.process.ProcessResourceGenerator.INVALID_CONTEXT_TEMPLATE;
 
 class ProcessResourceGeneratorTest {
@@ -217,7 +216,6 @@ class ProcessResourceGeneratorTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testUserTaskManageTransactionalEnabledByDefault(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder.build();
-        assumeFalse(JavaKogitoBuildContext.CONTEXT_NAME.equals(context.name()));
         UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
         CompilationUnit compilationUnit = StaticJavaParser.parse(new String(userTaskCodegen.generateRestEndpiont().contents()));
         List<MethodDeclaration> restEndpoints = compilationUnit.findAll(MethodDeclaration.class).stream().filter(MethodDeclaration::isPublic).toList();
@@ -231,7 +229,6 @@ class ProcessResourceGeneratorTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testUserTaskManageTransactionalDisabled(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder.build();
-        assumeFalse(JavaKogitoBuildContext.CONTEXT_NAME.equals(context.name()));
         UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
         context.setApplicationProperty(CodegenUtil.generatorProperty(userTaskCodegen, CodegenUtil.TRANSACTION_ENABLED), "false");
         CompilationUnit compilationUnit = StaticJavaParser.parse(new String(userTaskCodegen.generateRestEndpiont().contents()));
@@ -246,7 +243,6 @@ class ProcessResourceGeneratorTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testUserTaskManageTransactionalGeneratorDisabled(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder.build();
-        assumeFalse(JavaKogitoBuildContext.CONTEXT_NAME.equals(context.name()));
         UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
         context.setApplicationProperty(CodegenUtil.generatorProperty(userTaskCodegen, CodegenUtil.TRANSACTION_ENABLED), "false");
         CompilationUnit compilationUnit = StaticJavaParser.parse(new String(userTaskCodegen.generateRestEndpiont().contents()));
@@ -261,7 +257,6 @@ class ProcessResourceGeneratorTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testUserTaskManageTransactionalEnabled(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder.build();
-        assumeFalse(JavaKogitoBuildContext.CONTEXT_NAME.equals(context.name()));
         UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
         context.setApplicationProperty(CodegenUtil.generatorProperty(userTaskCodegen, CodegenUtil.TRANSACTION_ENABLED), "true");
         CompilationUnit compilationUnit = StaticJavaParser.parse(new String(userTaskCodegen.generateRestEndpiont().contents()));
@@ -276,7 +271,6 @@ class ProcessResourceGeneratorTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testUserTaskManageTransactionalGeneratorEnabled(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder.build();
-        assumeFalse(JavaKogitoBuildContext.CONTEXT_NAME.equals(context.name()));
         UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
         context.setApplicationProperty(CodegenUtil.generatorProperty(userTaskCodegen, CodegenUtil.TRANSACTION_ENABLED), "true");
         CompilationUnit compilationUnit = StaticJavaParser.parse(new String(userTaskCodegen.generateRestEndpiont().contents()));
