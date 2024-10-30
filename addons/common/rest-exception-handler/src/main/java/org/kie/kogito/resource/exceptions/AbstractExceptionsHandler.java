@@ -125,6 +125,8 @@ public abstract class AbstractExceptionsHandler<T> {
         Throwable exception = exceptionThrown;
         var handler = mapper.getOrDefault(exception.getClass(), DEFAULT_HANDLER);
 
+        ExceptionBodyMessage message = handler.getContent(exceptionThrown);
+
         Throwable rootCause = exception.getCause();
         while (rootCause != null) {
             if (mapper.containsKey(rootCause.getClass())) {
@@ -135,8 +137,8 @@ public abstract class AbstractExceptionsHandler<T> {
         }
         // we invoked the error handlers
         errorHandlers.forEach(e -> e.handle(exceptionThrown));
-        T response = handler.buildResponse(exception);
-        LOG.debug("mapping exception {} with response {}", exceptionThrown, response);
+        T response = handler.buildResponse(message);
+        LOG.debug("mapping exception {} with response {}", exceptionThrown, message.getBody());
         return response;
     }
 }

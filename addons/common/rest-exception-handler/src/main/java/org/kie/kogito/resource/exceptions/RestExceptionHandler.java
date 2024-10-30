@@ -39,12 +39,12 @@ public class RestExceptionHandler<EXCEPTION extends Throwable, RESPONSE> {
         return type;
     }
 
-    public ExceptionBodyMessage getContent(EXCEPTION exception) {
-        return messageConverter.apply(exception);
+    public ExceptionBodyMessage getContent(Throwable exception) {
+        return messageConverter.apply(getType().cast(exception));
     }
 
-    public RESPONSE buildResponse(Throwable exception) {
-        return responseConverter.apply(getContent(getType().cast(exception)));
+    public RESPONSE buildResponse(ExceptionBodyMessage exceptionBodyMessage) {
+        return responseConverter.apply(exceptionBodyMessage);
     }
 
     public static <TYPE extends Exception, RES> RestExceptionHandler<TYPE, RES> newExceptionHandler(Class<TYPE> type, Function<TYPE, ExceptionBodyMessage> contentGenerator,

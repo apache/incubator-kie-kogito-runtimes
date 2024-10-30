@@ -251,11 +251,12 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         try {
             internalTrigger(from, type);
         } catch (Exception e) {
-            logger.error("Node instance causing process instance error in id {}", this.getStringId(), e);
             if (!WORKFLOW_PARAM_TRANSACTIONS.get(getProcessInstance().getProcess())) {
+                logger.error("Node instance causing process instance error in id {} in a non transactional environment", this.getStringId());
                 captureError(e);
                 return;
             } else {
+                logger.error("Node instance causing process instance error in id {} in a transactional environment (Wrapping)", this.getStringId());
                 throw new ProcessInstanceExecutionException(this.getProcessInstance().getId(), this.getNodeDefinitionId(), e.getMessage(), e);
             }
             // stop after capturing error

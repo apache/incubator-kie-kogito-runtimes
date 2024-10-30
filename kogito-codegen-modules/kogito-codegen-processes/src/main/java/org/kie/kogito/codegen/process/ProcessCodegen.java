@@ -59,12 +59,15 @@ import org.kie.kogito.codegen.api.GeneratedInfo;
 import org.kie.kogito.codegen.api.SourceFileCodegenBindEvent;
 import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMeta;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
+import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.validation.ValidationException;
@@ -75,6 +78,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
 import static java.lang.String.format;
@@ -299,9 +303,12 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // first we generate all the data classes from variable declarations
         for (WorkflowProcess workFlowProcess : processes.values()) {
-            if (isTransactionEnabled(this, context())) {
+            // transaction is disabled by default for SW types
+            boolean defaultTransactionEnabled = !KogitoWorkflowProcess.SW_TYPE.equals(workFlowProcess.getType());
+            if (isTransactionEnabled(this, context(), defaultTransactionEnabled)) {
                 ((WorkflowProcessImpl) workFlowProcess).setMetaData(WorkflowProcessParameters.WORKFLOW_PARAM_TRANSACTIONS.getName(), "true");
             }
+
             if (!skipModelGeneration(workFlowProcess)) {
                 ModelClassGenerator mcg = new ModelClassGenerator(context(), workFlowProcess);
                 processIdToModelGenerator.put(workFlowProcess.getId(), mcg);
@@ -313,9 +320,10 @@ public class ProcessCodegen extends AbstractGenerator {
                 processIdToOutputModelGenerator.put(workFlowProcess.getId(), omcg);
             }
         }
-
+        boolean isServerless = false;
         // then we generate work items task inputs and outputs if any
         for (WorkflowProcess workFlowProcess : processes.values()) {
+            isServerless |= KogitoWorkflowProcess.SW_TYPE.equals(workFlowProcess.getType());
             if (KogitoWorkflowProcess.SW_TYPE.equals(workFlowProcess.getType())) {
                 continue;
             }
@@ -344,6 +352,7 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         // generate Process, ProcessInstance classes and the REST resource
+
         for (ProcessExecutableModelGenerator execModelGen : processExecutableModelGenerators) {
             String classPrefix = sanitizeClassName(execModelGen.extractedProcessId());
             KogitoWorkflowProcess workFlowProcess = execModelGen.process();
@@ -454,6 +463,17 @@ public class ProcessCodegen extends AbstractGenerator {
         if (Objects.nonNull(isBusinessCalendarPresent) && isBusinessCalendarPresent) {
             staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE))
                     .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
+        }
+
+        if (CodegenUtil.isTransactionEnabled(this, context()) && !isServerless) {
+            String template = "ExceptionHandlerTransaction";
+            TemplatedGenerator generator = TemplatedGenerator.builder()
+                    .withTemplateBasePath("/class-templates/transaction/")
+                    .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
+                    .withTargetTypeName(template)
+                    .build(context(), template);
+            CompilationUnit handler = generator.compilationUnitOrThrow();
+            storeFile(MODEL_TYPE, generator.generatedFilePath(), handler.toString());
         }
 
         if (context().hasRESTForGenerator(this)) {

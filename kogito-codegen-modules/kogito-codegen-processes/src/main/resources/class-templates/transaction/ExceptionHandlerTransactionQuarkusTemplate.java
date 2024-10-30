@@ -18,13 +18,10 @@
  */
 package org.kie.kogito.quarkus.workflow.handler;
 
-import java.util.Optional;
-
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.kogito.Model;
 import org.kie.kogito.handler.ExceptionHandler;
 import org.kie.kogito.process.MutableProcessInstances;
-import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
@@ -56,11 +53,12 @@ public class QuarkusExceptionHandler implements ExceptionHandler {
         if (!processes.isResolvable()) {
             return;
         }
-        if (th instanceof ProcessInstanceExecutionException processInstanceExecutionException) {
+        if (th instanceof ProcessInstanceExecutionException) {
+            ProcessInstanceExecutionException processInstanceExecutionException = (ProcessInstanceExecutionException) th;
             LOG.info("handling exception {} by the handler {}", th, this.getClass().getName());
             UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                 String processInstanceId = processInstanceExecutionException.getProcessInstanceId();
-                Optional<Process<? extends Model>> processDefinition = processes.get().processByProcessInstanceId(processInstanceId);
+                var processDefinition = processes.get().processByProcessInstanceId(processInstanceId);
                 if (processDefinition.isEmpty()) {
                     return null;
                 }
