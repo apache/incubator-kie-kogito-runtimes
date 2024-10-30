@@ -22,6 +22,7 @@ import java.util.function.Function;
 
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +67,9 @@ public final class CodegenUtil {
      */
     public static boolean isTransactionEnabled(Generator generator, KogitoBuildContext context) {
         boolean propertyValue = getProperty(generator, context, TRANSACTION_ENABLED, Boolean::parseBoolean, true);
-        LOG.debug("trying to compute property {} for generator {} property with value {}", TRANSACTION_ENABLED, generator.name(), propertyValue);
-        return propertyValue;
+        LOG.debug("Compute property {} for generator {} property with value {}", TRANSACTION_ENABLED, generator.name(), propertyValue);
+        // java implementation does not have transactions
+        return JavaKogitoBuildContext.CONTEXT_NAME.equals(context.name()) && propertyValue;
     }
 
     /**
