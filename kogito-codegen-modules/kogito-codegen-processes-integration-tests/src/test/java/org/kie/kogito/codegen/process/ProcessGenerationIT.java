@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -406,13 +407,15 @@ public class ProcessGenerationIT extends AbstractCodegenIT {
             return;
         }
         expected.remove("CorrelationSubscriptions");
-        assertThat(current).hasSize((int) expected.keySet()
-                .stream()
-                .filter(k -> ignoredKeys == null || !ignoredKeys.contains(k))
-                .count());
+        Predicate<String> precicateIgnoredKeys = Predicate.not(ignoredKeys::contains);
+
+        List<String> currentKeys = current.keySet().stream().filter(precicateIgnoredKeys).toList();
+        List<String> expectedKeys = expected.keySet().stream().filter(precicateIgnoredKeys).toList();
+        assertThat(currentKeys).containsExactlyElementsOf(expectedKeys);
+
         expected.keySet()
                 .stream()
-                .filter(k -> ignoredKeys == null || !ignoredKeys.contains(k))
+                .filter(precicateIgnoredKeys)
                 .forEach(k -> assertThat(current).as("Metadata " + k).containsEntry(k, expected.get(k)));
     }
 

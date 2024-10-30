@@ -33,6 +33,8 @@ import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class SpringbootExceptionHandler implements ExceptionHandler {
@@ -44,6 +46,7 @@ public class SpringbootExceptionHandler implements ExceptionHandler {
     Processes processes;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handle(Exception th) {
         if (processes == null) {
             return;

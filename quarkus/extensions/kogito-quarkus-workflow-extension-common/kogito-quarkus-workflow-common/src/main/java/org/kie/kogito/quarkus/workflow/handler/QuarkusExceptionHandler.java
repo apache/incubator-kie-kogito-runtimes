@@ -35,6 +35,8 @@ import org.kie.kogito.uow.UnitOfWorkManager;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 @ApplicationScoped
 public class QuarkusExceptionHandler implements ExceptionHandler {
@@ -46,6 +48,7 @@ public class QuarkusExceptionHandler implements ExceptionHandler {
     Instance<Processes> processes;
 
     @Override
+    @Transactional(value = TxType.REQUIRES_NEW)
     public void handle(Exception th) {
         if (!processes.isResolvable()) {
             return;
