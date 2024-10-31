@@ -24,6 +24,7 @@ import java.util.function.Function;
 
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
+import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
         BoundaryEventNode boundaryNode = (BoundaryEventNode) getEventNode();
 
         String attachedTo = boundaryNode.getAttachedToNodeId();
-        Collection<org.kie.api.runtime.process.NodeInstance> nodeInstances = getNodeInstanceContainer().getNodeInstances();
+        Collection<NodeInstance> nodeInstances = getProcessInstance().getNodeInstances(true);
         if (type != null && type.startsWith(Metadata.EVENT_TYPE_COMPENSATION)) {
             // if not active && completed, signal
             if (!isAttachedToNodeActive(nodeInstances, attachedTo, type, event) && isAttachedToNodeCompleted(attachedTo)) {
@@ -65,9 +66,9 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
         this.signalEvent(type, event, varName -> this.getVariable(varName));
     }
 
-    private boolean isAttachedToNodeActive(Collection<org.kie.api.runtime.process.NodeInstance> nodeInstances, String attachedTo, String type, Object event) {
+    private boolean isAttachedToNodeActive(Collection<NodeInstance> nodeInstances, String attachedTo, String type, Object event) {
         if (nodeInstances != null && !nodeInstances.isEmpty()) {
-            for (org.kie.api.runtime.process.NodeInstance nInstance : nodeInstances) {
+            for (NodeInstance nInstance : nodeInstances) {
                 String nodeUniqueId = (String) nInstance.getNode().getUniqueId();
                 boolean isActivating = ((WorkflowProcessInstanceImpl) nInstance.getProcessInstance()).getActivatingNodeIds().contains(nodeUniqueId);
                 if (attachedTo.equals(nodeUniqueId) && !isActivating) {
