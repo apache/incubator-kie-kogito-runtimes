@@ -37,7 +37,7 @@ import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 
 @ApplicationScoped
-public class QuarkusExceptionHandler implements ExceptionHandler {
+public class ExceptionHandlerTransaction implements ExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(QuarkusExceptionHandler.class);
 

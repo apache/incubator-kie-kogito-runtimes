@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class SpringbootExceptionHandler implements ExceptionHandler {
+public class ExceptionHandlerTransaction implements ExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(SpringbootExceptionHandler.class);
 
