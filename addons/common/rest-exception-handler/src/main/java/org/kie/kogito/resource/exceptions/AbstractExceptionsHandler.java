@@ -122,16 +122,14 @@ public abstract class AbstractExceptionsHandler<T> {
 
     public T mapException(Exception exceptionThrown) {
 
-        Throwable exception = exceptionThrown;
-        var handler = mapper.getOrDefault(exception.getClass(), DEFAULT_HANDLER);
-
+        var handler = mapper.getOrDefault(exceptionThrown.getClass(), DEFAULT_HANDLER);
         ExceptionBodyMessage message = handler.getContent(exceptionThrown);
 
-        Throwable rootCause = exception.getCause();
+        Throwable rootCause = exceptionThrown.getCause();
         while (rootCause != null) {
             if (mapper.containsKey(rootCause.getClass())) {
                 handler = mapper.get(rootCause.getClass());
-                exception = rootCause;
+                message.merge(handler.getContent(rootCause));
             }
             rootCause = rootCause.getCause();
         }

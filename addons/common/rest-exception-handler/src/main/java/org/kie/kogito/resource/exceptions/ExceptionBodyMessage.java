@@ -50,4 +50,8 @@ public class ExceptionBodyMessage {
     public String getErrorCode() {
         return body.getOrDefault(ERROR_CODE, "");
     }
+
+    public void merge(ExceptionBodyMessage content) {
+        this.body.putAll(content.body);
+    }
 }
