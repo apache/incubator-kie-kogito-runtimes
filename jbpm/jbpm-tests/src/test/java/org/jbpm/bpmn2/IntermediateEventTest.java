@@ -2057,15 +2057,15 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         instance.start();
 
         countDownListener.reset(1);
-        countDownListener.await();
+        assertThat(countDownListener.await()).isTrue();
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
         countDownListener.reset(1);
-        countDownListener.await();
+        assertThat(countDownListener.await()).isTrue();
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
 
         countDownListener.reset(1);
-        countDownListener.await();
+        assertThat(countDownListener.await()).isTrue();
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
