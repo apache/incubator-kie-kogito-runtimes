@@ -32,15 +32,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.plugin.BuildPluginManager;
+import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
+import org.kie.kogito.maven.plugin.util.MojoExecutionHelper;
 
 import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
 import static org.kie.efesto.common.api.constants.Constants.INDEXFILE_DIRECTORY_PROPERTY;
@@ -69,8 +76,27 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
 
+    @Parameter(defaultValue = "${mojoExecution}")
+    private MojoExecution mojoExecution;
+
+    /**
+     * The <code>maven-compiler-plugin</code> version to use.
+     * Default to <b>3.8.1</b>
+     */
+    @Parameter(defaultValue = "3.8.1", property = "version.compiler.plugin")
+    private String compilerPluginVersion;
+
+    @Component
+    private MavenProject mavenProject;
+
+    @Component
+    private MavenSession mavenSession;
+
+    @Component
+    private BuildPluginManager pluginManager;
+
     @Override
-    public void execute() throws MojoExecutionException {
+    public void execute() throws MojoExecutionException, MojoFailureException {
         // TODO to be removed with DROOLS-7090
         boolean indexFileDirectorySet = false;
         getLog().debug("execute -> " + outputDirectory);
@@ -91,6 +117,40 @@ public class GenerateModelMojo extends AbstractKieMojo {
         if (indexFileDirectorySet) {
             System.clearProperty(INDEXFILE_DIRECTORY_PROPERTY);
         }
+
+        // invoke maven-compiler-plugin:compile
+        compileGeneratedClasses();
+
+        // invoke ProcessClassesMojo
+        processClasses();
+    }
+
+    protected void compileGeneratedClasses() throws MojoFailureException {
+        try {
+            MojoExecutionHelper.compile(mavenProject,
+                    mavenSession,
+                    pluginManager,
+                    compilerPluginVersion,
+                    getLog());
+        } catch (Exception e) {
+            getLog().error(e);
+            throw new MojoFailureException(e.getMessage());
+        }
+        getLog().info("....done!");
+    }
+
+    protected void processClasses() throws MojoFailureException {
+        try {
+            MojoExecutionHelper.processClasses(mavenProject,
+                    mavenSession,
+                    pluginManager,
+                    this.mojoExecution.getVersion(),
+                    getLog());
+        } catch (Exception e) {
+            getLog().error(e);
+            throw new MojoFailureException(e.getMessage());
+        }
+        getLog().info("....done!");
     }
 
     protected boolean isOnDemand() {
@@ -126,7 +186,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
         List<GeneratedFile> generatedCompiledFiles = mappedGeneratedFiles.getOrDefault(COMPILED_CLASS,
                 Collections.emptyList())
                 .stream().map(originalGeneratedFile -> new GeneratedFile(COMPILED_CLASS, convertPath(originalGeneratedFile.path().toString()), originalGeneratedFile.contents()))
-                .collect(Collectors.toList());
+                .toList();
 
         writeGeneratedFiles(generatedCompiledFiles);
 
@@ -154,4 +214,5 @@ public class GenerateModelMojo extends AbstractKieMojo {
             throw new MojoExecutionException("Unable to find .drl files");
         }
     }
+
 }
