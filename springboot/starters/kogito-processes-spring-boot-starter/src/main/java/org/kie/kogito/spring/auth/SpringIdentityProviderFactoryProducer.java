@@ -35,8 +35,8 @@ public class SpringIdentityProviderFactoryProducer {
 
     @Bean
     public IdentityProviderFactory produce(IdentityProvider identityProvider,
-            @Value("${kogito.security.auth.enabled:false}") boolean enabled,
-            @Value("${kogito.security.auth.impersonation.allowed-for-roles}") Optional<String> configRolesThatAllowImpersonation) {
+            @Value("${" + IdentityProviderFactory.KOGITO_SECURITY_AUTH_ENABLED+ ":false}") boolean enabled,
+            @Value("${" + IdentityProviderFactory.KOGITO_SECURITY_AUTH_IMPERSONATION_ALLOWED_FOR_ROLES + "}") Optional<String> configRolesThatAllowImpersonation) {
         String[] rolesThatAllowImpersonation = configRolesThatAllowImpersonation.map(roles -> roles.split(",")).orElse(new String[] {});
         return new IdentityProviderFactoryImpl(identityProvider, new KogitoAuthConfig(enabled, List.of(rolesThatAllowImpersonation)));
     }
