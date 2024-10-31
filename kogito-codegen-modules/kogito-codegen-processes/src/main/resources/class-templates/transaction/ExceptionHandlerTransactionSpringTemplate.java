@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class ExceptionHandlerTransaction implements ExceptionHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SpringbootExceptionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlerTransaction.class);
 
     @Autowired
     UnitOfWorkManager unitOfWorkManager;
@@ -56,19 +56,15 @@ public class ExceptionHandlerTransaction implements ExceptionHandler {
             LOG.info("handling exception {} by the handler {}", th, this.getClass().getName());
             UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                 String processInstanceId = processInstanceExecutionException.getProcessInstanceId();
-                var processDefinition = processes.processByProcessInstanceId(processInstanceId);
-                if (processDefinition.isEmpty()) {
-                    return null;
-                }
+                processes.processByProcessInstanceId(processInstanceId).ifPresent(processDefinition -> {
+                    processDefinition.instances().findById(processInstanceId).ifPresent(instance -> {
+                        AbstractProcessInstance<? extends Model> processInstance = ((AbstractProcessInstance<? extends Model>) instance);
+                        ((WorkflowProcessInstanceImpl) processInstance.internalGetProcessInstance()).internalSetError(processInstanceExecutionException);
+                        ((MutableProcessInstances) processDefinition.instances()).update(processInstanceId, processInstance);
+                    });
 
-                var instance = processDefinition.get().instances().findById(processInstanceId);
-                if (instance.isEmpty()) {
-                    return null;
-                }
+                });
 
-                AbstractProcessInstance<? extends Model> processInstance = ((AbstractProcessInstance<? extends Model>) instance.get());
-                ((WorkflowProcessInstanceImpl) processInstance.internalGetProcessInstance()).internalSetError(processInstanceExecutionException);
-                ((MutableProcessInstances) processDefinition.get().instances()).update(processInstanceId, processInstance);
                 return null;
             });
         }

@@ -39,38 +39,36 @@ import jakarta.transaction.Transactional.TxType;
 @ApplicationScoped
 public class ExceptionHandlerTransaction implements ExceptionHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(QuarkusExceptionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlerTransaction.class);
 
     @Inject
     UnitOfWorkManager unitOfWorkManager;
 
     @Inject
-    Instance<Processes> processes;
+    Instance<Processes> processesContainer;
 
     @Override
     @Transactional(value = TxType.REQUIRES_NEW)
     public void handle(Exception th) {
-        if (!processes.isResolvable()) {
+        if (processesContainer.isResolvable()) {
             return;
         }
+
+        Processes processes = processesContainer.get();
         if (th instanceof ProcessInstanceExecutionException) {
             ProcessInstanceExecutionException processInstanceExecutionException = (ProcessInstanceExecutionException) th;
             LOG.info("handling exception {} by the handler {}", th, this.getClass().getName());
             UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                 String processInstanceId = processInstanceExecutionException.getProcessInstanceId();
-                var processDefinition = processes.get().processByProcessInstanceId(processInstanceId);
-                if (processDefinition.isEmpty()) {
-                    return null;
-                }
+                processes.processByProcessInstanceId(processInstanceId).ifPresent(processDefinition -> {
+                    processDefinition.instances().findById(processInstanceId).ifPresent(instance -> {
+                        AbstractProcessInstance<? extends Model> processInstance = ((AbstractProcessInstance<? extends Model>) instance);
+                        ((WorkflowProcessInstanceImpl) processInstance.internalGetProcessInstance()).internalSetError(processInstanceExecutionException);
+                        ((MutableProcessInstances) processDefinition.instances()).update(processInstanceId, processInstance);
+                    });
 
-                var instance = processDefinition.get().instances().findById(processInstanceId);
-                if (instance.isEmpty()) {
-                    return null;
-                }
+                });
 
-                AbstractProcessInstance<? extends Model> processInstance = ((AbstractProcessInstance<? extends Model>) instance.get());
-                ((WorkflowProcessInstanceImpl) processInstance.internalGetProcessInstance()).internalSetError(processInstanceExecutionException);
-                ((MutableProcessInstances) processDefinition.get().instances()).update(processInstanceId, processInstance);
                 return null;
             });
         }
