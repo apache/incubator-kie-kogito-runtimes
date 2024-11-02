@@ -49,7 +49,6 @@
     <module>integration-tests-quarkus-processes-reactive</module>
     <module>integration-tests-quarkus-processes-persistence</module>
     <module>integration-tests-quarkus-source-files</module>
-    <module>integration-tests-quarkus-gradle</module>
   </modules>
 
 </project>
