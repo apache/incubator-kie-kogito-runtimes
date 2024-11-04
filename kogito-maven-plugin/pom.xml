@@ -97,6 +97,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- Needed to instruct MAVEN reactor to build this module after the one required by it -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-spring-boot-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
       <!-- Plugin invocations -->
       <dependency>
         <groupId>org.twdata.maven</groupId>
@@ -194,6 +201,11 @@
     </dependency>
 
     <!-- Needed to instruct MAVEN reactor to build this module after the one required by it -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-spring-boot-bom</artifactId>
+      <type>pom</type>
+    </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-spring-boot-starter</artifactId>
