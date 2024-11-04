@@ -193,6 +193,12 @@
       <artifactId>javaparser-core</artifactId>
     </dependency>
 
+    <!-- Needed to instruct MAVEN reactor to build this module after the one required by it -->
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-spring-boot-starter</artifactId>
+    </dependency>
+
     <!-- Plugin invocations -->
     <dependency>
       <groupId>org.twdata.maven</groupId>
