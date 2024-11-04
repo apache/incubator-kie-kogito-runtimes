@@ -45,4 +45,10 @@ public class KogitoRuntimeConfig {
      */
     @ConfigItem(name = "process.instances.limit", defaultValue = "1000")
     public short processInstanceLimit;
+
+    /**
+     * Auth Configuration
+     */
+    @ConfigItem(name = "security.auth")
+    public KogitoAuthRuntimeConfig authConfig;
 }

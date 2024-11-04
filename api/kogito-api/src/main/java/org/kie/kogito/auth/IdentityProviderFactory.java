@@ -17,14 +17,24 @@
  * under the License.
  */
 
-pluginManagement {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    plugins {
-        id "${quarkusPluginId}" version "${quarkusPluginVersion}"
-    }
+package org.kie.kogito.auth;
+
+import java.util.Collection;
+
+/**
+ * Factory that resolves the {@link IdentityProvider}
+ */
+public interface IdentityProviderFactory {
+
+    /**
+     * Enables (true) using the application security context when resolving current User Identity. Defaults to false.
+     */
+    String KOGITO_SECURITY_AUTH_ENABLED = "kogito.security.auth.enabled";
+
+    /**
+     * Comma-separated list of roles that allow identity impersonation when resolving the actual User Identity.
+     */
+    String KOGITO_SECURITY_AUTH_IMPERSONATION_ALLOWED_FOR_ROLES = "kogito.security.auth.impersonation.allowed-for-roles";
+
+    IdentityProvider getOrImpersonateIdentity(String user, Collection<String> roles);
 }
-rootProject.name='integration-tests-quarkus-gradle-project'
