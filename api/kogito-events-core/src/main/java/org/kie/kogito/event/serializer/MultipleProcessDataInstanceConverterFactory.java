@@ -49,8 +49,7 @@ public class MultipleProcessDataInstanceConverterFactory {
     }
 
     private static boolean isCompressed(CloudEvent event) {
-        Object value = event.getExtension(MultipleProcessInstanceDataEvent.COMPRESS_DATA);
-        return value instanceof Boolean ? ((Boolean) value).booleanValue() : false;
+        return MultipleProcessInstanceDataEvent.isCompressed(event.getExtension(MultipleProcessInstanceDataEvent.COMPRESS_DATA));
     }
 
     private static Converter<CloudEventData, Collection<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>>> binaryConverter =
