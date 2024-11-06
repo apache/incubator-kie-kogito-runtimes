@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-api-parent</artifactId>
-        <version>10.0.999-SNAPSHOT</version>
+        <version>10.0.0</version>
     </parent>
 
     <artifactId>kogito-api-incubation-common-objectmapper</artifactId>
