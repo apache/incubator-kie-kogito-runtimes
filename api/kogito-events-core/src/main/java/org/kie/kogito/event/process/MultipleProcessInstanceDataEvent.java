@@ -21,14 +21,33 @@ package org.kie.kogito.event.process;
 import java.net.URI;
 import java.util.Collection;
 
-public class MultipleProcessInstanceDataEvent extends ProcessInstanceDataEvent<Collection<ProcessInstanceDataEvent<?>>> {
+public class MultipleProcessInstanceDataEvent extends ProcessInstanceDataEvent<Collection<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>>> {
 
-    public static final String TYPE = "MultipleProcessInstanceDataEvent";
+    public static final String MULTIPLE_TYPE = "MultipleProcessInstanceDataEvent";
+    public static final String BINARY_CONTENT_TYPE = "application/octet-stream";
+    public static final String COMPRESS_DATA = "compressdata";
 
     public MultipleProcessInstanceDataEvent() {
     }
 
-    public MultipleProcessInstanceDataEvent(URI source, Collection<ProcessInstanceDataEvent<?>> body) {
-        super(TYPE, source, body);
+    public MultipleProcessInstanceDataEvent(URI source, Collection<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>> body) {
+        super(MULTIPLE_TYPE, source, body);
+    }
+
+    public boolean isCompressed() {
+        return isCompressed(getExtension(MultipleProcessInstanceDataEvent.COMPRESS_DATA));
+    }
+
+    public static boolean isCompressed(Object extension) {
+        if (extension instanceof Boolean) {
+            return ((Boolean) extension).booleanValue();
+        } else if (extension instanceof String) {
+            return Boolean.parseBoolean((String) extension);
+        }
+        return false;
+    }
+
+    public void setCompressed(boolean compressed) {
+        addExtensionAttribute(COMPRESS_DATA, compressed);
     }
 }

@@ -27,7 +27,7 @@ import java.util.Collection;
 public interface IdentityProvider {
 
     /**
-     * Returns name assigned to the current context, usually refers to user name
+     * Returns name assigned to the current context, usually refers to the username
      * 
      * @return assigned name taken from security context
      */
