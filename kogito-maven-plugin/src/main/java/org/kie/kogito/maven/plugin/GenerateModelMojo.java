@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.maven.plugin;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.FileSystems;
@@ -26,17 +25,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -44,13 +41,15 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.drools.codegen.common.GeneratedFile;
-import org.drools.codegen.common.GeneratedFileType;
-import org.kie.kogito.codegen.core.ApplicationGenerator;
-import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
-import org.kie.kogito.maven.plugin.util.MojoExecutionHelper;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.maven.plugin.util.CompilerHelper;
+import org.kie.kogito.maven.plugin.util.GenerateModelHelper;
+import org.kie.kogito.maven.plugin.util.PersistenceGenerationHelper;
+import org.reflections.Reflections;
 
-import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
 import static org.kie.efesto.common.api.constants.Constants.INDEXFILE_DIRECTORY_PROPERTY;
+import static org.kie.kogito.maven.plugin.util.CompilerHelper.RESOURCES;
+import static org.kie.kogito.maven.plugin.util.CompilerHelper.SOURCES;
 
 @Mojo(name = "generateModel",
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
@@ -76,6 +75,9 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
 
+    @Parameter(property = "kogito.jsonSchema.version", required = false)
+    String schemaVersion;
+
     @Parameter(defaultValue = "${mojoExecution}")
     private MojoExecution mojoExecution;
 
@@ -92,9 +94,6 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Component
     private MavenSession mavenSession;
 
-    @Component
-    private BuildPluginManager pluginManager;
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         // TODO to be removed with DROOLS-7090
@@ -108,49 +107,30 @@ public class GenerateModelMojo extends AbstractKieMojo {
             indexFileDirectorySet = true;
         }
         addCompileSourceRoots();
+        Map<String, Collection<GeneratedFile>> generatedModelFiles;
+        ClassLoader projectClassLoader = projectClassLoader();
+        KogitoBuildContext kogitoBuildContext = discoverKogitoRuntimeContext(projectClassLoader);
         if (isOnDemand()) {
             getLog().info("On-Demand Mode is On. Use mvn compile kogito:scaffold");
+            generatedModelFiles = new HashMap<>();
         } else {
-            generateModel();
+            generatedModelFiles = generateModel(kogitoBuildContext);
         }
         // TODO to be removed with DROOLS-7090
         if (indexFileDirectorySet) {
             System.clearProperty(INDEXFILE_DIRECTORY_PROPERTY);
         }
 
-        // invoke maven-compiler-plugin:compile
-        compileGeneratedClasses();
+        // Compile and write model files
+        compileAndDump(generatedModelFiles, projectClassLoader, getLog());
 
-        // invoke ProcessClassesMojo
-        processClasses();
-    }
+        Map<String, Collection<GeneratedFile>> generatedPersistenceFiles = generatePersistence(kogitoBuildContext, getReflections(projectClassLoader));
 
-    protected void compileGeneratedClasses() throws MojoFailureException {
-        try {
-            MojoExecutionHelper.compile(mavenProject,
-                    mavenSession,
-                    pluginManager,
-                    compilerPluginVersion,
-                    getLog());
-        } catch (Exception e) {
-            getLog().error(e);
-            throw new MojoFailureException(e.getMessage());
+        compileAndDump(generatedPersistenceFiles, projectClassLoader, getLog());
+
+        if (!keepSources) {
+            deleteDrlFiles();
         }
-        getLog().info("....done!");
-    }
-
-    protected void processClasses() throws MojoFailureException {
-        try {
-            MojoExecutionHelper.processClasses(mavenProject,
-                    mavenSession,
-                    pluginManager,
-                    this.mojoExecution.getVersion(),
-                    getLog());
-        } catch (Exception e) {
-            getLog().error(e);
-            throw new MojoFailureException(e.getMessage());
-        }
-        getLog().info("....done!");
     }
 
     protected boolean isOnDemand() {
@@ -161,42 +141,20 @@ public class GenerateModelMojo extends AbstractKieMojo {
         project.addCompileSourceRoot(getGeneratedFileWriter().getScaffoldedSourcesDir().toString());
     }
 
-    protected void generateModel() throws MojoExecutionException {
-
+    protected Map<String, Collection<GeneratedFile>> generateModel(KogitoBuildContext kogitoBuildContext) {
         setSystemProperties(properties);
-
-        ClassLoader projectClassLoader = projectClassLoader();
-        ApplicationGenerator appGen = ApplicationGeneratorDiscovery.discover(discoverKogitoRuntimeContext(projectClassLoader));
-
-        Collection<GeneratedFile> generatedFiles;
-        if (generatePartial) {
-            generatedFiles = appGen.generateComponents();
-        } else {
-            generatedFiles = appGen.generate();
-        }
-
-        Map<GeneratedFileType, List<GeneratedFile>> mappedGeneratedFiles = generatedFiles.stream()
-                .collect(Collectors.groupingBy(GeneratedFile::type));
-        List<GeneratedFile> generatedUncompiledFiles = mappedGeneratedFiles.entrySet().stream()
-                .filter(entry -> !entry.getKey().equals(COMPILED_CLASS))
-                .flatMap(entry -> entry.getValue().stream())
-                .toList();
-        writeGeneratedFiles(generatedUncompiledFiles);
-
-        List<GeneratedFile> generatedCompiledFiles = mappedGeneratedFiles.getOrDefault(COMPILED_CLASS,
-                Collections.emptyList())
-                .stream().map(originalGeneratedFile -> new GeneratedFile(COMPILED_CLASS, convertPath(originalGeneratedFile.path().toString()), originalGeneratedFile.contents()))
-                .toList();
-
-        writeGeneratedFiles(generatedCompiledFiles);
-
-        if (!keepSources) {
-            deleteDrlFiles();
-        }
+        return GenerateModelHelper.generateModelFiles(kogitoBuildContext, generatePartial);
     }
 
-    private String convertPath(String toConvert) {
-        return toConvert.replace('.', File.separatorChar) + ".class";
+    protected Map<String, Collection<GeneratedFile>> generatePersistence(KogitoBuildContext kogitoBuildContext, Reflections reflections) throws MojoExecutionException {
+        return PersistenceGenerationHelper.generatePersistenceFiles(kogitoBuildContext, reflections, schemaVersion);
+    }
+
+    protected void compileAndDump(Map<String, Collection<GeneratedFile>> generatedFiles, ClassLoader classloader, Log log) throws MojoExecutionException {
+        // Compile and write files
+        CompilerHelper.dumpAndCompileGeneratedSources(generatedFiles.get(SOURCES), classloader, project, baseDir, log);
+        // Dump resources
+        CompilerHelper.dumpResources(generatedFiles.get(RESOURCES), baseDir, log);
     }
 
     private void deleteDrlFiles() throws MojoExecutionException {
@@ -214,5 +172,4 @@ public class GenerateModelMojo extends AbstractKieMojo {
             throw new MojoExecutionException("Unable to find .drl files");
         }
     }
-
 }

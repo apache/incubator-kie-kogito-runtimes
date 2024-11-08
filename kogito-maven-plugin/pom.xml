@@ -38,7 +38,6 @@
 
   <properties>
     <java.module.name>org.kie.kogito.maven.plugin</java.module.name>
-    <version.mojo-executor>2.4.0</version.mojo-executor>
   </properties>
 
   <build>
@@ -108,12 +107,6 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-decisions-spring-boot-starter</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <!-- Plugin invocations -->
-      <dependency>
-        <groupId>org.twdata.maven</groupId>
-        <artifactId>mojo-executor</artifactId>
-        <version>${version.mojo-executor}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -218,12 +211,6 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-spring-boot-starter</artifactId>
-    </dependency>
-
-    <!-- Plugin invocations -->
-    <dependency>
-      <groupId>org.twdata.maven</groupId>
-      <artifactId>mojo-executor</artifactId>
     </dependency>
 
     <!-- classpath scanning -->
