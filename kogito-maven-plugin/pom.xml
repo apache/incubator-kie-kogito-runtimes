@@ -48,35 +48,6 @@
           <goalPrefix>kogito</goalPrefix>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-invoker-plugin</artifactId>
-        <configuration>
-          <skipInstallation>${skipITs}</skipInstallation>
-          <skipInvocation>${skipITs}</skipInvocation>
-          <writeJunitReport>true</writeJunitReport>
-          <junitPackageName>org.kie.kogito.maven.plugin.it</junitPackageName>
-          <pomIncludes>
-            <pomInclude>*/pom.xml</pomInclude>
-          </pomIncludes>
-          <projectsDirectory>src/it</projectsDirectory>
-          <debug>true</debug>
-          <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-          <logDirectory>${project.build.directory}/it</logDirectory>
-          <filterProperties>
-            <org.kie.version>${project.version}</org.kie.version>
-          </filterProperties>
-        </configuration>
-        <executions>
-          <execution>
-            <id>integration-test</id>
-            <goals>
-              <goal>install</goal>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
@@ -95,18 +66,6 @@
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <!-- Needed to instruct MAVEN reactor to build this module after the one required by it -->
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-spring-boot-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-decisions-spring-boot-starter</artifactId>
-        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -198,21 +157,6 @@
       <artifactId>javaparser-core</artifactId>
     </dependency>
 
-    <!-- Needed to instruct MAVEN reactor to build this module after the one required by it -->
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-spring-boot-bom</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-decisions-spring-boot-starter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-spring-boot-starter</artifactId>
-    </dependency>
-
     <!-- classpath scanning -->
     <dependency>
       <groupId>org.reflections</groupId>
@@ -220,7 +164,6 @@
     </dependency>
 
     <!-- Test -->
-
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
