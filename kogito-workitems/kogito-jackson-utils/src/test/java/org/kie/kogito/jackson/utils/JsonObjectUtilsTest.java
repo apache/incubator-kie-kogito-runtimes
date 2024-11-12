@@ -18,6 +18,8 @@
  */
 package org.kie.kogito.jackson.utils;
 
+import java.io.File;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -28,6 +30,7 @@ import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.FloatNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -81,5 +84,28 @@ public class JsonObjectUtilsTest {
     void testJavaByteArray() {
         byte[] bytes = { 1, 2, 3, 4 };
         assertThat((byte[]) JsonObjectUtils.toJavaValue(BinaryNode.valueOf(bytes))).isEqualTo(bytes);
+    }
+
+    @Test
+    void testURI() {
+        final String uri = "www.google.com";
+        assertThat(JsonObjectUtils.convertValue(ObjectMapperFactory.get().createObjectNode().put("uri", uri), URI.class)).isEqualTo(URI.create(uri));
+        assertThat(JsonObjectUtils.convertValue(new TextNode(uri), URI.class)).isEqualTo(URI.create(uri));
+    }
+
+    @Test
+    void testFile() {
+        final String file = "/home/myhome/sample.txt";
+        final String additionalData = "Javierito";
+        assertThat(JsonObjectUtils.convertValue(ObjectMapperFactory.get().createObjectNode().put("file", file), File.class)).isEqualTo(new File(file));
+        assertThat(JsonObjectUtils.convertValue(ObjectMapperFactory.get().createObjectNode().put("file", file).put("additionalData", additionalData), PseudoPOJO.class))
+                .isEqualTo(new PseudoPOJO(additionalData, new File(file)));
+        assertThat(JsonObjectUtils.convertValue(new TextNode(file), File.class)).isEqualTo(new File(file));
+    }
+
+    private static record PseudoPOJO(String additionalData, File file) {
+    }
+
+    private static record Person(String name) {
     }
 }
