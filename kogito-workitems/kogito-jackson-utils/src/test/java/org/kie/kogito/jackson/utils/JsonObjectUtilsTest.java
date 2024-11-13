@@ -26,6 +26,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.node.BinaryNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.FloatNode;
 import com.fasterxml.jackson.databind.node.IntNode;
@@ -33,6 +34,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class JsonObjectUtilsTest {
 
@@ -98,9 +100,51 @@ public class JsonObjectUtilsTest {
         final String file = "/home/myhome/sample.txt";
         final String additionalData = "Javierito";
         assertThat(JsonObjectUtils.convertValue(ObjectMapperFactory.get().createObjectNode().put("file", file), File.class)).isEqualTo(new File(file));
+        assertThat(JsonObjectUtils.convertValue(ObjectMapperFactory.get().createArrayNode().add(file), File.class)).isEqualTo(new File(file));
         assertThat(JsonObjectUtils.convertValue(ObjectMapperFactory.get().createObjectNode().put("file", file).put("additionalData", additionalData), PseudoPOJO.class))
                 .isEqualTo(new PseudoPOJO(additionalData, new File(file)));
         assertThat(JsonObjectUtils.convertValue(new TextNode(file), File.class)).isEqualTo(new File(file));
+    }
+
+    @Test
+    void testFileNullInput() {
+        assertThat(JsonObjectUtils.convertValue(NullNode.getInstance(), File.class)).isNull();
+    }
+
+    @Test
+    void testFileEmptyPath() {
+        final String emptyPath = "";
+        assertThat(JsonObjectUtils.convertValue(new TextNode(emptyPath), File.class)).isEqualTo(new File(emptyPath));
+    }
+
+    @Test
+    void testFileWithSpecialCharacters() {
+        final String pathWithSpecialChars = "/home/user/my file en español.txt";
+        assertThat(JsonObjectUtils.convertValue(new TextNode(pathWithSpecialChars), File.class))
+                .isEqualTo(new File(pathWithSpecialChars));
+    }
+
+    @Test
+    void testUnsupportedNodeType() {
+        final String errorMessage = "should be a string or have exactly one property of type string";
+        assertThatThrownBy(() -> JsonObjectUtils.convertValue(BooleanNode.TRUE, URI.class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(errorMessage);
+        assertThatThrownBy(() -> JsonObjectUtils.convertValue(new IntNode(1), URI.class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(errorMessage);
+        assertThatThrownBy(() -> JsonObjectUtils.convertValue(ObjectMapperFactory.get().createArrayNode(), URI.class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(errorMessage);
+        assertThatThrownBy(() -> JsonObjectUtils.convertValue(ObjectMapperFactory.get().createObjectNode(), URI.class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(errorMessage);
+        assertThatThrownBy(() -> JsonObjectUtils.convertValue(ObjectMapperFactory.get().createObjectNode().put("name", 1), URI.class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(errorMessage);
+        assertThatThrownBy(() -> JsonObjectUtils.convertValue(ObjectMapperFactory.get().createArrayNode().add("first.txt").add("second.txt"), URI.class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(errorMessage);
     }
 
     private static record PseudoPOJO(String additionalData, File file) {

@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 class CommonObjectModule extends SimpleModule {
 
@@ -51,14 +50,12 @@ class CommonObjectModule extends SimpleModule {
 
     private static String fromNode(JsonParser p) throws IOException {
         JsonNode node = p.readValueAsTree();
+        if (node.size() == 1) {
+            node = node.iterator().next();
+        }
         if (node.isTextual()) {
             return node.asText();
-        } else if (node.isObject()) {
-            return ((ObjectNode) node).iterator().next().asText();
-        } else if (node.isArray()) {
-            return node.get(0).asText();
-        } else {
-            throw new IOException("Cannot extract string from node " + node);
         }
+        throw new IOException(node + "should be a string or have exactly one property of type string");
     }
 }
