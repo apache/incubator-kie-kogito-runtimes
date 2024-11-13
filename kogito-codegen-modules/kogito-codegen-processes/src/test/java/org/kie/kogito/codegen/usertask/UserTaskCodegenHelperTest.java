@@ -21,11 +21,12 @@ package org.kie.kogito.codegen.usertask;
 
 import java.nio.file.Path;
 
-import org.assertj.core.api.Assertions;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.impl.WorkImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class UserTaskCodegenHelperTest {
     static final String PROCESS_ID = "approvals";
@@ -45,17 +46,17 @@ class UserTaskCodegenHelperTest {
 
     @Test
     void testGetWorkProcessId() {
-        Assertions.assertThat(UserTaskCodegenHelper.processId(work)).isEqualTo("Approvals");
+        assertThat(UserTaskCodegenHelper.processId(work)).isEqualTo("Approvals");
     }
 
     @Test
     void testGetWorkClassName() {
-        Assertions.assertThat(UserTaskCodegenHelper.className(work)).isEqualTo("Approvals_TaskId");
+        assertThat(UserTaskCodegenHelper.className(work)).isEqualTo("Approvals_TaskId");
     }
 
     @Test
     void testGetWorkPackagePath() {
-        Assertions.assertThat(UserTaskCodegenHelper.path(work))
+        assertThat(UserTaskCodegenHelper.path(work))
                 .isNotNull()
                 .isEqualTo(PACKAGE_PATH);
 
@@ -63,11 +64,11 @@ class UserTaskCodegenHelperTest {
 
     @Test
     void testGetPath() {
-        Assertions.assertThat(UserTaskCodegenHelper.path(PACKAGE))
+        assertThat(UserTaskCodegenHelper.path(PACKAGE))
                 .isNotNull()
                 .isEqualTo(PACKAGE_PATH);
 
-        Assertions.assertThat(UserTaskCodegenHelper.path("test"))
+        assertThat(UserTaskCodegenHelper.path("test"))
                 .isNotNull()
                 .isEqualTo(Path.of("test"));
     }
