@@ -18,20 +18,34 @@
  */
 package org.jbpm.process.core.timer;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.timer.SessionPseudoClock;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.DAYS_PER_WEEK;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.END_HOUR;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOURS_PER_DAY;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.START_HOUR;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.WEEKEND_DAYS;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BusinessCalendarImplTest extends AbstractBaseTest {
 
@@ -82,7 +96,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     @Test
     public void testCalculateHoursPassingOverCustomDefinedWeekend() {
         Properties config = new Properties();
-        config.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, Calendar.FRIDAY + "," + Calendar.SATURDAY);
+        config.setProperty(WEEKEND_DAYS, Calendar.FRIDAY + "," + Calendar.SATURDAY);
         String expectedDate = "2012-05-06 12:45";
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-03 13:45").getTime());
@@ -150,7 +164,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     public void testCalculateDaysCustomWorkingDays() {
         Properties config = new Properties();
         config.setProperty(BusinessCalendarImpl.DAYS_PER_WEEK, "4");
-        config.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, Calendar.FRIDAY + "," + Calendar.SATURDAY + "," + Calendar.SUNDAY);
+        config.setProperty(WEEKEND_DAYS, Calendar.FRIDAY + "," + Calendar.SATURDAY + "," + Calendar.SUNDAY);
         String expectedDate = "2012-05-15 14:30";
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-03 14:30").getTime());
@@ -338,7 +352,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         config.setProperty(BusinessCalendarImpl.HOURS_PER_DAY, "8");
         config.setProperty(BusinessCalendarImpl.START_HOUR, "9");
         config.setProperty(BusinessCalendarImpl.END_HOUR, "18");
-        config.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, "1,7"); // sun,sat
+        config.setProperty(WEEKEND_DAYS, "1,7"); // sun,sat
         config.setProperty(BusinessCalendarImpl.HOLIDAYS, "2018-04-30,2018-05-03:2018-05-05");
         config.setProperty(BusinessCalendarImpl.HOLIDAY_DATE_FORMAT, "yyyy-MM-dd");
         String currentDate = "2018-05-03 13:51:33";
@@ -366,6 +380,18 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate(duration);
 
         assertThat(formatDate("yyyy-MM-dd HH:mm:ss", result)).isEqualTo(expectedDate);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getValidCalendarProperties")
+    public void testValidation(Map<String, Object> propertyMap, Map<String, Object> expectedValuesMap) throws NoSuchFieldException, IllegalAccessException {
+        Properties businessCalendarProperties = new Properties();
+        businessCalendarProperties.putAll(propertyMap);
+        List<BusinessCalendarImpl> businessCalendarList = new ArrayList<>();
+        assertDoesNotThrow(() -> {
+            businessCalendarList.add(new BusinessCalendarImpl(businessCalendarProperties));
+        });
+        assertCalendarProperties(businessCalendarList.get(0), expectedValuesMap);
     }
 
     private Date parseToDate(String dateString) {
@@ -432,5 +458,37 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
             throw new UnsupportedOperationException("It is static clock and does not allow advance time operation");
         }
 
+    }
+
+    private static Stream<Arguments> getValidCalendarProperties() {
+
+        return Stream.of(
+                Arguments.of(Map.of(), Map.of(WEEKEND_DAYS, List.of(1, 7), DAYS_PER_WEEK, 5, START_HOUR, 9, END_HOUR, 17, HOURS_PER_DAY, 8)),
+                Arguments.of(Map.of(WEEKEND_DAYS, "1, 2, 3", HOURS_PER_DAY, "5"),
+                        Map.of(WEEKEND_DAYS, List.of(1, 2, 3), DAYS_PER_WEEK, 4, START_HOUR, 9, END_HOUR, 14, HOURS_PER_DAY, 5)),
+                Arguments.of(Map.of(START_HOUR, "10", HOURS_PER_DAY, "5"),
+                        Map.of(WEEKEND_DAYS, List.of(1, 6), DAYS_PER_WEEK, 5, START_HOUR, 10, END_HOUR, 15, HOURS_PER_DAY, 5)),
+                Arguments.of(Map.of(END_HOUR, "11"),
+                        Map.of(WEEKEND_DAYS, List.of(1, 6), DAYS_PER_WEEK, 5, START_HOUR, 9, END_HOUR, 11, HOURS_PER_DAY, 2)),
+                Arguments.of(Map.of(START_HOUR, "10", END_HOUR, "16"),
+                        Map.of(WEEKEND_DAYS, List.of(1, 6), DAYS_PER_WEEK, 5, START_HOUR, 10, END_HOUR, 16, HOURS_PER_DAY, 6)));
+    }
+
+    private void assertCalendarProperties(BusinessCalendarImpl businessCalendar, Map<String, Object> expectedValuesMap) throws NoSuchFieldException, IllegalAccessException {
+        Field daysPerWeekField = BusinessCalendarImpl.class.getDeclaredField("daysPerWeek");
+        daysPerWeekField.setAccessible(true);
+        Field startHourField = BusinessCalendarImpl.class.getDeclaredField("startHour");
+        startHourField.setAccessible(true);
+        Field endHourField = BusinessCalendarImpl.class.getDeclaredField("endHour");
+        endHourField.setAccessible(true);
+        Field hoursInDayField = BusinessCalendarImpl.class.getDeclaredField("hoursInDay");
+        hoursInDayField.setAccessible(true);
+        Field weekendDaysField = BusinessCalendarImpl.class.getDeclaredField("weekendDays");
+        weekendDaysField.setAccessible(true);
+
+        assertEquals(expectedValuesMap.get(DAYS_PER_WEEK), daysPerWeekField.get(businessCalendar));
+        assertEquals(expectedValuesMap.get(START_HOUR), startHourField.get(businessCalendar));
+        assertEquals(expectedValuesMap.get(END_HOUR), endHourField.get(businessCalendar));
+        assertEquals(expectedValuesMap.get(HOURS_PER_DAY), hoursInDayField.get(businessCalendar));
     }
 }

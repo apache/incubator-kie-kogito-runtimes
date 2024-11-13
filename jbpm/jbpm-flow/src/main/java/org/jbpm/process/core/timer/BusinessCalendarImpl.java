@@ -107,6 +107,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
     public static final String WEEKEND_DAYS = "business.weekend.days";
     public static final String TIMEZONE = "business.cal.timezone";
+    private static final int TOTAL_WEEK_DAYS = 7;
 
     public BusinessCalendarImpl() {
         this(null);
@@ -137,13 +138,14 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     protected void init() {
-        daysPerWeek = getPropertyAsInt(DAYS_PER_WEEK, "5");
-        hoursInDay = getPropertyAsInt(HOURS_PER_DAY, "8");
-        startHour = getPropertyAsInt(START_HOUR, "9");
-        endHour = getPropertyAsInt(END_HOUR, "17");
-        holidays = parseHolidays();
         parseWeekendDays();
+        daysPerWeek = getPropertyAsInt(DAYS_PER_WEEK, String.valueOf(TOTAL_WEEK_DAYS - weekendDays.size()));
+        startHour = getPropertyAsInt(START_HOUR, "9");
+        calculateEndHourAndHoursInADay();
+        holidays = parseHolidays();
         this.timezone = businessCalendarConfiguration.getProperty(TIMEZONE);
+        validateSingleProperties();
+        validateMultipleProperties();
     }
 
     protected String adoptISOFormat(String timeExpression) {
@@ -442,7 +444,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         } else {
             String[] days = weekendDays.split(",");
             for (String day : days) {
-                this.weekendDays.add(Integer.parseInt(day));
+                this.weekendDays.add(Integer.parseInt(day.trim()));
             }
         }
     }
@@ -493,5 +495,90 @@ public class BusinessCalendarImpl implements BusinessCalendar {
             }
             dayOfTheWeek = c.get(Calendar.DAY_OF_WEEK);
         }
+    }
+
+    private void calculateEndHourAndHoursInADay() {
+        String hoursPerDay = businessCalendarConfiguration.getProperty(HOURS_PER_DAY);
+        String endHourText = businessCalendarConfiguration.getProperty(END_HOUR);
+        if (Objects.nonNull(hoursPerDay)) {
+            hoursInDay = Integer.parseInt(hoursPerDay);
+            endHour = getPropertyAsInt(END_HOUR, String.valueOf(startHour + hoursInDay));
+        } else if (Objects.nonNull(endHourText)) {
+            endHour = Integer.parseInt(endHourText);
+            hoursInDay = getPropertyAsInt(HOURS_PER_DAY, String.valueOf(endHour - startHour));
+        } else {
+            hoursInDay = getPropertyAsInt(HOURS_PER_DAY, "8");
+            endHour = getPropertyAsInt(END_HOUR, String.valueOf(startHour + hoursInDay));
+        }
+    }
+
+    private void validateSingleProperties() {
+
+        if (startHour < 0 || startHour > 23) {
+            throw new IllegalArgumentException("Invalid configuration: business.start.hour must be between 0 and 23.");
+        }
+
+        if (endHour < 0 || endHour > 23) {
+            throw new IllegalArgumentException("Invalid configuration: business.end.hour must be between 0 and 23.");
+        }
+
+        if (hoursInDay < 0 || hoursInDay > 24) {
+            throw new IllegalArgumentException("Invalid configuration: business.hours.per.day must be between 0 and 24.");
+        }
+
+        if (daysPerWeek < 0 || daysPerWeek > 7) {
+            throw new IllegalArgumentException("Invalid configuration: business.days.per.week must be between 0 and 7.");
+        }
+
+        for (int weekendDay : weekendDays) {
+            if (weekendDay < 1 || weekendDay > 7) {
+                throw new IllegalArgumentException("Invalid configuration: business.weekend.days must be between 1 (Sunday) and 7 (Saturday).");
+            }
+        }
+
+        validateHolidaysFormat();
+
+        if (timezone != null && !isValidTimeZone(timezone)) {
+            throw new IllegalArgumentException("Invalid timezone: " + timezone + ". Refer to valid timezones: https://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html");
+        }
+    }
+
+    private void validateMultipleProperties() {
+        // Validate that startHour is less than endHour
+        if (startHour >= endHour) {
+            throw new IllegalArgumentException("Invalid configuration: business.start.hour must be less than business.end.hour.");
+        }
+
+        if (hoursInDay != (endHour - startHour)) {
+            throw new IllegalArgumentException("Invalid configuration: business.hours.per.day must be equal to the difference between business.end.hour and business.start.hour.");
+        }
+
+        if (daysPerWeek + weekendDays.size() != 7) {
+            throw new IllegalArgumentException("Invalid configuration: business.days.per.week and weekend days must sum up to 7.");
+        }
+    }
+
+    private void validateHolidaysFormat() {
+        try {
+            String dateFormat = businessCalendarConfiguration.getProperty(HOLIDAY_DATE_FORMAT, "yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+
+            for (TimePeriod holiday : holidays) {
+                sdf.parse(sdf.format(holiday.getFrom()));
+                sdf.parse(sdf.format(holiday.getTo()));
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid holiday date format in properties: " + e.getMessage());
+        }
+    }
+
+    private boolean isValidTimeZone(String timeZone) {
+        String[] validIDs = TimeZone.getAvailableIDs();
+        for (String id : validIDs) {
+            if (id.equals(timeZone)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
