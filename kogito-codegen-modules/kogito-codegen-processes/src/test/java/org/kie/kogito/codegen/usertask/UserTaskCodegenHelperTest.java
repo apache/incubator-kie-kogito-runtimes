@@ -19,13 +19,13 @@
 
 package org.kie.kogito.codegen.usertask;
 
+import java.nio.file.Path;
+
 import org.assertj.core.api.Assertions;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.impl.WorkImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.nio.file.Path;
 
 class UserTaskCodegenHelperTest {
     static final String PROCESS_ID = "approvals";
