@@ -25,13 +25,13 @@ import org.jbpm.process.core.impl.WorkImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.nio.file.Path;
 
 class UserTaskCodegenHelperTest {
     static final String PROCESS_ID = "approvals";
     static final String TASK_ID = "taskId";
     static final String PACKAGE = "org.kie.kogito.usertask";
-    static final String PACKAGE_PATH = "org/kie/kogito/usertask";
+    static final Path PACKAGE_PATH = Path.of("org/kie/kogito/usertask");
 
     private Work work;
 
@@ -57,7 +57,6 @@ class UserTaskCodegenHelperTest {
     void testGetWorkPackagePath() {
         Assertions.assertThat(UserTaskCodegenHelper.path(work))
                 .isNotNull()
-                .asString()
                 .isEqualTo(PACKAGE_PATH);
 
     }
@@ -66,12 +65,10 @@ class UserTaskCodegenHelperTest {
     void testGetPath() {
         Assertions.assertThat(UserTaskCodegenHelper.path(PACKAGE))
                 .isNotNull()
-                .asString()
                 .isEqualTo(PACKAGE_PATH);
 
         Assertions.assertThat(UserTaskCodegenHelper.path("test"))
                 .isNotNull()
-                .asString()
-                .isEqualTo("test");
+                .isEqualTo(Path.of("test"));
     }
 }
