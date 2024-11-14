@@ -61,20 +61,37 @@ public class DefaultCountDownProcessEventListener extends DefaultKogitoProcessEv
         try {
             return latch.await(timeOut, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
+            System.out.println("********************************");
+            System.out.println("********************************");
+            System.out.println("latch " + latch + " interrupted");
+            System.out.println("********************************");
+            System.out.println("********************************");
             Thread.currentThread().interrupt();
             logger.error("Interrputed thread while waiting for all triggers", e);
             return false;
         } catch (Exception e) {
+            System.out.println("********************************");
+            System.out.println("********************************");
+            System.out.println("latch " + latch + " with exception " + e.getMessage() + " " + e );
+            System.out.println("********************************");
+            System.out.println("********************************");
             logger.error("Error during waiting state", e);
             return false;
         }
     }
 
     public void reset(int threads) {
+        System.out.println("********************************");
+        System.out.println("********************************");
+        System.out.println("Reset latch " + latch);
         this.latch = new CountDownLatch(threads);
     }
 
     protected void countDown() {
+        System.out.println("********************************");
+        System.out.println("********************************");
+        System.out.println("Counting down latch " + latch);
         latch.countDown();
+        System.out.println("Latch count " + latch.getCount());
     }
 }
