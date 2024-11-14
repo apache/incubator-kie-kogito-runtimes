@@ -19,23 +19,38 @@
 
 package org.jbpm.usertask.jpa.model;
 
-import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
-@Entity
-@Table(name = "jbpm_user_tasks_outputs")
-@AttributeOverrides({
-        @AttributeOverride(name = "name", column = @Column(name = "output_name")),
-        @AttributeOverride(name = "value", column = @Column(name = "output_value"))
-})
-@AssociationOverride(name = "taskInstance",
-        joinColumns = @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "jbpm_user_tasks_outputs_tid")))
-public class TaskOutputEntity extends TaskNamedDataEntity<byte[]> {
+@MappedSuperclass
+public abstract class TaskTimerConfigEntity<T> extends AbstractTaskEntity<T> {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    protected Integer id;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "task_id")
+    protected UserTaskInstanceEntity taskInstance;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public UserTaskInstanceEntity getTaskInstance() {
+        return taskInstance;
+    }
+
+    public void setTaskInstance(UserTaskInstanceEntity taskInstance) {
+        this.taskInstance = taskInstance;
+    }
 
 }

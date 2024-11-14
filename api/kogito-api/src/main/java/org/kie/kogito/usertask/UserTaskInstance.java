@@ -132,7 +132,7 @@ public interface UserTaskInstance {
 
     Collection<DeadlineInfo<Reassignment>> getNotStartedReassignments();
 
-    Collection<DeadlineInfo<Reassignment>> getNotCompletedReassigments();
+    Collection<DeadlineInfo<Reassignment>> getNotCompletedReassignments();
 
     void startNotStartedDeadlines();
 
@@ -140,7 +140,7 @@ public interface UserTaskInstance {
 
     void startNotStartedReassignments();
 
-    void startNotCompletedReassigments();
+    void startNotCompletedReassignments();
 
     void stopNotStartedDeadlines();
 

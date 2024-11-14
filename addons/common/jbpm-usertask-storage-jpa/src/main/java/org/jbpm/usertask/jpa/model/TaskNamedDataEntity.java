@@ -21,25 +21,25 @@ package org.jbpm.usertask.jpa.model;
 
 import java.util.Objects;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class TaskDataEntity<T> {
-
-    @Id
-    @Column(name = "name")
-    protected String name;
+@IdClass(TaskNamedDataEntityPK.class)
+public abstract class TaskNamedDataEntity<T> extends AbstractTaskEntity<T> {
 
     @Id
     @ManyToOne(optional = false)
     @JoinColumn(name = "task_id")
     protected UserTaskInstanceEntity taskInstance;
 
-    @Column(name = "value")
-    protected T value;
-
-    @Column(name = "java_type")
-    protected String javaType;
+    @Id
+    @Column(name = "name")
+    protected String name;
 
     public String getName() {
         return name;
@@ -57,35 +57,20 @@ public abstract class TaskDataEntity<T> {
         this.taskInstance = taskInstance;
     }
 
-    public T getValue() {
-        return value;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
-    }
-
-    public String getJavaType() {
-        return javaType;
-    }
-
-    public void setJavaType(String javaType) {
-        this.javaType = javaType;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        TaskDataEntity<?> that = (TaskDataEntity<?>) o;
-        return Objects.equals(getName(), that.getName()) && Objects.equals(getTaskInstance(), that.getTaskInstance()) && Objects.equals(getValue(),
-                that.getValue()) && Objects.equals(getJavaType(), that.getJavaType());
+        TaskNamedDataEntity<?> that = (TaskNamedDataEntity<?>) o;
+        return Objects.equals(getName(), that.getName()) &&
+                Objects.equals(getValue(), that.getValue()) &&
+                Objects.equals(getJavaType(), that.getJavaType());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getTaskInstance(), getValue(), getJavaType());
+        return Objects.hash(getName(), getValue(), getJavaType());
     }
 }

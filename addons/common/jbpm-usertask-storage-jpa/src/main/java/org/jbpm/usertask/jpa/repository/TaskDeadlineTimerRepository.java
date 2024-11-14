@@ -17,25 +17,19 @@
  * under the License.
  */
 
-package org.jbpm.usertask.jpa.model;
+package org.jbpm.usertask.jpa.repository;
 
-import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
+import org.jbpm.usertask.jpa.model.TaskDeadlineTimerEntity;
+import org.jbpm.usertask.jpa.model.TaskNamedDataEntityPK;
 
-@Entity
-@Table(name = "jbpm_user_tasks_inputs")
-@AttributeOverrides({
-        @AttributeOverride(name = "name", column = @Column(name = "input_name")),
-        @AttributeOverride(name = "value", column = @Column(name = "input_value"))
-})
-@AssociationOverride(name = "taskInstance", foreignKey = @ForeignKey(name = "jbpm_user_tasks_inputs_tid"))
-@IdClass(TaskNamedDataEntityPK.class)
-public class TaskInputEntity extends TaskNamedDataEntity<byte[]> {
+public class TaskDeadlineTimerRepository extends BaseRepository<TaskDeadlineTimerEntity, TaskNamedDataEntityPK> {
 
+    public TaskDeadlineTimerRepository(UserTaskJPAContext context) {
+        super(context);
+    }
+
+    @Override
+    public Class<TaskDeadlineTimerEntity> getEntityClass() {
+        return TaskDeadlineTimerEntity.class;
+    }
 }

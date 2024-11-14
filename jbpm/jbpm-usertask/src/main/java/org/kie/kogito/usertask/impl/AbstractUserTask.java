@@ -47,7 +47,7 @@ public abstract class AbstractUserTask implements UserTask {
     private Collection<DeadlineInfo<Notification>> startDeadlines;
     private Collection<DeadlineInfo<Notification>> endDeadlines;
     private Collection<DeadlineInfo<Reassignment>> startReassigments;
-    private Collection<DeadlineInfo<Reassignment>> endReassigments;
+    private Collection<DeadlineInfo<Reassignment>> endReassignments;
 
     public AbstractUserTask(String id, String name) {
         this.id = id;
@@ -61,7 +61,7 @@ public abstract class AbstractUserTask implements UserTask {
         this.startDeadlines = new HashSet<>();
         this.endDeadlines = new HashSet<>();
         this.startReassigments = new HashSet<>();
-        this.endReassigments = new HashSet<>();
+        this.endReassignments = new HashSet<>();
     }
 
     @Override
@@ -78,7 +78,7 @@ public abstract class AbstractUserTask implements UserTask {
         instance.setExcludedUsers(getExcludedUsers());
         instance.setInstances(this.instances());
         instance.setNotCompletedDeadlines(this.getNotCompletedDeadlines());
-        instance.setNotCompletedReassigments(this.getNotCompletedReassigments());
+        instance.setNotCompletedReassignments(this.getNotCompletedReassignments());
         instance.setNotStartedDeadlines(this.getNotStartedDeadlines());
         instance.setNotStartedReassignments(this.getNotStartedReassignments());
         return instance;
@@ -231,12 +231,12 @@ public abstract class AbstractUserTask implements UserTask {
     }
 
     @Override
-    public Collection<DeadlineInfo<Reassignment>> getNotCompletedReassigments() {
-        return endReassigments;
+    public Collection<DeadlineInfo<Reassignment>> getNotCompletedReassignments() {
+        return endReassignments;
     }
 
     public void setNotCompletedReassigments(String reassignments) {
-        this.endReassigments = DeadlineHelper.parseReassignments(reassignments);
+        this.endReassignments = DeadlineHelper.parseReassignments(reassignments);
     }
 
     protected Set<String> toSet(String value) {

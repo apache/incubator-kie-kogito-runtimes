@@ -22,17 +22,19 @@ package org.jbpm.usertask.jpa.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class TaskDataEntityPK implements Serializable {
+public class TaskTimerDataEntityPK implements Serializable {
 
-    private String name;
+    private static final long serialVersionUID = 5506586793841760884L;
+
+    private String jobId;
     private UserTaskInstanceEntity taskInstance;
 
-    public TaskDataEntityPK() {
+    public TaskTimerDataEntityPK() {
     }
 
-    public TaskDataEntityPK(String inputName, UserTaskInstanceEntity taskInstance) {
+    public TaskTimerDataEntityPK(String jobId, UserTaskInstanceEntity taskInstance) {
         this.taskInstance = taskInstance;
-        this.name = inputName;
+        this.jobId = jobId;
     }
 
     public UserTaskInstanceEntity getTaskInstance() {
@@ -43,12 +45,12 @@ public class TaskDataEntityPK implements Serializable {
         this.taskInstance = taskInstance;
     }
 
-    public String getName() {
-        return name;
+    public String getJobId() {
+        return jobId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
     }
 
     @Override
@@ -57,20 +59,20 @@ public class TaskDataEntityPK implements Serializable {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        TaskDataEntityPK that = (TaskDataEntityPK) o;
-        return Objects.equals(getName(), that.getName()) && Objects.equals(getTaskInstance(), that.getTaskInstance());
+        TaskTimerDataEntityPK that = (TaskTimerDataEntityPK) o;
+        return Objects.equals(getJobId(), that.getJobId()) && Objects.equals(getTaskInstance(), that.getTaskInstance());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getTaskInstance());
+        return Objects.hash(getJobId(), getTaskInstance());
     }
 
     @Override
     public String toString() {
-        return "TaskInputEntityId{" +
+        return "TaskTimerDataEntityId {" +
                 "taskInstance='" + taskInstance + '\'' +
-                ", name='" + name + '\'' +
+                ", name='" + jobId + '\'' +
                 '}';
     }
 }

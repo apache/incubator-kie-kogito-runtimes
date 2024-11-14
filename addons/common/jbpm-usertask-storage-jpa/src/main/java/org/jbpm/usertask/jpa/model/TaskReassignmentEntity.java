@@ -19,23 +19,52 @@
 
 package org.jbpm.usertask.jpa.model;
 
+import java.util.Objects;
+
 import jakarta.persistence.AssociationOverride;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
-import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "jbpm_user_tasks_inputs")
+@Table(name = "jbpm_user_tasks_reassignment")
 @AttributeOverrides({
-        @AttributeOverride(name = "name", column = @Column(name = "input_name")),
-        @AttributeOverride(name = "value", column = @Column(name = "input_value"))
+        @AttributeOverride(name = "value", column = @Column(name = "reassignment_value"))
 })
-@AssociationOverride(name = "taskInstance", foreignKey = @ForeignKey(name = "jbpm_user_tasks_inputs_tid"))
-@IdClass(TaskNamedDataEntityPK.class)
-public class TaskInputEntity extends TaskNamedDataEntity<byte[]> {
+@AssociationOverride(name = "taskInstance",
+        joinColumns = @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "jbpm_user_tasks_reassignment_tid")))
+public class TaskReassignmentEntity extends TaskTimerConfigEntity<byte[]> {
+
+    @Column(name = "reassignment_type")
+    private TaskReassignmentType type;
+
+    public TaskReassignmentType getType() {
+        return type;
+    }
+
+    public void setType(TaskReassignmentType type) {
+        this.type = type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, javaType, type);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TaskReassignmentEntity other = (TaskReassignmentEntity) obj;
+        return type == other.type && super.equals(obj);
+    }
 
 }

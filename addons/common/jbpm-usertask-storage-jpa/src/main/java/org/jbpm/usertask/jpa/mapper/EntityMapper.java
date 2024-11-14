@@ -16,22 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.jbpm.usertask.jpa.mapper;
 
-package org.jbpm.usertask.jpa.springboot.mapper;
+import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
+import org.kie.kogito.usertask.UserTaskInstance;
 
-import java.util.List;
+public interface EntityMapper {
 
-import org.jbpm.usertask.jpa.mapper.EntityMapper;
-import org.jbpm.usertask.jpa.mapper.UserTaskInstanceEntityMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+    void mapInstanceToEntity(UserTaskInstance userTaskInstance, UserTaskInstanceEntity userTaskInstanceEntity);
 
-@Component
-public class SpringBootUserTaskInstanceEntityMapper extends UserTaskInstanceEntityMapper {
-
-    @Autowired
-    public SpringBootUserTaskInstanceEntityMapper(List<EntityMapper> mappers) {
-        super(mappers);
-    }
+    void mapEntityToInstance(UserTaskInstanceEntity userTaskInstanceEntity, UserTaskInstance userTaskInstance);
 
 }

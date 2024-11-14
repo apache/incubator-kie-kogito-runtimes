@@ -110,7 +110,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         ofNullable(workItem.getParameters().get(NOT_STARTED_NOTIFY)).map(String.class::cast).map(DeadlineHelper::parseDeadlines).ifPresent(instance::setNotStartedDeadlines);
         ofNullable(workItem.getParameters().get(NOT_STARTED_REASSIGN)).map(String.class::cast).map(DeadlineHelper::parseReassignments).ifPresent(instance::setNotStartedReassignments);
         ofNullable(workItem.getParameters().get(NOT_COMPLETED_NOTIFY)).map(String.class::cast).map(DeadlineHelper::parseDeadlines).ifPresent(instance::setNotCompletedDeadlines);
-        ofNullable(workItem.getParameters().get(NOT_COMPLETED_REASSIGN)).map(String.class::cast).map(DeadlineHelper::parseReassignments).ifPresent(instance::setNotCompletedReassigments);
+        ofNullable(workItem.getParameters().get(NOT_COMPLETED_REASSIGN)).map(String.class::cast).map(DeadlineHelper::parseReassignments).ifPresent(instance::setNotCompletedReassignments);
 
         instance.initialize(emptyMap(), IdentityProviders.of(WORKFLOW_ENGINE_USER));
 

@@ -107,7 +107,7 @@ public interface UserTask {
 
     Collection<DeadlineInfo<Reassignment>> getNotStartedReassignments();
 
-    Collection<DeadlineInfo<Reassignment>> getNotCompletedReassigments();
+    Collection<DeadlineInfo<Reassignment>> getNotCompletedReassignments();
 
     UserTaskAssignmentStrategy getAssignmentStrategy();
 

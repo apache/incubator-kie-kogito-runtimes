@@ -25,7 +25,7 @@ import org.assertj.core.api.Assertions;
 import org.jbpm.usertask.jpa.mapper.models.Person;
 import org.jbpm.usertask.jpa.model.AttachmentEntity;
 import org.jbpm.usertask.jpa.model.CommentEntity;
-import org.jbpm.usertask.jpa.model.TaskDataEntity;
+import org.jbpm.usertask.jpa.model.TaskNamedDataEntity;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
@@ -203,7 +203,7 @@ public class TestUtils {
         assertUserTaskEntityMapData(userTaskInstanceEntity.getMetadata(), userTaskInstance.getMetadata());
     }
 
-    private static void assertUserTaskEntityMapData(Collection<? extends TaskDataEntity> entityData, Map<String, Object> instanceData) {
+    private static void assertUserTaskEntityMapData(Collection<? extends TaskNamedDataEntity> entityData, Map<String, Object> instanceData) {
         Assertions.assertThat(entityData.size())
                 .isEqualTo(instanceData.size());
 
@@ -228,18 +228,18 @@ public class TestUtils {
         assertUserTaskInstanceMapData(userTaskInstance.getMetadata(), userTaskInstanceEntity.getMetadata());
     }
 
-    private static void assertUserTaskInstanceMapData(Map<String, Object> instanceData, Collection<? extends TaskDataEntity> entityData) {
+    private static void assertUserTaskInstanceMapData(Map<String, Object> instanceData, Collection<? extends TaskNamedDataEntity> entityData) {
         Assertions.assertThat(instanceData.size())
                 .isEqualTo(entityData.size());
 
         instanceData.forEach((key, value) -> {
-            Optional<? extends TaskDataEntity> optional = entityData.stream().filter(data -> data.getName().equals(key)).findFirst();
+            Optional<? extends TaskNamedDataEntity> optional = entityData.stream().filter(data -> data.getName().equals(key)).findFirst();
 
             Assertions.assertThat(optional)
                     .isPresent();
 
             if (Objects.nonNull(value)) {
-                TaskDataEntity data = optional.get();
+                TaskNamedDataEntity data = optional.get();
                 Assertions.assertThat(value.getClass().getName())
                         .isEqualTo(data.getJavaType());
             }

@@ -139,7 +139,7 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
 
         // restart the timers
         userTaskInstance.startNotCompletedDeadlines();
-        userTaskInstance.startNotCompletedReassigments();
+        userTaskInstance.startNotCompletedReassignments();
 
         String user = assignStrategy(userTaskInstance, identityProvider);
         if (user != null) {
@@ -152,7 +152,7 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
 
     public Optional<UserTaskTransitionToken> activate(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
         userTaskInstance.startNotCompletedDeadlines();
-        userTaskInstance.startNotCompletedReassigments();
+        userTaskInstance.startNotCompletedReassignments();
 
         String user = assignStrategy(userTaskInstance, identityProvider);
         if (user != null) {

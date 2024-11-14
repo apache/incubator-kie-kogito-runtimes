@@ -17,25 +17,19 @@
  * under the License.
  */
 
-package org.jbpm.usertask.jpa.model;
+package org.jbpm.usertask.jpa.repository;
 
-import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
+import org.jbpm.usertask.jpa.model.TaskNamedDataEntityPK;
+import org.jbpm.usertask.jpa.model.TaskReassignmentEntity;
 
-@Entity
-@Table(name = "jbpm_user_tasks_inputs")
-@AttributeOverrides({
-        @AttributeOverride(name = "name", column = @Column(name = "input_name")),
-        @AttributeOverride(name = "value", column = @Column(name = "input_value"))
-})
-@AssociationOverride(name = "taskInstance", foreignKey = @ForeignKey(name = "jbpm_user_tasks_inputs_tid"))
-@IdClass(TaskNamedDataEntityPK.class)
-public class TaskInputEntity extends TaskNamedDataEntity<byte[]> {
+public class TaskReassignmentRepository extends BaseRepository<TaskReassignmentEntity, TaskNamedDataEntityPK> {
 
+    public TaskReassignmentRepository(UserTaskJPAContext context) {
+        super(context);
+    }
+
+    @Override
+    public Class<TaskReassignmentEntity> getEntityClass() {
+        return TaskReassignmentEntity.class;
+    }
 }

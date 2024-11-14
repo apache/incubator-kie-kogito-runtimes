@@ -642,11 +642,11 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     }
 
     @Override
-    public Collection<DeadlineInfo<Reassignment>> getNotCompletedReassigments() {
+    public Collection<DeadlineInfo<Reassignment>> getNotCompletedReassignments() {
         return notCompletedReassigments;
     }
 
-    public void setNotCompletedReassigments(Collection<DeadlineInfo<Reassignment>> notCompletedReassigments) {
+    public void setNotCompletedReassignments(Collection<DeadlineInfo<Reassignment>> notCompletedReassigments) {
         this.notCompletedReassigments = notCompletedReassigments;
     }
 
@@ -699,8 +699,8 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     }
 
     @Override
-    public void startNotCompletedReassigments() {
-        initTimers(this.notCompletedReassigmentsTimers, getNotCompletedReassigments());
+    public void startNotCompletedReassignments() {
+        initTimers(this.notCompletedReassigmentsTimers, getNotCompletedReassignments());
     }
 
     @Override

@@ -19,6 +19,8 @@
 
 package org.jbpm.usertask.jpa.model;
 
+import java.util.Objects;
+
 import jakarta.persistence.AssociationOverride;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -29,13 +31,41 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "jbpm_user_tasks_outputs")
+@Table(name = "jbpm_user_tasks_deadline_timer")
 @AttributeOverrides({
-        @AttributeOverride(name = "name", column = @Column(name = "output_name")),
-        @AttributeOverride(name = "value", column = @Column(name = "output_value"))
+        @AttributeOverride(name = "jobId", column = @Column(name = "notification_job_id")),
+        @AttributeOverride(name = "value", column = @Column(name = "notification_value"))
 })
 @AssociationOverride(name = "taskInstance",
-        joinColumns = @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "jbpm_user_tasks_outputs_tid")))
-public class TaskOutputEntity extends TaskNamedDataEntity<byte[]> {
+        joinColumns = @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "jbpm_user_tasks_deadline_timer_tid")))
+public class TaskDeadlineTimerEntity extends TaskTimerDataEntity<byte[]> {
+
+    @Column(name = "notification_type")
+    private TaskDeadlineType type;
+
+    public TaskDeadlineType getType() {
+        return type;
+    }
+
+    public void setType(TaskDeadlineType type) {
+        this.type = type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getJobId(), getValue(), getJavaType(), type);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TaskDeadlineTimerEntity other = (TaskDeadlineTimerEntity) obj;
+        return super.equals(obj) && type == other.type;
+    }
 
 }

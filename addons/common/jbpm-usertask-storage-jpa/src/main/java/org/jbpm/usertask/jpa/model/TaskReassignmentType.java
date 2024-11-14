@@ -16,26 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.jbpm.usertask.jpa.model;
 
-import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "jbpm_user_tasks_inputs")
-@AttributeOverrides({
-        @AttributeOverride(name = "name", column = @Column(name = "input_name")),
-        @AttributeOverride(name = "value", column = @Column(name = "input_value"))
-})
-@AssociationOverride(name = "taskInstance", foreignKey = @ForeignKey(name = "jbpm_user_tasks_inputs_tid"))
-@IdClass(TaskNamedDataEntityPK.class)
-public class TaskInputEntity extends TaskNamedDataEntity<byte[]> {
-
+public enum TaskReassignmentType {
+    NotStarted,
+    NotCompleted
 }

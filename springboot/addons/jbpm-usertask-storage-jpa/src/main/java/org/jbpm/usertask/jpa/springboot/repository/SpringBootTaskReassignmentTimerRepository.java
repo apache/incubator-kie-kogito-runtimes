@@ -17,25 +17,23 @@
  * under the License.
  */
 
-package org.jbpm.usertask.jpa.model;
+package org.jbpm.usertask.jpa.springboot.repository;
 
-import jakarta.persistence.AssociationOverride;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
+import org.jbpm.usertask.jpa.repository.TaskReassignmentTimerRepository;
+import org.jbpm.usertask.jpa.repository.UserTaskJPAContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Entity
-@Table(name = "jbpm_user_tasks_inputs")
-@AttributeOverrides({
-        @AttributeOverride(name = "name", column = @Column(name = "input_name")),
-        @AttributeOverride(name = "value", column = @Column(name = "input_value"))
-})
-@AssociationOverride(name = "taskInstance", foreignKey = @ForeignKey(name = "jbpm_user_tasks_inputs_tid"))
-@IdClass(TaskNamedDataEntityPK.class)
-public class TaskInputEntity extends TaskNamedDataEntity<byte[]> {
+@Component
+public class SpringBootTaskReassignmentTimerRepository extends TaskReassignmentTimerRepository {
+
+    SpringBootTaskReassignmentTimerRepository() {
+        super(null);
+    }
+
+    @Autowired
+    public SpringBootTaskReassignmentTimerRepository(UserTaskJPAContext context) {
+        super(context);
+    }
 
 }
