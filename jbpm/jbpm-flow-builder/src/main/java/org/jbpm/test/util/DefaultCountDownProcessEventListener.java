@@ -72,7 +72,7 @@ public class DefaultCountDownProcessEventListener extends DefaultKogitoProcessEv
         } catch (Exception e) {
             System.out.println("********************************");
             System.out.println("********************************");
-            System.out.println("latch " + latch + " with exception " + e.getMessage() + " " + e );
+            System.out.println("latch " + latch + " with exception " + e.getMessage() + " " + e);
             System.out.println("********************************");
             System.out.println("********************************");
             logger.error("Error during waiting state", e);
