@@ -85,7 +85,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     protected final T variables;
     protected final AbstractProcess<T> process;
     protected InternalProcessRuntime rt;
-    protected volatile WorkflowProcessInstance processInstance;
+    protected WorkflowProcessInstance processInstance;
 
     protected Integer status;
 
@@ -334,7 +334,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public int status() {
-        return processInstance != null ? processInstance.getState() : status;
+        return status;
     }
 
     @Override
