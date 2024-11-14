@@ -32,7 +32,6 @@ import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
 import org.jbpm.usertask.jpa.repository.TaskReassignmentTimerRepository;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
-import org.kie.kogito.usertask.model.Notification;
 import org.kie.kogito.usertask.model.Reassignment;
 
 public class TaskReassignmentTimerEntityMapper implements EntityMapper {
@@ -51,16 +50,16 @@ public class TaskReassignmentTimerEntityMapper implements EntityMapper {
             TaskReassignmentTimerEntity entity = new TaskReassignmentTimerEntity();
             entity.setTaskInstance(userTaskInstanceEntity);
             entity.setJobId(timer.getKey());
-            entity.setJavaType(Notification.class.getName());
+            entity.setJavaType(Reassignment.class.getName());
             entity.setValue(JSONUtils.valueToString(timer.getValue()).getBytes(StandardCharsets.UTF_8));
             entity.setType(TaskReassignmentType.NotStarted);
             timers.add(entity);
         }
-        for (Map.Entry<String, Notification> timer : userTaskInstance.getNotCompletedDeadlinesTimers().entrySet()) {
+        for (Map.Entry<String, Reassignment> timer : userTaskInstance.getNotCompletedReassigmentsTimers().entrySet()) {
             TaskReassignmentTimerEntity entity = new TaskReassignmentTimerEntity();
             entity.setJobId(timer.getKey());
             entity.setTaskInstance(userTaskInstanceEntity);
-            entity.setJavaType(Notification.class.getName());
+            entity.setJavaType(Reassignment.class.getName());
             entity.setValue(JSONUtils.valueToString(timer.getValue()).getBytes(StandardCharsets.UTF_8));
             entity.setType(TaskReassignmentType.NotCompleted);
             timers.add(entity);
