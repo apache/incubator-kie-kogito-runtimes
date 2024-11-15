@@ -71,8 +71,13 @@ class JobCallbackResourceDefTest {
         assertThat(httpRecipient.getMethod()).isEqualTo("POST");
         assertThat(httpRecipient.getUrl()).isEqualTo(CALLBACK);
         assertThat(httpRecipient.getHeaders())
-                .hasSize(1)
-                .containsEntry(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+                .hasSize(6)
+                .containsEntry(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .containsEntry("processId", PROCESS_ID)
+                .containsEntry("processInstanceId", PROCESS_INSTANCE_ID)
+                .containsEntry("rootProcessId", ROOT_PROCESS_ID)
+                .containsEntry("rootProcessInstanceId", ROOT_PROCESS_INSTANCE_ID)
+                .containsEntry("nodeInstanceId", NODE_INSTANCE_ID);
         assertThat(httpRecipient.getPayload()).isNotNull();
         assertThat(httpRecipient.getPayload().getData()).isNotNull();
         assertThat(httpRecipient.getPayload().getData()).isInstanceOf(JsonNode.class);

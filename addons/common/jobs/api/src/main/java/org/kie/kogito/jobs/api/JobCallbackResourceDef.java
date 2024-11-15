@@ -21,6 +21,7 @@ package org.kie.kogito.jobs.api;
 import java.time.temporal.ChronoUnit;
 
 import org.kie.kogito.jobs.JobDescription;
+import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.service.api.TemporalUnit;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipient;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientJsonPayloadData;
@@ -73,12 +74,20 @@ public class JobCallbackResourceDef {
     }
 
     private static HttpRecipient<HttpRecipientJsonPayloadData> buildRecipient(JobDescription description, String callback, ObjectMapper objectMapper) {
-        return HttpRecipient.builder()
+        HttpRecipient.Builder<HttpRecipientJsonPayloadData> selector = HttpRecipient.builder()
                 .forJsonPayload()
                 .payload(HttpRecipientJsonPayloadData.from(buildPayload(description, objectMapper)))
                 .url(callback)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .build();
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+
+        if (description instanceof ProcessInstanceJobDescription processInstanceJobDescription) {
+            selector.header(PROCESS_ID, processInstanceJobDescription.processId())
+                    .header(PROCESS_INSTANCE_ID, processInstanceJobDescription.processInstanceId())
+                    .header(ROOT_PROCESS_ID, processInstanceJobDescription.rootProcessId())
+                    .header(ROOT_PROCESS_INSTANCE_ID, processInstanceJobDescription.rootProcessInstanceId())
+                    .header(NODE_INSTANCE_ID, processInstanceJobDescription.nodeInstanceId());
+        }
+        return selector.build();
     }
 
     private static JsonNode buildPayload(JobDescription description, ObjectMapper objectMapper) {
