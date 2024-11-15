@@ -1,16 +1,16 @@
 ### general excludes
-**/\..*
-*README*
-*readme*
-**/src/test/resources/**
-**/src/test/filtered-resources/**
-**/*integration-test*/src/main/resources/**
-**/*example*/**/resources/**
-**/META-INF/services/*
-**/META-INF/beans\.xml
+.*/\..*
+.*README.*
+.*readme.*
+.*/src/test/resources/.*
+.*/src/test/filtered-resources/.*
+.*/.*integration-test.*/src/main/resources/.*
+.*/.*example.*/.*/resources/.*
+.*/META-INF/services/.*
+.*/META-INF/beans\.xml
 
 ### kogito-runtimes specific excludes
 .*/META-INF/kogito\.addon
 .*\.avsc
-**/jbpm-tests/src/test/bpmn/**
-**/jbpm-bpmn2/**/.*\.xsd
+.*/jbpm-tests/src/test/bpmn/.*
+.*/jbpm-bpmn2/.*/.*\.xsd
