@@ -37,4 +37,4 @@ jobs:
 
       - name: Run Apache RAT
         run: |
-          java -jar apache-rat-0.17-20241115.065104-374.jar --input-exclude-file .rat-excludes -- . | grep "INFO:   Unapproved:  0" && echo "All files have license headers." || echo "The files listed above are missing license headers." && exit 1
+          java -jar apache-rat-0.17-20241115.065104-374.jar --input-exclude-file .rat-excludes -- . | grep "Files with unapproved licenses:" && echo "There are files with missing or unapproved license headers." && exit 1 || echo "All files have correct license headers."
