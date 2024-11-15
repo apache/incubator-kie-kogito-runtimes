@@ -18,18 +18,31 @@
  */
 package org.kie.kogito.serverless.workflow.parser.handlers.validation;
 
+import java.util.Map;
+
+import org.kie.kogito.serverless.workflow.parser.ParserContext;
+
 import io.serverlessworkflow.api.Workflow;
 
 import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.findDuplicates;
 
 public class WorkflowValidator {
 
     private WorkflowValidator() {
     }
 
-    public static void validateStart(Workflow workflow) {
+    public static void validateStart(Workflow workflow, ParserContext context) {
         if (workflow.getStart() == null || isEmpty(workflow.getStart().getStateName())) {
-            throw new IllegalArgumentException("Workflow does not define a starting state");
+            context.addValidationError("Workflow does not define a starting state");
+        }
+        if (workflow.getFunctions() != null) {
+            Map<String, Integer> functionDuplicates = findDuplicates(workflow.getFunctions().getFunctionDefs(), f -> f.getName());
+            if (!functionDuplicates.isEmpty()) {
+                StringBuilder sb = new StringBuilder("There are duplicated function definitions: ");
+                functionDuplicates.forEach((k, v) -> sb.append(String.format("\nFunction %s appears %d times", k, v)));
+                context.addValidationError(sb.toString());
+            }
         }
     }
 }

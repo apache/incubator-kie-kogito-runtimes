@@ -20,7 +20,10 @@ package com.myspace.demo;
 
 import java.util.Map;
 import java.util.List;
+import java.io.IOException;
 import java.util.Collection;
+
+import jakarta.inject.Inject;
 
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Context;
@@ -37,21 +40,27 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.Consumes;
 
-import org.kie.kogito.auth.IdentityProviders;
-import org.kie.kogito.auth.SecurityPolicy;
-import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.ProcessInstanceReadMode;
-import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.process.impl.Sig;
-import org.kie.kogito.services.uow.UnitOfWorkExecutor;
+import org.kie.kogito.auth.IdentityProviderFactory;
+import org.kie.kogito.usertask.UserTaskInstanceNotFoundException;
 import org.kie.kogito.usertask.UserTaskService;
+import org.kie.kogito.usertask.impl.json.SimpleDeserializationProblemHandler;
+import org.kie.kogito.usertask.impl.json.SimplePolymorphicTypeValidator;
 import org.kie.kogito.usertask.view.UserTaskView;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
 
 import org.kie.kogito.usertask.model.*;
 
-import jakarta.inject.Inject;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator.Validity;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Path("/usertasks/instance")
 public class UserTasksResource {
@@ -59,17 +68,34 @@ public class UserTasksResource {
     @Inject
     UserTaskService userTaskService;
 
+    @Inject
+    IdentityProviderFactory identityProviderFactory;
+
+    @Inject
+    ObjectMapper objectMapper;
+
+    ObjectMapper mapper;
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        mapper = objectMapper.copy();
+        SimpleModule module = new SimpleModule();
+        mapper.addHandler(new SimpleDeserializationProblemHandler());
+        mapper.registerModule(module);
+        mapper.activateDefaultTypingAsProperty(new SimplePolymorphicTypeValidator(), DefaultTyping.NON_FINAL, "@type");
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<UserTaskView> list(@QueryParam("user") String user, @QueryParam("group") List<String> groups) {
-        return userTaskService.list(IdentityProviders.of(user, groups));
+        return userTaskService.list(identityProviderFactory.getOrImpersonateIdentity(user, groups));
     }
 
     @GET
     @Path("/{taskId}")
     @Produces(MediaType.APPLICATION_JSON)
     public UserTaskView find(@PathParam("taskId") String taskId, @QueryParam("user") String user, @QueryParam("group") List<String> groups) {
-        return userTaskService.getUserTaskInstance(taskId, IdentityProviders.of(user, groups)).orElseThrow(NotFoundException::new);
+        return userTaskService.getUserTaskInstance(taskId, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
     @POST
@@ -78,10 +104,10 @@ public class UserTasksResource {
     @Produces(MediaType.APPLICATION_JSON)
     public UserTaskView transition(
             @PathParam("taskId") String taskId,
-            @QueryParam("transitionId") String transitionId,
             @QueryParam("user") String user,
-            @QueryParam("group") List<String> groups, Map<String, Object> data) {
-        return userTaskService.transition(taskId, transitionId, data, IdentityProviders.of(user, groups)).orElseThrow(NotFoundException::new);
+            @QueryParam("group") List<String> groups,
+            TransitionInfo transitionInfo) {
+        return userTaskService.transition(taskId, transitionInfo.getTransitionId(), transitionInfo.getData(), identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
     @GET
@@ -91,7 +117,7 @@ public class UserTasksResource {
             @PathParam("taskId") String taskId,
             @QueryParam("user") String user,
             @QueryParam("group") List<String> groups) {
-        return userTaskService.allowedTransitions(taskId, IdentityProviders.of(user, groups));
+        return userTaskService.allowedTransitions(taskId, identityProviderFactory.getOrImpersonateIdentity(user, groups));
     }
 
     @PUT
@@ -101,19 +127,21 @@ public class UserTasksResource {
             @PathParam("taskId") String taskId,
             @QueryParam("user") String user,
             @QueryParam("group") List<String> groups,
-            Map<String, Object> data) {
-        return userTaskService.setOutputs(taskId, data, IdentityProviders.of(user, groups)).orElseThrow(NotFoundException::new);
+            String body) throws Exception {
+        Map<String, Object> data = mapper.readValue(body, Map.class);
+        return userTaskService.setOutputs(taskId, data, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
     @PUT
     @Path("/{taskId}/inputs")
     @Consumes(MediaType.APPLICATION_JSON)
-    public UserTaskView setOutput(@PathParam("id") String id,
+    public UserTaskView setInputs(
             @PathParam("taskId") String taskId,
             @QueryParam("user") String user,
             @QueryParam("group") List<String> groups,
-            Map<String, Object> data) {
-        return userTaskService.setInputs(taskId, data, IdentityProviders.of(user, groups)).orElseThrow(NotFoundException::new);
+            String body) throws Exception {
+        Map<String, Object> data = mapper.readValue(body, Map.class);
+        return userTaskService.setInputs(taskId, data, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
     @GET
@@ -123,7 +151,7 @@ public class UserTasksResource {
             @PathParam("taskId") String taskId,
             @QueryParam("user") String user,
             @QueryParam("group") List<String> groups) {
-        return userTaskService.getComments(taskId, IdentityProviders.of(user, groups));
+        return userTaskService.getComments(taskId, identityProviderFactory.getOrImpersonateIdentity(user, groups));
     }
 
     @POST
@@ -137,7 +165,7 @@ public class UserTasksResource {
             CommentInfo commentInfo) {
         Comment comment = new Comment(null, user);
         comment.setContent(commentInfo.getComment());
-        return userTaskService.addComment(taskId, comment, IdentityProviders.of(user, groups)).orElseThrow(NotFoundException::new);
+        return userTaskService.addComment(taskId, comment, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
     @GET
@@ -148,8 +176,8 @@ public class UserTasksResource {
             @PathParam("commentId") String commentId,
             @QueryParam("user") String user,
             @QueryParam("group") List<String> groups) {
-        return userTaskService.getComment(taskId, commentId, IdentityProviders.of(user, groups))
-                .orElseThrow(() -> new NotFoundException("Comment " + commentId + " not found"));
+        return userTaskService.getComment(taskId, commentId, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(() -> new UserTaskInstanceNotFoundException("Comment " + commentId + " not found"));
     }
 
     @PUT
@@ -164,8 +192,8 @@ public class UserTasksResource {
             CommentInfo commentInfo) {
         Comment comment = new Comment(commentId, user);
         comment.setContent(commentInfo.getComment());
-        return userTaskService.updateComment(taskId, comment, IdentityProviders.of(user, groups))
-                .orElseThrow(NotFoundException::new);
+        return userTaskService.updateComment(taskId, comment, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
     @DELETE
@@ -175,8 +203,8 @@ public class UserTasksResource {
             @PathParam("commentId") String commentId,
             @QueryParam("user") String user,
             @QueryParam("group") List<String> groups) {
-        return userTaskService.removeComment(taskId, commentId, IdentityProviders.of(user, groups))
-                .orElseThrow(NotFoundException::new);
+        return userTaskService.removeComment(taskId, commentId, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
     @GET
@@ -186,7 +214,7 @@ public class UserTasksResource {
             @PathParam("taskId") String taskId,
             @QueryParam("user") String user,
             @QueryParam("group") List<String> groups) {
-        return userTaskService.getAttachments(taskId, IdentityProviders.of(user, groups));
+        return userTaskService.getAttachments(taskId, identityProviderFactory.getOrImpersonateIdentity(user, groups));
     }
 
     @POST
@@ -201,8 +229,8 @@ public class UserTasksResource {
         Attachment attachment = new Attachment(null, user);
         attachment.setName(attachmentInfo.getName());
         attachment.setContent(attachmentInfo.getUri());
-        return userTaskService.addAttachment(taskId, attachment, IdentityProviders.of(user, groups))
-                .orElseThrow(NotFoundException::new);
+        return userTaskService.addAttachment(taskId, attachment, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
     @PUT
@@ -218,8 +246,8 @@ public class UserTasksResource {
         Attachment attachment = new Attachment(attachmentId, user);
         attachment.setName(attachmentInfo.getName());
         attachment.setContent(attachmentInfo.getUri());
-        return userTaskService.updateAttachment(taskId, attachment, IdentityProviders.of(user, groups))
-                .orElseThrow(NotFoundException::new);
+        return userTaskService.updateAttachment(taskId, attachment, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
     @DELETE
@@ -229,8 +257,8 @@ public class UserTasksResource {
             @PathParam("attachmentId") String attachmentId,
             @QueryParam("user") String user,
             @QueryParam("group") List<String> groups) {
-        return userTaskService.removeAttachment(taskId, attachmentId, IdentityProviders.of(user, groups))
-                .orElseThrow(NotFoundException::new);
+        return userTaskService.removeAttachment(taskId, attachmentId, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
     @GET
@@ -241,8 +269,8 @@ public class UserTasksResource {
             @PathParam("attachmentId") String attachmentId,
             @QueryParam("user") String user,
             @QueryParam("group") List<String> groups) {
-        return userTaskService.getAttachment(taskId, attachmentId, IdentityProviders.of(user, groups))
-                .orElseThrow(() -> new NotFoundException("Attachment " + attachmentId + " not found"));
+        return userTaskService.getAttachment(taskId, attachmentId, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(() -> new UserTaskInstanceNotFoundException("Attachment " + attachmentId + " not found"));
     }
 
 }

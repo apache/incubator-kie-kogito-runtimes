@@ -39,7 +39,7 @@ public interface UserTaskInstance {
 
     boolean hasActualOwner();
 
-    void setActuaOwner(String actualOwner);
+    void setActualOwner(String actualOwner);
 
     String getActualOwner();
 
@@ -51,7 +51,7 @@ public interface UserTaskInstance {
 
     String getTaskDescription();
 
-    Integer getTaskPriority();
+    String getTaskPriority();
 
     Map<String, Object> getMetadata();
 

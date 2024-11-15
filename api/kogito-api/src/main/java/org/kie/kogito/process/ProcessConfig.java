@@ -20,6 +20,7 @@ package org.kie.kogito.process;
 
 import org.kie.kogito.KogitoConfig;
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.signal.SignalManagerHub;
 import org.kie.kogito.uow.UnitOfWorkManager;
@@ -38,4 +39,6 @@ public interface ProcessConfig extends KogitoConfig {
     ProcessVersionResolver versionResolver();
 
     IdentityProvider identityProvider();
+
+    BusinessCalendar getBusinessCalendar();
 }

@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -47,6 +48,8 @@ import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.core.SemanticModules;
 import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.core.validation.ProcessValidatorRegistry;
+import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
+import org.jbpm.workflow.instance.WorkflowProcessParameters;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
@@ -56,12 +59,15 @@ import org.kie.kogito.codegen.api.GeneratedInfo;
 import org.kie.kogito.codegen.api.SourceFileCodegenBindEvent;
 import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMeta;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
+import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.validation.ValidationException;
@@ -72,11 +78,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.process.ProcessResourceGenerator.TRANSACTION_ENABLED;
+import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_PATH;
+import static org.kie.kogito.codegen.process.util.CodegenUtil.isTransactionEnabled;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.buildDashboardName;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.generateOperationalDashboard;
 import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
@@ -100,7 +108,8 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global-operational-dashboard-template.json";
     private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/process-operational-dashboard-template.json";
-
+    public static final String BUSINESS_CALENDAR_PRODUCER_TEMPLATE = "BusinessCalendarProducer";
+    private static final String IS_BUSINESS_CALENDAR_PRESENT = "isBusinessCalendarPresent";
     static {
         ProcessValidatorRegistry.getInstance().registerAdditonalValidator(JavaRuleFlowProcessValidator.getInstance());
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNSemanticModule());
@@ -144,6 +153,7 @@ public class ProcessCodegen extends AbstractGenerator {
         if (useSvgAddon) {
             context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGMap);
         }
+        context.addContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, resources.stream().anyMatch(resource -> resource.resource().getSourcePath().endsWith(BUSINESS_CALENDAR_PATH)));
 
         handleValidation(context, processesErrors);
 
@@ -293,6 +303,12 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // first we generate all the data classes from variable declarations
         for (WorkflowProcess workFlowProcess : processes.values()) {
+            // transaction is disabled by default for SW types
+            boolean defaultTransactionEnabled = !KogitoWorkflowProcess.SW_TYPE.equals(workFlowProcess.getType());
+            if (isTransactionEnabled(this, context(), defaultTransactionEnabled)) {
+                ((WorkflowProcessImpl) workFlowProcess).setMetaData(WorkflowProcessParameters.WORKFLOW_PARAM_TRANSACTIONS.getName(), "true");
+            }
+
             if (!skipModelGeneration(workFlowProcess)) {
                 ModelClassGenerator mcg = new ModelClassGenerator(context(), workFlowProcess);
                 processIdToModelGenerator.put(workFlowProcess.getId(), mcg);
@@ -304,9 +320,10 @@ public class ProcessCodegen extends AbstractGenerator {
                 processIdToOutputModelGenerator.put(workFlowProcess.getId(), omcg);
             }
         }
-
+        boolean isServerless = false;
         // then we generate work items task inputs and outputs if any
         for (WorkflowProcess workFlowProcess : processes.values()) {
+            isServerless |= KogitoWorkflowProcess.SW_TYPE.equals(workFlowProcess.getType());
             if (KogitoWorkflowProcess.SW_TYPE.equals(workFlowProcess.getType())) {
                 continue;
             }
@@ -335,6 +352,7 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         // generate Process, ProcessInstance classes and the REST resource
+
         for (ProcessExecutableModelGenerator execModelGen : processExecutableModelGenerators) {
             String classPrefix = sanitizeClassName(execModelGen.extractedProcessId());
             KogitoWorkflowProcess workFlowProcess = execModelGen.process();
@@ -369,7 +387,7 @@ public class ProcessCodegen extends AbstractGenerator {
                         .withWorkItems(processIdToWorkItemModel.get(workFlowProcess.getId()))
                         .withSignals(metaData.getSignals())
                         .withTriggers(metaData.isStartable(), metaData.isDynamic(), metaData.getTriggers())
-                        .withTransaction(isTransactionEnabled());
+                        .withTransaction(isTransactionEnabled(this, context()));
 
                 rgs.add(processResourceGenerator);
             }
@@ -436,10 +454,27 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         //Generating the Producer classes for Dependency Injection
-        StaticDependencyInjectionProducerGenerator.of(context())
-                .generate()
+        StaticDependencyInjectionProducerGenerator staticDependencyInjectionProducerGenerator = StaticDependencyInjectionProducerGenerator.of(context());
+
+        staticDependencyInjectionProducerGenerator.generate()
                 .entrySet()
                 .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
+        Boolean isBusinessCalendarPresent = context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class);
+        if (Objects.nonNull(isBusinessCalendarPresent) && isBusinessCalendarPresent) {
+            staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE))
+                    .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
+        }
+
+        if (CodegenUtil.isTransactionEnabled(this, context()) && !isServerless) {
+            String template = "ExceptionHandlerTransaction";
+            TemplatedGenerator generator = TemplatedGenerator.builder()
+                    .withTemplateBasePath("/class-templates/transaction/")
+                    .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
+                    .withTargetTypeName(template)
+                    .build(context(), template);
+            CompilationUnit handler = generator.compilationUnitOrThrow();
+            storeFile(MODEL_TYPE, generator.generatedFilePath(), handler.toString());
+        }
 
         if (context().hasRESTForGenerator(this)) {
             for (ProcessResourceGenerator resourceGenerator : rgs) {
@@ -509,11 +544,6 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         return generatedFiles;
-    }
-
-    protected boolean isTransactionEnabled() {
-        String processTransactionProperty = String.format("kogito.%s.%s", GENERATOR_NAME, TRANSACTION_ENABLED);
-        return "true".equalsIgnoreCase(context().getApplicationProperty(processTransactionProperty).orElse("true"));
     }
 
     private void storeFile(GeneratedFileType type, String path, String source) {

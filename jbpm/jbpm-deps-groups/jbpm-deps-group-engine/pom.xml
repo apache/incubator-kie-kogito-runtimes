@@ -53,10 +53,13 @@ under the License.
             <groupId>org.kie.kogito</groupId>
             <artifactId>process-workitems</artifactId>
         </dependency>
-        
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>jbpm-usertask</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>jbpm-usertask-workitem</artifactId>
         </dependency>
     </dependencies>
 

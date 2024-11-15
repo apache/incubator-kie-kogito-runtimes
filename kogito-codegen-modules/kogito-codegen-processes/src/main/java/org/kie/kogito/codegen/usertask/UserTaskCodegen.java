@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.codegen.usertask;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Path;
@@ -51,6 +50,7 @@ import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.process.ProcessCodegenException;
 import org.kie.kogito.codegen.process.ProcessParsingException;
+import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.validation.ValidationException;
@@ -62,9 +62,9 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
@@ -97,9 +97,9 @@ public class UserTaskCodegen extends AbstractGenerator {
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNDISemanticModule());
     }
 
-    public static final String SECTION_CLASS_NAME = "usertask";
+    public static final String SECTION_CLASS_NAME = "usertasks";
 
-    TemplatedGenerator templateGenerator;
+    private TemplatedGenerator templateGenerator;
     private List<Work> descriptors;
     private TemplatedGenerator producerTemplateGenerator;
     private TemplatedGenerator restTemplateGenerator;
@@ -158,25 +158,28 @@ public class UserTaskCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private GeneratedFile generateRestEndpiont() {
+    public GeneratedFile generateRestEndpiont() {
         String packageName = context().getPackageName();
-        CompilationUnit compilationUnit = producerTemplateGenerator.compilationUnitOrThrow("Not rest endpoints template found for user tasks");
+        CompilationUnit compilationUnit = restTemplateGenerator.compilationUnitOrThrow("Not rest endpoints template found for user tasks");
         compilationUnit.setPackageDeclaration(packageName);
+        if (CodegenUtil.isTransactionEnabled(this, context())) {
+            compilationUnit.findAll(MethodDeclaration.class).stream().filter(MethodDeclaration::isPublic).forEach(context().getDependencyInjectionAnnotator()::withTransactional);
+        }
         String className = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get().getNameAsString();
-        String urlBase = packageName.replaceAll("\\.", File.separator);
-        return new GeneratedFile(GeneratedFileType.SOURCE, Path.of(urlBase).resolve(className + ".java"), compilationUnit.toString());
+        Path basePath = UserTaskCodegenHelper.path(packageName);
+        return new GeneratedFile(GeneratedFileType.REST, basePath.resolve(className + ".java"), compilationUnit.toString());
     }
 
-    private GeneratedFile generateProducer() {
+    public GeneratedFile generateProducer() {
         String packageName = context().getPackageName();
-        CompilationUnit compilationUnit = restTemplateGenerator.compilationUnitOrThrow("No producer template found for user tasks");
+        CompilationUnit compilationUnit = producerTemplateGenerator.compilationUnitOrThrow("No producer template found for user tasks");
         compilationUnit.setPackageDeclaration(packageName);
         String className = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get().getNameAsString();
-        String urlBase = packageName.replaceAll("\\.", File.separator);
-        return new GeneratedFile(GeneratedFileType.SOURCE, Path.of(urlBase).resolve(className + ".java"), compilationUnit.toString());
+        Path basePath = UserTaskCodegenHelper.path(packageName);
+        return new GeneratedFile(GeneratedFileType.SOURCE, basePath.resolve(className + ".java"), compilationUnit.toString());
     }
 
-    private List<GeneratedFile> generateUserTask() {
+    public List<GeneratedFile> generateUserTask() {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         for (Work info : descriptors) {
             CompilationUnit unit = templateGenerator.compilationUnit().get();
@@ -194,7 +197,7 @@ public class UserTaskCodegen extends AbstractGenerator {
             ConstructorDeclaration declaration = clazzDeclaration.findFirst(ConstructorDeclaration.class).get();
             declaration.setName(className);
 
-            String taskNodeName = (String) info.getParameter(NODE_NAME);
+            String taskNodeName = (String) info.getParameter("TaskName");
             Expression taskNameExpression = taskNodeName != null ? new StringLiteralExpr(taskNodeName) : new NullLiteralExpr();
 
             BlockStmt block = declaration.getBody();
@@ -212,7 +215,7 @@ public class UserTaskCodegen extends AbstractGenerator {
             block.addStatement(new MethodCallExpr(new ThisExpr(), "setExcludedUsers", NodeList.nodeList(toStringExpression(info.getParameter(EXCLUDED_OWNER_ID)))));
 
             block.addStatement(new MethodCallExpr(new ThisExpr(), "setTaskDescription", NodeList.nodeList(toStringExpression(info.getParameter(DESCRIPTION)))));
-            block.addStatement(new MethodCallExpr(new ThisExpr(), "setTaskPriority", NodeList.nodeList(toIntegerExpression(info.getParameter(PRIORITY)))));
+            block.addStatement(new MethodCallExpr(new ThisExpr(), "setTaskPriority", NodeList.nodeList(toStringExpression(info.getParameter(PRIORITY)))));
             block.addStatement(new MethodCallExpr(new ThisExpr(), "setReferenceName", NodeList.nodeList(toStringExpression(info.getParameter(NODE_NAME)))));
             block.addStatement(new MethodCallExpr(new ThisExpr(), "setSkippable", NodeList.nodeList(toStringExpression(info.getParameter("Skippable")))));
 
@@ -224,14 +227,6 @@ public class UserTaskCodegen extends AbstractGenerator {
             generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE, UserTaskCodegenHelper.path(info).resolve(className + ".java"), unit.toString()));
         }
         return generatedFiles;
-    }
-
-    private Expression toIntegerExpression(Object value) {
-        if (value == null) {
-            return new CastExpr(StaticJavaParser.parseType(Integer.class.getName()), new NullLiteralExpr());
-        }
-
-        return new IntegerLiteralExpr(value.toString());
     }
 
     private Expression toStringExpression(Object value) {

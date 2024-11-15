@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -52,12 +54,16 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.mvel2.integration.VariableResolver;
 import org.mvel2.integration.impl.SimpleValueResolver;
 
+import static org.jbpm.workflow.instance.WorkflowProcessParameters.WORKFLOW_PARAM_MULTIPLE_CONNECTIONS;
+
 /**
  * Runtime counterpart of a for each node.
  */
 public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     private static final long serialVersionUID = 510L;
+    private static final Set<Class<? extends org.kie.api.runtime.process.NodeInstance>> NOT_SERIALIZABLE_CLASSES = Set.of(ForEachJoinNodeInstance.class); // using Arrays.asList to allow multiple exclusions
+
     public static final String TEMP_OUTPUT_VAR = "foreach_output";
 
     private int totalInstances;
@@ -293,7 +299,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                 ((NodeInstanceContainer) getNodeInstanceContainer()).removeNodeInstance(this);
 
                 if (getForEachNode().isWaitForCompletion()) {
-                    if (!Boolean.parseBoolean((String) getForEachNode().getProcess().getMetaData().get("jbpm.enable.multi.con"))) {
+                    if (!WORKFLOW_PARAM_MULTIPLE_CONNECTIONS.get(getProcessInstance().getProcess())) {
                         triggerConnection(getForEachJoinNode().getTo());
                     } else {
                         List<Connection> connections = getForEachJoinNode().getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE);
@@ -346,8 +352,23 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     @Override
     public int getLevelForNode(String uniqueID) {
-        // always 1 for for each
+        // always 1 for each
         return 1;
+    }
+
+    @Override
+    public Collection<org.kie.api.runtime.process.NodeInstance> getSerializableNodeInstances() {
+        return getNodeInstances().stream().filter(ForEachNodeInstance::isSerializable).collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * Check if the given <code>org.kie.api.runtime.process.NodeInstance</code> is serializable.
+     *
+     * @param toCheck
+     * @return
+     */
+    static boolean isSerializable(org.kie.api.runtime.process.NodeInstance toCheck) {
+        return !NOT_SERIALIZABLE_CLASSES.contains(toCheck.getClass());
     }
 
     private class ForEachNodeInstanceResolverFactory extends NodeInstanceResolverFactory {

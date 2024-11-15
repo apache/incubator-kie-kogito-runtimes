@@ -20,16 +20,19 @@ package com.myspace.demo;
 
 import java.util.List;
 import java.util.Map;
+import java.io.IOException;
 import java.util.Collection;
 
 import org.jbpm.util.JsonSchemaUtil;
-import org.kie.kogito.auth.IdentityProviders;
+import org.kie.kogito.auth.IdentityProviderFactory;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.Sig;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.usertask.UserTaskService;
+import org.kie.kogito.usertask.impl.json.SimpleDeserializationProblemHandler;
+import org.kie.kogito.usertask.impl.json.SimplePolymorphicTypeValidator;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
 import org.kie.kogito.usertask.view.UserTaskView;
 import org.springframework.http.HttpStatus;
@@ -47,6 +50,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator.Validity;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.kie.kogito.usertask.model.*;
@@ -58,24 +74,41 @@ public class UserTasksResource {
     @Autowired
     UserTaskService userTaskService;
 
+    @Autowired
+    IdentityProviderFactory identityProviderFactory;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    ObjectMapper mapper;
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        mapper = objectMapper.copy();
+        SimpleModule module = new SimpleModule();
+        mapper.addHandler(new SimpleDeserializationProblemHandler());
+        mapper.registerModule(module);
+        mapper.activateDefaultTypingAsProperty(new SimplePolymorphicTypeValidator(), DefaultTyping.NON_FINAL, "@type");
+    }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserTaskView> list(@RequestParam("user") String user, @RequestParam("group") List<String> groups) {
-        return userTaskService.list(IdentityProviders.of(user, groups));
+        return userTaskService.list(identityProviderFactory.getOrImpersonateIdentity(user, groups));
     }
 
     @GetMapping(value = "/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserTaskView find(@PathVariable("taskId") String taskId, @RequestParam("user") String user, @RequestParam("group") List<String> groups) {
-        return userTaskService.getUserTaskInstance(taskId, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userTaskService.getUserTaskInstance(taskId, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping(value = "/{taskId}/transition")
     public UserTaskView transition(
             @PathVariable("taskId") String taskId,
-            @RequestParam("transitionId") String transitionId,
             @RequestParam("user") String user,
-            @RequestParam("group") List<String> groups, 
-            @RequestBody Map<String, Object> data) {
-        return userTaskService.transition(taskId, transitionId, data, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            @RequestParam("group") List<String> groups,
+            @RequestBody TransitionInfo transitionInfo) {
+        return userTaskService.transition(taskId, transitionInfo.getTransitionId(), transitionInfo.getData(), identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(value = "/{taskId}/transition", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -83,25 +116,27 @@ public class UserTasksResource {
             @PathVariable("taskId") String taskId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups) {
-        return userTaskService.allowedTransitions(taskId, IdentityProviders.of(user, groups));
+        return userTaskService.allowedTransitions(taskId, identityProviderFactory.getOrImpersonateIdentity(user, groups));
     }
-    
+
     @PutMapping("/{taskId}/outputs")
     public UserTaskView setOutput(
             @PathVariable("taskId") String taskId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups,
-            @RequestBody Map<String, Object> data) {
-        return userTaskService.setOutputs(taskId, data, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            @RequestBody String body) throws Exception {
+        Map<String, Object> data = mapper.readValue(body, Map.class);
+        return userTaskService.setOutputs(taskId, data, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{taskId}/inputs")
-    public UserTaskView setOutput(@PathVariable("id") String id,
+    public UserTaskView setInputs(
             @PathVariable("taskId") String taskId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups,
-            @RequestBody Map<String, Object> data) {
-        return userTaskService.setInputs(taskId, data, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            @RequestBody String body) throws Exception {
+        Map<String, Object> data = mapper.readValue(body, Map.class);
+        return userTaskService.setInputs(taskId, data, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{taskId}/comments")
@@ -109,7 +144,7 @@ public class UserTasksResource {
             @PathVariable("taskId") String taskId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups) {
-        return userTaskService.getComments(taskId, IdentityProviders.of(user, groups));
+        return userTaskService.getComments(taskId, identityProviderFactory.getOrImpersonateIdentity(user, groups));
     }
 
     @PostMapping("/{taskId}/comments")
@@ -120,7 +155,7 @@ public class UserTasksResource {
             @RequestBody CommentInfo commentInfo) {
         Comment comment = new Comment(null, user);
         comment.setContent(commentInfo.getComment());
-        return userTaskService.addComment(taskId, comment, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userTaskService.addComment(taskId, comment, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{taskId}/comments/{commentId}")
@@ -129,7 +164,7 @@ public class UserTasksResource {
             @PathVariable("commentId") String commentId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups) {
-        return userTaskService.getComment(taskId, commentId, IdentityProviders.of(user, groups))
+        return userTaskService.getComment(taskId, commentId, identityProviderFactory.getOrImpersonateIdentity(user, groups))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment " + commentId + " not found"));
     }
 
@@ -142,16 +177,16 @@ public class UserTasksResource {
             @RequestBody CommentInfo commentInfo) {
         Comment comment = new Comment(commentId, user);
         comment.setContent(commentInfo.getComment());
-        return userTaskService.updateComment(taskId, comment, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userTaskService.updateComment(taskId, comment, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping("/{taskId}/comments/{commentId}")
+    @DeleteMapping(value = "/{taskId}/comments/{commentId}", consumes = MediaType.ALL_VALUE)
     public Comment deleteComment(
             @PathVariable("taskId") String taskId,
             @PathVariable("commentId") String commentId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups) {
-        return userTaskService.removeComment(taskId, commentId, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userTaskService.removeComment(taskId, commentId, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{taskId}/attachments")
@@ -159,7 +194,7 @@ public class UserTasksResource {
             @PathVariable("taskId") String taskId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups) {
-        return userTaskService.getAttachments(taskId, IdentityProviders.of(user, groups));
+        return userTaskService.getAttachments(taskId, identityProviderFactory.getOrImpersonateIdentity(user, groups));
     }
 
     @PostMapping("/{taskId}/attachments")
@@ -171,7 +206,7 @@ public class UserTasksResource {
         Attachment attachment = new Attachment(null, user);
         attachment.setName(attachmentInfo.getName());
         attachment.setContent(attachmentInfo.getUri());
-        return userTaskService.addAttachment(taskId, attachment, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userTaskService.addAttachment(taskId, attachment, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{taskId}/attachments/{attachmentId}")
@@ -184,17 +219,17 @@ public class UserTasksResource {
         Attachment attachment = new Attachment(attachmentId, user);
         attachment.setName(attachmentInfo.getName());
         attachment.setContent(attachmentInfo.getUri());
-        return userTaskService.updateAttachment(taskId, attachment, IdentityProviders.of(user, groups))
+        return userTaskService.updateAttachment(taskId, attachment, identityProviderFactory.getOrImpersonateIdentity(user, groups))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping("/{taskId}/attachments/{attachmentId}")
+    @DeleteMapping(value = "/{taskId}/attachments/{attachmentId}", consumes = MediaType.ALL_VALUE)
     public Attachment deleteAttachment(
             @PathVariable("taskId") String taskId,
             @PathVariable("attachmentId") String attachmentId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups) {
-        return userTaskService.removeAttachment(taskId, attachmentId, IdentityProviders.of(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userTaskService.removeAttachment(taskId, attachmentId, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{taskId}/attachments/{attachmentId}")
@@ -203,7 +238,7 @@ public class UserTasksResource {
             @PathVariable("attachmentId") String attachmentId,
             @RequestParam("user") String user,
             @RequestParam("group") List<String> groups) {
-        return userTaskService.getAttachment(taskId, attachmentId, IdentityProviders.of(user, groups))
+        return userTaskService.getAttachment(taskId, attachmentId, identityProviderFactory.getOrImpersonateIdentity(user, groups))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment " + attachmentId + " not found"));
     }
 

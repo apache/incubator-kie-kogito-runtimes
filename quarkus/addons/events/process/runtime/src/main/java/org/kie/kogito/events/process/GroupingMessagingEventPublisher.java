@@ -26,24 +26,32 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.process.KogitoMarshallEventSupport;
 import org.kie.kogito.event.process.MultipleProcessInstanceDataEvent;
 import org.kie.kogito.event.process.ProcessInstanceDataEvent;
 import org.kie.kogito.event.usertask.MultipleUserTaskInstanceDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceDataEvent;
 
-import io.quarkus.arc.properties.IfBuildProperty;
+import io.quarkus.arc.lookup.LookupIfProperty;
 
 import jakarta.inject.Singleton;
 
 @Singleton
-@IfBuildProperty(name = "kogito.events.grouping", stringValue = "true")
+@LookupIfProperty(name = "kogito.events.grouping", stringValue = "true")
 public class GroupingMessagingEventPublisher extends AbstractMessagingEventPublisher {
 
     @Override
     public void publish(DataEvent<?> event) {
         publish(Collections.singletonList(event));
     }
+
+    @ConfigProperty(name = "kogito.events.grouping.binary", defaultValue = "false")
+    private boolean binary;
+
+    @ConfigProperty(name = "kogito.events.grouping.compress", defaultValue = "false")
+    private boolean compress;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
@@ -62,7 +70,12 @@ public class GroupingMessagingEventPublisher extends AbstractMessagingEventPubli
         if (firstEvent instanceof UserTaskInstanceDataEvent) {
             publishToTopic(entry.getKey(), new MultipleUserTaskInstanceDataEvent(source, (Collection<UserTaskInstanceDataEvent<?>>) entry.getValue()));
         } else if (firstEvent instanceof ProcessInstanceDataEvent) {
-            publishToTopic(entry.getKey(), new MultipleProcessInstanceDataEvent(source, (Collection<ProcessInstanceDataEvent<?>>) entry.getValue()));
+            MultipleProcessInstanceDataEvent sent = new MultipleProcessInstanceDataEvent(source, (Collection<ProcessInstanceDataEvent<? extends KogitoMarshallEventSupport>>) entry.getValue());
+            if (binary) {
+                sent.setDataContentType(MultipleProcessInstanceDataEvent.BINARY_CONTENT_TYPE);
+                sent.setCompressed(compress);
+            }
+            publishToTopic(entry.getKey(), sent);
         } else {
             for (DataEvent<?> event : (Collection<DataEvent<?>>) entry.getValue()) {
                 publishToTopic(entry.getKey(), event);
