@@ -113,7 +113,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     private Map<String, Reassignment> notStartedReassignmentsTimers;
 
-    private Map<String, Reassignment> notCompletedReassigmentsTimers;
+    private Map<String, Reassignment> notCompletedReassignmentsTimers;
 
     public DefaultUserTaskInstance() {
         this.inputs = new HashMap<>();
@@ -130,7 +130,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         this.notStartedDeadlinesTimers = new HashMap<>();
         this.notCompletedDeadlinesTimers = new HashMap<>();
         this.notStartedReassignmentsTimers = new HashMap<>();
-        this.notCompletedReassigmentsTimers = new HashMap<>();
+        this.notCompletedReassignmentsTimers = new HashMap<>();
     }
 
     public DefaultUserTaskInstance(UserTask userTask) {
@@ -147,12 +147,12 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         this.notCompletedDeadlinesTimers = notCompletedDeadlinesTimers;
     }
 
-    public Map<String, Reassignment> getNotCompletedReassigmentsTimers() {
-        return notCompletedReassigmentsTimers;
+    public Map<String, Reassignment> getNotCompletedReassignmentsTimers() {
+        return notCompletedReassignmentsTimers;
     }
 
-    public void setNotCompletedReassigmentsTimers(Map<String, Reassignment> notCompletedReassigmentsTimers) {
-        this.notCompletedReassigmentsTimers = notCompletedReassigmentsTimers;
+    public void setNotCompletedReassignmentsTimers(Map<String, Reassignment> notCompletedReassignmentsTimers) {
+        this.notCompletedReassignmentsTimers = notCompletedReassignmentsTimers;
     }
 
     public Map<String, Notification> getNotStartedDeadlinesTimers() {
@@ -700,7 +700,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     @Override
     public void startNotCompletedReassignments() {
-        initTimers(this.notCompletedReassigmentsTimers, getNotCompletedReassignments());
+        initTimers(this.notCompletedReassignmentsTimers, getNotCompletedReassignments());
     }
 
     @Override
@@ -719,8 +719,8 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     }
 
     @Override
-    public void stopNotCompletedReassigments() {
-        stopTimers(this.notCompletedReassigmentsTimers);
+    public void stopNotCompletedReassignments() {
+        stopTimers(this.notCompletedReassignmentsTimers);
     }
 
     public void trigger(UserTaskInstanceJobDescription jobDescription) {
@@ -728,7 +728,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         checkAndSendNotitication(jobDescription, notStartedDeadlinesTimers, this::startNotification);
         checkAndSendNotitication(jobDescription, notCompletedDeadlinesTimers, this::endNotification);
         checkAndReassign(jobDescription, notStartedReassignmentsTimers);
-        checkAndReassign(jobDescription, notCompletedReassigmentsTimers);
+        checkAndReassign(jobDescription, notCompletedReassignmentsTimers);
         this.updatePersistence();
     }
 

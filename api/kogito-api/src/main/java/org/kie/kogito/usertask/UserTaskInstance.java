@@ -148,6 +148,6 @@ public interface UserTaskInstance {
 
     void stopNotCompletedDeadlines();
 
-    void stopNotCompletedReassigments();
+    void stopNotCompletedReassignments();
 
 }

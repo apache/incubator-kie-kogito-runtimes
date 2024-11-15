@@ -19,7 +19,15 @@
 
 package org.jbpm.usertask.jpa.mapper.utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
 import org.jbpm.usertask.jpa.mapper.models.Person;
@@ -261,6 +269,16 @@ public class TestUtils {
         instance.setAdminUsers(Set.of("Seymour"));
         instance.setAdminGroups(Set.of("Administrators", "Managers"));
         instance.setExcludedUsers(Set.of("Ned", "Bart"));
+
+        instance.setNotStartedDeadlines(new ArrayList<>());
+        instance.setNotStartedDeadlinesTimers(new HashMap<>());
+        instance.setNotCompletedDeadlines(new ArrayList<>());
+        instance.setNotCompletedDeadlinesTimers(new HashMap<>());
+
+        instance.setNotStartedReassignments(new ArrayList<>());
+        instance.setNotStartedReassignmentsTimers(new HashMap<>());
+        instance.setNotCompletedReassignments(new ArrayList<>());
+        instance.setNotCompletedReassignmentsTimers(new HashMap<>());
 
         instance.setExternalReferenceId("external-reference-id");
 

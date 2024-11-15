@@ -135,7 +135,7 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         userTaskInstance.stopNotCompletedDeadlines();
-        userTaskInstance.stopNotCompletedReassigments();
+        userTaskInstance.stopNotCompletedReassignments();
 
         // restart the timers
         userTaskInstance.startNotCompletedDeadlines();
@@ -188,7 +188,7 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         userTaskInstance.stopNotCompletedDeadlines();
-        userTaskInstance.stopNotCompletedReassigments();
+        userTaskInstance.stopNotCompletedReassignments();
         return Optional.empty();
     }
 
@@ -199,7 +199,7 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         userTaskInstance.stopNotCompletedDeadlines();
-        userTaskInstance.stopNotCompletedReassigments();
+        userTaskInstance.stopNotCompletedReassignments();
         return Optional.empty();
     }
 
@@ -210,7 +210,7 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         userTaskInstance.stopNotCompletedDeadlines();
-        userTaskInstance.stopNotCompletedReassigments();
+        userTaskInstance.stopNotCompletedReassignments();
         return Optional.empty();
     }
 

@@ -51,7 +51,7 @@ create table jbpm_user_tasks_reassignment_timer (
     reassignment_type   varchar(255) not null,
     reassignment_value  varbinary(max),
     java_type           varchar(255),
-    primary key (task_id, reasssignment_job_id)
+    primary key (task_id, reassignment_job_id)
 );
 
 CREATE SEQUENCE jbpm_user_tasks_deadline_seq INCREMENT BY 50;

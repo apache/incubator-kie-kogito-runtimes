@@ -55,7 +55,7 @@ public class TaskReassignmentTimerEntityMapper implements EntityMapper {
             entity.setType(TaskReassignmentType.NotStarted);
             timers.add(entity);
         }
-        for (Map.Entry<String, Reassignment> timer : userTaskInstance.getNotCompletedReassigmentsTimers().entrySet()) {
+        for (Map.Entry<String, Reassignment> timer : userTaskInstance.getNotCompletedReassignmentsTimers().entrySet()) {
             TaskReassignmentTimerEntity entity = new TaskReassignmentTimerEntity();
             entity.setJobId(timer.getKey());
             entity.setTaskInstance(userTaskInstanceEntity);
@@ -84,6 +84,6 @@ public class TaskReassignmentTimerEntityMapper implements EntityMapper {
         }
 
         ((DefaultUserTaskInstance) userTaskInstance).setNotStartedReassignmentsTimers(notStarted);
-        ((DefaultUserTaskInstance) userTaskInstance).setNotCompletedReassigmentsTimers(notCompleted);
+        ((DefaultUserTaskInstance) userTaskInstance).setNotCompletedReassignmentsTimers(notCompleted);
     }
 }
