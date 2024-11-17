@@ -26,6 +26,8 @@ import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
@@ -41,6 +43,7 @@ import jakarta.persistence.Table;
 public class TaskReassignmentTimerEntity extends TaskTimerDataEntity<byte[]> {
 
     @Column(name = "reassignment_type")
+    @Enumerated(EnumType.STRING)
     private TaskReassignmentType type;
 
     public TaskReassignmentType getType() {

@@ -22,6 +22,7 @@ package org.jbpm.usertask.jpa.mapper;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,27 +45,65 @@ public class TaskDeadlineTimerEntityMapper implements EntityMapper {
 
     @Override
     public void mapInstanceToEntity(UserTaskInstance instance, UserTaskInstanceEntity userTaskInstanceEntity) {
+        if (userTaskInstanceEntity.getDeadlineTimers() == null) {
+            userTaskInstanceEntity.setDeadlineTimers(new ArrayList<>());
+        }
         DefaultUserTaskInstance userTaskInstance = (DefaultUserTaskInstance) instance;
-        List<TaskDeadlineTimerEntity> timers = new ArrayList<>();
+        List<String> notStartedNotifications = new ArrayList<>();
+        List<String> notCompletedNotifications = new ArrayList<>();
+
+        List<TaskDeadlineTimerEntity> entities = new ArrayList<>();
+        Iterator<TaskDeadlineTimerEntity> iterator = userTaskInstanceEntity.getDeadlineTimers().iterator();
+        while (iterator.hasNext()) {
+            TaskDeadlineTimerEntity deadlineEntity = iterator.next();
+            switch (deadlineEntity.getType()) {
+                case NotCompleted:
+                    if (!userTaskInstance.getNotCompletedDeadlinesTimers().keySet().contains(deadlineEntity.getJobId())) {
+                        entities.add(deadlineEntity);
+                    } else {
+                        notCompletedNotifications.add(deadlineEntity.getJobId());
+                    }
+                    break;
+                case NotStarted:
+                    if (!userTaskInstance.getNotStartedDeadlinesTimers().keySet().contains(deadlineEntity.getJobId())) {
+                        entities.add(deadlineEntity);
+                    } else {
+                        notStartedNotifications.add(deadlineEntity.getJobId());
+                    }
+                    break;
+            }
+        }
+
+        entities.forEach(e -> {
+            repository.remove(e);
+            userTaskInstanceEntity.getDeadlineTimers().remove(e);
+        });
+        entities.clear();
+
         for (Map.Entry<String, Notification> timer : userTaskInstance.getNotStartedDeadlinesTimers().entrySet()) {
-            TaskDeadlineTimerEntity entity = new TaskDeadlineTimerEntity();
-            entity.setTaskInstance(userTaskInstanceEntity);
-            entity.setJobId(timer.getKey());
-            entity.setJavaType(Notification.class.getName());
-            entity.setValue(JSONUtils.valueToString(timer.getValue()).getBytes(StandardCharsets.UTF_8));
-            entity.setType(TaskDeadlineType.NotStarted);
-            timers.add(entity);
+            if (!notStartedNotifications.contains(timer.getKey())) {
+                TaskDeadlineTimerEntity entity = buildEntity(userTaskInstanceEntity, timer.getKey(), timer.getValue(), TaskDeadlineType.NotStarted);
+                entities.add(entity);
+            }
         }
+
         for (Map.Entry<String, Notification> timer : userTaskInstance.getNotCompletedDeadlinesTimers().entrySet()) {
-            TaskDeadlineTimerEntity entity = new TaskDeadlineTimerEntity();
-            entity.setJobId(timer.getKey());
-            entity.setTaskInstance(userTaskInstanceEntity);
-            entity.setJavaType(Notification.class.getName());
-            entity.setValue(JSONUtils.valueToString(timer.getValue()).getBytes(StandardCharsets.UTF_8));
-            entity.setType(TaskDeadlineType.NotCompleted);
-            timers.add(entity);
+            if (!notCompletedNotifications.contains(timer.getKey())) {
+                TaskDeadlineTimerEntity entity = buildEntity(userTaskInstanceEntity, timer.getKey(), timer.getValue(), TaskDeadlineType.NotCompleted);
+                entities.add(entity);
+            }
         }
-        userTaskInstanceEntity.setDeadlineTimers(timers);
+        entities.forEach(userTaskInstanceEntity.getDeadlineTimers()::add);
+    }
+
+    private TaskDeadlineTimerEntity buildEntity(UserTaskInstanceEntity userTaskInstanceEntity, String jobId, Notification deadline, TaskDeadlineType type) {
+        TaskDeadlineTimerEntity entity = new TaskDeadlineTimerEntity();
+        entity.setTaskInstance(userTaskInstanceEntity);
+        entity.setJobId(jobId);
+        entity.setJavaType(Notification.class.getName());
+        entity.setValue(JSONUtils.valueToString(deadline).getBytes(StandardCharsets.UTF_8));
+        entity.setType(type);
+        return entity;
     }
 
     @Override
@@ -85,5 +124,9 @@ public class TaskDeadlineTimerEntityMapper implements EntityMapper {
 
         ((DefaultUserTaskInstance) userTaskInstance).setNotStartedDeadlinesTimers(notStarted);
         ((DefaultUserTaskInstance) userTaskInstance).setNotCompletedDeadlinesTimers(notCompleted);
+    }
+
+    private Notification readNotification(byte[] value) {
+        return (Notification) JSONUtils.stringTreeToValue(new String(value), Notification.class.getName());
     }
 }

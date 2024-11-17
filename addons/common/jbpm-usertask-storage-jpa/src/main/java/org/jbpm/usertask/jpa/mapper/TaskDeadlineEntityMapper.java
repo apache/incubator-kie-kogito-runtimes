@@ -33,10 +33,13 @@ import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.model.DeadlineInfo;
 import org.kie.kogito.usertask.model.Notification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 
 public class TaskDeadlineEntityMapper implements EntityMapper {
+    private static final Logger LOG = LoggerFactory.getLogger(TaskDeadlineEntityMapper.class);
 
     private final TaskDeadlineRepository repository;
 
@@ -46,6 +49,11 @@ public class TaskDeadlineEntityMapper implements EntityMapper {
 
     @Override
     public void mapInstanceToEntity(UserTaskInstance userTaskInstance, UserTaskInstanceEntity userTaskInstanceEntity) {
+        if (userTaskInstanceEntity.getDeadlines() == null) {
+            userTaskInstanceEntity.setDeadlines(new ArrayList<>());
+        }
+
+        List<TaskDeadlineEntity> entities = new ArrayList<>();
         List<DeadlineInfo<Notification>> notStartedNotifications = new ArrayList<>();
         List<DeadlineInfo<Notification>> notCompletedNotifications = new ArrayList<>();
         Iterator<TaskDeadlineEntity> iterator = userTaskInstanceEntity.getDeadlines().iterator();
@@ -55,14 +63,14 @@ public class TaskDeadlineEntityMapper implements EntityMapper {
             switch (deadlineEntity.getType()) {
                 case NotCompleted:
                     if (!userTaskInstance.getNotCompletedDeadlines().contains(deadline)) {
-                        iterator.remove();
+                        entities.add(deadlineEntity);
                     } else {
                         notCompletedNotifications.add(deadline);
                     }
                     break;
                 case NotStarted:
                     if (!userTaskInstance.getNotStartedDeadlines().contains(deadline)) {
-                        iterator.remove();
+                        entities.add(deadlineEntity);
                     } else {
                         notStartedNotifications.add(deadline);
                     }
@@ -70,17 +78,25 @@ public class TaskDeadlineEntityMapper implements EntityMapper {
             }
         }
 
+        entities.forEach(e -> {
+            repository.remove(e);
+            userTaskInstanceEntity.getDeadlines().remove(e);
+        });
+        entities.clear();
+
         for (DeadlineInfo<Notification> deadline : userTaskInstance.getNotStartedDeadlines()) {
             if (!notStartedNotifications.contains(deadline)) {
-                userTaskInstanceEntity.getDeadlines().add(buildEntity(userTaskInstanceEntity, deadline, TaskDeadlineType.NotStarted));
+                entities.add(buildEntity(userTaskInstanceEntity, deadline, TaskDeadlineType.NotStarted));
             }
         }
         for (DeadlineInfo<Notification> deadline : userTaskInstance.getNotCompletedDeadlines()) {
-            if (notStartedNotifications.add(deadline)) {
-                userTaskInstanceEntity.getDeadlines().add(buildEntity(userTaskInstanceEntity, deadline, TaskDeadlineType.NotCompleted));
+            if (!notCompletedNotifications.contains(deadline)) {
+                entities.add(buildEntity(userTaskInstanceEntity, deadline, TaskDeadlineType.NotCompleted));
             }
         }
-
+        entities.forEach(e -> {
+            userTaskInstanceEntity.getDeadlines().add(e);
+        });
     }
 
     private TaskDeadlineEntity buildEntity(UserTaskInstanceEntity userTaskInstanceEntity, DeadlineInfo<Notification> deadline, TaskDeadlineType type) {

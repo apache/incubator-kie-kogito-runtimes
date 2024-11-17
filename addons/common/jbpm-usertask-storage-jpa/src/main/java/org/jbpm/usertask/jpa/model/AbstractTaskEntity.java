@@ -56,8 +56,7 @@ public abstract class AbstractTaskEntity<T> {
         if (o == null || getClass() != o.getClass())
             return false;
         AbstractTaskEntity<?> that = (AbstractTaskEntity<?>) o;
-        return Objects.equals(getValue(),
-                that.getValue()) && Objects.equals(getJavaType(), that.getJavaType());
+        return Objects.equals(getValue(), that.getValue()) && Objects.equals(getJavaType(), that.getJavaType());
     }
 
     @Override

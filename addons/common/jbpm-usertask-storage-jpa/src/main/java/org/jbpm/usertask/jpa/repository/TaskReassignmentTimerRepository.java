@@ -19,10 +19,10 @@
 
 package org.jbpm.usertask.jpa.repository;
 
-import org.jbpm.usertask.jpa.model.TaskNamedDataEntityPK;
 import org.jbpm.usertask.jpa.model.TaskReassignmentTimerEntity;
+import org.jbpm.usertask.jpa.model.TaskTimerDataEntityPK;
 
-public class TaskReassignmentTimerRepository extends BaseRepository<TaskReassignmentTimerEntity, TaskNamedDataEntityPK> {
+public class TaskReassignmentTimerRepository extends BaseRepository<TaskReassignmentTimerEntity, TaskTimerDataEntityPK> {
 
     public TaskReassignmentTimerRepository(UserTaskJPAContext context) {
         super(context);

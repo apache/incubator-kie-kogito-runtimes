@@ -60,7 +60,7 @@ public class TaskTimerDataEntityPK implements Serializable {
         if (o == null || getClass() != o.getClass())
             return false;
         TaskTimerDataEntityPK that = (TaskTimerDataEntityPK) o;
-        return Objects.equals(getJobId(), that.getJobId()) && Objects.equals(getTaskInstance(), that.getTaskInstance());
+        return Objects.equals(getJobId(), that.getJobId()) && Objects.equals(getTaskInstance().getId(), that.getTaskInstance().getId());
     }
 
     @Override
@@ -71,7 +71,7 @@ public class TaskTimerDataEntityPK implements Serializable {
     @Override
     public String toString() {
         return "TaskTimerDataEntityId {" +
-                "taskInstance='" + taskInstance + '\'' +
+                "taskInstance='" + taskInstance.getId() + '\'' +
                 ", name='" + jobId + '\'' +
                 '}';
     }

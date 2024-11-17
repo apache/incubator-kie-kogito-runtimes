@@ -19,17 +19,16 @@
 
 package org.jbpm.usertask.jpa.repository;
 
-import org.jbpm.usertask.jpa.model.TaskDeadlineTimerEntity;
-import org.jbpm.usertask.jpa.model.TaskNamedDataEntityPK;
+import org.jbpm.usertask.jpa.model.TaskDeadlineEntity;
 
-public class TaskDeadlineRepository extends BaseRepository<TaskDeadlineTimerEntity, TaskNamedDataEntityPK> {
+public class TaskDeadlineRepository extends BaseRepository<TaskDeadlineEntity, Integer> {
 
     public TaskDeadlineRepository(UserTaskJPAContext context) {
         super(context);
     }
 
     @Override
-    public Class<TaskDeadlineTimerEntity> getEntityClass() {
-        return TaskDeadlineTimerEntity.class;
+    public Class<TaskDeadlineEntity> getEntityClass() {
+        return TaskDeadlineEntity.class;
     }
 }

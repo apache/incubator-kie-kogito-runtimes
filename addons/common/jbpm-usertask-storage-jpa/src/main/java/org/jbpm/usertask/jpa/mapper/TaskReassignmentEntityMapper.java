@@ -33,10 +33,14 @@ import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.model.DeadlineInfo;
 import org.kie.kogito.usertask.model.Reassignment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 
 public class TaskReassignmentEntityMapper implements EntityMapper {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TaskReassignmentEntityMapper.class);
 
     private final TaskReassignmentRepository repository;
 
@@ -46,23 +50,27 @@ public class TaskReassignmentEntityMapper implements EntityMapper {
 
     @Override
     public void mapInstanceToEntity(UserTaskInstance userTaskInstance, UserTaskInstanceEntity userTaskInstanceEntity) {
+        if (userTaskInstanceEntity.getReassignments() == null) {
+            userTaskInstanceEntity.setReassignments(new ArrayList<>());
+        }
+        List<TaskReassignmentEntity> entities = new ArrayList<>();
         List<DeadlineInfo<Reassignment>> notStartedReassignments = new ArrayList<>();
         List<DeadlineInfo<Reassignment>> notCompletedReassignments = new ArrayList<>();
         Iterator<TaskReassignmentEntity> iterator = userTaskInstanceEntity.getReassignments().iterator();
         while (iterator.hasNext()) {
-            TaskReassignmentEntity deadlineEntity = iterator.next();
-            DeadlineInfo<Reassignment> deadline = readNotification(deadlineEntity.getValue());
-            switch (deadlineEntity.getType()) {
+            TaskReassignmentEntity reassignmentEntity = iterator.next();
+            DeadlineInfo<Reassignment> deadline = readNotification(reassignmentEntity.getValue());
+            switch (reassignmentEntity.getType()) {
                 case NotCompleted:
                     if (!userTaskInstance.getNotCompletedReassignments().contains(deadline)) {
-                        iterator.remove();
+                        entities.add(reassignmentEntity);
                     } else {
                         notCompletedReassignments.add(deadline);
                     }
                     break;
                 case NotStarted:
                     if (!userTaskInstance.getNotStartedReassignments().contains(deadline)) {
-                        iterator.remove();
+                        entities.add(reassignmentEntity);
                     } else {
                         notStartedReassignments.add(deadline);
                     }
@@ -70,16 +78,26 @@ public class TaskReassignmentEntityMapper implements EntityMapper {
             }
         }
 
-        for (DeadlineInfo<Reassignment> deadline : userTaskInstance.getNotStartedReassignments()) {
-            if (!notStartedReassignments.contains(deadline)) {
-                userTaskInstanceEntity.getReassignments().add(buildEntity(userTaskInstanceEntity, deadline, TaskReassignmentType.NotStarted));
+        entities.forEach(e -> {
+            repository.remove(e);
+            userTaskInstanceEntity.getReassignments().remove(e);
+        });
+        entities.clear();
+
+        for (DeadlineInfo<Reassignment> reassignment : userTaskInstance.getNotStartedReassignments()) {
+            if (!notStartedReassignments.contains(reassignment)) {
+                entities.add(buildEntity(userTaskInstanceEntity, reassignment, TaskReassignmentType.NotStarted));
             }
         }
-        for (DeadlineInfo<Reassignment> deadline : userTaskInstance.getNotCompletedReassignments()) {
-            if (notStartedReassignments.add(deadline)) {
-                userTaskInstanceEntity.getReassignments().add(buildEntity(userTaskInstanceEntity, deadline, TaskReassignmentType.NotCompleted));
+
+        for (DeadlineInfo<Reassignment> reassignment : userTaskInstance.getNotCompletedReassignments()) {
+            if (!notCompletedReassignments.contains(reassignment)) {
+                entities.add(buildEntity(userTaskInstanceEntity, reassignment, TaskReassignmentType.NotCompleted));
             }
         }
+        entities.forEach(e -> {
+            userTaskInstanceEntity.getReassignments().add(e);
+        });
     }
 
     private TaskReassignmentEntity buildEntity(UserTaskInstanceEntity userTaskInstanceEntity, DeadlineInfo<Reassignment> deadline, TaskReassignmentType type) {

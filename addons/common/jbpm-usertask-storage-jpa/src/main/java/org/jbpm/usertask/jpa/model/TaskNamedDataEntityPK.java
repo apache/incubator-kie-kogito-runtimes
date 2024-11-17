@@ -60,7 +60,7 @@ public class TaskNamedDataEntityPK implements Serializable {
         if (o == null || getClass() != o.getClass())
             return false;
         TaskNamedDataEntityPK that = (TaskNamedDataEntityPK) o;
-        return Objects.equals(getName(), that.getName()) && Objects.equals(getTaskInstance(), that.getTaskInstance());
+        return Objects.equals(getName(), that.getName()) && Objects.equals(getTaskInstance().getId(), that.getTaskInstance().getId());
     }
 
     @Override
@@ -71,7 +71,7 @@ public class TaskNamedDataEntityPK implements Serializable {
     @Override
     public String toString() {
         return "TaskNamedDataEntityId {" +
-                "taskInstance='" + taskInstance + '\'' +
+                "taskInstance='" + taskInstance.getId() + '\'' +
                 ", name='" + name + '\'' +
                 '}';
     }

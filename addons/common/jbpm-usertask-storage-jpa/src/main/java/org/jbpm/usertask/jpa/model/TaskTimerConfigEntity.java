@@ -19,6 +19,8 @@
 
 package org.jbpm.usertask.jpa.model;
 
+import java.util.Objects;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,6 +53,23 @@ public abstract class TaskTimerConfigEntity<T> extends AbstractTaskEntity<T> {
 
     public void setTaskInstance(UserTaskInstanceEntity taskInstance) {
         this.taskInstance = taskInstance;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, javaType, id, taskInstance.getId());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TaskTimerConfigEntity other = (TaskTimerConfigEntity) obj;
+        return super.equals(obj) && Objects.equals(id, other.id) && Objects.equals(taskInstance.getId(), other.taskInstance.getId());
     }
 
 }

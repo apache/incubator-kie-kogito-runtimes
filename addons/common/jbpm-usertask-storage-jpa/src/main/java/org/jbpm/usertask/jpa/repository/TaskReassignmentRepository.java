@@ -19,10 +19,9 @@
 
 package org.jbpm.usertask.jpa.repository;
 
-import org.jbpm.usertask.jpa.model.TaskNamedDataEntityPK;
 import org.jbpm.usertask.jpa.model.TaskReassignmentEntity;
 
-public class TaskReassignmentRepository extends BaseRepository<TaskReassignmentEntity, TaskNamedDataEntityPK> {
+public class TaskReassignmentRepository extends BaseRepository<TaskReassignmentEntity, Integer> {
 
     public TaskReassignmentRepository(UserTaskJPAContext context) {
         super(context);
