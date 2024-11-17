@@ -303,6 +303,11 @@ public abstract class AbstractReactiveMessagingJobsServiceTest<T extends Abstrac
                 .recipient(HttpRecipient.builder().forJsonPayload()
                         .payload(HttpRecipientJsonPayloadData.from(JSON_PAYLOAD))
                         .url(CALLBACK_ENDPOINT)
+                        .header("processInstanceId", PROCESS_INSTANCE_ID)
+                        .header("rootProcessInstanceId", ROOT_PROCESS_INSTANCE_ID)
+                        .header("processId", PROCESS_ID)
+                        .header("rootProcessId", ROOT_PROCESS_ID)
+                        .header("nodeInstanceId", NODE_INSTANCE_ID)
                         .header("Content-Type", "application/json")
                         .build())
                 .build();
