@@ -111,7 +111,12 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
                 PROCESS_INSTANCE_ID,
                 TIMER_ID);
         assertThat(httpRecipient.getHeaders())
-                .hasSize(1)
+                .hasSize(6)
+                .containsEntry("processId", PROCESS_ID)
+                .containsEntry("processInstanceId", PROCESS_INSTANCE_ID)
+                .containsEntry("rootProcessId", ROOT_PROCESS_ID)
+                .containsEntry("rootProcessInstanceId", ROOT_PROCESS_INSTANCE_ID)
+                .containsEntry("nodeInstanceId", NODE_INSTANCE_ID)
                 .containsEntry("Content-Type", "application/json");
         assertThat(httpRecipient.getPayload()).isNotNull();
         assertThat(httpRecipient.getPayload()).isInstanceOf(HttpRecipientJsonPayloadData.class);

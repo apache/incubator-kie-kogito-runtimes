@@ -121,16 +121,16 @@ public class UserTaskInstanceEntity {
     @OneToMany(mappedBy = "taskInstance", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TaskMetadataEntity> metadata = new ArrayList<>();
 
-    @OneToMany(mappedBy = "taskInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "taskInstance", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TaskDeadlineEntity> deadlines;
 
-    @OneToMany(mappedBy = "taskInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "taskInstance", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TaskDeadlineTimerEntity> deadlineTimers;
 
-    @OneToMany(mappedBy = "taskInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "taskInstance", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TaskReassignmentEntity> reassignments;
 
-    @OneToMany(mappedBy = "taskInstance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "taskInstance", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TaskReassignmentTimerEntity> reassignmentTimers;
 
     public String getId() {

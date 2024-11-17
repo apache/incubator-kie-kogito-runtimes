@@ -21,6 +21,7 @@ package org.jbpm.usertask.jpa.mapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jbpm.usertask.jpa.mapper.json.utils.JSONUtils;
@@ -45,24 +46,54 @@ public class TaskReassignmentEntityMapper implements EntityMapper {
 
     @Override
     public void mapInstanceToEntity(UserTaskInstance userTaskInstance, UserTaskInstanceEntity userTaskInstanceEntity) {
-        List<TaskReassignmentEntity> reassignments = new ArrayList<>();
-        for (DeadlineInfo<Reassignment> reassignment : userTaskInstance.getNotStartedReassignments()) {
-            TaskReassignmentEntity entity = new TaskReassignmentEntity();
-            entity.setTaskInstance(userTaskInstanceEntity);
-            entity.setJavaType(DeadlineInfo.class.getName());
-            entity.setValue(JSONUtils.valueToString(reassignment).getBytes(StandardCharsets.UTF_8));
-            entity.setType(TaskReassignmentType.NotStarted);
-            reassignments.add(entity);
+        List<DeadlineInfo<Reassignment>> notStartedReassignments = new ArrayList<>();
+        List<DeadlineInfo<Reassignment>> notCompletedReassignments = new ArrayList<>();
+        Iterator<TaskReassignmentEntity> iterator = userTaskInstanceEntity.getReassignments().iterator();
+        while (iterator.hasNext()) {
+            TaskReassignmentEntity deadlineEntity = iterator.next();
+            DeadlineInfo<Reassignment> deadline = readNotification(deadlineEntity.getValue());
+            switch (deadlineEntity.getType()) {
+                case NotCompleted:
+                    if (!userTaskInstance.getNotCompletedReassignments().contains(deadline)) {
+                        iterator.remove();
+                    } else {
+                        notCompletedReassignments.add(deadline);
+                    }
+                    break;
+                case NotStarted:
+                    if (!userTaskInstance.getNotStartedReassignments().contains(deadline)) {
+                        iterator.remove();
+                    } else {
+                        notStartedReassignments.add(deadline);
+                    }
+                    break;
+            }
         }
-        for (DeadlineInfo<Reassignment> reassignment : userTaskInstance.getNotCompletedReassignments()) {
-            TaskReassignmentEntity entity = new TaskReassignmentEntity();
-            entity.setTaskInstance(userTaskInstanceEntity);
-            entity.setJavaType(DeadlineInfo.class.getName());
-            entity.setValue(JSONUtils.valueToString(reassignment).getBytes(StandardCharsets.UTF_8));
-            entity.setType(TaskReassignmentType.NotCompleted);
-            reassignments.add(entity);
+
+        for (DeadlineInfo<Reassignment> deadline : userTaskInstance.getNotStartedReassignments()) {
+            if (!notStartedReassignments.contains(deadline)) {
+                userTaskInstanceEntity.getReassignments().add(buildEntity(userTaskInstanceEntity, deadline, TaskReassignmentType.NotStarted));
+            }
         }
-        userTaskInstanceEntity.setReassignments(reassignments);
+        for (DeadlineInfo<Reassignment> deadline : userTaskInstance.getNotCompletedReassignments()) {
+            if (notStartedReassignments.add(deadline)) {
+                userTaskInstanceEntity.getReassignments().add(buildEntity(userTaskInstanceEntity, deadline, TaskReassignmentType.NotCompleted));
+            }
+        }
+    }
+
+    private TaskReassignmentEntity buildEntity(UserTaskInstanceEntity userTaskInstanceEntity, DeadlineInfo<Reassignment> deadline, TaskReassignmentType type) {
+        TaskReassignmentEntity entity = new TaskReassignmentEntity();
+        entity.setTaskInstance(userTaskInstanceEntity);
+        entity.setJavaType(DeadlineInfo.class.getName());
+        entity.setValue(JSONUtils.valueToString(deadline).getBytes(StandardCharsets.UTF_8));
+        entity.setType(type);
+        return entity;
+    }
+
+    private DeadlineInfo<Reassignment> readNotification(byte[] value) {
+        JavaType javaType = JSONUtils.buildJavaType(DeadlineInfo.class, Reassignment.class);
+        return (DeadlineInfo<Reassignment>) JSONUtils.stringTreeToValue(new String(value), javaType);
     }
 
     @Override

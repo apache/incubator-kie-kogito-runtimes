@@ -21,6 +21,7 @@ package org.jbpm.usertask.jpa.mapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jbpm.usertask.jpa.mapper.json.utils.JSONUtils;
@@ -45,33 +46,59 @@ public class TaskDeadlineEntityMapper implements EntityMapper {
 
     @Override
     public void mapInstanceToEntity(UserTaskInstance userTaskInstance, UserTaskInstanceEntity userTaskInstanceEntity) {
-        List<TaskDeadlineEntity> deadlines = new ArrayList<>();
+        List<DeadlineInfo<Notification>> notStartedNotifications = new ArrayList<>();
+        List<DeadlineInfo<Notification>> notCompletedNotifications = new ArrayList<>();
+        Iterator<TaskDeadlineEntity> iterator = userTaskInstanceEntity.getDeadlines().iterator();
+        while (iterator.hasNext()) {
+            TaskDeadlineEntity deadlineEntity = iterator.next();
+            DeadlineInfo<Notification> deadline = readNotification(deadlineEntity.getValue());
+            switch (deadlineEntity.getType()) {
+                case NotCompleted:
+                    if (!userTaskInstance.getNotCompletedDeadlines().contains(deadline)) {
+                        iterator.remove();
+                    } else {
+                        notCompletedNotifications.add(deadline);
+                    }
+                    break;
+                case NotStarted:
+                    if (!userTaskInstance.getNotStartedDeadlines().contains(deadline)) {
+                        iterator.remove();
+                    } else {
+                        notStartedNotifications.add(deadline);
+                    }
+                    break;
+            }
+        }
+
         for (DeadlineInfo<Notification> deadline : userTaskInstance.getNotStartedDeadlines()) {
-            TaskDeadlineEntity entity = new TaskDeadlineEntity();
-            entity.setTaskInstance(userTaskInstanceEntity);
-            entity.setJavaType(DeadlineInfo.class.getName());
-            entity.setValue(JSONUtils.valueToString(deadline).getBytes(StandardCharsets.UTF_8));
-            entity.setType(TaskDeadlineType.NotStarted);
-            deadlines.add(entity);
+            if (!notStartedNotifications.contains(deadline)) {
+                userTaskInstanceEntity.getDeadlines().add(buildEntity(userTaskInstanceEntity, deadline, TaskDeadlineType.NotStarted));
+            }
         }
         for (DeadlineInfo<Notification> deadline : userTaskInstance.getNotCompletedDeadlines()) {
-            TaskDeadlineEntity entity = new TaskDeadlineEntity();
-            entity.setTaskInstance(userTaskInstanceEntity);
-            entity.setJavaType(DeadlineInfo.class.getName());
-            entity.setValue(JSONUtils.valueToString(deadline).getBytes(StandardCharsets.UTF_8));
-            entity.setType(TaskDeadlineType.NotCompleted);
-            deadlines.add(entity);
+            if (notStartedNotifications.add(deadline)) {
+                userTaskInstanceEntity.getDeadlines().add(buildEntity(userTaskInstanceEntity, deadline, TaskDeadlineType.NotCompleted));
+            }
         }
-        userTaskInstanceEntity.setDeadlines(deadlines);
+
+    }
+
+    private TaskDeadlineEntity buildEntity(UserTaskInstanceEntity userTaskInstanceEntity, DeadlineInfo<Notification> deadline, TaskDeadlineType type) {
+        TaskDeadlineEntity entity = new TaskDeadlineEntity();
+        entity.setTaskInstance(userTaskInstanceEntity);
+        entity.setJavaType(DeadlineInfo.class.getName());
+        entity.setValue(JSONUtils.valueToString(deadline).getBytes(StandardCharsets.UTF_8));
+        entity.setType(type);
+        return entity;
     }
 
     @Override
     public void mapEntityToInstance(UserTaskInstanceEntity userTaskInstanceEntity, UserTaskInstance userTaskInstance) {
         List<DeadlineInfo<Notification>> notStarted = new ArrayList<>();
         List<DeadlineInfo<Notification>> notCompleted = new ArrayList<>();
-        JavaType javaType = JSONUtils.buildJavaType(DeadlineInfo.class, Notification.class);
+
         for (TaskDeadlineEntity entity : userTaskInstanceEntity.getDeadlines()) {
-            DeadlineInfo<Notification> deadline = (DeadlineInfo<Notification>) JSONUtils.stringTreeToValue(new String(entity.getValue()), javaType);
+            DeadlineInfo<Notification> deadline = readNotification(entity.getValue());
             switch (entity.getType()) {
                 case NotCompleted:
                     notCompleted.add(deadline);
@@ -84,5 +111,10 @@ public class TaskDeadlineEntityMapper implements EntityMapper {
 
         ((DefaultUserTaskInstance) userTaskInstance).setNotStartedDeadlines(notStarted);
         ((DefaultUserTaskInstance) userTaskInstance).setNotCompletedDeadlines(notCompleted);
+    }
+
+    private DeadlineInfo<Notification> readNotification(byte[] value) {
+        JavaType javaType = JSONUtils.buildJavaType(DeadlineInfo.class, Notification.class);
+        return (DeadlineInfo<Notification>) JSONUtils.stringTreeToValue(new String(value), javaType);
     }
 }
