@@ -26,6 +26,8 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import static java.lang.Thread.currentThread;
+
 public class JSONUtils {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -51,7 +53,7 @@ public class JSONUtils {
             if (Objects.isNull(value) || Objects.isNull(javaType)) {
                 return null;
             }
-            return OBJECT_MAPPER.readValue(value, Class.forName(javaType));
+            return OBJECT_MAPPER.readValue(value, currentThread().getContextClassLoader().loadClass(javaType));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

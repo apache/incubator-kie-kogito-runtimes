@@ -25,7 +25,6 @@ import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 
 @Entity
@@ -35,7 +34,6 @@ import jakarta.persistence.Table;
         @AttributeOverride(name = "value", column = @Column(name = "input_value"))
 })
 @AssociationOverride(name = "taskInstance", foreignKey = @ForeignKey(name = "jbpm_user_tasks_inputs_tid"))
-@IdClass(TaskNamedDataEntityPK.class)
 public class TaskInputEntity extends TaskNamedDataEntity<byte[]> {
 
 }

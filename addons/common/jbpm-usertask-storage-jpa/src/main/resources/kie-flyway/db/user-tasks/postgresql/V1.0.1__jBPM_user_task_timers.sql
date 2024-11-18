@@ -48,11 +48,11 @@ create table jbpm_user_tasks_deadline_timer (
 
 
 create table jbpm_user_tasks_reassignment_timer (
-    task_id              varchar(50) not null,
+    task_id             varchar(50) not null,
     reassignment_job_id varchar(255) not null,
     reassignment_type   varchar(255) not null,
     reassignment_value  bytea,
-    java_type            varchar(255),
+    java_type           varchar(255),
     primary key (task_id, reassignment_job_id)
 );
 
