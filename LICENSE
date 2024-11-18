@@ -208,17 +208,4 @@ for jbpm/jbpm-bpmn2/src/main/resources/META-INF/BPMN20.xsd
     jbpm/jbpm-bpmn2/src/main/resources/META-INF/DI.xsd
     jbpm/jbpm-bpmn2/src/main/resources/META-INF/Semantic.xsd
 
-    (https://www.omg.org/spec/BPMN/2.0/PDF)
-    The companies listed above have granted to the Object Management Group, Inc. (OMG) a nonexclusive, royalty-free,
-    paid up, worldwide license to copy and distribute this document and to modify this document and distribute copies of the
-    modified version. Each of the copyright holders listed above has agreed that no person shall be deemed to have infringed
-    the copyright in the included material of any such copyright holder by reason of having used the specification set forth
-    herein or having conformed any computer software to the specification.
-    Subject to all of the terms and conditions below, the owners of the copyright in this specification hereby grant you a fullypaid up, non-exclusive,  nontransferable, perpetual, worldwide license (without the right to sublicense), to use this
-    specification to create and distribute software and special purpose specifications that are based upon this specification,
-    and to use, copy, and distribute this specification as provided under the Copyright Act; provided that: (1) both the
-    copyright notice identified above and this permission notice appear on any copies of this specification; (2) the use of the
-    specifications is for informational purposes and will not be copied or posted on any network computer or broadcast in any
-    media and will not be otherwise resold or transferred for commercial purposes; and (3) no modifications are made to this
-    specification. This limited permission automatically terminates without notice if you breach any of these terms or
-    conditions. Upon termination, you will destroy immediately any copies of the specifications in your possession or control
+TODO put license text for files listed above here.
