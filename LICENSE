@@ -202,14 +202,8 @@
 
 
 ------------------------------------------------------------------------------------
-This product bundles various third-party components under other open source licenses.
-This section summarizes those components and their licenses. See licenses/
-for text of these licenses.
-
-OMG BPMN Specification License (https://www.omg.org/spec/BPMN)
---------------------------------------------------------------
-jbpm/jbpm-bpmn2/src/main/resources/META-INF/BPMN20.xsd
-jbpm/jbpm-bpmn2/src/main/resources/META-INF/BPMNDI.xsd
-jbpm/jbpm-bpmn2/src/main/resources/META-INF/DC.xsd
-jbpm/jbpm-bpmn2/src/main/resources/META-INF/DI.xsd
-jbpm/jbpm-bpmn2/src/main/resources/META-INF/Semantic.xsd
+for jbpm/jbpm-bpmn2/src/main/resources/META-INF/BPMN20.xsd
+    jbpm/jbpm-bpmn2/src/main/resources/META-INF/BPMNDI.xsd
+    jbpm/jbpm-bpmn2/src/main/resources/META-INF/DC.xsd
+    jbpm/jbpm-bpmn2/src/main/resources/META-INF/DI.xsd
+    jbpm/jbpm-bpmn2/src/main/resources/META-INF/Semantic.xsd
