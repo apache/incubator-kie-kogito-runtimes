@@ -207,3 +207,5 @@ for jbpm/jbpm-bpmn2/src/main/resources/META-INF/BPMN20.xsd
     jbpm/jbpm-bpmn2/src/main/resources/META-INF/DC.xsd
     jbpm/jbpm-bpmn2/src/main/resources/META-INF/DI.xsd
     jbpm/jbpm-bpmn2/src/main/resources/META-INF/Semantic.xsd
+
+TODO put license text for files listed above here.
