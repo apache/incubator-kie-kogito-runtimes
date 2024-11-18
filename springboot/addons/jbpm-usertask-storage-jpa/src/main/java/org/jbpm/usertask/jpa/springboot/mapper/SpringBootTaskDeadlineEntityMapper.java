@@ -17,31 +17,22 @@
  * under the License.
  */
 
-package org.kie.flyway.integration;
+package org.jbpm.usertask.jpa.springboot.mapper;
 
-import java.util.Map;
+import org.jbpm.usertask.jpa.mapper.TaskDeadlineEntityMapper;
+import org.jbpm.usertask.jpa.repository.TaskDeadlineRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class TestKieFlywayConfiguration implements KieFlywayConfiguration<TestKieFlywayNamedModule> {
+@Component
+public class SpringBootTaskDeadlineEntityMapper extends TaskDeadlineEntityMapper {
 
-    private boolean enabled;
-    private Map<String, TestKieFlywayNamedModule> modules;
-
-    public TestKieFlywayConfiguration(boolean enabled, Map<String, TestKieFlywayNamedModule> modules) {
-        this.enabled = enabled;
-        this.modules = modules;
+    public SpringBootTaskDeadlineEntityMapper() {
+        super(null);
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
-    public Map<String, TestKieFlywayNamedModule> getModules() {
-        return modules;
+    @Autowired
+    public SpringBootTaskDeadlineEntityMapper(TaskDeadlineRepository repository) {
+        super(repository);
     }
 }

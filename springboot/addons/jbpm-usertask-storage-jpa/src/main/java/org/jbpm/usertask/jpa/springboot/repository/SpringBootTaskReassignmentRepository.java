@@ -17,13 +17,23 @@
  * under the License.
  */
 
-package org.kie.flyway.integration;
+package org.jbpm.usertask.jpa.springboot.repository;
 
-import java.util.Map;
+import org.jbpm.usertask.jpa.repository.TaskReassignmentRepository;
+import org.jbpm.usertask.jpa.repository.UserTaskJPAContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public interface KieFlywayConfiguration<T extends KieFlywayNamedModule> {
+@Component
+public class SpringBootTaskReassignmentRepository extends TaskReassignmentRepository {
 
-    boolean isEnabled();
+    SpringBootTaskReassignmentRepository() {
+        super(null);
+    }
 
-    Map<String, T> getModules();
+    @Autowired
+    public SpringBootTaskReassignmentRepository(UserTaskJPAContext context) {
+        super(context);
+    }
+
 }
