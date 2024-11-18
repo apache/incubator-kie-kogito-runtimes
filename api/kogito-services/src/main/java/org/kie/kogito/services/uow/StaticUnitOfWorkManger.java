@@ -16,19 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.kie.kogito.services.uow;
 
-package org.kie.flyway.integration;
+import org.kie.kogito.uow.UnitOfWorkManager;
 
-public class TestKieFlywayNamedModule implements KieFlywayNamedModule {
+public class StaticUnitOfWorkManger {
 
-    private boolean enabled;
+    private static final UnitOfWorkManager SINGLETON = new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
 
-    public TestKieFlywayNamedModule(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
+    public static UnitOfWorkManager staticUnitOfWorkManager() {
+        return SINGLETON;
     }
 }

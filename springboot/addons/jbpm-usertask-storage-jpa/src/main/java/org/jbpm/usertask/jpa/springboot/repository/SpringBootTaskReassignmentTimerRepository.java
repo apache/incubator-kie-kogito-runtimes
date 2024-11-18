@@ -16,24 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.jackson.utils;
 
-public class Person {
+package org.jbpm.usertask.jpa.springboot.repository;
 
-    private String name;
+import org.jbpm.usertask.jpa.repository.TaskReassignmentTimerRepository;
+import org.jbpm.usertask.jpa.repository.UserTaskJPAContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-    public Person() {
+@Component
+public class SpringBootTaskReassignmentTimerRepository extends TaskReassignmentTimerRepository {
+
+    SpringBootTaskReassignmentTimerRepository() {
+        super(null);
     }
 
-    public Person(String name) {
-        this.name = name;
+    @Autowired
+    public SpringBootTaskReassignmentTimerRepository(UserTaskJPAContext context) {
+        super(context);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
