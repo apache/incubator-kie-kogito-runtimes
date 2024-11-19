@@ -457,7 +457,6 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <scope>test</scope>
         <version>${version.com.thoughtworks.xstream}</version>
       </dependency>
 
