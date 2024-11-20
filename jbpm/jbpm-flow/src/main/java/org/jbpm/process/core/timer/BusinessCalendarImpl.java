@@ -90,6 +90,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     private List<TimePeriod> holidays;
     private List<Integer> weekendDays = new ArrayList<>();
     private SessionClock clock;
+    private final StringBuilder errorMessage = new StringBuilder();
 
     private static final int SIM_WEEK = 3;
     private static final int SIM_DAY = 5;
@@ -97,8 +98,6 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     private static final int SIM_MIN = 9;
     private static final int SIM_SEC = 11;
 
-    public static final String DAYS_PER_WEEK = "business.days.per.week";
-    public static final String HOURS_PER_DAY = "business.hours.per.day";
     public static final String START_HOUR = "business.start.hour";
     public static final String END_HOUR = "business.end.hour";
     // holidays are given as date range and can have more than one value separated with comma
@@ -137,13 +136,12 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     protected void init() {
-        daysPerWeek = getPropertyAsInt(DAYS_PER_WEEK, "5");
-        hoursInDay = getPropertyAsInt(HOURS_PER_DAY, "8");
-        startHour = getPropertyAsInt(START_HOUR, "9");
-        endHour = getPropertyAsInt(END_HOUR, "17");
         holidays = parseHolidays();
         parseWeekendDays();
+        daysPerWeek = 7 - weekendDays.size();
         this.timezone = businessCalendarConfiguration.getProperty(TIMEZONE);
+
+        validateProperties();
     }
 
     protected String adoptISOFormat(String timeExpression) {
@@ -338,6 +336,12 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         return Integer.parseInt(value);
     }
 
+    protected int getPropertyAsInt(String propertyName) {
+        String value = businessCalendarConfiguration.getProperty(propertyName);
+
+        return Integer.parseInt(value);
+    }
+
     protected List<TimePeriod> parseHolidays() {
         String holidaysString = businessCalendarConfiguration.getProperty(HOLIDAYS);
         List<TimePeriod> holidays = new ArrayList<>();
@@ -427,6 +431,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
                     }
                 } catch (Exception e) {
                     logger.error("Error while parsing holiday in business calendar", e);
+                    errorMessage.append("Invalid holidays: Error while parsing holiday in business calendar(").append(e.getMessage()).append(")\n");
                 }
             }
         }
@@ -442,9 +447,10 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         } else {
             String[] days = weekendDays.split(",");
             for (String day : days) {
-                this.weekendDays.add(Integer.parseInt(day));
+                this.weekendDays.add(Integer.parseInt(day.trim()));
             }
         }
+        this.weekendDays.removeIf(weekend -> weekend == 0);
     }
 
     private class TimePeriod {
@@ -494,4 +500,66 @@ public class BusinessCalendarImpl implements BusinessCalendar {
             dayOfTheWeek = c.get(Calendar.DAY_OF_WEEK);
         }
     }
+
+    private void validateProperties() {
+
+        boolean startHourProvided = validateRequiredProperty(START_HOUR);
+        boolean endHourProvided = validateRequiredProperty(END_HOUR);
+        if (startHourProvided) {
+            startHour = getPropertyAsInt(START_HOUR);
+            validateRangeForProperty(startHour, START_HOUR, 0, 23, null, null);
+        }
+        if (endHourProvided) {
+            endHour = getPropertyAsInt(END_HOUR);
+            validateRangeForProperty(endHour, END_HOUR, 0, 23, null, null);
+        }
+        if (startHourProvided && endHourProvided) {
+            hoursInDay = startHour < endHour ? endHour - startHour : (24 - startHour) + endHour;
+        }
+
+        for (int weekendDay : weekendDays) {
+            validateRangeForProperty(weekendDay, WEEKEND_DAYS, 0, 7, "No weekend day", "Saturday");
+        }
+        if (timezone != null && !isValidTimeZone(timezone)) {
+            errorMessage.append("Invalid timezone: ").append(timezone).append(". Refer to valid timezones: https://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html\n");
+        }
+
+        if (!errorMessage.isEmpty()) {
+            throw new IllegalArgumentException(errorMessage.toString());
+        }
+    }
+
+    private boolean validateRequiredProperty(String property) {
+        String value = businessCalendarConfiguration.getProperty(property);
+        if (Objects.isNull(value)) {
+            errorMessage.append("Property required: ").append(property).append(" is not provided.\n");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidTimeZone(String timeZone) {
+        String[] validIDs = TimeZone.getAvailableIDs();
+        for (String id : validIDs) {
+            if (id.equals(timeZone)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void validateRangeForProperty(int value, String propertyName, int lowerBound, int upperBound, String lowerBoundDescription, String upperBoundDescription) {
+        if ((value < lowerBound || value > upperBound)) {
+            errorMessage.append("Invalid property: ")
+                    .append(propertyName)
+                    .append(" must be between ")
+                    .append(lowerBound)
+                    .append(Objects.nonNull(lowerBoundDescription) ? "(" + lowerBoundDescription + ")" : "")
+                    .append(" and ")
+                    .append(upperBound)
+                    .append(Objects.nonNull(upperBoundDescription) ? "(" + upperBoundDescription + ")" : "")
+                    .append(".\n");
+        }
+    }
+
 }

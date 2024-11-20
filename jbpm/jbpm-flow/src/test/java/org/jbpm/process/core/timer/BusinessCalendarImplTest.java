@@ -18,22 +18,45 @@
  */
 package org.jbpm.process.core.timer;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.timer.SessionPseudoClock;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.END_HOUR;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAYS;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAY_DATE_FORMAT;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.START_HOUR;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.TIMEZONE;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.WEEKEND_DAYS;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BusinessCalendarImplTest extends AbstractBaseTest {
+
+    private static final String START_HOUR_FIELD = "startHour";
+    private static final String END_HOUR_FIELD = "endHour";
+    private static final String HOURS_IN_DAY_FIELD = "hoursInDay";
+    private static final String WEEKEND_DAY_FIELD = "weekendDays";
+    private static final String DAYS_PER_WEEK_FIELD = "daysPerWeek";
 
     public void addLogger() {
         logger = LoggerFactory.getLogger(this.getClass());
@@ -42,6 +65,8 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     @Test
     public void testCalculateHours() {
         Properties config = new Properties();
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
         String expectedDate = "2012-05-04 16:45";
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-04 13:45").getTime());
 
@@ -55,7 +80,8 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     @Test
     public void testCalculateHoursCustomWorkingHours() {
         Properties config = new Properties();
-        config.setProperty(BusinessCalendarImpl.HOURS_PER_DAY, "6");
+        config.setProperty(START_HOUR, "11");
+        config.setProperty(END_HOUR, "17");
         String expectedDate = "2012-05-04 15:45";
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-03 13:45").getTime());
@@ -71,6 +97,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Properties config = new Properties();
         String expectedDate = "2012-05-07 12:45";
 
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-04 13:45").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
 
@@ -82,8 +111,10 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     @Test
     public void testCalculateHoursPassingOverCustomDefinedWeekend() {
         Properties config = new Properties();
-        config.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, Calendar.FRIDAY + "," + Calendar.SATURDAY);
+        config.setProperty(WEEKEND_DAYS, Calendar.FRIDAY + "," + Calendar.SATURDAY);
         String expectedDate = "2012-05-06 12:45";
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-03 13:45").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
@@ -97,6 +128,8 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     public void testCalculateMinutesPassingOverWeekend() {
         Properties config = new Properties();
         String expectedDate = "2012-05-07 09:15";
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-04 16:45").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
@@ -111,6 +144,8 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Properties config = new Properties();
         config.setProperty(BusinessCalendarImpl.HOLIDAYS, "2012-05-12:2012-05-19");
         String expectedDate = "2012-05-21 09:15";
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-11 16:45").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
@@ -124,6 +159,8 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     public void testCalculateDays() {
         Properties config = new Properties();
         String expectedDate = "2012-05-14 09:00";
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDate("2012-05-04").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
@@ -138,6 +175,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Properties config = new Properties();
         String expectedDate = "2012-05-09 09:00";
 
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+
         SessionPseudoClock clock = new StaticPseudoClock(parseToDate("2012-05-05").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
 
@@ -149,9 +189,11 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     @Test
     public void testCalculateDaysCustomWorkingDays() {
         Properties config = new Properties();
-        config.setProperty(BusinessCalendarImpl.DAYS_PER_WEEK, "4");
-        config.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, Calendar.FRIDAY + "," + Calendar.SATURDAY + "," + Calendar.SUNDAY);
+        config.setProperty(WEEKEND_DAYS, Calendar.FRIDAY + "," + Calendar.SATURDAY + "," + Calendar.SUNDAY);
         String expectedDate = "2012-05-15 14:30";
+
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-03 14:30").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
@@ -166,6 +208,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Properties config = new Properties();
         String expectedDate = "2012-05-11 12:27";
 
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-03 12:27").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
 
@@ -178,6 +223,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     public void testCalculateDaysHoursMinutes() {
         Properties config = new Properties();
         String expectedDate = "2012-05-14 14:20";
+
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDate("2012-05-04").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
@@ -193,6 +241,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         config.setProperty(BusinessCalendarImpl.HOLIDAYS, "2012-05-10:2012-05-19");
         String expectedDate = "2012-05-21 14:20";
 
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+
         SessionPseudoClock clock = new StaticPseudoClock(parseToDate("2012-05-04").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
 
@@ -206,6 +257,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Properties config = new Properties();
         config.setProperty(BusinessCalendarImpl.HOLIDAYS, "2012-05-07");
         String expectedDate = "2012-05-08 13:20";
+
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDate("2012-05-04").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
@@ -221,6 +275,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         config.setProperty(BusinessCalendarImpl.HOLIDAYS, "2012-05-09");
         String expectedDate = "2012-05-10 15:30";
 
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-08 11:10").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
 
@@ -234,6 +291,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Properties config = new Properties();
         config.setProperty(BusinessCalendarImpl.HOLIDAYS, "2012-12-31:2013-01-01");
         String expectedDate = "2013-01-04 09:15";
+
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-12-28 16:45").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
@@ -249,6 +309,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         config.setProperty(BusinessCalendarImpl.HOLIDAYS, "*-12-31:*-01-01");
         String expectedDate = "2013-01-02 09:15";
 
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-12-28 16:45").getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
 
@@ -261,6 +324,10 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     public void testCalculateISOHours() {
         Properties config = new Properties();
         String expectedDate = "2012-05-04 16:45";
+
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-04 13:45").getTime());
 
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
@@ -275,6 +342,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Properties config = new Properties();
         config.setProperty(BusinessCalendarImpl.HOLIDAYS, "2012-05-09");
         String expectedDate = "2012-05-10 15:30";
+
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-08 11:10").getTime());
 
@@ -291,6 +361,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         props.put(BusinessCalendarImpl.HOLIDAYS, "2015-01-13");
         String expectedDate = "2015-01-15 11:38";
 
+        props.setProperty(START_HOUR, "9");
+        props.setProperty(END_HOUR, "17");
+
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTimeAndMillis("2015-01-08 11:38:30.198").getTime());
 
         BusinessCalendarImpl businessCalendarImpl = new BusinessCalendarImpl(props, clock);
@@ -303,6 +376,8 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     public void testCalculateMillisecondsAsDefault() {
         Properties config = new Properties();
         String expectedDate = "2012-05-04 16:45:10.000";
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTimeAndMillis("2012-05-04 16:45:00.000").getTime());
 
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
@@ -318,6 +393,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         String currentDate = "2018-05-02 19:51:33";
         String expectedDate = "2018-05-03 09:01:00";
 
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime(currentDate).getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
 
@@ -328,17 +406,18 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
 
     @Test
     public void testBusinessCalendarWithoutProvidedConfiguration() {
-        assertDoesNotThrow(() -> new BusinessCalendarImpl());
+        Properties config = new Properties();
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+        assertDoesNotThrow(() -> new BusinessCalendarImpl(config));
     }
 
     @Test
     public void testCalculateMinutesPassingHoliday() {
         Properties config = new Properties();
-        config.setProperty(BusinessCalendarImpl.DAYS_PER_WEEK, "5");
-        config.setProperty(BusinessCalendarImpl.HOURS_PER_DAY, "8");
         config.setProperty(BusinessCalendarImpl.START_HOUR, "9");
         config.setProperty(BusinessCalendarImpl.END_HOUR, "18");
-        config.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, "1,7"); // sun,sat
+        config.setProperty(WEEKEND_DAYS, "1,7"); // sun,sat
         config.setProperty(BusinessCalendarImpl.HOLIDAYS, "2018-04-30,2018-05-03:2018-05-05");
         config.setProperty(BusinessCalendarImpl.HOLIDAY_DATE_FORMAT, "yyyy-MM-dd");
         String currentDate = "2018-05-03 13:51:33";
@@ -360,12 +439,51 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         String duration = "10m";
         String expectedDate = "2018-05-07 09:10:00";
 
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime(currentDate).getTime());
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
 
         Date result = businessCal.calculateBusinessTimeAsDate(duration);
 
         assertThat(formatDate("yyyy-MM-dd HH:mm:ss", result)).isEqualTo(expectedDate);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getValidCalendarProperties")
+    public void testValidationForValidProperties(Map<String, Object> propertyMap, Map<String, Object> expectedValuesMap) throws NoSuchFieldException, IllegalAccessException {
+        Properties businessCalendarProperties = new Properties();
+        businessCalendarProperties.putAll(propertyMap);
+        List<BusinessCalendarImpl> businessCalendarList = new ArrayList<>();
+        assertDoesNotThrow(() -> {
+            businessCalendarList.add(new BusinessCalendarImpl(businessCalendarProperties));
+        });
+        assertCalendarProperties(businessCalendarList.get(0), expectedValuesMap);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getInValidCalendarProperties")
+    public void testValidationForInvalidProperties(Map<String, Object> propertyMap, List<String> errorMessages) throws NoSuchFieldException, IllegalAccessException {
+        Properties businessCalendarProperties = new Properties();
+        businessCalendarProperties.putAll(propertyMap);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            new BusinessCalendarImpl(businessCalendarProperties);
+        });
+        errorMessages.forEach(msg -> assertTrue(exception.getMessage().contains(msg)));
+    }
+
+    @Test
+    public void testValidationForInvalidFormats() {
+        Map<String, Object> propertyMap = Map.of(START_HOUR, "2", END_HOUR, "12", HOLIDAY_DATE_FORMAT, "aaa/y/d", HOLIDAYS,
+                "22-12-121", TIMEZONE, "invalid/invalid");
+        Properties businessCalendarProperties = new Properties();
+        businessCalendarProperties.putAll(propertyMap);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            new BusinessCalendarImpl(businessCalendarProperties);
+        });
+        assertTrue(exception.getMessage().contains("Invalid holidays"));
+        assertTrue(exception.getMessage().contains("Invalid timezone"));
     }
 
     private Date parseToDate(String dateString) {
@@ -431,6 +549,46 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         public long advanceTime(long amount, TimeUnit unit) {
             throw new UnsupportedOperationException("It is static clock and does not allow advance time operation");
         }
+
+    }
+
+    private static Stream<Arguments> getValidCalendarProperties() {
+
+        return Stream.of(
+                Arguments.of(Map.of(START_HOUR, "9", END_HOUR, "17"),
+                        Map.of(WEEKEND_DAY_FIELD, List.of(7, 1), START_HOUR_FIELD, 9, END_HOUR_FIELD, 17, HOURS_IN_DAY_FIELD, 8, DAYS_PER_WEEK_FIELD, 5)),
+                Arguments.of(Map.of(WEEKEND_DAYS, "1, 2, 3", START_HOUR, "21", END_HOUR, "7"),
+                        Map.of(WEEKEND_DAY_FIELD, List.of(1, 2, 3), START_HOUR_FIELD, 21, END_HOUR_FIELD, 7, HOURS_IN_DAY_FIELD, 10, DAYS_PER_WEEK_FIELD, 4)));
+    }
+
+    private static Stream<Arguments> getInValidCalendarProperties() {
+
+        return Stream.of(
+                Arguments.of(Map.of(), List.of("Property required: " + START_HOUR, "Property required: " + END_HOUR)),
+                Arguments.of(Map.of(START_HOUR, "9"), List.of("Property required: " + END_HOUR)),
+                Arguments.of(Map.of(END_HOUR, "17"), List.of("Property required: " + START_HOUR)),
+                Arguments.of(Map.of(START_HOUR, "9", END_HOUR, "24"), List.of("Invalid property: " + END_HOUR)),
+                Arguments.of(Map.of(START_HOUR, "24", END_HOUR, "24"), List.of("Invalid property: " + START_HOUR, "Invalid property: " + END_HOUR)),
+                Arguments.of(Map.of(START_HOUR, "10", END_HOUR, "4", WEEKEND_DAYS, "1,2,8"), List.of("Invalid property: " + WEEKEND_DAYS)));
+    }
+
+    private void assertCalendarProperties(BusinessCalendarImpl businessCalendar, Map<String, Object> expectedValuesMap) throws NoSuchFieldException, IllegalAccessException {
+        Field daysPerWeekField = BusinessCalendarImpl.class.getDeclaredField(DAYS_PER_WEEK_FIELD);
+        daysPerWeekField.setAccessible(true);
+        Field startHourField = BusinessCalendarImpl.class.getDeclaredField(START_HOUR_FIELD);
+        startHourField.setAccessible(true);
+        Field endHourField = BusinessCalendarImpl.class.getDeclaredField(END_HOUR_FIELD);
+        endHourField.setAccessible(true);
+        Field hoursInDayField = BusinessCalendarImpl.class.getDeclaredField(HOURS_IN_DAY_FIELD);
+        hoursInDayField.setAccessible(true);
+        Field weekendDaysField = BusinessCalendarImpl.class.getDeclaredField(WEEKEND_DAY_FIELD);
+        weekendDaysField.setAccessible(true);
+
+        assertEquals(expectedValuesMap.get(START_HOUR_FIELD), startHourField.get(businessCalendar));
+        assertEquals(expectedValuesMap.get(END_HOUR_FIELD), endHourField.get(businessCalendar));
+        assertEquals(expectedValuesMap.get(DAYS_PER_WEEK_FIELD), daysPerWeekField.get(businessCalendar));
+        assertEquals(expectedValuesMap.get(HOURS_IN_DAY_FIELD), hoursInDayField.get(businessCalendar));
+        assertEquals(expectedValuesMap.get(WEEKEND_DAY_FIELD), weekendDaysField.get(businessCalendar));
 
     }
 }
