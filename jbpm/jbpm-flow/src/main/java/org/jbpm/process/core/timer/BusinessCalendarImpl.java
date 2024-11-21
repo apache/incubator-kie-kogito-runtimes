@@ -89,7 +89,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
     private List<TimePeriod> holidays;
     private List<Integer> weekendDays = new ArrayList<>();
+    // @TODO Remove - always null
     private SessionClock clock;
+    // @TODO consider removal
     private final StringBuilder errorMessage = new StringBuilder();
 
     private static final int SIM_WEEK = 3;
@@ -111,13 +113,17 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         this(null);
     }
 
+    // @TODO Remove constructore
     public BusinessCalendarImpl(Properties configuration) {
         this(configuration, null);
     }
 
+    // @TODO Remove constructor
     public BusinessCalendarImpl(Properties configuration, SessionClock clock) {
         this.clock = clock;
+        // @TODO Remove if - configuration is alwyas null
         if (configuration == null) {
+            // @TODO instantiate after nonNull(resource) check)
             businessCalendarConfiguration = new Properties();
             URL resource = Thread.currentThread().getContextClassLoader().getResource(BUSINESS_CALENDAR_PATH);
             if (Objects.nonNull(resource)) {
@@ -128,7 +134,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
                     throw new RuntimeException("Error while loading properties for business calendar", e);
                 }
             }
-
+            // @TODO Remove - we never get there
         } else {
             this.businessCalendarConfiguration = configuration;
         }
@@ -136,11 +142,27 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     protected void init() {
+
+        // @TODO Identify three steps
+        // Validation given properties
+        // calculation missing properties
+        // Validation resulted properties (needed ?)
+
+
+        // @TODO First validate for missing properties
+        // consider stream of predicates from a map ->  key = property / value = predicate/producer,
+        // @TODO Then validate formal correctness (format/range) of given properties
+        // consider stream of predicates from a map ->  key = property / value = predicate/producer,
+
+
+        // @TODO Then calculate missing properties
         holidays = parseHolidays();
+        // @TODO avoid side effect - have the method returns a value that will be stored as weekend days
         parseWeekendDays();
         daysPerWeek = 7 - weekendDays.size();
         this.timezone = businessCalendarConfiguration.getProperty(TIMEZONE);
 
+        // @TODO Last validate "merged" properties
         validateProperties();
     }
 
@@ -344,6 +366,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     protected List<TimePeriod> parseHolidays() {
         String holidaysString = businessCalendarConfiguration.getProperty(HOLIDAYS);
         List<TimePeriod> holidays = new ArrayList<>();
+        // @TODO return immediately if  holidaysString is null
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         if (holidaysString != null) {
             String[] hPeriods = holidaysString.split(",");
@@ -438,6 +461,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     protected void parseWeekendDays() {
+        // @TODO return weekendDays instead of setting them here
         String weekendDays = businessCalendarConfiguration.getProperty(WEEKEND_DAYS);
 
         if (weekendDays == null) {
@@ -471,6 +495,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     protected long getCurrentTime() {
+        // @TODO remove clock usage
         if (clock != null) {
             return clock.getCurrentTime();
         } else {
@@ -479,6 +504,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     protected boolean isWorkingDay(int day) {
+        // @TODO simplify if
         if (weekendDays.contains(day)) {
             return false;
         }
@@ -501,7 +527,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     private void validateProperties() {
-
+        // @TODO remove instance assignment - see comments inside init()
         boolean startHourProvided = validateRequiredProperty(START_HOUR);
         boolean endHourProvided = validateRequiredProperty(END_HOUR);
         if (startHourProvided) {
@@ -523,6 +549,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
             errorMessage.append("Invalid timezone: ").append(timezone).append(". Refer to valid timezones: https://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html\n");
         }
 
+        // @TODO no need to create to different strings for logging and errorMessage
         logger.info("Business Calendar Configuration: \n" +
                 "Start Hour: {} \n" +
                 "End Hour: {} \n" +
