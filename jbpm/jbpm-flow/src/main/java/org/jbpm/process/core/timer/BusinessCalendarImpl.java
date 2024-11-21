@@ -48,14 +48,14 @@ import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDA
  * Default implementation of BusinessCalendar interface that is configured with properties.
  * Following are supported properties:
  * <ul>
- * <li>business.days.per.week - specifies number of working days per week (default 5)</li>
- * <li>business.hours.per.day - specifies number of working hours per day (default 8)</li>
- * <li>business.start.hour - specifies starting hour of work day (default 9AM)</li>
- * <li>business.end.hour - specifies ending hour of work day (default 5PM)</li>
+ * <li>business.start.hour - specifies starting hour of work day (mandatory, default 9AM)</li>
+ * <li>business.end.hour - specifies ending hour of work day (mandatory, default 5PM)</li>
  * <li>business.holidays - specifies holidays (see format section for details on how to configure it)</li>
  * <li>business.holiday.date.format - specifies holiday date format used (default yyyy-MM-dd)</li>
- * <li>business.weekend.days - specifies days of the weekend (default Saturday and Sunday)</li>
+ * <li>business.weekend.days - specifies days of the weekend (default Saturday (7) and Sunday (1), use 0 to indicate no weekend days)</li>
  * <li>business.cal.timezone - specifies time zone to be used (if not given uses default of the system it runs on)</li>
+ * <li>business.hours.per.day - calculated as the difference between business.end.hour and business.start.hour</li>
+ * <li>business.days.per.week - calculated as 7 - number of weekend days</li>
  * </ul>
  * 
  * <b>Format</b><br/>
@@ -69,7 +69,7 @@ import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDA
  * <br/>
  * Holiday date format must be given in pattern that is supported by <code>java.text.SimpleDateFormat</code>.<br/>
  * 
- * Weekend days should be given as integer that corresponds to <code>java.util.Calendar</code> constants.
+ * Weekend days should be given as integer that corresponds to <code>java.util.Calendar</code> constants, use 0 to indicate no weekend days
  * <br/>
  * 
  */
@@ -330,16 +330,15 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
     }
 
-    protected int getPropertyAsInt(String propertyName, String defaultValue) {
-        String value = businessCalendarConfiguration.getProperty(propertyName, defaultValue);
-
-        return Integer.parseInt(value);
-    }
-
     protected int getPropertyAsInt(String propertyName) {
-        String value = businessCalendarConfiguration.getProperty(propertyName);
-
-        return Integer.parseInt(value);
+        try {
+            String value = businessCalendarConfiguration.getProperty(propertyName);
+            return Integer.parseInt(value);
+        } catch (NumberFormatException nfe) {
+            logger.error("Number format exception while parsing {}: {}", propertyName, nfe.getMessage());
+            errorMessage.append("Property is not a number: ").append(propertyName).append(" must be a number");
+        }
+        return -1;
     }
 
     protected List<TimePeriod> parseHolidays() {
@@ -523,6 +522,20 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         if (timezone != null && !isValidTimeZone(timezone)) {
             errorMessage.append("Invalid timezone: ").append(timezone).append(". Refer to valid timezones: https://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html\n");
         }
+
+        logger.info("Business Calendar Configuration: \n" +
+                "Start Hour: {} \n" +
+                "End Hour: {} \n" +
+                "Hours in a Day: {} \n" +
+                "Days per Week: {} \n" +
+                "Weekend Days: {} \n" +
+                "Timezone: {}",
+                startHourProvided ? (startHour < 0) ? "Invalid number provided" : startHour : "Not provided",
+                endHourProvided ? (endHour < 0) ? "Invalid number provided" : endHour : "Not provided",
+                hoursInDay,
+                daysPerWeek,
+                weekendDays,
+                timezone != null ? timezone : "Default (System)");
 
         if (!errorMessage.isEmpty()) {
             throw new IllegalArgumentException(errorMessage.toString());

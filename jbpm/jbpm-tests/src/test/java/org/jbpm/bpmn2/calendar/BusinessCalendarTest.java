@@ -81,10 +81,8 @@ public class BusinessCalendarTest {
         Properties businessCalendarConfiguration = new Properties();
         if (isWorkingDayCalendar) {
             businessCalendarConfiguration.setProperty(BusinessCalendarImpl.START_HOUR, "0");
-            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.END_HOUR, "24");
-            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.HOURS_PER_DAY, "24");
-            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.DAYS_PER_WEEK, "7");
-            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, "8,9");
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.END_HOUR, "23");
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, "0");
         } else {
             Calendar currentCalendar = Calendar.getInstance();
             Date today = new Date();
@@ -92,6 +90,8 @@ public class BusinessCalendarTest {
             Date tomorrow = currentCalendar.getTime();
             String dateFormat = "yyyy-MM-dd";
             SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.START_HOUR, "9");
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.END_HOUR, "17");
             businessCalendarConfiguration.setProperty(BusinessCalendarImpl.HOLIDAYS, sdf.format(today) + "," + sdf.format(tomorrow));
             businessCalendarConfiguration.setProperty(BusinessCalendarImpl.HOLIDAY_DATE_FORMAT, dateFormat);
         }

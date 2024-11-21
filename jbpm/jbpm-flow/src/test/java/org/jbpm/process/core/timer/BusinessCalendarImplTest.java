@@ -569,7 +569,8 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
                 Arguments.of(Map.of(END_HOUR, "17"), List.of("Property required: " + START_HOUR)),
                 Arguments.of(Map.of(START_HOUR, "9", END_HOUR, "24"), List.of("Invalid property: " + END_HOUR)),
                 Arguments.of(Map.of(START_HOUR, "24", END_HOUR, "24"), List.of("Invalid property: " + START_HOUR, "Invalid property: " + END_HOUR)),
-                Arguments.of(Map.of(START_HOUR, "10", END_HOUR, "4", WEEKEND_DAYS, "1,2,8"), List.of("Invalid property: " + WEEKEND_DAYS)));
+                Arguments.of(Map.of(START_HOUR, "10", END_HOUR, "4", WEEKEND_DAYS, "1,2,8"), List.of("Invalid property: " + WEEKEND_DAYS)),
+                Arguments.of(Map.of(START_HOUR, "", END_HOUR, ""), List.of("Property is not a number: " + START_HOUR, "Property is not a number: " + END_HOUR)));
     }
 
     private void assertCalendarProperties(BusinessCalendarImpl businessCalendar, Map<String, Object> expectedValuesMap) throws NoSuchFieldException, IllegalAccessException {
