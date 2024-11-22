@@ -128,6 +128,14 @@ org.kie.kogito.internal.process.workitem.KogitoWorkItemHandlerFactory
 kogito.addon
 # kogito-codegen-modules/kogito-codegen-processes-integration-tests/src/test/resources/org/kie/kogito/codegen/process/process-generation-test.skip.txt
 process-generation-test.skip.txt
+# kogito-codegen-modules/kogito-codegen-processes-integration-tests/src/test/resources/usertask/UserTasksNotCompletedDeadline.bpmn2
+UserTasksNotCompletedDeadline.bpmn2
+# kogito-codegen-modules/kogito-codegen-processes-integration-tests/src/test/resources/usertask/UserTasksNotCompletedReassign.bpmn2
+UserTasksNotCompletedReassign.bpmn2
+# kogito-codegen-modules/kogito-codegen-processes-integration-tests/src/test/resources/usertask/UserTasksNotStartedDeadline.bpmn2
+UserTasksNotStartedDeadline.bpmn2
+# kogito-codegen-modules/kogito-codegen-processes-integration-tests/src/test/resources/usertask/UserTasksNotStartedReasssign.bpmn2
+UserTasksNotStartedReasssign.bpmn2
 # kogito-codegen-modules/kogito-codegen-sample/kogito-codegen-sample-generator/src/test/resources/sampleFile1.txt
 sampleFile1.txt
 # kogito-codegen-modules/kogito-codegen-sample/kogito-codegen-sample-generator/src/test/resources/sampleFile2.txt
