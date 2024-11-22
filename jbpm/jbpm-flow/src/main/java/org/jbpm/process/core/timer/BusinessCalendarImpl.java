@@ -21,24 +21,33 @@ package org.jbpm.process.core.timer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TimeZone;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import org.jbpm.util.PatternConstants;
 import org.kie.kogito.calendar.BusinessCalendar;
-import org.kie.kogito.timer.SessionClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +57,8 @@ import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDA
  * Default implementation of BusinessCalendar interface that is configured with properties.
  * Following are supported properties:
  * <ul>
- * <li>business.start.hour - specifies starting hour of work day (mandatory, default 9AM)</li>
- * <li>business.end.hour - specifies ending hour of work day (mandatory, default 5PM)</li>
+ * <li>business.start.hour - specifies starting hour of work day (mandatory)</li>
+ * <li>business.end.hour - specifies ending hour of work day (mandatory)</li>
  * <li>business.holidays - specifies holidays (see format section for details on how to configure it)</li>
  * <li>business.holiday.date.format - specifies holiday date format used (default yyyy-MM-dd)</li>
  * <li>business.weekend.days - specifies days of the weekend (default Saturday (7) and Sunday (1), use 0 to indicate no weekend days)</li>
@@ -57,9 +66,9 @@ import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDA
  * <li>business.hours.per.day - calculated as the difference between business.end.hour and business.start.hour</li>
  * <li>business.days.per.week - calculated as 7 - number of weekend days</li>
  * </ul>
- * 
+ *
  * <b>Format</b><br/>
- * 
+ *
  * Holidays can be given in two formats:
  * <ul>
  * <li>as date range separated with colon - for instance 2012-05-01:2012-05-15</li>
@@ -68,31 +77,24 @@ import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDA
  * each holiday period should be separated from next one with comma: 2012-05-01:2012-05-15,2012-12-24:2012-12-27
  * <br/>
  * Holiday date format must be given in pattern that is supported by <code>java.text.SimpleDateFormat</code>.<br/>
- * 
+ *
  * Weekend days should be given as integer that corresponds to <code>java.util.Calendar</code> constants, use 0 to indicate no weekend days
  * <br/>
- * 
  */
 public class BusinessCalendarImpl implements BusinessCalendar {
 
     private static final Logger logger = LoggerFactory.getLogger(BusinessCalendarImpl.class);
 
-    private Properties businessCalendarConfiguration;
-
     private static final long HOUR_IN_MILLIS = 60 * 60 * 1000;
 
-    private int daysPerWeek;
-    private int hoursInDay;
-    private int startHour;
-    private int endHour;
-    private String timezone;
+    private final int daysPerWeek;
+    private final int hoursInDay;
+    private final int startHour;
+    private final int endHour;
+    private final String timezone;
 
-    private List<TimePeriod> holidays;
-    private List<Integer> weekendDays = new ArrayList<>();
-    // @TODO Remove - always null
-    private SessionClock clock;
-    // @TODO consider removal
-    private final StringBuilder errorMessage = new StringBuilder();
+    private final List<TimePeriod> holidays;
+    private final List<Integer> weekendDays;
 
     private static final int SIM_WEEK = 3;
     private static final int SIM_DAY = 5;
@@ -110,104 +112,36 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     public static final String TIMEZONE = "business.cal.timezone";
 
     public BusinessCalendarImpl() {
-        this(null);
-    }
-
-    // @TODO Remove constructore
-    public BusinessCalendarImpl(Properties configuration) {
-        this(configuration, null);
-    }
-
-    // @TODO Remove constructor
-    public BusinessCalendarImpl(Properties configuration, SessionClock clock) {
-        this.clock = clock;
-        // @TODO Remove if - configuration is alwyas null
-        if (configuration == null) {
-            // @TODO instantiate after nonNull(resource) check)
-            businessCalendarConfiguration = new Properties();
-            URL resource = Thread.currentThread().getContextClassLoader().getResource(BUSINESS_CALENDAR_PATH);
-            if (Objects.nonNull(resource)) {
-                try (InputStream is = resource.openStream()) {
-                    businessCalendarConfiguration.load(is);
-                } catch (IOException e) {
-                    logger.error("Error while loading properties for business calendar", e);
-                    throw new RuntimeException("Error while loading properties for business calendar", e);
-                }
+        URL resource = Thread.currentThread().getContextClassLoader().getResource(BUSINESS_CALENDAR_PATH);
+        if (Objects.nonNull(resource)) {
+            Properties calendarConfiguration = new Properties();
+            try (InputStream is = resource.openStream()) {
+                calendarConfiguration.load(is);
+                CalendarBean calendarBean = new CalendarBean(calendarConfiguration);
+                holidays = calendarBean.getHolidays();
+                weekendDays = calendarBean.getWeekendDays();
+                daysPerWeek = calendarBean.getDaysPerWeek();
+                timezone = calendarBean.getTimezone();
+                startHour = calendarBean.getStartHour();
+                endHour = calendarBean.getEndHour();
+                hoursInDay = calendarBean.getHoursInDay();
+            } catch (IOException e) {
+                String errorMessage = "Error while loading properties for business calendar";
+                logger.error(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            } catch (IllegalArgumentException e) {
+                String errorMessage = "Error while populating properties for business calendar";
+                logger.error(errorMessage, e);
+                throw e;
             }
-            // @TODO Remove - we never get there
         } else {
-            this.businessCalendarConfiguration = configuration;
-        }
-        init();
-    }
-
-    protected void init() {
-
-        // @TODO Identify three steps
-        // Validation given properties
-        // calculation missing properties
-        // Validation resulted properties (needed ?)
-
-
-        // @TODO First validate for missing properties
-        // consider stream of predicates from a map ->  key = property / value = predicate/producer,
-        // @TODO Then validate formal correctness (format/range) of given properties
-        // consider stream of predicates from a map ->  key = property / value = predicate/producer,
-
-
-        // @TODO Then calculate missing properties
-        holidays = parseHolidays();
-        // @TODO avoid side effect - have the method returns a value that will be stored as weekend days
-        parseWeekendDays();
-        daysPerWeek = 7 - weekendDays.size();
-        this.timezone = businessCalendarConfiguration.getProperty(TIMEZONE);
-
-        // @TODO Last validate "merged" properties
-        validateProperties();
-    }
-
-    protected String adoptISOFormat(String timeExpression) {
-
-        try {
-            Duration p = null;
-            if (DateTimeUtils.isPeriod(timeExpression)) {
-                p = Duration.parse(timeExpression);
-            } else if (DateTimeUtils.isNumeric(timeExpression)) {
-                p = Duration.of(Long.valueOf(timeExpression), ChronoUnit.MILLIS);
-            } else {
-                OffsetDateTime dateTime = OffsetDateTime.parse(timeExpression, DateTimeFormatter.ISO_DATE_TIME);
-                p = Duration.between(OffsetDateTime.now(), dateTime);
-            }
-
-            long days = p.toDays();
-            long hours = p.toHours() % 24;
-            long minutes = p.toMinutes() % 60;
-            long seconds = p.getSeconds() % 60;
-            long milis = p.toMillis() % 1000;
-
-            StringBuffer time = new StringBuffer();
-            if (days > 0) {
-                time.append(days + "d");
-            }
-            if (hours > 0) {
-                time.append(hours + "h");
-            }
-            if (minutes > 0) {
-                time.append(minutes + "m");
-            }
-            if (seconds > 0) {
-                time.append(seconds + "s");
-            }
-            if (milis > 0) {
-                time.append(milis + "ms");
-            }
-
-            return time.toString();
-        } catch (Exception e) {
-            return timeExpression;
+            String errorMessage = String.format("Missing %s", BUSINESS_CALENDAR_PATH);
+            logger.error(errorMessage);
+            throw new RuntimeException(errorMessage);
         }
     }
 
+    @Override
     public long calculateBusinessTimeAsDuration(String timeExpression) {
         timeExpression = adoptISOFormat(timeExpression);
 
@@ -216,6 +150,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         return (calculatedDate.getTime() - getCurrentTime());
     }
 
+    @Override
     public Date calculateBusinessTimeAsDate(String timeExpression) {
         timeExpression = adoptISOFormat(timeExpression);
 
@@ -241,9 +176,6 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         Calendar c = new GregorianCalendar();
         if (timezone != null) {
             c.setTimeZone(TimeZone.getTimeZone(timezone));
-        }
-        if (this.clock != null) {
-            c.setTimeInMillis(this.clock.getCurrentTime());
         }
 
         // calculate number of weeks
@@ -323,6 +255,49 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         return c.getTime();
     }
 
+
+    protected String adoptISOFormat(String timeExpression) {
+
+        try {
+            Duration p = null;
+            if (DateTimeUtils.isPeriod(timeExpression)) {
+                p = Duration.parse(timeExpression);
+            } else if (DateTimeUtils.isNumeric(timeExpression)) {
+                p = Duration.of(Long.valueOf(timeExpression), ChronoUnit.MILLIS);
+            } else {
+                OffsetDateTime dateTime = OffsetDateTime.parse(timeExpression, DateTimeFormatter.ISO_DATE_TIME);
+                p = Duration.between(OffsetDateTime.now(), dateTime);
+            }
+
+            long days = p.toDays();
+            long hours = p.toHours() % 24;
+            long minutes = p.toMinutes() % 60;
+            long seconds = p.getSeconds() % 60;
+            long milis = p.toMillis() % 1000;
+
+            StringBuffer time = new StringBuffer();
+            if (days > 0) {
+                time.append(days + "d");
+            }
+            if (hours > 0) {
+                time.append(hours + "h");
+            }
+            if (minutes > 0) {
+                time.append(minutes + "m");
+            }
+            if (seconds > 0) {
+                time.append(seconds + "s");
+            }
+            if (milis > 0) {
+                time.append(milis + "ms");
+            }
+
+            return time.toString();
+        } catch (Exception e) {
+            return timeExpression;
+        }
+    }
+
     protected void handleHoliday(Calendar c, boolean resetTime) {
         if (!holidays.isEmpty()) {
             Date current = c.getTime();
@@ -352,131 +327,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
     }
 
-    protected int getPropertyAsInt(String propertyName) {
-        try {
-            String value = businessCalendarConfiguration.getProperty(propertyName);
-            return Integer.parseInt(value);
-        } catch (NumberFormatException nfe) {
-            logger.error("Number format exception while parsing {}: {}", propertyName, nfe.getMessage());
-            errorMessage.append("Property is not a number: ").append(propertyName).append(" must be a number");
-        }
-        return -1;
-    }
-
-    protected List<TimePeriod> parseHolidays() {
-        String holidaysString = businessCalendarConfiguration.getProperty(HOLIDAYS);
-        List<TimePeriod> holidays = new ArrayList<>();
-        // @TODO return immediately if  holidaysString is null
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        if (holidaysString != null) {
-            String[] hPeriods = holidaysString.split(",");
-            SimpleDateFormat sdf = new SimpleDateFormat(businessCalendarConfiguration.getProperty(HOLIDAY_DATE_FORMAT, "yyyy-MM-dd"));
-            for (String hPeriod : hPeriods) {
-                boolean addNextYearHolidays = false;
-
-                String[] fromTo = hPeriod.split(":");
-                if (fromTo[0].startsWith("*")) {
-                    addNextYearHolidays = true;
-
-                    fromTo[0] = fromTo[0].replaceFirst("\\*", currentYear + "");
-                }
-                try {
-                    if (fromTo.length == 2) {
-                        Calendar tmpFrom = new GregorianCalendar();
-                        if (timezone != null) {
-                            tmpFrom.setTimeZone(TimeZone.getTimeZone(timezone));
-                        }
-                        tmpFrom.setTime(sdf.parse(fromTo[0]));
-
-                        if (fromTo[1].startsWith("*")) {
-
-                            fromTo[1] = fromTo[1].replaceFirst("\\*", currentYear + "");
-                        }
-
-                        Calendar tmpTo = new GregorianCalendar();
-                        if (timezone != null) {
-                            tmpTo.setTimeZone(TimeZone.getTimeZone(timezone));
-                        }
-                        tmpTo.setTime(sdf.parse(fromTo[1]));
-                        Date from = tmpFrom.getTime();
-
-                        tmpTo.add(Calendar.DAY_OF_YEAR, 1);
-
-                        if ((tmpFrom.get(Calendar.MONTH) > tmpTo.get(Calendar.MONTH)) && (tmpFrom.get(Calendar.YEAR) == tmpTo.get(Calendar.YEAR))) {
-                            tmpTo.add(Calendar.YEAR, 1);
-                        }
-
-                        Date to = tmpTo.getTime();
-                        holidays.add(new TimePeriod(from, to));
-
-                        holidays.add(new TimePeriod(from, to));
-                        if (addNextYearHolidays) {
-                            tmpFrom = new GregorianCalendar();
-                            if (timezone != null) {
-                                tmpFrom.setTimeZone(TimeZone.getTimeZone(timezone));
-                            }
-                            tmpFrom.setTime(sdf.parse(fromTo[0]));
-                            tmpFrom.add(Calendar.YEAR, 1);
-
-                            from = tmpFrom.getTime();
-                            tmpTo = new GregorianCalendar();
-                            if (timezone != null) {
-                                tmpTo.setTimeZone(TimeZone.getTimeZone(timezone));
-                            }
-                            tmpTo.setTime(sdf.parse(fromTo[1]));
-                            tmpTo.add(Calendar.YEAR, 1);
-                            tmpTo.add(Calendar.DAY_OF_YEAR, 1);
-
-                            if ((tmpFrom.get(Calendar.MONTH) > tmpTo.get(Calendar.MONTH)) && (tmpFrom.get(Calendar.YEAR) == tmpTo.get(Calendar.YEAR))) {
-                                tmpTo.add(Calendar.YEAR, 1);
-                            }
-
-                            to = tmpTo.getTime();
-                            holidays.add(new TimePeriod(from, to));
-                        }
-                    } else {
-
-                        Calendar c = new GregorianCalendar();
-                        c.setTime(sdf.parse(fromTo[0]));
-                        c.add(Calendar.DAY_OF_YEAR, 1);
-                        // handle one day holiday
-                        holidays.add(new TimePeriod(sdf.parse(fromTo[0]), c.getTime()));
-                        if (addNextYearHolidays) {
-                            Calendar tmp = Calendar.getInstance();
-                            tmp.setTime(sdf.parse(fromTo[0]));
-                            tmp.add(Calendar.YEAR, 1);
-
-                            Date from = tmp.getTime();
-                            c.add(Calendar.YEAR, 1);
-                            holidays.add(new TimePeriod(from, c.getTime()));
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Error while parsing holiday in business calendar", e);
-                    errorMessage.append("Invalid holidays: Error while parsing holiday in business calendar(").append(e.getMessage()).append(")\n");
-                }
-            }
-        }
-        return holidays;
-    }
-
-    protected void parseWeekendDays() {
-        // @TODO return weekendDays instead of setting them here
-        String weekendDays = businessCalendarConfiguration.getProperty(WEEKEND_DAYS);
-
-        if (weekendDays == null) {
-            this.weekendDays.add(Calendar.SATURDAY);
-            this.weekendDays.add(Calendar.SUNDAY);
-        } else {
-            String[] days = weekendDays.split(",");
-            for (String day : days) {
-                this.weekendDays.add(Integer.parseInt(day.trim()));
-            }
-        }
-        this.weekendDays.removeIf(weekend -> weekend == 0);
-    }
-
-    private class TimePeriod {
+    static class TimePeriod {
         private Date from;
         private Date to;
 
@@ -495,21 +346,11 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     protected long getCurrentTime() {
-        // @TODO remove clock usage
-        if (clock != null) {
-            return clock.getCurrentTime();
-        } else {
-            return System.currentTimeMillis();
-        }
+        return System.currentTimeMillis();
     }
 
     protected boolean isWorkingDay(int day) {
-        // @TODO simplify if
-        if (weekendDays.contains(day)) {
-            return false;
-        }
-
-        return true;
+        return !weekendDays.contains(day);
     }
 
     protected void handleWeekend(Calendar c, boolean resetTime) {
@@ -526,80 +367,5 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         }
     }
 
-    private void validateProperties() {
-        // @TODO remove instance assignment - see comments inside init()
-        boolean startHourProvided = validateRequiredProperty(START_HOUR);
-        boolean endHourProvided = validateRequiredProperty(END_HOUR);
-        if (startHourProvided) {
-            startHour = getPropertyAsInt(START_HOUR);
-            validateRangeForProperty(startHour, START_HOUR, 0, 23, null, null);
-        }
-        if (endHourProvided) {
-            endHour = getPropertyAsInt(END_HOUR);
-            validateRangeForProperty(endHour, END_HOUR, 0, 23, null, null);
-        }
-        if (startHourProvided && endHourProvided) {
-            hoursInDay = startHour < endHour ? endHour - startHour : (24 - startHour) + endHour;
-        }
-
-        for (int weekendDay : weekendDays) {
-            validateRangeForProperty(weekendDay, WEEKEND_DAYS, 0, 7, "No weekend day", "Saturday");
-        }
-        if (timezone != null && !isValidTimeZone(timezone)) {
-            errorMessage.append("Invalid timezone: ").append(timezone).append(". Refer to valid timezones: https://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html\n");
-        }
-
-        // @TODO no need to create to different strings for logging and errorMessage
-        logger.info("Business Calendar Configuration: \n" +
-                "Start Hour: {} \n" +
-                "End Hour: {} \n" +
-                "Hours in a Day: {} \n" +
-                "Days per Week: {} \n" +
-                "Weekend Days: {} \n" +
-                "Timezone: {}",
-                startHourProvided ? (startHour < 0) ? "Invalid number provided" : startHour : "Not provided",
-                endHourProvided ? (endHour < 0) ? "Invalid number provided" : endHour : "Not provided",
-                hoursInDay,
-                daysPerWeek,
-                weekendDays,
-                timezone != null ? timezone : "Default (System)");
-
-        if (!errorMessage.isEmpty()) {
-            throw new IllegalArgumentException(errorMessage.toString());
-        }
-    }
-
-    private boolean validateRequiredProperty(String property) {
-        String value = businessCalendarConfiguration.getProperty(property);
-        if (Objects.isNull(value)) {
-            errorMessage.append("Property required: ").append(property).append(" is not provided.\n");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isValidTimeZone(String timeZone) {
-        String[] validIDs = TimeZone.getAvailableIDs();
-        for (String id : validIDs) {
-            if (id.equals(timeZone)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void validateRangeForProperty(int value, String propertyName, int lowerBound, int upperBound, String lowerBoundDescription, String upperBoundDescription) {
-        if ((value < lowerBound || value > upperBound)) {
-            errorMessage.append("Invalid property: ")
-                    .append(propertyName)
-                    .append(" must be between ")
-                    .append(lowerBound)
-                    .append(Objects.nonNull(lowerBoundDescription) ? "(" + lowerBoundDescription + ")" : "")
-                    .append(" and ")
-                    .append(upperBound)
-                    .append(Objects.nonNull(upperBoundDescription) ? "(" + upperBoundDescription + ")" : "")
-                    .append(".\n");
-        }
-    }
 
 }

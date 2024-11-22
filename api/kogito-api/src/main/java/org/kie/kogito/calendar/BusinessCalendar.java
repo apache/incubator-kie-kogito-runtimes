@@ -32,7 +32,7 @@ public interface BusinessCalendar {
      * @param timeExpression time expression that is supported by business calendar implementation.
      * @return duration expressed in milliseconds
      */
-    public long calculateBusinessTimeAsDuration(String timeExpression);
+    long calculateBusinessTimeAsDuration(String timeExpression);
 
     /**
      * Calculates given time expression into target date based on calendar configuration.
@@ -40,5 +40,5 @@ public interface BusinessCalendar {
      * @param timeExpression time expression that is supported by business calendar implementation.
      * @return date when given time expression will match in the future
      */
-    public Date calculateBusinessTimeAsDate(String timeExpression);
+     Date calculateBusinessTimeAsDate(String timeExpression);
 }
