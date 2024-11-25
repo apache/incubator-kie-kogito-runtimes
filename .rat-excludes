@@ -74,44 +74,6 @@ simple_invalid_migration.invalid
 simple_migration.mpf
 # jbpm/jbpm-flow-migration/src/test/resources/META-INF/migration-plan/simple_migration_version.mpf
 simple_migration_version.mpf
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/activity/BPMN2-BoundarySignalEventOnTaskWithTransformation.bpmn
-BPMN2-BoundarySignalEventOnTaskWithTransformation.bpmn
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/activity/BPMN2-UserTaskAssignmentActor.bpmn
-BPMN2-UserTaskAssignmentActor.bpmn
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/activity/BPMN2-UserTaskAssignmentActorGroup.bpmn
-BPMN2-UserTaskAssignmentActorGroup.bpmn
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/activity/BPMN2-UserTaskAssignmentGroup.bpmn
-BPMN2-UserTaskAssignmentGroup.bpmn
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/activity/BPMN2-UserTaskAssignmentNone.bpmn
-BPMN2-UserTaskAssignmentNone.bpmn
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/adhoc/BPMN2-AdHocTerminateEndEvent.bpmn2
-BPMN2-AdHocTerminateEndEvent.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/calendar/BPMN2-BusinessCalendarTimer.bpmn2
-BPMN2-BusinessCalendarTimer.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/escalation/BPMN2-EventSubprocessEscalation.bpmn2
-BPMN2-EventSubprocessEscalation.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/escalation/BPMN2-Multiescalation.bpmn2
-BPMN2-Multiescalation.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/escalation/BPMN2-TopLevelEscalation.bpmn2
-BPMN2-TopLevelEscalation.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/flow/BPMN2-BooleanStructureRef.bpmn2
-BPMN2-BooleanStructureRef.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/flow/BPMN2-BrokenStructureRef.bpmn2
-BPMN2-BrokenStructureRef.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/flow/BPMN2-DefaultObjectStructureRef.bpmn2
-BPMN2-DefaultObjectStructureRef.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/flow/BPMN2-FloatStructureRef.bpmn2
-BPMN2-FloatStructureRef.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/flow/BPMN2-IntegerStructureRef.bpmn2
-BPMN2-IntegerStructureRef.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/flow/BPMN2-ObjectStructureRef.bpmn2
-BPMN2-ObjectStructureRef.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/loop/BPMN2-MultiInstanceLoopSubprocessBoundaryTimer.bpmn2
-BPMN2-MultiInstanceLoopSubprocessBoundaryTimer.bpmn2
-# jbpm/jbpm-tests/src/test/bpmn/org/jbpm/bpmn2/subprocess/BPMN2-SubProcessWithEntryExitScripts.bpmn2
-BPMN2-SubProcessWithEntryExitScripts.bpmn2
-# jbpm/jbpm-tests/src/test/resources/BPMN2-StringStructureRef.bpmn2
-BPMN2-StringStructureRef.bpmn2
 # jbpm/jbpm-tests/src/test/resources/calendar.properties
 calendar.properties
 # jbpm/jbpm-tests/src/test/resources/xxe-protection/Text1.txt
@@ -128,14 +90,6 @@ org.kie.kogito.internal.process.workitem.KogitoWorkItemHandlerFactory
 kogito.addon
 # kogito-codegen-modules/kogito-codegen-processes-integration-tests/src/test/resources/org/kie/kogito/codegen/process/process-generation-test.skip.txt
 process-generation-test.skip.txt
-# kogito-codegen-modules/kogito-codegen-processes-integration-tests/src/test/resources/usertask/UserTasksNotCompletedDeadline.bpmn2
-UserTasksNotCompletedDeadline.bpmn2
-# kogito-codegen-modules/kogito-codegen-processes-integration-tests/src/test/resources/usertask/UserTasksNotCompletedReassign.bpmn2
-UserTasksNotCompletedReassign.bpmn2
-# kogito-codegen-modules/kogito-codegen-processes-integration-tests/src/test/resources/usertask/UserTasksNotStartedDeadline.bpmn2
-UserTasksNotStartedDeadline.bpmn2
-# kogito-codegen-modules/kogito-codegen-processes-integration-tests/src/test/resources/usertask/UserTasksNotStartedReasssign.bpmn2
-UserTasksNotStartedReasssign.bpmn2
 # kogito-codegen-modules/kogito-codegen-sample/kogito-codegen-sample-generator/src/test/resources/sampleFile1.txt
 sampleFile1.txt
 # kogito-codegen-modules/kogito-codegen-sample/kogito-codegen-sample-generator/src/test/resources/sampleFile2.txt
@@ -208,8 +162,6 @@ kogito.addon
 TrafficViolation.txt
 # quarkus/extensions/kogito-quarkus-decisions-extension/kogito-quarkus-decisions-integration-test-hot-reload/src/test/resources/adult.txt
 adult.txt
-# quarkus/extensions/kogito-quarkus-processes-extension/kogito-quarkus-processes-integration-test/src/main/resources/com/example/flexible.bpmn
-flexible.bpmn
 # quarkus/extensions/kogito-quarkus-rules-extension/kogito-quarkus-rules-integration-test-hot-reload/src/test/resources/adult.txt
 adult.txt
 # quarkus/extensions/kogito-quarkus-rules-extension/kogito-quarkus-rules-integration-test-hot-reload/src/test/resources/drl1.txt
@@ -218,22 +170,8 @@ drl1.txt
 long-call.sw.yaml
 # quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-integration-test/src/test/resources/__snapshots__/ServerlessWorkflowCodestartTest/testContent/src_test_resources_application.yml
 src_test_resources_application.yml
-# quarkus/integration-tests/integration-tests-quarkus-processes/src/main/resources/AdHocFragments.bpmn
-AdHocFragments.bpmn
-# quarkus/integration-tests/integration-tests-quarkus-processes/src/main/resources/cinema.bpmn
-cinema.bpmn
-# quarkus/integration-tests/integration-tests-quarkus-processes/src/main/resources/monitoring.bpmn
-monitoring.bpmn
-# quarkus/integration-tests/integration-tests-quarkus-processes/src/main/resources/multi-instance-task.bpmn
-multi-instance-task.bpmn
-# quarkus/integration-tests/integration-tests-quarkus-processes-persistence/integration-tests-processes-persistence-common/src/main/resources/AddedTask.bpmn
-AddedTask.bpmn
-# quarkus/integration-tests/integration-tests-quarkus-processes-persistence/integration-tests-processes-persistence-common/src/main/resources/EmbeddedProcess.bpmn
-EmbeddedProcess.bpmn
 # quarkus/integration-tests/integration-tests-quarkus-rules/src/test/resources/LoanUnit.xls.properties.test
 LoanUnit.xls.properties.test
-# quarkus/integration-tests/integration-tests-quarkus-usertasks/src/main/resources/approval.bpmn
-approval.bpmn
 # springboot/addons/events/decisions/src/main/resources/META-INF/kogito.addon
 kogito.addon
 # springboot/addons/events/predictions/src/main/resources/META-INF/kogito.addon
@@ -278,15 +216,5 @@ goal.txt
 .gitignore
 # springboot/integration-tests/integration-tests-springboot-processes-it/.gitignore
 .gitignore
-# springboot/integration-tests/integration-tests-springboot-processes-it/src/main/resources/AdHocFragments.bpmn
-AdHocFragments.bpmn
-# springboot/integration-tests/integration-tests-springboot-processes-it/src/main/resources/cinema.bpmn
-cinema.bpmn
-# springboot/integration-tests/integration-tests-springboot-processes-it/src/main/resources/monitoring.bpmn
-monitoring.bpmn
-# springboot/integration-tests/integration-tests-springboot-processes-it/src/main/resources/multi-instance-task.bpmn
-multi-instance-task.bpmn
 # springboot/integration-tests/integration-tests-springboot-processes-persistence-it/integration-tests-springboot-processes-persistence-common/.gitignore
 .gitignore
-# springboot/integration-tests/integration-tests-springboot-usertasks-it/src/main/resources/approval.bpmn
-approval.bpmn
