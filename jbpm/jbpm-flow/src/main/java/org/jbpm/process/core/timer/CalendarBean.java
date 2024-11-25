@@ -70,7 +70,7 @@ public class CalendarBean {
     static {
         FORMAL_VALIDATOR_MAP = new HashMap<>();
         FORMAL_VALIDATOR_MAP.put(START_HOUR, (stringBuilder, properties) -> {
-            if (properties.contains(START_HOUR)) {
+            if (properties.containsKey(START_HOUR)) {
                 try {
                     int hour = getPropertyAsInt(START_HOUR, properties);
                     if (!isInsideValidRange(hour, LOWER_HOUR_BOUND, UPPER_HOUR_BOUND)) {
@@ -82,7 +82,7 @@ public class CalendarBean {
             }
         });
         FORMAL_VALIDATOR_MAP.put(END_HOUR, (stringBuilder, properties) -> {
-            if (properties.contains(END_HOUR)) {
+            if (properties.containsKey(END_HOUR)) {
                 try {
                     int hour = getPropertyAsInt(END_HOUR, properties);
                     if (!isInsideValidRange(hour, LOWER_HOUR_BOUND, UPPER_HOUR_BOUND)) {
@@ -94,7 +94,7 @@ public class CalendarBean {
             }
         });
         FORMAL_VALIDATOR_MAP.put(HOLIDAYS, (stringBuilder, properties) -> {
-            if (properties.contains(HOLIDAYS)) {
+            if (properties.containsKey(HOLIDAYS)) {
                 String originalData = properties.getProperty(WEEKEND_DAYS);
                 String[] allHolidays = originalData.split(",");
                 for (String holiday : allHolidays) {
@@ -110,7 +110,7 @@ public class CalendarBean {
             }
         });
         FORMAL_VALIDATOR_MAP.put(HOLIDAY_DATE_FORMAT, (stringBuilder, properties) -> {
-            if (properties.contains(HOLIDAY_DATE_FORMAT)) {
+            if (properties.containsKey(HOLIDAY_DATE_FORMAT)) {
                 try {
                     getSimpleDateFormat((String) properties.get(HOLIDAY_DATE_FORMAT));
                 } catch (IllegalArgumentException e) {
@@ -119,7 +119,7 @@ public class CalendarBean {
             }
         });
         FORMAL_VALIDATOR_MAP.put(WEEKEND_DAYS, (stringBuilder, properties) -> {
-            if (properties.contains(WEEKEND_DAYS)) {
+            if (properties.containsKey(WEEKEND_DAYS)) {
                 String originalData = properties.getProperty(WEEKEND_DAYS);
                 String[] weekendDays = originalData.split(",");
                 Set<String> differentValues = Arrays.stream(weekendDays).collect(Collectors.toSet());
@@ -142,7 +142,7 @@ public class CalendarBean {
             }
         });
         FORMAL_VALIDATOR_MAP.put(TIMEZONE, (stringBuilder, properties) -> {
-            if (properties.contains(TIMEZONE)) {
+            if (properties.containsKey(TIMEZONE)) {
                 String originalData = properties.getProperty(WEEKEND_DAYS);
                 try {
                     TimeZone.getTimeZone(originalData);
@@ -171,7 +171,15 @@ public class CalendarBean {
     }
 
     static void formalValidation(StringBuilder errorMessage, Properties calendarConfiguration) {
+        requiredValidation(errorMessage, calendarConfiguration);
+        formatValidation(errorMessage, calendarConfiguration);
+    }
+
+    static void requiredValidation(StringBuilder errorMessage, Properties calendarConfiguration) {
         REQUIRED_PROPERTIES.forEach(property -> validateRequiredProperty(property, errorMessage, calendarConfiguration));
+    }
+
+    static void formatValidation(StringBuilder errorMessage, Properties calendarConfiguration) {
         FORMAL_VALIDATOR_MAP.values().forEach(stringBuilderPropertiesBiConsumer -> stringBuilderPropertiesBiConsumer.accept(errorMessage, calendarConfiguration));
     }
 
