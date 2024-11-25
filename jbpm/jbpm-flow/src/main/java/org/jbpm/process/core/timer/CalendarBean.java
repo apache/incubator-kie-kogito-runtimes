@@ -60,7 +60,8 @@ public class CalendarBean {
     private static final List<BiConsumer<StringBuilder, Properties>> BUSINESS_VALIDATOR_LIST;
 
     private static final int LOWER_HOUR_BOUND = 0;
-    private static final int UPPER_HOUR_BOUND = 23;
+
+    private static final int UPPER_HOUR_BOUND = 24;
 
     private static final String DEFAULT_WEEKENDS = String.format("%s,%s", Calendar.SATURDAY, Calendar.SUNDAY);
     private static final String DEFAULT_HOLIDAY_DATE_FORMAT = "yyyy-MM-dd";
@@ -73,7 +74,7 @@ public class CalendarBean {
                 try {
                     int hour = getPropertyAsInt(START_HOUR, properties);
                     if (!isInsideValidRange(hour, LOWER_HOUR_BOUND, UPPER_HOUR_BOUND)) {
-                        addMessageToStringBuilder(stringBuilder, String.format("Start hour %s outside expected boundaries (0-23)", hour));
+                        addMessageToStringBuilder(stringBuilder, String.format("Start hour %s outside expected boundaries (0-24)", hour));
                     }
                 } catch (NumberFormatException e) {
                     addMessageToStringBuilder(stringBuilder, e.getMessage());
@@ -85,7 +86,7 @@ public class CalendarBean {
                 try {
                     int hour = getPropertyAsInt(END_HOUR, properties);
                     if (!isInsideValidRange(hour, LOWER_HOUR_BOUND, UPPER_HOUR_BOUND)) {
-                        addMessageToStringBuilder(stringBuilder, String.format("Start hour %s outside expected boundaries (0-23)", hour));
+                        addMessageToStringBuilder(stringBuilder, String.format("Start hour %s outside expected boundaries (0-24)", hour));
                     }
                 } catch (NumberFormatException e) {
                     addMessageToStringBuilder(stringBuilder, e.getMessage());
@@ -160,19 +161,28 @@ public class CalendarBean {
         });
     }
 
+    private CalendarBean(Properties calendarConfiguration) {
+        this.calendarConfiguration = calendarConfiguration;
+        setup();
+    }
+
+    public static CalendarBean create(Properties calendarConfiguration) {
+        return new CalendarBean(calendarConfiguration);
+    }
+
     static void formalValidation(StringBuilder errorMessage, Properties calendarConfiguration) {
         REQUIRED_PROPERTIES.forEach(property -> validateRequiredProperty(property, errorMessage, calendarConfiguration));
         FORMAL_VALIDATOR_MAP.values().forEach(stringBuilderPropertiesBiConsumer -> stringBuilderPropertiesBiConsumer.accept(errorMessage, calendarConfiguration));
     }
 
     static void missingDataPopulation(Properties calendarConfiguration) {
-        if (!calendarConfiguration.contains(WEEKEND_DAYS)) {
+        if (!calendarConfiguration.containsKey(WEEKEND_DAYS)) {
             calendarConfiguration.put(WEEKEND_DAYS, DEFAULT_WEEKENDS);
         }
-        if (!calendarConfiguration.contains(HOLIDAY_DATE_FORMAT)) {
+        if (!calendarConfiguration.containsKey(HOLIDAY_DATE_FORMAT)) {
             calendarConfiguration.put(HOLIDAY_DATE_FORMAT, DEFAULT_HOLIDAY_DATE_FORMAT);
         }
-        if (!calendarConfiguration.contains(TIMEZONE)) {
+        if (!calendarConfiguration.containsKey(TIMEZONE)) {
             calendarConfiguration.put(TIMEZONE, DEFAULT_TIMEZONE);
         }
     }
@@ -223,15 +233,6 @@ public class CalendarBean {
     private static void addMessageToStringBuilder(StringBuilder stringBuilder, String message) {
         stringBuilder.append(message);
         stringBuilder.append("\n");
-    }
-
-    public CalendarBean(Properties calendarConfiguration) {
-        try {
-            this.calendarConfiguration = calendarConfiguration;
-            setup();
-        } catch (IllegalArgumentException e) {
-            throw e;
-        }
     }
 
 

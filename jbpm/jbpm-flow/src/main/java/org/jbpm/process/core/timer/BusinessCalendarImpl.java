@@ -117,7 +117,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
             Properties calendarConfiguration = new Properties();
             try (InputStream is = resource.openStream()) {
                 calendarConfiguration.load(is);
-                CalendarBean calendarBean = new CalendarBean(calendarConfiguration);
+                CalendarBean calendarBean = CalendarFactory.createCalendarBean(calendarConfiguration);
                 holidays = calendarBean.getHolidays();
                 weekendDays = calendarBean.getWeekendDays();
                 daysPerWeek = calendarBean.getDaysPerWeek();
