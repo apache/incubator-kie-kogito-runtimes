@@ -57,7 +57,7 @@ public class BusinessCalendarTest {
     @Test
     public void testTimerWithWorkingDayCalendar() throws InterruptedException {
         MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
-        calendarFactoryMockedStatic.when(() -> CalendarFactory.createCalendarBean(any(Properties.class))).thenReturn(CalendarBean.create(workingDayCalendarConfiguration));
+        calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(workingDayCalendarConfiguration));
         BusinessCalendar workingDayCalendar = new BusinessCalendarImpl();
         Application app = ProcessTestHelper.newApplication(new MockProcessConfig(workingDayCalendar));
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
@@ -75,7 +75,7 @@ public class BusinessCalendarTest {
     @Test
     public void testTimerWithNotWorkingDayCalendar() throws InterruptedException {
         MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
-        calendarFactoryMockedStatic.when(() -> CalendarFactory.createCalendarBean(any(Properties.class))).thenReturn(CalendarBean.create(notWorkingDayCalendarConfiguration));
+        calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(notWorkingDayCalendarConfiguration));
         BusinessCalendar notWorkingDayCalendar = new BusinessCalendarImpl();
         Application app = ProcessTestHelper.newApplication(new MockProcessConfig(notWorkingDayCalendar));
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
@@ -106,7 +106,7 @@ public class BusinessCalendarTest {
             businessCalendarConfiguration.setProperty(BusinessCalendarImpl.START_HOUR, "9");
             businessCalendarConfiguration.setProperty(BusinessCalendarImpl.END_HOUR, "17");
             businessCalendarConfiguration.setProperty(BusinessCalendarImpl.HOLIDAYS, sdf.format(today) + "," + sdf.format(tomorrow));
-            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, "1,2,3,4,5,6,7");
+            businessCalendarConfiguration.setProperty(BusinessCalendarImpl.WEEKEND_DAYS, "1,2,3,4,5");
             businessCalendarConfiguration.setProperty(BusinessCalendarImpl.HOLIDAY_DATE_FORMAT, dateFormat);
         }
         return businessCalendarConfiguration;

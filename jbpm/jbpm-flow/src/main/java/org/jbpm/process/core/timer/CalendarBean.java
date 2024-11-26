@@ -54,7 +54,7 @@ public class CalendarBean {
 
 
     private final Properties calendarConfiguration;
-    private static final Collection<String> REQUIRED_PROPERTIES = Arrays.asList(START_HOUR, END_HOUR, WEEKEND_DAYS);
+    private static final Collection<String> REQUIRED_PROPERTIES = Arrays.asList(START_HOUR, END_HOUR);
 
     private static final Map<String, BiConsumer<StringBuilder, Properties>> FORMAL_VALIDATOR_MAP;
     private static final List<BiConsumer<StringBuilder, Properties>> BUSINESS_VALIDATOR_LIST;
@@ -95,7 +95,7 @@ public class CalendarBean {
         });
         FORMAL_VALIDATOR_MAP.put(HOLIDAYS, (stringBuilder, properties) -> {
             if (properties.containsKey(HOLIDAYS)) {
-                String originalData = properties.getProperty(WEEKEND_DAYS);
+                String originalData = properties.getProperty(HOLIDAYS);
                 String[] allHolidays = originalData.split(",");
                 for (String holiday : allHolidays) {
                     String[] ranges = holiday.split(":");
@@ -121,7 +121,7 @@ public class CalendarBean {
         FORMAL_VALIDATOR_MAP.put(WEEKEND_DAYS, (stringBuilder, properties) -> {
             if (properties.containsKey(WEEKEND_DAYS)) {
                 String originalData = properties.getProperty(WEEKEND_DAYS);
-                String[] weekendDays = originalData.split(",");
+                String[] weekendDays = originalData.split(",\\s?");
                 Set<String> differentValues = Arrays.stream(weekendDays).collect(Collectors.toSet());
                 if (differentValues.size() < weekendDays.length) {
                     addMessageToStringBuilder(stringBuilder, String.format("There are repeated values in the given WEEKEND_DAYS %s", originalData));
@@ -153,21 +153,19 @@ public class CalendarBean {
         });
         BUSINESS_VALIDATOR_LIST = new ArrayList<>();
         BUSINESS_VALIDATOR_LIST.add((stringBuilder, properties) -> {
-            int startHour = getPropertyAsInt(START_HOUR, properties);
-            int endHour = getPropertyAsInt(END_HOUR, properties);
-            if (startHour == endHour) {
-                addMessageToStringBuilder(stringBuilder, String.format("Start hour %s and end hour %s must be different", startHour, endHour));
+            if(properties.containsKey(START_HOUR) && properties.containsKey(END_HOUR)) {
+                int startHour = getPropertyAsInt(START_HOUR, properties);
+                int endHour = getPropertyAsInt(END_HOUR, properties);
+                if (startHour == endHour) {
+                    addMessageToStringBuilder(stringBuilder, String.format("Start hour %s and end hour %s must be different", startHour, endHour));
+                }
             }
         });
     }
 
-    private CalendarBean(Properties calendarConfiguration) {
+    public CalendarBean(Properties calendarConfiguration) {
         this.calendarConfiguration = calendarConfiguration;
         setup();
-    }
-
-    public static CalendarBean create(Properties calendarConfiguration) {
-        return new CalendarBean(calendarConfiguration);
     }
 
     static void formalValidation(StringBuilder errorMessage, Properties calendarConfiguration) {
@@ -245,7 +243,7 @@ public class CalendarBean {
 
 
     public List<BusinessCalendarImpl.TimePeriod> getHolidays() {
-        if (!calendarConfiguration.contains(HOLIDAYS)) {
+        if (!calendarConfiguration.containsKey(HOLIDAYS)) {
             return Collections.emptyList();
         }
         String timezone = calendarConfiguration.getProperty(TIMEZONE);

@@ -112,12 +112,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     public static final String TIMEZONE = "business.cal.timezone";
 
     public BusinessCalendarImpl() {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource(BUSINESS_CALENDAR_PATH);
-        if (Objects.nonNull(resource)) {
-            Properties calendarConfiguration = new Properties();
-            try (InputStream is = resource.openStream()) {
-                calendarConfiguration.load(is);
-                CalendarBean calendarBean = CalendarFactory.createCalendarBean(calendarConfiguration);
+
+        try {
+                CalendarBean calendarBean = CalendarFactory.createCalendarBean();
                 holidays = calendarBean.getHolidays();
                 weekendDays = calendarBean.getWeekendDays();
                 daysPerWeek = calendarBean.getDaysPerWeek();
@@ -125,20 +122,11 @@ public class BusinessCalendarImpl implements BusinessCalendar {
                 startHour = calendarBean.getStartHour();
                 endHour = calendarBean.getEndHour();
                 hoursInDay = calendarBean.getHoursInDay();
-            } catch (IOException e) {
-                String errorMessage = "Error while loading properties for business calendar";
-                logger.error(errorMessage, e);
-                throw new RuntimeException(errorMessage, e);
             } catch (IllegalArgumentException e) {
                 String errorMessage = "Error while populating properties for business calendar";
                 logger.error(errorMessage, e);
                 throw e;
             }
-        } else {
-            String errorMessage = String.format("Missing %s", BUSINESS_CALENDAR_PATH);
-            logger.error(errorMessage);
-            throw new RuntimeException(errorMessage);
-        }
     }
 
     @Override
@@ -173,7 +161,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         }
         int time = 0;
 
-        Calendar c = new GregorianCalendar();
+        Calendar c = CalendarFactory.getCalendar();
         if (timezone != null) {
             c.setTimeZone(TimeZone.getTimeZone(timezone));
         }
