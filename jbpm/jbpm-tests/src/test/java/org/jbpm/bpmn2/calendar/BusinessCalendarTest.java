@@ -29,7 +29,7 @@ import java.util.Properties;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.timer.BusinessCalendarImpl;
 import org.jbpm.process.core.timer.CalendarBean;
-import org.jbpm.process.core.timer.CalendarFactory;
+import org.jbpm.process.core.timer.CalendarBeanFactory;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -56,9 +56,9 @@ public class BusinessCalendarTest {
 
     @Test
     public void testTimerWithWorkingDayCalendar() throws InterruptedException {
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
-        calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(workingDayCalendarConfiguration));
-        BusinessCalendar workingDayCalendar = new BusinessCalendarImpl();
+        MockedStatic<CalendarBeanFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarBeanFactory.class);
+        calendarFactoryMockedStatic.when(CalendarBeanFactory::createCalendarBean).thenReturn(new CalendarBean(workingDayCalendarConfiguration));
+        BusinessCalendar workingDayCalendar = BusinessCalendarImpl.builder().build();
         Application app = ProcessTestHelper.newApplication(new MockProcessConfig(workingDayCalendar));
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
@@ -74,9 +74,9 @@ public class BusinessCalendarTest {
 
     @Test
     public void testTimerWithNotWorkingDayCalendar() throws InterruptedException {
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
-        calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(notWorkingDayCalendarConfiguration));
-        BusinessCalendar notWorkingDayCalendar = new BusinessCalendarImpl();
+        MockedStatic<CalendarBeanFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarBeanFactory.class);
+        calendarFactoryMockedStatic.when(CalendarBeanFactory::createCalendarBean).thenReturn(new CalendarBean(notWorkingDayCalendarConfiguration));
+        BusinessCalendar notWorkingDayCalendar = BusinessCalendarImpl.builder().build();
         Application app = ProcessTestHelper.newApplication(new MockProcessConfig(notWorkingDayCalendar));
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);

@@ -18,40 +18,22 @@
  */
 package org.jbpm.process.core.timer;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
 import java.util.TimeZone;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
 import org.jbpm.util.PatternConstants;
 import org.kie.kogito.calendar.BusinessCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_PATH;
 
 /**
  * Default implementation of BusinessCalendar interface that is configured with properties.
@@ -111,22 +93,22 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     public static final String WEEKEND_DAYS = "business.weekend.days";
     public static final String TIMEZONE = "business.cal.timezone";
 
-    public BusinessCalendarImpl() {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-        try {
-                CalendarBean calendarBean = CalendarFactory.createCalendarBean();
-                holidays = calendarBean.getHolidays();
-                weekendDays = calendarBean.getWeekendDays();
-                daysPerWeek = calendarBean.getDaysPerWeek();
-                timezone = calendarBean.getTimezone();
-                startHour = calendarBean.getStartHour();
-                endHour = calendarBean.getEndHour();
-                hoursInDay = calendarBean.getHoursInDay();
-            } catch (IllegalArgumentException e) {
-                String errorMessage = "Error while populating properties for business calendar";
-                logger.error(errorMessage, e);
-                throw e;
-            }
+    private BusinessCalendarImpl() {
+        this(CalendarBeanFactory.createCalendarBean());
+    }
+
+    private BusinessCalendarImpl(CalendarBean calendarBean) {
+        holidays = calendarBean.getHolidays();
+        weekendDays = calendarBean.getWeekendDays();
+        daysPerWeek = calendarBean.getDaysPerWeek();
+        timezone = calendarBean.getTimezone();
+        startHour = calendarBean.getStartHour();
+        endHour = calendarBean.getEndHour();
+        hoursInDay = calendarBean.getHoursInDay();
     }
 
     @Override
@@ -161,7 +143,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         }
         int time = 0;
 
-        Calendar c = CalendarFactory.getCalendar();
+        Calendar c = CalendarBeanFactory.getCalendar();
         if (timezone != null) {
             c.setTimeZone(TimeZone.getTimeZone(timezone));
         }
@@ -243,7 +225,6 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         return c.getTime();
     }
 
-
     protected String adoptISOFormat(String timeExpression) {
 
         try {
@@ -315,24 +296,6 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
     }
 
-    static class TimePeriod {
-        private Date from;
-        private Date to;
-
-        protected TimePeriod(Date from, Date to) {
-            this.from = from;
-            this.to = to;
-        }
-
-        protected Date getFrom() {
-            return this.from;
-        }
-
-        protected Date getTo() {
-            return this.to;
-        }
-    }
-
     protected long getCurrentTime() {
         return System.currentTimeMillis();
     }
@@ -355,5 +318,49 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         }
     }
 
+    public static class Builder {
+
+        private CalendarBean calendarBean;
+
+        public Builder withCalendarBean(CalendarBean calendarBean) {
+            this.calendarBean = calendarBean;
+            return this;
+        }
+
+        public BusinessCalendarImpl build() {
+            return calendarBean == null ? new BusinessCalendarImpl() : new BusinessCalendarImpl(calendarBean);
+        }
+    }
+
+    static class TimePeriod {
+        private Date from;
+        private Date to;
+
+        protected TimePeriod(Date from, Date to) {
+            this.from = from;
+            this.to = to;
+        }
+
+        protected Date getFrom() {
+            return this.from;
+        }
+
+        protected Date getTo() {
+            return this.to;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof TimePeriod that)) {
+                return false;
+            }
+            return Objects.equals(from, that.from) && Objects.equals(to, that.to);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(from, to);
+        }
+    }
 
 }

@@ -1,8 +1,5 @@
 package org.jbpm.process.core.timer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -11,11 +8,14 @@ import java.util.GregorianCalendar;
 import java.util.Objects;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_PATH;
 
-public class CalendarFactory {
+public class CalendarBeanFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(CalendarFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(CalendarBeanFactory.class);
 
     public static CalendarBean createCalendarBean() {
         URL resource = Thread.currentThread().getContextClassLoader().getResource(BUSINESS_CALENDAR_PATH);
@@ -28,6 +28,10 @@ public class CalendarFactory {
                 String errorMessage = "Error while loading properties for business calendar";
                 logger.error(errorMessage, e);
                 throw new RuntimeException(errorMessage, e);
+            } catch (IllegalArgumentException e) {
+                String errorMessage = "Error while populating properties for business calendar";
+                logger.error(errorMessage, e);
+                throw e;
             }
         } else {
             String errorMessage = String.format("Missing %s", BUSINESS_CALENDAR_PATH);
@@ -35,7 +39,8 @@ public class CalendarFactory {
             throw new RuntimeException(errorMessage);
         }
     }
-     public static Calendar getCalendar() {
+
+    public static Calendar getCalendar() {
         return new GregorianCalendar();
-     }
+    }
 }
