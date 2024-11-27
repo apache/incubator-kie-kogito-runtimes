@@ -19,6 +19,8 @@
 package org.jbpm.process.core.timer;
 
 import org.jbpm.test.util.AbstractBaseTest;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -56,6 +58,18 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     private static final String WEEKEND_DAY_FIELD = "weekendDays";
     private static final String DAYS_PER_WEEK_FIELD = "daysPerWeek";
 
+    private MockedStatic<CalendarFactory> calendarFactoryMockedStatic;
+
+    @BeforeEach
+    void setup() {
+        calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
+    }
+
+    @AfterEach
+    void cleanUp() {
+        calendarFactoryMockedStatic.close();
+    }
+
     public void addLogger() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -69,7 +83,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-04 13:45").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
 
@@ -78,7 +91,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("3h");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -91,15 +103,14 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-03 13:45").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
+
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
 
         Date result = businessCal.calculateBusinessTimeAsDate("8h");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -113,15 +124,11 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-04 13:45").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
-
         Date result = businessCal.calculateBusinessTimeAsDate("7h");
-
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -135,15 +142,11 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-03 13:45").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
-
         Date result = businessCal.calculateBusinessTimeAsDate("7h");
-
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -156,7 +159,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-04 16:45").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -164,7 +166,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("30m");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -178,7 +179,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-11 16:45").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -186,7 +186,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("30m");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -199,7 +198,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDate("2012-05-04").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -207,7 +205,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("6d");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -221,7 +218,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDate("2012-05-05").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -229,7 +225,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("2d");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -244,7 +239,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-03 14:30").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -252,7 +246,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("6d");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -266,7 +259,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-03 12:27").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -274,7 +266,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("6d");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -288,7 +279,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDate("2012-05-04").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -296,7 +286,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("6d4h80m");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -311,7 +300,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDate("2012-05-04").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -319,7 +307,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("6d4h80m");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -334,7 +321,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDate("2012-05-04").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -342,7 +328,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("1d4h20m");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -357,7 +342,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-08 11:10").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -365,7 +349,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("1d4h20m");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -380,7 +363,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-12-28 16:45").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -388,7 +370,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("2d30m");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -403,7 +384,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-12-28 16:45").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
@@ -411,7 +391,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("2d30m");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -425,7 +404,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-04 13:45").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
 
@@ -434,7 +412,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("PT3H");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -449,7 +426,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime("2012-05-08 11:10").getTime());
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(clock.getCurrentTime());
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
         calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
 
@@ -458,7 +434,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Date result = businessCal.calculateBusinessTimeAsDate("P1DT4H20M");
 
         assertThat(formatDate("yyyy-MM-dd HH:mm", result)).isEqualTo(expectedDate);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
@@ -471,6 +446,10 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         props.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTimeAndMillis("2015-01-08 11:38:30.198").getTime());
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(clock.getCurrentTime());
+        calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(props));
+        calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
 
 
         BusinessCalendarImpl businessCalendarImpl = new BusinessCalendarImpl();
@@ -486,6 +465,10 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         config.setProperty(START_HOUR, "9");
         config.setProperty(END_HOUR, "17");
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTimeAndMillis("2012-05-04 16:45:00.000").getTime());
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(clock.getCurrentTime());
+        calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
+        calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
 
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
 
@@ -504,6 +487,11 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime(currentDate).getTime());
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(clock.getCurrentTime());
+        calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
+        calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
+
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
 
         Date result = businessCal.calculateBusinessTimeAsDate("1m");
@@ -516,6 +504,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Properties config = new Properties();
         config.setProperty(START_HOUR, "9");
         config.setProperty(END_HOUR, "17");
+        Calendar calendar = new GregorianCalendar();
+        calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
+        calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         assertDoesNotThrow(() -> new BusinessCalendarImpl());
     }
 
@@ -532,6 +523,10 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         String expectedDate = "2018-05-07 09:10:00";
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime(currentDate).getTime());
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(clock.getCurrentTime());
+        calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
+        calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
 
         Date result = businessCal.calculateBusinessTimeAsDate(duration);
@@ -550,6 +545,10 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         config.setProperty(END_HOUR, "17");
 
         SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime(currentDate).getTime());
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(clock.getCurrentTime());
+        calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(config));
+        calendarFactoryMockedStatic.when(CalendarFactory::getCalendar).thenReturn(calendar);
         BusinessCalendarImpl businessCal = new BusinessCalendarImpl();
 
         Date result = businessCal.calculateBusinessTimeAsDate(duration);
@@ -563,13 +562,11 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Properties businessCalendarProperties = new Properties();
         businessCalendarProperties.putAll(propertyMap);
         List<BusinessCalendarImpl> businessCalendarList = new ArrayList<>();
-        MockedStatic<CalendarFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarFactory.class);
         calendarFactoryMockedStatic.when(CalendarFactory::createCalendarBean).thenReturn(new CalendarBean(businessCalendarProperties));
         assertDoesNotThrow(() -> {
             businessCalendarList.add(new BusinessCalendarImpl());
         });
         assertCalendarProperties(businessCalendarList.get(0), expectedValuesMap);
-        calendarFactoryMockedStatic.close();
     }
 
     private Date parseToDate(String dateString) {

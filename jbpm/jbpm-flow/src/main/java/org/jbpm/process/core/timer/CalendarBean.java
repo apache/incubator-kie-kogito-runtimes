@@ -67,6 +67,13 @@ public class CalendarBean {
     private static final String DEFAULT_HOLIDAY_DATE_FORMAT = "yyyy-MM-dd";
     private static final String DEFAULT_TIMEZONE = TimeZone.getDefault().getID();
 
+    private static final String OUTSIDE_BOUNDARY_ERROR_MESSAGE= "%s %s outside expected boundaries %s";
+    private static final String INVALID_FORMAT_ERROR_MESSAGE="%s is not valid: %s";
+    private static final String REPEATED_VALUES_ERROR_MESSAGE="There are repeated values in the given %s %s";
+    private static final String OTHER_VALUES_ERR_MSG="%s and other values provided in the given %s %s";
+    private static final String VALUES_SAME_ERR_MSG="%s %s and %s %s must be different";
+    private static final String PROPERTY_REQUIRED_ERR_MSG="Property %s is required";
+
     static {
         FORMAL_VALIDATOR_MAP = new HashMap<>();
         FORMAL_VALIDATOR_MAP.put(START_HOUR, (stringBuilder, properties) -> {
@@ -74,10 +81,10 @@ public class CalendarBean {
                 try {
                     int hour = getPropertyAsInt(START_HOUR, properties);
                     if (!isInsideValidRange(hour, LOWER_HOUR_BOUND, UPPER_HOUR_BOUND)) {
-                        addMessageToStringBuilder(stringBuilder, String.format("Start hour %s outside expected boundaries (0-24)", hour));
+                        addMessageToStringBuilder(stringBuilder, String.format(OUTSIDE_BOUNDARY_ERROR_MESSAGE, START_HOUR,hour, "(0-24)"));
                     }
                 } catch (NumberFormatException e) {
-                    addMessageToStringBuilder(stringBuilder, e.getMessage());
+                    addMessageToStringBuilder(stringBuilder, String.format(INVALID_FORMAT_ERROR_MESSAGE,START_HOUR, e.getMessage()));
                 }
             }
         });
@@ -86,10 +93,10 @@ public class CalendarBean {
                 try {
                     int hour = getPropertyAsInt(END_HOUR, properties);
                     if (!isInsideValidRange(hour, LOWER_HOUR_BOUND, UPPER_HOUR_BOUND)) {
-                        addMessageToStringBuilder(stringBuilder, String.format("Start hour %s outside expected boundaries (0-24)", hour));
+                        addMessageToStringBuilder(stringBuilder, String.format(OUTSIDE_BOUNDARY_ERROR_MESSAGE, END_HOUR,hour, "(0-24)"));
                     }
                 } catch (NumberFormatException e) {
-                    addMessageToStringBuilder(stringBuilder, e.getMessage());
+                    addMessageToStringBuilder(stringBuilder, String.format(INVALID_FORMAT_ERROR_MESSAGE, END_HOUR, e.getMessage()));
                 }
             }
         });
@@ -103,7 +110,7 @@ public class CalendarBean {
                         try {
                             getFormattedDate(range, properties);
                         } catch (ParseException e) {
-                            addMessageToStringBuilder(stringBuilder, e.getMessage());
+                            addMessageToStringBuilder(stringBuilder, String.format(INVALID_FORMAT_ERROR_MESSAGE, HOLIDAYS,e.getMessage()));
                         }
                     }
                 }
@@ -124,40 +131,44 @@ public class CalendarBean {
                 String[] weekendDays = originalData.split(",\\s?");
                 Set<String> differentValues = Arrays.stream(weekendDays).collect(Collectors.toSet());
                 if (differentValues.size() < weekendDays.length) {
-                    addMessageToStringBuilder(stringBuilder, String.format("There are repeated values in the given WEEKEND_DAYS %s", originalData));
+                    addMessageToStringBuilder(stringBuilder, String.format(REPEATED_VALUES_ERROR_MESSAGE,WEEKEND_DAYS, originalData));
                 }
                 if (differentValues.contains("0") && differentValues.size() > 1) {
-                    addMessageToStringBuilder(stringBuilder, String.format("0 (= no weekends) and other values provided in the given WEEKEND_DAYS %s", originalData));
+                    addMessageToStringBuilder(stringBuilder, String.format(OTHER_VALUES_ERR_MSG, "0 (= no weekends)",WEEKEND_DAYS, originalData));
                 }
-                if (differentValues.size() > 7) {
-                    addMessageToStringBuilder(stringBuilder, String.format("It is not possible to have more then 7 WEEKEND_DAYS; provided %s", differentValues.size()));
-                }
+                final List<Integer> intValues = new ArrayList<>();
                 differentValues.forEach(s -> {
                     try {
-                        getStringAsInt(s);
+                        intValues.add(getStringAsInt(s));
                     } catch (NumberFormatException e) {
                         addMessageToStringBuilder(stringBuilder, e.getMessage());
                     }
                 });
+                if( intValues.stream().anyMatch(value -> value < 0 || value > 7)) {
+                    addMessageToStringBuilder(stringBuilder,String.format(OUTSIDE_BOUNDARY_ERROR_MESSAGE, WEEKEND_DAYS, intValues.stream().filter(value -> value < 0 || value > 7).toList(), "(0-7)"));
+                }
             }
         });
         FORMAL_VALIDATOR_MAP.put(TIMEZONE, (stringBuilder, properties) -> {
             if (properties.containsKey(TIMEZONE)) {
-                String originalData = properties.getProperty(WEEKEND_DAYS);
-                try {
-                    TimeZone.getTimeZone(originalData);
-                } catch (Throwable e) {
-                    addMessageToStringBuilder(stringBuilder, e.getMessage());
+                String originalData = properties.getProperty(TIMEZONE);
+                    if(!Arrays.asList(TimeZone.getAvailableIDs()).contains(originalData)) {
+                        addMessageToStringBuilder(stringBuilder, String.format(INVALID_FORMAT_ERROR_MESSAGE, TIMEZONE, originalData));
+                    }
                 }
-            }
         });
         BUSINESS_VALIDATOR_LIST = new ArrayList<>();
         BUSINESS_VALIDATOR_LIST.add((stringBuilder, properties) -> {
             if(properties.containsKey(START_HOUR) && properties.containsKey(END_HOUR)) {
-                int startHour = getPropertyAsInt(START_HOUR, properties);
-                int endHour = getPropertyAsInt(END_HOUR, properties);
-                if (startHour == endHour) {
-                    addMessageToStringBuilder(stringBuilder, String.format("Start hour %s and end hour %s must be different", startHour, endHour));
+                try {
+                    int startHour = getPropertyAsInt(START_HOUR, properties);
+                    int endHour = getPropertyAsInt(END_HOUR, properties);
+                    if (startHour == endHour) {
+                        addMessageToStringBuilder(stringBuilder, String.format(VALUES_SAME_ERR_MSG, START_HOUR, startHour,END_HOUR, endHour));
+                    }
+                }
+                catch (NumberFormatException nfe) {
+                    logger.error("Number format exception while checking equality of start time and end time: {}", nfe.getMessage());
                 }
             }
         });
@@ -213,7 +224,7 @@ public class CalendarBean {
 
     static Date getFormattedDate(String date, Properties businessCalendar) throws ParseException {
         SimpleDateFormat sdf =
-                businessCalendar.contains(HOLIDAY_DATE_FORMAT) ? getSimpleDateFormat(businessCalendar.getProperty(HOLIDAY_DATE_FORMAT)) : getSimpleDateFormat(DEFAULT_HOLIDAY_DATE_FORMAT);
+                businessCalendar.containsKey(HOLIDAY_DATE_FORMAT) ? getSimpleDateFormat(businessCalendar.getProperty(HOLIDAY_DATE_FORMAT)) : getSimpleDateFormat(DEFAULT_HOLIDAY_DATE_FORMAT);
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         if (date.startsWith("*")) {
             date = date.replaceFirst("\\*", currentYear + "");
@@ -228,7 +239,7 @@ public class CalendarBean {
     static void validateRequiredProperty(String property, StringBuilder errorMessage, Properties calendarConfiguration) {
         String value = calendarConfiguration.getProperty(property);
         if (Objects.isNull(value)) {
-            errorMessage.append("Property required: ").append(property).append(" is not provided.\n");
+            addMessageToStringBuilder(errorMessage, String.format(PROPERTY_REQUIRED_ERR_MSG, property));
         }
     }
 

@@ -35,6 +35,7 @@ import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAYS;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAY_DATE_FORMAT;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.START_HOUR;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.TIMEZONE;
+import static org.jbpm.process.core.timer.BusinessCalendarImpl.WEEKEND_DAYS;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -48,7 +49,7 @@ class CalendarBeanTest {
         assertThat(errors).isEmpty();
         CalendarBean.requiredValidation(errors, config);
         assertThat(errors).isNotEmpty();
-        String expected = "Start hour 25 outside expected boundaries (0-24)";
+        String expected = "Property "+END_HOUR +" is required";
         assertThat(errors).contains(expected);
 
     }
@@ -61,18 +62,18 @@ class CalendarBeanTest {
         assertThat(errors).isEmpty();
         CalendarBean.formatValidation(errors, config);
         assertThat(errors).isNotEmpty();
-        String expected = "Start hour 25 outside expected boundaries (0-24)";
+        String expected = START_HOUR+" 25 outside expected boundaries (0-24)";
         assertThat(errors).contains(expected);
 
     }
 
     @ParameterizedTest
     @MethodSource("getInValidCalendarProperties")
-    public void testValidationForInvalidProperties(Map<String, Object> propertyMap, List<String> errorMessages) throws NoSuchFieldException, IllegalAccessException {
+    public void testValidationForInvalidProperties(Map<String, Object> propertyMap, List<String> errorMessages) {
         Properties businessCalendarProperties = new Properties();
         businessCalendarProperties.putAll(propertyMap);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->new CalendarBean(businessCalendarProperties));
-        //errorMessages.forEach(msg -> assertTrue(exception.getMessage().contains(msg)));
+        errorMessages.forEach(msg -> assertTrue(exception.getMessage().contains(msg)));
     }
 
     @Test
@@ -82,19 +83,22 @@ class CalendarBeanTest {
         Properties businessCalendarProperties = new Properties();
         businessCalendarProperties.putAll(propertyMap);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CalendarBean(businessCalendarProperties));
-        assertTrue(exception.getMessage().contains("Invalid holidays"));
-        assertTrue(exception.getMessage().contains("Invalid timezone"));
+        assertTrue(exception.getMessage().contains(HOLIDAYS+ " is not valid: Unparseable date: \"22-12-121\""));
+        assertTrue(exception.getMessage().contains(TIMEZONE+" is not valid: invalid/invalid"));
     }
 
     private static Stream<Arguments> getInValidCalendarProperties() {
 
         return Stream.of(
-                Arguments.of(Map.of(), List.of("Property required: " + START_HOUR, "Property required: " + END_HOUR)),
-                Arguments.of(Map.of(START_HOUR, "9"), List.of("Property required: " + END_HOUR)),
-                Arguments.of(Map.of(END_HOUR, "17"), List.of("Property required: " + START_HOUR)),
-                Arguments.of(Map.of(START_HOUR, "9", END_HOUR, "25"), List.of("Invalid property: " + END_HOUR)),
-                Arguments.of(Map.of(START_HOUR, "24", END_HOUR, "25"), List.of("Invalid property: " + START_HOUR, "Invalid property: " + END_HOUR)));
-                //Arguments.of(Map.of(START_HOUR, "10", END_HOUR, "4", WEEKEND_DAYS, "1,2,8"), List.of("Invalid property: " + WEEKEND_DAYS)));
-                //Arguments.of(Map.of(START_HOUR, "", END_HOUR, ""), List.of("Property is not a number: " + START_HOUR, "Property is not a number: " + END_HOUR)));
+                Arguments.of(Map.of(), List.of("Property " + START_HOUR+" is required", "Property " + END_HOUR+ " is required")),
+                Arguments.of(Map.of(START_HOUR, "9"), List.of("Property " + END_HOUR+ " is required")),
+                Arguments.of(Map.of(END_HOUR, "17"), List.of("Property " + START_HOUR+ " is required")),
+                Arguments.of(Map.of(START_HOUR, "9", END_HOUR, "25"), List.of(END_HOUR+" 25 outside expected boundaries (0-24)")),
+                Arguments.of(Map.of(START_HOUR, "26", END_HOUR, "-2"), List.of(START_HOUR+" 26 outside expected boundaries (0-24)", END_HOUR+" -2 outside expected boundaries (0-24)")),
+                Arguments.of(Map.of(START_HOUR, "10", END_HOUR, "4", WEEKEND_DAYS, "1,2,8,9"), List.of(WEEKEND_DAYS+" [8, 9] outside expected boundaries (0-7)")),
+                Arguments.of(Map.of(START_HOUR, "10", END_HOUR, "10"), List.of(START_HOUR+" 10 and "+END_HOUR+" 10 must be different")),
+                Arguments.of(Map.of(START_HOUR, "10", END_HOUR, "4", WEEKEND_DAYS, "0,1,2"), List.of("0 (= no weekends) and other values provided in the given "+WEEKEND_DAYS+ " 0,1,2")),
+                Arguments.of(Map.of(START_HOUR, "10", END_HOUR, "4", WEEKEND_DAYS, "1,1,2"), List.of("There are repeated values in the given "+WEEKEND_DAYS+" 1,1,2")),
+                Arguments.of(Map.of(START_HOUR, "", END_HOUR, ""), List.of(START_HOUR+" is not valid: For input string: \"\"", END_HOUR+" is not valid: For input string: \"\"")));
     }
 }
