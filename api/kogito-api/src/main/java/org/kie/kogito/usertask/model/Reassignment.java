@@ -26,6 +26,17 @@ public class Reassignment {
     private Set<String> potentialUsers;
     private Set<String> potentialGroups;
 
+    public Reassignment() {
+    }
+
+    public void setPotentialGroups(Set<String> potentialGroups) {
+        this.potentialGroups = potentialGroups;
+    }
+
+    public void setPotentialUsers(Set<String> potentialUsers) {
+        this.potentialUsers = potentialUsers;
+    }
+
     public Reassignment(Set<String> potentialUsers, Set<String> potentialGroups) {
         this.potentialUsers = potentialUsers;
         this.potentialGroups = potentialGroups;
@@ -41,7 +52,7 @@ public class Reassignment {
 
     @Override
     public String toString() {
-        return "Reassigment [potentialUsers=" + potentialUsers + ", potentialGroups=" + potentialGroups + "]";
+        return "Reassignment [potentialUsers=" + potentialUsers + ", potentialGroups=" + potentialGroups + "]";
     }
 
     @Override

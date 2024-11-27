@@ -95,7 +95,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.internal.process.runtime.MessageException;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.jobs.ProcessInstanceJobDescription;
+import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
@@ -442,8 +442,6 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
             removeEventListeners();
             processRuntime.getProcessInstanceManager().removeProcessInstance(this);
-            processRuntime.getProcessEventSupport().fireAfterProcessCompleted(this, kruntime);
-
             if (isSignalCompletion()) {
 
                 List<KogitoEventListener> listeners = eventListeners.get("processInstanceCompleted:" + getStringId());
@@ -455,6 +453,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
                 processRuntime.getSignalManager().signalEvent("processInstanceCompleted:" + getStringId(), this);
             }
+            processRuntime.getProcessEventSupport().fireAfterProcessCompleted(this, kruntime);
+
         } else {
             super.setState(state, outcome);
         }
@@ -599,7 +599,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     private TimerInstance registerTimer(TimerInstance timerInstance) {
         ProcessInstanceJobDescription description =
-                ProcessInstanceJobDescription.builder()
+                ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
                         .id(timerInstance.getId())
                         .timerId(timerInstance.getTimerId())
                         .expirationTime(DurationExpirationTime.after(timerInstance.getDelay()))
@@ -607,7 +607,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                         .processId(getProcessId())
                         .build();
         JobsService jobsService = InternalProcessRuntime.asKogitoProcessRuntime(getKnowledgeRuntime().getProcessRuntime()).getJobsService();
-        jobsService.scheduleProcessInstanceJob(description);
+        jobsService.scheduleJob(description);
         return timerInstance;
     }
 
