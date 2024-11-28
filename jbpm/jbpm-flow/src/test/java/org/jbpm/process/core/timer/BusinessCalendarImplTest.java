@@ -368,6 +368,24 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         assertThat(formatDate("yyyy-MM-dd HH:mm:ss", result)).isEqualTo(expectedDate);
     }
 
+    @Test
+    public void testCalculateMinutesBeforeStartHour() {
+        Properties config = new Properties();
+        config.setProperty(BusinessCalendarImpl.HOURS_PER_DAY, "4");
+        config.setProperty(BusinessCalendarImpl.START_HOUR, "14");
+        config.setProperty(BusinessCalendarImpl.END_HOUR, "18");
+        String currentDate = "2024-11-28 10:48:33";
+        String duration = "10m";
+        String expectedDate = "2024-11-28 14:10:00";
+
+        SessionPseudoClock clock = new StaticPseudoClock(parseToDateWithTime(currentDate).getTime());
+        BusinessCalendarImpl businessCal = new BusinessCalendarImpl(config, clock);
+
+        Date result = businessCal.calculateBusinessTimeAsDate(duration);
+
+        assertThat(formatDate("yyyy-MM-dd HH:mm:ss", result)).isEqualTo(expectedDate);
+    }
+
     private Date parseToDate(String dateString) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
