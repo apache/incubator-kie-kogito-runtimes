@@ -41,9 +41,8 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 
-public class BusinessCalendarTest {
+public class BusinessCalendarTimerTest {
 
     private static Properties notWorkingDayCalendarConfiguration;
     private static Properties workingDayCalendarConfiguration;

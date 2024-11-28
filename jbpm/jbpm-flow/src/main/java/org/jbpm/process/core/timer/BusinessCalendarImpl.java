@@ -143,7 +143,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         }
         int time = 0;
 
-        Calendar c = CalendarBeanFactory.getCalendar();
+        Calendar c = new GregorianCalendar();
         if (timezone != null) {
             c.setTimeZone(TimeZone.getTimeZone(timezone));
         }

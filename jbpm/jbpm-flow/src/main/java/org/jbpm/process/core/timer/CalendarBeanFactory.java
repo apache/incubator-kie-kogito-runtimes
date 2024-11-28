@@ -3,8 +3,6 @@ package org.jbpm.process.core.timer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -38,9 +36,5 @@ public class CalendarBeanFactory {
             logger.error(errorMessage);
             throw new RuntimeException(errorMessage);
         }
-    }
-
-    public static Calendar getCalendar() {
-        return new GregorianCalendar();
     }
 }
