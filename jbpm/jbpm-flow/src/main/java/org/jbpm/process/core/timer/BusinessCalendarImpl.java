@@ -279,12 +279,12 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      *
      * Set hour, minute, second and millisecond when
      * <code>resetTime</code> is <code>true</code>
-     * @param calendar
+     * @param toRoll
      * @param resetTime
      */
-    protected void rollCalendarAfterHolidays(Calendar calendar, boolean resetTime) {
+    protected void rollCalendarAfterHolidays(Calendar toRoll, boolean resetTime) {
         if (!holidays.isEmpty()) {
-            Date current = calendar.getTime();
+            Date current = toRoll.getTime();
             for (TimePeriod holiday : holidays) {
                 // check each holiday if it overlaps current date and break after first match
                 if (current.after(holiday.getFrom()) && current.before(holiday.getTo())) {
@@ -301,9 +301,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
                     long difference = tmp.getTimeInMillis() - tmp2.getTimeInMillis();
 
-                    calendar.add(Calendar.HOUR_OF_DAY, (int) (difference / HOUR_IN_MILLIS));
+                    toRoll.add(Calendar.HOUR_OF_DAY, (int) (difference / HOUR_IN_MILLIS));
 
-                    rollCalendarToNextWorkingDay(calendar, resetTime);
+                    rollCalendarToNextWorkingDay(toRoll, resetTime);
                     break;
                 }
             }
@@ -315,20 +315,20 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      * Rolls the given <code>Calendar</code> to the first <b>working day</b>
      * Set hour, minute, second and millisecond when
      * <code>resetTime</code> is <code>true</code>
-     * @param calendar
+     * @param toRoll
      * @param resetTime
      */
-    protected void rollCalendarToNextWorkingDay(Calendar calendar, boolean resetTime) {
-        int dayOfTheWeek = calendar.get(Calendar.DAY_OF_WEEK);
+    protected void rollCalendarToNextWorkingDay(Calendar toRoll, boolean resetTime) {
+        int dayOfTheWeek = toRoll.get(Calendar.DAY_OF_WEEK);
         while (!isWorkingDay(dayOfTheWeek)) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            toRoll.add(Calendar.DAY_OF_YEAR, 1);
             if (resetTime) {
-                calendar.set(Calendar.HOUR_OF_DAY, 0);
-                calendar.set(Calendar.MINUTE, 0);
-                calendar.set(Calendar.SECOND, 0);
-                calendar.set(Calendar.MILLISECOND, 0);
+                toRoll.set(Calendar.HOUR_OF_DAY, 0);
+                toRoll.set(Calendar.MINUTE, 0);
+                toRoll.set(Calendar.SECOND, 0);
+                toRoll.set(Calendar.MILLISECOND, 0);
             }
-            dayOfTheWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            dayOfTheWeek = toRoll.get(Calendar.DAY_OF_WEEK);
         }
     }
 
