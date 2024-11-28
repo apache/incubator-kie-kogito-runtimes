@@ -131,7 +131,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         int min = 0;
         int sec = 0;
 
-        if (trimmed.length() > 0) {
+        if (!trimmed.isEmpty()) {
             Matcher mat = PatternConstants.SIMPLE_TIME_DATE_MATCHER.matcher(trimmed);
             if (mat.matches()) {
                 weeks = (mat.group(SIM_WEEK) != null) ? Integer.parseInt(mat.group(SIM_WEEK)) : 0;

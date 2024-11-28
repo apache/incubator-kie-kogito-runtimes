@@ -70,7 +70,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     // TODO
     // name this testing method after the method that is actually tested
     @Test
-    public void testCalculateHours() {
+    public void calculateBusinessTimeAsDateINsideWorkingHOur() {
         // TODO revert the test logic.
         // Instead of if evaluation, calcuated start and end hour based on current time,
         // and make proper assertion
@@ -81,8 +81,8 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         LocalDateTime currentTime = LocalDateTime.now();
         int triggerDelay = 3;
         LocalDateTime firstTriggerTime = currentTime.plusHours(triggerDelay);
-        LocalDateTime startTime = firstTriggerTime.minusHours(1);
-        LocalDateTime endTime = firstTriggerTime.plusHours(1);
+        LocalDateTime startTime = firstTriggerTime.minusHours(4);
+        LocalDateTime endTime = firstTriggerTime.plusHours(4);
 
         int startHour = startTime.getHour();
         int endHour = endTime.getHour();
@@ -99,7 +99,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Instant firstTriggerInstant = firstTriggerTime.toInstant(ZoneOffset.of("Z"));
         assertThat(firstTriggerInstant).isEqualTo(resultInstant);
 
-        // modify parameters and repeat test to verify all the conditions ywritten in the if/else statements
+        // modify parameters and repeat test to verify all the conditions written in the if/else statements
 
 
 //        if (firstTriggerTime.isAfter(startTime) && firstTriggerTime.isBefore(endTime)) {
@@ -119,8 +119,9 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
 
     @Test
     public void testCalculateHoursWhenTodayAndTomorrowAreHolidays() {
+        int startHour = 9;
         Properties config = new Properties();
-        config.setProperty(START_HOUR, "9");
+        config.setProperty(START_HOUR, String.valueOf(startHour));
         config.setProperty(END_HOUR, "17");
         config.setProperty(WEEKEND_DAYS, "0");
         String dateFormat = "yyyy-MM-dd";
@@ -132,7 +133,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
 
         String dateTimeFormat = "yyyy-MM-dd HH:mm";
 
-        LocalTime startTime = LocalTime.of(9, 0);
+        LocalTime startTime = LocalTime.of(startHour, 0);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat);
 
         BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
