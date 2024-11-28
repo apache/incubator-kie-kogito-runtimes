@@ -301,7 +301,6 @@ public class CalendarBean {
                     Date to = tmpTo.getTime();
                     holidays.add(new BusinessCalendarImpl.TimePeriod(from, to));
 
-                    holidays.add(new BusinessCalendarImpl.TimePeriod(from, to));
                     if (addNextYearHolidays) {
                         tmpFrom = new GregorianCalendar();
                         if (timezone != null) {

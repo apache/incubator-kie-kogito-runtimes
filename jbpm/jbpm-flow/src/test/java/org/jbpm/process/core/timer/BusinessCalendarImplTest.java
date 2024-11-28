@@ -23,22 +23,30 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.END_HOUR;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAYS;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAY_DATE_FORMAT;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.START_HOUR;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.WEEKEND_DAYS;
+import static org.jbpm.process.core.timer.CalendarBean.DEFAULT_HOLIDAY_DATE_FORMAT;
 
 public class BusinessCalendarImplTest extends AbstractBaseTest {
 
@@ -66,7 +74,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         assertThat(retrieved).isNotNull();
     }
 
-
     // TODO
     // name this testing method after the method that is actually tested
     @Test
@@ -87,34 +94,32 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         int startHour = startTime.getHour();
         int endHour = endTime.getHour();
 
-
         Properties config = new Properties();
         config.setProperty(START_HOUR, String.valueOf(startHour));
         config.setProperty(END_HOUR, String.valueOf(endHour));
         config.setProperty(WEEKEND_DAYS, "0");
 
         BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
-        Date result = businessCal.calculateBusinessTimeAsDate(String.format("%sh", triggerDelay));
-        Instant resultInstant = result.toInstant();
+        Date retrieved = businessCal.calculateBusinessTimeAsDate(String.format("%sh", triggerDelay));
+        Instant resultInstant = retrieved.toInstant();
         Instant firstTriggerInstant = firstTriggerTime.toInstant(ZoneOffset.of("Z"));
         assertThat(firstTriggerInstant).isEqualTo(resultInstant);
 
         // modify parameters and repeat test to verify all the conditions written in the if/else statements
 
-
-//        if (firstTriggerTime.isAfter(startTime) && firstTriggerTime.isBefore(endTime)) {
-//            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(firstTriggerTime.format(dtf));
-//        } else if (currentTime.isBefore(startTime)) {
-//            LocalTime actualTriggerTime = currentTime;
-//
-//            while (actualTriggerTime.isBefore(startTime)) {
-//                actualTriggerTime = actualTriggerTime.plusHours(3);
-//            }
-//            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(actualTriggerTime.plusHours(3).atDate(LocalDate.now()).format(dtf));
-//        } else {
-//            LocalDateTime actualTriggerTime = startTime.plusHours(3).atDate(LocalDate.now().plusDays(1));
-//            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(actualTriggerTime.format(dtf));
-//        }
+        //        if (firstTriggerTime.isAfter(startTime) && firstTriggerTime.isBefore(endTime)) {
+        //            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(firstTriggerTime.format(dtf));
+        //        } else if (currentTime.isBefore(startTime)) {
+        //            LocalTime actualTriggerTime = currentTime;
+        //
+        //            while (actualTriggerTime.isBefore(startTime)) {
+        //                actualTriggerTime = actualTriggerTime.plusHours(3);
+        //            }
+        //            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(actualTriggerTime.plusHours(3).atDate(LocalDate.now()).format(dtf));
+        //        } else {
+        //            LocalDateTime actualTriggerTime = startTime.plusHours(3).atDate(LocalDate.now().plusDays(1));
+        //            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(actualTriggerTime.format(dtf));
+        //        }
     }
 
     @Test
@@ -188,12 +193,81 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         }
     }
 
+    @Test
+    void rollCalendarAfterHolidays() {
+        Instant now = Instant.now();
+        int holidayLeft = 4;
+        Instant startHolidayInstant = now.minus(2, DAYS);
+        Instant endHolidayInstant = now.plus(holidayLeft, DAYS);
+        Date startHoliday = Date.from(startHolidayInstant);
+        Date endHoliday = Date.from(endHolidayInstant);
+        String startHolidayFormatted = formatDate(DEFAULT_HOLIDAY_DATE_FORMAT, startHoliday);
+        String endHolidayFormatted = formatDate(DEFAULT_HOLIDAY_DATE_FORMAT, endHoliday);
+        String holidays = String.format("%s:%s", startHolidayFormatted, endHolidayFormatted);
+        Properties config = new Properties();
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+        config.setProperty(WEEKEND_DAYS, "0");
+        config.setProperty(HOLIDAYS, holidays);
+        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
+
+        Calendar calendar = Calendar.getInstance();
+        int currentDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+        businessCal.rollCalendarAfterHolidays(calendar, false);
+        int expected = currentDayOfYear + holidayLeft + 1;
+        assertThat(calendar.get(Calendar.DAY_OF_YEAR)).isEqualTo(expected);
+    }
+
+    @Test
+    void rollCalendarToNextWorkingDay() {
+        List<Integer> workingDays = IntStream.range(Calendar.MONDAY, Calendar.SATURDAY).boxed().toList();
+        List<Integer> weekendDays = Arrays.asList(Calendar.SATURDAY, Calendar.SUNDAY);
+        Properties config = new Properties();
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+        config.setProperty(WEEKEND_DAYS, weekendDays.stream().map(String::valueOf).collect(Collectors.joining(",")));
+        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
+
+        workingDays.forEach(workingDay -> {
+            Calendar calendar = getCalendarAtExpectedWeekDay(workingDay);
+            businessCal.rollCalendarToNextWorkingDay(calendar, false);
+            assertThat(calendar.get(Calendar.DAY_OF_WEEK)).isEqualTo(workingDay);
+        });
+        weekendDays.forEach(weekendDay -> {
+            Calendar calendar = getCalendarAtExpectedWeekDay(weekendDay);
+            businessCal.rollCalendarToNextWorkingDay(calendar, false);
+            assertThat(calendar.get(Calendar.DAY_OF_WEEK)).isEqualTo(Calendar.MONDAY);
+        });
+    }
+
+    @Test
+    void isWorkingDay() {
+        List<Integer> workingDays = IntStream.range(Calendar.MONDAY, Calendar.SATURDAY).boxed().toList();
+        List<Integer> weekendDays = Arrays.asList(Calendar.SATURDAY, Calendar.SUNDAY);
+        Properties config = new Properties();
+        config.setProperty(START_HOUR, "9");
+        config.setProperty(END_HOUR, "17");
+        config.setProperty(WEEKEND_DAYS, weekendDays.stream().map(String::valueOf).collect(Collectors.joining(",")));
+        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
+        workingDays.forEach(workingDay -> assertThat(businessCal.isWorkingDay(workingDay)).isTrue());
+        weekendDays.forEach(workingDay -> assertThat(businessCal.isWorkingDay(workingDay)).isFalse());
+    }
+
+    private Calendar getCalendarAtExpectedWeekDay(int weekDay) {
+        Calendar toReturn = Calendar.getInstance();
+        while (toReturn.get(Calendar.DAY_OF_WEEK) != weekDay) {
+            toReturn.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        return toReturn;
+    }
+
     private String formatDate(String pattern, Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        return sdf.format(date);
+    }
 
-        String testTime = sdf.format(date);
-
-        return testTime;
-
+    private String formatLocalDate(String pattern, LocalDate date) {
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        return sdf.format(date);
     }
 }

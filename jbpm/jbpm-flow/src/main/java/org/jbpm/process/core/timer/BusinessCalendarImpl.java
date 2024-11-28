@@ -111,6 +111,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         hoursInDay = calendarBean.getHoursInDay();
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public long calculateBusinessTimeAsDuration(String timeExpression) {
         timeExpression = adoptISOFormat(timeExpression);
@@ -120,6 +123,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         return (calculatedDate.getTime() - getCurrentTime());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public Date calculateBusinessTimeAsDate(String timeExpression) {
         timeExpression = adoptISOFormat(timeExpression);
@@ -153,7 +159,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         if (numberOfWeeks > 0) {
             c.add(Calendar.WEEK_OF_YEAR, numberOfWeeks);
         }
-        handleWeekend(c, hours > 0 || min > 0);
+        rollCalendarToNextWorkingDay(c, hours > 0 || min > 0);
         hours += (days - (numberOfWeeks * daysPerWeek)) * hoursInDay;
 
         // calculate number of days
@@ -161,8 +167,8 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         if (numberOfDays > 0) {
             for (int i = 0; i < numberOfDays; i++) {
                 c.add(Calendar.DAY_OF_YEAR, 1);
-                handleWeekend(c, false);
-                handleHoliday(c, hours > 0 || min > 0);
+                rollCalendarToNextWorkingDay(c, false);
+                rollCalendarAfterHolidays(c, hours > 0 || min > 0);
             }
         }
 
@@ -179,8 +185,8 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         // calculate remaining hours
         time = hours - (numberOfDays * hoursInDay);
         c.add(Calendar.HOUR, time);
-        handleWeekend(c, true);
-        handleHoliday(c, hours > 0 || min > 0);
+        rollCalendarToNextWorkingDay(c, true);
+        rollCalendarAfterHolidays(c, hours > 0 || min > 0);
 
         currentCalHour = c.get(Calendar.HOUR_OF_DAY);
         if (currentCalHour >= endHour) {
@@ -218,9 +224,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
             c.add(Calendar.HOUR_OF_DAY, startHour);
         }
         // take under consideration weekend
-        handleWeekend(c, false);
+        rollCalendarToNextWorkingDay(c, false);
         // take under consideration holidays
-        handleHoliday(c, false);
+        rollCalendarAfterHolidays(c, false);
 
         return c.getTime();
     }
@@ -267,9 +273,18 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         }
     }
 
-    protected void handleHoliday(Calendar c, boolean resetTime) {
+    /**
+     * Rolls the given <code>Calendar</code> to the first <b>working day</b>
+     * after configured <code>holidays</code>, if provided.
+     *
+     * Set hour, minute, second and millisecond when
+     * <code>resetTime</code> is <code>true</code>
+     * @param calendar
+     * @param resetTime
+     */
+    protected void rollCalendarAfterHolidays(Calendar calendar, boolean resetTime) {
         if (!holidays.isEmpty()) {
-            Date current = c.getTime();
+            Date current = calendar.getTime();
             for (TimePeriod holiday : holidays) {
                 // check each holiday if it overlaps current date and break after first match
                 if (current.after(holiday.getFrom()) && current.before(holiday.getTo())) {
@@ -286,14 +301,35 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
                     long difference = tmp.getTimeInMillis() - tmp2.getTimeInMillis();
 
-                    c.add(Calendar.HOUR_OF_DAY, (int) (difference / HOUR_IN_MILLIS));
+                    calendar.add(Calendar.HOUR_OF_DAY, (int) (difference / HOUR_IN_MILLIS));
 
-                    handleWeekend(c, resetTime);
+                    rollCalendarToNextWorkingDay(calendar, resetTime);
                     break;
                 }
             }
         }
 
+    }
+
+    /**
+     * Rolls the given <code>Calendar</code> to the first <b>working day</b>
+     * Set hour, minute, second and millisecond when
+     * <code>resetTime</code> is <code>true</code>
+     * @param calendar
+     * @param resetTime
+     */
+    protected void rollCalendarToNextWorkingDay(Calendar calendar, boolean resetTime) {
+        int dayOfTheWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        while (!isWorkingDay(dayOfTheWeek)) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            if (resetTime) {
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+            }
+            dayOfTheWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        }
     }
 
     protected long getCurrentTime() {
@@ -302,20 +338,6 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
     protected boolean isWorkingDay(int day) {
         return !weekendDays.contains(day);
-    }
-
-    protected void handleWeekend(Calendar c, boolean resetTime) {
-        int dayOfTheWeek = c.get(Calendar.DAY_OF_WEEK);
-        while (!isWorkingDay(dayOfTheWeek)) {
-            c.add(Calendar.DAY_OF_YEAR, 1);
-            if (resetTime) {
-                c.set(Calendar.HOUR_OF_DAY, 0);
-                c.set(Calendar.MINUTE, 0);
-                c.set(Calendar.SECOND, 0);
-                c.set(Calendar.MILLISECOND, 0);
-            }
-            dayOfTheWeek = c.get(Calendar.DAY_OF_WEEK);
-        }
     }
 
     public static class Builder {
