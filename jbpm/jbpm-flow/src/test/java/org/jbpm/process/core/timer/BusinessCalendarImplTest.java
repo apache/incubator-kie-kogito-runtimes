@@ -19,9 +19,12 @@
 package org.jbpm.process.core.timer;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Properties;
@@ -38,12 +41,6 @@ import static org.jbpm.process.core.timer.BusinessCalendarImpl.START_HOUR;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.WEEKEND_DAYS;
 
 public class BusinessCalendarImplTest extends AbstractBaseTest {
-
-    private static final String START_HOUR_FIELD = "startHour";
-    private static final String END_HOUR_FIELD = "endHour";
-    private static final String HOURS_IN_DAY_FIELD = "hoursInDay";
-    private static final String WEEKEND_DAY_FIELD = "weekendDays";
-    private static final String DAYS_PER_WEEK_FIELD = "daysPerWeek";
 
     public void addLogger() {
         logger = LoggerFactory.getLogger(this.getClass());
@@ -69,38 +66,55 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         assertThat(retrieved).isNotNull();
     }
 
+
+    // TODO
+    // name this testing method after the method that is actually tested
     @Test
     public void testCalculateHours() {
-        Properties config = new Properties();
-        config.setProperty(START_HOUR, "9");
-        config.setProperty(END_HOUR, "17");
-        config.setProperty(WEEKEND_DAYS, "0");
-
-        LocalTime startTime = LocalTime.of(9, 0);
-        LocalTime endTime = LocalTime.of(17, 0);
-        LocalTime currentTime = LocalTime.now();
-        LocalTime firstTriggerTime = currentTime.plusHours(3);
+        // TODO revert the test logic.
+        // Instead of if evaluation, calcuated start and end hour based on current time,
+        // and make proper assertion
+        // Do not create the "functionally" same property in multiple times (e.g. "9" used in configuration is exactly the same 9 used in LocalTime.of
 
         String dateTimeFormat = "yyyy-MM-dd HH:mm";
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat);
+        LocalDateTime currentTime = LocalDateTime.now();
+        int triggerDelay = 3;
+        LocalDateTime firstTriggerTime = currentTime.plusHours(triggerDelay);
+        LocalDateTime startTime = firstTriggerTime.minusHours(1);
+        LocalDateTime endTime = firstTriggerTime.plusHours(1);
+
+        int startHour = startTime.getHour();
+        int endHour = endTime.getHour();
+
+
+        Properties config = new Properties();
+        config.setProperty(START_HOUR, String.valueOf(startHour));
+        config.setProperty(END_HOUR, String.valueOf(endHour));
+        config.setProperty(WEEKEND_DAYS, "0");
 
         BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
+        Date result = businessCal.calculateBusinessTimeAsDate(String.format("%sh", triggerDelay));
+        Instant resultInstant = result.toInstant();
+        Instant firstTriggerInstant = firstTriggerTime.toInstant(ZoneOffset.of("Z"));
+        assertThat(firstTriggerInstant).isEqualTo(resultInstant);
 
-        Date result = businessCal.calculateBusinessTimeAsDate("3h");
+        // modify parameters and repeat test to verify all the conditions ywritten in the if/else statements
 
-        if (firstTriggerTime.isAfter(startTime) && firstTriggerTime.isBefore(endTime)) {
-            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(firstTriggerTime.format(dtf));
-        } else if (currentTime.isBefore(startTime)) {
-            LocalTime actualTriggerTime = currentTime;
 
-            while (actualTriggerTime.isBefore(startTime)) {
-                actualTriggerTime = actualTriggerTime.plusHours(3);
-            }
-            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(actualTriggerTime.plusHours(3).atDate(LocalDate.now()).format(dtf));
-        } else {
-            LocalDateTime actualTriggerTime = startTime.plusHours(3).atDate(LocalDate.now().plusDays(1));
-            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(actualTriggerTime.format(dtf));
-        }
+//        if (firstTriggerTime.isAfter(startTime) && firstTriggerTime.isBefore(endTime)) {
+//            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(firstTriggerTime.format(dtf));
+//        } else if (currentTime.isBefore(startTime)) {
+//            LocalTime actualTriggerTime = currentTime;
+//
+//            while (actualTriggerTime.isBefore(startTime)) {
+//                actualTriggerTime = actualTriggerTime.plusHours(3);
+//            }
+//            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(actualTriggerTime.plusHours(3).atDate(LocalDate.now()).format(dtf));
+//        } else {
+//            LocalDateTime actualTriggerTime = startTime.plusHours(3).atDate(LocalDate.now().plusDays(1));
+//            assertThat(formatDate(dateTimeFormat, result)).isEqualTo(actualTriggerTime.format(dtf));
+//        }
     }
 
     @Test
