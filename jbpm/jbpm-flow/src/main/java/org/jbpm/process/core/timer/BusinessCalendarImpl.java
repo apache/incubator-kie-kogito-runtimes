@@ -78,6 +78,11 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     private final List<TimePeriod> holidays;
     private final List<Integer> weekendDays;
 
+    /**
+     * Testing calendar used only for testing purposes
+     */
+    private final Calendar testingCalendar;
+
     private static final int SIM_WEEK = 3;
     private static final int SIM_DAY = 5;
     private static final int SIM_HOU = 7;
@@ -97,11 +102,16 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         return new Builder();
     }
 
-    private BusinessCalendarImpl() {
-        this(CalendarBeanFactory.createCalendarBean());
+    /**
+     *
+     * @param testingCalendar is used only for testing purpose. It is <code>null</code> in production and
+     * during normal execution
+     */
+    private BusinessCalendarImpl(Calendar testingCalendar) {
+        this(CalendarBeanFactory.createCalendarBean(), testingCalendar);
     }
 
-    private BusinessCalendarImpl(CalendarBean calendarBean) {
+    private BusinessCalendarImpl(CalendarBean calendarBean, Calendar testingCalendar) {
         holidays = calendarBean.getHolidays();
         weekendDays = calendarBean.getWeekendDays();
         daysPerWeek = calendarBean.getDaysPerWeek();
@@ -109,6 +119,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         startHour = calendarBean.getStartHour();
         endHour = calendarBean.getEndHour();
         hoursInDay = calendarBean.getHoursInDay();
+        this.testingCalendar = testingCalendar;
     }
 
     /**
@@ -149,7 +160,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         }
         int time = 0;
 
-        Calendar calendar = new GregorianCalendar();
+        Calendar calendar = getCalendar();
         if (timezone != null) {
             calendar.setTimeZone(TimeZone.getTimeZone(timezone));
         }
@@ -209,8 +220,16 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     /**
+     * Indirection used only for testing purposes
+     * @return
+     */
+    protected Calendar getCalendar() {
+        return testingCalendar != null ? (Calendar) testingCalendar.clone() : new GregorianCalendar();
+    }
+
+    /**
      * Rolls the <code>HOUR_OF_DAY</code> of the given <code>Calendar</code> depending on
-     * given  <code>currentCalHour</code>, instance <code>endHour</code>, and instance <code>startHour</code>
+     * given <code>currentCalHour</code>, instance <code>endHour</code>, and instance <code>startHour</code>
      *
      * It also consider if the startHour < endHour (i.e. working daily hours) or startHour > endHour (i.e. nightly daily hours).
      *
@@ -243,8 +262,6 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         } else if (currentCalHour < startHour) {
             toRoll.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
         }
-        toRoll.set(Calendar.MINUTE, 0);
-        toRoll.set(Calendar.SECOND, 0);
     }
 
     /**
@@ -334,7 +351,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     protected long getCurrentTime() {
-        return System.currentTimeMillis();
+        return  testingCalendar != null ? testingCalendar.getTimeInMillis() : System.currentTimeMillis();
     }
 
 
@@ -383,14 +400,25 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     public static class Builder {
 
         private CalendarBean calendarBean;
+        private Calendar testingCalendar;
 
         public Builder withCalendarBean(CalendarBean calendarBean) {
             this.calendarBean = calendarBean;
             return this;
         }
 
+        /**
+         * Used only for testing purposes.
+         * @param testingCalendar
+         * @return
+         */
+        public Builder withTestingCalendar(Calendar testingCalendar) {
+            this.testingCalendar = testingCalendar;
+            return this;
+        }
+
         public BusinessCalendarImpl build() {
-            return calendarBean == null ? new BusinessCalendarImpl() : new BusinessCalendarImpl(calendarBean);
+            return calendarBean == null ? new BusinessCalendarImpl(testingCalendar) : new BusinessCalendarImpl(calendarBean, testingCalendar);
         }
     }
 
