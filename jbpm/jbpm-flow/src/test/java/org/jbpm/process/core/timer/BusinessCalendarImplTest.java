@@ -87,7 +87,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     @Test
-    public void calculateBusinessTimeAsDateInsideNIghtlyWorkingHour() {
+    public void calculateBusinessTimeAsDateInsideNightlyWorkingHour() {
         commonCalculateBusinessTimeAsDateAssertBetweenHours(4, -4, 3, 0, null, null);
         //        //executed at 10.48
         //        //first trigger time:2024-11-29T01:48:01.955975900
@@ -121,6 +121,49 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         String holidays = sdf.format(tomorrow);
         commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 3, 0, holidayDateFormat, holidays);
+    }
+
+    @Test
+    void rollCalendarToDailyWorkingHour() {
+        int startHour = 14;
+        int endHour = 16;
+        Calendar toRoll = Calendar.getInstance();
+        int currentHour = 8;
+        toRoll.set(Calendar.HOUR_OF_DAY, currentHour);
+        int dayOfYear = toRoll.get(Calendar.DAY_OF_YEAR);
+        BusinessCalendarImpl.rollCalendarToDailyWorkingHour(toRoll, startHour, endHour);
+        assertThat(toRoll.get(Calendar.HOUR_OF_DAY)).isEqualTo(startHour);
+        assertThat(toRoll.get(Calendar.DAY_OF_YEAR)).isEqualTo(dayOfYear);
+
+        toRoll = Calendar.getInstance();
+        currentHour = 19;
+        toRoll.set(Calendar.HOUR_OF_DAY, currentHour);
+        dayOfYear = toRoll.get(Calendar.DAY_OF_YEAR);
+        BusinessCalendarImpl.rollCalendarToDailyWorkingHour(toRoll, startHour, endHour);
+        assertThat(toRoll.get(Calendar.HOUR_OF_DAY)).isEqualTo(startHour);
+        assertThat(toRoll.get(Calendar.DAY_OF_YEAR)).isEqualTo(dayOfYear + 1);
+    }
+
+    @Test
+    void rollCalendarToNightlyWorkingHour() {
+        int startHour = 20;
+        int endHour = 4;
+        Calendar toRoll = Calendar.getInstance();
+        int currentHour = 21;
+        toRoll.set(Calendar.HOUR_OF_DAY, currentHour);
+        int dayOfYear = toRoll.get(Calendar.DAY_OF_YEAR);
+        BusinessCalendarImpl.rollCalendarToNightlyWorkingHour(toRoll, startHour, endHour);
+        assertThat(toRoll.get(Calendar.HOUR_OF_DAY)).isEqualTo(startHour);
+        assertThat(toRoll.get(Calendar.DAY_OF_YEAR)).isEqualTo(dayOfYear);
+
+        toRoll = Calendar.getInstance();
+        currentHour = 3;
+        toRoll.set(Calendar.HOUR_OF_DAY, currentHour);
+        dayOfYear = toRoll.get(Calendar.DAY_OF_YEAR);
+        BusinessCalendarImpl.rollCalendarToNightlyWorkingHour(toRoll, startHour, endHour);
+        assertThat(toRoll.get(Calendar.HOUR_OF_DAY)).isEqualTo(startHour);
+        assertThat(toRoll.get(Calendar.DAY_OF_YEAR)).isEqualTo(dayOfYear + 1);
+
     }
 
     @Test

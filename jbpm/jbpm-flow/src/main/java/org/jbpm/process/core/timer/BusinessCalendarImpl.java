@@ -172,17 +172,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
             }
         }
 
-        int currentCalHour = calendar.get(Calendar.HOUR_OF_DAY);
-        if (currentCalHour >= endHour) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
-            calendar.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-        } else if (currentCalHour < startHour) {
-            calendar.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-        }
+        rollCalendarToWorkingHour(calendar);
 
         // calculate remaining hours
         time = hours - (numberOfDays * hoursInDay);
@@ -190,17 +180,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         rollCalendarToNextWorkingDay(calendar, true);
         rollCalendarAfterHolidays(calendar, hours > 0 || min > 0);
 
-        currentCalHour = calendar.get(Calendar.HOUR_OF_DAY);
-        if (currentCalHour >= endHour) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
-            // set hour to the starting one
-            calendar.set(Calendar.HOUR_OF_DAY, startHour);
-            calendar.add(Calendar.HOUR_OF_DAY, currentCalHour - endHour);
-        } else if (currentCalHour < startHour) {
-            calendar.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-        }
+        rollCalendarToWorkingHour(calendar);
 
         // calculate minutes
         int numberOfHours = min / 60;
@@ -218,18 +198,8 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         }
         calendar.add(Calendar.SECOND, sec);
 
-        currentCalHour = calendar.get(Calendar.HOUR_OF_DAY);
-        // TODO - implement switching logic for night -hours
-        if (currentCalHour >= endHour) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
-            // set hour to the starting one
-            calendar.set(Calendar.HOUR_OF_DAY, startHour);
-            calendar.add(Calendar.HOUR_OF_DAY, currentCalHour - endHour);
-        } else if (currentCalHour < startHour) {
-            calendar.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-        }
+        rollCalendarToWorkingHour(calendar);
+
         // take under consideration weekend
         rollCalendarToNextWorkingDay(calendar, false);
         // take under consideration holidays
@@ -238,47 +208,66 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         return calendar.getTime();
     }
 
-    protected String adoptISOFormat(String timeExpression) {
-
-        try {
-            Duration p = null;
-            if (DateTimeUtils.isPeriod(timeExpression)) {
-                p = Duration.parse(timeExpression);
-            } else if (DateTimeUtils.isNumeric(timeExpression)) {
-                p = Duration.of(Long.valueOf(timeExpression), ChronoUnit.MILLIS);
-            } else {
-                OffsetDateTime dateTime = OffsetDateTime.parse(timeExpression, DateTimeFormatter.ISO_DATE_TIME);
-                p = Duration.between(OffsetDateTime.now(), dateTime);
-            }
-
-            long days = p.toDays();
-            long hours = p.toHours() % 24;
-            long minutes = p.toMinutes() % 60;
-            long seconds = p.getSeconds() % 60;
-            long milis = p.toMillis() % 1000;
-
-            StringBuffer time = new StringBuffer();
-            if (days > 0) {
-                time.append(days + "d");
-            }
-            if (hours > 0) {
-                time.append(hours + "h");
-            }
-            if (minutes > 0) {
-                time.append(minutes + "m");
-            }
-            if (seconds > 0) {
-                time.append(seconds + "s");
-            }
-            if (milis > 0) {
-                time.append(milis + "ms");
-            }
-
-            return time.toString();
-        } catch (Exception e) {
-            return timeExpression;
+    /**
+     * Rolls the <code>HOUR_OF_DAY</code> of the given <code>Calendar</code> depending on
+     * given  <code>currentCalHour</code>, instance <code>endHour</code>, and instance <code>startHour</code>
+     *
+     * It also consider if the startHour < endHour (i.e. working daily hours) or startHour > endHour (i.e. nightly daily hours).
+     *
+     * The case where startHour = endHour is excluded by validation of the <code>CalendarBean</code>
+     * @param toRoll
+     */
+    protected void rollCalendarToWorkingHour(Calendar toRoll) {
+        if (startHour < endHour) {
+            rollCalendarToDailyWorkingHour(toRoll, startHour, endHour);
+        } else {
+            rollCalendarToNightlyWorkingHour(toRoll, startHour, endHour);
         }
+        toRoll.set(Calendar.MINUTE, 0);
+        toRoll.set(Calendar.SECOND, 0);
     }
+
+    /**
+     * Rolls the <code>HOUR_OF_DAY</code> of the given <code>Calendar</code> to the next "daily" working hour
+     *
+     * @param toRoll
+     * @param startHour
+     * @param endHour
+     */
+    static void rollCalendarToDailyWorkingHour(Calendar toRoll, int startHour, int endHour) {
+        int currentCalHour = toRoll.get(Calendar.HOUR_OF_DAY);
+        if (currentCalHour >= endHour) {
+            toRoll.add(Calendar.DAY_OF_YEAR, 1);
+            // set hour to the starting one
+            toRoll.set(Calendar.HOUR_OF_DAY, startHour);
+        } else if (currentCalHour < startHour) {
+            toRoll.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
+        }
+        toRoll.set(Calendar.MINUTE, 0);
+        toRoll.set(Calendar.SECOND, 0);
+    }
+
+    /**
+     * Rolls the <code>HOUR_OF_DAY</code> of the given <code>Calendar</code> to the next "nightly" working hour
+     *
+     * @param toRoll
+     * @param startHour
+     * @param endHour
+     */
+    static void rollCalendarToNightlyWorkingHour(Calendar toRoll, int startHour, int endHour) {
+        int currentCalHour = toRoll.get(Calendar.HOUR_OF_DAY);
+        if (currentCalHour < endHour) {
+            toRoll.set(Calendar.HOUR_OF_DAY, endHour);
+        } else if (currentCalHour >= startHour) {
+            toRoll.add(Calendar.DAY_OF_YEAR, 1);
+            // set hour to the starting one
+            toRoll.set(Calendar.HOUR_OF_DAY, endHour);
+        }
+        toRoll.set(Calendar.MINUTE, 0);
+        toRoll.set(Calendar.SECOND, 0);
+    }
+
+
 
     /**
      * Rolls the given <code>Calendar</code> to the first <b>working day</b>
@@ -345,6 +334,48 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
     protected boolean isWorkingDay(int day) {
         return !weekendDays.contains(day);
+    }
+
+    protected String adoptISOFormat(String timeExpression) {
+
+        try {
+            Duration p = null;
+            if (DateTimeUtils.isPeriod(timeExpression)) {
+                p = Duration.parse(timeExpression);
+            } else if (DateTimeUtils.isNumeric(timeExpression)) {
+                p = Duration.of(Long.valueOf(timeExpression), ChronoUnit.MILLIS);
+            } else {
+                OffsetDateTime dateTime = OffsetDateTime.parse(timeExpression, DateTimeFormatter.ISO_DATE_TIME);
+                p = Duration.between(OffsetDateTime.now(), dateTime);
+            }
+
+            long days = p.toDays();
+            long hours = p.toHours() % 24;
+            long minutes = p.toMinutes() % 60;
+            long seconds = p.getSeconds() % 60;
+            long milis = p.toMillis() % 1000;
+
+            StringBuffer time = new StringBuffer();
+            if (days > 0) {
+                time.append(days + "d");
+            }
+            if (hours > 0) {
+                time.append(hours + "h");
+            }
+            if (minutes > 0) {
+                time.append(minutes + "m");
+            }
+            if (seconds > 0) {
+                time.append(seconds + "s");
+            }
+            if (milis > 0) {
+                time.append(milis + "ms");
+            }
+
+            return time.toString();
+        } catch (Exception e) {
+            return timeExpression;
+        }
     }
 
     public static class Builder {
