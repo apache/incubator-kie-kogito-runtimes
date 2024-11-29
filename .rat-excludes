@@ -90,6 +90,8 @@ process-generation-test.skip.txt
 sampleFile1.txt
 # kogito-codegen-modules/kogito-codegen-sample/kogito-codegen-sample-generator/src/test/resources/sampleFile2.txt
 sampleFile2.txt
+# kogito-serverless-workflow/kogito-serverless-workflow-builder/src/test/resources/pepe.txt
+pepe.txt
 # kogito-serverless-workflow/kogito-serverless-workflow-executor-python/requirements.txt
 requirements.txt
 # quarkus/addons/events/decisions/runtime/src/main/resources/META-INF/kogito.addon
