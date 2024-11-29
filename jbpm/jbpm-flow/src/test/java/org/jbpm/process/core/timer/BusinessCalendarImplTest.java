@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -73,97 +74,53 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     @Test
-    public void calculateBusinessTimeAsDateInsideWorkingHour() {
+    public void calculateBusinessTimeAsDateInsideDailyWorkingHour() {
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 3, 0, null, null);
+//        //executed at 10.48
+//        //first trigger time:2024-11-29T01:48:01.955975900
+//        //start time: 2024-11-28T21:48:01.955975900
+//        //end hour: 2024-11-29T05:48:01.955975900
+//        //expected trigger time is between start time and end time
+//        //but actual is Mon Dec 02 13:00:00 EST 2024(after 2 days)
+//        assertTrue(resultInstant.isAfter(startTime.toInstant(ZoneOffset.of("Z"))));
+//        assertTrue(resultInstant.isBefore(endTime.toInstant(ZoneOffset.of("Z"))));
+    }
 
-        LocalDateTime currentTime = LocalDateTime.now();
-        int triggerDelay = 3;
-        LocalDateTime firstTriggerTime = currentTime.plusHours(triggerDelay);
-        LocalDateTime startTime = firstTriggerTime.minusHours(4);
-        LocalDateTime endTime = firstTriggerTime.plusHours(4);
+    @Test
+    public void calculateBusinessTimeAsDateInsideNIghtlyWorkingHour() {
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(4, -4, 3, 0, null, null);
+        //        //executed at 10.48
+        //        //first trigger time:2024-11-29T01:48:01.955975900
+        //        //start time: 2024-11-28T21:48:01.955975900
+        //        //end hour: 2024-11-29T05:48:01.955975900
+        //        //expected trigger time is between start time and end time
+        //        //but actual is Mon Dec 02 13:00:00 EST 2024(after 2 days)
+        //        assertTrue(resultInstant.isAfter(startTime.toInstant(ZoneOffset.of("Z"))));
+        //        assertTrue(resultInstant.isBefore(endTime.toInstant(ZoneOffset.of("Z"))));
+    }
 
-        int startHour = startTime.getHour();
-        int endHour = endTime.getHour();
-
-        Properties config = new Properties();
-        config.setProperty(START_HOUR, String.valueOf(startHour));
-        config.setProperty(END_HOUR, String.valueOf(endHour));
-        config.setProperty(WEEKEND_DAYS, "0");
-
-        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
-        Date retrieved = businessCal.calculateBusinessTimeAsDate(String.format("%sh", triggerDelay));
-        Instant resultInstant = retrieved.toInstant();
-        //executed at 10.48
-        //first trigger time:2024-11-29T01:48:01.955975900
-        //start time: 2024-11-28T21:48:01.955975900
-        //end hour: 2024-11-29T05:48:01.955975900
-        //expected trigger time is between start time and end time
-        //but actual is Mon Dec 02 13:00:00 EST 2024(after 2 days)
-        assertTrue(resultInstant.isAfter(startTime.toInstant(ZoneOffset.of("Z"))));
-        assertTrue(resultInstant.isBefore(endTime.toInstant(ZoneOffset.of("Z"))));
+    @Test
+    public void calculateBusinessTimeAsDateBeforeWorkingHour() {
+        commonCalculateBusinessTimeAsDateAssertAtStartHour(2, 4, 1, 0, null, null);
     }
 
     @Test
     public void calculateBusinessTimeAsDateWhenTodayAndTomorrowAreHolidays() {
-        Properties config = new Properties();
-        String dateFormat = "yyyy-MM-dd";
-        DateTimeFormatter sdf = DateTimeFormatter.ofPattern(dateFormat);
+        String holidayDateFormat = "yyyy-MM-dd";
+        DateTimeFormatter sdf = DateTimeFormatter.ofPattern(holidayDateFormat);
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
-
-        int triggerDelay = 3;
-        int numberOfHolidays = 2;
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime firstTriggerTime = currentTime.plusHours(triggerDelay);
-        LocalDateTime startTime = firstTriggerTime.minusHours(4);
-        LocalDateTime endTime = firstTriggerTime.plusHours(4);
-
-        int startHour = startTime.getHour();
-        int endHour = endTime.getHour();
-
-        config.setProperty(START_HOUR, String.valueOf(startHour));
-        config.setProperty(END_HOUR, String.valueOf(endHour));
-        config.setProperty(WEEKEND_DAYS, "0");
-
-        config.setProperty(HOLIDAY_DATE_FORMAT, dateFormat);
-        config.setProperty(HOLIDAYS, sdf.format(today) + "," + sdf.format(tomorrow));
-
-        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
-        Date retrieved = businessCal.calculateBusinessTimeAsDate(String.format("%sh", triggerDelay));
-        Instant resultInstant = retrieved.toInstant();
-
-        assertTrue(resultInstant.isAfter(startTime.plusDays(numberOfHolidays).toInstant(ZoneOffset.of("Z"))));
-        assertTrue(resultInstant.isBefore(endTime.plusDays(numberOfHolidays).toInstant(ZoneOffset.of("Z"))));
-
+        String holidays = sdf.format(today) + "," + sdf.format(tomorrow);
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 3, 2, holidayDateFormat, holidays);
     }
 
     @Test
     public void calculateBusinessTimeAsDateWhenNextDayIsHoliday() {
-        Properties config = new Properties();
-        String dateFormat = "yyyy-MM-dd";
-        DateTimeFormatter sdf = DateTimeFormatter.ofPattern(dateFormat);
+        String holidayDateFormat = "yyyy-MM-dd";
+        DateTimeFormatter sdf = DateTimeFormatter.ofPattern(holidayDateFormat);
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        config.setProperty(HOLIDAY_DATE_FORMAT, dateFormat);
-        config.setProperty(HOLIDAYS, sdf.format(tomorrow));
-
-        int triggerDelay = 3;
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime firstTriggerTime = currentTime.plusHours(triggerDelay);
-        LocalDateTime startTime = firstTriggerTime.minusHours(4);
-        LocalDateTime endTime = firstTriggerTime.plusHours(4);
-
-        int startHour = startTime.getHour();
-        int endHour = endTime.getHour();
-
-        config.setProperty(START_HOUR, String.valueOf(startHour));
-        config.setProperty(END_HOUR, String.valueOf(endHour));
-        config.setProperty(WEEKEND_DAYS, "0");
-
-        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
-        Date retrieved = businessCal.calculateBusinessTimeAsDate(String.format("%sh", triggerDelay));
-        Instant resultInstant = retrieved.toInstant();
-
-        assertTrue(resultInstant.isAfter(startTime.toInstant(ZoneOffset.of("Z"))));
-        assertTrue(resultInstant.isBefore(endTime.toInstant(ZoneOffset.of("Z"))));
+        String holidays = sdf.format(tomorrow);
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 3, 0, holidayDateFormat, holidays);
     }
 
     @Test
@@ -226,6 +183,71 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         weekendDays.forEach(workingDay -> assertThat(businessCal.isWorkingDay(workingDay)).isFalse());
     }
 
+    private void commonCalculateBusinessTimeAsDateAssertBetweenHours(int startHourGap, int endHourGap, int hourDelay, int numberOfHolidays, String holidayDateFormat, String holidays ) {
+        BiFunction<Instant, Instant, Boolean> startBooleanCondition = (resultInstant1, expectedStartTime1) -> resultInstant1.isAfter(expectedStartTime1);
+        commonCalculateBusinessTimeAsDate(startHourGap,
+                endHourGap,
+                hourDelay,
+                numberOfHolidays,
+                holidayDateFormat,
+                holidays,
+                startBooleanCondition);
+    }
+
+    private void commonCalculateBusinessTimeAsDateAssertAtStartHour(int startHourGap, int endHourGap, int hourDelay, int numberOfHolidays, String holidayDateFormat, String holidays ) {
+        BiFunction<Instant, Instant, Boolean> startBooleanCondition = (resultInstant, expectedStartTime) -> resultInstant.getEpochSecond() ==  expectedStartTime.getEpochSecond();
+        commonCalculateBusinessTimeAsDate(startHourGap,
+                endHourGap,
+                hourDelay,
+                numberOfHolidays,
+                holidayDateFormat,
+                holidays,
+                startBooleanCondition);
+    }
+
+    private void commonCalculateBusinessTimeAsDate(int startHourGap,
+            int endHourGap, int hourDelay, int numberOfHolidays, String holidayDateFormat, String holidays,
+            BiFunction<Instant, Instant, Boolean> startBooleanCondition) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        if (hourDelay != 0) {
+            currentTime = currentTime.plusHours(hourDelay);
+        }
+        LocalDateTime correctedTIme = LocalDateTime.of(currentTime.getYear(), currentTime.getMonthValue(), currentTime.getDayOfMonth(), currentTime.getHour(), 0);
+        LocalDateTime startTime = correctedTIme.plusHours(startHourGap);
+        LocalDateTime endTime = correctedTIme.plusHours(endHourGap);
+
+        int startHour = startTime.getHour();
+        int endHour = endTime.getHour();
+
+        Properties config = new Properties();
+        config.setProperty(START_HOUR, String.valueOf(startHour));
+        config.setProperty(END_HOUR, String.valueOf(endHour));
+        config.setProperty(WEEKEND_DAYS, "0");
+        if (holidayDateFormat != null) {
+            config.setProperty(HOLIDAY_DATE_FORMAT, holidayDateFormat);
+        }
+        if (holidays != null) {
+            config.setProperty(HOLIDAYS, holidays);
+        }
+
+        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
+        Date retrieved = businessCal.calculateBusinessTimeAsDate(String.format("%sh", hourDelay));
+
+
+
+        Instant resultInstant = retrieved.toInstant();
+
+        Instant expectedStartTime = numberOfHolidays > 0 ? startTime.plusDays(numberOfHolidays).toInstant(ZoneOffset.of("Z")) : startTime.toInstant(ZoneOffset.of("Z"));
+        Instant expectedEndTime = numberOfHolidays > 0 ? endTime.plusDays(numberOfHolidays).toInstant(ZoneOffset.of("Z")) : endTime.toInstant(ZoneOffset.of("Z"));
+
+        System.out.println("resultInstant " + resultInstant.getEpochSecond());
+        System.out.println("expectedStartTime " + expectedStartTime.getEpochSecond());
+        System.out.println("expectedEndTime " + expectedEndTime.getEpochSecond());
+
+        assertTrue(startBooleanCondition.apply(resultInstant, expectedStartTime));
+        assertTrue(resultInstant.isBefore(expectedEndTime));
+    }
+
     private Calendar getCalendarAtExpectedWeekDay(int weekDay) {
         Calendar toReturn = Calendar.getInstance();
         while (toReturn.get(Calendar.DAY_OF_WEEK) != weekDay) {
@@ -235,11 +257,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     private String formatDate(String pattern, Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-        return sdf.format(date);
-    }
-
-    private String formatLocalDate(String pattern, LocalDate date) {
         SimpleDateFormat sdf = new SimpleDateFormat(pattern);
         return sdf.format(date);
     }

@@ -149,86 +149,93 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         }
         int time = 0;
 
-        Calendar c = new GregorianCalendar();
+        Calendar calendar = new GregorianCalendar();
         if (timezone != null) {
-            c.setTimeZone(TimeZone.getTimeZone(timezone));
+            calendar.setTimeZone(TimeZone.getTimeZone(timezone));
         }
 
         // calculate number of weeks
         int numberOfWeeks = days / daysPerWeek + weeks;
         if (numberOfWeeks > 0) {
-            c.add(Calendar.WEEK_OF_YEAR, numberOfWeeks);
+            calendar.add(Calendar.WEEK_OF_YEAR, numberOfWeeks);
         }
-        rollCalendarToNextWorkingDay(c, hours > 0 || min > 0);
+        rollCalendarToNextWorkingDay(calendar, hours > 0 || min > 0);
         hours += (days - (numberOfWeeks * daysPerWeek)) * hoursInDay;
 
         // calculate number of days
         int numberOfDays = hours / hoursInDay;
         if (numberOfDays > 0) {
             for (int i = 0; i < numberOfDays; i++) {
-                c.add(Calendar.DAY_OF_YEAR, 1);
-                rollCalendarToNextWorkingDay(c, false);
-                rollCalendarAfterHolidays(c, hours > 0 || min > 0);
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+                rollCalendarToNextWorkingDay(calendar, false);
+                rollCalendarAfterHolidays(calendar, hours > 0 || min > 0);
             }
         }
 
-        int currentCalHour = c.get(Calendar.HOUR_OF_DAY);
+        int currentCalHour = calendar.get(Calendar.HOUR_OF_DAY);
         if (currentCalHour >= endHour) {
-            c.add(Calendar.DAY_OF_YEAR, 1);
-            c.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
-            c.set(Calendar.MINUTE, 0);
-            c.set(Calendar.SECOND, 0);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            calendar.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
         } else if (currentCalHour < startHour) {
-            c.add(Calendar.HOUR_OF_DAY, startHour);
+            calendar.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
         }
 
         // calculate remaining hours
         time = hours - (numberOfDays * hoursInDay);
-        c.add(Calendar.HOUR, time);
-        rollCalendarToNextWorkingDay(c, true);
-        rollCalendarAfterHolidays(c, hours > 0 || min > 0);
+        calendar.add(Calendar.HOUR, time);
+        rollCalendarToNextWorkingDay(calendar, true);
+        rollCalendarAfterHolidays(calendar, hours > 0 || min > 0);
 
-        currentCalHour = c.get(Calendar.HOUR_OF_DAY);
+        currentCalHour = calendar.get(Calendar.HOUR_OF_DAY);
         if (currentCalHour >= endHour) {
-            c.add(Calendar.DAY_OF_YEAR, 1);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
             // set hour to the starting one
-            c.set(Calendar.HOUR_OF_DAY, startHour);
-            c.add(Calendar.HOUR_OF_DAY, currentCalHour - endHour);
+            calendar.set(Calendar.HOUR_OF_DAY, startHour);
+            calendar.add(Calendar.HOUR_OF_DAY, currentCalHour - endHour);
         } else if (currentCalHour < startHour) {
-            c.add(Calendar.HOUR_OF_DAY, startHour);
+            calendar.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
         }
 
         // calculate minutes
         int numberOfHours = min / 60;
         if (numberOfHours > 0) {
-            c.add(Calendar.HOUR, numberOfHours);
+            calendar.add(Calendar.HOUR, numberOfHours);
             min = min - (numberOfHours * 60);
         }
-        c.add(Calendar.MINUTE, min);
+        calendar.add(Calendar.MINUTE, min);
 
         // calculate seconds
         int numberOfMinutes = sec / 60;
         if (numberOfMinutes > 0) {
-            c.add(Calendar.MINUTE, numberOfMinutes);
+            calendar.add(Calendar.MINUTE, numberOfMinutes);
             sec = sec - (numberOfMinutes * 60);
         }
-        c.add(Calendar.SECOND, sec);
+        calendar.add(Calendar.SECOND, sec);
 
-        currentCalHour = c.get(Calendar.HOUR_OF_DAY);
+        currentCalHour = calendar.get(Calendar.HOUR_OF_DAY);
+        // TODO - implement switching logic for night -hours
         if (currentCalHour >= endHour) {
-            c.add(Calendar.DAY_OF_YEAR, 1);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
             // set hour to the starting one
-            c.set(Calendar.HOUR_OF_DAY, startHour);
-            c.add(Calendar.HOUR_OF_DAY, currentCalHour - endHour);
+            calendar.set(Calendar.HOUR_OF_DAY, startHour);
+            calendar.add(Calendar.HOUR_OF_DAY, currentCalHour - endHour);
         } else if (currentCalHour < startHour) {
-            c.add(Calendar.HOUR_OF_DAY, startHour);
+            calendar.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
         }
         // take under consideration weekend
-        rollCalendarToNextWorkingDay(c, false);
+        rollCalendarToNextWorkingDay(calendar, false);
         // take under consideration holidays
-        rollCalendarAfterHolidays(c, false);
+        rollCalendarAfterHolidays(calendar, false);
 
-        return c.getTime();
+        return calendar.getTime();
     }
 
     protected String adoptISOFormat(String timeExpression) {

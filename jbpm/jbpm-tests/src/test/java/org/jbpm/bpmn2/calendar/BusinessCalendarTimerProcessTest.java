@@ -39,10 +39,6 @@ import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// TODO
-// 1. remove all mock related to CalendarBean !!!!!!! THE BusinessCalendarImplTest@instantiate shows how to instantiate BusinessCalendarImpl with arbitrary CalendarBean
-// 2. identify what are the class/method actually tested
-// 3. rename this class based on the above: there is not any BusinessCalendarTimer around
 public class BusinessCalendarTimerProcessTest {
 
     private static Properties notWorkingDayCalendarConfiguration;
