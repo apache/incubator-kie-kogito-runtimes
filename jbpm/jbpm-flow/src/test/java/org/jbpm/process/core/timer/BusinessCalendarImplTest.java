@@ -22,7 +22,6 @@ import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,11 +29,11 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -44,7 +43,6 @@ import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAYS;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAY_DATE_FORMAT;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.START_HOUR;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.WEEKEND_DAYS;
-import static org.jbpm.process.core.timer.CalendarBean.DEFAULT_HOLIDAY_DATE_FORMAT;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BusinessCalendarImplTest extends AbstractBaseTest {
@@ -174,19 +172,11 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         Instant endHolidayInstant = now.plus(holidayLeft, DAYS);
         Date startHoliday = Date.from(startHolidayInstant);
         Date endHoliday = Date.from(endHolidayInstant);
-        String startHolidayFormatted = formatDate(DEFAULT_HOLIDAY_DATE_FORMAT, startHoliday);
-        String endHolidayFormatted = formatDate(DEFAULT_HOLIDAY_DATE_FORMAT, endHoliday);
-        String holidays = String.format("%s:%s", startHolidayFormatted, endHolidayFormatted);
-        Properties config = new Properties();
-        config.setProperty(START_HOUR, "9");
-        config.setProperty(END_HOUR, "17");
-        config.setProperty(WEEKEND_DAYS, "0");
-        config.setProperty(HOLIDAYS, holidays);
-        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
-
+        List<BusinessCalendarImpl.TimePeriod> holidays = Collections.singletonList(new BusinessCalendarImpl.TimePeriod(startHoliday, endHoliday));
+        List<Integer> weekendDays = Collections.emptyList();
         Calendar calendar = Calendar.getInstance();
         int currentDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-        businessCal.rollCalendarAfterHolidays(calendar, false);
+        BusinessCalendarImpl.rollCalendarAfterHolidays(calendar, holidays, weekendDays, false);
         int expected = currentDayOfYear + holidayLeft + 1;
         assertThat(calendar.get(Calendar.DAY_OF_YEAR)).isEqualTo(expected);
     }
@@ -195,20 +185,14 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     void rollCalendarToNextWorkingDay() {
         List<Integer> workingDays = IntStream.range(Calendar.MONDAY, Calendar.SATURDAY).boxed().toList();
         List<Integer> weekendDays = Arrays.asList(Calendar.SATURDAY, Calendar.SUNDAY);
-        Properties config = new Properties();
-        config.setProperty(START_HOUR, "9");
-        config.setProperty(END_HOUR, "17");
-        config.setProperty(WEEKEND_DAYS, weekendDays.stream().map(String::valueOf).collect(Collectors.joining(",")));
-        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
-
         workingDays.forEach(workingDay -> {
             Calendar calendar = getCalendarAtExpectedWeekDay(workingDay);
-            businessCal.rollCalendarToNextWorkingDay(calendar, false);
+            BusinessCalendarImpl.rollCalendarToNextWorkingDay(calendar, weekendDays, false);
             assertThat(calendar.get(Calendar.DAY_OF_WEEK)).isEqualTo(workingDay);
         });
         weekendDays.forEach(weekendDay -> {
             Calendar calendar = getCalendarAtExpectedWeekDay(weekendDay);
-            businessCal.rollCalendarToNextWorkingDay(calendar, false);
+            BusinessCalendarImpl.rollCalendarToNextWorkingDay(calendar, weekendDays, false);
             assertThat(calendar.get(Calendar.DAY_OF_WEEK)).isEqualTo(Calendar.MONDAY);
         });
     }
@@ -217,13 +201,8 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     void isWorkingDay() {
         List<Integer> workingDays = IntStream.range(Calendar.MONDAY, Calendar.SATURDAY).boxed().toList();
         List<Integer> weekendDays = Arrays.asList(Calendar.SATURDAY, Calendar.SUNDAY);
-        Properties config = new Properties();
-        config.setProperty(START_HOUR, "9");
-        config.setProperty(END_HOUR, "17");
-        config.setProperty(WEEKEND_DAYS, weekendDays.stream().map(String::valueOf).collect(Collectors.joining(",")));
-        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config)).build();
-        workingDays.forEach(workingDay -> assertThat(businessCal.isWorkingDay(workingDay)).isTrue());
-        weekendDays.forEach(workingDay -> assertThat(businessCal.isWorkingDay(workingDay)).isFalse());
+        workingDays.forEach(workingDay -> assertThat(BusinessCalendarImpl.isWorkingDay(weekendDays, workingDay)).isTrue());
+        weekendDays.forEach(workingDay -> assertThat(BusinessCalendarImpl.isWorkingDay(weekendDays, workingDay)).isFalse());
     }
 
     private void commonCalculateBusinessTimeAsDateAssertBetweenHours(int startHourGap, int endHourGap, int hourDelay, int numberOfHolidays, String holidayDateFormat, String holidays ) {
@@ -299,8 +278,4 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
         return toReturn;
     }
 
-    private String formatDate(String pattern, Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-        return sdf.format(date);
-    }
 }

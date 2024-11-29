@@ -159,7 +159,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         if (numberOfWeeks > 0) {
             calendar.add(Calendar.WEEK_OF_YEAR, numberOfWeeks);
         }
-        rollCalendarToNextWorkingDay(calendar, hours > 0 || min > 0);
+        rollCalendarToNextWorkingDay(calendar, weekendDays,hours > 0 || min > 0);
         hours += (days - (numberOfWeeks * daysPerWeek)) * hoursInDay;
 
         // calculate number of days
@@ -167,8 +167,8 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         if (numberOfDays > 0) {
             for (int i = 0; i < numberOfDays; i++) {
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
-                rollCalendarToNextWorkingDay(calendar, false);
-                rollCalendarAfterHolidays(calendar, hours > 0 || min > 0);
+                rollCalendarToNextWorkingDay(calendar, weekendDays,false);
+                rollCalendarAfterHolidays(calendar, holidays,  weekendDays, hours > 0 || min > 0);
             }
         }
 
@@ -177,8 +177,8 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         // calculate remaining hours
         time = hours - (numberOfDays * hoursInDay);
         calendar.add(Calendar.HOUR, time);
-        rollCalendarToNextWorkingDay(calendar, true);
-        rollCalendarAfterHolidays(calendar, hours > 0 || min > 0);
+        rollCalendarToNextWorkingDay(calendar, weekendDays,true);
+        rollCalendarAfterHolidays(calendar, holidays,  weekendDays, hours > 0 || min > 0);
 
         rollCalendarToWorkingHour(calendar);
 
@@ -201,9 +201,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         rollCalendarToWorkingHour(calendar);
 
         // take under consideration weekend
-        rollCalendarToNextWorkingDay(calendar, false);
+        rollCalendarToNextWorkingDay(calendar, weekendDays,false);
         // take under consideration holidays
-        rollCalendarAfterHolidays(calendar, false);
+        rollCalendarAfterHolidays(calendar, holidays,  weekendDays, false);
 
         return calendar.getTime();
     }
@@ -276,9 +276,10 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      * Set hour, minute, second and millisecond when
      * <code>resetTime</code> is <code>true</code>
      * @param toRoll
+     * @param holidays
      * @param resetTime
      */
-    protected void rollCalendarAfterHolidays(Calendar toRoll, boolean resetTime) {
+    static void rollCalendarAfterHolidays(Calendar toRoll, List<TimePeriod> holidays, List<Integer> weekendDays, boolean resetTime) {
         if (!holidays.isEmpty()) {
             Date current = toRoll.getTime();
             for (TimePeriod holiday : holidays) {
@@ -299,7 +300,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
                     toRoll.add(Calendar.HOUR_OF_DAY, (int) (difference / HOUR_IN_MILLIS));
 
-                    rollCalendarToNextWorkingDay(toRoll, resetTime);
+                    rollCalendarToNextWorkingDay(toRoll, weekendDays, resetTime);
                     break;
                 }
             }
@@ -314,9 +315,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      * @param toRoll
      * @param resetTime
      */
-    protected void rollCalendarToNextWorkingDay(Calendar toRoll, boolean resetTime) {
+    static void rollCalendarToNextWorkingDay(Calendar toRoll, List<Integer> weekendDays, boolean resetTime) {
         int dayOfTheWeek = toRoll.get(Calendar.DAY_OF_WEEK);
-        while (!isWorkingDay(dayOfTheWeek)) {
+        while (!isWorkingDay(weekendDays, dayOfTheWeek)) {
             toRoll.add(Calendar.DAY_OF_YEAR, 1);
             if (resetTime) {
                 toRoll.set(Calendar.HOUR_OF_DAY, 0);
@@ -328,13 +329,14 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         }
     }
 
+    static boolean isWorkingDay(List<Integer> weekendDays, int day) {
+        return !weekendDays.contains(day);
+    }
+
     protected long getCurrentTime() {
         return System.currentTimeMillis();
     }
 
-    protected boolean isWorkingDay(int day) {
-        return !weekendDays.contains(day);
-    }
 
     protected String adoptISOFormat(String timeExpression) {
 
