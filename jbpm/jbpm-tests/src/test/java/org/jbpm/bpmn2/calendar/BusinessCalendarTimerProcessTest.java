@@ -19,17 +19,9 @@
 
 package org.jbpm.bpmn2.calendar;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.timer.BusinessCalendarImpl;
 import org.jbpm.process.core.timer.CalendarBean;
-import org.jbpm.process.core.timer.CalendarBeanFactory;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,8 +29,13 @@ import org.kie.kogito.Application;
 import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcessConfig;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 // 1. remove all mock related to CalendarBean !!!!!!! THE BusinessCalendarImplTest@instantiate shows how to instantiate BusinessCalendarImpl with arbitrary CalendarBean
 // 2. identify what are the class/method actually tested
 // 3. rename this class based on the above: there is not any BusinessCalendarTimer around
-public class BusinessCalendarTimerTest {
+public class BusinessCalendarTimerProcessTest {
 
     private static Properties notWorkingDayCalendarConfiguration;
     private static Properties workingDayCalendarConfiguration;
@@ -59,9 +56,7 @@ public class BusinessCalendarTimerTest {
 
     @Test
     public void testTimerWithWorkingDayCalendar() throws InterruptedException {
-        MockedStatic<CalendarBeanFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarBeanFactory.class);
-        calendarFactoryMockedStatic.when(CalendarBeanFactory::createCalendarBean).thenReturn(new CalendarBean(workingDayCalendarConfiguration));
-        BusinessCalendar workingDayCalendar = BusinessCalendarImpl.builder().build();
+        BusinessCalendar workingDayCalendar = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(workingDayCalendarConfiguration)).build();
         Application app = ProcessTestHelper.newApplication(new MockProcessConfig(workingDayCalendar));
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
@@ -72,14 +67,11 @@ public class BusinessCalendarTimerTest {
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         Thread.sleep(2000);
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        calendarFactoryMockedStatic.close();
     }
 
     @Test
     public void testTimerWithNotWorkingDayCalendar() throws InterruptedException {
-        MockedStatic<CalendarBeanFactory> calendarFactoryMockedStatic = Mockito.mockStatic(CalendarBeanFactory.class);
-        calendarFactoryMockedStatic.when(CalendarBeanFactory::createCalendarBean).thenReturn(new CalendarBean(notWorkingDayCalendarConfiguration));
-        BusinessCalendar notWorkingDayCalendar = BusinessCalendarImpl.builder().build();
+        BusinessCalendar notWorkingDayCalendar = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(notWorkingDayCalendarConfiguration)).build();
         Application app = ProcessTestHelper.newApplication(new MockProcessConfig(notWorkingDayCalendar));
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
@@ -90,7 +82,6 @@ public class BusinessCalendarTimerTest {
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         Thread.sleep(2000);
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-        calendarFactoryMockedStatic.close();
     }
 
     private static Properties configureBusinessCalendar(boolean isWorkingDayCalendar) {
