@@ -45,7 +45,7 @@ import static org.jbpm.process.core.timer.BusinessCalendarImpl.START_HOUR;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.WEEKEND_DAYS;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BusinessCalendarImplTest extends AbstractBaseTest {
+class BusinessCalendarImplTest extends AbstractBaseTest {
 
     public void addLogger() {
         logger = LoggerFactory.getLogger(this.getClass());
@@ -72,7 +72,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     @Test
-    public void calculateBusinessTimeAsDateInsideDailyWorkingHour() {
+    void calculateBusinessTimeAsDateInsideDailyWorkingHour() {
         commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 3, 0, null, null);
 //        //executed at 10.48
 //        //first trigger time:2024-11-29T01:48:01.955975900
@@ -85,7 +85,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     @Test
-    public void calculateBusinessTimeAsDateInsideNightlyWorkingHour() {
+    void calculateBusinessTimeAsDateInsideNightlyWorkingHour() {
         commonCalculateBusinessTimeAsDateAssertBetweenHours(4, -4, 3, 0, null, null);
         //        //executed at 10.48
         //        //first trigger time:2024-11-29T01:48:01.955975900
@@ -98,12 +98,12 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     @Test
-    public void calculateBusinessTimeAsDateBeforeWorkingHour() {
+    void calculateBusinessTimeAsDateBeforeWorkingHour() {
         commonCalculateBusinessTimeAsDateAssertAtStartHour(2, 4, 1, 0, null, null);
     }
 
     @Test
-    public void calculateBusinessTimeAsDateWhenTodayAndTomorrowAreHolidays() {
+    void calculateBusinessTimeAsDateWhenTodayAndTomorrowAreHolidays() {
         String holidayDateFormat = "yyyy-MM-dd";
         DateTimeFormatter sdf = DateTimeFormatter.ofPattern(holidayDateFormat);
         LocalDate today = LocalDate.now();
@@ -113,7 +113,7 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     @Test
-    public void calculateBusinessTimeAsDateWhenNextDayIsHoliday() {
+    void calculateBusinessTimeAsDateWhenNextDayIsHoliday() {
         String holidayDateFormat = "yyyy-MM-dd";
         DateTimeFormatter sdf = DateTimeFormatter.ofPattern(holidayDateFormat);
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -261,10 +261,6 @@ public class BusinessCalendarImplTest extends AbstractBaseTest {
 
         Instant expectedStartTime = numberOfHolidays > 0 ? startTime.plusDays(numberOfHolidays).toInstant(ZoneOffset.of("Z")) : startTime.toInstant(ZoneOffset.of("Z"));
         Instant expectedEndTime = numberOfHolidays > 0 ? endTime.plusDays(numberOfHolidays).toInstant(ZoneOffset.of("Z")) : endTime.toInstant(ZoneOffset.of("Z"));
-
-        System.out.println("resultInstant " + resultInstant.getEpochSecond());
-        System.out.println("expectedStartTime " + expectedStartTime.getEpochSecond());
-        System.out.println("expectedEndTime " + expectedEndTime.getEpochSecond());
 
         assertTrue(startBooleanCondition.apply(resultInstant, expectedStartTime));
         assertTrue(resultInstant.isBefore(expectedEndTime));
