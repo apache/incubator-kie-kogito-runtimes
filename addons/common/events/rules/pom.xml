@@ -26,7 +26,7 @@
   <parent>
     <groupId>org.kie</groupId>
     <artifactId>kie-addons-events-parent</artifactId>
-    <version>10.0.999-SNAPSHOT</version>
+    <version>10.0.0</version>
   </parent>
 
   <groupId>org.drools</groupId>
