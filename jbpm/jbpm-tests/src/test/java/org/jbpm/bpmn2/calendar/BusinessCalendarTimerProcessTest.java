@@ -19,6 +19,13 @@
 
 package org.jbpm.bpmn2.calendar;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.timer.BusinessCalendarImpl;
 import org.jbpm.process.core.timer.CalendarBean;
@@ -29,13 +36,6 @@ import org.kie.kogito.Application;
 import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcessConfig;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
