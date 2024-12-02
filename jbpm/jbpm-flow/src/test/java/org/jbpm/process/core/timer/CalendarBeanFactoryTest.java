@@ -20,7 +20,6 @@
 package org.jbpm.process.core.timer;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.Test;

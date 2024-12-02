@@ -105,7 +105,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     /**
      *
      * @param testingCalendar is used only for testing purpose. It is <code>null</code> in production and
-     * during normal execution
+     *        during normal execution
      */
     private BusinessCalendarImpl(Calendar testingCalendar) {
         this(CalendarBeanFactory.createCalendarBean(), testingCalendar);

@@ -50,7 +50,6 @@ import static org.jbpm.process.core.timer.CalendarBean.DEFAULT_TIMEZONE;
 import static org.jbpm.process.core.timer.CalendarBean.DEFAULT_WEEKENDS;
 import static org.jbpm.process.core.timer.CalendarBean.DEFAULT_WEEKEND_DAYS;
 
-
 class CalendarBeanTest {
 
     // Static validation methods

@@ -78,20 +78,20 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
     @Test
     void calculateBusinessTimeAsDateInsideDailyWorkingHourWithoutDelay() {
         int daysToSkip = 0; // since executionHourDelay falls before endHOurGap
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 0,daysToSkip, null, null);
-   }
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 0, daysToSkip, null, null);
+    }
 
-    @Disabled("TO FIX")
+    @Disabled("TO FIX https://github.com/apache/incubator-kie-issues/issues/1651")
     @Test
     void calculateBusinessTimeAsDateInsideNightlyWorkingHour() {
         int daysToSkip = 0; // since executionHourDelay falls before endHOurGap
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(4, -4, 0,3, daysToSkip, null, null);
-      }
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(4, -4, 0, 3, daysToSkip, null, null);
+    }
 
     @Test
     void calculateBusinessTimeAsDateBeforeWorkingHourWithDelay() {
         int daysToSkip = 0; // since executionHourDelay falls before endHOurGap
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(2, 4, -1,1, daysToSkip, null, null);
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(2, 4, -1, 1, daysToSkip, null, null);
     }
 
     @Test
@@ -103,7 +103,7 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
     @Test
     void calculateBusinessTimeAsDateAfterWorkingHour() {
         int daysToSkip = 1; // because the executionHourDelay is bigger to endHOurGap, so it goes to next day;
-        commonCalculateBusinessTimeAsDateAssertAtStartHour(-1, 2, 3,3, daysToSkip, null, null);
+        commonCalculateBusinessTimeAsDateAssertAtStartHour(-1, 2, 3, 3, daysToSkip, null, null);
     }
 
     @Test
@@ -115,8 +115,8 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
         String holidays = sdf.format(today) + "," + sdf.format(tomorrow);
         int daysToSkip = 2; // because both today and tomorrow are holiday
         // endHOurGap and executionHourDelay are ininfluent in this context
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0,3, daysToSkip, holidayDateFormat, holidays);
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 5,3, daysToSkip, holidayDateFormat, holidays);
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 3, daysToSkip, holidayDateFormat, holidays);
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 5, 3, daysToSkip, holidayDateFormat, holidays);
     }
 
     @Test
@@ -129,7 +129,7 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
         // 1 because next day is holiday
         int daysToSkip = 2;
 
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0,4, daysToSkip, holidayDateFormat, holidays);
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 4, daysToSkip, holidayDateFormat, holidays);
         daysToSkip = 0; // since executionHourDelay falls before endHOurGap
         commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 3, daysToSkip, holidayDateFormat, holidays);
     }
@@ -178,7 +178,6 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
 
     }
 
-    @Disabled("TO FIX https://github.com/apache/incubator-kie-issues/issues/1651")
     @Test
     void rollCalendarAfterHolidays() {
         Instant now = Instant.now();
