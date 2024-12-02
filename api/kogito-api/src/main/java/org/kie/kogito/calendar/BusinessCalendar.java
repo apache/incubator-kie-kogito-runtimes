@@ -43,5 +43,5 @@ public interface BusinessCalendar {
      * @param timeExpression time expression that is supported by business calendar implementation.
      * @return date when given time expression will match in the future
      */
-     Date calculateBusinessTimeAsDate(String timeExpression);
+    Date calculateBusinessTimeAsDate(String timeExpression);
 }
