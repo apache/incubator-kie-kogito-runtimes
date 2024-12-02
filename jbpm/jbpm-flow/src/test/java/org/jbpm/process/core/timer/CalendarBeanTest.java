@@ -243,13 +243,12 @@ class CalendarBeanTest {
         assertThat(errors).isNotEmpty();
         String[] retrievedErrors = errors.toString().split("\n");
         assertThat(retrievedErrors).hasSize(errorMessages.size());
-        assertThat(retrievedErrors).contains(retrievedErrors);
+        errorMessages.forEach(msg -> assertThat(retrievedErrors).contains(msg));
     }
 
     private void commonIllegalArgumentAssertion(ThrowableAssert.ThrowingCallable executedMethod, List<String> errorMessages) {
         ThrowableAssert throwableAssert = (ThrowableAssert) assertThatThrownBy(executedMethod)
                 .isInstanceOf(IllegalArgumentException.class);
-        System.out.println(throwableAssert);
         errorMessages.forEach(throwableAssert::hasMessageContaining);
     }
 
