@@ -201,7 +201,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
             }
         }
 
-        rollCalendarToWorkingHour(calendar);
+        rollCalendarToWorkingHour(calendar, true);
         logger.debug("calendar after rolling to working hour: {}", calendar.getTime());
 
         // calculate remaining hours
@@ -213,7 +213,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         logger.debug("calendar after rolling to next working day: {}", calendar.getTime());
         rollCalendarAfterHolidays(calendar, holidays, weekendDays, hours > 0 || min > 0);
         logger.debug("calendar after holidays: {}", calendar.getTime());
-        rollCalendarToWorkingHour(calendar);
+        rollCalendarToWorkingHour(calendar, true);
         logger.debug("calendar after rolling to working hour: {}", calendar.getTime());
 
         // calculate minutes
@@ -233,7 +233,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         calendar.add(Calendar.SECOND, sec);
         logger.debug("calendar after adding {} hour, {} minutes and {} seconds: {}", numberOfHours, numberOfMinutes, sec, calendar.getTime());
 
-        rollCalendarToWorkingHour(calendar);
+        rollCalendarToWorkingHour(calendar, false);
         logger.debug("calendar after rolling to next working day: {}", calendar.getTime());
 
         // take under consideration weekend
@@ -267,16 +267,19 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      * The case where startHour = endHour is excluded by validation of the <code>CalendarBean</code>
      * 
      * @param toRoll
+     * @param resetMinuteAndSecond if <code>true</code>, reset minutes and seconds to 0
      */
-    protected void rollCalendarToWorkingHour(Calendar toRoll) {
+    protected void rollCalendarToWorkingHour(Calendar toRoll, boolean resetMinuteAndSecond) {
         logger.debug("toRoll: {}", toRoll.getTime());
         if (startHour < endHour) {
             rollCalendarToDailyWorkingHour(toRoll, startHour, endHour);
         } else {
             rollCalendarToNightlyWorkingHour(toRoll, startHour, endHour);
         }
-        toRoll.set(Calendar.MINUTE, 0);
-        toRoll.set(Calendar.SECOND, 0);
+        if (resetMinuteAndSecond) {
+            toRoll.set(Calendar.MINUTE, 0);
+            toRoll.set(Calendar.SECOND, 0);
+        }
     }
 
     /**
