@@ -22,3 +22,6 @@ target/
 .checkstyle
 
 *.log
+
+# Apache RAT check excludes file
+!.rat-excludes
