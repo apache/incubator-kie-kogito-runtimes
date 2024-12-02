@@ -42,8 +42,6 @@ import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAYS;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAY_DATE_FORMAT;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.START_HOUR;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.WEEKEND_DAYS;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BusinessCalendarImplTest extends AbstractBaseTest {
 
@@ -328,9 +326,9 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
         logger.debug("expectedStartTime {}", expectedStartTime);
         logger.debug("expectedEndTime {}", expectedEndTime);
 
-        assertTrue(startBooleanCondition.apply(retrievedInstant, expectedStartTime));
+        assertThat(startBooleanCondition.apply(retrievedInstant, expectedStartTime)).isTrue();
         logger.debug("Check if {} is not after {} ", retrievedInstant, expectedEndTime);
-        assertFalse(retrievedInstant.isAfter(expectedEndTime));
+        assertThat(retrievedInstant.isAfter(expectedEndTime)).isFalse();
     }
 
     private Calendar getCalendarAtExpectedWeekDay(int weekDay) {

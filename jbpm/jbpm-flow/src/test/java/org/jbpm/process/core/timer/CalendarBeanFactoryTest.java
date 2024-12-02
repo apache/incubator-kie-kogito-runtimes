@@ -25,7 +25,7 @@ import java.util.TimeZone;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CalendarBeanFactoryTest {
 
@@ -34,13 +34,13 @@ class CalendarBeanFactoryTest {
         // This test relies on src/test/resources/calendar.properties:
         // checked values comes from it
         CalendarBean calendarBean = CalendarBeanFactory.createCalendarBean();
-        assertNotNull(calendarBean);
-        assertEquals(10, calendarBean.getStartHour());
-        assertEquals(16, calendarBean.getEndHour());
-        assertEquals(6, calendarBean.getHoursInDay());
-        assertEquals(5, calendarBean.getDaysPerWeek());
-        assertEquals(List.of(Calendar.SATURDAY, Calendar.SUNDAY), calendarBean.getWeekendDays());
-        assertEquals(List.of(), calendarBean.getHolidays());
-        assertEquals(TimeZone.getDefault().getID(), calendarBean.getTimezone());
+        assertThat(calendarBean).isNotNull();
+        assertThat(calendarBean.getStartHour()).isEqualTo(10);
+        assertThat(calendarBean.getEndHour()).isEqualTo(16);
+        assertThat(calendarBean.getHoursInDay()).isEqualTo(6);
+        assertThat(calendarBean.getDaysPerWeek()).isEqualTo(5);
+        assertThat(calendarBean.getWeekendDays()).contains(Calendar.SATURDAY, Calendar.SUNDAY);
+        assertThat(calendarBean.getHolidays()).isEmpty();
+        assertThat(calendarBean.getTimezone()).isEqualTo(TimeZone.getDefault().getID());
     }
 }

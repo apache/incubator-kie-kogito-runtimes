@@ -31,13 +31,14 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.END_HOUR;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAYS;
 import static org.jbpm.process.core.timer.BusinessCalendarImpl.HOLIDAY_DATE_FORMAT;
@@ -48,8 +49,7 @@ import static org.jbpm.process.core.timer.CalendarBean.DEFAULT_HOLIDAY_DATE_FORM
 import static org.jbpm.process.core.timer.CalendarBean.DEFAULT_TIMEZONE;
 import static org.jbpm.process.core.timer.CalendarBean.DEFAULT_WEEKENDS;
 import static org.jbpm.process.core.timer.CalendarBean.DEFAULT_WEEKEND_DAYS;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 class CalendarBeanTest {
 
@@ -102,9 +102,10 @@ class CalendarBeanTest {
         assertThat(retrieved).isEqualTo(originalValue);
         value = "WRONG";
         calendarConfiguration.put(propertyName, value);
-        NumberFormatException thrown = assertThrows(NumberFormatException.class, () -> CalendarBean.getPropertyAsInt(propertyName, calendarConfiguration));
         String expectedMessage = "For input string: \"WRONG\"";
-        assertThat(thrown.getMessage()).isEqualTo(expectedMessage);
+        assertThatThrownBy(() -> CalendarBean.getPropertyAsInt(propertyName, calendarConfiguration))
+                .isInstanceOf(NumberFormatException.class)
+                .hasMessage(expectedMessage);
     }
 
     @Test
@@ -141,9 +142,10 @@ class CalendarBeanTest {
         retrieved = CalendarBean.getSimpleDateFormat("dd-MM-yyyy");
         assertThat(retrieved).isNotNull();
         String wrong = "WRONG";
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> CalendarBean.getSimpleDateFormat(wrong));
         String expectedMessage = "Illegal pattern character 'R'";
-        assertThat(thrown.getMessage()).isEqualTo(expectedMessage);
+        assertThatThrownBy(() -> CalendarBean.getSimpleDateFormat(wrong))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(expectedMessage);
     }
 
     // Instance methods
@@ -244,9 +246,11 @@ class CalendarBeanTest {
         assertThat(retrievedErrors).contains(retrievedErrors);
     }
 
-    private void commonIllegalArgumentAssertion(Executable executedMethod, List<String> errorMessages) {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, executedMethod);
-        errorMessages.forEach(msg -> assertTrue(exception.getMessage().contains(msg)));
+    private void commonIllegalArgumentAssertion(ThrowableAssert.ThrowingCallable executedMethod, List<String> errorMessages) {
+        ThrowableAssert throwableAssert = (ThrowableAssert) assertThatThrownBy(executedMethod)
+                .isInstanceOf(IllegalArgumentException.class);
+        System.out.println(throwableAssert);
+        errorMessages.forEach(throwableAssert::hasMessageContaining);
     }
 
     private static Stream<Arguments> getMissingPropertiesCalendar() {
