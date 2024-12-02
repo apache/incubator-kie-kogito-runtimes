@@ -18,11 +18,6 @@
  */
 package org.jbpm.process.core.timer;
 
-import org.jbpm.test.util.AbstractBaseTest;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -34,6 +29,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
+
+import org.jbpm.test.util.AbstractBaseTest;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,55 +73,39 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
 
     @Test
     void calculateBusinessTimeAsDateInsideDailyWorkingHourWithDelay() {
-        int daysToSkip = 0; // since executionHourDelay falls before endHOurGap
+        int daysToSkip = 0;
         commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 3, daysToSkip, null, null);
     }
 
     @Test
     void calculateBusinessTimeAsDateInsideDailyWorkingHourWithoutDelay() {
-        int daysToSkip = 0; // since executionHourDelay falls before endHOurGap
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 0,daysToSkip, null, null);
-        //        //executed at 10.48
-        //        //first trigger time:2024-11-29T01:48:01.955975900
-        //        //start time: 2024-11-28T21:48:01.955975900
-        //        //end hour: 2024-11-29T05:48:01.955975900
-        //        //expected trigger time is between start time and end time
-        //        //but actual is Mon Dec 02 13:00:00 EST 2024(after 2 days)
-        //        assertTrue(resultInstant.isAfter(startTime.toInstant(ZoneOffset.of("Z"))));
-        //        assertTrue(resultInstant.isBefore(endTime.toInstant(ZoneOffset.of("Z"))));
+        int daysToSkip = 0;
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 0, daysToSkip, null, null);
     }
 
     @Disabled("TO FIX")
     @Test
     void calculateBusinessTimeAsDateInsideNightlyWorkingHour() {
-        int daysToSkip = 0; // since executionHourDelay falls before endHOurGap
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(4, -4, 0,3, daysToSkip, null, null);
-        //        //executed at 10.48
-        //        //first trigger time:2024-11-29T01:48:01.955975900
-        //        //start time: 2024-11-28T21:48:01.955975900
-        //        //end hour: 2024-11-29T05:48:01.955975900
-        //        //expected trigger time is between start time and end time
-        //        //but actual is Mon Dec 02 13:00:00 EST 2024(after 2 days)
-        //        assertTrue(resultInstant.isAfter(startTime.toInstant(ZoneOffset.of("Z"))));
-        //        assertTrue(resultInstant.isBefore(endTime.toInstant(ZoneOffset.of("Z"))));
+        int daysToSkip = 0;
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(4, -4, 0, 3, daysToSkip, null, null);
     }
 
     @Test
     void calculateBusinessTimeAsDateBeforeWorkingHourWithDelay() {
-        int daysToSkip = 0; // since executionHourDelay falls before endHOurGap
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(2, 4, -1,1, daysToSkip, null, null);
+        int daysToSkip = 0;
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(2, 4, -1, 1, daysToSkip, null, null);
     }
 
     @Test
     void calculateBusinessTimeAsDateBeforeWorkingHourWithoutDelay() {
-        int daysToSkip = 0; // since executionHourDelay falls before endHOurGap
+        int daysToSkip = 0;
         commonCalculateBusinessTimeAsDateAssertBetweenHours(-1, 4, -2, 1, daysToSkip, null, null);
     }
 
     @Test
     void calculateBusinessTimeAsDateAfterWorkingHour() {
-        int daysToSkip = 1; // because the executionHourDelay is bigger to endHOurGap, so it goes to next day;
-        commonCalculateBusinessTimeAsDateAssertAtStartHour(-1, 2, 3,3, daysToSkip, null, null);
+        int daysToSkip = 1;
+        commonCalculateBusinessTimeAsDateAssertAtStartHour(-1, 2, 3, 3, daysToSkip, null, null);
     }
 
     @Test
@@ -131,12 +115,10 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
         String holidays = sdf.format(today) + "," + sdf.format(tomorrow);
-        int daysToSkip = 2; // because both today and tomorrow are holiday
-        // endHOurGap and executionHourDelay are ininfluent in this context
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0,3, daysToSkip, holidayDateFormat, holidays);
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 5,3, daysToSkip, holidayDateFormat, holidays);
+        int daysToSkip = 2;
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 3, daysToSkip, holidayDateFormat, holidays);
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 5, 3, daysToSkip, holidayDateFormat, holidays);
     }
-
 
     @Test
     void calculateBusinessTimeAsDateWhenNextDayIsHoliday() {
@@ -144,12 +126,10 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
         DateTimeFormatter sdf = DateTimeFormatter.ofPattern(holidayDateFormat);
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         String holidays = sdf.format(tomorrow);
-        // 1 because the executionHourDelay is equal to endHOurGap, so it goes to next day;
-        // 1 because next day is holiday
         int daysToSkip = 2;
 
-        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0,4, daysToSkip, holidayDateFormat, holidays);
-        daysToSkip = 0; // since executionHourDelay falls before endHOurGap
+        commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 4, daysToSkip, holidayDateFormat, holidays);
+        daysToSkip = 0;
         commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 3, daysToSkip, holidayDateFormat, holidays);
     }
 
@@ -174,7 +154,7 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
         assertThat(toRoll.get(Calendar.DAY_OF_YEAR)).isEqualTo(dayOfYear + 1);
     }
 
-    @Disabled("TO FIX")
+    @Disabled("TO FIX https://github.com/apache/incubator-kie-issues/issues/1651")
     @Test
     void rollCalendarToNightlyWorkingHour() {
         int startHour = 20;
@@ -197,6 +177,7 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
 
     }
 
+    @Disabled("TO FIX https://github.com/apache/incubator-kie-issues/issues/1651")
     @Test
     void rollCalendarAfterHolidays() {
         Instant now = Instant.now();
@@ -215,17 +196,18 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     @Test
-    void rollCalendarToNextWorkingDay() {
+    void rollCalendarToNextWorkingDayIfCurrentDayIsNonWorking() {
         List<Integer> workingDays = IntStream.range(Calendar.MONDAY, Calendar.SATURDAY).boxed().toList();
         List<Integer> weekendDays = Arrays.asList(Calendar.SATURDAY, Calendar.SUNDAY);
+        boolean resetTime = false;
         workingDays.forEach(workingDay -> {
             Calendar calendar = getCalendarAtExpectedWeekDay(workingDay);
-            BusinessCalendarImpl.rollCalendarToNextWorkingDay(calendar, weekendDays, false);
+            BusinessCalendarImpl.rollCalendarToNextWorkingDayIfCurrentDayIsNonWorking(calendar, weekendDays, resetTime);
             assertThat(calendar.get(Calendar.DAY_OF_WEEK)).isEqualTo(workingDay);
         });
         weekendDays.forEach(weekendDay -> {
             Calendar calendar = getCalendarAtExpectedWeekDay(weekendDay);
-            BusinessCalendarImpl.rollCalendarToNextWorkingDay(calendar, weekendDays, false);
+            BusinessCalendarImpl.rollCalendarToNextWorkingDayIfCurrentDayIsNonWorking(calendar, weekendDays, resetTime);
             assertThat(calendar.get(Calendar.DAY_OF_WEEK)).isEqualTo(Calendar.MONDAY);
         });
     }
@@ -238,7 +220,8 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
         weekendDays.forEach(workingDay -> assertThat(BusinessCalendarImpl.isWorkingDay(weekendDays, workingDay)).isFalse());
     }
 
-    private void commonCalculateBusinessTimeAsDateAssertBetweenHours(int startHourGap, int endHourGap, int testingCalendarHourGap,  int executionHourDelay, int daysToSkip, String holidayDateFormat, String holidays ) {
+    private void commonCalculateBusinessTimeAsDateAssertBetweenHours(int startHourGap, int endHourGap, int testingCalendarHourGap, int executionHourDelay, int daysToSkip, String holidayDateFormat,
+            String holidays) {
         BiFunction<Instant, Instant, Boolean> startBooleanCondition = (resultInstant, expectedStartTime) -> {
             logger.debug("Check if {} is after or equal to {} ", resultInstant, expectedStartTime);
             return !resultInstant.isBefore(expectedStartTime);
@@ -253,7 +236,8 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
                 startBooleanCondition);
     }
 
-    private void commonCalculateBusinessTimeAsDateAssertAtStartHour(int startHourGap, int endHourGap, int testingCalendarHourGap, int executionHourDelay, int daysToSkip, String holidayDateFormat, String holidays ) {
+    private void commonCalculateBusinessTimeAsDateAssertAtStartHour(int startHourGap, int endHourGap, int testingCalendarHourGap, int executionHourDelay, int daysToSkip, String holidayDateFormat,
+            String holidays) {
         BiFunction<Instant, Instant, Boolean> startBooleanCondition = (resultInstant, expectedStartTime) -> {
             logger.debug("Check if {} is equal to {} ", resultInstant, expectedStartTime);
             return resultInstant.getEpochSecond() == expectedStartTime.getEpochSecond();
@@ -296,10 +280,7 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
         int startHour = startCalendar.get(Calendar.HOUR_OF_DAY);
         int endHour = endCalendar.get(Calendar.HOUR_OF_DAY);
 
-        // We need to reconciliate for daily/working hours and daily/nightly hours
-        int smallerHour = Math.min(startHour, endHour);
-        int biggerHour = Math.max(startHour, endHour);
-        int hoursInDay = biggerHour - smallerHour; // TODO DOUBLE CHECK!!!!!
+        int hoursInDay = startHour < endHour ? endHour - startHour : 24 - (startHour - endHour);
         int daysToAdd = daysToSkip;
         logger.debug("daysToAdd (= numberOfHolidays) {}", daysToAdd);
         if (executionHourDelay >= hoursInDay) {

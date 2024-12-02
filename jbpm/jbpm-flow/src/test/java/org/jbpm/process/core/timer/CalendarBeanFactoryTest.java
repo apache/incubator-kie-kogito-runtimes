@@ -13,7 +13,7 @@ class CalendarBeanFactoryTest {
     @Test
     void testCreateCalendarBean() {
         // This test relies on src/test/resources/calendar.properties.
-        // Checked values comes from it
+        // Checked values comes from calendar.properties
         CalendarBean calendarBean = CalendarBeanFactory.createCalendarBean();
         assertNotNull(calendarBean);
         assertEquals(10, calendarBean.getStartHour());
