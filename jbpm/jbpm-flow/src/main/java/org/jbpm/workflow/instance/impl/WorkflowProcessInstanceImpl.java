@@ -550,7 +550,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         Map<String, Object> metadata = getProcess().getMetaData();
         String slaDueDateExpression = (String) metadata.get(CUSTOM_SLA_DUE_DATE);
         if (slaDueDateExpression != null) {
-            TimerInstance timer = configureSLATimer(slaDueDateExpression, null);
+            TimerInstance timer = configureSLATimer(slaDueDateExpression);
             if (timer != null) {
                 this.slaTimerId = timer.getId();
                 this.slaDueDate = new Date(System.currentTimeMillis() + timer.getDelay());
@@ -560,8 +560,12 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         }
         String processDuration = (String) metadata.get(Metadata.PROCESS_DURATION);
         if (processDuration != null) {
-            this.cancelTimerId = registerTimer(createDurationTimer(Duration.parse(processDuration).toMillis()), null).getId();
+            this.cancelTimerId = registerTimer(createDurationTimer(Duration.parse(processDuration).toMillis())).getId();
         }
+    }
+
+    public TimerInstance configureSLATimer(String slaDueDateExpression) {
+        return configureSLATimer(slaDueDateExpression, null);
     }
 
     public TimerInstance configureSLATimer(String slaDueDateExpression, String nodeInstanceId) {
@@ -595,6 +599,10 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         timerInstance.setDelay(duration);
         timerInstance.setPeriod(0);
         return timerInstance;
+    }
+
+    private TimerInstance registerTimer(TimerInstance timerInstance) {
+        return registerTimer(timerInstance, null);
     }
 
     private TimerInstance registerTimer(TimerInstance timerInstance, String nodeInstanceId) {
