@@ -274,7 +274,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         if (startHour < endHour) {
             rollCalendarToDailyWorkingHour(toRoll, startHour, endHour);
         } else {
-            rollCalendarToNightlyWorkingHour(toRoll, startHour, endHour);
+            throw new UnsupportedOperationException(String.format("This feature is not supported yet: %s should be greater than %s", END_HOUR, START_HOUR));
         }
         if (resetMinuteAndSecond) {
             toRoll.set(Calendar.MINUTE, 0);
@@ -349,19 +349,20 @@ public class BusinessCalendarImpl implements BusinessCalendar {
                 // check each holiday if it overlaps current date and break after first match
                 if (current.after(holiday.getFrom()) && current.before(holiday.getTo())) {
 
-                    Calendar tmp = new GregorianCalendar();
-                    tmp.setTime(holiday.getTo());
+                    Calendar firstWorkingHourTmp = new GregorianCalendar();
+                    firstWorkingHourTmp.setTime(holiday.getTo());
 
-                    Calendar tmp2 = new GregorianCalendar();
-                    tmp2.setTime(current);
-                    tmp2.set(Calendar.HOUR_OF_DAY, 0);
-                    tmp2.set(Calendar.MINUTE, 0);
-                    tmp2.set(Calendar.SECOND, 0);
-                    tmp2.set(Calendar.MILLISECOND, 0);
+                    Calendar currentDayTmp = new GregorianCalendar();
+                    currentDayTmp.setTime(current);
+                    currentDayTmp.set(Calendar.HOUR_OF_DAY, 0);
+                    currentDayTmp.set(Calendar.MINUTE, 0);
+                    currentDayTmp.set(Calendar.SECOND, 0);
+                    currentDayTmp.set(Calendar.MILLISECOND, 0);
 
-                    long difference = tmp.getTimeInMillis() - tmp2.getTimeInMillis();
+                    long difference = firstWorkingHourTmp.getTimeInMillis() - currentDayTmp.getTimeInMillis();
+                    int dayDifference = (int) Math.ceil(difference / (HOUR_IN_MILLIS * 24d));
 
-                    toRoll.add(Calendar.HOUR_OF_DAY, (int) (difference / HOUR_IN_MILLIS));
+                    toRoll.add(Calendar.DAY_OF_MONTH, dayDifference);
 
                     rollCalendarToNextWorkingDayIfCurrentDayIsNonWorking(toRoll, weekendDays, resetTime);
                     break;
