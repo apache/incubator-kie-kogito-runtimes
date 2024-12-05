@@ -344,8 +344,8 @@ public class BusinessCalendarImpl implements BusinessCalendar {
                 // check each holiday if it overlaps current date and break after first match
                 if (current.after(holiday.getFrom()) && current.before(holiday.getTo())) {
 
-                    Calendar firstWorkingHourTmp = new GregorianCalendar();
-                    firstWorkingHourTmp.setTime(holiday.getTo());
+                    Calendar lastHolidayDayTime = new GregorianCalendar();
+                    lastHolidayDayTime.setTime(holiday.getTo());
 
                     Calendar currentDayTmp = new GregorianCalendar();
                     currentDayTmp.setTime(current);
@@ -354,7 +354,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
                     currentDayTmp.set(Calendar.SECOND, 0);
                     currentDayTmp.set(Calendar.MILLISECOND, 0);
 
-                    long difference = firstWorkingHourTmp.getTimeInMillis() - currentDayTmp.getTimeInMillis();
+                    long difference = lastHolidayDayTime.getTimeInMillis() - currentDayTmp.getTimeInMillis();
                     int dayDifference = (int) Math.ceil(difference / (HOUR_IN_MILLIS * 24d));
 
                     toRoll.add(Calendar.DAY_OF_MONTH, dayDifference);
