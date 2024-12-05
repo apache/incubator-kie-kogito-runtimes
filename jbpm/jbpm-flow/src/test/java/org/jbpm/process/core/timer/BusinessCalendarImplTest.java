@@ -146,6 +146,7 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
     void calculateBusinessTimeAsDateAfterWorkingHour() {
         int daysToSkip = 1; // because the executionHourDelay is bigger to endHOurGap, so it goes to next day;
         commonCalculateBusinessTimeAsDateAssertAtStartHour(-1, 2, 3, 3, daysToSkip, null, null);
+        commonCalculateBusinessTimeAsDateAssertAtStartHour(0, 6, 1, 5, daysToSkip, null, null);
     }
 
     @Test
