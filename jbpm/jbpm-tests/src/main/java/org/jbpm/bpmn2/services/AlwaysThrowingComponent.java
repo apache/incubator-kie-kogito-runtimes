@@ -23,6 +23,7 @@ import org.kie.kogito.internal.process.workitem.WorkItemExecutionException;
 public class AlwaysThrowingComponent {
 
     public void throwException() {
+        System.out.println("throwException ");
         throw new WorkItemExecutionException("MY_ERROR");
     }
 }
