@@ -200,8 +200,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
                 logger.debug("calendar after holidays when number of days > 0: {}", calendar.getTime());
             }
         }
-
-        rollCalendarToWorkingHour(calendar);
+        int currentCalHour = calendar.get(Calendar.HOUR_OF_DAY);
+        boolean resetMinuteSecond = currentCalHour >= endHour || currentCalHour < startHour;
+        rollCalendarToWorkingHour(calendar, resetMinuteSecond);
         logger.debug("calendar after rolling to working hour: {}", calendar.getTime());
 
         // calculate remaining hours
@@ -213,7 +214,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         logger.debug("calendar after rolling to next working day: {}", calendar.getTime());
         rollCalendarAfterHolidays(calendar, holidays, weekendDays, hours > 0 || min > 0);
         logger.debug("calendar after holidays: {}", calendar.getTime());
-        rollCalendarToWorkingHour(calendar);
+        rollCalendarToWorkingHour(calendar, false);
         logger.debug("calendar after rolling to working hour: {}", calendar.getTime());
 
         // calculate minutes
@@ -233,7 +234,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         calendar.add(Calendar.SECOND, sec);
         logger.debug("calendar after adding {} hour, {} minutes and {} seconds: {}", numberOfHours, numberOfMinutes, sec, calendar.getTime());
 
-        rollCalendarToWorkingHour(calendar);
+        rollCalendarToWorkingHour(calendar, false);
         logger.debug("calendar after rolling to next working day: {}", calendar.getTime());
 
         // take under consideration weekend
@@ -267,13 +268,18 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      * The case where startHour = endHour is excluded by validation of the <code>CalendarBean</code>
      * 
      * @param toRoll
+     * @param resetMinuteSecond if <code>true</code>, set minutes and seconds to 0
      */
-    protected void rollCalendarToWorkingHour(Calendar toRoll) {
+    protected void rollCalendarToWorkingHour(Calendar toRoll, boolean resetMinuteSecond) {
         logger.debug("toRoll: {}", toRoll.getTime());
         if (startHour < endHour) {
             rollCalendarToDailyWorkingHour(toRoll, startHour, endHour);
         } else {
             throw new UnsupportedOperationException(String.format("This feature is not supported yet: %s should be greater than %s", END_HOUR, START_HOUR));
+        }
+        if (resetMinuteSecond) {
+            toRoll.set(Calendar.MINUTE, 0);
+            toRoll.set(Calendar.SECOND, 0);
         }
     }
 

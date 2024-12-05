@@ -18,6 +18,7 @@
  */
 package org.jbpm.process.core.timer;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -95,6 +96,47 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
     }
 
     @Test
+    void calculateBusinessTimeAsDateBeforeWorkingHourWithDelayFineGrained() {
+        // lets pretend 2024-11-28 10:48:33 is the current time
+        Calendar testingCalendar = Calendar.getInstance();
+        testingCalendar.set(Calendar.YEAR, 2024);
+        testingCalendar.set(Calendar.MONTH, Calendar.NOVEMBER);
+        testingCalendar.set(Calendar.DAY_OF_MONTH, 28);
+        testingCalendar.set(Calendar.HOUR_OF_DAY, 10);
+        testingCalendar.set(Calendar.MINUTE, 48);
+        testingCalendar.set(Calendar.SECOND, 33);
+
+        int startHour = 14;
+        Properties config = new Properties();
+        config.setProperty(BusinessCalendarImpl.START_HOUR, String.valueOf(startHour));
+        config.setProperty(BusinessCalendarImpl.END_HOUR, "18");
+        config.setProperty(WEEKEND_DAYS, "0");
+
+        String delay = "10m";
+        BusinessCalendarImpl businessCal = BusinessCalendarImpl.builder().withCalendarBean(new CalendarBean(config))
+                .withTestingCalendar(testingCalendar)
+                .build();
+        Date retrieved = businessCal.calculateBusinessTimeAsDate(delay);
+        String expectedDate = "2024-11-28 14:10:00";
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String retrievedTime = sdf.format(retrieved);
+        assertThat(retrievedTime).isEqualTo(expectedDate);
+
+        delay = "10s";
+        retrieved = businessCal.calculateBusinessTimeAsDate(delay);
+        expectedDate = "2024-11-28 14:00:10";
+        retrievedTime = sdf.format(retrieved);
+        assertThat(retrievedTime).isEqualTo(expectedDate);
+
+        delay = "10m 10s";
+        retrieved = businessCal.calculateBusinessTimeAsDate(delay);
+        expectedDate = "2024-11-28 14:10:10";
+        retrievedTime = sdf.format(retrieved);
+        assertThat(retrievedTime).isEqualTo(expectedDate);
+    }
+
+    @Test
     void calculateBusinessTimeAsDateBeforeWorkingHourWithoutDelay() {
         int daysToSkip = 0; // since executionHourDelay falls before endHOurGap
         commonCalculateBusinessTimeAsDateAssertBetweenHours(-1, 4, -2, 1, daysToSkip, null, null);
@@ -114,7 +156,7 @@ class BusinessCalendarImplTest extends AbstractBaseTest {
         LocalDate tomorrow = today.plusDays(1);
         String holidays = sdf.format(today) + "," + sdf.format(tomorrow);
         int daysToSkip = 2; // because both today and tomorrow are holiday
-        // endHOurGap and executionHourDelay are ininfluent in this context
+        // endHOurGap and executionHourDelay are not relevant in this context
         commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 0, 3, daysToSkip, holidayDateFormat, holidays);
         commonCalculateBusinessTimeAsDateAssertBetweenHours(-4, 4, 5, 3, daysToSkip, holidayDateFormat, holidays);
     }
