@@ -35,7 +35,6 @@ public class CalendarBeanFactory {
     private static final Logger logger = LoggerFactory.getLogger(CalendarBeanFactory.class);
 
     public static CalendarBean createCalendarBean() {
-        logger.debug("createCalendarBean");
         URL resource = Thread.currentThread().getContextClassLoader().getResource(BUSINESS_CALENDAR_PATH);
         if (Objects.nonNull(resource)) {
             logger.debug("URL resource: {}", resource);

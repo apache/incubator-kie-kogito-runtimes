@@ -45,8 +45,6 @@ import org.slf4j.LoggerFactory;
  * <li>business.holiday.date.format - specifies holiday date format used (default yyyy-MM-dd)</li>
  * <li>business.weekend.days - specifies days of the weekend (default Saturday (7) and Sunday (1), use 0 to indicate no weekend days)</li>
  * <li>business.cal.timezone - specifies time zone to be used (if not given uses default of the system it runs on)</li>
- * <li>business.hours.per.day - calculated as the difference between business.end.hour and business.start.hour</li>
- * <li>business.days.per.week - calculated as 7 - number of weekend days</li>
  * </ul>
  *
  * <b>Format</b><br/>
@@ -112,7 +110,6 @@ public class BusinessCalendarImpl implements BusinessCalendar {
     }
 
     private BusinessCalendarImpl(CalendarBean calendarBean, Calendar testingCalendar) {
-        logger.debug("calendarBean {} testingCalendar{}", calendarBean, testingCalendar);
         holidays = calendarBean.getHolidays();
         weekendDays = calendarBean.getWeekendDays();
         daysPerWeek = calendarBean.getDaysPerWeek();
@@ -130,7 +127,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      */
     @Override
     public long calculateBusinessTimeAsDuration(String timeExpression) {
-        logger.debug("timeExpression {}", timeExpression);
+        logger.trace("timeExpression {}", timeExpression);
         timeExpression = adoptISOFormat(timeExpression);
 
         Date calculatedDate = calculateBusinessTimeAsDate(timeExpression);
@@ -144,7 +141,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      */
     @Override
     public Date calculateBusinessTimeAsDate(String timeExpression) {
-        logger.debug("timeExpression {}", timeExpression);
+        logger.trace("timeExpression {}", timeExpression);
         timeExpression = adoptISOFormat(timeExpression);
 
         String trimmed = timeExpression.trim();
@@ -164,58 +161,58 @@ public class BusinessCalendarImpl implements BusinessCalendar {
                 sec = (mat.group(SIM_SEC) != null) ? Integer.parseInt(mat.group(SIM_SEC)) : 0;
             }
         }
-        logger.debug("weeks: {}", hours);
-        logger.debug("days: {}", days);
-        logger.debug("hours: {}", hours);
-        logger.debug("min: {}", min);
-        logger.debug("sec: {}", sec);
+        logger.trace("weeks: {}", weeks);
+        logger.trace("days: {}", days);
+        logger.trace("hours: {}", hours);
+        logger.trace("min: {}", min);
+        logger.trace("sec: {}", sec);
         int time = 0;
 
         Calendar calendar = getCalendar();
-        logger.debug("calendar selected for business calendar: {}", calendar.getTime());
+        logger.trace("calendar selected for business calendar: {}", calendar.getTime());
         if (timezone != null) {
             calendar.setTimeZone(TimeZone.getTimeZone(timezone));
         }
 
         // calculate number of weeks
         int numberOfWeeks = days / daysPerWeek + weeks;
-        logger.debug("number of weeks: {}", numberOfWeeks);
+        logger.trace("number of weeks: {}", numberOfWeeks);
         if (numberOfWeeks > 0) {
             calendar.add(Calendar.WEEK_OF_YEAR, numberOfWeeks);
         }
-        logger.debug("calendar WEEK_OF_YEAR: {}", calendar.get(Calendar.WEEK_OF_YEAR));
+        logger.trace("calendar WEEK_OF_YEAR: {}", calendar.get(Calendar.WEEK_OF_YEAR));
         rollCalendarToNextWorkingDayIfCurrentDayIsNonWorking(calendar, weekendDays, hours > 0 || min > 0);
         hours += (days - (numberOfWeeks * daysPerWeek)) * hoursInDay;
 
         // calculate number of days
         int numberOfDays = hours / hoursInDay;
-        logger.debug("numberOfDays: {}", numberOfDays);
+        logger.trace("numberOfDays: {}", numberOfDays);
         if (numberOfDays > 0) {
             for (int i = 0; i < numberOfDays; i++) {
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
                 boolean resetTime = false;
                 rollCalendarToNextWorkingDayIfCurrentDayIsNonWorking(calendar, weekendDays, resetTime);
-                logger.debug("calendar after rolling to next working day: {} when number of days > 0", calendar.getTime());
+                logger.trace("calendar after rolling to next working day: {} when number of days > 0", calendar.getTime());
                 rollCalendarAfterHolidays(calendar, holidays, weekendDays, hours > 0 || min > 0);
-                logger.debug("calendar after holidays when number of days > 0: {}", calendar.getTime());
+                logger.trace("calendar after holidays when number of days > 0: {}", calendar.getTime());
             }
         }
         int currentCalHour = calendar.get(Calendar.HOUR_OF_DAY);
         boolean resetMinuteSecond = currentCalHour >= endHour || currentCalHour < startHour;
         rollCalendarToWorkingHour(calendar, resetMinuteSecond);
-        logger.debug("calendar after rolling to working hour: {}", calendar.getTime());
+        logger.trace("calendar after rolling to working hour: {}", calendar.getTime());
 
         // calculate remaining hours
         time = hours - (numberOfDays * hoursInDay);
         calendar.add(Calendar.HOUR, time);
-        logger.debug("calendar after adding time {}: {}", time, calendar.getTime());
+        logger.trace("calendar after adding time {}: {}", time, calendar.getTime());
         boolean resetTime = true;
         rollCalendarToNextWorkingDayIfCurrentDayIsNonWorking(calendar, weekendDays, resetTime);
-        logger.debug("calendar after rolling to next working day: {}", calendar.getTime());
+        logger.trace("calendar after rolling to next working day: {}", calendar.getTime());
         rollCalendarAfterHolidays(calendar, holidays, weekendDays, hours > 0 || min > 0);
-        logger.debug("calendar after holidays: {}", calendar.getTime());
+        logger.trace("calendar after holidays: {}", calendar.getTime());
         rollCalendarToWorkingHour(calendar, false);
-        logger.debug("calendar after rolling to working hour: {}", calendar.getTime());
+        logger.trace("calendar after rolling to working hour: {}", calendar.getTime());
 
         // calculate minutes
         int numberOfHours = min / 60;
@@ -232,18 +229,18 @@ public class BusinessCalendarImpl implements BusinessCalendar {
             sec = sec - (numberOfMinutes * 60);
         }
         calendar.add(Calendar.SECOND, sec);
-        logger.debug("calendar after adding {} hour, {} minutes and {} seconds: {}", numberOfHours, numberOfMinutes, sec, calendar.getTime());
+        logger.trace("calendar after adding {} hour, {} minutes and {} seconds: {}", numberOfHours, numberOfMinutes, sec, calendar.getTime());
 
         rollCalendarToWorkingHour(calendar, false);
-        logger.debug("calendar after rolling to next working day: {}", calendar.getTime());
+        logger.trace("calendar after rolling to next working day: {}", calendar.getTime());
 
         // take under consideration weekend
         resetTime = false;
         rollCalendarToNextWorkingDayIfCurrentDayIsNonWorking(calendar, weekendDays, resetTime);
-        logger.debug("calendar after rolling to next working day: {}", calendar.getTime());
+        logger.trace("calendar after rolling to next working day: {}", calendar.getTime());
         // take under consideration holidays
         rollCalendarAfterHolidays(calendar, holidays, weekendDays, resetTime);
-        logger.debug("calendar after holidays: {}", calendar.getTime());
+        logger.trace("calendar after holidays: {}", calendar.getTime());
 
         return calendar.getTime();
     }
@@ -255,7 +252,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      */
     protected Calendar getCalendar() {
         String debugMessage = testingCalendar != null ? "Returning clone of testingCalendar " : "Return new GregorianCalendar";
-        logger.debug(debugMessage);
+        logger.trace(debugMessage);
         return testingCalendar != null ? (Calendar) testingCalendar.clone() : new GregorianCalendar();
     }
 
@@ -271,7 +268,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      * @param resetMinuteSecond if <code>true</code>, set minutes and seconds to 0
      */
     protected void rollCalendarToWorkingHour(Calendar toRoll, boolean resetMinuteSecond) {
-        logger.debug("toRoll: {}", toRoll.getTime());
+        logger.trace("toRoll: {}", toRoll.getTime());
         if (startHour < endHour) {
             rollCalendarToDailyWorkingHour(toRoll, startHour, endHour);
         } else {
@@ -291,9 +288,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      * @param endHour
      */
     static void rollCalendarToDailyWorkingHour(Calendar toRoll, int startHour, int endHour) {
-        logger.debug("toRoll: {}", toRoll.getTime());
-        logger.debug("startHour: {}", startHour);
-        logger.debug("endHour: {}", endHour);
+        logger.trace("toRoll: {}", toRoll.getTime());
+        logger.trace("startHour: {}", startHour);
+        logger.trace("endHour: {}", endHour);
         int currentCalHour = toRoll.get(Calendar.HOUR_OF_DAY);
         if (currentCalHour >= endHour) {
             toRoll.add(Calendar.DAY_OF_YEAR, 1);
@@ -302,7 +299,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         } else if (currentCalHour < startHour) {
             toRoll.add(Calendar.HOUR_OF_DAY, startHour - currentCalHour);
         }
-        logger.debug("calendar after rolling to daily working hour: {}", toRoll.getTime());
+        logger.trace("calendar after rolling to daily working hour: {}", toRoll.getTime());
     }
 
     /**
@@ -313,9 +310,9 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      * @param endHour
      */
     static void rollCalendarToNightlyWorkingHour(Calendar toRoll, int startHour, int endHour) {
-        logger.debug("toRoll: {}", toRoll.getTime());
-        logger.debug("startHour: {}", startHour);
-        logger.debug("endHour: {}", endHour);
+        logger.trace("toRoll: {}", toRoll.getTime());
+        logger.trace("startHour: {}", startHour);
+        logger.trace("endHour: {}", endHour);
         int currentCalHour = toRoll.get(Calendar.HOUR_OF_DAY);
         if (currentCalHour < endHour) {
             toRoll.set(Calendar.HOUR_OF_DAY, endHour);
@@ -340,10 +337,10 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      * @param resetTime
      */
     static void rollCalendarAfterHolidays(Calendar toRoll, List<TimePeriod> holidays, List<Integer> weekendDays, boolean resetTime) {
-        logger.debug("toRoll: {}", toRoll.getTime());
-        logger.debug("holidays: {}", holidays);
-        logger.debug("weekendDays: {}", weekendDays);
-        logger.debug("resetTime: {}", resetTime);
+        logger.trace("toRoll: {}", toRoll.getTime());
+        logger.trace("holidays: {}", holidays);
+        logger.trace("weekendDays: {}", weekendDays);
+        logger.trace("resetTime: {}", resetTime);
         if (!holidays.isEmpty()) {
             Date current = toRoll.getTime();
             for (TimePeriod holiday : holidays) {
@@ -382,11 +379,11 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      * @param resetTime
      */
     static void rollCalendarToNextWorkingDayIfCurrentDayIsNonWorking(Calendar toRoll, List<Integer> weekendDays, boolean resetTime) {
-        logger.debug("toRoll: {}", toRoll.getTime());
-        logger.debug("weekendDays: {}", weekendDays);
-        logger.debug("resetTime: {}", resetTime);
+        logger.trace("toRoll: {}", toRoll.getTime());
+        logger.trace("weekendDays: {}", weekendDays);
+        logger.trace("resetTime: {}", resetTime);
         int dayOfTheWeek = toRoll.get(Calendar.DAY_OF_WEEK);
-        logger.debug("dayOfTheWeek: {}", dayOfTheWeek);
+        logger.trace("dayOfTheWeek: {}", dayOfTheWeek);
         while (!isWorkingDay(weekendDays, dayOfTheWeek)) {
             toRoll.add(Calendar.DAY_OF_YEAR, 1);
             if (resetTime) {
@@ -397,23 +394,22 @@ public class BusinessCalendarImpl implements BusinessCalendar {
             }
             dayOfTheWeek = toRoll.get(Calendar.DAY_OF_WEEK);
         }
-        logger.debug("dayOfTheWeek after rolling calendar: {}", dayOfTheWeek);
+        logger.trace("dayOfTheWeek after rolling calendar: {}", dayOfTheWeek);
     }
 
     static boolean isWorkingDay(List<Integer> weekendDays, int day) {
-        logger.debug("weekendDays: {}", weekendDays);
-        logger.debug("day: {}", day);
+        logger.trace("weekendDays: {}", weekendDays);
+        logger.trace("day: {}", day);
         return !weekendDays.contains(day);
     }
 
     protected long getCurrentTime() {
         String debugMessage = testingCalendar != null ? "Returning testingCalendar time " : "Return System time";
-        logger.debug(debugMessage);
         return testingCalendar != null ? testingCalendar.getTimeInMillis() : System.currentTimeMillis();
     }
 
     protected String adoptISOFormat(String timeExpression) {
-        logger.debug("timeExpression: {}", timeExpression);
+        logger.trace("timeExpression: {}", timeExpression);
         try {
             Duration p = null;
             if (DateTimeUtils.isPeriod(timeExpression)) {
@@ -508,6 +504,14 @@ public class BusinessCalendarImpl implements BusinessCalendar {
         @Override
         public int hashCode() {
             return Objects.hash(from, to);
+        }
+
+        @Override
+        public String toString() {
+            return "TimePeriod{" +
+                    "from=" + from +
+                    ", to=" + to +
+                    '}';
         }
     }
 
