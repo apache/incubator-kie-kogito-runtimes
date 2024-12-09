@@ -127,11 +127,11 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      */
     @Override
     public long calculateBusinessTimeAsDuration(String timeExpression) {
-        logger.trace("timeExpression {}", timeExpression);
         timeExpression = adoptISOFormat(timeExpression);
 
         Date calculatedDate = calculateBusinessTimeAsDate(timeExpression);
-        logger.debug("calculatedDate({})-currentTime({}) is {}", calculatedDate, getCurrentTime(), calculatedDate.getTime() - getCurrentTime());
+        logger.debug("calculatedDate: {}, currentTime: {}, timeExpression: {}, Difference: {} ms",
+                calculatedDate, new Date(getCurrentTime()), timeExpression, calculatedDate.getTime() - getCurrentTime());
 
         return (calculatedDate.getTime() - getCurrentTime());
     }
