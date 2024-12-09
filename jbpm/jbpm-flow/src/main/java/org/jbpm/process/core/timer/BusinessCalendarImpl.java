@@ -127,6 +127,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
      */
     @Override
     public long calculateBusinessTimeAsDuration(String timeExpression) {
+        logger.trace("timeExpression {}", timeExpression);
         timeExpression = adoptISOFormat(timeExpression);
 
         Date calculatedDate = calculateBusinessTimeAsDate(timeExpression);
