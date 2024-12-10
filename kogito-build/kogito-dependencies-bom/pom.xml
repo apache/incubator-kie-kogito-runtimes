@@ -51,7 +51,7 @@
     <version.net.minidev.jsonsmart>2.4.10</version.net.minidev.jsonsmart>
     <version.net.thisptr.jackson-jq>1.0.0-preview.20240207</version.net.thisptr.jackson-jq>
     <version.io.quarkiverse.jackson-jq>2.0.2</version.io.quarkiverse.jackson-jq>
-    <version.io.quarkiverse.openapi.generator>2.5.0</version.io.quarkiverse.openapi.generator>
+    <version.io.quarkiverse.openapi.generator>2.6.0-lts</version.io.quarkiverse.openapi.generator>
     <version.io.quarkiverse.asyncapi>0.3.0</version.io.quarkiverse.asyncapi>
     <version.io.quarkiverse.reactivemessaging.http>2.4.1</version.io.quarkiverse.reactivemessaging.http>
     <version.io.quarkiverse.embedded.postgresql>0.2.3</version.io.quarkiverse.embedded.postgresql>
@@ -59,7 +59,7 @@
     <version.com.github.javaparser>3.26.1</version.com.github.javaparser>
     <version.com.fasterxml.jackson.datatype>2.17.2</version.com.fasterxml.jackson.datatype>
     <version.com.github.victools>4.31.0</version.com.github.victools>
-    <version.com.github.tomakehurst.wiremock>2.35.1</version.com.github.tomakehurst.wiremock>
+    <version.com.github.tomakehurst.wiremock>2.35.2</version.com.github.tomakehurst.wiremock>
     <version.com.google.protobuf>3.25.5</version.com.google.protobuf>
     <!-- We don't use gson directly. This is just to align versions of transitive dependencies -->
     <version.com.google.gson>2.10.1</version.com.google.gson>
@@ -144,7 +144,7 @@
 
     <version.maven>3.9.6</version.maven>
     <version.maven.project>2.2.1</version.maven.project>
-    <version.maven.plugin>3.13.0</version.maven.plugin>
+    <version.maven.plugin>3.7.1</version.maven.plugin>
     <version.maven.invoker>3.2.0</version.maven.invoker>
     <version.maven.plugin.testing.harness>4.0.0-alpha-2</version.maven.plugin.testing.harness>
     <version.plexus>2.1.0</version.plexus>
