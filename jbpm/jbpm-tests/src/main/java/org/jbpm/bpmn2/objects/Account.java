@@ -27,6 +27,7 @@ public class Account {
     }
 
     public void setPerson(Person person) {
+        System.out.println("Person ");
         this.person = person;
     }
 
