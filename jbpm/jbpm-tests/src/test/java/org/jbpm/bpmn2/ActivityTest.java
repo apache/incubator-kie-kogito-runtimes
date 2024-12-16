@@ -1520,7 +1520,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
 
-        Assertions.assertEquals("error desde Subproceso", processInstance.variables().getEvent());
+        assertThat(processInstance.variables().getEvent()).isEqualTo("error desde Subproceso");
     }
 
     @Test
