@@ -57,8 +57,6 @@ import org.jbpm.bpmn2.flow.InclusiveGatewayWithHumanTasksProcessModel;
 import org.jbpm.bpmn2.flow.InclusiveGatewayWithHumanTasksProcessProcess;
 import org.jbpm.bpmn2.flow.InclusiveGatewayWithLoopInsideModel;
 import org.jbpm.bpmn2.flow.InclusiveGatewayWithLoopInsideProcess;
-import org.jbpm.bpmn2.flow.InclusiveGatewayWithLoopInsideSubprocessModel;
-import org.jbpm.bpmn2.flow.InclusiveGatewayWithLoopInsideSubprocessProcess;
 import org.jbpm.bpmn2.flow.InclusiveNestedInParallelNestedInExclusiveModel;
 import org.jbpm.bpmn2.flow.InclusiveNestedInParallelNestedInExclusiveProcess;
 import org.jbpm.bpmn2.flow.InclusiveSplitAndJoinEmbeddedModel;
@@ -93,8 +91,6 @@ import org.jbpm.bpmn2.flow.MultiInstanceLoopCharacteristicsProcessWithOutputCmpC
 import org.jbpm.bpmn2.flow.MultiInstanceLoopCharacteristicsProcessWithOutputCmpCondProcess;
 import org.jbpm.bpmn2.flow.MultiInstanceLoopCharacteristicsProcessWithOutputModel;
 import org.jbpm.bpmn2.flow.MultiInstanceLoopCharacteristicsProcessWithOutputProcess;
-import org.jbpm.bpmn2.flow.MultiInstanceLoopCharacteristicsTaskWithOutputModel;
-import org.jbpm.bpmn2.flow.MultiInstanceLoopCharacteristicsTaskWithOutputProcess;
 import org.jbpm.bpmn2.flow.MultiInstanceLoopNumberingModel;
 import org.jbpm.bpmn2.flow.MultiInstanceLoopNumberingProcess;
 import org.jbpm.bpmn2.flow.MultipleGatewaysProcessModel;
@@ -852,7 +848,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
     @Test
     @Disabled("On Exit not supported, see https://issues.redhat.com/browse/KOGITO-2067")
     public void testInclusiveSplitWithLoopInsideSubprocess() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-InclusiveGatewayWithLoopInsideSubprocess.bpmn2");
+        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/flow/BPMN2-InclusiveGatewayWithLoopInsideSubprocess.bpmn2");
 
         final Map<String, Integer> nodeInstanceExecutionCounter = new HashMap<>();
         kruntime.getProcessEventManager().addEventListener(new DefaultKogitoProcessEventListener() {
@@ -876,7 +872,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("testWI2", handler2);
         Map<String, Object> params = new HashMap<>();
         params.put("x", -1);
-        KogitoProcessInstance processInstance = kruntime.startProcess("Process_1", params);
+        KogitoProcessInstance processInstance = kruntime.startProcess("InclusiveGatewayWithLoopInsideSubprocess", params);
 
         assertProcessInstanceActive(processInstance);
         List<KogitoWorkItem> workItems = handler.getWorkItems();
@@ -1145,7 +1141,8 @@ public class FlowTest extends JbpmBpmn2TestCase {
         myList.add("First Item");
         myList.add("Second Item");
         assertThat(myListOut).isEmpty();
-        org.kie.kogito.process.Process<MultiInstanceLoopCharacteristicsProcessWithOutputAndScriptsModel> processDefinition = MultiInstanceLoopCharacteristicsProcessWithOutputAndScriptsProcess.newProcess(app);
+        org.kie.kogito.process.Process<MultiInstanceLoopCharacteristicsProcessWithOutputAndScriptsModel> processDefinition =
+                MultiInstanceLoopCharacteristicsProcessWithOutputAndScriptsProcess.newProcess(app);
         MultiInstanceLoopCharacteristicsProcessWithOutputAndScriptsModel model = processDefinition.createModel();
         model.setList(myList);
         model.setListOut(myListOut);
@@ -1158,47 +1155,37 @@ public class FlowTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Disabled("On Exit not supported, see https://issues.redhat.com/browse/KOGITO-2067")
-    public void testMultiInstanceLoopCharacteristicsTaskWithOutput()
-            throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-MultiInstanceLoopCharacteristicsTaskWithOutput.bpmn2");
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
+    public void testMultiInstanceLoopCharacteristicsTaskWithOutput() {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Human Task",
                 new SystemOutWorkItemHandler());
-        Map<String, Object> params = new HashMap<>();
         List<String> myList = new ArrayList<>();
-        List<String> myListOut = new ArrayList<>();
         myList.add("First Item");
         myList.add("Second Item");
-        params.put("list", myList);
-        params.put("listOut", myListOut);
-        assertThat(myListOut).isEmpty();
-        KogitoProcessInstance processInstance = kruntime.startProcess(
-                "MultiInstanceLoopCharacteristicsTask", params);
-        assertProcessInstanceCompleted(processInstance);
-        assertThat(myListOut).hasSize(2);
-
+        Process<MultiInstanceLoopCharacteristicsProcessWithOutputModel> process = MultiInstanceLoopCharacteristicsProcessWithOutputProcess.newProcess(app);
+        MultiInstanceLoopCharacteristicsProcessWithOutputModel model = process.createModel();
+        model.setList(myList);
+        ProcessInstance<MultiInstanceLoopCharacteristicsProcessWithOutputModel> instance = process.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(instance.variables().getListOut()).hasSize(2);
     }
 
     @Test
-    @Disabled("On Exit not supported, see https://issues.redhat.com/browse/KOGITO-2067")
-    public void testMultiInstanceLoopCharacteristicsTaskWithOutputCompletionCondition()
-            throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-MultiInstanceLoopCharacteristicsTaskWithOutputCmpCond.bpmn2");
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
+    public void testMultiInstanceLoopCharacteristicsTaskWithOutputCompletionCondition() {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Human Task",
                 new SystemOutWorkItemHandler());
-        Map<String, Object> params = new HashMap<>();
         List<String> myList = new ArrayList<>();
-        List<String> myListOut = new ArrayList<>();
         myList.add("First Item");
         myList.add("Second Item");
-        params.put("list", myList);
-        params.put("listOut", myListOut);
-        assertThat(myListOut).isEmpty();
-        KogitoProcessInstance processInstance = kruntime.startProcess(
-                "MultiInstanceLoopCharacteristicsTask", params);
-        assertProcessInstanceCompleted(processInstance);
-        assertThat(myListOut).hasSize(1);
-
+        Process<MultiInstanceLoopCharacteristicsProcessWithOutputCmpCondModel> process = MultiInstanceLoopCharacteristicsProcessWithOutputCmpCondProcess.newProcess(app);
+        MultiInstanceLoopCharacteristicsProcessWithOutputCmpCondModel model = process.createModel();
+        model.setList(myList);
+        ProcessInstance<MultiInstanceLoopCharacteristicsProcessWithOutputCmpCondModel> instance = process.createInstance(model);
+        instance.start();
+        assertThat(instance.status()).isEqualTo(org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(instance.variables().getListOut()).hasSize(1);
     }
 
     @Test
@@ -1225,7 +1212,6 @@ public class FlowTest extends JbpmBpmn2TestCase {
         // only two approved outcomes are required to complete multiinstance and since there was reject in between we should have
         // three elements in the list
         assertThat(myListOut).hasSize(3);
-
     }
 
     @Test
