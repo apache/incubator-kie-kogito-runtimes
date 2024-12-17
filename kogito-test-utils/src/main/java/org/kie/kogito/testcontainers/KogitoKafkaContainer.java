@@ -47,20 +47,20 @@ public class KogitoKafkaContainer extends KogitoGenericContainer<KogitoKafkaCont
         withExposedPorts(KAFKA_PORT);
         withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint("sh"));
         withCommand("-c", "while [ ! -f " + STARTER_SCRIPT + " ]; do sleep 0.1; done; " + STARTER_SCRIPT);
+        withNetworkAliases("kafka");
         waitingFor(Wait.forLogMessage(".*Started Kafka API server.*", 1).withStartupTimeout(Constants.CONTAINER_START_TIMEOUT));
     }
 
     @Override
     protected void containerIsStarting(InspectContainerResponse containerInfo, boolean reused) {
         super.containerIsStarting(containerInfo, reused);
-        String brokerAdvertisedListener = brokerAdvertisedListener(containerInfo);
 
         // Start and configure the advertised address
         String command = "#!/bin/bash\n";
         command += "/usr/bin/rpk redpanda start --check=false --node-id 0 --smp 1 ";
         command += "--memory 1G --overprovisioned --reserve-memory 0M ";
         command += "--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 ";
-        command += format("--advertise-kafka-addr %s ", String.join(",", getBootstrapServers(), brokerAdvertisedListener));
+        command += "--advertise-kafka-addr PLAINTEXT://kafka:29092,OUTSIDE://" + getHost() + ":" + getMappedPort(KAFKA_PORT) + " ";
         command += "--set redpanda.enable_idempotence=true ";
         command += "--set redpanda.enable_transactions=true ";
 
@@ -71,10 +71,6 @@ public class KogitoKafkaContainer extends KogitoGenericContainer<KogitoKafkaCont
     public void start() {
         super.start();
         LOGGER.info("Kafka servers: {}", getBootstrapServers());
-    }
-
-    protected String brokerAdvertisedListener(InspectContainerResponse containerInfo) {
-        return String.format("PLAINTEXT://%s:29092", containerInfo.getConfig().getHostName());
     }
 
     public String getBootstrapServers() {
