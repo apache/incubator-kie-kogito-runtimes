@@ -70,9 +70,20 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
                 }
             }
 
-            String namespace = parameters.get(NAMESPACE_PROP);
-            String model = parameters.get(MODEL_PROP);
-            String decision = parameters.get(DECISION_PROP);
+            String namespace = parameters.getOrDefault(NAMESPACE_PROP, "");
+            String model = parameters.getOrDefault(MODEL_PROP, "");
+            String decision = parameters.getOrDefault(DECISION_PROP, "");
+            String variableRegex = "#\\{[^}]+}";
+            if (namespace.matches(variableRegex)) {
+                namespace = resolveProcessVariable(namespace, parser, element);
+            }
+            if (model.matches(variableRegex)) {
+                model = resolveProcessVariable(model, parser, element);
+            }
+            if (decision.matches(variableRegex)) {
+                decision = resolveProcessVariable(decision, parser, element);
+            }
+
             ruleSetNode.setRuleType(RuleType.decision(
                     namespace,
                     model,
@@ -94,7 +105,6 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
         RuleType ruleType = ruleSetNode.getRuleType();
         if (ruleType != null) {
             xmlDump.append("g:ruleFlowGroup=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(ruleType.getName()) + "\" " + EOL);
-            // else DMN
         }
 
         xmlDump.append(" implementation=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(ruleSetNode.getLanguage()) + "\" >" + EOL);
@@ -102,6 +112,15 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
         writeExtensionElements(ruleSetNode, xmlDump);
         writeIO(ruleSetNode.getIoSpecification(), xmlDump);
         endNode("businessRuleTask", xmlDump);
+    }
+
+    private String resolveProcessVariable(String expression, Parser parser, Element element) {
+
+        String varName = expression.substring(expression.indexOf("#{") + 2, expression.indexOf("}"));
+
+        String variableValue = element.getAttribute(varName);
+
+        return expression.replace("#{" + varName + "}", variableValue);
     }
 
 }
