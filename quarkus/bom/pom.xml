@@ -85,6 +85,11 @@
         <version>${version.io.quarkiverse.openapi.generator}</version>
       </dependency>
       <dependency>
+        <groupId>io.quarkiverse.openapi.generator</groupId>
+        <artifactId>quarkus-openapi-generator-oidc</artifactId>
+        <version>${version.io.quarkiverse.openapi.generator}</version>
+      </dependency>
+      <dependency>
         <groupId>io.quarkiverse.asyncapi</groupId>
         <artifactId>quarkus-asyncapi</artifactId>
         <version>${version.io.quarkiverse.asyncapi}</version>

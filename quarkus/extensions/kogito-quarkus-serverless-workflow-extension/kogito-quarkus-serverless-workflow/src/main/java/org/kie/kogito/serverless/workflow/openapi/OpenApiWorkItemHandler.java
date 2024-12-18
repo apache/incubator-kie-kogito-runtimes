@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.serverless.workflow.openapi;
 
-import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 import java.util.Map;
@@ -37,7 +36,6 @@ import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 import io.quarkus.restclient.runtime.RestClientBuilderFactory;
 
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 
 public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler {
@@ -45,12 +43,8 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
     @Override
     protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
         Class<T> clazz = getRestClass();
-        T ref = RestClientBuilderFactory.build(clazz, calculatedConfigKey(workItem, parameters)).register(new ClientRequestFilter() {
-            @Override
-            public void filter(ClientRequestContext requestContext) throws IOException {
-                ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> requestContext.getHeaders().put(k, Collections.singletonList(v)));
-            }
-        }).build(clazz);
+        T ref = RestClientBuilderFactory.build(clazz, calculatedConfigKey(workItem)).register(
+                (ClientRequestFilter) requestContext -> ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> requestContext.getHeaders().put(k, Collections.singletonList(v)))).build(clazz);
         try {
             return internalExecute(ref, parameters);
         } catch (WebApplicationException ex) {
@@ -58,7 +52,7 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
         }
     }
 
-    private Optional<String> calculatedConfigKey(KogitoWorkItem workItem, Map<String, Object> parameters) {
+    private Optional<String> calculatedConfigKey(KogitoWorkItem workItem) {
         String configKeyExpr = (String) workItem.getNodeInstance().getNode().getMetaData().get("configKey");
         if (configKeyExpr == null) {
             return Optional.empty();
