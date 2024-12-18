@@ -171,7 +171,6 @@ import org.kie.kogito.internal.process.workitem.WorkItemTransition;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
 import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.impl.Sig;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 
