@@ -38,7 +38,6 @@ import jakarta.inject.Inject;
 public class ProcessDefinitionRegistration {
 
     Instance<Processes> processes;
-    Instance<Application> application;
     ProcessDefinitionEventRegistry processDefinitionRegistry;
 
     @Inject
