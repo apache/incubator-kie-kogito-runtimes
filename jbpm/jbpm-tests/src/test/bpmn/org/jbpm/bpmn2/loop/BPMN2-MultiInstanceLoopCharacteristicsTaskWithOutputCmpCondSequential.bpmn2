@@ -46,7 +46,7 @@
     <userTask id="_2" name="Hello" tns:taskName="Human Task">
       <extensionElements>
         <tns:onEntry-script scriptFormat="http://www.java.com/java">
-          <tns:script>kcontext.setVariable("itemOut", "test");</tns:script>
+          <tns:script>System.out.println("Hello");kcontext.setVariable("itemOut", "test");</tns:script>
         </tns:onEntry-script>
       </extensionElements>
       <ioSpecification>
