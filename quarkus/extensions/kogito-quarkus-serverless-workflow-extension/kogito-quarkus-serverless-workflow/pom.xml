@@ -117,6 +117,10 @@
       <artifactId>quarkus-openapi-generator</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.quarkiverse.openapi.generator</groupId>
+      <artifactId>quarkus-openapi-generator-oidc</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.quarkiverse.asyncapi</groupId>
       <artifactId>quarkus-asyncapi</artifactId>
     </dependency>
