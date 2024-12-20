@@ -886,7 +886,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
             instance.completeWorkItem(wi.getStringId(), null);
         }
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-        instance.completeWorkItem(handler2.getWorkItem().getStringId(), null);//After this line, state of the process instance is error state instead of active
+        instance.completeWorkItem(handler2.getWorkItem().getStringId(), null);
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         instance.completeWorkItem(handler2.getWorkItem().getStringId(), null);
         assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
