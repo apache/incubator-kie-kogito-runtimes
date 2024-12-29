@@ -27,7 +27,7 @@
   <parent>
     <artifactId>springboot</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>999-SNAPSHOT</version>
+    <version>999-20241229-SNAPSHOT</version>
   </parent>
 
   <artifactId>kogito-spring-boot-test-utils</artifactId>
