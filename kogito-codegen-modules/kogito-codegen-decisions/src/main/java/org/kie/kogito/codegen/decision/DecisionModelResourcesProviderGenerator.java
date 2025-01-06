@@ -137,7 +137,9 @@ public class DecisionModelResourcesProviderGenerator {
         Set<String> definitions = new HashSet<>(resource.getDmnModel().getDefinitions().getNsContext().values());
         definitions.retainAll(Arrays.asList(org.kie.dmn.model.v1_1.KieDMNModelInstrumentedBase.URI_DMN,
                 org.kie.dmn.model.v1_2.KieDMNModelInstrumentedBase.URI_DMN,
-                org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DMN));
+                org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DMN,
+                org.kie.dmn.model.v1_4.KieDMNModelInstrumentedBase.URI_DMN,
+                org.kie.dmn.model.v1_5.KieDMNModelInstrumentedBase.URI_DMN));
 
         if (definitions.size() != 1) {
             LOGGER.error("Could not extract DMN version from DMN model {}", resource.getDmnModel().getName());
