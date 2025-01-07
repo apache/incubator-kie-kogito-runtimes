@@ -140,7 +140,6 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
 
         // Let Quarkus figure a random port
         args.add("-Dquarkus.http.port=0");
-        args.add("-Dquarkus.http.test-port=0");
         args.addAll(getProvidedMavenProperties());
 
         running.execute(args, Collections.emptyMap());
