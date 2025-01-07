@@ -136,8 +136,11 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         args.add("-Djvm.args=-Xmx1024m");
         // Disable devservices
         args.add("-Dquarkus.kogito.devservices.enabled=false");
+        args.add("-Dquarkus.analytics.disabled=true");
+
         // Let Quarkus figure a random port
         args.add("-Dquarkus.http.port=0");
+        args.add("-Dquarkus.http.test-port=0");
         args.addAll(getProvidedMavenProperties());
 
         running.execute(args, Collections.emptyMap());
