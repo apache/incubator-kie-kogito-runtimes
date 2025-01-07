@@ -44,7 +44,8 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
     protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
         Class<T> clazz = getRestClass();
         T ref = RestClientBuilderFactory.build(clazz, calculatedConfigKey(workItem)).register(
-                (ClientRequestFilter) requestContext -> ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> requestContext.getHeaders().put(k, Collections.singletonList(v)))).build(clazz);
+                (ClientRequestFilter) requestContext -> ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> requestContext.getHeaders().put(k, Collections.singletonList(v))))
+                .build(clazz);
         try {
             return internalExecute(ref, parameters);
         } catch (WebApplicationException ex) {
