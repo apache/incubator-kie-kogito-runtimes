@@ -223,7 +223,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
 
     @Test
     public void testBPMN2HotReload() throws Exception {
-        testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-bpmn");
+        testDir = initProject("projects/classic-inst", "projects/project-instrumentation-reload-bpmn");
         String httpPort = run("testBPMN2HotReload");
         assertThat(httpPort).isNotEmpty();
 
@@ -298,7 +298,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
 
     @Test
     public void testDMNHotReload() throws Exception {
-        testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-dmn");
+        testDir = initProject("projects/classic-inst", "projects/project-instrumentation-reload-dmn");
         final String httpPort = run("testDMNHotReload");
 
         final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
@@ -369,7 +369,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
 
     @Test
     public void testDRLHotReload() throws Exception {
-        testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-drl");
+        testDir = initProject("projects/classic-inst", "projects/project-instrumentation-reload-drl");
         final String httpPort = run("testDRLHotReload");
 
         final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
