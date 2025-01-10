@@ -18,11 +18,8 @@
  */
 package org.kie.kogito.codegen.decision;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
