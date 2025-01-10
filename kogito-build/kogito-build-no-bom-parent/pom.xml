@@ -93,7 +93,7 @@
     <version.install.plugin>2.5.2</version.install.plugin>
     <version.invoker.plugin>3.2.2</version.invoker.plugin>
     <version.jacoco.plugin>0.8.11</version.jacoco.plugin>
-    <version.jandex.plugin>3.2.2</version.jandex.plugin>
+    <version.jandex.plugin>3.1.6</version.jandex.plugin>
     <version.jar.plugin>3.2.0</version.jar.plugin>
     <version.javancss.plugin>2.0</version.javancss.plugin>
     <version.jdocbook.plugin>2.3.9</version.jdocbook.plugin>
@@ -111,7 +111,7 @@
     <version.shade.plugin>3.0.0</version.shade.plugin>
     <version.sonar.plugin>3.6.1.1688</version.sonar.plugin>
     <version.source.plugin>3.2.1</version.source.plugin>
-    <version.surefire.plugin>3.1.2</version.surefire.plugin> <!-- minimum required by JUnit 5 -->
+    <version.surefire.plugin>3.3.1</version.surefire.plugin> <!-- minimum required by JUnit 5 -->
     <version.surefire.report.plugin>3.1.2</version.surefire.report.plugin>
     <version.taglist.plugin>2.4</version.taglist.plugin>
     <!-- Versions plugin should stay on version 2.5
