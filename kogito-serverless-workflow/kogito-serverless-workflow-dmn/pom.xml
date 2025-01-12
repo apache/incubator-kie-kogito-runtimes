@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-serverless-workflow</artifactId>
-    <version>999-SNAPSHOT</version>
+    <version>999-20250112-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-serverless-workflow-dmn</artifactId>
   <name>Kogito :: Serverless Workflow :: DMN :: Runtime</name>
