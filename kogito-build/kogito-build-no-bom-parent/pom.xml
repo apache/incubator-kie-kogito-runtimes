@@ -48,13 +48,13 @@
     <checkstyle.logViolationsToConsole>true</checkstyle.logViolationsToConsole>
 
     <!-- container images for testing -->
-    <container.image.infinispan>infinispan/server:${version.org.infinispan}</container.image.infinispan>
+    <container.image.infinispan>mirror.gcr.io/infinispan/server:${version.org.infinispan}</container.image.infinispan>
     <container.image.keycloak>quay.io/keycloak/keycloak:${version.org.keycloak}</container.image.keycloak>
-    <container.image.kafka>redpandadata/redpanda:v24.3.1</container.image.kafka>
-    <container.image.wurstmeister.kafka>wurstmeister/kafka:${version.wurstmeister.kafka}</container.image.wurstmeister.kafka>
-    <container.image.mongodb>library/mongo:${version.org.mongo-image}</container.image.mongodb>
-    <container.image.redis>redislabs/redisearch:${version.org.redis}</container.image.redis>
-    <container.image.postgres>postgres:${version.org.postgres}</container.image.postgres>
+    <container.image.kafka>mirror.gcr.io/redpandadata/redpanda:v24.3.1</container.image.kafka>
+    <container.image.wurstmeister.kafka>mirror.gcr.io/wurstmeister/kafka:${version.wurstmeister.kafka}</container.image.wurstmeister.kafka>
+    <container.image.mongodb>mirror.gcr.io/library/mongo:${version.org.mongo-image}</container.image.mongodb>
+    <container.image.redis>mirror.gcr.io/redislabs/redisearch:${version.org.redis}</container.image.redis>
+    <container.image.postgres>mirror.gcr.io/postgres:${version.org.postgres}</container.image.postgres>
 
     <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.source>17</maven.compiler.source>
@@ -114,6 +114,7 @@
     <version.surefire.plugin>3.1.2</version.surefire.plugin> <!-- minimum required by JUnit 5 -->
     <version.surefire.report.plugin>3.1.2</version.surefire.report.plugin>
     <version.taglist.plugin>2.4</version.taglist.plugin>
+    <version.testcontainers.ryuk>0.7.0</version.testcontainers.ryuk>
     <!-- Versions plugin should stay on version 2.5
       until https://github.com/mojohaus/versions-maven-plugin/issues/312 is fixed -->
     <version.versions.plugin>2.5</version.versions.plugin>
@@ -330,6 +331,9 @@
               <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
               <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
             </systemPropertyVariables>
+            <environmentVariables>
+               <TESTCONTAINERS_RYUK_CONTAINER_IMAGE>mirror.gcr.io/testcontainers/ryuk:${version.testcontainers.ryuk}</TESTCONTAINERS_RYUK_CONTAINER_IMAGE>
+            </environmentVariables>
             <parallel>all</parallel>
           </configuration>
         </plugin>
@@ -354,6 +358,9 @@
               <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
               <forkedProcessTimeoutInSeconds>1800</forkedProcessTimeoutInSeconds>
             </systemPropertyVariables>
+            <environmentVariables>
+               <TESTCONTAINERS_RYUK_CONTAINER_IMAGE>mirror.gcr.io/testcontainers/ryuk:${version.testcontainers.ryuk}</TESTCONTAINERS_RYUK_CONTAINER_IMAGE>
+            </environmentVariables>
             <parallel>all</parallel>
           </configuration>
         </plugin>
