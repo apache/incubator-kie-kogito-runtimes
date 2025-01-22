@@ -16,33 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.integrationtests.quarkus;
+package org.kie.kogito.integrationtests.springboot;
 
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
+import org.kie.kogito.testcontainers.springboot.KafkaSpringBootTestResource;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-@QuarkusIntegrationTest
-@QuarkusTestResource(KafkaQuarkusTestResource.class)
-public class MessageSenderReceiverIT {
-
-    static {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
+@ContextConfiguration(initializers = { KafkaSpringBootTestResource.class })
+public class MessageSenderReceiverTest extends BaseRestTest {
 
     @Test
-    void testMessageSignalBetweenProcessInstances() {
-        String pId = given()
+    void testMessageSignalBetweenProcessInstances() throws InterruptedException {
+        String pId = given().body("{ \"message\": \"hello\" }")
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/message_receiver")
@@ -52,7 +47,7 @@ public class MessageSenderReceiverIT {
 
         validateSenderProcess(pId);
 
-        await().atMost(Duration.ofSeconds(5))
+        await().atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> given()
                         .contentType(ContentType.JSON)
                         .when()
@@ -83,7 +78,7 @@ public class MessageSenderReceiverIT {
                 .header("X-KOGITO-ReferenceId", receiverProcessId)
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/message_sender/")
+                .post("/message_sender")
                 .then()
                 .statusCode(201)
                 .extract().body().path("id");

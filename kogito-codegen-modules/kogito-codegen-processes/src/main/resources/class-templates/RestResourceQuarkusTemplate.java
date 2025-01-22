@@ -79,7 +79,7 @@ public class $Type$Resource {
                                                                           httpHeaders.getRequestHeaders(),
                                                                           httpHeaders.getHeaderString("X-KOGITO-StartFromNode"),
                                                                           null,
-                                                                          httpHeaders.getHeaderString("X-KOGITO-ProcRefId"),
+                                                                          httpHeaders.getHeaderString("X-KOGITO-ReferenceId"),
                                                                           null);
         return Response.created(uriInfo.getAbsolutePathBuilder().path(pi.id()).build())
                 .entity(pi.checkError().variables().toModel())
