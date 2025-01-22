@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 import io.quarkus.maven.it.RunAndCheckMojoTestBase;
 import io.quarkus.maven.it.verifier.MavenProcessInvoker;
 import io.quarkus.maven.it.verifier.RunningInvoker;
-import io.quarkus.test.devmode.util.DevModeTestUtils;
+import io.quarkus.test.devmode.util.DevModeClient;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
@@ -93,7 +93,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         await().pollDelay(INIT_POLL_DELAY, INIT_POLL_DELAY_UNIT)
                 .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> {
                     try {
-                        String content = DevModeTestUtils.get("http://localhost:" + port + "/control");
+                        String content = new DevModeClient().get("http://localhost:" + port + "/control");
                         resp.set(content);
                         return true;
                     } catch (Exception e) {
