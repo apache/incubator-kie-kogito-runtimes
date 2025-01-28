@@ -25,7 +25,7 @@
   <parent>
     <artifactId>sonataflow-quarkus-extension</artifactId>
     <groupId>org.apache.kie.sonataflow</groupId>
-    <version>999-SNAPSHOT</version>
+    <version>999-20250128-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
