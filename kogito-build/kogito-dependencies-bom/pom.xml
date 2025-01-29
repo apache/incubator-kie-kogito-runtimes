@@ -102,10 +102,8 @@
 
     <version.org.graalvm.nativeimage>23.1.2</version.org.graalvm.nativeimage>
 
-<!--    <version.org.infinispan>15.0.11.Final</version.org.infinispan>-->
-<!--    <version.org.infinispan.protostream>5.0.8.Final</version.org.infinispan.protostream>-->
-    <version.org.infinispan>15.0.12.Final</version.org.infinispan>
-    <version.org.infinispan.protostream>5.0.12.Final</version.org.infinispan.protostream>
+    <version.org.infinispan>15.0.11.Final</version.org.infinispan>
+    <version.org.infinispan.protostream>5.0.8.Final</version.org.infinispan.protostream>
 
     <version.org.rocksdb>7.10.2</version.org.rocksdb>
     <!-- consider migrating to 3.x JDK 9: https://jakarta.ee/specifications/restful-ws/ -->
