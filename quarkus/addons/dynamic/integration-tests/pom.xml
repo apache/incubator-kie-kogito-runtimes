@@ -24,7 +24,7 @@ under the License.
   <parent>
     <groupId>org.kie</groupId>
     <artifactId>kie-addons-quarkus-process-dynamic-parent</artifactId>
-    <version>999-SNAPSHOT</version>
+    <version>999-20250202-SNAPSHOT</version>
   </parent>
 
   <artifactId>kie-addons-quarkus-process-dynamic-integration-tests</artifactId>
