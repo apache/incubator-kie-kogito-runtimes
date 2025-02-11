@@ -23,15 +23,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.kie.dmn.core.compiler.DMNProfile;
+import org.kie.kogito.dmn.DmnExecutionIdSupplier;
+
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.kie.dmn.core.compiler.DMNProfile;
-import org.kie.kogito.dmn.DmnExecutionIdSupplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
