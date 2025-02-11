@@ -133,7 +133,7 @@ public class DecisionCodegen extends AbstractGenerator {
     public DecisionCodegen(KogitoBuildContext context, List<CollectedResource> cResources) {
         super(context, GENERATOR_NAME, new DecisionConfigGenerator(context));
         Set<String> customDMNProfilesProperties = getCustomDMNProfilesProperties();
-        customDMNProfiles.addAll(getCustomDMNProfiles(customDMNProfilesProperties));
+        customDMNProfiles.addAll(getCustomDMNProfiles(customDMNProfilesProperties, context.getClassLoader()));
         this.cResources = cResources;
     }
 
@@ -177,12 +177,12 @@ public class DecisionCodegen extends AbstractGenerator {
                 .collect(Collectors.toSet());
     }
 
-    static Set<DMNProfile> getCustomDMNProfiles(Set<String> customDMNProfiles) {
+    static Set<DMNProfile> getCustomDMNProfiles(Set<String> customDMNProfiles, ClassLoader classLoader) {
         Set<DMNProfile> toReturn = new HashSet<>();
         for (String profileName : customDMNProfiles) {
             Class<? extends DMNProfile> profileClass = null;
             try {
-                profileClass = Class.forName(profileName).asSubclass(DMNProfile.class);
+                profileClass = classLoader.loadClass(profileName).asSubclass(DMNProfile.class);
             } catch (Exception e) {
                 LOGGER.warn("Unable to load DMN profile {} from classloader.", profileName);
             }

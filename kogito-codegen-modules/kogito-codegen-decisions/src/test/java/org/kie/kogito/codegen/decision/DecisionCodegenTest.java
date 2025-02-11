@@ -289,7 +289,7 @@ public class DecisionCodegenTest {
         Set<String> customDMNProfiles = IntStream.range(0, 3)
                 .mapToObj(index -> String.format("%s.Profile_%d", CUSTOM_PROFILES_PACKAGE, index))
                 .collect(Collectors.toSet());
-        Set<DMNProfile> retrieved = DecisionCodegen.getCustomDMNProfiles(customDMNProfiles);
+        Set<DMNProfile> retrieved = DecisionCodegen.getCustomDMNProfiles(customDMNProfiles, Thread.currentThread().getContextClassLoader());
         assertThat(retrieved).isNotNull().hasSize(3);
         Set<String> retrievedStrings = retrieved.stream().map(profile -> profile.getClass().getCanonicalName()).collect(Collectors.toSet());
         assertThat(retrievedStrings).containsExactlyInAnyOrderElementsOf(customDMNProfiles);

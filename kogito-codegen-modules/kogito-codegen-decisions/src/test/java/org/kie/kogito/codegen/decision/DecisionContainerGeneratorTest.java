@@ -93,7 +93,7 @@ class DecisionContainerGeneratorTest {
         Set<String> customDMNProfileStrings = IntStream.range(0, 3)
                 .mapToObj(index -> String.format("%s.Profile_%d", CUSTOM_PROFILES_PACKAGE, index))
                 .collect(Collectors.toSet());
-        Set<DMNProfile> customDMNProfiles = getCustomDMNProfiles(customDMNProfileStrings);
+        Set<DMNProfile> customDMNProfiles = getCustomDMNProfiles(customDMNProfileStrings, Thread.currentThread().getContextClassLoader());
         DecisionContainerGenerator.setupCustomDMNProfiles(initMethod, customDMNProfiles);
         assertThat(initMethod.getArguments()).hasSize(1);
         Expression retrieved = arguments.get(0);
