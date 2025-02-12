@@ -46,7 +46,7 @@ public class DMNKogitoTest {
 
     @Test
     public void testProfile() {
-        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(Collections.emptySet(),false,  new InputStreamReader(DMNKogitoTest.class.getResourceAsStream("profile.dmn")));
+        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(Collections.emptySet(), false, new InputStreamReader(DMNKogitoTest.class.getResourceAsStream("profile.dmn")));
         assertThat(dmnRuntime.getModels()).hasSize(1);
 
         DMNModel dmnModel = dmnRuntime.getModels().get(0);
