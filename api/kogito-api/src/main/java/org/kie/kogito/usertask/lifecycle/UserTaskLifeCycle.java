@@ -34,6 +34,7 @@ public interface UserTaskLifeCycle {
     default String startTransition() {
         return ACTIVATE;
     }
+
     default String reassignTransition() {
         return REASSIGN;
     }
