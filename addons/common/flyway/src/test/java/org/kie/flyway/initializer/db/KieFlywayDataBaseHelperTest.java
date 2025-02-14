@@ -66,14 +66,14 @@ public class KieFlywayDataBaseHelperTest {
 
     @ParameterizedTest
     @MethodSource("getDataBaseData")
-    public void testReadDataBaseInfo(String productName, String version, String sanitizedName) throws Exception {
+    public void testReadDataBaseInfo(String productName, String version, String normalizedName) throws Exception {
         when(metaData.getDatabaseProductName()).thenReturn(productName);
         when(metaData.getDatabaseProductVersion()).thenReturn(version);
 
         Assertions.assertThat(readDataBaseInfo(dataSource))
                 .hasFieldOrPropertyWithValue("name", productName)
                 .hasFieldOrPropertyWithValue("version", version)
-                .hasFieldOrPropertyWithValue("flywayName", sanitizedName);
+                .hasFieldOrPropertyWithValue("normalizedName", normalizedName);
     }
 
     public static Stream<Arguments> getDataBaseData() {

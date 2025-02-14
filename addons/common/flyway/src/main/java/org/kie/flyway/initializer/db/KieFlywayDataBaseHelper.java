@@ -20,6 +20,7 @@
 package org.kie.flyway.initializer.db;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 
 import javax.sql.DataSource;
 
@@ -35,23 +36,18 @@ public class KieFlywayDataBaseHelper {
 
     public static DataBaseInfo readDataBaseInfo(DataSource ds) {
         try (Connection con = ds.getConnection()) {
-            String name = con.getMetaData().getDatabaseProductName();
-            String version = con.getMetaData().getDatabaseProductVersion();
-            String flywayName = normalizeName(name);
 
-            LOGGER.info("Reading DataBase Product: '{}' Version: '{}' (Flyway name: {})", name, version, flywayName);
+            DatabaseMetaData metadata = con.getMetaData();
 
-            return new DataBaseInfo(name, version, flywayName);
+            String name = metadata.getDatabaseProductName();
+            String version = metadata.getDatabaseProductVersion();
+
+            LOGGER.info("Reading DataBase Product: '{}' Version: '{}'", name, version);
+
+            return new DataBaseInfo(name, version);
         } catch (Exception e) {
             LOGGER.error("Kie Flyway: Couldn't extract database product name from datasource ", e);
             throw new KieFlywayException("Kie Flyway: Couldn't extract database product name from datasource.", e);
         }
     }
-
-    public static String normalizeName(String name) {
-        final String NORMALIZATION_REGEX = "[^a-zA-Z0-9]+";
-        String[] fragments = name.split(NORMALIZATION_REGEX);
-        return String.join("-", fragments).toLowerCase();
-    }
-
 }

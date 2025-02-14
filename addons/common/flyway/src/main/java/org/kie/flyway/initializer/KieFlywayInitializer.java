@@ -89,7 +89,7 @@ public class KieFlywayInitializer {
             return;
         }
 
-        String[] locations = config.getDBScriptLocations(databaseInfo.getFlywayName());
+        String[] locations = config.getDBScriptLocations(databaseInfo.getNormalizedName());
 
         if (Objects.isNull(locations)) {
             LOGGER.warn("Cannot run Flyway migration for module `{}`, cannot find SQL Script locations for db `{}`", config.getModule(), databaseInfo);

@@ -23,12 +23,12 @@ public class DataBaseInfo {
 
     private final String name;
     private final String version;
-    private final String flywayName;
+    private final String normalizedName;
 
-    public DataBaseInfo(String name, String version, String flywayName) {
+    public DataBaseInfo(String name, String version) {
         this.name = name;
         this.version = version;
-        this.flywayName = flywayName;
+        this.normalizedName = normalizeName(name);
     }
 
     public String getName() {
@@ -39,7 +39,13 @@ public class DataBaseInfo {
         return version;
     }
 
-    public String getFlywayName() {
-        return flywayName;
+    public String getNormalizedName() {
+        return normalizedName;
+    }
+
+    private String normalizeName(String name) {
+        final String NORMALIZATION_REGEX = "[^a-zA-Z0-9]+";
+        String[] fragments = name.split(NORMALIZATION_REGEX);
+        return String.join("-", fragments).toLowerCase();
     }
 }
