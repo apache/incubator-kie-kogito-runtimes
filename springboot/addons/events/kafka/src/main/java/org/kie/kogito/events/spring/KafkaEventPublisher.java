@@ -25,7 +25,6 @@ import org.kie.kogito.event.EventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -36,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class KafkaEventPublisher implements EventPublisher {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaEventPublisher.class);
+    private static final String PROPS_FORMAT = "kogito.addon.events.process.kafka.%s.%s";
 
     @Autowired
     private ObjectMapper json;
@@ -45,15 +45,6 @@ public class KafkaEventPublisher implements EventPublisher {
 
     @Autowired
     private KafkaTemplate<String, String> eventsEmitter;
-
-    @Value("${kogito.events.processinstances.enabled:true}")
-    private boolean processInstancesEvents;
-
-    @Value("${kogito.events.processdefinitions.enabled:true}")
-    private boolean processDefinitionEvents;
-
-    @Value("${kogito.events.usertasks.enabled:true}")
-    private boolean userTasksEvents;
 
     @Override
     public void publish(DataEvent<?> event) {
@@ -90,14 +81,16 @@ public class KafkaEventPublisher implements EventPublisher {
     }
 
     protected void publishToTopic(DataEvent<?> event, String topic) {
-        logger.debug("About to publish event {} to Kafka topic {}", event, topic);
-        try {
-            String eventString = json.writeValueAsString(event);
-            logger.debug("Event payload '{}'", eventString);
-            eventsEmitter.send(env.getProperty("kogito.addon.events.process.kafka." + topic + ".topic", topic), eventString);
-            logger.debug("Successfully published event {} to topic {}", event, topic);
-        } catch (Exception e) {
-            logger.error("Error while publishing event to Kafka topic {} for event {}", topic, event, e);
+        if (env.getProperty(String.format(PROPS_FORMAT, topic, "enabled"), Boolean.class, true)) {
+            logger.debug("About to publish event {} to Kafka topic {}", event, topic);
+            try {
+                String eventString = json.writeValueAsString(event);
+                logger.debug("Event payload '{}'", eventString);
+                eventsEmitter.send(env.getProperty(String.format(PROPS_FORMAT, topic, "topic"), topic), eventString);
+                logger.debug("Successfully published event {} to topic {}", event, topic);
+            } catch (Exception e) {
+                logger.error("Error while publishing event to Kafka topic {} for event {}", topic, event, e);
+            }
         }
     }
 }
