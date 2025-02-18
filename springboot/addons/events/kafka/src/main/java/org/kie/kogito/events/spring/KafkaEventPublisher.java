@@ -93,7 +93,7 @@ public class KafkaEventPublisher implements EventPublisher {
                 logger.error("Error while publishing event to Kafka topic {} for event {}", topic, event, e);
             }
         } else {
-            logger.debug("Event {} won't be published becuase topic {} is disabled", event, topic);
+            logger.debug("Event {} won't be published because topic {} is disabled", event, topic);
         }
     }
 }
