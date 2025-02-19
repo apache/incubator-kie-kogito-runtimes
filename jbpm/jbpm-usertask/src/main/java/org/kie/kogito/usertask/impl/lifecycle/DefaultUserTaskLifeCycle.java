@@ -87,7 +87,8 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     @Override
-    public List<UserTaskTransition> allowedTransitions(UserTaskInstance userTaskInstance) {
+    public List<UserTaskTransition> allowedTransitions(UserTaskInstance userTaskInstance, IdentityProvider identity) {
+        checkPermission(userTaskInstance, identity);
         return transitions.stream().filter(t -> t.source().equals(userTaskInstance.getStatus())).toList();
     }
 
@@ -196,6 +197,8 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         if (token.data().containsKey(PARAMETER_NOTIFY)) {
             userTaskInstance.getMetadata().put(PARAMETER_NOTIFY, token.data().get(PARAMETER_NOTIFY));
         }
+        // Adding output data in terminating transitions
+        token.data().forEach(userTaskInstance::setOutput);
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         userTaskInstance.stopNotCompletedDeadlines();
@@ -207,6 +210,8 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         if (token.data().containsKey(PARAMETER_NOTIFY)) {
             userTaskInstance.getMetadata().put(PARAMETER_NOTIFY, token.data().get(PARAMETER_NOTIFY));
         }
+        // Adding output data in terminating transitions
+        token.data().forEach(userTaskInstance::setOutput);
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         userTaskInstance.stopNotCompletedDeadlines();
@@ -258,7 +263,7 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
             }
         }
 
-        throw new UserTaskInstanceNotAuthorizedException("user " + user + " with roles " + roles + " not autorized to perform an operation on user task " + userTaskInstance.getId());
+        throw new UserTaskInstanceNotAuthorizedException("user " + user + " with roles " + roles + " not authorized to perform an operation on user task " + userTaskInstance.getId());
     }
 
 }
