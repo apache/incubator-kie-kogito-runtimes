@@ -197,8 +197,6 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         if (token.data().containsKey(PARAMETER_NOTIFY)) {
             userTaskInstance.getMetadata().put(PARAMETER_NOTIFY, token.data().get(PARAMETER_NOTIFY));
         }
-        // Adding output data in terminating transitions
-        token.data().forEach(userTaskInstance::setOutput);
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         userTaskInstance.stopNotCompletedDeadlines();
@@ -210,8 +208,6 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         if (token.data().containsKey(PARAMETER_NOTIFY)) {
             userTaskInstance.getMetadata().put(PARAMETER_NOTIFY, token.data().get(PARAMETER_NOTIFY));
         }
-        // Adding output data in terminating transitions
-        token.data().forEach(userTaskInstance::setOutput);
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         userTaskInstance.stopNotCompletedDeadlines();
