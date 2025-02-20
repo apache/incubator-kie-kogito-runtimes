@@ -105,10 +105,12 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final GeneratedFileType PRODUCER_TYPE = GeneratedFileType.of("PRODUCER", GeneratedFileType.Category.SOURCE);
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
     public static final String SVG_EXPORT_NAME_EXPRESION = "%s-svg.svg";
+    public static final String CUSTOM_BUSINESS_CALENDAR_PROPERTY = "kogito.processes.businessCalendar";
 
     private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global-operational-dashboard-template.json";
     private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/process-operational-dashboard-template.json";
     public static final String BUSINESS_CALENDAR_PRODUCER_TEMPLATE = "BusinessCalendarProducer";
+    public static final String CUSTOM_BUSINESS_CALENDAR_PRODUCER_TEMPLATE = "CustomBusinessCalendarProducer";
     private static final String IS_BUSINESS_CALENDAR_PRESENT = "isBusinessCalendarPresent";
     static {
         ProcessValidatorRegistry.getInstance().registerAdditonalValidator(JavaRuleFlowProcessValidator.getInstance());
@@ -460,6 +462,15 @@ public class ProcessCodegen extends AbstractGenerator {
                 .entrySet()
                 .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
         Boolean isBusinessCalendarPresent = context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class);
+        String customBusinessCalendarClass = getBusinessCalendarClassProperty();
+        if (Objects.nonNull(customBusinessCalendarClass) && isClassAvailable(customBusinessCalendarClass)) {
+            staticDependencyInjectionProducerGenerator.generate(List.of(CUSTOM_BUSINESS_CALENDAR_PRODUCER_TEMPLATE), customBusinessCalendarClass)
+                    .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
+        } else {
+            staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE))
+                    .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
+        }
+
         if (Objects.nonNull(isBusinessCalendarPresent) && isBusinessCalendarPresent) {
             staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE))
                     .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
@@ -581,5 +592,23 @@ public class ProcessCodegen extends AbstractGenerator {
     @Override
     public int priority() {
         return 10;
+    }
+    private String getBusinessCalendarClassProperty() {
+        Map<String, String> propertiesMap = this.context().getPropertiesMap();
+        return propertiesMap.entrySet().stream()
+                .filter(stringStringEntry -> stringStringEntry.getKey().equals(CUSTOM_BUSINESS_CALENDAR_PROPERTY))
+                .map(Map.Entry::getValue)
+                .findFirst().orElse(null);
+    }
+
+    private boolean isClassAvailable(String customBusinessCalendar) {
+        try {
+            context().getClassLoader().loadClass(customBusinessCalendar);
+            return true;
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Class not available: {},\n Generating default business calendar", customBusinessCalendar);
+            LOGGER.error("Exception: {}", e.getMessage());
+            return false;
+        }
     }
 }
