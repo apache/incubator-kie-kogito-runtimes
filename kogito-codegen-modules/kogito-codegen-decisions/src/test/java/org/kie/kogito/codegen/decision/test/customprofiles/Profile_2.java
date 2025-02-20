@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -15,33 +15,31 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
  */
+package org.kie.kogito.codegen.decision.test.customprofiles;
 
-package org.kie.flyway.test.dataSources;
+import java.util.List;
 
-import javax.sql.DataSource;
+import org.kie.dmn.api.marshalling.DMNExtensionRegister;
+import org.kie.dmn.core.compiler.DMNProfile;
+import org.kie.dmn.core.compiler.DRGElementCompiler;
+import org.kie.dmn.feel.runtime.FEELFunction;
 
-import org.kie.kogito.testcontainers.KogitoPostgreSqlContainer;
-import org.postgresql.ds.PGSimpleDataSource;
+public class Profile_2 implements DMNProfile {
 
-public class PostgreSQLTestDataSource implements TestDataSource {
-
-    private final PGSimpleDataSource dataSource;
-
-    public PostgreSQLTestDataSource(KogitoPostgreSqlContainer pgContainer) {
-        dataSource = new PGSimpleDataSource();
-        dataSource.setUrl(pgContainer.getJdbcUrl());
-        dataSource.setUser(pgContainer.getUsername());
-        dataSource.setPassword(pgContainer.getPassword());
+    @Override
+    public List<DMNExtensionRegister> getExtensionRegisters() {
+        return List.of();
     }
 
     @Override
-    public String getDbType() {
-        return "postgresql";
+    public List<DRGElementCompiler> getDRGElementCompilers() {
+        return List.of();
     }
 
     @Override
-    public DataSource getDataSource() {
-        return dataSource;
+    public List<FEELFunction> getFEELFunctions() {
+        return List.of();
     }
 }
