@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import jakarta.enterprise.inject.Produces;
 
-public class BusinessCalendarProducer {
+public class CustomBusinessCalendarProducer {
 
-    private static final Logger logger = LoggerFactory.getLogger(BusinessCalendarProducer.class);
+    private static final Logger logger = LoggerFactory.getLogger(CustomBusinessCalendarProducer.class);
 
     @Produces
     public BusinessCalendar createBusinessCalendar() {

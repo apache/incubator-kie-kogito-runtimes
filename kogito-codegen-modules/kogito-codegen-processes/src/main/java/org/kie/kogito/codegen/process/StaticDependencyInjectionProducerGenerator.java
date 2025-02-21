@@ -27,9 +27,8 @@ import java.util.stream.Collectors;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.expr.Name;
-import com.github.javaparser.ast.expr.NameExpr;
 
 public class StaticDependencyInjectionProducerGenerator {
 
@@ -72,8 +71,10 @@ public class StaticDependencyInjectionProducerGenerator {
                 .collect(Collectors.toMap(TemplatedGenerator::generatedFilePath,
                         generator -> {
                             CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
-                            if (customClass != null)
-                                compilationUnit.replace(new NameExpr("$customBusinessCalendar$"), new Name(customClass));
+                            if (customClass != null) {
+                                //compilationUnit.replace(new SimpleName("$customBusinessCalendar$"), new SimpleName(customClass));
+                                return compilationUnit.toString().replace("$customBusinessCalendar$", customClass);
+                            }
                             return compilationUnit.toString();
                         }));
     }

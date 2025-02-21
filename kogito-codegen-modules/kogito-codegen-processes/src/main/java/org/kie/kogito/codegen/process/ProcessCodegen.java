@@ -463,17 +463,14 @@ public class ProcessCodegen extends AbstractGenerator {
                 .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
         Boolean isBusinessCalendarPresent = context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class);
         String customBusinessCalendarClass = getBusinessCalendarClassProperty();
-        if (Objects.nonNull(customBusinessCalendarClass) && isClassAvailable(customBusinessCalendarClass)) {
-            staticDependencyInjectionProducerGenerator.generate(List.of(CUSTOM_BUSINESS_CALENDAR_PRODUCER_TEMPLATE), customBusinessCalendarClass)
-                    .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
-        } else {
-            staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE))
-                    .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
-        }
-
         if (Objects.nonNull(isBusinessCalendarPresent) && isBusinessCalendarPresent) {
-            staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE))
-                    .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
+            if (Objects.nonNull(customBusinessCalendarClass) && isClassAvailable(customBusinessCalendarClass)) {
+                staticDependencyInjectionProducerGenerator.generate(List.of(CUSTOM_BUSINESS_CALENDAR_PRODUCER_TEMPLATE), customBusinessCalendarClass)
+                        .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
+            } else {
+                staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE))
+                        .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
+            }
         }
 
         if (CodegenUtil.isTransactionEnabled(this, context()) && !isServerless) {
@@ -593,6 +590,7 @@ public class ProcessCodegen extends AbstractGenerator {
     public int priority() {
         return 10;
     }
+
     private String getBusinessCalendarClassProperty() {
         Map<String, String> propertiesMap = this.context().getPropertiesMap();
         return propertiesMap.entrySet().stream()

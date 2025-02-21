@@ -26,9 +26,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class BusinessCalendarProducer {
+public class CustomBusinessCalendarProducer {
 
-    private static final Logger logger = LoggerFactory.getLogger(BusinessCalendarProducer.class);
+    private static final Logger logger = LoggerFactory.getLogger(CustomBusinessCalendarProducer.class);
 
     @Bean
     public BusinessCalendar createBusinessCalendar() {
