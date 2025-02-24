@@ -28,9 +28,14 @@ import jakarta.enterprise.inject.Produces;
 public class BusinessCalendarProducer {
 
     private static final Logger logger = LoggerFactory.getLogger(BusinessCalendarProducer.class);
+    private BusinessCalendar businessCalendar;
+
+    public BusinessCalendarProducer() {
+        this.businessCalendar = BusinessCalendarImpl.builder().build();
+    }
 
     @Produces
     public BusinessCalendar createBusinessCalendar() {
-        return BusinessCalendarImpl.builder().build();
+        return this.businessCalendar;
     }
 }

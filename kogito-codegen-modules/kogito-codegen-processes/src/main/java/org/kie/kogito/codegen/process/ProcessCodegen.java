@@ -78,8 +78,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.nodeTypes.NodeWithMembers;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -105,13 +110,14 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final GeneratedFileType PRODUCER_TYPE = GeneratedFileType.of("PRODUCER", GeneratedFileType.Category.SOURCE);
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
     public static final String SVG_EXPORT_NAME_EXPRESION = "%s-svg.svg";
-    public static final String CUSTOM_BUSINESS_CALENDAR_PROPERTY = "kogito.processes.businessCalendar";
+    public static final String CUSTOM_BUSINESS_CALENDAR_PROPERTY = "businessCalendar";
 
     private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global-operational-dashboard-template.json";
     private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/process-operational-dashboard-template.json";
     public static final String BUSINESS_CALENDAR_PRODUCER_TEMPLATE = "BusinessCalendarProducer";
-    public static final String CUSTOM_BUSINESS_CALENDAR_PRODUCER_TEMPLATE = "CustomBusinessCalendarProducer";
     private static final String IS_BUSINESS_CALENDAR_PRESENT = "isBusinessCalendarPresent";
+    private static final String DEFAULT_BUSINESS_CALENDAR_INSTANCE = "org.jbpm.process.core.timer.BusinessCalendarImpl.builder().build()";
+
     static {
         ProcessValidatorRegistry.getInstance().registerAdditonalValidator(JavaRuleFlowProcessValidator.getInstance());
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNSemanticModule());
@@ -461,16 +467,24 @@ public class ProcessCodegen extends AbstractGenerator {
         staticDependencyInjectionProducerGenerator.generate()
                 .entrySet()
                 .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
+
         Boolean isBusinessCalendarPresent = context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class);
-        String customBusinessCalendarClass = getBusinessCalendarClassProperty();
+        String customBusinessCalendarClassName = CodegenUtil.getProperty(this, context(), CUSTOM_BUSINESS_CALENDAR_PROPERTY, String::valueOf, null);
         if (Objects.nonNull(isBusinessCalendarPresent) && isBusinessCalendarPresent) {
-            if (Objects.nonNull(customBusinessCalendarClass) && isClassAvailable(customBusinessCalendarClass)) {
-                staticDependencyInjectionProducerGenerator.generate(List.of(CUSTOM_BUSINESS_CALENDAR_PRODUCER_TEMPLATE), customBusinessCalendarClass)
-                        .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
-            } else {
-                staticDependencyInjectionProducerGenerator.generate(List.of(BUSINESS_CALENDAR_PRODUCER_TEMPLATE))
-                        .forEach((key, value) -> storeFile(PRODUCER_TYPE, key, value));
+            String businessCalendarDeclarationStatement = DEFAULT_BUSINESS_CALENDAR_INSTANCE;
+            if (Objects.nonNull(customBusinessCalendarClassName)) {
+                ClassOrInterfaceType customBusinessCalendarClass = StaticJavaParser.parseClassOrInterfaceType(customBusinessCalendarClassName);
+                //boolean businessCalendarInstance = customBusinessCalendarClass.isDescendantOf(new ClassOrInterfaceType(null, BusinessCalendar.class.getCanonicalName()));
+                //How can we check that classOrInterface type object is an implementation of BusinessCalendar interface? Need guidance at this point.
+                if (!customBusinessCalendarClass.isClassOrInterfaceType()) {
+                    LOGGER.error("Custom Business Calendar class {} does not implement BusinessCalendar interface or it is missing.\nGenerating default business calendar",
+                            customBusinessCalendarClassName);
+                } else {
+                    businessCalendarDeclarationStatement = "new " + customBusinessCalendarClassName + "()";
+                }
+
             }
+            processProducerTemplate(businessCalendarDeclarationStatement);
         }
 
         if (CodegenUtil.isTransactionEnabled(this, context()) && !isServerless) {
@@ -591,22 +605,17 @@ public class ProcessCodegen extends AbstractGenerator {
         return 10;
     }
 
-    private String getBusinessCalendarClassProperty() {
-        Map<String, String> propertiesMap = this.context().getPropertiesMap();
-        return propertiesMap.entrySet().stream()
-                .filter(stringStringEntry -> stringStringEntry.getKey().equals(CUSTOM_BUSINESS_CALENDAR_PROPERTY))
-                .map(Map.Entry::getValue)
-                .findFirst().orElse(null);
-    }
-
-    private boolean isClassAvailable(String customBusinessCalendar) {
-        try {
-            context().getClassLoader().loadClass(customBusinessCalendar);
-            return true;
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("Class not available: {},\n Generating default business calendar", customBusinessCalendar);
-            LOGGER.error("Exception: {}", e.getMessage());
-            return false;
-        }
+    private void processProducerTemplate(String statement) {
+        TemplatedGenerator generator = TemplatedGenerator.builder()
+                .withTemplateBasePath("/class-templates/producer/")
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
+                .withTargetTypeName(BUSINESS_CALENDAR_PRODUCER_TEMPLATE)
+                .build(context(), BUSINESS_CALENDAR_PRODUCER_TEMPLATE);
+        CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
+        String constructorBody = String.format("{ this.businessCalendar =  %s; }", statement);
+        NodeList<com.github.javaparser.ast.stmt.Statement> statements = StaticJavaParser.parseBlock(constructorBody).getStatements();
+        compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).flatMap(NodeWithMembers::getDefaultConstructor)
+                .ifPresent(a -> a.setBody(new BlockStmt(statements)));
+        storeFile(PRODUCER_TYPE, generator.generatedFilePath(), compilationUnit.toString());
     }
 }
