@@ -54,6 +54,7 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedInfo;
 import org.kie.kogito.codegen.api.SourceFileCodegenBindEvent;
@@ -84,7 +85,6 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.nodeTypes.NodeWithMembers;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -471,20 +471,7 @@ public class ProcessCodegen extends AbstractGenerator {
         Boolean isBusinessCalendarPresent = context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class);
         String customBusinessCalendarClassName = CodegenUtil.getProperty(this, context(), CUSTOM_BUSINESS_CALENDAR_PROPERTY, String::valueOf, null);
         if (Objects.nonNull(isBusinessCalendarPresent) && isBusinessCalendarPresent) {
-            String businessCalendarDeclarationStatement = DEFAULT_BUSINESS_CALENDAR_INSTANCE;
-            if (Objects.nonNull(customBusinessCalendarClassName)) {
-                ClassOrInterfaceType customBusinessCalendarClass = StaticJavaParser.parseClassOrInterfaceType(customBusinessCalendarClassName);
-                //boolean businessCalendarInstance = customBusinessCalendarClass.isDescendantOf(new ClassOrInterfaceType(null, BusinessCalendar.class.getCanonicalName()));
-                //How can we check that classOrInterface type object is an implementation of BusinessCalendar interface? Need guidance at this point.
-                if (!customBusinessCalendarClass.isClassOrInterfaceType()) {
-                    LOGGER.error("Custom Business Calendar class {} does not implement BusinessCalendar interface or it is missing.\nGenerating default business calendar",
-                            customBusinessCalendarClassName);
-                } else {
-                    businessCalendarDeclarationStatement = "new " + customBusinessCalendarClassName + "()";
-                }
-
-            }
-            processProducerTemplate(businessCalendarDeclarationStatement);
+            processProducerTemplate(deriveBusinessCalendarDeclarationStatement(customBusinessCalendarClassName));
         }
 
         if (CodegenUtil.isTransactionEnabled(this, context()) && !isServerless) {
@@ -612,10 +599,36 @@ public class ProcessCodegen extends AbstractGenerator {
                 .withTargetTypeName(BUSINESS_CALENDAR_PRODUCER_TEMPLATE)
                 .build(context(), BUSINESS_CALENDAR_PRODUCER_TEMPLATE);
         CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
-        String constructorBody = String.format("{ this.businessCalendar =  %s; }", statement);
-        NodeList<com.github.javaparser.ast.stmt.Statement> statements = StaticJavaParser.parseBlock(constructorBody).getStatements();
-        compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).flatMap(NodeWithMembers::getDefaultConstructor)
-                .ifPresent(a -> a.setBody(new BlockStmt(statements)));
+        if (Objects.nonNull(statement)) {
+            String constructorBody = String.format("{ this.businessCalendar =  %s; }", statement);
+            NodeList<com.github.javaparser.ast.stmt.Statement> statements = StaticJavaParser.parseBlock(constructorBody).getStatements();
+            compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).flatMap(NodeWithMembers::getDefaultConstructor)
+                    .ifPresent(a -> a.setBody(new BlockStmt(statements)));
+        }
         storeFile(PRODUCER_TYPE, generator.generatedFilePath(), compilationUnit.toString());
+    }
+
+    private String deriveBusinessCalendarDeclarationStatement(String businessCalendarClassName) {
+        Class<?> businessCalendarClass;
+        boolean validBusinessCalendar = false;
+        String declarationStmt = null;
+        if (Objects.isNull(businessCalendarClassName)) {
+            return declarationStmt;
+        }
+        try {
+            businessCalendarClass = Class.forName(businessCalendarClassName, true, Thread.currentThread().getContextClassLoader());
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Custom Business Calendar class {} not found.\nGenerating default business calendar", businessCalendarClassName);
+            return declarationStmt;
+        }
+        if (!businessCalendarClass.isInterface()) {
+            validBusinessCalendar = BusinessCalendar.class.isAssignableFrom(businessCalendarClass);
+        }
+        if (!validBusinessCalendar) {
+            LOGGER.error("Custom Business Calendar class {} does not implement BusinessCalendar interface.\nGenerating default business calendar", businessCalendarClassName);
+        } else {
+            declarationStmt = "new " + businessCalendarClassName + "()";
+        }
+        return declarationStmt;
     }
 }
