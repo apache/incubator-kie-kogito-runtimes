@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -87,7 +86,6 @@ import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.nodeTypes.NodeWithMembers;
 import com.github.javaparser.ast.stmt.Statement;
 
 import static java.lang.String.format;
@@ -472,10 +470,11 @@ public class ProcessCodegen extends AbstractGenerator {
                 .entrySet()
                 .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
 
-        Boolean isBusinessCalendarPresent = context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class);
+        boolean isBusinessCalendarPresent =
+                context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class) != null ? context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class) : false;
         String customBusinessCalendarClassName = CodegenUtil.getProperty(this, context(), CUSTOM_BUSINESS_CALENDAR_PROPERTY, String::valueOf, null);
-        if (Objects.nonNull(isBusinessCalendarPresent) && isBusinessCalendarPresent) {
-            processProducerTemplate(deriveBusinessCalendarDeclarationStatement(customBusinessCalendarClassName));
+        if (isBusinessCalendarPresent) {
+            processProducerTemplate(customBusinessCalendarClassName);
         }
 
         if (CodegenUtil.isTransactionEnabled(this, context()) && !isServerless) {
@@ -561,7 +560,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private void storeFile(GeneratedFileType type, String path, String source) {
         if (generatedFiles.stream().anyMatch(f -> path.equals(f.relativePath()))) {
-            LOGGER.warn("There's already a generated file named {} to be compiled. Ignoring.", path);
+            LOGGER.warn("There is already a generated file named {} to be compiled. Ignoring.", path);
         } else {
             generatedFiles.add(new GeneratedFile(type, path, source));
         }
@@ -569,7 +568,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private void storeFile(GeneratedFileType type, String path, byte[] source) {
         if (generatedFiles.stream().anyMatch(f -> path.equals(f.relativePath()))) {
-            LOGGER.warn("There's already a generated file named {} to be compiled. Ignoring.", path);
+            LOGGER.warn("There is already a generated file named {} to be compiled. Ignoring.", path);
         } else {
             generatedFiles.add(new GeneratedFile(type, path, source));
         }
@@ -596,49 +595,40 @@ public class ProcessCodegen extends AbstractGenerator {
         return 10;
     }
 
-    private void processProducerTemplate(Optional<Expression> statement) {
+    private void processProducerTemplate(String businessCalendarClassName) {
         TemplatedGenerator generator = TemplatedGenerator.builder()
                 .withTemplateBasePath("/class-templates/producer/")
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .withTargetTypeName(BUSINESS_CALENDAR_PRODUCER_TEMPLATE)
                 .build(context(), BUSINESS_CALENDAR_PRODUCER_TEMPLATE);
         CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
+        if (businessCalendarClassName != null) {
+            try {
+                context().getClassLoader().loadClass(businessCalendarClassName).asSubclass(BusinessCalendar.class);
+                Expression expression = new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType(businessCalendarClassName), NodeList.nodeList());
 
-        statement.ifPresent(expression -> compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
-                .flatMap(NodeWithMembers::getDefaultConstructor)
-                .ifPresent(constructor -> constructor.getBody().getStatements().stream()
+                compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
+                        .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a class declaration"))
+                        .getDefaultConstructor()
+                        .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a default constructor"))
+                        .getBody().getStatements().stream()
                         .filter(Statement::isExpressionStmt)
                         .flatMap(stmt -> stmt.getChildNodes().stream())
                         .filter(AssignExpr.class::isInstance)
                         .map(AssignExpr.class::cast)
                         .filter(assignExpr -> assignExpr.getTarget() instanceof FieldAccessExpr field &&
                                 BUSINESS_CALENDAR_FIELD_NAME.equals(field.getNameAsString()))
-                        .forEach(assignExpr -> assignExpr.setValue(expression))));
+                        .findFirst()
+                        .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a field named businessCalendar"))
+                        .setValue(expression);
+
+            } catch (ClassNotFoundException e) {
+                String message = String.format("Custom Business Calendar class %s not found or it is not an instance of %s", businessCalendarClassName, BusinessCalendar.class.getCanonicalName());
+                LOGGER.error(message);
+                throw new ProcessCodegenException(message, e);
+            }
+        }
 
         storeFile(PRODUCER_TYPE, generator.generatedFilePath(), compilationUnit.toString());
-    }
-
-    private Optional<Expression> deriveBusinessCalendarDeclarationStatement(String businessCalendarClassName) {
-        Class<?> businessCalendarClass;
-        boolean validBusinessCalendar = false;
-        ObjectCreationExpr declarationStmt = null;
-        if (Objects.isNull(businessCalendarClassName)) {
-            return Optional.empty();
-        }
-        try {
-            businessCalendarClass = Class.forName(businessCalendarClassName, true, context().getClassLoader());
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("Custom Business Calendar class {} not found.\nGenerating default business calendar", businessCalendarClassName);
-            return Optional.empty();
-        }
-        if (!businessCalendarClass.isInterface()) {
-            validBusinessCalendar = BusinessCalendar.class.isAssignableFrom(businessCalendarClass);
-        }
-        if (!validBusinessCalendar) {
-            LOGGER.error("Custom Business Calendar class {} does not implement BusinessCalendar interface.\nGenerating default business calendar", businessCalendarClassName);
-        } else {
-            declarationStmt = new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType(businessCalendarClassName), NodeList.nodeList());
-        }
-        return Optional.ofNullable(declarationStmt);
     }
 }
