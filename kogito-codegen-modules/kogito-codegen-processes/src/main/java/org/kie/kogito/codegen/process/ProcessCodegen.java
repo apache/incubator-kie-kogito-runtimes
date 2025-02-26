@@ -21,6 +21,7 @@ package org.kie.kogito.codegen.process;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -470,12 +471,7 @@ public class ProcessCodegen extends AbstractGenerator {
                 .entrySet()
                 .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
 
-        boolean isBusinessCalendarPresent =
-                context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class) != null ? context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class) : false;
-        String customBusinessCalendarClassName = CodegenUtil.getProperty(this, context(), CUSTOM_BUSINESS_CALENDAR_PROPERTY, String::valueOf, null);
-        if (isBusinessCalendarPresent) {
-            processProducerTemplate(customBusinessCalendarClassName);
-        }
+        processProducerTemplate();
 
         if (CodegenUtil.isTransactionEnabled(this, context()) && !isServerless) {
             String template = "ExceptionHandlerTransaction";
@@ -595,40 +591,59 @@ public class ProcessCodegen extends AbstractGenerator {
         return 10;
     }
 
-    private void processProducerTemplate(String businessCalendarClassName) {
+    private void processProducerTemplate() {
+
+        boolean isBusinessCalendarPresent = Optional.ofNullable(context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class)).orElse(false);
+        String businessCalendarClassName = CodegenUtil.getProperty(this, context(), CUSTOM_BUSINESS_CALENDAR_PROPERTY, String::valueOf, null);
+
+        if (!isBusinessCalendarPresent) {
+            return;
+        }
+
         TemplatedGenerator generator = TemplatedGenerator.builder()
                 .withTemplateBasePath("/class-templates/producer/")
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .withTargetTypeName(BUSINESS_CALENDAR_PRODUCER_TEMPLATE)
                 .build(context(), BUSINESS_CALENDAR_PRODUCER_TEMPLATE);
+
         CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
+
         if (businessCalendarClassName != null) {
-            try {
-                context().getClassLoader().loadClass(businessCalendarClassName).asSubclass(BusinessCalendar.class);
-                Expression expression = new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType(businessCalendarClassName), NodeList.nodeList());
 
-                compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
-                        .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a class declaration"))
-                        .getDefaultConstructor()
-                        .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a default constructor"))
-                        .getBody().getStatements().stream()
-                        .filter(Statement::isExpressionStmt)
-                        .flatMap(stmt -> stmt.getChildNodes().stream())
-                        .filter(AssignExpr.class::isInstance)
-                        .map(AssignExpr.class::cast)
-                        .filter(assignExpr -> assignExpr.getTarget() instanceof FieldAccessExpr field &&
-                                BUSINESS_CALENDAR_FIELD_NAME.equals(field.getNameAsString()))
-                        .findFirst()
-                        .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a field named businessCalendar"))
-                        .setValue(expression);
+            validateBusinessCalendarClass(businessCalendarClassName, context());
+            Expression expression = new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType(businessCalendarClassName), NodeList.nodeList());
 
-            } catch (ClassNotFoundException e) {
-                String message = String.format("Custom Business Calendar class %s not found or it is not an instance of %s", businessCalendarClassName, BusinessCalendar.class.getCanonicalName());
-                LOGGER.error(message);
-                throw new ProcessCodegenException(message, e);
-            }
+            compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
+                    .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a class declaration"))
+                    .getDefaultConstructor()
+                    .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a default constructor"))
+                    .getBody().getStatements().stream()
+                    .filter(Statement::isExpressionStmt)
+                    .flatMap(stmt -> stmt.getChildNodes().stream())
+                    .filter(AssignExpr.class::isInstance)
+                    .map(AssignExpr.class::cast)
+                    .filter(assignExpr -> assignExpr.getTarget() instanceof FieldAccessExpr field &&
+                            BUSINESS_CALENDAR_FIELD_NAME.equals(field.getNameAsString()))
+                    .findFirst()
+                    .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a field named businessCalendar"))
+                    .setValue(expression);
         }
 
         storeFile(PRODUCER_TYPE, generator.generatedFilePath(), compilationUnit.toString());
+    }
+
+    private static void validateBusinessCalendarClass(String className, KogitoBuildContext context) {
+        try {
+            Class<? extends BusinessCalendar> businessCalendarClass = context.getClassLoader().loadClass(className).asSubclass(BusinessCalendar.class);
+            int mod = businessCalendarClass.getModifiers();
+
+            if (Modifier.isAbstract(mod) || Modifier.isInterface(mod)) {
+                throw new ProcessCodegenException(String.format("Custom Business Calendar class %s must be a concrete class", className));
+            }
+        } catch (ClassNotFoundException e) {
+            String message = String.format("Custom Business Calendar class %s not found or it is not an instance of %s", className, BusinessCalendar.class.getCanonicalName());
+            LOGGER.error(message);
+            throw new ProcessCodegenException(message, e);
+        }
     }
 }
