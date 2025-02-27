@@ -89,10 +89,12 @@ public class BusinessCalendarUtilTest {
     public void testConditionallyAddCustomBusinessCalendarWithoutCustomCalendarClassName() {
         CompilationUnit compilationUnit = getCompilationUnit();
 
-        conditionallyAddCustomBusinessCalendar(compilationUnit, context, null);
+        assertThatThrownBy(() -> conditionallyAddCustomBusinessCalendar(compilationUnit, context, null))
+                .isExactlyInstanceOf(ProcessCodegenException.class)
+                .hasMessage("Custom Business Calendar class cannot be null");
 
+        // This is just to verify that the Compilation unit has not been modified by BusinessCalendarUtil
         MethodCallExpr expression = new MethodCallExpr(new MethodCallExpr(new NameExpr("BusinessCalendarImpl"), "builder"), "build");
-
         assertBusinessCalendarProducerConstructor(compilationUnit, expression);
     }
 
