@@ -28,8 +28,6 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 
-import com.github.javaparser.ast.CompilationUnit;
-
 public class StaticDependencyInjectionProducerGenerator {
 
     private final KogitoBuildContext context;
@@ -60,23 +58,12 @@ public class StaticDependencyInjectionProducerGenerator {
      * @return Map with the generated resources
      */
     public Map<String, String> generate(List<String> templates) {
-        return generate(templates, null);
-    }
-
-    public Map<String, String> generate(List<String> templates, String customClass) {
         if (!context.hasDI()) {
             return Collections.emptyMap();
         }
         return templates.stream().map(this::buildProducerTemplatedGenerator)
                 .collect(Collectors.toMap(TemplatedGenerator::generatedFilePath,
-                        generator -> {
-                            CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
-                            if (customClass != null) {
-                                //compilationUnit.replace(new SimpleName("$customBusinessCalendar$"), new SimpleName(customClass));
-                                return compilationUnit.toString().replace("$customBusinessCalendar$", customClass);
-                            }
-                            return compilationUnit.toString();
-                        }));
+                        generator -> generator.compilationUnitOrThrow().toString()));
     }
 
     private TemplatedGenerator buildProducerTemplatedGenerator(String template) {

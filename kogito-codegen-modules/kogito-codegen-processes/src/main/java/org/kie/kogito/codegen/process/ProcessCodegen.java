@@ -18,8 +18,12 @@
  */
 package org.kie.kogito.codegen.process;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
+import java.util.stream.Stream;
+
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.drools.io.InternalResource;
@@ -50,7 +54,6 @@ import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMeta;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
-import org.kie.kogito.codegen.process.util.BusinessCalendarUtil;
 import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -62,15 +65,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.*;
-import java.util.stream.Stream;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_PATH;
+import static org.kie.kogito.codegen.process.util.BusinessCalendarUtil.conditionallyAddCustomBusinessCalendar;
 import static org.kie.kogito.codegen.process.util.CodegenUtil.isTransactionEnabled;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.buildDashboardName;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.generateOperationalDashboard;
@@ -586,7 +587,9 @@ public class ProcessCodegen extends AbstractGenerator {
 
         CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
 
-        BusinessCalendarUtil.processBusinessCalendarProducer(compilationUnit, context(), businessCalendarClassName);
+        if (businessCalendarClassName != null) {
+            conditionallyAddCustomBusinessCalendar(compilationUnit, context(), businessCalendarClassName);
+        }
 
         storeFile(PRODUCER_TYPE, generator.generatedFilePath(), compilationUnit.toString());
     }
