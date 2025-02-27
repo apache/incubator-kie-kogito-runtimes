@@ -126,15 +126,11 @@ public class BusinessCalendarUtilTest {
 
         Node firstNode = nodes.get(0);
 
-        assertThat(firstNode)
-                .isNotNull()
-                .isInstanceOf(AssignExpr.class);
-
-        AssignExpr assignExpr = (AssignExpr) firstNode;
-
         FieldAccessExpr expectedTargetExpression = new FieldAccessExpr(new ThisExpr(), BUSINESS_CALENDAR_FIELD_NAME);
 
-        assertThat(assignExpr)
+        assertThat(firstNode)
+                .isNotNull()
+                .isInstanceOf(AssignExpr.class)
                 .hasFieldOrPropertyWithValue("target", expectedTargetExpression)
                 .hasFieldOrPropertyWithValue("value", expectedInitExpression);
     }
