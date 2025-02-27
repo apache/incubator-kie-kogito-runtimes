@@ -40,11 +40,11 @@ public class BusinessCalendarUtil {
 
     public static final String BUSINESS_CALENDAR_FIELD_NAME = "businessCalendar";
 
-    public static void conditionallyAddCustomBusinessCalendar(CompilationUnit compilationUnit, KogitoBuildContext context, String businessCalendarClassName) {
-        if (businessCalendarClassName == null) {
-            return;
-        }
+    private BusinessCalendarUtil() {
+        // This is a utility class and shouldn't be instantiated.
+    }
 
+    public static void conditionallyAddCustomBusinessCalendar(CompilationUnit compilationUnit, KogitoBuildContext context, String businessCalendarClassName) {
         validateBusinessCalendarClass(businessCalendarClassName, context);
 
         Expression expression = getBusinessCalendarCreationExpression(businessCalendarClassName);
@@ -60,7 +60,7 @@ public class BusinessCalendarUtil {
         calendarAssignment.setValue(expression);
     }
 
-    public static void validateBusinessCalendarClass(String className, KogitoBuildContext context) {
+    static void validateBusinessCalendarClass(String className, KogitoBuildContext context) {
         try {
             if (className == null) {
                 throw new ProcessCodegenException("Custom Business Calendar class cannot be null");
@@ -94,13 +94,13 @@ public class BusinessCalendarUtil {
 
         Node firstNode = calendarFieldInitStatement.getChildNodes().get(0);
 
-        if (!(firstNode instanceof AssignExpr assignExpr)) {
+        if (!(firstNode instanceof AssignExpr toReturn)) {
             throw new ProcessCodegenException("BusinessCalendarProducer template does not contain an assign expression");
         }
-        if (!(assignExpr.getTarget().isFieldAccessExpr() && BUSINESS_CALENDAR_FIELD_NAME.equals(assignExpr.getTarget().asFieldAccessExpr().getNameAsString()))) {
+        if (!(toReturn.getTarget().isFieldAccessExpr() && BUSINESS_CALENDAR_FIELD_NAME.equals(toReturn.getTarget().asFieldAccessExpr().getNameAsString()))) {
             throw new ProcessCodegenException("BusinessCalendarProducer template does not contain a assign expression for businessCalendar field");
         }
 
-        return assignExpr;
+        return toReturn;
     }
 }

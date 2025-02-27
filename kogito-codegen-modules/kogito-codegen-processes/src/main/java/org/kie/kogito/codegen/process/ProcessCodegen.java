@@ -72,6 +72,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_PATH;
 import static org.kie.kogito.codegen.process.util.BusinessCalendarUtil.conditionallyAddCustomBusinessCalendar;
+import static org.kie.kogito.codegen.process.util.CodegenUtil.generatorProperty;
 import static org.kie.kogito.codegen.process.util.CodegenUtil.isTransactionEnabled;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.buildDashboardName;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.generateOperationalDashboard;
@@ -574,6 +575,11 @@ public class ProcessCodegen extends AbstractGenerator {
 
         boolean isBusinessCalendarPresent = Optional.ofNullable(context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class)).orElse(false);
         String businessCalendarClassName = CodegenUtil.getProperty(this, context(), CUSTOM_BUSINESS_CALENDAR_PROPERTY, String::valueOf, null);
+
+        if (isBusinessCalendarPresent && businessCalendarClassName != null) {
+            String message = String.format("Project could not provide both '%s' file and '%s' property.", BUSINESS_CALENDAR_PATH, generatorProperty(this, CUSTOM_BUSINESS_CALENDAR_PROPERTY));
+            throw new ProcessCodegenException(message);
+        }
 
         if (!isBusinessCalendarPresent && businessCalendarClassName == null) {
             return;
