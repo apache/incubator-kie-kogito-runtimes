@@ -18,32 +18,15 @@
  */
 package org.kie.kogito.codegen.process;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
-
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.drools.io.InternalResource;
 import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
 import org.jbpm.bpmn2.xml.BPMNExtensionsSemanticModule;
 import org.jbpm.bpmn2.xml.BPMNSemanticModule;
-import org.jbpm.compiler.canonical.ModelMetaData;
-import org.jbpm.compiler.canonical.ProcessMetaData;
-import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
-import org.jbpm.compiler.canonical.TriggerMetaData;
-import org.jbpm.compiler.canonical.WorkItemModelMetaData;
+import org.jbpm.compiler.canonical.*;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.core.SemanticModules;
 import org.jbpm.process.core.impl.ProcessImpl;
@@ -54,7 +37,6 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.kogito.KogitoGAV;
-import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedInfo;
 import org.kie.kogito.codegen.api.SourceFileCodegenBindEvent;
@@ -68,6 +50,7 @@ import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMeta;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
+import org.kie.kogito.codegen.process.util.BusinessCalendarUtil;
 import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -79,15 +62,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.stmt.Statement;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -119,7 +98,6 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/process-operational-dashboard-template.json";
     public static final String BUSINESS_CALENDAR_PRODUCER_TEMPLATE = "BusinessCalendarProducer";
     private static final String IS_BUSINESS_CALENDAR_PRESENT = "isBusinessCalendarPresent";
-    private static final String BUSINESS_CALENDAR_FIELD_NAME = "businessCalendar";
 
     static {
         ProcessValidatorRegistry.getInstance().registerAdditonalValidator(JavaRuleFlowProcessValidator.getInstance());
@@ -471,7 +449,7 @@ public class ProcessCodegen extends AbstractGenerator {
                 .entrySet()
                 .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
 
-        processProducerTemplate();
+        generateBusinessCalendarProducer();
 
         if (CodegenUtil.isTransactionEnabled(this, context()) && !isServerless) {
             String template = "ExceptionHandlerTransaction";
@@ -591,12 +569,12 @@ public class ProcessCodegen extends AbstractGenerator {
         return 10;
     }
 
-    private void processProducerTemplate() {
+    private void generateBusinessCalendarProducer() {
 
         boolean isBusinessCalendarPresent = Optional.ofNullable(context().getContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, Boolean.class)).orElse(false);
         String businessCalendarClassName = CodegenUtil.getProperty(this, context(), CUSTOM_BUSINESS_CALENDAR_PROPERTY, String::valueOf, null);
 
-        if (!isBusinessCalendarPresent) {
+        if (!isBusinessCalendarPresent && businessCalendarClassName == null) {
             return;
         }
 
@@ -608,42 +586,8 @@ public class ProcessCodegen extends AbstractGenerator {
 
         CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
 
-        if (businessCalendarClassName != null) {
-
-            validateBusinessCalendarClass(businessCalendarClassName, context());
-            Expression expression = new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType(businessCalendarClassName), NodeList.nodeList());
-
-            compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
-                    .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a class declaration"))
-                    .getDefaultConstructor()
-                    .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a default constructor"))
-                    .getBody().getStatements().stream()
-                    .filter(Statement::isExpressionStmt)
-                    .flatMap(stmt -> stmt.getChildNodes().stream())
-                    .filter(AssignExpr.class::isInstance)
-                    .map(AssignExpr.class::cast)
-                    .filter(assignExpr -> assignExpr.getTarget() instanceof FieldAccessExpr field &&
-                            BUSINESS_CALENDAR_FIELD_NAME.equals(field.getNameAsString()))
-                    .findFirst()
-                    .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a field named businessCalendar"))
-                    .setValue(expression);
-        }
+        BusinessCalendarUtil.processBusinessCalendarProducer(compilationUnit, context(), businessCalendarClassName);
 
         storeFile(PRODUCER_TYPE, generator.generatedFilePath(), compilationUnit.toString());
-    }
-
-    private static void validateBusinessCalendarClass(String className, KogitoBuildContext context) {
-        try {
-            Class<? extends BusinessCalendar> businessCalendarClass = context.getClassLoader().loadClass(className).asSubclass(BusinessCalendar.class);
-            int mod = businessCalendarClass.getModifiers();
-
-            if (Modifier.isAbstract(mod) || Modifier.isInterface(mod)) {
-                throw new ProcessCodegenException(String.format("Custom Business Calendar class %s must be a concrete class", className));
-            }
-        } catch (ClassNotFoundException e) {
-            String message = String.format("Custom Business Calendar class %s not found or it is not an instance of %s", className, BusinessCalendar.class.getCanonicalName());
-            LOGGER.error(message);
-            throw new ProcessCodegenException(message, e);
-        }
     }
 }
