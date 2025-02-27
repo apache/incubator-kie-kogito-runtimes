@@ -18,6 +18,13 @@
  */
 
 package org.kie.kogito.codegen.process.util;
+
+import java.lang.reflect.Modifier;
+
+import org.kie.kogito.calendar.BusinessCalendar;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.process.ProcessCodegenException;
+
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -28,22 +35,19 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
-import org.kie.kogito.calendar.BusinessCalendar;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.process.ProcessCodegenException;
-
-import java.lang.reflect.Modifier;
 
 public class BusinessCalendarUtil {
 
-    private static final String BUSINESS_CALENDAR_FIELD_NAME = "businessCalendar";
+    public static final String BUSINESS_CALENDAR_FIELD_NAME = "businessCalendar";
 
-    public static void processBusinessCalendarProducer(CompilationUnit compilationUnit, KogitoBuildContext context, String businessCalendarClassName) {
+    public static void conditionallyAddCustomBusinessCalendar(CompilationUnit compilationUnit, KogitoBuildContext context, String businessCalendarClassName) {
         if (businessCalendarClassName == null) {
             return;
         }
+
         validateBusinessCalendarClass(businessCalendarClassName, context);
-        Expression expression = getBusinessCalendarCreation(businessCalendarClassName);
+
+        Expression expression = getBusinessCalendarCreationExpression(businessCalendarClassName);
 
         BlockStmt constructorBody = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a class declaration"))
@@ -51,31 +55,39 @@ public class BusinessCalendarUtil {
                 .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer template does not contain a default constructor"))
                 .getBody();
 
-        AssignExpr calendarAssignment = getAssignExpr(constructorBody);
+        AssignExpr calendarAssignment = getAssignExpression(constructorBody);
 
         calendarAssignment.setValue(expression);
-
     }
 
     public static void validateBusinessCalendarClass(String className, KogitoBuildContext context) {
         try {
+            if (className == null) {
+                throw new ProcessCodegenException("Custom Business Calendar class cannot be null");
+            }
+
             Class<? extends BusinessCalendar> businessCalendarClass = context.getClassLoader().loadClass(className).asSubclass(BusinessCalendar.class);
+
             int mod = businessCalendarClass.getModifiers();
 
             if (Modifier.isAbstract(mod) || Modifier.isInterface(mod)) {
-                throw new ProcessCodegenException(String.format("Custom Business Calendar class %s must be a concrete class", className));
+                throw new ProcessCodegenException(String.format("Custom Business Calendar class '%s' must be a concrete class", className));
+            }
+
+            if (!Modifier.isPublic(mod)) {
+                throw new ProcessCodegenException(String.format("Custom Business Calendar class '%s' must be a public class", className));
             }
         } catch (ClassNotFoundException e) {
-            String message = String.format("Custom Business Calendar class %s not found or it is not an instance of %s", className, BusinessCalendar.class.getCanonicalName());
-            throw new ProcessCodegenException(message, e);
+            String message = String.format("Custom Business Calendar class '%s' not found or it is not an instance of '%s'", className, BusinessCalendar.class.getCanonicalName());
+            throw new ProcessCodegenException(message);
         }
     }
 
-    public static Expression getBusinessCalendarCreation(String businessCalendarClassName) {
+    static ObjectCreationExpr getBusinessCalendarCreationExpression(String businessCalendarClassName) {
         return new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType(businessCalendarClassName), NodeList.nodeList());
     }
 
-    private static AssignExpr getAssignExpr(BlockStmt constructorBody) {
+    static AssignExpr getAssignExpression(BlockStmt constructorBody) {
         Statement calendarFieldInitStatement = constructorBody.getStatements()
                 .getFirst()
                 .orElseThrow(() -> new ProcessCodegenException("BusinessCalendarProducer constructor does not contain any statements"));
