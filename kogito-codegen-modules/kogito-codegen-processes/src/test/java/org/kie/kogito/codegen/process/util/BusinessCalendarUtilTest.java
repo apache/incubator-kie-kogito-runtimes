@@ -102,7 +102,7 @@ public class BusinessCalendarUtilTest {
 
         conditionallyAddCustomBusinessCalendar(compilationUnit, context, CustomBusinessCalendar.class.getCanonicalName());
 
-        ObjectCreationExpr expression = getBusinessCalendarCreationExpression(CustomBusinessCalendar.class.getCanonicalName()).asObjectCreationExpr();
+        ObjectCreationExpr expression = getBusinessCalendarCreationExpression(CustomBusinessCalendar.class.getCanonicalName());
 
         assertBusinessCalendarProducerConstructor(compilationUnit, expression);
     }
@@ -131,10 +131,6 @@ public class BusinessCalendarUtilTest {
                 .isInstanceOf(AssignExpr.class);
 
         AssignExpr assignExpr = (AssignExpr) firstNode;
-
-        assertThat(assignExpr.getTarget())
-                .isNotNull()
-                .isInstanceOf(FieldAccessExpr.class);
 
         FieldAccessExpr expectedTargetExpression = new FieldAccessExpr(new ThisExpr(), BUSINESS_CALENDAR_FIELD_NAME);
 
