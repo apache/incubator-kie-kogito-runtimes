@@ -16,19 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.serverless.workflow.executor;
 
-import org.kie.kogito.serverless.workflow.functions.FunctionDefinitionEx;
+package org.kie.kogito.codegen.process.util.calendars;
 
-import io.serverlessworkflow.api.Workflow;
+import java.util.Date;
 
-public class StaticJavaRegister implements StaticWorkflowRegister {
+import org.kie.kogito.calendar.BusinessCalendar;
+
+public class CustomBusinessCalendar implements BusinessCalendar {
+    @Override
+    public long calculateBusinessTimeAsDuration(String timeExpression) {
+        return 0;
+    }
 
     @Override
-    public void register(StaticWorkflowApplication application, Workflow workflow) {
-        if (workflow.getFunctions() != null && workflow.getFunctions().getFunctionDefs() != null) {
-            workflow.getFunctions().getFunctionDefs().stream().filter(FunctionDefinitionEx.class::isInstance).map(FunctionDefinitionEx.class::cast)
-                    .forEach(function -> application.registerHandler(new StaticFunctionWorkItemHandler(function)));
-        }
+    public Date calculateBusinessTimeAsDate(String timeExpression) {
+        return null;
     }
 }
