@@ -76,6 +76,8 @@ public class ProcessInstanceNodeEventBody implements KogitoMarshallEventSupport,
 
     private Date slaDueDate;
 
+    private int triggerCount;
+
     private Map<String, Object> data;
 
     @Override
@@ -119,6 +121,10 @@ public class ProcessInstanceNodeEventBody implements KogitoMarshallEventSupport,
 
     public Date getEventDate() {
         return eventDate;
+    }
+
+    public int triggerCount() {
+        return triggerCount;
     }
 
     public String getEventUser() {
@@ -255,6 +261,11 @@ public class ProcessInstanceNodeEventBody implements KogitoMarshallEventSupport,
 
         public Builder nodeName(String nodeName) {
             instance.nodeName = nodeName;
+            return this;
+        }
+
+        public Builder triggerCount(int triggerCount) {
+            instance.triggerCount = triggerCount;
             return this;
         }
 
