@@ -20,16 +20,22 @@ package org.jbpm.process.instance.event;
 
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.runtime.KieRuntime;
-import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public class KogitoProcessNodeTriggeredEventImpl extends AbstractProcessNodeEvent implements ProcessNodeTriggeredEvent {
 
     private static final long serialVersionUID = 510l;
 
-    public KogitoProcessNodeTriggeredEventImpl(NodeInstance nodeInstance, KieRuntime kruntime, String identity) {
-        super(nodeInstance, nodeInstance.getProcessInstance(), kruntime, identity);
+    private int triggerCount;
 
+    public KogitoProcessNodeTriggeredEventImpl(KogitoNodeInstance nodeInstance, KieRuntime kruntime, String identity) {
+        super(nodeInstance, nodeInstance.getProcessInstance(), kruntime, identity);
+        this.triggerCount = nodeInstance.triggerCount();
+    }
+
+    @Override
+    public int triggerCount() {
+        return triggerCount;
     }
 
     @Override
