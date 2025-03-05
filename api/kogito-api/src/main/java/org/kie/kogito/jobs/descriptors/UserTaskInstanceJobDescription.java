@@ -27,16 +27,29 @@ public class UserTaskInstanceJobDescription implements JobDescription {
     private ExpirationTime expirationTime;
     private Integer priority = ProcessInstanceJobDescription.DEFAULT_PRIORITY;
     private String userTaskInstanceId;
+    private String processId;
+    private String processInstanceId;
+    private String nodeInstanceId;
 
     public UserTaskInstanceJobDescription() {
         // do nothing
     }
 
-    public UserTaskInstanceJobDescription(String id, ExpirationTime expirationTime, Integer priority, String userTaskInstanceId) {
+    public UserTaskInstanceJobDescription(
+            String id,
+            ExpirationTime expirationTime,
+            Integer priority,
+            String userTaskInstanceId,
+            String processId,
+            String processInstanceId,
+            String nodeInstanceId) {
         this.id = id;
         this.expirationTime = expirationTime;
         this.priority = priority;
         this.userTaskInstanceId = userTaskInstanceId;
+        this.processId = processId;
+        this.processInstanceId = processInstanceId;
+        this.nodeInstanceId = nodeInstanceId;
     }
 
     @Override
@@ -59,8 +72,20 @@ public class UserTaskInstanceJobDescription implements JobDescription {
         return null;
     }
 
-    public String getUserTaskInstanceId() {
+    public String userTaskInstanceId() {
         return userTaskInstanceId;
+    }
+
+    public String processId() {
+        return processId;
+    }
+
+    public String processInstanceId() {
+        return processInstanceId;
+    }
+
+    public String nodeInstanceId() {
+        return nodeInstanceId;
     }
 
     public static UserTaskInstanceJobDescriptionBuilder newUserTaskInstanceJobDescriptionBuilder() {
