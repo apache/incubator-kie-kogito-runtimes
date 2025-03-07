@@ -75,4 +75,11 @@ public interface KogitoNodeInstance extends NodeInstance {
     default Map<String, Object> getMetaData() {
         return Collections.emptyMap();
     }
+
+    /**
+     * Returns the number of times the node has been triggered
+     * 
+     * @return trigger count
+     */
+    int triggerCount();
 }

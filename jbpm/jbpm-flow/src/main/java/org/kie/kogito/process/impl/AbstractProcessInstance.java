@@ -470,7 +470,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 .filter(ni -> ni.getStringId().equals(nodeInstanceId))
                 .findFirst()
                 .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
-
         ((NodeInstanceImpl) nodeInstance).retrigger(true);
         removeOnFinish();
     }
@@ -698,12 +697,18 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
         final String errorMessage = pi.getErrorMessage();
         final String nodeInError = pi.getNodeIdInError();
+        final String nodeInstanceInError = pi.getNodeInstanceIdInError();
         final Throwable errorCause = pi.getErrorCause().orElse(null);
         return new ProcessError() {
 
             @Override
             public String failedNodeId() {
                 return nodeInError;
+            }
+
+            @Override
+            public String failedNodeInstanceId() {
+                return nodeInstanceInError;
             }
 
             @Override
@@ -720,9 +725,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             public void retrigger() {
                 WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
                 NodeInstance ni = pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
-                pInstance.setState(STATE_ACTIVE);
-                pInstance.internalSetErrorNodeId(null);
-                pInstance.internalSetErrorMessage(null);
+                clearError(pInstance);
                 org.kie.api.runtime.process.NodeInstanceContainer nodeInstanceContainer = ni.getNodeInstanceContainer();
                 if (nodeInstanceContainer instanceof NodeInstance) {
                     ((NodeInstance) nodeInstanceContainer).internalSetTriggerTime(new Date());
@@ -735,11 +738,16 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             public void skip() {
                 WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
                 NodeInstance ni = pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
-                pInstance.setState(STATE_ACTIVE);
-                pInstance.internalSetErrorNodeId(null);
-                pInstance.internalSetErrorMessage(null);
+                clearError(pInstance);
                 ((NodeInstanceImpl) ni).triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, true);
                 removeOnFinish();
+            }
+
+            private void clearError(WorkflowProcessInstanceImpl pInstance) {
+                pInstance.setState(STATE_ACTIVE);
+                pInstance.internalSetErrorNodeId(null);
+                pInstance.internalSetErrorNodeInstanceId(null);
+                pInstance.internalSetErrorMessage(null);
             }
         };
     }
