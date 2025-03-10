@@ -199,9 +199,8 @@ public class ProtobufProcessInstanceReader {
             nodeInstanceImpl.setProcessInstance(processInstance);
         }
 
-        if (nodeInstanceProtobuf.hasTriggerCount()) {
-            nodeInstanceImpl.internalSetTriggerCount(nodeInstanceProtobuf.getTriggerCount());
-        }
+        if (nodeInstanceProtobuf.hasIsRetrigger())
+            nodeInstanceImpl.internalSetRetrigger(nodeInstanceProtobuf.getIsRetrigger());
 
         nodeInstanceImpl.setLevel(nodeInstanceProtobuf.getLevel() == 0 ? 1 : nodeInstanceProtobuf.getLevel());
     }

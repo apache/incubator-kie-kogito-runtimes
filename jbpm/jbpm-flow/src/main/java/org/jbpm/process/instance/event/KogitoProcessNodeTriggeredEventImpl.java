@@ -26,21 +26,22 @@ public class KogitoProcessNodeTriggeredEventImpl extends AbstractProcessNodeEven
 
     private static final long serialVersionUID = 510l;
 
-    private int triggerCount;
+    private boolean isRetrigger;
 
     public KogitoProcessNodeTriggeredEventImpl(KogitoNodeInstance nodeInstance, KieRuntime kruntime, String identity) {
         super(nodeInstance, nodeInstance.getProcessInstance(), kruntime, identity);
-        this.triggerCount = nodeInstance.triggerCount();
+        this.isRetrigger = nodeInstance.isRetrigger();
     }
 
     @Override
-    public int triggerCount() {
-        return triggerCount;
+    public boolean isRetrigger() {
+        return isRetrigger;
     }
 
     @Override
     public String toString() {
         return "==>[ProcessNodeTriggered(nodeId=" + getNodeInstance().getNodeId() + "; id=" + ((KogitoNodeInstance) getNodeInstance()).getStringId()
-                + "; nodeName=" + getNodeInstance().getNodeName() + "; processName=" + getProcessInstance().getProcessName() + "; processId=" + getProcessInstance().getProcessId() + ")]";
+                + "; nodeName=" + getNodeInstance().getNodeName() + "; processName=" + getProcessInstance().getProcessName() + "; processId=" + getProcessInstance().getProcessId()
+                + "; isRetrigger=" + isRetrigger + ")]";
     }
 }

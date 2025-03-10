@@ -94,7 +94,7 @@ public abstract class AbstractDataEventAdapter implements DataEventAdapter {
     }
 
     protected ProcessInstanceNodeDataEvent toProcessInstanceNodeEvent(ProcessNodeTriggeredEvent event, int eventType) {
-        return toProcessInstanceNodeEvent(event, eventType, (k, v) -> k.triggerCount(v.triggerCount()));
+        return toProcessInstanceNodeEvent(event, eventType, (k, v) -> k.setRetrigger(v.isRetrigger()));
     }
 
     protected ProcessInstanceNodeDataEvent toProcessInstanceNodeEvent(ProcessNodeEvent event, int eventType) {

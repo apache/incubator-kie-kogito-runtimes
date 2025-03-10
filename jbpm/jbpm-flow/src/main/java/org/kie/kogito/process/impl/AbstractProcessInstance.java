@@ -724,12 +724,13 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             @Override
             public void retrigger() {
                 WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
-                NodeInstance ni = pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
+                NodeInstanceImpl ni = (NodeInstanceImpl) pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
                 clearError(pInstance);
                 org.kie.api.runtime.process.NodeInstanceContainer nodeInstanceContainer = ni.getNodeInstanceContainer();
                 if (nodeInstanceContainer instanceof NodeInstance) {
                     ((NodeInstance) nodeInstanceContainer).internalSetTriggerTime(new Date());
                 }
+                ni.internalSetRetrigger(true);
                 ni.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
                 removeOnFinish();
             }
@@ -737,9 +738,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             @Override
             public void skip() {
                 WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
-                NodeInstance ni = pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
+                NodeInstanceImpl ni = (NodeInstanceImpl) pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
                 clearError(pInstance);
-                ((NodeInstanceImpl) ni).triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, true);
+                ni.triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, true);
                 removeOnFinish();
             }
 

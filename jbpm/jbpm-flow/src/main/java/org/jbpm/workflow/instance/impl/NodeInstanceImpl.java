@@ -93,7 +93,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     protected String slaTimerId;
     protected Date triggerTime;
     protected Date leaveTime;
-    protected int triggerCount;
+    protected boolean isRetrigger;
 
     protected transient CancelType cancelType;
 
@@ -114,8 +114,8 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     }
 
     @Override
-    public int triggerCount() {
-        return triggerCount;
+    public boolean isRetrigger() {
+        return isRetrigger;
     }
 
     public void setNodeId(WorkflowElementIdentifier nodeId) {
@@ -136,10 +136,6 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     @Override
     public String getNodeDefinitionId() {
         return getNode().getUniqueId();
-    }
-
-    public boolean isRetrigger() {
-        return triggerCount > 1;
     }
 
     @Override
@@ -230,7 +226,6 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
 
     @Override
     public final void trigger(KogitoNodeInstance from, String type) {
-        triggerCount++;
         boolean hidden = false;
         if (getNode().getMetaData().get(HIDDEN) != null) {
             hidden = true;
@@ -493,10 +488,12 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         triggerNodeInstance(followConnection(connection), connection.getToType());
     }
 
+    @Override
     public void retrigger(boolean remove) {
         if (remove) {
             cancel();
         }
+        isRetrigger = true;
         triggerNode(getNodeId(), !remove);
     }
 
@@ -755,8 +752,8 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         }
     }
 
-    public void internalSetTriggerCount(int triggerCount) {
-        this.triggerCount = triggerCount;
+    public void internalSetRetrigger(boolean isRetrigger) {
+        this.isRetrigger = isRetrigger;
 
     }
 }

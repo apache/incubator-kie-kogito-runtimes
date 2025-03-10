@@ -81,5 +81,5 @@ public interface KogitoNodeInstance extends NodeInstance {
      * 
      * @return trigger count
      */
-    int triggerCount();
+    boolean isRetrigger();
 }
