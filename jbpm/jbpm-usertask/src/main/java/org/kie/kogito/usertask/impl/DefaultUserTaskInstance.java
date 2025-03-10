@@ -688,9 +688,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
                     .generateId()
                     .expirationTime(expirationTime)
                     .userTaskInstanceId(this.id)
-                    .processId((String) this.metadata.get("ProcessId"))
-                    .processInstanceId((String) this.metadata.get("ProcessInstanceId"))
-                    .nodeInstanceId((String) this.metadata.get("NodeInstanceId"))
+                    .metadata(this.metadata)
                     .build());
         }
         return jobs;

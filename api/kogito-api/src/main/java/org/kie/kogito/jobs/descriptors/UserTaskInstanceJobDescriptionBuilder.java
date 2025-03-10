@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.jobs.descriptors;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.kie.kogito.jobs.ExpirationTime;
@@ -28,9 +29,7 @@ public class UserTaskInstanceJobDescriptionBuilder {
     private ExpirationTime expirationTime;
     private Integer priority = ProcessInstanceJobDescription.DEFAULT_PRIORITY;
     private String userTaskInstanceId;
-    private String processId;
-    private String processInstanceId;
-    private String nodeInstanceId;
+    private Map<String, Object> metadata;
 
     public UserTaskInstanceJobDescriptionBuilder id(String id) {
         this.id = id;
@@ -56,22 +55,21 @@ public class UserTaskInstanceJobDescriptionBuilder {
         return this;
     }
 
-    public UserTaskInstanceJobDescriptionBuilder processId(String processId) {
-        this.processId = processId;
-        return this;
-    }
-
-    public UserTaskInstanceJobDescriptionBuilder processInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
-        return this;
-    }
-
-    public UserTaskInstanceJobDescriptionBuilder nodeInstanceId(String nodeInstanceId) {
-        this.nodeInstanceId = nodeInstanceId;
+    public UserTaskInstanceJobDescriptionBuilder metadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
         return this;
     }
 
     public UserTaskInstanceJobDescription build() {
-        return new UserTaskInstanceJobDescription(id, expirationTime, priority, userTaskInstanceId, processId, processInstanceId, nodeInstanceId);
+        return new UserTaskInstanceJobDescription(
+                id,
+                expirationTime,
+                priority,
+                userTaskInstanceId,
+                (String) this.metadata.get("ProcessId"),
+                (String) this.metadata.get("ProcessInstanceId"),
+                (String) this.metadata.get("NodeInstanceId"),
+                (String) this.metadata.get("RootProcessInstanceId"),
+                (String) this.metadata.get("RootProcessId"));
     }
 }
