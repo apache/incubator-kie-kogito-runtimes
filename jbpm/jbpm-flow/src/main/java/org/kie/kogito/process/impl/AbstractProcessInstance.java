@@ -726,6 +726,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
                 NodeInstanceImpl ni = (NodeInstanceImpl) pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
                 clearError(pInstance);
+                getProcessRuntime().getProcessEventSupport().fireProcessRetriggered(pInstance, pInstance.getKnowledgeRuntime());
                 org.kie.api.runtime.process.NodeInstanceContainer nodeInstanceContainer = ni.getNodeInstanceContainer();
                 if (nodeInstanceContainer instanceof NodeInstance) {
                     ((NodeInstance) nodeInstanceContainer).internalSetTriggerTime(new Date());
