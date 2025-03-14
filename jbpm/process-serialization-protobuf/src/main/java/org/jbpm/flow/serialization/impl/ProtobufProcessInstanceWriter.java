@@ -202,7 +202,7 @@ public class ProtobufProcessInstanceWriter {
                     .setId(((KogitoNodeInstance) nodeInstance).getStringId())
                     .setNodeId(nodeInstance.getNodeId().toExternalFormat())
                     .setLevel(((org.jbpm.workflow.instance.NodeInstance) nodeInstance).getLevel())
-                    .setIsRetrigger(((org.jbpm.workflow.instance.NodeInstance) nodeInstance).isRetrigger());
+                    .setRetrigger(((org.jbpm.workflow.instance.NodeInstance) nodeInstance).isRetrigger());
 
             Date triggerDate = ((org.jbpm.workflow.instance.NodeInstance) nodeInstance).getTriggerTime();
             if (triggerDate != null) {

@@ -2357,18 +2357,18 @@ public final class KogitoTypesProtobuf {
         org.jbpm.flow.serialization.protobuf.KogitoTypesProtobuf.SLAContextOrBuilder getSlaOrBuilder();
 
         /**
-         * <code>optional bool isRetrigger = 7;</code>
+         * <code>optional bool retrigger = 7;</code>
          * 
-         * @return Whether the isRetrigger field is set.
+         * @return Whether the retrigger field is set.
          */
-        boolean hasIsRetrigger();
+        boolean hasRetrigger();
 
         /**
-         * <code>optional bool isRetrigger = 7;</code>
+         * <code>optional bool retrigger = 7;</code>
          * 
-         * @return The isRetrigger.
+         * @return The retrigger.
          */
-        boolean getIsRetrigger();
+        boolean getRetrigger();
     }
 
     /**
@@ -2605,27 +2605,27 @@ public final class KogitoTypesProtobuf {
             return sla_ == null ? org.jbpm.flow.serialization.protobuf.KogitoTypesProtobuf.SLAContext.getDefaultInstance() : sla_;
         }
 
-        public static final int ISRETRIGGER_FIELD_NUMBER = 7;
-        private boolean isRetrigger_ = false;
+        public static final int RETRIGGER_FIELD_NUMBER = 7;
+        private boolean retrigger_ = false;
 
         /**
-         * <code>optional bool isRetrigger = 7;</code>
+         * <code>optional bool retrigger = 7;</code>
          * 
-         * @return Whether the isRetrigger field is set.
+         * @return Whether the retrigger field is set.
          */
         @java.lang.Override
-        public boolean hasIsRetrigger() {
+        public boolean hasRetrigger() {
             return ((bitField0_ & 0x00000010) != 0);
         }
 
         /**
-         * <code>optional bool isRetrigger = 7;</code>
+         * <code>optional bool retrigger = 7;</code>
          * 
-         * @return The isRetrigger.
+         * @return The retrigger.
          */
         @java.lang.Override
-        public boolean getIsRetrigger() {
-            return isRetrigger_;
+        public boolean getRetrigger() {
+            return retrigger_;
         }
 
         private byte memoizedIsInitialized = -1;
@@ -2664,7 +2664,7 @@ public final class KogitoTypesProtobuf {
                 output.writeMessage(6, getSla());
             }
             if (((bitField0_ & 0x00000010) != 0)) {
-                output.writeBool(7, isRetrigger_);
+                output.writeBool(7, retrigger_);
             }
             getUnknownFields().writeTo(output);
         }
@@ -2700,7 +2700,7 @@ public final class KogitoTypesProtobuf {
             }
             if (((bitField0_ & 0x00000010) != 0)) {
                 size += com.google.protobuf.CodedOutputStream
-                        .computeBoolSize(7, isRetrigger_);
+                        .computeBoolSize(7, retrigger_);
             }
             size += getUnknownFields().getSerializedSize();
             memoizedSize = size;
@@ -2749,10 +2749,10 @@ public final class KogitoTypesProtobuf {
                         .equals(other.getSla()))
                     return false;
             }
-            if (hasIsRetrigger() != other.hasIsRetrigger())
+            if (hasRetrigger() != other.hasRetrigger())
                 return false;
-            if (hasIsRetrigger()) {
-                if (getIsRetrigger() != other.getIsRetrigger())
+            if (hasRetrigger()) {
+                if (getRetrigger() != other.getRetrigger())
                     return false;
             }
             if (!getUnknownFields().equals(other.getUnknownFields()))
@@ -2788,10 +2788,10 @@ public final class KogitoTypesProtobuf {
                 hash = (37 * hash) + SLA_FIELD_NUMBER;
                 hash = (53 * hash) + getSla().hashCode();
             }
-            if (hasIsRetrigger()) {
-                hash = (37 * hash) + ISRETRIGGER_FIELD_NUMBER;
+            if (hasRetrigger()) {
+                hash = (37 * hash) + RETRIGGER_FIELD_NUMBER;
                 hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-                        getIsRetrigger());
+                        getRetrigger());
             }
             hash = (29 * hash) + getUnknownFields().hashCode();
             memoizedHashCode = hash;
@@ -2962,7 +2962,7 @@ public final class KogitoTypesProtobuf {
                     slaBuilder_.dispose();
                     slaBuilder_ = null;
                 }
-                isRetrigger_ = false;
+                retrigger_ = false;
                 return this;
             }
 
@@ -3026,7 +3026,7 @@ public final class KogitoTypesProtobuf {
                     to_bitField0_ |= 0x00000008;
                 }
                 if (((from_bitField0_ & 0x00000040) != 0)) {
-                    result.isRetrigger_ = isRetrigger_;
+                    result.retrigger_ = retrigger_;
                     to_bitField0_ |= 0x00000010;
                 }
                 result.bitField0_ |= to_bitField0_;
@@ -3105,8 +3105,8 @@ public final class KogitoTypesProtobuf {
                 if (other.hasSla()) {
                     mergeSla(other.getSla());
                 }
-                if (other.hasIsRetrigger()) {
-                    setIsRetrigger(other.getIsRetrigger());
+                if (other.hasRetrigger()) {
+                    setRetrigger(other.getRetrigger());
                 }
                 this.mergeUnknownFields(other.getUnknownFields());
                 onChanged();
@@ -3169,7 +3169,7 @@ public final class KogitoTypesProtobuf {
                                 break;
                             } // case 50
                             case 56: {
-                                isRetrigger_ = input.readBool();
+                                retrigger_ = input.readBool();
                                 bitField0_ |= 0x00000040;
                                 break;
                             } // case 56
@@ -3716,50 +3716,50 @@ public final class KogitoTypesProtobuf {
                 return slaBuilder_;
             }
 
-            private boolean isRetrigger_;
+            private boolean retrigger_;
 
             /**
-             * <code>optional bool isRetrigger = 7;</code>
+             * <code>optional bool retrigger = 7;</code>
              * 
-             * @return Whether the isRetrigger field is set.
+             * @return Whether the retrigger field is set.
              */
             @java.lang.Override
-            public boolean hasIsRetrigger() {
+            public boolean hasRetrigger() {
                 return ((bitField0_ & 0x00000040) != 0);
             }
 
             /**
-             * <code>optional bool isRetrigger = 7;</code>
+             * <code>optional bool retrigger = 7;</code>
              * 
-             * @return The isRetrigger.
+             * @return The retrigger.
              */
             @java.lang.Override
-            public boolean getIsRetrigger() {
-                return isRetrigger_;
+            public boolean getRetrigger() {
+                return retrigger_;
             }
 
             /**
-             * <code>optional bool isRetrigger = 7;</code>
+             * <code>optional bool retrigger = 7;</code>
              * 
-             * @param value The isRetrigger to set.
+             * @param value The retrigger to set.
              * @return This builder for chaining.
              */
-            public Builder setIsRetrigger(boolean value) {
+            public Builder setRetrigger(boolean value) {
 
-                isRetrigger_ = value;
+                retrigger_ = value;
                 bitField0_ |= 0x00000040;
                 onChanged();
                 return this;
             }
 
             /**
-             * <code>optional bool isRetrigger = 7;</code>
+             * <code>optional bool retrigger = 7;</code>
              * 
              * @return This builder for chaining.
              */
-            public Builder clearIsRetrigger() {
+            public Builder clearRetrigger() {
                 bitField0_ = (bitField0_ & ~0x00000040);
-                isRetrigger_ = false;
+                retrigger_ = false;
                 onChanged();
                 return this;
             }
@@ -9081,32 +9081,32 @@ public final class KogitoTypesProtobuf {
                         "to\"\033\n\010JsonNode\022\017\n\007content\030\001 \001(\t\"\033\n\010Docum" +
                         "ent\022\017\n\007content\030\001 \001(\t\"_\n\010Variable\022\014\n\004name" +
                         "\030\001 \001(\t\022\021\n\tdata_type\030\002 \001(\t\022(\n\005value\030\003 \001(\013" +
-                        "2\024.google.protobuf.AnyH\000\210\001\001B\010\n\006_value\"\222\002" +
+                        "2\024.google.protobuf.AnyH\000\210\001\001B\010\n\006_value\"\216\002" +
                         "\n\014NodeInstance\022\n\n\002id\030\001 \001(\t\022\017\n\007node_id\030\002 " +
                         "\001(\t\022%\n\007content\030\003 \001(\0132\024.google.protobuf.A" +
                         "ny\022\022\n\005level\030\004 \001(\005H\000\210\001\001\022\031\n\014trigger_date\030\005" +
                         " \001(\003H\001\210\001\001\022B\n\003sla\030\006 \001(\01320.org.jbpm.flow.s" +
-                        "erialization.protobuf.SLAContextH\002\210\001\001\022\030\n" +
-                        "\013isRetrigger\030\007 \001(\010H\003\210\001\001B\010\n\006_levelB\017\n\r_tr" +
-                        "igger_dateB\006\n\004_slaB\016\n\014_isRetrigger\"\277\002\n\017W" +
-                        "orkflowContext\022@\n\010variable\030\001 \003(\0132..org.j" +
-                        "bpm.flow.serialization.protobuf.Variable" +
-                        "\022I\n\rnode_instance\030\002 \003(\01322.org.jbpm.flow." +
-                        "serialization.protobuf.NodeInstance\022P\n\017e" +
-                        "xclusive_group\030\003 \003(\01327.org.jbpm.flow.ser" +
-                        "ialization.protobuf.NodeInstanceGroup\022M\n" +
-                        "\017iterationLevels\030\004 \003(\01324.org.jbpm.flow.s" +
-                        "erialization.protobuf.IterationLevel\"Y\n\017" +
-                        "SwimlaneContext\022\025\n\010swimlane\030\001 \001(\tH\000\210\001\001\022\025" +
-                        "\n\010actor_id\030\002 \001(\tH\001\210\001\001B\013\n\t_swimlaneB\013\n\t_a" +
-                        "ctor_id\"\224\001\n\nSLAContext\022\031\n\014sla_timer_id\030\001" +
-                        " \001(\tH\000\210\001\001\022\031\n\014sla_due_date\030\002 \001(\003H\001\210\001\001\022\033\n\016" +
-                        "sla_compliance\030\003 \001(\005H\002\210\001\001B\017\n\r_sla_timer_" +
-                        "idB\017\n\r_sla_due_dateB\021\n\017_sla_compliance\"F" +
-                        "\n\016IterationLevel\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\022\n\005lev" +
-                        "el\030\002 \001(\005H\001\210\001\001B\005\n\003_idB\010\n\006_level\"3\n\021NodeIn" +
-                        "stanceGroup\022\036\n\026group_node_instance_id\030\001 " +
-                        "\003(\tB\025B\023KogitoTypesProtobufb\006proto3"
+                        "erialization.protobuf.SLAContextH\002\210\001\001\022\026\n" +
+                        "\tretrigger\030\007 \001(\010H\003\210\001\001B\010\n\006_levelB\017\n\r_trig" +
+                        "ger_dateB\006\n\004_slaB\014\n\n_retrigger\"\277\002\n\017Workf" +
+                        "lowContext\022@\n\010variable\030\001 \003(\0132..org.jbpm." +
+                        "flow.serialization.protobuf.Variable\022I\n\r" +
+                        "node_instance\030\002 \003(\01322.org.jbpm.flow.seri" +
+                        "alization.protobuf.NodeInstance\022P\n\017exclu" +
+                        "sive_group\030\003 \003(\01327.org.jbpm.flow.seriali" +
+                        "zation.protobuf.NodeInstanceGroup\022M\n\017ite" +
+                        "rationLevels\030\004 \003(\01324.org.jbpm.flow.seria" +
+                        "lization.protobuf.IterationLevel\"Y\n\017Swim" +
+                        "laneContext\022\025\n\010swimlane\030\001 \001(\tH\000\210\001\001\022\025\n\010ac" +
+                        "tor_id\030\002 \001(\tH\001\210\001\001B\013\n\t_swimlaneB\013\n\t_actor" +
+                        "_id\"\224\001\n\nSLAContext\022\031\n\014sla_timer_id\030\001 \001(\t" +
+                        "H\000\210\001\001\022\031\n\014sla_due_date\030\002 \001(\003H\001\210\001\001\022\033\n\016sla_" +
+                        "compliance\030\003 \001(\005H\002\210\001\001B\017\n\r_sla_timer_idB\017" +
+                        "\n\r_sla_due_dateB\021\n\017_sla_compliance\"F\n\016It" +
+                        "erationLevel\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\022\n\005level\030\002" +
+                        " \001(\005H\001\210\001\001B\005\n\003_idB\010\n\006_level\"3\n\021NodeInstan" +
+                        "ceGroup\022\036\n\026group_node_instance_id\030\001 \003(\tB" +
+                        "\025B\023KogitoTypesProtobufb\006proto3"
         };
         descriptor = com.google.protobuf.Descriptors.FileDescriptor
                 .internalBuildGeneratedFileFrom(descriptorData,
@@ -9132,7 +9132,7 @@ public final class KogitoTypesProtobuf {
                 getDescriptor().getMessageTypes().get(3);
         internal_static_org_jbpm_flow_serialization_protobuf_NodeInstance_fieldAccessorTable = new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
                 internal_static_org_jbpm_flow_serialization_protobuf_NodeInstance_descriptor,
-                new java.lang.String[] { "Id", "NodeId", "Content", "Level", "TriggerDate", "Sla", "IsRetrigger", });
+                new java.lang.String[] { "Id", "NodeId", "Content", "Level", "TriggerDate", "Sla", "Retrigger", });
         internal_static_org_jbpm_flow_serialization_protobuf_WorkflowContext_descriptor =
                 getDescriptor().getMessageTypes().get(4);
         internal_static_org_jbpm_flow_serialization_protobuf_WorkflowContext_fieldAccessorTable = new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
