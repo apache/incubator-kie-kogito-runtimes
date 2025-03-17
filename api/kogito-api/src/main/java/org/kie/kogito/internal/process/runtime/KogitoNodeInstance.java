@@ -77,9 +77,9 @@ public interface KogitoNodeInstance extends NodeInstance {
     }
 
     /**
-     * Returns the number of times the node has been triggered
+     * Returns if this node has been executed as the first one of a retrigger operation
      * 
-     * @return trigger count
+     * @return true if this a retrigger node (see above), false otherwise
      */
     boolean isRetrigger();
 }
