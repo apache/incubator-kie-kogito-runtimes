@@ -22,21 +22,21 @@
 
 <p align="center"><img width=55% height=55% src="docsimg/kogito.png"></p>
 
-[![GitHub Stars](https://img.shields.io/github/stars/kiegroup/kogito-runtimes.svg)](https://github.com/apache/incubator-kie-kogito-runtimes/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/kiegroup/kogito-runtimes.svg)](https://github.com/apache/incubator-kie-kogito-runtimes/network/members)
-[![GitHub Issues](https://img.shields.io/github/issues/kiegroup/kogito-runtimes.svg)](https://github.com/apache/incubator-kie-kogito-runtimes/issues)
-[![Pull Requests](https://img.shields.io/github/issues-pr/kiegroup/kogito-runtimes.svg?style=flat-square)](https://github.com/apache/incubator-kie-kogito-runtimes/pulls)
+[![GitHub Stars](https://img.shields.io/github/stars/apache/incubator-kie-kogito-runtimes.svg)](https://github.com/apache/incubator-kie-kogito-runtimes/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/apache/incubator-kie-kogito-runtimes.svg)](https://github.com/apache/incubator-kie-kogito-runtimes/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/apache/incubator-kie-kogito-runtimes.svg)](https://github.com/apache/incubator-kie-kogito-runtimes/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/apache/incubator-kie-kogito-runtimes.svg?style=flat-square)](https://github.com/apache/incubator-kie-kogito-runtimes/pulls)
 [![Zulip chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)]( https://kie.zulipchat.com)
-[![Contributors](https://img.shields.io/github/contributors/kiegroup/kogito-runtimes.svg?style=flat-square)](https://github.com/apache/incubator-kie-kogito-runtimes/graphs/contributors)
-[![License](https://img.shields.io/github/license/kiegroup/kogito-runtimes.svg)](https://github.com/apache/incubator-kie-kogito-runtimes/blob/main/LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/apache/incubator-kie-kogito-runtimes.svg?style=flat-square)](https://github.com/apache/incubator-kie-kogito-runtimes/graphs/contributors)
+[![License](https://img.shields.io/github/license/apache/incubator-kie-kogito-runtimes.svg)](https://github.com/apache/incubator-kie-kogito-runtimes/blob/main/LICENSE)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kogito_kie.svg?label=Follow&style=social)](https://twitter.com/kogito_kie?lang=en)
 
 ## Quick Links
 **Homepage:** https://kie.apache.org
 
-**Guides and Documentation:** https://kie.apache.org/kogito-docs/
+**Guides and Documentation:** https://kie.apache.org/docs/documentation/
 
-**JIRA Issues:** https://github.com/apache/incubator-kie-kogito-runtimes/issues
+**GitHub Issues:** https://github.com/apache/incubator-kie-issues/issues
 
 ## Requirements
 - [Maven](https://maven.apache.org/) 3.9.6 or later
@@ -49,7 +49,7 @@ The [Kogito Examples repository](https://github.com/apache/incubator-kie-kogito-
 ## Guides
 The official guides for Kogito can be found at our main website, these include guides for Quarkus and Spring Boot.
 
-- [Kogito Documentation](https://kie.apache.org/kogito-docs/).
+- [Kogito Documentation](https://kie.apache.org/docs/documentation/).
 
 If you want to read more about Quarkus:
 
@@ -62,9 +62,9 @@ All contributions are welcome! Before you start please read the [contribution gu
 ## Getting Help
 ### Issues
 - Do you have a [minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) for your issue?
-  - If so, please open a new issues for it in the [issues](https://github.com/apache/incubator-kie-kogito-runtimes/issues) with the details of your issue and example.
+  - If so, please open a new issues for it in the [issues](https://github.com/apache/incubator-kie-issues/issues) with the details of your issue and example.
 - Are you encountering an issue but unsure of what is going on? 
-  - Start a new conversation in the Apache KIE [users mailing list](https://groups.google.com/g/kogito-development), or open a new thread in the [Kogito stream](https://kie.zulipchat.com/#narrow/stream/232676-kogito) of the KIE Zulip chat.
+  - Start a new conversation in the Apache KIE [users mailing list](https://lists.apache.org/list.html?users@kie.apache.org), or open a new thread in the [Kogito stream](https://kie.zulipchat.com/#narrow/stream/232676-kogito) of the KIE Zulip chat.
   - Please provide as much relevant information as you can as to what could be causing the issue, and our developers will help you figure out what's going wrong.
 
 ### Requests
