@@ -68,7 +68,7 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
     public Optional<String> getProcessSvg(String processId) {
         if (svgResourcesPath.isPresent()) {
             Path path = Paths.get(svgResourcesPath.get(), processId + ".svg");
-            if (Files.exists(path)) {
+            if (path.toFile().exists()) {
                 try {
                     return Optional.of(new String(Files.readAllBytes(path.toRealPath())));
                 } catch (IOException e) {

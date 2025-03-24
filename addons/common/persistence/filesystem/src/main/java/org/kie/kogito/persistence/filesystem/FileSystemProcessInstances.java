@@ -69,7 +69,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     public Optional findById(String id, ProcessInstanceReadMode mode) {
         Path processInstanceStorage = Paths.get(storage.toString(), id);
 
-        if (Files.notExists(processInstanceStorage)) {
+        if (!processInstanceStorage.toFile().exists()) {
             return Optional.empty();
         }
         byte[] data = readBytesFromFile(processInstanceStorage);
@@ -90,7 +90,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
 
     @Override
     public boolean exists(String id) {
-        return Files.exists(Paths.get(storage.toString(), id));
+        return Paths.get(storage.toString(), id).toFile().exists();
     }
 
     @SuppressWarnings("unchecked")
@@ -98,7 +98,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     public void create(String id, ProcessInstance instance) {
         if (isActive(instance)) {
             Path processInstanceStorage = Paths.get(storage.toString(), id);
-            if (Files.exists(processInstanceStorage)) {
+            if (processInstanceStorage.toFile().exists()) {
                 throw new ProcessInstanceDuplicatedException(id);
             }
             storeProcessInstance(processInstanceStorage, instance);
@@ -110,7 +110,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     public void update(String id, ProcessInstance instance) {
         if (isActive(instance)) {
             Path processInstanceStorage = Paths.get(storage.toString(), id);
-            if (Files.exists(processInstanceStorage)) {
+            if (!processInstanceStorage.toFile().exists()) {
                 storeProcessInstance(processInstanceStorage, instance);
                 disconnect(processInstanceStorage, instance);
             }
