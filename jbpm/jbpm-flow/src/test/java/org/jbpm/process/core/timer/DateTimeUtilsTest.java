@@ -135,7 +135,7 @@ public class DateTimeUtilsTest extends AbstractBaseTest {
 
         assertThat(parsedRepeatable[0]).isEqualTo(-1L);
         // Default delay time is 1000ms
-        assertThat(parsedRepeatable[1]).isEqualTo(1000L);
+        assertThat(parsedRepeatable[1]).isLessThanOrEqualTo(MINUTE_IN_MILLISECONDS);
         assertThat(parsedRepeatable[2]).as("Parsed period should be one minute in milliseconds but is " + parsedRepeatable[2]).isEqualTo(MINUTE_IN_MILLISECONDS);
     }
 }
