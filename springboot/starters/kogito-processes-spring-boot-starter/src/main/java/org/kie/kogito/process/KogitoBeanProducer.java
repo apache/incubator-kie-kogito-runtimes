@@ -28,8 +28,7 @@ import org.kie.kogito.process.version.ProjectVersionProcessVersionResolver;
 import org.kie.kogito.services.jobs.impl.InMemoryJobContext;
 import org.kie.kogito.services.jobs.impl.InMemoryJobService;
 import org.kie.kogito.services.jobs.impl.InMemoryProcessJobExecutorFactory;
-import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
-import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
+import org.kie.kogito.services.uow.StaticUnitOfWorkManger;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.usertask.UserTasks;
 import org.kogito.workitem.rest.RestWorkItemHandlerUtils;
@@ -75,7 +74,7 @@ public class KogitoBeanProducer {
     @Bean
     @ConditionalOnMissingBean(UnitOfWorkManager.class)
     UnitOfWorkManager unitOfWorkManager() {
-        return new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
+        return StaticUnitOfWorkManger.staticUnitOfWorkManager();
     }
 
     @Bean
