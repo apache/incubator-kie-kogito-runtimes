@@ -28,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import io.smallrye.openapi.api.constants.OpenApiConstants;
 import io.smallrye.openapi.api.models.media.SchemaImpl;
 
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.DEFS_PREFIX;
@@ -41,6 +40,8 @@ import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.D
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JsonSchemaImpl extends SchemaImpl {
 
+    public static final String REF_PREFIX_SCHEMA = "#/components/schemas/";
+
     private Map<String, Schema> defs;
 
     @JsonSetter("$defs")
@@ -52,7 +53,7 @@ public class JsonSchemaImpl extends SchemaImpl {
     @JsonSetter("$ref")
     @Override
     public void setRef(String ref) {
-        super.setRef(ref.replace(DEFS_PREFIX, OpenApiConstants.REF_PREFIX_SCHEMA));
+        super.setRef(ref.replace(DEFS_PREFIX, REF_PREFIX_SCHEMA));
     }
 
     public Map<String, Schema> getDefs() {

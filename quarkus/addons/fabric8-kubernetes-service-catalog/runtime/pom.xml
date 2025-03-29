@@ -38,6 +38,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>openshift-client-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-addons-kubernetes-service-catalog</artifactId>
         </dependency>
