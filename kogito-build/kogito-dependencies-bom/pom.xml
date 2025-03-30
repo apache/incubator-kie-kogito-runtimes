@@ -81,7 +81,7 @@
     Don't add as a management dependency because it will break SpringBoot and Quarkus
     Kubernetes addons since they use a different version.
     -->
-    <version.io.fabric8.kubernetes-client>6.13.3</version.io.fabric8.kubernetes-client>
+    <version.io.fabric8.kubernetes-client>7.1.0</version.io.fabric8.kubernetes-client>
     <version.io.micrometer>1.14.5</version.io.micrometer>
     <version.org.flywaydb>10.17.3</version.org.flywaydb>
     <version.org.postgresql>42.7.5</version.org.postgresql>
@@ -90,6 +90,8 @@
     <version.io.smallrye-open-api>4.0.8</version.io.smallrye-open-api>
     <version.io.smallrye-config>3.11.4</version.io.smallrye-config>
     <version.org.awaitility>4.2.0</version.org.awaitility>
+
+    <version.com.squareup.okhttp3>4.2.0</version.com.squareup.okhttp3>
 
     <version.io.smallrye.reactive.mutiny-vertx-web-client>3.17.1</version.io.smallrye.reactive.mutiny-vertx-web-client>
 
@@ -428,6 +430,12 @@
         <groupId>io.smallrye</groupId>
         <artifactId>smallrye-open-api-vertx</artifactId>
         <version>${version.io.smallrye-open-api}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>${version.com.squareup.okhttp3}</version>
       </dependency>
 
       <dependency>
