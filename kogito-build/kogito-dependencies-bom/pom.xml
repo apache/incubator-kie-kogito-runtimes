@@ -75,7 +75,7 @@
 
     <version.io.netty>4.1.118.Final</version.io.netty>
 
-    <version.io.cloudevents>2.3.0</version.io.cloudevents>
+    <version.io.cloudevents>3.0.0</version.io.cloudevents>
     <!--
     We add Fabric8 here to use as a basis for Addons/Kubernetes
     Don't add as a management dependency because it will break SpringBoot and Quarkus
@@ -89,7 +89,7 @@
     <version.io.serverlessworkflow>4.1.0.Final</version.io.serverlessworkflow>
     <version.io.smallrye-open-api>4.0.8</version.io.smallrye-open-api>
     <version.io.smallrye-config>3.11.4</version.io.smallrye-config>
-    <version.org.awaitility>4.2.0</version.org.awaitility>
+    <version.org.awaitility>4.2.2</version.org.awaitility>
 
     <version.com.squareup.okhttp3>4.2.0</version.com.squareup.okhttp3>
 
@@ -103,7 +103,7 @@
     <version.io.swagger.parser.v3>2.1.19</version.io.swagger.parser.v3>
     <version.io.swagger.core.v3>2.2.19</version.io.swagger.core.v3>
 
-    <version.org.apache.commons>3.14.0</version.org.apache.commons>
+    <version.org.apache.commons>3.17.0</version.org.apache.commons>
 
     <version.org.graalvm.nativeimage>23.1.2</version.org.graalvm.nativeimage>
 
@@ -115,19 +115,19 @@
     <version.jakarta.ws.rs>3.1.0</version.jakarta.ws.rs>
     <version.jakarta.persistence-api>3.1.0</version.jakarta.persistence-api>
 
-    <version.org.jboss.resteasy>6.2.7.Final</version.org.jboss.resteasy>
+    <version.org.jboss.resteasy>6.2.12.Final</version.org.jboss.resteasy>
     <version.org.keycloak>26.1.0</version.org.keycloak>
     <!-- It seems that the confluent kafka cannot replace wurstmeister/kafka so easily. See FAI-729 -->
     <version.wurstmeister.kafka>2.12-2.2.1</version.wurstmeister.kafka>
-    <version.org.mongo>4.11.1</version.org.mongo>
-    <version.org.mongo-image>4.4.14</version.org.mongo-image>
+    <version.org.mongo>5.3.1</version.org.mongo>
+    <version.org.mongo-image>5.0.31</version.org.mongo-image>
     <version.org.mozilla.rhino>1.7.13</version.org.mozilla.rhino>
     <version.org.redis>2.0.4</version.org.redis>
     <version.org.postgres>15.9-alpine3.20</version.org.postgres>
     <!-- we align to version used by quarkus -->
     <version.org.apache.avro>1.12.0</version.org.apache.avro>
     <version.org.assertj>3.27.3</version.org.assertj>
-    <version.org.glassfish.jaxb>4.0.4</version.org.glassfish.jaxb>
+    <version.org.glassfish.jaxb>4.0.5</version.org.glassfish.jaxb>
     <version.org.json-unit-assertj>2.9.0</version.org.json-unit-assertj>
     <version.org.hamcrest>2.2</version.org.hamcrest> <!-- else old version coming from Mockito wins and breaks tests -->
     <version.org.junit>4.13.2</version.org.junit>
@@ -138,7 +138,7 @@
     <version.org.xmlunit-core>2.10.0</version.org.xmlunit-core>
     <version.io.rest-assured>5.5.0</version.io.rest-assured>
 
-    <version.net.byte-buddy>1.14.18</version.net.byte-buddy>
+    <version.net.byte-buddy>1.15.11</version.net.byte-buddy>
 
     <version.org.mvel>2.5.2.Final</version.org.mvel>
     <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
@@ -158,7 +158,7 @@
     <version.black.ninia>4.2.0</version.black.ninia>
     <version.com.google.collections>1.0</version.com.google.collections>
     <version.com.google.guava>33.0.0-jre</version.com.google.guava>
-    <version.apache.commons.commons-compress>1.26.1</version.apache.commons.commons-compress>
+    <version.apache.commons.commons-compress>1.27.1</version.apache.commons.commons-compress>
   </properties>
 
   <dependencyManagement>
