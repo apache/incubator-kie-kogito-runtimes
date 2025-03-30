@@ -46,11 +46,6 @@
       <groupId>org.apache.kie.sonataflow</groupId>
       <artifactId>sonataflow-quarkus</artifactId>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>io.smallrye</groupId>-->
-<!--      <artifactId>smallrye-open-api-core</artifactId>-->
-<!--      <version>4.0.8</version>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>
