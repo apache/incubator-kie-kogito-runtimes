@@ -20,6 +20,7 @@ package org.kie.kogito.process.impl;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstanceManager;
@@ -78,7 +79,7 @@ public class AbstractProcessInstanceTest {
         KogitoProcessRuntime kogitoProcessRuntime = mock(KogitoProcessRuntime.class);
         when(pr.getKogitoProcessRuntime()).thenReturn(kogitoProcessRuntime);
         when(unitOfWorkManager.currentUnitOfWork()).thenReturn(unitOfWork);
-
+        when(wpi.getStringId()).thenReturn(UUID.randomUUID().toString());
         processInstance = new TestProcessInstance(process, new TestModel(), pr);
     }
 
@@ -86,7 +87,7 @@ public class AbstractProcessInstanceTest {
     public void testCreateProcessInstance() {
 
         assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_PENDING);
-        assertThat(processInstance.id()).isNull();
+        assertThat(processInstance.id()).isNotNull();
         assertThat(processInstance.businessKey()).isNull();
 
         verify(pim, never()).addProcessInstance(any());
@@ -99,7 +100,7 @@ public class AbstractProcessInstanceTest {
         processInstance.startFrom(NODE_ID);
 
         verify(nodeInstance).trigger(null, Node.CONNECTION_DEFAULT_TYPE);
-        verify(unitOfWork, times(2)).intercept(any());
+        verify(unitOfWork, times(4)).intercept(any());
     }
 
     @Test
@@ -109,7 +110,7 @@ public class AbstractProcessInstanceTest {
         processInstance.triggerNode(NODE_ID);
 
         verify(nodeInstance).trigger(null, Node.CONNECTION_DEFAULT_TYPE);
-        verify(unitOfWork).intercept(any());
+        verify(unitOfWork, times(2)).intercept(any());
     }
 
     private NodeInstance givenExistingNode(String nodeId) {
