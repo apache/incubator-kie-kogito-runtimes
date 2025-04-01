@@ -29,19 +29,8 @@ import org.kie.pmml.api.enums.FIELD_USAGE_TYPE;
 import org.kie.pmml.api.models.Interval;
 import org.kie.pmml.api.models.MiningField;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BigIntegerNode;
-import com.fasterxml.jackson.databind.node.DecimalNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.FloatNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.NumericNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ShortNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-
-import io.smallrye.openapi.runtime.io.JsonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.*;
 
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.BOOLEAN;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.DOUBLE;
@@ -62,7 +51,18 @@ public class PMMLOASUtils {
 
     public static final String INFINITY_SYMBOL = new String(Character.toString('\u221E').getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final JsonNodeFactory factory = JsonNodeFactory.instance;
+
     private PMMLOASUtils() {
+    }
+
+    public static ObjectNode objectNode() {
+        return factory.objectNode();
+    }
+
+    public static ArrayNode arrayNode() {
+        return factory.arrayNode();
     }
 
     public static boolean isRequired(MiningField toVerify) {
@@ -117,7 +117,7 @@ public class PMMLOASUtils {
                 typeFieldNode.set(MAXIMUM, getNumericNode(interval.getRightMargin()));
             }
         } else {
-            ArrayNode intervalsNode = JsonUtil.arrayNode();
+            ArrayNode intervalsNode = PMMLOASUtils.arrayNode();
             IntStream.range(0, intervals.size()).forEach(i -> {
                 Interval interval = intervals.get(i);
                 String leftMargin = interval.getLeftMargin() != null ? interval.getLeftMargin().toString() : "-" + INFINITY_SYMBOL;
@@ -131,7 +131,7 @@ public class PMMLOASUtils {
 
     public static void addToSetNode(String fieldName, DATA_TYPE dataType, List<String> allowedValues, ObjectNode setNode) {
         final ObjectNode propertiesNode = (ObjectNode) setNode.get(PROPERTIES);
-        final ObjectNode typeFieldNode = JsonUtil.objectNode();
+        final ObjectNode typeFieldNode = PMMLOASUtils.objectNode();
         String mappedType = getMappedType(dataType);
         typeFieldNode.set(TYPE, new TextNode(mappedType));
         String mappedFormat = getMappedFormat(dataType);
@@ -147,7 +147,7 @@ public class PMMLOASUtils {
 
     public static ArrayNode conditionallyCreateEnumNode(final ObjectNode parent) {
         if (parent.get(ENUM) == null) {
-            ArrayNode availableValues = JsonUtil.arrayNode();
+            ArrayNode availableValues = PMMLOASUtils.arrayNode();
             parent.set(ENUM, availableValues);
         }
         return (ArrayNode) parent.get(ENUM);
@@ -160,9 +160,9 @@ public class PMMLOASUtils {
     }
 
     public static ObjectNode createSetNode() {
-        final ObjectNode toReturn = JsonUtil.objectNode();
+        final ObjectNode toReturn = PMMLOASUtils.objectNode();
         toReturn.set(TYPE, new TextNode(OBJECT));
-        final ObjectNode propertiesNode = JsonUtil.objectNode();
+        final ObjectNode propertiesNode = PMMLOASUtils.objectNode();
         toReturn.set(PROPERTIES, propertiesNode);
         return toReturn;
     }
