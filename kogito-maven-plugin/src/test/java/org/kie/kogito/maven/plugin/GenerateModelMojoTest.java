@@ -27,7 +27,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.junit5.InjectMojo;
 import org.apache.maven.plugin.testing.junit5.MojoTest;
 import org.drools.codegen.common.GeneratedFile;
-//import org.junit.jupiter.api.Test;
+// import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.manager.CompilerHelper;
 import org.kie.kogito.codegen.manager.GenerateModelHelper;
