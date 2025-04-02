@@ -122,7 +122,7 @@ public class DateTimeUtils extends TimeUtils {
             } else if (DateTimeUtils.isPeriod(periodIn)) {
                 // If period is specified as duration then delay variable carry start time information
                 OffsetDateTime startTime = OffsetDateTime.parse(delayIn, DateTimeFormatter.ISO_DATE_TIME);
-                period = Duration.parse(periodIn);
+                period = Duration.of(getMillis(periodIn), ChronoUnit.MILLIS);
                 startAtDelayDur = Duration.between(OffsetDateTime.now(), startTime);
             } else {
                 // Both delay and period are specified as start and end times
