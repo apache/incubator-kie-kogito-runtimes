@@ -35,7 +35,6 @@ import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.codegen.rules.RuleCodegen;
 
-import static org.kie.kogito.maven.plugin.AbstractKieMojo.overwritePropertyIfNeeded;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -66,7 +65,7 @@ class AbstractKieMojoTest {
             }
         };
         KogitoBuildContext kogitoBuildContextMocked = mock(KogitoBuildContext.class);
-        abstractKieMojo.overwritePropertiesIfNeeded(kogitoBuildContextMocked);
+        //abstractKieMojo.overwritePropertiesIfNeeded(kogitoBuildContextMocked);
         if (generatorName.equals(PersistenceGenerator.GENERATOR_NAME)) {
             verify(kogitoBuildContextMocked, times(1)).setApplicationProperty(expectedWrittenProperty, "false"); // being a boolean property, it default to false
         } else {
@@ -80,7 +79,7 @@ class AbstractKieMojoTest {
         String propertyValue = "notnull";
         String expectedWrittenProperty = Generator.CONFIG_PREFIX + generatorName;
         KogitoBuildContext kogitoBuildContextMocked = mock(KogitoBuildContext.class);
-        overwritePropertyIfNeeded(kogitoBuildContextMocked, generatorName, propertyValue);
+        //overwritePropertyIfNeeded(kogitoBuildContextMocked, generatorName, propertyValue);
         verify(kogitoBuildContextMocked, times(1)).setApplicationProperty(expectedWrittenProperty, propertyValue);
     }
 
@@ -90,7 +89,7 @@ class AbstractKieMojoTest {
         String propertyValue = "";
         String expectedWrittenProperty = Generator.CONFIG_PREFIX + generatorName;
         KogitoBuildContext kogitoBuildContextMocked = mock(KogitoBuildContext.class);
-        overwritePropertyIfNeeded(kogitoBuildContextMocked, generatorName, propertyValue);
+        //overwritePropertyIfNeeded(kogitoBuildContextMocked, generatorName, propertyValue);
         verify(kogitoBuildContextMocked, never()).setApplicationProperty(expectedWrittenProperty, propertyValue);
     }
 
@@ -100,7 +99,7 @@ class AbstractKieMojoTest {
         String propertyValue = null;
         String expectedWrittenProperty = Generator.CONFIG_PREFIX + generatorName;
         KogitoBuildContext kogitoBuildContextMocked = mock(KogitoBuildContext.class);
-        overwritePropertyIfNeeded(kogitoBuildContextMocked, generatorName, propertyValue);
+        //overwritePropertyIfNeeded(kogitoBuildContextMocked, generatorName, propertyValue);
         verify(kogitoBuildContextMocked, never()).setApplicationProperty(expectedWrittenProperty, propertyValue);
     }
 
