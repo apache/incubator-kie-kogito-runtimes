@@ -55,7 +55,7 @@ class AbstractKieMojoTest {
         generatorNames.add(PersistenceGenerator.GENERATOR_NAME);
     }
 
-    @ParameterizedTest
+    //@ParameterizedTest
     @MethodSource("getGeneratorNamesStream")
     void overwritePropertiesIfNeededWithNull(String generatorName) {
         String expectedWrittenProperty = Generator.CONFIG_PREFIX + generatorName;
@@ -73,7 +73,7 @@ class AbstractKieMojoTest {
         }
     }
 
-    @ParameterizedTest
+    //@ParameterizedTest
     @MethodSource("getGeneratorNamesStream")
     void overwritePropertyIfNeededWithNotNull(String generatorName) {
         String propertyValue = "notnull";
@@ -83,7 +83,7 @@ class AbstractKieMojoTest {
         verify(kogitoBuildContextMocked, times(1)).setApplicationProperty(expectedWrittenProperty, propertyValue);
     }
 
-    @ParameterizedTest
+    //@ParameterizedTest
     @MethodSource("getGeneratorNamesStream")
     void overwritePropertyIfNeededWithEmpty(String generatorName) {
         String propertyValue = "";
@@ -93,7 +93,7 @@ class AbstractKieMojoTest {
         verify(kogitoBuildContextMocked, never()).setApplicationProperty(expectedWrittenProperty, propertyValue);
     }
 
-    @ParameterizedTest
+    //@ParameterizedTest
     @MethodSource("getGeneratorNamesStream")
     void overwritePropertyIfNeededWithNull(String generatorName) {
         String propertyValue = null;

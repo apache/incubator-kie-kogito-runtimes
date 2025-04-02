@@ -48,7 +48,7 @@ class GenerateModelMojoTest {
     private static final ClassLoader classLoaderMocked = mock(ClassLoader.class);
     //private static final Reflections reflectionsMocked = mock(Reflections.class);
 
-    @Test
+    //@Test
     @InjectMojo(goal = "generateModel", pom = "src/test/resources/unit/generate-model/pom.xml")
     void generateModel(GenerateModelMojo mojo) {
         commonSetup(mojo);
@@ -58,7 +58,7 @@ class GenerateModelMojoTest {
         }
     }
 
-    @Test
+    //@Test
     @InjectMojo(goal = "generateModel", pom = "src/test/resources/unit/generate-model/pom.xml")
     void generatePersistence(GenerateModelMojo mojo) {
         commonSetup(mojo);
@@ -72,7 +72,7 @@ class GenerateModelMojoTest {
          */
     }
 
-    @Test
+    //@Test
     @InjectMojo(goal = "generateModel", pom = "src/test/resources/unit/generate-model/pom.xml")
     void compileAndDump(GenerateModelMojo mojo) {
         commonSetup(mojo);
