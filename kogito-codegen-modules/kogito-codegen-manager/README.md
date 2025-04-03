@@ -18,3 +18,13 @@
   -->
 
 # Kogito Codegen Manager
+
+The aim of this module is to be consumed by a build automation and project management tool such as Maven or Gradle.
+
+This module manages all the required logic to actually execute the KIE assets Generators defined in the other `kogito-codegen-*`
+, togheter with the glue code that perform the following actions:
+- It generates the CodeGen classes based on the given Apache KIE assets (BPMN, DMN, DRL, PMML), using its specific Generator;
+- It writes the CodeGen classes;
+- It compiles the CodeGen classes, based on the Java version used in the user Apache KIE project
+- It writes the compiled CodeGen classes;
+
