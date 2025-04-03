@@ -35,9 +35,9 @@ public class ProcessInstanceAtomicLockStrategy implements ProcessInstanceLockStr
 
     @Override
     public <T> T executeOperation(String processInstanceId, WorkflowAtomicExecutor<T> executor) {
+        ReentrantLock lock = locks.computeIfAbsent(processInstanceId, pi -> new ReentrantLock());
+        boolean alreadyAdquired = lock.isHeldByCurrentThread();
         try {
-            ReentrantLock lock = locks.computeIfAbsent(processInstanceId, pi -> new ReentrantLock());
-            boolean alreadyAdquired = lock.isHeldByCurrentThread();
             if (!alreadyAdquired) {
                 LOG.debug("about to adquire lock for {}", processInstanceId);
             }
@@ -47,12 +47,12 @@ public class ProcessInstanceAtomicLockStrategy implements ProcessInstanceLockStr
             }
             return executor.execute();
         } finally {
-            ReentrantLock lock = locks.get(processInstanceId);
+            boolean queued = lock.hasQueuedThreads();
             lock.unlock();
-            if (!lock.isHeldByCurrentThread()) {
+            if (!alreadyAdquired) {
                 LOG.debug("lock realeased for {}", processInstanceId);
             }
-            if (!lock.hasQueuedThreads()) {
+            if (!queued) {
                 LOG.debug("Removing lock {} from list as non is waiting for it by {}", lock, processInstanceId);
                 locks.remove(processInstanceId);
             }

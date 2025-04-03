@@ -18,8 +18,6 @@
  */
 package org.kie.kogito.codegen.tests;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,13 +44,8 @@ public class GatewayIT extends AbstractCodegenIT {
 
     @Test
     public void testEventBasedGatewayWithData() throws Exception {
-        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("gateway/EventBasedSplit.bpmn2"));
-        Application app = generateCode(resourcesTypeMap);
+        Application app = generateCodeProcessesOnly("gateway/EventBasedSplit.bpmn2");
         assertThat(app).isNotNull();
-
-        // we wired user tasks and processes
-        app.config().get(UserTaskConfig.class).userTaskEventListeners().listeners().add(new UserTaskKogitoWorkItemHandlerProcessListener(app.get(Processes.class)));
 
         Process<? extends Model> p = app.get(Processes.class).processById("EventBasedSplit");
 
@@ -94,6 +87,8 @@ public class GatewayIT extends AbstractCodegenIT {
     public void testMultipleJoin() throws Exception {
         Application app = generateCodeProcessesOnly("gateway/MultipleJoin.bpmn2");
         assertThat(app).isNotNull();
+        // we wired user tasks and processes
+        app.config().get(UserTaskConfig.class).userTaskEventListeners().listeners().add(new UserTaskKogitoWorkItemHandlerProcessListener(app.get(Processes.class)));
 
         Process<? extends Model> p = app.get(Processes.class).processById("hiring_join");
 
