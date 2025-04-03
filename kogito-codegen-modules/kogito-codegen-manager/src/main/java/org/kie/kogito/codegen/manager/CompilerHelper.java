@@ -113,11 +113,11 @@ public class CompilerHelper {
         }
     }
 
-    private static GeneratedFileWriter getGeneratedFileWriter(File baseDir) {
+    static GeneratedFileWriter getGeneratedFileWriter(File baseDir) {
         return GENERATED_FILE_WRITER_BUILDER.build(Path.of(baseDir.getAbsolutePath()));
     }
 
-    private static JavaCompilerSettings getJavaCompilerSettings(List<String> runtimeClassPathElements,
+    static JavaCompilerSettings getJavaCompilerSettings(List<String> runtimeClassPathElements,
             String sourceEncoding,
             String sourceVersion,
             String targetVersion) {

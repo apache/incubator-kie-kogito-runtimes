@@ -36,8 +36,36 @@
         <java.module.name>org.kie.kogito.codegen.manager</java.module.name>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.kie.kogito</groupId>
+                <artifactId>kogito-kie-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <!-- Internal dependencies -->
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-codegen-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-model-codegen</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-util</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-api</artifactId>
@@ -62,7 +90,6 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-codegen-processes</artifactId>
         </dependency>
-
 
         <!-- 3rd party dependencies -->
         <dependency>

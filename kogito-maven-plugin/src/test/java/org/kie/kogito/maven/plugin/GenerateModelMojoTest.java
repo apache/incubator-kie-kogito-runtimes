@@ -27,13 +27,13 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.junit5.InjectMojo;
 import org.apache.maven.plugin.testing.junit5.MojoTest;
 import org.drools.codegen.common.GeneratedFile;
-// import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.manager.CompilerHelper;
 import org.kie.kogito.codegen.manager.GenerateModelHelper;
+import org.kie.kogito.codegen.manager.processes.PersistenceGenerationHelper;
 import org.mockito.MockedStatic;
 
-// import org.reflections.Reflections;
 import static org.assertj.core.api.Fail.fail;
 import static org.kie.kogito.codegen.manager.CompilerHelper.RESOURCES;
 import static org.kie.kogito.codegen.manager.CompilerHelper.SOURCES;
@@ -46,9 +46,8 @@ class GenerateModelMojoTest {
 
     private static final KogitoBuildContext kogitoBuildContextMocked = mock(KogitoBuildContext.class);
     private static final ClassLoader classLoaderMocked = mock(ClassLoader.class);
-    //private static final Reflections reflectionsMocked = mock(Reflections.class);
 
-    //@Test
+    @Test
     @InjectMojo(goal = "generateModel", pom = "src/test/resources/unit/generate-model/pom.xml")
     void generateModel(GenerateModelMojo mojo) {
         commonSetup(mojo);
@@ -58,18 +57,16 @@ class GenerateModelMojoTest {
         }
     }
 
-    //@Test
+    @Test
     @InjectMojo(goal = "generateModel", pom = "src/test/resources/unit/generate-model/pom.xml")
     void generatePersistence(GenerateModelMojo mojo) {
         commonSetup(mojo);
-        /*
-         * try (MockedStatic<PersistenceGenerationHelper> persistenceGenerationHelperMockedStatic = mockStatic(PersistenceGenerationHelper.class)) {
-         * //mojo.generatePersistence(kogitoBuildContextMocked, reflectionsMocked);
-         * //persistenceGenerationHelperMockedStatic.verify(() -> PersistenceGenerationHelper.generatePersistenceFiles(kogitoBuildContextMocked, reflectionsMocked, mojo.schemaVersion), times(1));
-         * } catch (MojoExecutionException e) {
-         * fail(e.getMessage(), e);
-         * }
-         */
+        try (MockedStatic<PersistenceGenerationHelper> persistenceGenerationHelperMockedStatic = mockStatic(PersistenceGenerationHelper.class)) {
+            mojo.generatePersistence(kogitoBuildContextMocked, classLoaderMocked);
+            persistenceGenerationHelperMockedStatic.verify(() -> PersistenceGenerationHelper.generatePersistenceFiles(kogitoBuildContextMocked, classLoaderMocked, mojo.schemaVersion), times(1));
+        } catch (Exception e) {
+            fail(e.getMessage(), e);
+        }
     }
 
     //@Test
