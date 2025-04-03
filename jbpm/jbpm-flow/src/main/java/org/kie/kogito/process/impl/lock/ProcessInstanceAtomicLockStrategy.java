@@ -47,11 +47,14 @@ public class ProcessInstanceAtomicLockStrategy implements ProcessInstanceLockStr
             }
             return executor.execute();
         } finally {
-
             ReentrantLock lock = locks.get(processInstanceId);
             lock.unlock();
             if (!lock.isHeldByCurrentThread()) {
                 LOG.debug("lock realeased for {}", processInstanceId);
+            }
+            if (!lock.hasQueuedThreads()) {
+                LOG.debug("Removing lock {} from list as non is waiting for it by {}", lock, processInstanceId);
+                locks.remove(processInstanceId);
             }
         }
 

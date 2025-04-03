@@ -74,7 +74,6 @@ import org.kie.kogito.process.flexible.Milestone;
 import org.kie.kogito.process.impl.lock.ProcessInstanceAtomicLockStrategy;
 import org.kie.kogito.process.impl.lock.ProcessInstanceLockStrategy;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
-import org.kie.kogito.uow.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -301,10 +300,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     }
 
-    private UnitOfWork getUnitOfWork() {
-        return getProcessRuntime().getUnitOfWorkManager().currentUnitOfWork();
-    }
-
     @Override
     public void abort() {
         processInstanceLockStrategy.executeOperation(id, () -> {
@@ -450,7 +445,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void triggerNode(String nodeId) {
-        processInstanceLockStrategy.executeOperation(id,  () -> {
+        processInstanceLockStrategy.executeOperation(id, () -> {
             WorkflowProcessInstance wfpi = processInstance();
             RuleFlowProcess rfp = ((RuleFlowProcess) wfpi.getProcess());
 
@@ -469,7 +464,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void cancelNodeInstance(String nodeInstanceId) {
-        processInstanceLockStrategy.executeOperation(id,  () -> {
+        processInstanceLockStrategy.executeOperation(id, () -> {
             NodeInstance nodeInstance = processInstance()
                     .getNodeInstances(true)
                     .stream()
@@ -485,7 +480,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void retriggerNodeInstance(String nodeInstanceId) {
-        processInstanceLockStrategy.executeOperation(id,  () -> {
+        processInstanceLockStrategy.executeOperation(id, () -> {
             NodeInstance nodeInstance = processInstance()
                     .getNodeInstances(true)
                     .stream()
@@ -512,14 +507,14 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public Collection<KogitoNodeInstance> findNodes(Predicate<KogitoNodeInstance> predicate) {
-        return processInstanceLockStrategy.executeOperation(id,  () -> {
+        return processInstanceLockStrategy.executeOperation(id, () -> {
             return processInstance().getKogitoNodeInstances(predicate, true);
         });
     }
 
     @Override
     public WorkItem workItem(String workItemId, Policy... policies) {
-        return processInstanceLockStrategy.executeOperation(id,  () -> {
+        return processInstanceLockStrategy.executeOperation(id, () -> {
             return processInstance().getNodeInstances(true).stream()
                     .filter(WorkItemNodeInstance.class::isInstance)
                     .map(WorkItemNodeInstance.class::cast)
@@ -543,7 +538,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public List<WorkItem> workItems(Predicate<KogitoNodeInstance> p, Policy... policies) {
-        return processInstanceLockStrategy.executeOperation(id,  () -> {
+        return processInstanceLockStrategy.executeOperation(id, () -> {
             return processInstance().getNodeInstances(true).stream()
                     .filter(p::test)
                     .filter(WorkItemNodeInstance.class::isInstance)
@@ -581,7 +576,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void completeWorkItem(String id, Map<String, Object> variables, Policy... policies) {
-        processInstanceLockStrategy.executeOperation(id,  () -> {
+        processInstanceLockStrategy.executeOperation(id, () -> {
             syncWorkItems();
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().completeWorkItem(id, variables, policies);
             removeOnFinish();
@@ -591,7 +586,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public <R> R updateWorkItem(String id, Function<KogitoWorkItem, R> updater, Policy... policies) {
-        return processInstanceLockStrategy.executeOperation(id,  () -> {
+        return processInstanceLockStrategy.executeOperation(id, () -> {
             syncWorkItems();
             R result = getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().updateWorkItem(id, updater, policies);
             ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
@@ -601,7 +596,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void abortWorkItem(String id, Policy... policies) {
-        processInstanceLockStrategy.executeOperation(id,  () -> {
+        processInstanceLockStrategy.executeOperation(id, () -> {
             syncWorkItems();
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().abortWorkItem(id, policies);
             removeOnFinish();
@@ -611,7 +606,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void transitionWorkItem(String id, WorkItemTransition transition) {
-        processInstanceLockStrategy.executeOperation(id,  () -> {
+        processInstanceLockStrategy.executeOperation(id, () -> {
             syncWorkItems();
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().transitionWorkItem(id, transition);
             removeOnFinish();
@@ -629,21 +624,21 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public Set<EventDescription<?>> events() {
-        return processInstanceLockStrategy.executeOperation(id,  () -> {
+        return processInstanceLockStrategy.executeOperation(id, () -> {
             return processInstance().getEventDescriptions();
         });
     }
 
     @Override
     public Collection<Milestone> milestones() {
-        return processInstanceLockStrategy.executeOperation(id,  () -> {
+        return processInstanceLockStrategy.executeOperation(id, () -> {
             return processInstance.milestones();
         });
     }
 
     @Override
     public Collection<AdHocFragment> adHocFragments() {
-        return processInstanceLockStrategy.executeOperation(id,  () -> {
+        return processInstanceLockStrategy.executeOperation(id, () -> {
             return processInstance.adHocFragments();
         });
     }
