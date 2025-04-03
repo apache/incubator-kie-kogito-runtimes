@@ -23,9 +23,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import io.fabric8.knative.internal.pkg.apis.duck.v1.CloudEventOverrides;
-import io.fabric8.knative.internal.pkg.apis.duck.v1.Destination;
-import io.fabric8.knative.internal.pkg.tracker.Reference;
+import io.fabric8.knative.duck.v1.CloudEventOverrides;
+import io.fabric8.knative.duck.v1.Destination;
+import io.fabric8.knative.pkg.tracker.Reference;
 import io.fabric8.kubernetes.api.model.KubernetesResource;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
