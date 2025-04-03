@@ -34,6 +34,7 @@ import org.kie.api.definition.process.Process;
 import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.uow.UnitOfWork;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.mockito.Mock;
@@ -60,6 +61,9 @@ public class AbstractProcessInstanceTest {
     @Mock
     private UnitOfWork unitOfWork;
 
+    @Mock
+    private MutableProcessInstances instances;
+
     private AbstractProcessInstance<TestModel> processInstance;
 
     @SuppressWarnings("unchecked")
@@ -70,6 +74,7 @@ public class AbstractProcessInstanceTest {
         AbstractProcess<TestModel> process = mock(AbstractProcess.class);
         Process piProcess = mock(Process.class);
         when(process.process()).thenReturn(piProcess);
+        when(process.instances()).thenReturn(instances);
         when(process.get()).thenReturn(piProcess);
         InternalProcessRuntime pr = mock(InternalProcessRuntime.class);
         when(pr.createProcessInstance(any(), any(), any())).thenReturn(wpi);
@@ -100,7 +105,7 @@ public class AbstractProcessInstanceTest {
         processInstance.startFrom(NODE_ID);
 
         verify(nodeInstance).trigger(null, Node.CONNECTION_DEFAULT_TYPE);
-        verify(unitOfWork, times(4)).intercept(any());
+        verify(unitOfWork, times(0)).intercept(any());
     }
 
     @Test
@@ -110,7 +115,7 @@ public class AbstractProcessInstanceTest {
         processInstance.triggerNode(NODE_ID);
 
         verify(nodeInstance).trigger(null, Node.CONNECTION_DEFAULT_TYPE);
-        verify(unitOfWork, times(2)).intercept(any());
+        verify(unitOfWork, times(0)).intercept(any());
     }
 
     private NodeInstance givenExistingNode(String nodeId) {

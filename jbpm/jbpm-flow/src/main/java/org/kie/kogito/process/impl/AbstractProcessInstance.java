@@ -425,9 +425,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         processInstance.setStartDate(new Date());
         processInstance.setState(STATE_ACTIVE);
         getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
-        ((MutableProcessInstances<T>) process.instances()).create(id, this);
 
         this.id = processInstance.getStringId();
+        ((MutableProcessInstances<T>) process.instances()).create(id, this);
+
         addCompletionEventListener();
         if (referenceId != null) {
             processInstance.setReferenceId(referenceId);
@@ -457,7 +458,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             }
             nodeInstance.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
 
-            ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
+            ((MutableProcessInstances<T>) process.instances()).update(id, this);
             return null;
         });
     }
