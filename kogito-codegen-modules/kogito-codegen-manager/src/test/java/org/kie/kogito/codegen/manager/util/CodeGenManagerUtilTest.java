@@ -98,13 +98,4 @@ class CodeGenManagerUtilTest {
     static Stream<String> getGeneratorNamesStream() {
         return generatorNames.stream();
     }
-
-    static CodeGenManagerUtil.ProjectParameters getProjectParameters() {
-        return new CodeGenManagerUtil.ProjectParameters(CodeGenManagerUtil.Framework.QUARKUS,
-                "false",
-                "false",
-                "false",
-                "false",
-                false);
-    }
 }
