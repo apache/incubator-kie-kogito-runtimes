@@ -69,7 +69,7 @@ class GenerateModelMojoTest {
         }
     }
 
-    //@Test
+    @Test
     @InjectMojo(goal = "generateModel", pom = "src/test/resources/unit/generate-model/pom.xml")
     void compileAndDump(GenerateModelMojo mojo) {
         commonSetup(mojo);
@@ -79,7 +79,7 @@ class GenerateModelMojoTest {
             Map<String, Collection<GeneratedFile>> generatedFiles = Map.of(SOURCES, generatedSources, RESOURCES, generatedResources);
             mojo.compileAndDump(generatedFiles, classLoaderMocked);
             compilerHelperMockedStatic.verify(
-                    () -> CompilerHelper.compileAndDumpGeneratedSources(generatedSources, classLoaderMocked, mojo.project.getRuntimeClasspathElements(), mojo.baseDir, "UTF-8", "17", "17"),
+                    () -> CompilerHelper.compileAndDumpGeneratedSources(generatedSources, classLoaderMocked, mojo.project.getRuntimeClasspathElements(), mojo.baseDir, "UTF-8", "1.8", "1.8"),
                     times(1));
             compilerHelperMockedStatic.verify(() -> CompilerHelper.dumpResources(generatedResources, mojo.baseDir), times(1));
         } catch (MojoExecutionException e) {
@@ -91,5 +91,6 @@ class GenerateModelMojoTest {
         mojo.outputDirectory = new File(mojo.project.getModel().getBuild().getOutputDirectory());
         mojo.baseDir = mojo.project.getBasedir();
         mojo.projectBaseDir = mojo.project.getBasedir();
+        mojo.projectSourceEncoding = "UTF-8";
     }
 }
