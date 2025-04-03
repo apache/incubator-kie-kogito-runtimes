@@ -30,7 +30,6 @@ import org.drools.codegen.common.AppPaths;
 import org.drools.codegen.common.GeneratedFileWriter;
 import org.kie.kogito.codegen.manager.util.CodeGenManagerUtil;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
-import org.reflections.Reflections;
 
 public abstract class AbstractKieMojo extends AbstractMojo {
 
@@ -68,8 +67,6 @@ public abstract class AbstractKieMojo extends AbstractMojo {
 
     @Parameter(property = "kogito.codegen.predictions")
     protected String generatePredictions;
-
-    private Reflections reflections;
 
     protected void setSystemProperties(Map<String, String> properties) {
         if (properties != null) {
