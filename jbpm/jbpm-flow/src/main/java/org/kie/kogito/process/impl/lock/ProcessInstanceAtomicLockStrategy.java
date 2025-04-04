@@ -39,22 +39,17 @@ public class ProcessInstanceAtomicLockStrategy implements ProcessInstanceLockStr
         boolean alreadyAdquired = lock.isHeldByCurrentThread();
         try {
             if (!alreadyAdquired) {
-                LOG.debug("about to adquire lock for {}", processInstanceId);
+                LOG.info("about to adquire lock for {}", processInstanceId);
             }
             lock.lock();
             if (!alreadyAdquired) {
-                LOG.debug("lock adquired for {}", processInstanceId);
+                LOG.info("lock adquired for {}", processInstanceId);
             }
             return executor.execute();
         } finally {
-            boolean queued = lock.hasQueuedThreads();
             lock.unlock();
             if (!alreadyAdquired) {
-                LOG.debug("lock realeased for {}", processInstanceId);
-            }
-            if (!queued) {
-                LOG.debug("Removing lock {} from list as non is waiting for it by {}", lock, processInstanceId);
-                locks.remove(processInstanceId);
+                LOG.info("lock realeased for {}", processInstanceId);
             }
         }
 
