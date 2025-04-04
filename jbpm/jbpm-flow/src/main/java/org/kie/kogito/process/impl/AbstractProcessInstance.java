@@ -430,7 +430,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
 
             this.id = processInstance.getStringId();
-            ((MutableProcessInstances<T>) process.instances()).create(id, this);
 
             addCompletionEventListener();
             if (referenceId != null) {
@@ -440,11 +439,13 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 this.processInstance.setHeaders(headers);
             }
 
-            triggerNode(nodeId);
+            internalTriggerNode(nodeId);
+
             unbind(variables, processInstance.getVariables());
-            if (processInstance != null) {
+            if (processInstance() != null) {
                 this.status = processInstance.getState();
             }
+            ((MutableProcessInstances<T>) process.instances()).create(id, this);
             return null;
         });
     }
@@ -452,20 +453,23 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void triggerNode(String nodeId) {
         processInstanceLockStrategy.executeOperation(id, () -> {
-            WorkflowProcessInstance wfpi = processInstance();
-            RuleFlowProcess rfp = ((RuleFlowProcess) wfpi.getProcess());
-
-            // we avoid create containers incorrectly
-            NodeInstance nodeInstance = wfpi.getNodeByPredicate(rfp,
-                    ni -> Objects.equals(nodeId, ni.getName()) || Objects.equals(nodeId, ni.getId().toExternalFormat()));
-            if (nodeInstance == null) {
-                throw new NodeNotFoundException(this.id, nodeId);
-            }
-            nodeInstance.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
-
+            internalTriggerNode(nodeId);
             ((MutableProcessInstances<T>) process.instances()).update(id, this);
             return null;
         });
+    }
+
+    private void internalTriggerNode(String nodeId) {
+        WorkflowProcessInstance wfpi = processInstance();
+        RuleFlowProcess rfp = ((RuleFlowProcess) wfpi.getProcess());
+
+        // we avoid create containers incorrectly
+        NodeInstance nodeInstance = wfpi.getNodeByPredicate(rfp,
+                ni -> Objects.equals(nodeId, ni.getName()) || Objects.equals(nodeId, ni.getId().toExternalFormat()));
+        if (nodeInstance == null) {
+            throw new NodeNotFoundException(this.id, nodeId);
+        }
+        nodeInstance.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
     }
 
     @Override
