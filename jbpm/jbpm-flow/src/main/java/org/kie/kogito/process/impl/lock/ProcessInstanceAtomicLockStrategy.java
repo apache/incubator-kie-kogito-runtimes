@@ -27,40 +27,91 @@ import org.slf4j.LoggerFactory;
 
 public class ProcessInstanceAtomicLockStrategy implements ProcessInstanceLockStrategy {
 
+    private class ProcessInstanceLockHolder {
+        Integer counter;
+        ReentrantLock lock;
+
+        public ProcessInstanceLockHolder() {
+            counter = 0;
+            lock = new ReentrantLock();
+        }
+
+        void lock() {
+            lock.lock();
+        }
+
+        void unlock() {
+            lock.unlock();
+        }
+
+        boolean isReferenced() {
+            return counter <= 0;
+        }
+
+        boolean isHeldByCurrentThread() {
+            return lock.isHeldByCurrentThread();
+        }
+
+        public void addReference() {
+            counter++;
+        }
+
+        public void removeReference() {
+            counter--;
+        }
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(ProcessInstanceAtomicLockStrategy.class);
 
     private static ProcessInstanceAtomicLockStrategy INSTANCE;
 
-    private Map<String, ReentrantLock> locks = new ConcurrentHashMap<>();
+    private Map<String, ProcessInstanceLockHolder> locks = new ConcurrentHashMap<>();
 
     @Override
     public <T> T executeOperation(String processInstanceId, WorkflowAtomicExecutor<T> executor) {
-        ReentrantLock lock = locks.computeIfAbsent(processInstanceId, pi -> {
-            ReentrantLock newLock = new ReentrantLock();
-            LOG.info("Creating lock {} from list as none is waiting for it by {}", newLock, processInstanceId);
-            return newLock;
+        // This is a bit tricky. To avoid resource memory leak of the reentrant lock and proper reuse we need to compute how many times
+        // the lock has being referenced. We avoid that way to compute incorrectly when to release it.
+        // compute and compute if present are thread safe and atomic to the bucket being computed meaning that the creation and obtaining this will rise
+        // the proper counter
+
+        ProcessInstanceLockHolder processInstanceLockHolder = locks.compute(processInstanceId, (pid, holder) -> {
+            ProcessInstanceLockHolder newHolder = holder;
+            if (newHolder == null) {
+                newHolder = new ProcessInstanceLockHolder();
+            }
+            newHolder.addReference();
+            LOG.info("Creating lock {} from list as none is waiting for it by {}", newHolder.lock, pid);
+            return newHolder;
         });
-        boolean alreadyAdquired = lock.isHeldByCurrentThread();
+
+        // at this points this is a safe ask as if we invoked prior to this point the hold it will always return
+        // properly
+        boolean alreadyAdquired = processInstanceLockHolder.isHeldByCurrentThread();
         try {
             if (!alreadyAdquired) {
                 LOG.info("About to adquire lock for {}", processInstanceId);
             }
-            lock.lock();
+            processInstanceLockHolder.lock();
             if (!alreadyAdquired) {
                 LOG.info("Lock adquired for {}", processInstanceId);
             }
             return executor.execute();
         } finally {
-            lock.unlock();
+            processInstanceLockHolder.unlock();
             if (!alreadyAdquired) {
                 LOG.info("Lock realeased for {}", processInstanceId);
             }
 
-            boolean queued = lock.hasQueuedThreads();
-            if (!queued) {
-                LOG.info("Removing lock {} from list as none is waiting for it by {}", lock, processInstanceId);
-                locks.remove(processInstanceId);
-            }
+            // evaluate atomically if the lock is still in used before removing it.
+            locks.computeIfPresent(processInstanceId, (pid, holder) -> {
+                holder.removeReference();
+                if (holder.isReferenced()) {
+                    return holder;
+                } else {
+                    LOG.info("Removing lock {} from list as none is waiting for it by {}", holder.lock, pid);
+                    return null;
+                }
+            });
         }
 
     }
