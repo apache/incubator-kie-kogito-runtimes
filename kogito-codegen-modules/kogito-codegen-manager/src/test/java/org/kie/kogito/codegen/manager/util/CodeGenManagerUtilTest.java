@@ -18,6 +18,10 @@
  */
 package org.kie.kogito.codegen.manager.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.codegen.api.Generator;
@@ -28,10 +32,6 @@ import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.codegen.rules.RuleCodegen;
 import org.mockito.Mockito;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 
 class CodeGenManagerUtilTest {
 
