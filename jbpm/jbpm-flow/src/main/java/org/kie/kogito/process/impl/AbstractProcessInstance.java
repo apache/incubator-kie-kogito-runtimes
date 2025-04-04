@@ -271,33 +271,35 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void start(String trigger, String referenceId, Map<String, List<String>> headers) {
-        if (this.status != KogitoProcessInstance.STATE_PENDING) {
-            throw new IllegalStateException("Impossible to start process instance that already has started");
-        }
-        this.status = KogitoProcessInstance.STATE_ACTIVE;
+        processInstanceLockStrategy.executeOperation(id, () -> {
+            if (this.status != KogitoProcessInstance.STATE_PENDING) {
+                throw new IllegalStateException("Impossible to start process instance that already has started");
+            }
+            this.status = KogitoProcessInstance.STATE_ACTIVE;
 
-        if (referenceId != null) {
-            processInstance.setReferenceId(referenceId);
-        }
+            if (referenceId != null) {
+                processInstance.setReferenceId(referenceId);
+            }
 
-        if (headers != null) {
-            this.processInstance.setHeaders(headers);
-        }
+            if (headers != null) {
+                this.processInstance.setHeaders(headers);
+            }
 
-        getProcessRuntime().getProcessInstanceManager().setLock(((MutableProcessInstances<T>) process.instances()).lock());
-        getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
-        this.id = processInstance.getStringId();
-        addCompletionEventListener();
-        ((MutableProcessInstances<T>) process.instances()).create(id, this);
-        KogitoProcessInstance kogitoProcessInstance = getProcessRuntime().getKogitoProcessRuntime().startProcessInstance(this.id, trigger);
-        if (kogitoProcessInstance.getState() != STATE_ABORTED && kogitoProcessInstance.getState() != STATE_COMPLETED) {
-            ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
-        }
-        unbind(variables, kogitoProcessInstance.getVariables());
-        if (this.processInstance != null) {
-            this.status = this.processInstance.getState();
-        }
-
+            getProcessRuntime().getProcessInstanceManager().setLock(((MutableProcessInstances<T>) process.instances()).lock());
+            getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
+            this.id = processInstance.getStringId();
+            addCompletionEventListener();
+            ((MutableProcessInstances<T>) process.instances()).create(id, this);
+            KogitoProcessInstance kogitoProcessInstance = getProcessRuntime().getKogitoProcessRuntime().startProcessInstance(this.id, trigger);
+            if (kogitoProcessInstance.getState() != STATE_ABORTED && kogitoProcessInstance.getState() != STATE_COMPLETED) {
+                ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
+            }
+            unbind(variables, kogitoProcessInstance.getVariables());
+            if (this.processInstance != null) {
+                this.status = this.processInstance.getState();
+            }
+            return null;
+        });
     }
 
     @Override
@@ -422,26 +424,29 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void startFrom(String nodeId, String referenceId, Map<String, List<String>> headers) {
-        processInstance.setStartDate(new Date());
-        processInstance.setState(STATE_ACTIVE);
-        getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
+        processInstanceLockStrategy.executeOperation(id, () -> {
+            processInstance.setStartDate(new Date());
+            processInstance.setState(STATE_ACTIVE);
+            getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
 
-        this.id = processInstance.getStringId();
-        ((MutableProcessInstances<T>) process.instances()).create(id, this);
+            this.id = processInstance.getStringId();
+            ((MutableProcessInstances<T>) process.instances()).create(id, this);
 
-        addCompletionEventListener();
-        if (referenceId != null) {
-            processInstance.setReferenceId(referenceId);
-        }
-        if (headers != null) {
-            this.processInstance.setHeaders(headers);
-        }
+            addCompletionEventListener();
+            if (referenceId != null) {
+                processInstance.setReferenceId(referenceId);
+            }
+            if (headers != null) {
+                this.processInstance.setHeaders(headers);
+            }
 
-        triggerNode(nodeId);
-        unbind(variables, processInstance.getVariables());
-        if (processInstance != null) {
-            this.status = processInstance.getState();
-        }
+            triggerNode(nodeId);
+            unbind(variables, processInstance.getVariables());
+            if (processInstance != null) {
+                this.status = processInstance.getState();
+            }
+            return null;
+        });
     }
 
     @Override
