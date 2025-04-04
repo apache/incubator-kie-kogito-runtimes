@@ -42,7 +42,7 @@ public class ScaffoldMojo extends GenerateModelMojo {
     public void execute() throws MojoExecutionException {
         addCompileSourceRoots();
         ClassLoader projectClassLoader = projectClassLoader();
-        KogitoBuildContext kogitoBuildContext = discoverKogitoRuntimeContext(projectClassLoader);
+        KogitoBuildContext kogitoBuildContext = getKogitoBuildContext(projectClassLoader);
         generateModel(kogitoBuildContext);
     }
 

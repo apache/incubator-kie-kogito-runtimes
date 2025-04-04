@@ -107,6 +107,25 @@ public final class MojoUtil {
         return null;
     }
 
+    public static boolean hasClassOnClasspath(final MavenProject project, String className) {
+        try {
+            Set<Artifact> elements = project.getArtifacts();
+            URL[] urls = new URL[elements.size()];
+
+            int i = 0;
+            for (Artifact artifact : elements) {
+                urls[i] = artifact.getFile().toURI().toURL();
+                i++;
+            }
+            try (URLClassLoader cl = new URLClassLoader(urls)) {
+                cl.loadClass(className);
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private MojoUtil() {
         // Creating instances of util classes is forbidden.
     }
