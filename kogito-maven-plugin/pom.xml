@@ -68,6 +68,7 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-decisiontables</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
