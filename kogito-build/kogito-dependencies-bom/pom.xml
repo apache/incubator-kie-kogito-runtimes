@@ -82,6 +82,7 @@
     Kubernetes addons since they use a different version.
     -->
     <version.io.fabric8.kubernetes-client>7.1.0</version.io.fabric8.kubernetes-client>
+    <version.io.fabric8.openshift-mock>6.13.5</version.io.fabric8.openshift-mock>
     <version.io.micrometer>1.14.5</version.io.micrometer>
     <version.org.flywaydb>11.8.0</version.org.flywaydb>
     <version.org.postgresql>42.7.5</version.org.postgresql>
@@ -487,6 +488,13 @@
         <groupId>jakarta.persistence</groupId>
         <artifactId>jakarta.persistence-api</artifactId>
         <version>${version.jakarta.persistence-api}</version>
+      </dependency>
+
+      <!-- fabric8 - openshift mock server -->
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>openshift-server-mock</artifactId>
+        <version>${version.io.fabric8.openshift-mock}</version>
       </dependency>
 
       <dependency>
