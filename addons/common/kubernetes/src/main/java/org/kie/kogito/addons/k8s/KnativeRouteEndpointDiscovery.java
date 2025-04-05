@@ -62,7 +62,7 @@ public class KnativeRouteEndpointDiscovery implements EndpointDiscovery {
      */
     public final void adaptKnativeClientFromKube(final KubernetesClient kubernetesClient) {
         try {
-            if (kubernetesClient != null && kubernetesClient.isAdaptable(KnativeClient.class)) {
+            if (kubernetesClient != null && kubernetesClient.getClass().isAssignableFrom(KnativeClient.class)) {
                 knativeClient = kubernetesClient.adapt(KnativeClient.class);
             } else {
                 LOGGER.warn("Impossible to adapt Fabric8 Kubernetes Client to Knative Client. Discovery operations for Knative won't be performed.");
