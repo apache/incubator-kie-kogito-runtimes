@@ -40,7 +40,6 @@
 
   <modules>
     <module>integration-tests-springboot-processes-persistence-common</module>
-    <module>integration-tests-springboot-processes-infinispan</module>
     <module>integration-tests-springboot-processes-postgresql</module>
     <module>integration-tests-springboot-processes-mongodb</module>
     <module>integration-tests-springboot-processes-jdbc</module>
@@ -166,7 +165,6 @@
         <configuration>
           <classesDirectory>${project.build.outputDirectory}</classesDirectory>
           <systemPropertyVariables>
-            <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
             <container.image.kafka>${container.image.kafka}</container.image.kafka>
             <container.image.mongodb>${container.image.mongodb}</container.image.mongodb>
           </systemPropertyVariables>

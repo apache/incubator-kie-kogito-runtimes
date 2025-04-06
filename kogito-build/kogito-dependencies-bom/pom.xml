@@ -104,7 +104,6 @@
 
     <version.org.graalvm.nativeimage>23.1.2</version.org.graalvm.nativeimage>
 
-    <version.org.infinispan>15.0.11.Final</version.org.infinispan>
     <version.org.infinispan.protostream>5.0.8.Final</version.org.infinispan.protostream>
 
     <version.org.rocksdb>7.10.2</version.org.rocksdb>
@@ -745,26 +744,6 @@
         <version>${version.org.flywaydb}</version>
       </dependency>
       <!-- infinispan -->
-      <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-remote-query-client</artifactId>
-        <version>${version.org.infinispan}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-client-hotrod</artifactId>
-        <version>${version.org.infinispan}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-query-dsl</artifactId>
-        <version>${version.org.infinispan}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-commons</artifactId>
-        <version>${version.org.infinispan}</version>
-      </dependency>
       <dependency>
         <groupId>org.infinispan.protostream</groupId>
         <artifactId>protostream</artifactId>
