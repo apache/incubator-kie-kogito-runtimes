@@ -163,8 +163,6 @@ public class CodeGenManagerUtil {
         } catch (Exception e) {
         return false;
         }
-
-
     }
 
     /**
