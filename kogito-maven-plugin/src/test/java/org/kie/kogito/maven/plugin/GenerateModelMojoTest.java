@@ -79,7 +79,7 @@ class GenerateModelMojoTest {
             Map<String, Collection<GeneratedFile>> generatedFiles = Map.of(SOURCES, generatedSources, RESOURCES, generatedResources);
             mojo.compileAndDump(generatedFiles, classLoaderMocked);
             compilerHelperMockedStatic.verify(
-                    () -> CompilerHelper.compileAndDumpGeneratedSources(generatedSources, classLoaderMocked, mojo.project.getRuntimeClasspathElements(), mojo.baseDir, "UTF-8", "1.8", "1.8"),
+                    () -> CompilerHelper.compileAndDumpGeneratedSources(generatedSources, classLoaderMocked, mojo.project.getRuntimeClasspathElements(), mojo.baseDir, "UTF-8", "17", "17"),
                     times(1));
             compilerHelperMockedStatic.verify(() -> CompilerHelper.dumpResources(generatedResources, mojo.baseDir), times(1));
         } catch (MojoExecutionException e) {

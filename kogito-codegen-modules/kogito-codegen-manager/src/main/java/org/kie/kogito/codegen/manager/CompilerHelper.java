@@ -43,7 +43,7 @@ public class CompilerHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CompilerHelper.class);
 
-    private static final JavaCompiler JAVA_COMPILER = JavaCompilerFactory.loadCompiler(JavaConfiguration.CompilerType.NATIVE, "1.8");
+    private static final JavaCompiler JAVA_COMPILER = JavaCompilerFactory.loadCompiler(JavaConfiguration.CompilerType.NATIVE, "17");
     private static final GeneratedFileWriter.Builder GENERATED_FILE_WRITER_BUILDER = GeneratedFileWriter.builder("kogito", "kogito.codegen.resources.directory", "kogito.codegen.sources.directory");
     public static final String SOURCES = "SOURCES";
     public static final String RESOURCES = "RESOURCES";

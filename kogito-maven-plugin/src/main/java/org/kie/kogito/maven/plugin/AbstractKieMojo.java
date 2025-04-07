@@ -26,7 +26,6 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.drools.codegen.common.AppPaths;
 import org.drools.codegen.common.GeneratedFileWriter;
 import org.kie.kogito.codegen.manager.util.CodeGenManagerUtil;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
@@ -100,12 +99,6 @@ public abstract class AbstractKieMojo extends AbstractMojo {
 
     private boolean hasDependency(String dependency) {
         return project.getDependencies().stream().anyMatch(d -> d.getArtifactId().contains(dependency));
-    }
-
-    protected File getSourcesPath() {
-        // using runtime BT instead of static AppPaths.MAVEN to allow
-        // invocation from GRADLE
-        return Path.of(baseDir.getAbsolutePath(), AppPaths.BT.GENERATED_SOURCES_PATH.toString()).toFile();
     }
 
     protected GeneratedFileWriter getGeneratedFileWriter() {

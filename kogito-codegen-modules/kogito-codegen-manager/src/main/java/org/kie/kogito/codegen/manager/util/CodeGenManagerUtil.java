@@ -21,6 +21,7 @@ package org.kie.kogito.codegen.manager.util;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -153,6 +154,17 @@ public class CodeGenManagerUtil {
     static Predicate<Class<?>> classSubTypeAvailabilityResolver(ClassLoader projectClassLoader) {
         return clazz -> getReflections(projectClassLoader).getSubTypesOf(clazz).stream()
                 .anyMatch(c -> !c.isInterface() && !Modifier.isAbstract(c.getModifiers()));
+    }
+
+    public static boolean isClassNameInUrlClassLoader(URL[] urls, String className) {
+        try (URLClassLoader cl = new URLClassLoader(urls)) {
+            cl.loadClass(className);
+            return true;
+        } catch (Exception e) {
+        return false;
+        }
+
+
     }
 
     /**

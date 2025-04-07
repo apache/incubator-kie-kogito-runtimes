@@ -51,8 +51,4 @@ public class ScaffoldMojo extends GenerateModelMojo {
         return onDemand;
     }
 
-    @Override
-    protected File getSourcesPath() {
-        return customizableSources;
-    }
 }
