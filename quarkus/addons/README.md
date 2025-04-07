@@ -38,7 +38,6 @@ In this module you will find all the add-ons supported by the community for Quar
 | Monitoring Elastic     | kie-addons-quarkus-monitoring-elastic       | 1.2.0  |
 | Monitoring Prometheus  | kie-addons-quarkus-monitoring-prometheus    | 0.1.0  |
 | Persistence FileSystem | kie-addons-quarkus-persistence-filesystem   | 1.12.0 |
-| Persistence Infinispan | kie-addons-quarkus-persistence-infinispan   | 1.12.0 |
 | Persistence JDBC       | kie-addons-quarkus-persistence-jdbc         | 1.12.0 |
 | Persistence Kafka      | kie-addons-quarkus-persistence-kafka        | 1.4.0  |
 | Persistence MongoDB    | kie-addons-quarkus-persistence-mongodb      | 1.12.0 |

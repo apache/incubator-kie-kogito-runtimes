@@ -66,12 +66,11 @@ public class PersistenceGenerator extends AbstractGenerator {
      * Type of persistence
      */
     public static final String FILESYSTEM_PERSISTENCE_TYPE = "filesystem";
-    public static final String INFINISPAN_PERSISTENCE_TYPE = "infinispan";
     public static final String MONGODB_PERSISTENCE_TYPE = "mongodb";
     public static final String POSTGRESQL_PERSISTENCE_TYPE = "postgresql";
     public static final String KAFKA_PERSISTENCE_TYPE = "kafka";
     public static final String JDBC_PERSISTENCE_TYPE = "jdbc";
-    public static final String DEFAULT_PERSISTENCE_TYPE = INFINISPAN_PERSISTENCE_TYPE;
+    public static final String DEFAULT_PERSISTENCE_TYPE = POSTGRESQL_PERSISTENCE_TYPE;
 
     /**
      * Kogito persistence properties
@@ -88,7 +87,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     public static final String KOGITO_PERSISTENCE_PROTO_MARSHALLER = "kogito.persistence.proto.marshaller";
     public static final String KOGITO_PERSISTENCE_PROTO_MARSHALLER_DEFAULT = "true";
     /**
-     * (string) kind of persistence used; possible values: filesystem, infinispan, mongodb, postgresql, kafka, jdbc; default to infinispan
+     * (string) kind of persistence used; possible values: filesystem, mongodb, postgresql, kafka, jdbc; default to postgresql
      */
     public static final String KOGITO_PERSISTENCE_TYPE = "kogito.persistence.type";
 
@@ -120,7 +119,6 @@ public class PersistenceGenerator extends AbstractGenerator {
     @Override
     protected Collection<GeneratedFile> internalGenerate() {
         switch (persistenceType()) {
-            case INFINISPAN_PERSISTENCE_TYPE:
             case FILESYSTEM_PERSISTENCE_TYPE:
             case MONGODB_PERSISTENCE_TYPE:
             case JDBC_PERSISTENCE_TYPE:
