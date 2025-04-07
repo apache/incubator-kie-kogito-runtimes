@@ -60,7 +60,7 @@ public class CompilerHelper {
             String javaTargetVersion) {
         compileAndWriteClasses(generatedSources,
                 classLoader,
-                getJavaCompilerSettings(runtimeClassPathElements,
+                buildJavaCompilerSettings(runtimeClassPathElements,
                         javaSourceEncoding,
                         javaSourceVersion,
                         javaTargetVersion),
@@ -117,14 +117,13 @@ public class CompilerHelper {
         return GENERATED_FILE_WRITER_BUILDER.build(Path.of(baseDir.getAbsolutePath()));
     }
 
-    static JavaCompilerSettings getJavaCompilerSettings(List<String> runtimeClassPathElements,
-            String sourceEncoding,
-            String sourceVersion,
-            String targetVersion) {
+    static JavaCompilerSettings buildJavaCompilerSettings(List<String> runtimeClassPathElements,
+                                                          String sourceEncoding,
+                                                          String sourceVersion,
+                                                          String targetVersion) {
         JavaCompilerSettings settings = new JavaCompilerSettings();
         for (String path : runtimeClassPathElements) {
-            File pathFile = new File(path);
-            settings.addClasspath(pathFile);
+            settings.addClasspath(new File(path));
         }
         settings.setSourceEncoding(sourceEncoding);
         settings.setSourceVersion(sourceVersion);
