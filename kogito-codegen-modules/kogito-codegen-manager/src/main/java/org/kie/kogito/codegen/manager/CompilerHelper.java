@@ -118,9 +118,9 @@ public class CompilerHelper {
     }
 
     static JavaCompilerSettings buildJavaCompilerSettings(List<String> runtimeClassPathElements,
-                                                          String sourceEncoding,
-                                                          String sourceVersion,
-                                                          String targetVersion) {
+            String sourceEncoding,
+            String sourceVersion,
+            String targetVersion) {
         JavaCompilerSettings settings = new JavaCompilerSettings();
         for (String path : runtimeClassPathElements) {
             settings.addClasspath(new File(path));
