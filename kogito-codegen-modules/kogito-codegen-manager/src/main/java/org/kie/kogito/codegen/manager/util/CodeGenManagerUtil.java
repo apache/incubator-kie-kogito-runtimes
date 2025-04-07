@@ -65,7 +65,7 @@ public class CodeGenManagerUtil {
             String generatePredictions,
             String generateProcesses,
             String generateRules,
-            Boolean persistence) {
+            boolean persistence) {
     }
 
     public static KogitoBuildContext discoverKogitoRuntimeContext(ClassLoader projectClassLoader,
@@ -113,11 +113,11 @@ public class CodeGenManagerUtil {
     }
 
     static void overwritePropertiesIfNeeded(KogitoBuildContext context, ProjectParameters projectParameters) {
-        overwritePropertyIfNeeded(context, RuleCodegen.GENERATOR_NAME, projectParameters.generateRules);
-        overwritePropertyIfNeeded(context, ProcessCodegen.GENERATOR_NAME, projectParameters.generateProcesses);
-        overwritePropertyIfNeeded(context, PredictionCodegen.GENERATOR_NAME, projectParameters.generatePredictions);
-        overwritePropertyIfNeeded(context, DecisionCodegen.GENERATOR_NAME, projectParameters.generateDecisions);
-        overwritePropertyIfNeeded(context, PersistenceGenerator.GENERATOR_NAME, Boolean.toString(projectParameters.persistence));
+        overwritePropertyIfNeeded(context, RuleCodegen.GENERATOR_NAME, projectParameters.generateRules());
+        overwritePropertyIfNeeded(context, ProcessCodegen.GENERATOR_NAME, projectParameters.generateProcesses());
+        overwritePropertyIfNeeded(context, PredictionCodegen.GENERATOR_NAME, projectParameters.generatePredictions());
+        overwritePropertyIfNeeded(context, DecisionCodegen.GENERATOR_NAME, projectParameters.generateDecisions());
+        overwritePropertyIfNeeded(context, PersistenceGenerator.GENERATOR_NAME, Boolean.toString(projectParameters.persistence()));
     }
 
     static void overwritePropertyIfNeeded(KogitoBuildContext context, String generatorName, String propertyValue) {

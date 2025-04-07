@@ -48,7 +48,7 @@ class CodeGenManagerUtilTest {
 
     @ParameterizedTest
     @MethodSource("getGeneratorNamesStream")
-    void overwritePropertiesIfNeededWithNull(String generatorName) {
+    void overwritePropertiesIfNeededWithNullParameters(String generatorName) {
         String expectedWrittenProperty = Generator.CONFIG_PREFIX + generatorName;
         KogitoBuildContext kogitoBuildContextMocked = Mockito.mock(KogitoBuildContext.class);
         CodeGenManagerUtil.ProjectParameters parameters = new CodeGenManagerUtil.ProjectParameters(CodeGenManagerUtil.Framework.QUARKUS,
@@ -62,6 +62,44 @@ class CodeGenManagerUtilTest {
             Mockito.verify(kogitoBuildContextMocked, Mockito.times(1)).setApplicationProperty(expectedWrittenProperty, "false"); // being a boolean property, it default to false
         } else {
             Mockito.verify(kogitoBuildContextMocked, Mockito.never()).setApplicationProperty(Mockito.eq(expectedWrittenProperty), Mockito.any());
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("getGeneratorNamesStream")
+    void overwritePropertiesIfNeededWithEmptyParameters(String generatorName) {
+        String expectedWrittenProperty = Generator.CONFIG_PREFIX + generatorName;
+        KogitoBuildContext kogitoBuildContextMocked = Mockito.mock(KogitoBuildContext.class);
+        CodeGenManagerUtil.ProjectParameters parameters = new CodeGenManagerUtil.ProjectParameters(CodeGenManagerUtil.Framework.QUARKUS,
+                "",
+                "",
+                "",
+                "",
+                false);
+        CodeGenManagerUtil.overwritePropertiesIfNeeded(kogitoBuildContextMocked, parameters);
+        if (generatorName.equals(PersistenceGenerator.GENERATOR_NAME)) {
+            Mockito.verify(kogitoBuildContextMocked, Mockito.times(1)).setApplicationProperty(expectedWrittenProperty, "false"); // being a boolean property, it default to false
+        } else {
+            Mockito.verify(kogitoBuildContextMocked, Mockito.never()).setApplicationProperty(Mockito.eq(expectedWrittenProperty), Mockito.any());
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("getGeneratorNamesStream")
+    void overwritePropertiesIfNeededWithNotNullParameters(String generatorName) {
+        String expectedWrittenProperty = Generator.CONFIG_PREFIX + generatorName;
+        KogitoBuildContext kogitoBuildContextMocked = Mockito.mock(KogitoBuildContext.class);
+        CodeGenManagerUtil.ProjectParameters parameters = new CodeGenManagerUtil.ProjectParameters(CodeGenManagerUtil.Framework.QUARKUS,
+                "notnull",
+                "notnull",
+                "notnull",
+                "notnull",
+                true);
+        CodeGenManagerUtil.overwritePropertiesIfNeeded(kogitoBuildContextMocked, parameters);
+        if (generatorName.equals(PersistenceGenerator.GENERATOR_NAME)) {
+            Mockito.verify(kogitoBuildContextMocked, Mockito.times(1)).setApplicationProperty(expectedWrittenProperty, "true");
+        } else {
+            Mockito.verify(kogitoBuildContextMocked, Mockito.times(1)).setApplicationProperty(Mockito.eq(expectedWrittenProperty), Mockito.eq("notnull"));
         }
     }
 
