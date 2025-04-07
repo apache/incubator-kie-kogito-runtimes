@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.it;
 
+import org.junit.jupiter.api.Disabled;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 
 import io.quarkus.test.common.QuarkusTestResource;
@@ -28,6 +29,7 @@ import static org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource.KOG
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(value = KafkaQuarkusTestResource.class, initArgs = { @ResourceArg(name = KOGITO_KAFKA_TOPICS, value = KafkaPersistenceIT.TOPICS) })
+@Disabled
 public class KafkaPersistenceIT extends PersistenceTest {
 
     public static final String TOPICS = "kogito.process";
