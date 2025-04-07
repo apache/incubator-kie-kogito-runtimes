@@ -61,18 +61,18 @@ public class CodeGenManagerUtil {
     }
 
     public record ProjectParameters(CodeGenManagerUtil.Framework framework,
-            String generateDecisions,
-            String generatePredictions,
-            String generateProcesses,
-            String generateRules,
-            boolean persistence) {
+                                    String generateDecisions,
+                                    String generatePredictions,
+                                    String generateProcesses,
+                                    String generateRules,
+                                    boolean persistence) {
     }
 
     public static KogitoBuildContext discoverKogitoRuntimeContext(ClassLoader projectClassLoader,
-            Path projectDir,
-            KogitoGAV kogitoGAV,
-            ProjectParameters projectParameters,
-            Predicate<String> classAvaialbilityPredicate) {
+                                                                  Path projectDir,
+                                                                  KogitoGAV kogitoGAV,
+                                                                  ProjectParameters projectParameters,
+                                                                  Predicate<String> classAvaialbilityPredicate) {
         AppPaths appPaths = AppPaths.fromProjectDir(projectDir);
         KogitoBuildContext context = contextBuilder(projectParameters.framework)
                 .withClassAvailabilityResolver(classAvaialbilityPredicate)
@@ -161,7 +161,7 @@ public class CodeGenManagerUtil {
             cl.loadClass(className);
             return true;
         } catch (Exception e) {
-        return false;
+            return false;
         }
     }
 
