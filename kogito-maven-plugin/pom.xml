@@ -67,8 +67,20 @@
     <!-- Internal dependencies -->
     <dependency>
       <groupId>org.drools</groupId>
+      <artifactId>drools-codegen-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-compiler</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
       <artifactId>drools-decisiontables</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-util</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -81,22 +93,6 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-codegen-manager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-codegen-processes</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-codegen-rules</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-codegen-decisions</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-codegen-predictions</artifactId>
     </dependency>
 
     <!-- 3rd party dependencies -->
