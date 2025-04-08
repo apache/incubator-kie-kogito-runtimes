@@ -237,8 +237,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         processInstance.wrap(this);
     }
 
-    public void internalRemoveProcessInstance(Consumer<AbstractProcessInstance<?>> reloadSupplier) {
+    public void internalSetReloadSupplier(Consumer<AbstractProcessInstance<?>> reloadSupplier) {
         this.reloadSupplier = reloadSupplier;
+    }
+
+    public void internalRemoveProcessInstance() {
         if (processInstance == null) {
             return;
         }

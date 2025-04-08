@@ -142,10 +142,11 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     }
 
     private void disconnect(ProcessInstance instance) {
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(marshaller.createdReloadFunction(() -> findByIdInternal(instance.id()).map(r -> {
+        ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> findByIdInternal(instance.id()).map(r -> {
             ((AbstractProcessInstance) instance).setVersion(r.getLong(VERSION));
             return r.getBuffer(PAYLOAD).getBytes();
         }).orElseThrow()));
+        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     private boolean insertInternal(String id, byte[] payload) {

@@ -136,10 +136,11 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     }
 
     private void disconnect(ProcessInstance<?> instance) {
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(marshaller.createdReloadFunction(() -> {
+        ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> {
             Repository.Record r = repository.findByIdInternal(process.id(), process.version(), UUID.fromString(instance.id())).orElseThrow();
             ((AbstractProcessInstance<?>) instance).setVersion(r.getVersion());
             return r.getPayload();
         }));
+        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 }

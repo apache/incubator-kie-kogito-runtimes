@@ -206,7 +206,7 @@ public class KafkaProcessInstancesTest {
         assertThat(captor.getValue().key()).isEqualTo(storedId);
         assertThat(captor.getValue().topic()).isEqualTo(topicName());
 
-        verify(instance).internalRemoveProcessInstance(any());
+        verify(instance).internalRemoveProcessInstance();
         verify(marshaller).createdReloadFunction(any());
     }
 

@@ -149,7 +149,8 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
 
     protected void disconnect(Path processInstanceStorage, ProcessInstance instance) {
         Supplier<byte[]> supplier = () -> readBytesFromFile(processInstanceStorage);
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(marshaller.createdReloadFunction(supplier));
+        ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(supplier));
+        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     public String getMetadata(Path file, String key) {

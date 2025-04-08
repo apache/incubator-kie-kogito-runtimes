@@ -168,10 +168,11 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
     }
 
     private void reloadProcessInstance(ProcessInstance<T> instance, String id) {
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(marshaller.createdReloadFunction(() -> find(id).map(reloaded -> {
+        ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> find(id).map(reloaded -> {
             setVersion(instance, reloaded.getLong(VERSION));
             return reloaded.toJson().getBytes();
         }).orElseThrow(() -> new IllegalArgumentException("process instance id " + id + " does not exists in mongodb"))));
+        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     private static void setVersion(ProcessInstance<?> instance, Long version) {
