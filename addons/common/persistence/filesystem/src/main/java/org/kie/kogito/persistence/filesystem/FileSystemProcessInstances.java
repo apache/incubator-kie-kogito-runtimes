@@ -68,12 +68,15 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     @Override
     public Optional findById(String id, ProcessInstanceReadMode mode) {
         Path processInstanceStorage = Paths.get(storage.toString(), id);
-
         if (Files.notExists(processInstanceStorage)) {
             return Optional.empty();
         }
         byte[] data = readBytesFromFile(processInstanceStorage);
-        return Optional.of(marshaller.unmarshallProcessInstance(data, process, mode));
+        AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process, mode);
+        if (pi != null) {
+            disconnect(processInstanceStorage, pi);
+        }
+        return Optional.of(pi);
     }
 
     @Override
