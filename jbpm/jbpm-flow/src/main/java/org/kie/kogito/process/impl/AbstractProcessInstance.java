@@ -430,7 +430,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
 
             this.id = processInstance.getStringId();
-
+            ((MutableProcessInstances<T>) process.instances()).create(id, this);
             addCompletionEventListener();
             if (referenceId != null) {
                 processInstance.setReferenceId(referenceId);
@@ -440,7 +440,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             }
 
             internalTriggerNode(nodeId);
-            ((MutableProcessInstances<T>) process.instances()).create(id, this);
+            ((MutableProcessInstances<T>) process.instances()).update(id, this);
             unbind(variables, processInstance.getVariables());
             if (processInstance != null) {
                 this.status = processInstance.getState();
