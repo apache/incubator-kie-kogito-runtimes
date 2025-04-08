@@ -71,6 +71,8 @@ import org.kie.kogito.process.Signal;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.Milestone;
+import org.kie.kogito.process.impl.lock.ProcessInstanceAtomicLockStrategy;
+import org.kie.kogito.process.impl.lock.ProcessInstanceLockStrategy;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.services.uow.ProcessInstanceWorkUnit;
 import org.slf4j.Logger;
@@ -105,6 +107,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     private Optional<CorrelationInstance> correlationInstance = Optional.empty();
 
+    private ProcessInstanceLockStrategy processInstanceLockStrategy;
+
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt) {
         this(process, variables, null, rt);
     }
@@ -118,6 +122,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
         this.removed = new AtomicBoolean(false);
+        this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
         setCorrelationKey(businessKey);
 
         Map<String, Object> map = bind(variables);
@@ -145,6 +150,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, org.kie.api.runtime.process.WorkflowProcessInstance wpi) {
         this.process = process;
         this.variables = variables;
+        this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
         syncProcessInstance((WorkflowProcessInstance) wpi);
         unbind(variables, processInstance.getVariables());
         this.removed = new AtomicBoolean(false);
@@ -154,6 +160,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
+        this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
         syncProcessInstance((WorkflowProcessInstance) wpi);
         reconnect();
         this.removed = new AtomicBoolean(false);
