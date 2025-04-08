@@ -296,7 +296,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             }
             unbind(variables, kogitoProcessInstance.getVariables());
             if (this.processInstance != null) {
-                this.status = kogitoProcessInstance.getState();
+                this.status = this.processInstance.getState();
             }
             return null;
         });
@@ -430,6 +430,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
 
             this.id = processInstance.getStringId();
+
             addCompletionEventListener();
             if (referenceId != null) {
                 processInstance.setReferenceId(referenceId);
@@ -441,7 +442,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             internalTriggerNode(nodeId);
 
             unbind(variables, processInstance.getVariables());
-            if (processInstance != null) {
+            if (processInstance() != null) {
                 this.status = processInstance.getState();
             }
             ((MutableProcessInstances<T>) process.instances()).create(id, this);
