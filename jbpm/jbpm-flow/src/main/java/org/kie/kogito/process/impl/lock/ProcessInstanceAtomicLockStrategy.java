@@ -86,20 +86,20 @@ public class ProcessInstanceAtomicLockStrategy implements ProcessInstanceLockStr
 
         // at this points this is a safe ask as if we invoked prior to this point the hold it will always return
         // properly
-        boolean alreadyAdquired = processInstanceLockHolder.isHeldByCurrentThread();
+        boolean alreadyAcquired = processInstanceLockHolder.isHeldByCurrentThread();
         try {
-            if (!alreadyAdquired) {
-                LOG.trace("About to adquire lock for {}", processInstanceId);
+            if (!alreadyAcquired) {
+                LOG.trace("About to acquire lock for {}", processInstanceId);
             }
             processInstanceLockHolder.lock();
-            if (!alreadyAdquired) {
-                LOG.trace("Lock adquired for {}", processInstanceId);
+            if (!alreadyAcquired) {
+                LOG.trace("Lock acquired for {}", processInstanceId);
             }
             return executor.execute();
         } finally {
             processInstanceLockHolder.unlock();
-            if (!alreadyAdquired) {
-                LOG.trace("Lock realeased for {}", processInstanceId);
+            if (!alreadyAcquired) {
+                LOG.trace("Lock released for {}", processInstanceId);
             }
 
             // evaluate atomically if the lock is still in used before removing it.
