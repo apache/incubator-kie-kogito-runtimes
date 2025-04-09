@@ -152,8 +152,10 @@ public class KafkaProcessInstances implements MutableProcessInstances {
     @Override
     public Optional<ProcessInstance<?>> findById(String id, ProcessInstanceReadMode mode) {
         return getProcessInstanceById(id).map(r -> {
-            AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.createUnmarshallFunction(process, mode);
-            disconnect(pi);
+            AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.createUnmarshallFunction(process, mode).apply(r);
+            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
+                disconnect(pi);
+            }
             return pi;
         });
     }

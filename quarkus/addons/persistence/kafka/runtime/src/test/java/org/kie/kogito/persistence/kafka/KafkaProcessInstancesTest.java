@@ -127,7 +127,7 @@ public class KafkaProcessInstancesTest {
 
     @Test
     public void testProcessInstancesFindById() {
-        doReturn(mock(ProcessInstance.class)).when(marshaller).unmarshallProcessInstance(any(), any(), eq(ProcessInstanceReadMode.MUTABLE));
+        doReturn(mock(AbstractProcessInstance.class)).when(marshaller).unmarshallProcessInstance(any(), any(), eq(ProcessInstanceReadMode.MUTABLE));
 
         doReturn(new byte[] {}).when(store).get(storedId);
 
@@ -137,7 +137,7 @@ public class KafkaProcessInstancesTest {
 
     @Test
     public void testProcessInstancesFindByIdReadOnly() {
-        doReturn(mock(ProcessInstance.class)).when(marshaller).unmarshallProcessInstance(any(), any(), eq(ProcessInstanceReadMode.READ_ONLY));
+        doReturn(mock(AbstractProcessInstance.class)).when(marshaller).unmarshallProcessInstance(any(), any(), eq(ProcessInstanceReadMode.READ_ONLY));
 
         doReturn(new byte[] {}).when(store).get(storedId);
 
