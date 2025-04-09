@@ -367,7 +367,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public Date startDate() {
-        return this.processInstance != null ? this.processInstance.getStartDate() : null;
+        return processInstanceLockStrategy.executeOperation(id, () -> {
+            return processInstance().getStartDate();
+        });
     }
 
     @Override
@@ -403,11 +405,12 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public Optional<ProcessError> error() {
-        if (this.status == STATE_ERROR) {
-            return Optional.of(this.processError != null ? this.processError : buildProcessError());
-        }
-
-        return Optional.empty();
+        return processInstanceLockStrategy.executeOperation(id, () -> {
+            if (this.status == STATE_ERROR) {
+                return Optional.of(this.processError != null ? this.processError : buildProcessError());
+            }
+            return Optional.empty();
+        });
     }
 
     @Override
