@@ -73,7 +73,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
         }
         byte[] data = readBytesFromFile(processInstanceStorage);
         AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process, mode);
-        if (pi != null) {
+        if (pi != null && !ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
             disconnect(processInstanceStorage, pi);
         }
         return Optional.of(pi);

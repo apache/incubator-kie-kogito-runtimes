@@ -113,9 +113,11 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
 
     @Override
     public Optional<ProcessInstance> findById(String id, ProcessInstanceReadMode mode) {
-        return findByIdInternal(id).map(r -> { 
+        return findByIdInternal(id).map(r -> {
             AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(r, mode);
-            disconnect(pi);
+            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
+                disconnect(pi);
+            }
             return pi;
         });
     }

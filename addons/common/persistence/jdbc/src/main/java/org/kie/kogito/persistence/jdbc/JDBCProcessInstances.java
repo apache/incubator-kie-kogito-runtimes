@@ -110,7 +110,9 @@ public class JDBCProcessInstances implements MutableProcessInstances {
         LOGGER.debug("Find process instance id: {}, mode: {}", id, mode);
         return repository.findByIdInternal(process.id(), process.version(), UUID.fromString(id)).map(r -> {
             AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(r, mode);
-            disconnect(pi);
+            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
+                disconnect(pi);
+            }
             return pi;
         });
     }
@@ -120,7 +122,9 @@ public class JDBCProcessInstances implements MutableProcessInstances {
         LOGGER.debug("Find process instance using business Key : {}", businessKey);
         return repository.findByBusinessKey(process.id(), process.version(), businessKey).map(r -> {
             AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(r, mode);
-            disconnect(pi);
+            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
+                disconnect(pi);
+            }
             return pi;
         });
     }
