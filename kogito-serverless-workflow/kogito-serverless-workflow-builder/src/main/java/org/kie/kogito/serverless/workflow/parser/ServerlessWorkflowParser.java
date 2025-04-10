@@ -135,6 +135,10 @@ public class ServerlessWorkflowParser {
                 .metaData(Metadata.VARIABLE, DEFAULT_WORKFLOW_VAR)
                 .variable(DEFAULT_WORKFLOW_VAR, new ObjectDataType(JsonNode.class), ObjectMapperFactory.listenerAware().createObjectNode())
                 .type(KogitoWorkflowProcess.SW_TYPE);
+
+        if (workflow.getMetadata() != null) {
+            workflow.getMetadata().forEach(factory::metaData);
+        }
         ParserContext parserContext =
                 new ParserContext(idGenerator, factory, context, WorkflowOperationIdFactoryProvider.getFactory(context.getApplicationProperty(WorkflowOperationIdFactoryProvider.PROPERTY_NAME)));
         WorkflowValidator.validateStart(workflow, parserContext);

@@ -21,6 +21,7 @@ package org.kie.kogito.serverless.workflow.openapi;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,6 +50,10 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
             @Override
             public void filter(ClientRequestContext requestContext) throws IOException {
                 ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> requestContext.getHeaders().put(k, Collections.singletonList(v)));
+                Map<String, List<String>> headers = workItem.getProcessInstance().getHeaders();
+                if (headers != null) {
+                    headers.forEach((k, v) -> requestContext.getHeaders().putIfAbsent(k, (List) v));
+                }
             }
         }).build(clazz);
         try {

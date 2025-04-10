@@ -29,12 +29,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.MarshallerWriterContext;
 import org.jbpm.flow.serialization.NodeInstanceWriter;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerListener;
 import org.jbpm.flow.serialization.protobuf.KogitoProcessInstanceProtobuf;
+import org.jbpm.flow.serialization.protobuf.KogitoProcessInstanceProtobuf.HeaderEntry;
 import org.jbpm.flow.serialization.protobuf.KogitoTypesProtobuf;
 import org.jbpm.flow.serialization.protobuf.KogitoTypesProtobuf.WorkflowContext;
 import org.jbpm.process.core.context.exclusive.ExclusiveGroup;
@@ -46,12 +48,14 @@ import org.jbpm.process.instance.ContextableInstance;
 import org.jbpm.process.instance.context.exclusive.ExclusiveGroupInstance;
 import org.jbpm.process.instance.context.swimlane.SwimlaneContextInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +84,8 @@ public class ProtobufProcessInstanceWriter {
     public void writeProcessInstance(WorkflowProcessInstanceImpl workFlow, OutputStream os) throws IOException {
         context.set(MarshallerContextName.MARSHALLER_PROCESS_INSTANCE, (RuleFlowProcessInstance) workFlow);
         LOGGER.debug("writing process instance {}", workFlow.getId());
-        KogitoProcessRuntime runtime = ((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS)).getProcessRuntime();
+        AbstractProcess<?> process = ((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS));
+        KogitoProcessRuntime runtime = process.getProcessRuntime();
         Arrays.stream(listeners).forEach(e -> e.beforeMarshallProcess(runtime, workFlow));
 
         KogitoProcessInstanceProtobuf.ProcessInstance.Builder instance = KogitoProcessInstanceProtobuf.ProcessInstance.newBuilder()
@@ -135,6 +140,13 @@ public class ProtobufProcessInstanceWriter {
             instance.setReferenceId(workFlow.getReferenceId());
         }
 
+        Map<String, Object> metadata = process.get().getMetaData();
+        if (workFlow.getHeaders() != null && writeHeaders(metadata)) {
+            Collection<String> excludedHeaders = ConversionUtils.convertToCollection(metadata.get(Metadata.EXCLUDED_HEADERS), String.class);
+            instance.addAllHeaders(workFlow.getHeaders().entrySet().stream().filter(e -> !excludedHeaders.contains(e.getKey()))
+                    .map(e -> HeaderEntry.newBuilder().setKey(e.getKey()).addAllValue(e.getValue()).build()).collect(Collectors.toList()));
+        }
+
         instance.addAllSwimlaneContext(buildSwimlaneContexts((SwimlaneContextInstance) workFlow.getContextInstance(SwimlaneContext.SWIMLANE_SCOPE)));
 
         instance.setContext(buildWorkflowContext(workFlow));
@@ -147,6 +159,11 @@ public class ProtobufProcessInstanceWriter {
         } else {
             piProtobuf.writeTo(os);
         }
+    }
+
+    private boolean writeHeaders(Map<String, Object> metadata) {
+        Object value = metadata.get(Metadata.PERSIST_HEADERS);
+        return value != null && (Boolean.TRUE.equals(value) || Boolean.parseBoolean(value.toString()));
     }
 
     private KogitoTypesProtobuf.SLAContext buildSLAContext(int slaCompliance, Date slaDueDate, String slaTimerId) {

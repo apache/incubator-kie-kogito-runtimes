@@ -19,9 +19,12 @@
 package org.kie.persistence.postgresql;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.drools.io.ClassPathResource;
+import org.jbpm.ruleflow.core.Metadata;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,6 +40,7 @@ import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnProcessInstance;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
+import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 import org.kie.kogito.process.impl.StaticProcessConfig;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
@@ -117,8 +121,11 @@ class PostgresqlProcessInstancesIT {
     @Test
     void testBasicFlow() {
         BpmnProcess process = createProcess("BPMN2-UserTask.bpmn2");
+        process.process().getMetaData().put(Metadata.PERSIST_HEADERS, "true");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
-        processInstance.start();
+
+        Map<String, List<String>> headers = Map.of("name", List.of("pepe"));
+        processInstance.start(headers);
 
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
         assertThat(processInstance.description()).isEqualTo("BPMN2-UserTask");
@@ -129,6 +136,7 @@ class PostgresqlProcessInstancesIT {
 
         ProcessInstance<?> readOnlyPI = process.instances().findById(processInstance.id(), ProcessInstanceReadMode.READ_ONLY).get();
         assertThat(readOnlyPI.status()).isEqualTo(STATE_ACTIVE);
+        assertThat(((AbstractProcessInstance) readOnlyPI).hasHeader("name")).isTrue();
         assertOne(processInstances);
 
         verify(processInstances).create(any(), any());
