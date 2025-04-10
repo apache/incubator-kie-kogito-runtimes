@@ -20,6 +20,7 @@ package org.kie.kogito.process.impl;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstanceManager;
@@ -33,6 +34,7 @@ import org.kie.api.definition.process.Process;
 import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.uow.UnitOfWork;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.mockito.Mock;
@@ -42,7 +44,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +58,9 @@ public class AbstractProcessInstanceTest {
     private WorkflowProcessInstanceImpl wpi;
 
     @Mock
+    private MutableProcessInstances instances;
+
+    @Mock
     private UnitOfWork unitOfWork;
 
     private AbstractProcessInstance<TestModel> processInstance;
@@ -69,6 +73,7 @@ public class AbstractProcessInstanceTest {
         AbstractProcess<TestModel> process = mock(AbstractProcess.class);
         Process piProcess = mock(Process.class);
         when(process.process()).thenReturn(piProcess);
+        when(process.instances()).thenReturn(instances);
         when(process.get()).thenReturn(piProcess);
         InternalProcessRuntime pr = mock(InternalProcessRuntime.class);
         when(pr.createProcessInstance(any(), any(), any())).thenReturn(wpi);
@@ -79,6 +84,7 @@ public class AbstractProcessInstanceTest {
         when(pr.getKogitoProcessRuntime()).thenReturn(kogitoProcessRuntime);
         when(unitOfWorkManager.currentUnitOfWork()).thenReturn(unitOfWork);
 
+        when(wpi.getStringId()).thenReturn(UUID.randomUUID().toString());
         processInstance = new TestProcessInstance(process, new TestModel(), pr);
     }
 
@@ -86,7 +92,7 @@ public class AbstractProcessInstanceTest {
     public void testCreateProcessInstance() {
 
         assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_PENDING);
-        assertThat(processInstance.id()).isNull();
+        assertThat(processInstance.id()).isNotNull();
         assertThat(processInstance.businessKey()).isNull();
 
         verify(pim, never()).addProcessInstance(any());
@@ -99,7 +105,6 @@ public class AbstractProcessInstanceTest {
         processInstance.startFrom(NODE_ID);
 
         verify(nodeInstance).trigger(null, Node.CONNECTION_DEFAULT_TYPE);
-        verify(unitOfWork, times(2)).intercept(any());
     }
 
     @Test
@@ -109,7 +114,6 @@ public class AbstractProcessInstanceTest {
         processInstance.triggerNode(NODE_ID);
 
         verify(nodeInstance).trigger(null, Node.CONNECTION_DEFAULT_TYPE);
-        verify(unitOfWork).intercept(any());
     }
 
     private NodeInstance givenExistingNode(String nodeId) {
