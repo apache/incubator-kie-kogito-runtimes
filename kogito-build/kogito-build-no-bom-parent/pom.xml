@@ -48,7 +48,6 @@
     <checkstyle.logViolationsToConsole>true</checkstyle.logViolationsToConsole>
 
     <!-- container images for testing -->
-    <container.image.infinispan>infinispan/server:${version.org.infinispan}</container.image.infinispan>
     <container.image.keycloak>quay.io/keycloak/keycloak:${version.org.keycloak}</container.image.keycloak>
     <container.image.kafka>redpandadata/redpanda:v24.3.1</container.image.kafka>
     <container.image.wurstmeister.kafka>wurstmeister/kafka:${version.wurstmeister.kafka}</container.image.wurstmeister.kafka>
