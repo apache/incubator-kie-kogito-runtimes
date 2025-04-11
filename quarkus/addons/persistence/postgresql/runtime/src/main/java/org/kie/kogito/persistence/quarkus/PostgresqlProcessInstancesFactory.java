@@ -18,7 +18,10 @@
  */
 package org.kie.kogito.persistence.quarkus;
 
+import java.util.List;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.internal.process.runtime.HeadersPersistentConfig;
 import org.kie.kogito.persistence.postgresql.AbstractProcessInstancesFactory;
 
 import io.vertx.pgclient.PgPool;
@@ -32,8 +35,10 @@ public class PostgresqlProcessInstancesFactory extends AbstractProcessInstancesF
     @Inject
     public PostgresqlProcessInstancesFactory(PgPool client,
             @ConfigProperty(name = "kogito.persistence.query.timeout.millis", defaultValue = "10000") Long queryTimeout,
-            @ConfigProperty(name = "kogito.persistence.optimistic.lock", defaultValue = "false") Boolean lock) {
-        super(client, queryTimeout, lock);
+            @ConfigProperty(name = "kogito.persistence.optimistic.lock", defaultValue = "false") Boolean lock,
+            @ConfigProperty(name = "kogito.persistence.headers.enabled", defaultValue = "false") boolean headersEnabled,
+            @ConfigProperty(name = "kogito.persistence.headers.excluded", defaultValue = "") List<String> headersExcluded) {
+        super(client, queryTimeout, lock, new HeadersPersistentConfig(headersEnabled, headersExcluded));
     }
 
     protected PostgresqlProcessInstancesFactory() {

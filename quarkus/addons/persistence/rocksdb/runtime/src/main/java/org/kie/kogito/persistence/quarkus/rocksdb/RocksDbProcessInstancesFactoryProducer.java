@@ -18,6 +18,10 @@
  */
 package org.kie.kogito.persistence.quarkus.rocksdb;
 
+import java.util.List;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.internal.process.runtime.HeadersPersistentConfig;
 import org.kie.kogito.persistence.rocksdb.RocksDBProcessInstancesFactory;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.rocksdb.Options;
@@ -41,13 +45,18 @@ public class RocksDbProcessInstancesFactoryProducer {
     @Inject
     RocksDbConfig config;
 
+    @ConfigProperty(name = "kogito.persistence.headers.enabled", defaultValue = "false")
+    boolean headersEnabled;
+    @ConfigProperty(name = "kogito.persistence.headers.excluded", defaultValue = "")
+    List<String> headersExcluded;
+
     @PostConstruct
     void init() throws RocksDBException {
         options = new Options();
         options.setCreateIfMissing(true);
         String dataDir = config.dataDir();
         logger.info("Opening rocksdb in directory {}", dataDir);
-        processInstancesFactory = new RocksDBProcessInstancesFactory(options, dataDir);
+        processInstancesFactory = new RocksDBProcessInstancesFactory(options, dataDir, new HeadersPersistentConfig(headersEnabled, headersExcluded));
     }
 
     @Produces

@@ -18,7 +18,10 @@
  */
 package org.kie.kogito.persistence.quarkus;
 
+import java.util.List;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.internal.process.runtime.HeadersPersistentConfig;
 import org.kie.kogito.mongodb.AbstractProcessInstancesFactory;
 import org.kie.kogito.mongodb.transaction.AbstractTransactionManager;
 
@@ -38,8 +41,10 @@ public class MongoDBProcessInstancesFactory extends AbstractProcessInstancesFact
     public MongoDBProcessInstancesFactory(MongoClient mongoClient,
             AbstractTransactionManager transactionManager,
             @ConfigProperty(name = "quarkus.mongodb.database", defaultValue = "kogito") String dbName,
-            @ConfigProperty(name = "kogito.persistence.optimistic.lock", defaultValue = "false") Boolean lock) {
-        super(mongoClient, dbName, lock, transactionManager);
+            @ConfigProperty(name = "kogito.persistence.optimistic.lock", defaultValue = "false") Boolean lock,
+            @ConfigProperty(name = "kogito.persistence.headers.enabled", defaultValue = "false") boolean headersEnabled,
+            @ConfigProperty(name = "kogito.persistence.headers.excluded", defaultValue = "") List<String> headersExcluded) {
+        super(mongoClient, dbName, lock, transactionManager, new HeadersPersistentConfig(headersEnabled, headersExcluded));
     }
 
 }
