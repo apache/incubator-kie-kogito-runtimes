@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.MarshallerWriterContext;
@@ -48,14 +49,13 @@ import org.jbpm.process.instance.ContextableInstance;
 import org.jbpm.process.instance.context.exclusive.ExclusiveGroupInstance;
 import org.jbpm.process.instance.context.swimlane.SwimlaneContextInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
-import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.process.runtime.HeadersPersistentConfig;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +67,7 @@ import com.google.protobuf.util.JsonFormat;
 
 import static org.jbpm.flow.serialization.MarshallerContextName.MARSHALLER_FORMAT;
 import static org.jbpm.flow.serialization.MarshallerContextName.MARSHALLER_FORMAT_JSON;
+import static org.jbpm.flow.serialization.MarshallerContextName.MARSHALLER_HEADERS_CONFIG;
 import static org.jbpm.flow.serialization.protobuf.ProtobufTypeRegistryFactory.protobufTypeRegistryFactoryInstance;
 
 public class ProtobufProcessInstanceWriter {
@@ -140,11 +141,13 @@ public class ProtobufProcessInstanceWriter {
             instance.setReferenceId(workFlow.getReferenceId());
         }
 
-        Map<String, Object> metadata = process.get().getMetaData();
-        if (workFlow.getHeaders() != null && writeHeaders(metadata)) {
-            Collection<String> excludedHeaders = ConversionUtils.convertToCollection(metadata.get(Metadata.EXCLUDED_HEADERS), String.class);
-            instance.addAllHeaders(workFlow.getHeaders().entrySet().stream().filter(e -> !excludedHeaders.contains(e.getKey()))
-                    .map(e -> HeaderEntry.newBuilder().setKey(e.getKey()).addAllValue(e.getValue()).build()).collect(Collectors.toList()));
+        HeadersPersistentConfig headersConfig = context.get(MARSHALLER_HEADERS_CONFIG);
+        if (workFlow.getHeaders() != null && headersConfig != null && headersConfig.enabled()) {
+            Stream<Entry<String, List<String>>> stream = workFlow.getHeaders().entrySet().stream();
+            if (headersConfig.excluded() != null && !headersConfig.excluded().isEmpty()) {
+                stream = stream.filter(e -> !headersConfig.excluded().contains(e.getKey()));
+            }
+            instance.addAllHeaders(stream.map(e -> HeaderEntry.newBuilder().setKey(e.getKey()).addAllValue(e.getValue()).build()).collect(Collectors.toList()));
         }
 
         instance.addAllSwimlaneContext(buildSwimlaneContexts((SwimlaneContextInstance) workFlow.getContextInstance(SwimlaneContext.SWIMLANE_SCOPE)));
@@ -159,11 +162,6 @@ public class ProtobufProcessInstanceWriter {
         } else {
             piProtobuf.writeTo(os);
         }
-    }
-
-    private boolean writeHeaders(Map<String, Object> metadata) {
-        Object value = metadata.get(Metadata.PERSIST_HEADERS);
-        return value != null && (Boolean.TRUE.equals(value) || Boolean.parseBoolean(value.toString()));
     }
 
     private KogitoTypesProtobuf.SLAContext buildSLAContext(int slaCompliance, Date slaDueDate, String slaTimerId) {
