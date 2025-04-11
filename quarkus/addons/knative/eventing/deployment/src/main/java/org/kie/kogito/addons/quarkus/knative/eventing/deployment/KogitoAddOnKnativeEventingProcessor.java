@@ -32,12 +32,12 @@ import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProce
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.fabric8.knative.duck.v1.DestinationBuilder;
 import io.fabric8.knative.eventing.v1.Broker;
 import io.fabric8.knative.eventing.v1.BrokerBuilder;
 import io.fabric8.knative.eventing.v1.Trigger;
 import io.fabric8.knative.eventing.v1.TriggerBuilder;
-import io.fabric8.knative.internal.pkg.apis.duck.v1.DestinationBuilder;
-import io.fabric8.knative.internal.pkg.tracker.ReferenceBuilder;
+import io.fabric8.knative.pkg.tracker.ReferenceBuilder;
 import io.fabric8.knative.sources.v1.SinkBinding;
 import io.fabric8.knative.sources.v1.SinkBindingBuilder;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
