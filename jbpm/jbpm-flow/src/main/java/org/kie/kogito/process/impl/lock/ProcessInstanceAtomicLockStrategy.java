@@ -45,7 +45,7 @@ public class ProcessInstanceAtomicLockStrategy implements ProcessInstanceLockStr
         }
 
         boolean isReferenced() {
-            return counter <= 0;
+            return counter > 0;
         }
 
         boolean isHeldByCurrentThread() {
