@@ -20,6 +20,8 @@ package org.jbpm.process.instance;
 
 import java.util.Collections;
 
+import org.drools.core.common.InternalKnowledgeRuntime;
+import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
@@ -27,10 +29,12 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.definition.process.WorkflowElementIdentifier;
 import org.kie.kogito.Application;
 import org.kie.kogito.Config;
+import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcessConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -79,6 +83,30 @@ class LightProcessRuntimeTest {
 
         assertThat(myProcess.result).isEqualTo("Hello!");
 
+    }
+
+    @Test
+    void testCreateTimerInstance() {
+        LightProcessRuntimeServiceProvider services =
+                new LightProcessRuntimeServiceProvider();
+
+        MyProcess myProcess = new MyProcess();
+        LightProcessRuntimeContext rtc = new LightProcessRuntimeContext(Collections.singletonList(myProcess.process));
+
+        Application application = mock(Application.class);
+        InternalKnowledgeRuntime runtime = mock(InternalKnowledgeRuntime.class);
+        when(runtime.getEnvironment()).thenReturn(mock(org.kie.api.runtime.Environment.class));
+        Config config = mock(Config.class);
+        when(application.config()).thenReturn(config);
+        when(config.get(any())).thenReturn(mock(AbstractProcessConfig.class));
+        when(application.get(Processes.class)).thenReturn(mock(Processes.class));
+        LightProcessRuntime rt = new LightProcessRuntime(rtc, services, application);
+        Timer timer = new Timer();
+        timer.setTimeType(Timer.TIME_CYCLE);
+        timer.setDelay("R5/PT10S");
+        ExpirationTime timerInstance = rt.createTimerInstance(timer, runtime);
+        assertEquals(5, timerInstance.repeatLimit());
+        assertEquals(10000L, timerInstance.repeatInterval());
     }
 
 }
