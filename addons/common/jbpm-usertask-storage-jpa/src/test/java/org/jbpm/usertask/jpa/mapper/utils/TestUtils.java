@@ -282,13 +282,6 @@ public class TestUtils {
 
         instance.setExternalReferenceId("external-reference-id");
 
-        instance.setMetadata("ProcessId", "process-id");
-        instance.setMetadata("ProcessType", "BPMN");
-        instance.setMetadata("ProcessVersion", "1.0.0");
-        instance.setMetadata("boolean", true);
-        instance.setMetadata("integer", 0);
-        instance.setMetadata("null", 0);
-
         instance.setInput("in_string", "hello this is a string");
         instance.setInput("in_integer", 1);
         instance.setInput("in_long", 1000L);
