@@ -78,7 +78,7 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
 
     @Test
     public void testCreateUserTask() {
-        UserTaskInstance instance = createUserTaskInstance();
+        DefaultUserTaskInstance instance = createUserTaskInstance();
 
         Assertions.assertThat(userTaskInstances.exists(instance.getId()))
                 .isFalse();
@@ -88,6 +88,16 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
                 .isEmpty();
 
         userTaskInstances.create(instance);
+
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("ProcessId", "process-id");
+        metadata.put("ProcessType", "BPMN");
+        metadata.put("ProcessVersion", "1.0.0");
+        metadata.put("boolean", true);
+        metadata.put("integer", 0);
+        metadata.put("null", 0);
+
+        instance.setMetadata(metadata);
 
         verify(connect, times(1)).apply(any(UserTaskInstance.class));
 
@@ -452,7 +462,7 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
         TestUtils.assertUserTaskEntityMetadata(entity, instance);
     }
 
-    private UserTaskInstance createUserTaskInstance() {
+    private DefaultUserTaskInstance createUserTaskInstance() {
         DefaultUserTaskInstance instance = TestUtils.createUserTaskInstance();
 
         instance.setInstances(userTaskInstances);
