@@ -67,8 +67,8 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
 
     @Override
     public Optional findById(String id, ProcessInstanceReadMode mode) {
-        Path processInstanceStorage = Paths.get(storage.toString(), id);
-        if (Files.notExists(processInstanceStorage)) {
+        Path processInstanceStorage = resolveSecure(storage, id);
+        if (!processInstanceStorage.toFile().exists()) {
             return Optional.empty();
         }
         byte[] data = readBytesFromFile(processInstanceStorage);
@@ -100,7 +100,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     @Override
     public void create(String id, ProcessInstance instance) {
         if (isActive(instance)) {
-            Path processInstanceStorage = Paths.get(storage.toString(), id);
+            Path processInstanceStorage = resolveSecure(storage, id);
             if (Files.exists(processInstanceStorage)) {
                 throw new ProcessInstanceDuplicatedException(id);
             }
@@ -112,7 +112,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     @Override
     public void update(String id, ProcessInstance instance) {
         if (isActive(instance)) {
-            Path processInstanceStorage = Paths.get(storage.toString(), id);
+            Path processInstanceStorage = resolveSecure(storage, id);
             if (Files.exists(processInstanceStorage)) {
                 storeProcessInstance(processInstanceStorage, instance);
                 disconnect(processInstanceStorage, instance);
@@ -122,7 +122,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
 
     @Override
     public void remove(String id) {
-        Path processInstanceStorage = Paths.get(storage.toString(), id);
+        Path processInstanceStorage = resolveSecure(storage, id);
         try {
             Files.deleteIfExists(processInstanceStorage);
         } catch (IOException e) {
@@ -196,5 +196,14 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
         } catch (IOException e) {
             return false;
         }
+    }
+
+    private Path resolveSecure(Path base, String userProvided) {
+        Path target = base.resolve(userProvided).normalize();
+
+        if (!target.startsWith(base)) {
+            throw new SecurityException("Invalid or unsafe path: " + userProvided);
+        }
+        return target;
     }
 }

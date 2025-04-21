@@ -67,7 +67,8 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
     @Override
     public Optional<String> getProcessSvg(String processId) {
         if (svgResourcesPath.isPresent()) {
-            Path path = Paths.get(svgResourcesPath.get(), processId + ".svg");
+            Path baseDir = Paths.get(svgResourcesPath.get());
+            Path path = resolveSecure(baseDir, processId + ".svg");
             if (path.toFile().exists()) {
                 try {
                     return Optional.of(new String(Files.readAllBytes(path.toRealPath())));
@@ -124,5 +125,13 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
         } else {
             return Optional.empty();
         }
+    }
+
+    private Path resolveSecure(Path baseDir, String fileName) {
+        Path resolved = baseDir.resolve(fileName).normalize();
+        if (!resolved.startsWith(baseDir)) {
+            throw new SecurityException("Attempted path traversal with file: " + fileName);
+        }
+        return resolved;
     }
 }
