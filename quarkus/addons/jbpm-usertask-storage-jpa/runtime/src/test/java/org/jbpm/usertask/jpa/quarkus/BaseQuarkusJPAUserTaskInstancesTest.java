@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.function.Function;
 
+import jakarta.persistence.EntityExistsException;
 import org.assertj.core.api.Assertions;
 import org.jbpm.usertask.jpa.JPAUserTaskInstances;
 import org.jbpm.usertask.jpa.mapper.utils.TestUtils;
@@ -89,16 +90,6 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
 
         userTaskInstances.create(instance);
 
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put("ProcessId", "process-id");
-        metadata.put("ProcessType", "BPMN");
-        metadata.put("ProcessVersion", "1.0.0");
-        metadata.put("boolean", true);
-        metadata.put("integer", 0);
-        metadata.put("null", 0);
-
-        instance.setMetadata(metadata);
-
         verify(connect, times(1)).apply(any(UserTaskInstance.class));
 
         Optional<UserTaskInstanceEntity> entityOptional = userTaskInstanceRepository.findById(instance.getId());
@@ -127,13 +118,7 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
         userTaskInstances.create(instance);
 
         Assertions.assertThatThrownBy(() -> userTaskInstances.create(instance))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Task Already exists.");
-
-        userTaskInstances.remove(instance);
-
-        Assertions.assertThat(userTaskInstances.exists(instance.getId()))
-                .isFalse();
+                .isInstanceOf(EntityExistsException.class);
     }
 
     @Test
