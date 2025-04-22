@@ -127,7 +127,7 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
         }
     }
 
-    private Path resolveSecure(Path baseDir, String fileName) {
+    Path resolveSecure(Path baseDir, String fileName) {
         Path resolved = baseDir.resolve(fileName).normalize();
         if (!resolved.startsWith(baseDir)) {
             throw new SecurityException("Attempted path traversal with file: " + fileName);
