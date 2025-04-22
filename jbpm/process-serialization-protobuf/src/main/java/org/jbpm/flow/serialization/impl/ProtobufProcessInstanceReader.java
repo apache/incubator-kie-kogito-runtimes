@@ -177,9 +177,8 @@ public class ProtobufProcessInstanceReader {
 
         if (processInstanceProtobuf.getHeadersList() != null) {
             processInstance.setHeaders(processInstanceProtobuf.getHeadersList().stream().collect(Collectors.toMap(HeaderEntry::getKey, HeaderEntry::getValueList)));
-            processInstance.getHeaders().forEach((key, values) -> {
-                LOGGER.info("Header {} restored for process instance {}", key, processInstance.getId());
-            });
+                LOGGER.debug("Headers {} restored for process instance {}", processInstance.getHeaders().keySet(), processInstance.getId()));
+           }
         }
 
         WorkflowContext workflowContext = processInstanceProtobuf.getContext();
