@@ -68,8 +68,8 @@ public class BusinessRuleTaskHandler extends AbstractNodeHandler {
             for (DataAssociation dataAssociation : ruleSetNode.getIoSpecification().getDataInputAssociation()) {
                 for (Assignment assignment : dataAssociation.getAssignments()) {
                     DataDefinition fromDefinition = assignment.getFrom();
-                    String fromValue  = fromDefinition.getExpression();
-                    if(!fromDefinition.hasExpression()) {
+                    String fromValue = fromDefinition.getExpression();
+                    if (!fromDefinition.hasExpression()) {
                         fromValue = String.format("#{%s}", fromDefinition.getId());
                     }
                     parameters.put(assignment.getTo().getLabel(), fromValue);
