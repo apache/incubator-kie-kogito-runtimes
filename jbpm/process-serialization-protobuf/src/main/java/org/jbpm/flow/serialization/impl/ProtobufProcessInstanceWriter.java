@@ -143,8 +143,19 @@ public class ProtobufProcessInstanceWriter {
 
         HeadersPersistentConfig headersConfig = context.get(MARSHALLER_HEADERS_CONFIG);
         if (workFlow.getHeaders() != null && headersConfig != null && headersConfig.enabled()) {
-            Stream<Entry<String, List<String>>> headersStream = getHeadersStream(workFlow, headersConfig);
-            instance.addAllHeaders(headersStream.map(e -> HeaderEntry.newBuilder().setKey(e.getKey()).addAllValue(e.getValue()).build()).collect(Collectors.toList()));
+
+        if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Headers {} are associated to process instance {}", workFlow.getHeaders().keySet(), workFlow.getId());
+            }
+            Stream<Entry<String, List<String>>> stream = workFlow.getHeaders().entrySet().stream();
+            if (headersConfig.excluded() != null && !headersConfig.excluded().isEmpty()) {
+                stream = stream.filter(e -> !headersConfig.excluded().contains(e.getKey()));
+            }
+            instance.addAllHeaders(stream.map(e -> HeaderEntry.newBuilder().setKey(e.getKey()).addAllValue(e.getValue()).build()).collect(Collectors.toList()));
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Headers {} are stored for process instance {}", instance.getHeadersList().stream().map(HeaderEntry::getKey).collect(Collectors.joining()), workFlow.getId());
+            }
+            
         }
 
         instance.addAllSwimlaneContext(buildSwimlaneContexts((SwimlaneContextInstance) workFlow.getContextInstance(SwimlaneContext.SWIMLANE_SCOPE)));
