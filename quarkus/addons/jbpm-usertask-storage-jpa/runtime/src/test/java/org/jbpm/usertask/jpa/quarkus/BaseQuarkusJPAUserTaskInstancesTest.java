@@ -24,7 +24,6 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.function.Function;
 
-import jakarta.persistence.EntityExistsException;
 import org.assertj.core.api.Assertions;
 import org.jbpm.usertask.jpa.JPAUserTaskInstances;
 import org.jbpm.usertask.jpa.mapper.utils.TestUtils;
@@ -41,6 +40,7 @@ import org.kie.kogito.usertask.model.Comment;
 import org.mockito.Mockito;
 
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityExistsException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
