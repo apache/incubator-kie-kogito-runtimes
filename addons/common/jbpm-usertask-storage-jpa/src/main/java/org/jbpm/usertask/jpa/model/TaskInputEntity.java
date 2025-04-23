@@ -35,7 +35,7 @@ import jakarta.persistence.Table;
         @AttributeOverride(name = "value", column = @Column(name = "input_value"))
 })
 @AssociationOverride(name = "taskInstance",
-        joinColumns = @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "jbpm_user_tasks_inputs_tid")))
+        joinColumns = @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "fk_jbpm_user_tasks_inputs_tid")))
 public class TaskInputEntity extends TaskNamedDataEntity<byte[]> {
 
 }
