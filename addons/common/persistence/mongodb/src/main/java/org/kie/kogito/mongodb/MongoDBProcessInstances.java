@@ -32,6 +32,7 @@ import org.bson.conversions.Bson;
 import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
 import org.kie.kogito.Model;
+import org.kie.kogito.internal.process.runtime.HeadersPersistentConfig;
 import org.kie.kogito.mongodb.transaction.AbstractTransactionManager;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.ProcessInstance;
@@ -51,7 +52,6 @@ import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.result.UpdateResult;
 
-import static java.util.Collections.singletonMap;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE_ID;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE_ID_INDEX;
 
@@ -65,12 +65,18 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
     private final boolean lock;
 
     public MongoDBProcessInstances(MongoClient mongoClient, org.kie.kogito.process.Process<?> process, String dbName, AbstractTransactionManager transactionManager, boolean lock) {
+        this(mongoClient, process, dbName, transactionManager, lock, null);
+    }
+
+    public MongoDBProcessInstances(MongoClient mongoClient, org.kie.kogito.process.Process<?> process, String dbName, AbstractTransactionManager transactionManager, boolean lock,
+            HeadersPersistentConfig headersConfig) {
         this.process = process;
         this.collection = Objects.requireNonNull(getCollection(mongoClient, process.id(), dbName));
         this.marshaller = ProcessInstanceMarshallerService.newBuilder()
                 .withDefaultObjectMarshallerStrategies()
                 .withDefaultListeners()
-                .withContextEntries(singletonMap(MarshallerContextName.MARSHALLER_FORMAT, MarshallerContextName.MARSHALLER_FORMAT_JSON))
+                .withContextEntry(MarshallerContextName.MARSHALLER_FORMAT, MarshallerContextName.MARSHALLER_FORMAT_JSON)
+                .withContextEntry(MarshallerContextName.MARSHALLER_HEADERS_CONFIG, headersConfig)
                 .build();
         this.transactionManager = Objects.requireNonNull(transactionManager);
         this.lock = lock;
@@ -78,7 +84,13 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
 
     @Override
     public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
-        return find(id).map(piDoc -> unmarshall(piDoc, mode));
+        return find(id).map(piDoc -> {
+            AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(piDoc, mode);
+            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
+                reloadProcessInstance(pi, id);
+            }
+            return pi;
+        });
     }
 
     @Override
@@ -168,10 +180,11 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
     }
 
     private void reloadProcessInstance(ProcessInstance<T> instance, String id) {
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(marshaller.createdReloadFunction(() -> find(id).map(reloaded -> {
+        ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> find(id).map(reloaded -> {
             setVersion(instance, reloaded.getLong(VERSION));
             return reloaded.toJson().getBytes();
         }).orElseThrow(() -> new IllegalArgumentException("process instance id " + id + " does not exists in mongodb"))));
+        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     private static void setVersion(ProcessInstance<?> instance, Long version) {
