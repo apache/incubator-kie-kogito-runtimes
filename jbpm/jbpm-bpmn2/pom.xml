@@ -99,7 +99,6 @@
     </dependency>
   </dependencies>
 
-
   <build>
     <resources>
       <resource>
@@ -119,8 +118,6 @@
     </testResources>
 
     <plugins>
-
-
       <!-- Unpack XSD resources from org.kie:kie-dmn-xsd-resources -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
