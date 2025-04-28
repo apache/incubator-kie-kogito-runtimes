@@ -204,7 +204,7 @@ public class ProcessGenerationIT extends AbstractCodegenIT {
 
     private static final BiConsumer<Node, Node> nodeAsserter = (expected, current) -> {
         assertThat(current.getId()).isEqualTo(expected.getId());
-        if (expected.getName() != null) {
+        if (expected.getName() != null && !expected.getName().trim().isEmpty()) {
             assertThat(current.getName()).isEqualTo(expected.getName());
         } else {
             assertThat(current.getName()).as(current.getClass().getName()).isNotNull();
