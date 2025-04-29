@@ -20,12 +20,17 @@ package org.kie.kogito.services.uow;
 
 import java.util.function.Supplier;
 
+
 import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.kie.kogito.process.ProcessInstanceOptimisticLockingException;
 import org.kie.kogito.uow.UnitOfWork;
 import org.kie.kogito.uow.UnitOfWorkManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UnitOfWorkExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UnitOfWorkExecutor.class);
 
     private UnitOfWorkExecutor() {
 
@@ -38,6 +43,7 @@ public class UnitOfWorkExecutor {
             try {
                 return execute(uowManager, supplier);
             } catch (ProcessInstanceOptimisticLockingException e) {
+                LOGGER.error("Process Instance Optimistic Exception", e);
                 th = e;
             }
         }
