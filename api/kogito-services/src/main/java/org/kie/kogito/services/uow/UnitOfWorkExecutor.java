@@ -21,6 +21,7 @@ package org.kie.kogito.services.uow;
 import java.util.function.Supplier;
 
 import org.kie.kogito.process.ProcessInstanceExecutionException;
+import org.kie.kogito.process.ProcessInstanceOptimisticLockingException;
 import org.kie.kogito.uow.UnitOfWork;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
@@ -31,6 +32,19 @@ public class UnitOfWorkExecutor {
     }
 
     public static <T> T executeInUnitOfWork(UnitOfWorkManager uowManager, Supplier<T> supplier) {
+        int retry = 3;
+        RuntimeException th = null;
+        for (int i = 0; i < retry; i++) {
+            try {
+                return execute(uowManager, supplier);
+            } catch (ProcessInstanceOptimisticLockingException e) {
+                th = e;
+            }
+        }
+        throw th;
+    }
+
+    private static <T> T execute(UnitOfWorkManager uowManager, Supplier<T> supplier) {
         T result = null;
         UnitOfWork uow = uowManager.newUnitOfWork();
 
@@ -44,14 +58,13 @@ public class UnitOfWorkExecutor {
         } catch (ProcessInstanceExecutionException e) {
             uow.end();
             throw e;
+        } catch (RuntimeException e) {
+            uow.abort();
+            throw e;
         } catch (Exception e) {
             uow.abort();
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(e);
-            }
-        }
+            throw new RuntimeException(e);
 
+        }
     }
 }
