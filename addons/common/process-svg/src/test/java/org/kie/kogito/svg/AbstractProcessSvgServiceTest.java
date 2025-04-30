@@ -76,7 +76,7 @@ class AbstractProcessSvgServiceTest {
         }
 
         public Path callResolveSecure(Path baseDir, String fileName) {
-            return super.resolveSecure(baseDir, fileName);
+            return PathUtils.resolveSecure(baseDir, fileName);
         }
     }
 }
