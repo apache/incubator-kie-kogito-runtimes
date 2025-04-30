@@ -214,6 +214,7 @@ import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
@@ -1701,6 +1702,27 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 
         assertThat(child.instances().stream().count()).isEqualTo(0);
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
+    }
+
+    @Test
+    public void testAbortChildProcessUponCompletion() {
+        Application app = ProcessTestHelper.newApplication();
+        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<UserTaskMainModel> main = UserTaskMainProcess.newProcess(app);
+        org.kie.kogito.process.Process<UserTaskChildModel> child = UserTaskChildProcess.newProcess(app);
+
+        UserTaskMainModel assignmentSubProcessModel = main.createModel();
+        org.kie.kogito.process.ProcessInstance<UserTaskMainModel> instance = main.createInstance(assignmentSubProcessModel);
+        instance.start();
+
+        assertThat(child.instances().stream().count()).isEqualTo(1);
+        org.kie.kogito.process.ProcessInstance<UserTaskChildModel> childInstance = child.instances().stream().findFirst().get();
+
+        ProcessTestHelper.completeWorkItem(childInstance, emptyMap());
+
+        assertThat(child.instances().stream().count()).isEqualTo(0);
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
