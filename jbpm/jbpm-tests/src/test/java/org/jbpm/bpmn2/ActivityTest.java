@@ -99,7 +99,6 @@ import org.jbpm.bpmn2.service.ServiceTaskWebServiceModel;
 import org.jbpm.bpmn2.service.ServiceTaskWebServiceProcess;
 import org.jbpm.bpmn2.subprocess.AssignmentProcessModel;
 import org.jbpm.bpmn2.subprocess.AssignmentProcessProcess;
-import org.jbpm.bpmn2.subprocess.AssignmentSubProcessModel;
 import org.jbpm.bpmn2.subprocess.AssignmentSubProcessProcess;
 import org.jbpm.bpmn2.subprocess.CallActivity2Model;
 import org.jbpm.bpmn2.subprocess.CallActivity2Process;
@@ -140,6 +139,10 @@ import org.jbpm.bpmn2.subprocess.SubProcessWithTypeVariableModel;
 import org.jbpm.bpmn2.subprocess.SubProcessWithTypeVariableProcess;
 import org.jbpm.bpmn2.subprocess.SubprocessGroupAssignmentModel;
 import org.jbpm.bpmn2.subprocess.SubprocessGroupAssignmentProcess;
+import org.jbpm.bpmn2.subprocess.UserTaskChildModel;
+import org.jbpm.bpmn2.subprocess.UserTaskChildProcess;
+import org.jbpm.bpmn2.subprocess.UserTaskMainModel;
+import org.jbpm.bpmn2.subprocess.UserTaskMainProcess;
 import org.jbpm.bpmn2.task.ReceiveTaskModel;
 import org.jbpm.bpmn2.task.ReceiveTaskProcess;
 import org.jbpm.bpmn2.task.SendTaskModel;
@@ -1671,17 +1674,33 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     @Test
     public void testCallActivityWithDataAssignment() {
         Application app = ProcessTestHelper.newApplication();
-        org.kie.kogito.process.Process<AssignmentSubProcessModel> assignmentSubProcessProcess = AssignmentSubProcessProcess.newProcess(app);
-        AssignmentSubProcessModel assignmentSubProcessModel = assignmentSubProcessProcess.createModel();
-        org.kie.kogito.process.ProcessInstance<AssignmentSubProcessModel> assignmentSubProcessInstance = assignmentSubProcessProcess.createInstance(assignmentSubProcessModel);
-        org.kie.kogito.process.Process<AssignmentProcessModel> processDefinition = AssignmentProcessProcess.newProcess(app);
-        AssignmentProcessModel model = processDefinition.createModel();
-        model.setName("oldValue");
-        org.kie.kogito.process.ProcessInstance<AssignmentProcessModel> instance = processDefinition.createInstance(model);
+        org.kie.kogito.process.Process<AssignmentProcessModel> assignmentProcess = AssignmentProcessProcess.newProcess(app);
+        AssignmentSubProcessProcess.newProcess(app);
+
+        AssignmentProcessModel assignmentSubProcessModel = assignmentProcess.createModel();
+        assignmentSubProcessModel.setName("oldValue");
+        org.kie.kogito.process.ProcessInstance<AssignmentProcessModel> instance = assignmentProcess.createInstance(assignmentSubProcessModel);
         instance.start();
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
         assertThat(instance.variables().getMessage()).isEqualTo("Hello Genworth welcome to jBPMS!");
+    }
+
+    @Test
+    public void testAbortChildProcessFromParentProcess() {
+        Application app = ProcessTestHelper.newApplication();
+        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<UserTaskMainModel> main = UserTaskMainProcess.newProcess(app);
+        org.kie.kogito.process.Process<UserTaskChildModel> child = UserTaskChildProcess.newProcess(app);
+
+        UserTaskMainModel assignmentSubProcessModel = main.createModel();
+        org.kie.kogito.process.ProcessInstance<UserTaskMainModel> instance = main.createInstance(assignmentSubProcessModel);
+        instance.start();
+        instance.abort();
+
+        assertThat(child.instances().stream().count()).isEqualTo(0);
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
     }
 
     @Test
