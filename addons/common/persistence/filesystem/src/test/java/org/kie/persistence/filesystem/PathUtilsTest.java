@@ -37,7 +37,7 @@ class PathUtilsTest {
             PathUtils.resolveSecure(base, userProvided);
         });
 
-        assertEquals("Invalid or unsafe path: ../otherfolder/file.txt", exception.getMessage());
+        assertEquals("Attempted path traversal: ../otherfolder/file.txt", exception.getMessage());
     }
 
     @Test
@@ -60,7 +60,7 @@ class PathUtilsTest {
             PathUtils.resolveSecure(base, userProvided);
         });
 
-        assertEquals("Invalid or unsafe path: ../hack", exception.getMessage());
+        assertEquals("Attempted path traversal: ../hack", exception.getMessage());
     }
 
     @Test
@@ -72,7 +72,7 @@ class PathUtilsTest {
             PathUtils.resolveSecure(base, userProvided);
         });
 
-        assertEquals("Invalid or unsafe path: ../../etc/passwd", exception.getMessage());
+        assertEquals("Attempted path traversal: ../../etc/passwd", exception.getMessage());
     }
 
 }

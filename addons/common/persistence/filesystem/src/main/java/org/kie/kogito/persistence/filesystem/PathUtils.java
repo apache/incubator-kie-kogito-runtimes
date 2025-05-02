@@ -26,7 +26,7 @@ public class PathUtils {
         Path target = base.resolve(userProvided).normalize();
 
         if (!target.startsWith(base)) {
-            throw new SecurityException("Invalid or unsafe path: " + userProvided);
+            throw new SecurityException("Attempted path traversal: " + userProvided);
         }
         return target;
     }

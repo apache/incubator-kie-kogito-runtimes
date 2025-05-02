@@ -45,6 +45,6 @@ class PathUtilsTest {
     void testResolveSecureRejectsTraversal() {
         assertThatExceptionOfType(SecurityException.class)
                 .isThrownBy(() -> PathUtils.resolveSecure(base, "../outside.svg"))
-                .withMessageContaining("Invalid or unsafe path"); // Adjusted to match actual message
+                .withMessageContaining("Attempted path traversal:"); // Adjusted to match actual message
     }
 }
