@@ -1206,6 +1206,23 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
     }
 
+    @ParameterizedTest
+    @CsvSource({ "JohnsRuleFlow, john", "MarysRuleFlow, mary" })
+    public void testBusinessRuleTaskWithDataInputsWithDynamicUnitName(String ruleFlowName, String expectedName) throws Exception {
+        kruntime = createKogitoProcessRuntime("BPMN2-BusinessRuleTaskWithDynamicUnitName.bpmn2",
+                "BPMN2-BusinessRuleTaskWithDynamicRule.drl");
+
+        Person person = new Person();
+        Map<String, Object> params = new HashMap<>();
+        params.put("person", person);
+        params.put("unitName", ruleFlowName);
+        KogitoProcessInstance processInstance = kruntime.startProcess(
+                "BPMN2-BusinessRuleTask", params);
+
+        assertProcessInstanceFinished(processInstance, kruntime);
+        assertThat(person.getName()).isEqualTo(expectedName);
+    }
+
     @Test
     public void testBusinessRuleTaskWithContionalEvent() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-ConditionalEventRuleTask.bpmn2",
