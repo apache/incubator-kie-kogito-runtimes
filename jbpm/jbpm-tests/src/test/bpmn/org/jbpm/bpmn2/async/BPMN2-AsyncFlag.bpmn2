@@ -25,7 +25,7 @@
   <bpmn2:interface id="_F387A14A-BC7C-49AC-BAED-0CCFE1E114C6_ServiceInterface" name="org.jbpm.bpmn2.objects.HelloService" implementationRef="org.jbpm.bpmn2.objects.HelloService">
     <bpmn2:operation id="_F387A14A-BC7C-49AC-BAED-0CCFE1E114C6_ServiceOperation" name="hello" implementationRef="hello"/>
   </bpmn2:interface>
-  <bpmn2:process id="AsyncProcess" drools:packageName="com.example" drools:version="1.0" drools:adHoc="false" name="AsyncProcess" isExecutable="true" processType="Public">
+  <bpmn2:process id="AsyncFlag" drools:packageName="org.jbpm.bpmn2.async" drools:version="1.0" drools:adHoc="false" name="AsyncFlag" isExecutable="true" processType="Public">
     <bpmn2:property id="name" itemSubjectRef="_nameItem" name="name"/>
     <bpmn2:property id="greeting" itemSubjectRef="_greetingItem" name="greeting"/>
     <bpmn2:sequenceFlow id="_B2E99C0F-7ECA-4A3E-A559-F0DC8E35743E" sourceRef="_F387A14A-BC7C-49AC-BAED-0CCFE1E114C6" targetRef="_F0619798-C09C-4ABE-AFA8-62A9C86F5604">
