@@ -86,9 +86,9 @@ public class PublishEventBusinessRuleIT extends AbstractRulesCodegenIT {
 
         assertThat(processInstanceStateEvents).hasSize(2);
         assertThat(processInstanceStateEvents)
-            .extracting(ProcessInstanceStateDataEvent::getData)
-            .extracting(ProcessInstanceStateEventBody::getState)
-            .containsExactlyInAnyOrder(KogitoProcessInstance.STATE_ACTIVE, KogitoProcessInstance.STATE_COMPLETED);
+                .extracting(ProcessInstanceStateDataEvent::getData)
+                .extracting(ProcessInstanceStateEventBody::getState)
+                .containsExactlyInAnyOrder(KogitoProcessInstance.STATE_ACTIVE, KogitoProcessInstance.STATE_COMPLETED);
 
         ProcessInstanceStateDataEvent processDataEvent =
                 processInstanceStateEvents.stream().filter(e -> e.getData().getState() == KogitoProcessInstance.STATE_COMPLETED).findFirst().orElseThrow();
