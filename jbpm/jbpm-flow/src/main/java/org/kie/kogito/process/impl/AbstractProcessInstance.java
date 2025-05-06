@@ -597,6 +597,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void completeWorkItem(String id, Map<String, Object> variables, Policy... policies) {
         processInstanceLockStrategy.executeOperation(id, () -> {
+            processInstance();
             syncWorkItems();
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().completeWorkItem(id, variables, policies);
             removeOnFinish();
@@ -607,6 +608,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public <R> R updateWorkItem(String id, Function<KogitoWorkItem, R> updater, Policy... policies) {
         return processInstanceLockStrategy.executeOperation(id, () -> {
+            processInstance();
             syncWorkItems();
             R result = getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().updateWorkItem(id, updater, policies);
             ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
@@ -617,6 +619,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void abortWorkItem(String id, Policy... policies) {
         processInstanceLockStrategy.executeOperation(id, () -> {
+            processInstance();
             syncWorkItems();
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().abortWorkItem(id, policies);
             removeOnFinish();
@@ -627,6 +630,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void transitionWorkItem(String id, WorkItemTransition transition) {
         processInstanceLockStrategy.executeOperation(id, () -> {
+            processInstance();
             syncWorkItems();
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().transitionWorkItem(id, transition);
             removeOnFinish();
