@@ -26,7 +26,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import org.jbpm.bpmn2.intermediate.IntermediateCatchEventTimerDurationWithErrorProcessInstance;
+import org.jbpm.bpmn2.support.InMemmoryProcessInstances;
 import org.kie.api.event.process.ProcessNodeEvent;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
@@ -39,10 +39,14 @@ import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
+import org.kie.kogito.process.MutableProcessInstances;
+import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.bpmn2.BpmnProcesses;
+import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
 import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 import org.kie.kogito.process.impl.StaticProcessConfig;
@@ -65,6 +69,14 @@ public class ProcessTestHelper {
 
     public static Application newApplication(ProcessConfig staticConfig) {
         BpmnProcesses bpmnProcesses = new BpmnProcesses();
+        bpmnProcesses.setProcessInstancesFactory(new ProcessInstancesFactory() {
+
+            @Override
+            public MutableProcessInstances<?> createProcessInstances(Process<?> process) {
+                return (MutableProcessInstances<?>) new InMemmoryProcessInstances((Process) process);
+            }
+            
+        });
         InMemoryJobContext context = new InMemoryJobContext(null, staticUnitOfWorkManager(), bpmnProcesses, null);
         staticJobService().clearJobExecutorFactories();
         staticJobService().registerJobExecutorFactory(new InMemoryProcessJobExecutorFactory(context));
@@ -174,7 +186,7 @@ public class ProcessTestHelper {
 
     }
 
-    public static CompletionKogitoEventListener registerCompletionEventListener(IntermediateCatchEventTimerDurationWithErrorProcessInstance instance) {
+    public static CompletionKogitoEventListener registerCompletionEventListener(AbstractProcessInstance<?> instance) {
         CompletionKogitoEventListener completionEventListener = new CompletionKogitoEventListener(instance.id());
         instance.internalGetProcessInstance().addEventListener("processInstanceCompleted:" + instance.id(), completionEventListener, false);
         return completionEventListener;
