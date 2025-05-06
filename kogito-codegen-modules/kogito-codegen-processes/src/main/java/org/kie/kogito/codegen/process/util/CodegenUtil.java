@@ -34,6 +34,11 @@ public final class CodegenUtil {
      */
     public static final String TRANSACTION_ENABLED = "transactionEnabled";
 
+    /**
+     * Flag used to configure fault tolerance enabling. Default to <code>true</code>
+     */
+    public static final String FAULT_TOLERANCE_ENABLED = "faultToleranceEnabled";
+
     private CodegenUtil() {
         // do nothing
     }
@@ -107,5 +112,11 @@ public final class CodegenUtil {
 
     private static String getApplicationProperty(KogitoBuildContext context, String property) {
         return context.getApplicationProperty(property).orElseThrow(() -> new IllegalArgumentException("Property " + property + " defined but does not contain proper value"));
+    }
+
+    public static boolean isFaultToleranceEnabled(Generator generator, KogitoBuildContext context) {
+        boolean isFaultToleranceEnabled = getProperty(generator, context, FAULT_TOLERANCE_ENABLED, Boolean::parseBoolean, true);
+
+        return !JavaKogitoBuildContext.CONTEXT_NAME.equals(context.name()) && isFaultToleranceEnabled;
     }
 }
