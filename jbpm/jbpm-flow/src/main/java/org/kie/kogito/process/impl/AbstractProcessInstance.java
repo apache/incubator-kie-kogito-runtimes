@@ -597,6 +597,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void completeWorkItem(String workItemId, Map<String, Object> variables, Policy... policies) {
         processInstanceLockStrategy.executeOperation(id, () -> {
+            processInstance();
             syncWorkItems();
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().completeWorkItem(workItemId, variables, policies);
             removeOnFinish();
@@ -607,6 +608,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public <R> R updateWorkItem(String workItemId, Function<KogitoWorkItem, R> updater, Policy... policies) {
         return processInstanceLockStrategy.executeOperation(id, () -> {
+            processInstance();
             syncWorkItems();
             R result = getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().updateWorkItem(workItemId, updater, policies);
             ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
@@ -617,6 +619,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void abortWorkItem(String workItemId, Policy... policies) {
         processInstanceLockStrategy.executeOperation(id, () -> {
+            processInstance();
             syncWorkItems();
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().abortWorkItem(workItemId, policies);
             removeOnFinish();
@@ -627,6 +630,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void transitionWorkItem(String workItemId, WorkItemTransition transition) {
         processInstanceLockStrategy.executeOperation(id, () -> {
+            processInstance();
             syncWorkItems();
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().transitionWorkItem(workItemId, transition);
             removeOnFinish();

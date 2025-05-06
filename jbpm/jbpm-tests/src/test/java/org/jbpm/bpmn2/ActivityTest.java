@@ -221,6 +221,7 @@ import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
+import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -1715,8 +1716,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     @Test
     public void testAbortFirstChildProcessFromParentProcess() {
         Application app = ProcessTestHelper.newApplication();
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        ProcessTestHelper.registerHandler(app, "Human Task", new DefaultKogitoWorkItemHandler());
         org.kie.kogito.process.Process<FlowMainModel> main = FlowMainProcess.newProcess(app);
         org.kie.kogito.process.Process<FlowChild1Model> child1 = FlowChild1Process.newProcess(app);
         org.kie.kogito.process.Process<FlowChild2Model> child2 = FlowChild2Process.newProcess(app);
@@ -1737,8 +1737,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     @Test
     public void testAbortSecondChildProcessFromParentProcess() {
         Application app = ProcessTestHelper.newApplication();
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        ProcessTestHelper.registerHandler(app, "Human Task", new DefaultKogitoWorkItemHandler());
         org.kie.kogito.process.Process<FlowMainModel> main = FlowMainProcess.newProcess(app);
         org.kie.kogito.process.Process<FlowChild1Model> child1 = FlowChild1Process.newProcess(app);
         org.kie.kogito.process.Process<FlowChild2Model> child2 = FlowChild2Process.newProcess(app);
@@ -1762,8 +1761,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     @Test
     public void testAbortThirdChildProcessFromParentProcess() {
         Application app = ProcessTestHelper.newApplication();
-        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        ProcessTestHelper.registerHandler(app, "Human Task", new DefaultKogitoWorkItemHandler());
         org.kie.kogito.process.Process<FlowMainModel> main = FlowMainProcess.newProcess(app);
         org.kie.kogito.process.Process<FlowChild1Model> child1 = FlowChild1Process.newProcess(app);
         org.kie.kogito.process.Process<FlowChild2Model> child2 = FlowChild2Process.newProcess(app);
