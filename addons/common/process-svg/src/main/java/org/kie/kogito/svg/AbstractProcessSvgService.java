@@ -71,18 +71,13 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
             Path path = PathUtils.resolveSecure(baseDir, processId + ".svg");
 
             try {
-                if (Files.exists(path) && Files.isRegularFile(path) && path.toRealPath().startsWith(baseDir.toRealPath())) {
-                    try {
-                        return Optional.of(new String(Files.readAllBytes(path)));
-                    } catch (IOException e) {
-                        throw new ProcessSVGException("Exception trying to read SVG file", e);
-                    }
-                } else {
+                if (Files.notExists(path) || !Files.isRegularFile(path) || !path.toRealPath().startsWith(baseDir.toRealPath())) {
                     LOGGER.debug("Could not find {}.svg file in folder {}", processId, svgResourcesPath.get());
                     return Optional.empty();
                 }
+                return Optional.of(new String(Files.readAllBytes(path)));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new ProcessSVGException("Exception trying to read SVG file", e);
             }
         } else {
             return readFileContentFromClassPath(processId + ".svg");
