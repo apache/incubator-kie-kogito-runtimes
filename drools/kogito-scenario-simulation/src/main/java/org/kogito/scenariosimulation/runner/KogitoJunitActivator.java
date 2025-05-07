@@ -21,7 +21,7 @@ package org.kogito.scenariosimulation.runner;
 import org.drools.scenariosimulation.backend.runner.ScenarioJunitActivator;
 import org.junit.runners.model.InitializationError;
 
-@Deprecated(since = "10.1", forRemoval = true)
+@Deprecated(since = "10.2", forRemoval = true)
 public class KogitoJunitActivator extends ScenarioJunitActivator {
 
     public KogitoJunitActivator(Class<?> testClass) throws InitializationError {
