@@ -19,7 +19,6 @@
  */
 package org.kie.kogito.codegen.decision;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -31,13 +30,13 @@ import java.util.stream.Collectors;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
-import org.drools.io.FileSystemResource;
 import org.kie.api.io.Resource;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.marshalling.DMNMarshaller;
 import org.kie.dmn.backend.marshalling.v1x.DMNMarshallerFactory;
 import org.kie.dmn.core.compiler.DMNProfile;
 import org.kie.dmn.core.compiler.RuntimeTypeCheckOption;
+import org.kie.dmn.efesto.compiler.model.DMNResourceSetResource;
 import org.kie.dmn.efesto.compiler.model.DmnCompilationContext;
 import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
 import org.kie.dmn.model.api.BusinessKnowledgeModel;
@@ -54,7 +53,6 @@ import org.kie.efesto.common.api.identifiers.ModelLocalUriId;
 import org.kie.efesto.common.api.model.EfestoCompilationContext;
 import org.kie.efesto.common.api.model.GeneratedModelResource;
 import org.kie.efesto.common.api.model.GeneratedResources;
-import org.kie.efesto.compilationmanager.api.model.EfestoFileSetResource;
 import org.kie.efesto.compilationmanager.api.service.CompilationManager;
 import org.kie.efesto.compilationmanager.api.utils.SPIUtils;
 import org.kie.kogito.KogitoGAV;
@@ -114,13 +112,9 @@ public class DecisionCodegenUtils {
             Set<DMNProfile> customDMNProfiles,
             RuntimeTypeCheckOption runtimeTypeCheckOption) {
         DecisionValidation.dmnValidateResources(context, r2cr.keySet());
-        Set<File> dmnFiles = r2cr.keySet().stream()
-                .filter(FileSystemResource.class::isInstance)
-                .map(FileSystemResource.class::cast)
-                .map(FileSystemResource::getFile)
-                .collect(Collectors.toSet());
+        Set<Resource> dmnResources = r2cr.keySet();
         ModelLocalUriId dmnModelLocalUriId = new ModelLocalUriId(LocalUri.Root.append("dmn").append("scesim"));
-        EfestoFileSetResource toProcessDmn = new EfestoFileSetResource(dmnFiles, dmnModelLocalUriId);
+        DMNResourceSetResource toProcessDmn = new DMNResourceSetResource(dmnResources, dmnModelLocalUriId);
         EfestoCompilationContext dmnCompilationContext = DmnCompilationContext.buildWithParentClassLoader(context.getClassLoader(), customDMNProfiles, runtimeTypeCheckOption);
         compilationManager.processResource(dmnCompilationContext, toProcessDmn);
         Map<String, GeneratedResources> generatedResourcesMap = dmnCompilationContext.getGeneratedResourcesMap();
@@ -188,11 +182,9 @@ public class DecisionCodegenUtils {
     static void generateDecisionsFiles(Collection<GeneratedFile> generatedFiles, DMNModel model, DMNMarshaller marshaller) {
         Definitions definitions = model.getDefinitions();
         for (DRGElement drg : definitions.getDrgElement()) {
-            if (drg instanceof Decision) {
-                Decision decision = (Decision) drg;
+            if (drg instanceof Decision decision) {
                 decision.setExpression(null);
-            } else if (drg instanceof BusinessKnowledgeModel) {
-                BusinessKnowledgeModel bkm = (BusinessKnowledgeModel) drg;
+            } else if (drg instanceof BusinessKnowledgeModel bkm) {
                 bkm.setEncapsulatedLogic(null);
             }
         }
