@@ -61,8 +61,8 @@
       <artifactId>microprofile-openapi-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.smallrye</groupId>
-      <artifactId>smallrye-fault-tolerance</artifactId>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
     </dependency>
   </dependencies>
 
