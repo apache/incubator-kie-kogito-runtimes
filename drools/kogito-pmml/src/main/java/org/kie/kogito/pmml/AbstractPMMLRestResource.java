@@ -19,6 +19,7 @@
 package org.kie.kogito.pmml;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.kie.api.pmml.PMML4Result;
 import org.kie.kogito.Application;
@@ -38,6 +39,7 @@ public abstract class AbstractPMMLRestResource {
 
     public static String getJsonErrorMessage(Exception e) {
         String errorMessage = String.format("%1$s: %2$s", e.getClass().getName(), e.getMessage() != null ? e.getMessage() : "");
-        return String.format("{\"exception\" : \"%s\"}", errorMessage);
+        Logger.getLogger(errorMessage);
+        return "{\"exception\" : \"Internal server error occurred while processing the prediction.\"}";
     }
 }
