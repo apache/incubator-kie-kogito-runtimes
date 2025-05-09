@@ -23,9 +23,12 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import org.jbpm.workflow.core.node.AsyncEventNode;
+import org.jbpm.workflow.core.node.CompositeNode;
+import org.jbpm.workflow.core.node.StartNode;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.WorkflowElementIdentifier;
+import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
@@ -102,6 +105,19 @@ public interface NodeInstanceContainer extends KogitoNodeInstanceContainer {
             return ((AsyncEventNode) node).getActualNode();
         }
         boolean asyncMode = Boolean.parseBoolean((String) node.getMetaData().get(CUSTOM_ASYNC));
+
+        if (!asyncMode && !(node instanceof StartNode)) {
+            NodeContainer nodeContainer = ((KogitoNode) node).getParentContainer();
+            while (nodeContainer != null && !(nodeContainer instanceof WorkflowProcess)) {
+                if (nodeContainer instanceof CompositeNode) {
+                    nodeContainer = ((CompositeNode) nodeContainer).getParentContainer();
+                } else {
+                    break;
+                }
+            }
+            WorkflowProcess workflowProcess = (WorkflowProcess) nodeContainer;
+            asyncMode |= Boolean.parseBoolean((String) workflowProcess.getMetaData().get(CUSTOM_ASYNC));
+        }
         if (asyncMode) {
             return new AsyncEventNode(node);
         }

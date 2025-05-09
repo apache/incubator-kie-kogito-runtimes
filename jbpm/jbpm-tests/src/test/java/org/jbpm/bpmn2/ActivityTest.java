@@ -19,6 +19,8 @@
 package org.jbpm.bpmn2;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +49,10 @@ import org.jbpm.bpmn2.activity.UserTaskWithSimulationMetaDataModel;
 import org.jbpm.bpmn2.activity.UserTaskWithSimulationMetaDataProcess;
 import org.jbpm.bpmn2.adhoc.SubProcessInAdHocProcessModel;
 import org.jbpm.bpmn2.adhoc.SubProcessInAdHocProcessProcess;
+import org.jbpm.bpmn2.async.AsyncFlagModel;
+import org.jbpm.bpmn2.async.AsyncFlagProcess;
+import org.jbpm.bpmn2.async.AsyncGlobalFlagModel;
+import org.jbpm.bpmn2.async.AsyncGlobalFlagProcess;
 import org.jbpm.bpmn2.flow.CompositeWithDIGraphicalModel;
 import org.jbpm.bpmn2.flow.CompositeWithDIGraphicalProcess;
 import org.jbpm.bpmn2.flow.MinimalImplicitModel;
@@ -79,6 +85,7 @@ import org.jbpm.bpmn2.flow.UserTaskNoneProcess;
 import org.jbpm.bpmn2.flow.UserTaskProcess;
 import org.jbpm.bpmn2.flow.XORSameTargetModel;
 import org.jbpm.bpmn2.flow.XORSameTargetProcess;
+import org.jbpm.bpmn2.handler.AutoCompleteWorkItemHandler;
 import org.jbpm.bpmn2.objects.Account;
 import org.jbpm.bpmn2.objects.Address;
 import org.jbpm.bpmn2.objects.HelloService;
@@ -212,6 +219,7 @@ import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
+import static org.awaitility.Awaitility.waitAtMost;
 
 public class ActivityTest extends JbpmBpmn2TestCase {
 
@@ -223,6 +231,36 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         org.kie.kogito.process.ProcessInstance<MinimalModel> instance = minimalProcess.createInstance(model);
         instance.start();
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+    }
+
+    @Test
+    public void testAsyncFlagProcess() throws InterruptedException {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.HelloService_hello__F387A14A_BC7C_49AC_BAED_0CCFE1E114C6_Handler", new AutoCompleteWorkItemHandler());
+        org.kie.kogito.process.Process<AsyncFlagModel> minimalProcess = AsyncFlagProcess.newProcess(app);
+        AsyncFlagModel model = minimalProcess.createModel();
+        org.kie.kogito.process.ProcessInstance<AsyncFlagModel> instance = minimalProcess.createInstance(model);
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_PENDING);
+        instance.start();
+        // as the execution is not synchronous it will lead to active state.
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
+        waitAtMost(Duration.of(20L, ChronoUnit.SECONDS)).given()
+                .until(() -> instance.status() == org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+    }
+
+    @Test
+    public void testAsyncGlobalFlagProcess() throws InterruptedException {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "org.jbpm.bpmn2.objects.HelloService_hello__F387A14A_BC7C_49AC_BAED_0CCFE1E114C6_Handler", new AutoCompleteWorkItemHandler());
+        org.kie.kogito.process.Process<AsyncGlobalFlagModel> minimalProcess = AsyncGlobalFlagProcess.newProcess(app);
+        AsyncGlobalFlagModel model = minimalProcess.createModel();
+        org.kie.kogito.process.ProcessInstance<AsyncGlobalFlagModel> instance = minimalProcess.createInstance(model);
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_PENDING);
+        instance.start();
+        // as the execution is not synchronous it will lead to active state.
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
+        waitAtMost(Duration.of(20L, ChronoUnit.SECONDS)).given()
+                .until(() -> instance.status() == org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
