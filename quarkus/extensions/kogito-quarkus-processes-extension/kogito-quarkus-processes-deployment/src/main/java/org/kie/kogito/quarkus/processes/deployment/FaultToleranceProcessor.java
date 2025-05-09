@@ -24,26 +24,21 @@ import java.util.function.BooleanSupplier;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import io.quarkus.deployment.Capabilities;
+import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.SystemPropertyBuildItem;
 
 import jakarta.interceptor.Interceptor;
 
-public class FaultToleranceProcessor {
+import static org.kie.kogito.codegen.api.context.ContextAttributesConstants.KOGITO_FAULT_TOLERANCE_ENABLED;
 
-    private static final String SMALLRYE_FAULT_TOLERANCE_CAPABILITY = "io.quarkus.smallrye.faulttolerance";
+public class FaultToleranceProcessor {
 
     public static class IsFaultToleranceEnabled implements BooleanSupplier {
         @Override
         public boolean getAsBoolean() {
-            return checkFaultToleranceProperty("kogito.faultToleranceEnabled") ||
-                    checkFaultToleranceProperty("kogito.processes.faultToleranceEnabled") ||
-                    checkFaultToleranceProperty("kogito.usertasks.faultToleranceEnabled");
-        }
-
-        private boolean checkFaultToleranceProperty(String propertyName) {
-            return ConfigProvider.getConfig().getOptionalValue(propertyName, Boolean.class).orElse(true);
+            return ConfigProvider.getConfig().getOptionalValue(KOGITO_FAULT_TOLERANCE_ENABLED, Boolean.class).orElse(true);
         }
     }
 
@@ -52,7 +47,7 @@ public class FaultToleranceProcessor {
             BuildProducer<SystemPropertyBuildItem> systemProperties,
             Capabilities capabilities) {
 
-        if (capabilities.isPresent(SMALLRYE_FAULT_TOLERANCE_CAPABILITY)) {
+        if (capabilities.isPresent(Capability.SMALLRYE_FAULT_TOLERANCE)) {
             systemProperties.produce(new SystemPropertyBuildItem("mp.fault.tolerance.interceptor.priority", String.valueOf(Interceptor.Priority.PLATFORM_BEFORE + 100)));
         }
     }

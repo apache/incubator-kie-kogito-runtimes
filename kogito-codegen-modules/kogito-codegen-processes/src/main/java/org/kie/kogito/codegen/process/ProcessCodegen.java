@@ -380,7 +380,7 @@ public class ProcessCodegen extends AbstractGenerator {
                         .withSignals(metaData.getSignals())
                         .withTriggers(metaData.isStartable(), metaData.isDynamic(), metaData.getTriggers())
                         .withTransaction(isTransactionEnabled(this, context()))
-                        .withFaultTolerance(isFaultToleranceEnabled(this, context()));
+                        .withFaultTolerance(isFaultToleranceEnabled(context()));
 
                 rgs.add(processResourceGenerator);
             }

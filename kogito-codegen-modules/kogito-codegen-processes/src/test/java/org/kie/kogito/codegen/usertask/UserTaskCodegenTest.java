@@ -21,15 +21,12 @@ package org.kie.kogito.codegen.usertask;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.drools.codegen.common.rest.RestAnnotator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.faultTolerance.impl.QuarkusFaultToleranceAnnotator;
-import org.kie.kogito.codegen.faultTolerance.impl.SpringBootFaultToleranceAnnotator;
 import org.kie.kogito.codegen.process.util.CodegenUtil;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -37,7 +34,6 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.codegen.api.utils.KogitoContextTestUtils.mockClassAvailabilityResolver;
 import static org.kie.kogito.codegen.process.ProcessResourceGeneratorTest.*;
 
 public class UserTaskCodegenTest {
@@ -80,25 +76,6 @@ public class UserTaskCodegenTest {
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
-    void testUserTaskManageTransactionalGeneratorDisabled(KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = contextBuilder.build();
-        UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
-        context.setApplicationProperty(CodegenUtil.generatorProperty(userTaskCodegen, CodegenUtil.TRANSACTION_ENABLED), "false");
-
-        CompilationUnit compilationUnit = userTaskCodegen.createRestEndpointCompilationUnit();
-
-        Collection<MethodDeclaration> restEndpoints = getRestMethods(compilationUnit, context);
-        assertThat(restEndpoints).isNotEmpty();
-
-        testTransactionAnnotationIsPresent(restEndpoints, context, false);
-
-        userTaskCodegen.manageTransactional(compilationUnit);
-
-        testTransactionAnnotationIsPresent(restEndpoints, context, false);
-    }
-
-    @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testUserTaskManageTransactionalEnabled(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder.build();
         UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
@@ -117,51 +94,10 @@ public class UserTaskCodegenTest {
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
-    void testUserTaskManageTransactionalGeneratorEnabled(KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = contextBuilder.build();
-        UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
-        context.setApplicationProperty(CodegenUtil.generatorProperty(userTaskCodegen, CodegenUtil.TRANSACTION_ENABLED), "true");
-        CompilationUnit compilationUnit = userTaskCodegen.createRestEndpointCompilationUnit();
-
-        Collection<MethodDeclaration> restEndpoints = getRestMethods(compilationUnit, context);
-        assertThat(restEndpoints).isNotEmpty();
-
-        testTransactionAnnotationIsPresent(restEndpoints, context, false);
-
-        userTaskCodegen.manageTransactional(compilationUnit);
-
-        testTransactionAnnotationIsPresent(restEndpoints, context, true);
-    }
-
-    @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testUserTaskFaultToleranceDisabled(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder.build();
         UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
         context.setApplicationProperty(CodegenUtil.globalProperty(CodegenUtil.FAULT_TOLERANCE_ENABLED), "false");
-        CompilationUnit compilationUnit = userTaskCodegen.createRestEndpointCompilationUnit();
-
-        Collection<MethodDeclaration> restEndpoints = getRestMethods(compilationUnit, context);
-        assertThat(restEndpoints).isNotEmpty();
-
-        testFaultToleranceAnnotationIsPresent(restEndpoints, context, false);
-
-        userTaskCodegen.manageFaultTolerance(compilationUnit);
-
-        testFaultToleranceAnnotationIsPresent(restEndpoints, context, false);
-    }
-
-    @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
-    void testUserTaskFaultToleranceGeneratorDisabled(KogitoBuildContext.Builder contextBuilder) {
-        // Not relevant for the test, just to avoid validation failure
-        contextBuilder
-                .withClassAvailabilityResolver(
-                        mockClassAvailabilityResolver(List.of(QuarkusFaultToleranceAnnotator.RETRY_ANNOTATION, SpringBootFaultToleranceAnnotator.RETRY_ANNOTATION), emptyList()));
-
-        KogitoBuildContext context = contextBuilder.build();
-        UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
-        context.setApplicationProperty(CodegenUtil.generatorProperty(userTaskCodegen, CodegenUtil.FAULT_TOLERANCE_ENABLED), "false");
         CompilationUnit compilationUnit = userTaskCodegen.createRestEndpointCompilationUnit();
 
         Collection<MethodDeclaration> restEndpoints = getRestMethods(compilationUnit, context);

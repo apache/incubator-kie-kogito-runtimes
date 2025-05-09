@@ -208,7 +208,7 @@ public class UserTaskCodegen extends AbstractGenerator {
      *
      */
     protected void manageFaultTolerance(CompilationUnit compilationUnit) {
-        if (isFaultToleranceEnabled(this, context())) {
+        if (isFaultToleranceEnabled(context())) {
             FaultToleranceAnnotator annotator = lookFaultToleranceAnnotatorForContext(context());
             getRestMethods(compilationUnit)
                     .forEach(annotator::addFaultToleranceAnnotations);
