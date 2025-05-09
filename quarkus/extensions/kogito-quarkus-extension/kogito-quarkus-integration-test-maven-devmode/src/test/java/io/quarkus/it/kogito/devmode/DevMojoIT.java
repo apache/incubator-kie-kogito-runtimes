@@ -54,13 +54,14 @@ import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /*
  *  Test inspired by https://github.com/quarkusio/quarkus/blob/c8919cfb8abbc3df49dd1febd74b998417b0367e/integration-tests/maven/src/test/java/io/quarkus/maven/it/DevMojoIT.java#L218
  */
 //@DisableForNative: it is not yet available as of 1.11, and I doubt is ever needed for this module
 @NotThreadSafe
-public class DevMojoIT extends RunAndCheckMojoTestBase {
+public abstract class DevMojoIT extends RunAndCheckMojoTestBase {
 
     private static final String PROPERTY_MAVEN_REPO_LOCAL = "maven.repo.local";
     private static final String PROPERTY_MAVEN_SETTINGS = "maven.settings";
@@ -303,7 +304,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         // --- Change #2
         modifyFiles(DRL_HOT_RELOAD,
                 Map.of(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"),
-                controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+")),
+                        controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+")),
                 2);
         await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
                 .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Bonjour, v1"));
@@ -345,6 +346,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
     @Override
     protected void run(boolean performCompile, String... options) throws MavenInvocationException {
         assertThat(testDir).isDirectory();
+        assertThatPortIsFree();
         running = new RunningInvoker(testDir, false);
         String applicationName = "";
         final List<String> args = new ArrayList<>(4 + options.length);
@@ -519,5 +521,16 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
             }
         }
         return additionalArguments;
+    }
+
+    private void assertThatPortIsFree() {
+        try {
+            // Call get(), which doesn't retry - otherwise, tests will go very slow
+            devModeClient.get();
+            fail("The port " + getPort()
+                    + " appears to be in use before starting the test instance of Quarkus, so any tests will give unpredictable results.");
+        } catch (IOException e) {
+            // All good, we wanted this
+        }
     }
 }
