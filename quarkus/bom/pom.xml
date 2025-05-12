@@ -38,7 +38,7 @@
 
   <properties>
     <!-- Keep it aligned with https://github.com/quarkusio/quarkus/blob/3.15/pom.xml#L72 -->
-    <version.io.fabric8.kubernetes-client>6.13.4</version.io.fabric8.kubernetes-client>
+    <version.io.fabric8.kubernetes-client>7.1.0</version.io.fabric8.kubernetes-client>
   </properties>
   <dependencyManagement>
     <dependencies>
