@@ -16,11 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.kie.kogito.signal;
 
-public interface SignalManagerHub extends SignalManager {
+import java.util.List;
 
-    void addProcessInstanceResolver(ProcessInstanceResolver<?> processInstanceResolver);
+import org.kie.kogito.process.ProcessInstance;
 
-    void removeProcessInstanceResolver(ProcessInstanceResolver<?> processInstanceResolver);
+public interface ProcessInstanceResolver<T> {
+
+    ProcessInstance<T> findById(String processInstanceId);
+
+    List<ProcessInstance<T>> waitingForEvents(String eventType);
+
 }

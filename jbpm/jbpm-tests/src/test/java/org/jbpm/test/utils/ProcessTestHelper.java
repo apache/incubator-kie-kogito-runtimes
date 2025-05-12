@@ -26,7 +26,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import org.jbpm.bpmn2.support.InMemmoryProcessInstances;
+import org.jbpm.bpmn2.support.InMemoryProcessInstances;
 import org.kie.api.event.process.ProcessNodeEvent;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
@@ -73,7 +73,7 @@ public class ProcessTestHelper {
 
             @Override
             public MutableProcessInstances<?> createProcessInstances(Process<?> process) {
-                return (MutableProcessInstances<?>) new InMemmoryProcessInstances((Process) process);
+                return (MutableProcessInstances<?>) new InMemoryProcessInstances((Process) process);
             }
             
         });

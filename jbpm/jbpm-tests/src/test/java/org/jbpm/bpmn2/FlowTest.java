@@ -138,7 +138,7 @@ import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
 import org.kie.kogito.internal.process.workitem.WorkItemTransition;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.impl.Sig;
+import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -514,7 +514,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         model.setX(25);
         ProcessInstance<InclusiveSplitAndJoinExtraPathModel> processInstance = definition.createInstance(model);
         processInstance.start();
-        processInstance.send(Sig.of("signal", null));
+        processInstance.send(SignalFactory.of("signal", null));
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
         assertThat(activeWorkItems).hasSize(4);
         for (int i = 0; i < 3; i++) {
@@ -1291,7 +1291,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertThat(list).isEmpty();
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-        processInstance.send(Sig.of("signal", null));
+        processInstance.send(SignalFactory.of("signal", null));
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         assertThat(list).hasSize(1);
         System.clearProperty("jbpm.enable.multi.con");

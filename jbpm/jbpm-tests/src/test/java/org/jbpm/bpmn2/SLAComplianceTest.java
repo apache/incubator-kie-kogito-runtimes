@@ -45,8 +45,8 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
-import org.kie.kogito.process.impl.Sig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -435,7 +435,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
                 .internalGetProcessInstance().getNodeInstances();
         assertThat(activeNodes).hasSize(1);
         org.kie.kogito.internal.process.runtime.KogitoNodeInstance eventNode = (KogitoNodeInstance) activeNodes.iterator().next();
-        processInstance.send(Sig.of("MyMessage", null));
+        processInstance.send(SignalFactory.of("MyMessage", null));
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         int slaCompliance = ((org.kie.kogito.process.impl.AbstractProcessInstance<?>) processInstance)
                 .internalGetProcessInstance().getSlaCompliance();

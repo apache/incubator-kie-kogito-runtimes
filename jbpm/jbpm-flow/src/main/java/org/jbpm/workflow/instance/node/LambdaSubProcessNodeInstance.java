@@ -103,7 +103,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         if (!getSubProcessNode().isWaitForCompletion()) {
             triggerCompleted();
         } else if (processInstance.status() == KogitoProcessInstance.STATE_COMPLETED || processInstance.status() == KogitoProcessInstance.STATE_ABORTED) {
-            processInstanceCompleted(processInstance);
+            processInstanceCompleted((ProcessInstance) pi);
         } else {
             addProcessListener();
         }
@@ -124,13 +124,10 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
             return;
         }
 
-        Optional<org.kie.kogito.process.ProcessInstance<?>> pi = getApplicationProcessInstance();
-        pi.ifPresent(e -> e.abort());
-    }
-
-    private Optional<org.kie.kogito.process.ProcessInstance<?>> getApplicationProcessInstance() {
         KogitoProcessRuntime kruntime = (KogitoProcessRuntime) ((ProcessInstance) getProcessInstance()).getKnowledgeRuntime();
-        return ((MutableProcessInstances) kruntime.getApplication().get(Processes.class).processById(this.getSubProcessNode().getProcessId()).instances()).findById(processInstanceId);
+        Optional<AbstractProcessInstance> pi =
+                ((MutableProcessInstances) kruntime.getApplication().get(Processes.class).processById(this.getSubProcessNode().getProcessId()).instances()).findById(processInstanceId);
+        pi.ifPresent(e -> e.abort());
     }
 
     public String getProcessInstanceId() {
@@ -164,7 +161,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     @Override
     public void signalEvent(String type, Object event) {
         if (("processInstanceCompleted:" + processInstanceId).equals(type)) {
-            getApplicationProcessInstance().ifPresent(this::processInstanceCompleted);
+            this.processInstanceCompleted((ProcessInstance) event);
         } else {
             super.signalEvent(type, event);
         }
@@ -175,9 +172,8 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         return new String[] { "processInstanceCompleted:" + processInstanceId };
     }
 
-    public void processInstanceCompleted(org.kie.kogito.process.ProcessInstance<?> kogitoProcessInstance) {
+    public void processInstanceCompleted(ProcessInstance processInstance) {
         removeEventListeners();
-        ProcessInstance processInstance = ((AbstractProcessInstance<?>) kogitoProcessInstance).internalGetProcessInstance();
         handleOutMappings(processInstance);
         if (processInstance.getState() == KogitoProcessInstance.STATE_ABORTED) {
             String faultName = processInstance.getOutcome() == null ? "" : processInstance.getOutcome();
