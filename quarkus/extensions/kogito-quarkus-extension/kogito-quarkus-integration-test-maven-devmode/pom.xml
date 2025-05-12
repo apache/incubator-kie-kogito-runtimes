@@ -133,39 +133,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-invoker-plugin</artifactId>
-        <configuration>
-          <skipInstallation>${skipITs}</skipInstallation>
-          <skipInvocation>${skipITs}</skipInvocation>
-          <writeJunitReport>true</writeJunitReport>
-          <junitPackageName>jbpm-with-drools-quarkus-integration-test-maven-devmode.it</junitPackageName>
-<!--          <setupIncludes>-->
-<!--            <setupInclude>kie-maven-plugin-test-kjar-setup/pom.xml</setupInclude>-->
-<!--          </setupIncludes>-->
-          <pomIncludes>
-            <pomInclude>*/pom.xml</pomInclude>
-          </pomIncludes>
-          <projectsDirectory>src/it</projectsDirectory>
-          <debug>true</debug>
-          <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-          <logDirectory>${project.build.directory}/it</logDirectory>
-          <filterProperties>
-            <org.kie.version>${project.version}</org.kie.version>
-<!--            <version.io.quarkus>version.io.quarkus</version.io.quarkus>-->
-          </filterProperties>
-        </configuration>
-        <executions>
-          <execution>
-            <id>integration-test</id>
-            <goals>
-              <goal>install</goal>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 

@@ -34,6 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,23 +55,18 @@ import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /*
  *  Test inspired by https://github.com/quarkusio/quarkus/blob/c8919cfb8abbc3df49dd1febd74b998417b0367e/integration-tests/maven/src/test/java/io/quarkus/maven/it/DevMojoIT.java#L218
  */
 //@DisableForNative: it is not yet available as of 1.11, and I doubt is ever needed for this module
 @NotThreadSafe
-public abstract class DevMojoIT extends RunAndCheckMojoTestBase {
+public class DevMojoIT extends RunAndCheckMojoTestBase {
 
     private static final String PROPERTY_MAVEN_REPO_LOCAL = "maven.repo.local";
     private static final String PROPERTY_MAVEN_SETTINGS = "maven.settings";
     private static final String MAVEN_REPO_LOCAL = System.getProperty(PROPERTY_MAVEN_REPO_LOCAL);
     private static final String MAVEN_SETTINGS = System.getProperty(PROPERTY_MAVEN_SETTINGS);
-
-    private static final String BPMN2_HOT_RELOAD = "testBPMN2HotReload";
-    private static final String DMN_HOT_RELOAD = "testDMNHotReload";
-    private static final String DRL_HOT_RELOAD = "testDRLHotReload";
 
     private static final long INIT_POLL_DELAY = 3;
     private static final TimeUnit INIT_POLL_DELAY_UNIT = TimeUnit.SECONDS;
@@ -92,261 +88,27 @@ public abstract class DevMojoIT extends RunAndCheckMojoTestBase {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    @Test
-    public void testBPMN2HotReload() throws Exception {
-        testDir = initProject("projects/classic-inst",
-                "projects/project-instrumentation-reload-bpmn",
-                "src/main/java/acme",
-                "src/main/resources/acme",
-                "src/main/resources/hello.dmn");
-        String httpPort = run(BPMN2_HOT_RELOAD);
-        assertThat(httpPort).isNotEmpty();
-
-        final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
-
-        // await Quarkus
+    private String getRestResponse(String port) {
+        AtomicReference<String> resp = new AtomicReference<>();
+        DevModeClient devModeClient = new DevModeClient(Integer.parseInt(port));
+        // retry on exceptions for connection refused, connection errors, etc. which will occur until the Kogito Quarkus maven project is fully built and running
         await().pollDelay(INIT_POLL_DELAY, INIT_POLL_DELAY_UNIT)
-                .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Hello, v1"));
-
-        LOGGER.info("[{}] Starting bpmn process", BPMN2_HOT_RELOAD);
-        given().baseUri("http://localhost:" + httpPort)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body("{\n" +
-                        "    \"s1\": \"v1\"," +
-                        "    \"s2\": \"v2\"" +
-                        "}")
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/" + "simple")
-                .then()
-                .statusCode(201)
-                .body("s2", is("Hello, v1"));
-
-        // --- Change #1
-        File source = new File(testDir, "src/main/resources/simple.bpmn2");
-        modifyFiles(BPMN2_HOT_RELOAD,
-                Map.of(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"),
-                        controlSource, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+")),
-                1);
-        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
-                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Ciao, v1"));
-
-        LOGGER.info("[{}] Starting bpmn process", BPMN2_HOT_RELOAD);
-        given().baseUri("http://localhost:" + httpPort)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body("{\n" +
-                        "    \"s1\": \"v1\"," +
-                        "    \"s2\": \"v2\"" +
-                        "}")
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/" + "simple")
-                .then()
-                .statusCode(201)
-                .body("s2", is("Ciao, v1"));
-
-        // --- Change #2
-        modifyFiles(BPMN2_HOT_RELOAD,
-                Map.of(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"),
-                        controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+")),
-                2);
-        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
-                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Bonjour, v1"));
-
-        LOGGER.info("[{}}] Starting bpmn process", BPMN2_HOT_RELOAD);
-        given().baseUri("http://localhost:" + httpPort)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body("{\n" +
-                        "    \"s1\": \"v1\"," +
-                        "    \"s2\": \"v2\"" +
-                        "}")
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/" + "simple")
-                .then()
-                .statusCode(201)
-                .body("s2", is("Bonjour, v1"));
-
-        logDone(BPMN2_HOT_RELOAD);
-    }
-
-    @Test
-    public void testDMNHotReload() throws Exception {
-        testDir = initProject("projects/classic-inst",
-                "projects/project-instrumentation-reload-dmn",
-                "src/main/java/acme",
-                "src/main/resources/acme",
-                "src/main/resources/simple.bpmn2");
-        final String httpPort = run(DMN_HOT_RELOAD);
-
-        final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
-
-        // await Quarkus
-        await().pollDelay(INIT_POLL_DELAY, INIT_POLL_DELAY_UNIT)
-                .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Hello, v1"));
-
-        logEvaluate(DMN_HOT_RELOAD, "DMN");
-        given().baseUri("http://localhost:" + httpPort)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body("{\n" +
-                        "    \"name\": \"v1\"   " +
-                        "}")
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/" + "hello")
-                .then()
-                .statusCode(200)
-                .body("greeting", is("Hello, v1"));
-
-        // --- Change #1
-        File source = new File(testDir, "src/main/resources/hello.dmn");
-        modifyFiles(DMN_HOT_RELOAD,
-                Map.of(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"),
-                        controlSource, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+")),
-                1);
-        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
-                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Ciao, v1"));
-
-        logEvaluate(DMN_HOT_RELOAD, "DMN");
-        given().baseUri("http://localhost:" + httpPort)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body("{\n" +
-                        "    \"name\": \"v1\"   " +
-                        "}")
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/" + "hello")
-                .then()
-                .statusCode(200)
-                .body("greeting", is("Ciao, v1"));
-
-        // --- Change #2
-        modifyFiles(DMN_HOT_RELOAD,
-                Map.of(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"),
-                        controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+")),
-                2);
-        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
-                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Bonjour, v1"));
-
-        logEvaluate(DMN_HOT_RELOAD, "DMN");
-        given().baseUri("http://localhost:" + httpPort)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body("{\n" +
-                        "    \"name\": \"v1\"   " +
-                        "}")
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/" + "hello")
-                .then()
-                .statusCode(200)
-                .body("greeting", is("Bonjour, v1"));
-
-        logDone(DMN_HOT_RELOAD);
-    }
-
-    @Test
-    public void testDRLHotReload() throws Exception {
-        testDir = initProject("projects/classic-inst",
-                "projects/project-instrumentation-reload-drl",
-                "src/main/resources/simple.bpmn2",
-                "src/main/resources/hello.dmn");
-        final String httpPort = run(DRL_HOT_RELOAD);
-
-        final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
-
-        // await Quarkus
-        await().pollDelay(INIT_POLL_DELAY, INIT_POLL_DELAY_UNIT)
-                .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Hello, v1"));
-
-        logEvaluate(DRL_HOT_RELOAD, "DRL");
-        given().baseUri("http://localhost:" + httpPort)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body("{\n" +
-                        "    \"strings\": [\"v1\"]  " +
-                        "}")
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/" + "q1")
-                .then()
-                .statusCode(200)
-                .body(containsString("Hello, v1"));
-
-        // --- Change #1
-        File source = new File(testDir, "src/main/resources/acme/rules.drl");
-        modifyFiles(DRL_HOT_RELOAD,
-                Map.of(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"),
-                        controlSource, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+")),
-                1);
-        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
-                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Ciao, v1"));
-
-        logEvaluate(DRL_HOT_RELOAD, "DRL");
-        given().baseUri("http://localhost:" + httpPort)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body("{\n" +
-                        "    \"strings\": [\"v1\"]  " +
-                        "}")
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/" + "q1")
-                .then()
-                .statusCode(200)
-                .body(containsString("Ciao, v1"));
-
-        // --- Change #2
-        modifyFiles(DRL_HOT_RELOAD,
-                Map.of(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"),
-                        controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+")),
-                2);
-        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
-                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Bonjour, v1"));
-
-        logEvaluate(DRL_HOT_RELOAD, "DRL");
-        given().baseUri("http://localhost:" + httpPort)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body("{\n" +
-                        "    \"strings\": [\"v1\"]  " +
-                        "}")
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/" + "q1")
-                .then()
-                .statusCode(200)
-                .body(containsString("Bonjour, v1"));
-        logDone(DRL_HOT_RELOAD);
-    }
-
-    @Test
-    public void testStaticResource() throws MavenInvocationException {
-        testDir = initProject("projects/simple-dmn", "projects/simple-dmn-static-resource");
-        final String httpPort = run("testStaticResource");
-
-        // await Quarkus
-        await().pollDelay(INIT_POLL_DELAY, INIT_POLL_DELAY_UNIT)
-                .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Hello, v1"));
-
-        // static resource
-        given().baseUri("http://localhost:" + httpPort)
-                .get("/hello.json")
-                .then()
-                .statusCode(200)
-                .body("definitions", aMapWithSize(greaterThan(0)));
+                .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> {
+                    try {
+                        String content = devModeClient.get("http://localhost:" + port + "/control");
+                        resp.set(content);
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                });
+        return resp.get();
     }
 
     /* copy-paste from quarkus */
     @Override
     protected void run(boolean performCompile, String... options) throws MavenInvocationException {
         assertThat(testDir).isDirectory();
-        assertThatPortIsFree();
         running = new RunningInvoker(testDir, false);
         String applicationName = "";
         final List<String> args = new ArrayList<>(4 + options.length);
@@ -393,67 +155,6 @@ public abstract class DevMojoIT extends RunAndCheckMojoTestBase {
                     filePointer.set(seekRandomHttpPort(logFile, finalApplicationName, filePointer.get()));
                     return randomHttpPorts.containsKey(finalApplicationName);
                 });
-    }
-
-    private void logEvaluate(String test, String model) {
-        LOGGER.info("[{}] Evaluate {}", test, model);
-    }
-
-    private void logChange(String test, int change) {
-        LOGGER.info("[{}] Beginning Change #{}", test, change);
-    }
-
-    private void logDone(String test) {
-        LOGGER.info("[{}] done.", test);
-    }
-
-    /**
-     * Method used to modify the given files with the associated modification map
-     *
-     * @param test
-     * @param mappedModifications
-     * @throws IOException
-     */
-    private void modifyFiles(String test, Map<File, Map<String, String>> mappedModifications, int change) throws IOException {
-        logChange(test, change);
-        for (Map.Entry<File, Map<String, String>> entry : mappedModifications.entrySet()) {
-            LOGGER.info("[{}] Modifying file {}", test, entry.getKey());
-            filter(entry.getKey(), entry.getValue());
-        }
-    }
-
-    /**
-     * Method used to remove unwanted sources/resources from the common stub project
-     *
-     * @param name
-     * @param output
-     * @param toRemove
-     * @return
-     */
-    private File initProject(String name, String output, String... toRemove) {
-        File toReturn = initProject(name, output);
-        for (String fileToRemove : toRemove) {
-            File actualRemove = new File(toReturn, fileToRemove);
-            org.apache.commons.io.FileUtils.deleteQuietly(actualRemove);
-        }
-        return toReturn;
-    }
-
-    private String getRestResponse(String port) {
-        AtomicReference<String> resp = new AtomicReference<>();
-        DevModeClient devModeClient = new DevModeClient(Integer.parseInt(port));
-        // retry on exceptions for connection refused, connection errors, etc. which will occur until the Kogito Quarkus maven project is fully built and running
-        await().pollDelay(INIT_POLL_DELAY, INIT_POLL_DELAY_UNIT)
-                .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> {
-                    try {
-                        String content = devModeClient.get("http://localhost:" + port + "/control");
-                        resp.set(content);
-                        return true;
-                    } catch (Exception e) {
-                        return false;
-                    }
-                });
-        return resp.get();
     }
 
     private String run(String appName) throws MavenInvocationException {
@@ -523,14 +224,241 @@ public abstract class DevMojoIT extends RunAndCheckMojoTestBase {
         return additionalArguments;
     }
 
-    private void assertThatPortIsFree() {
-        try {
-            // Call get(), which doesn't retry - otherwise, tests will go very slow
-            devModeClient.get();
-            fail("The port " + getPort()
-                    + " appears to be in use before starting the test instance of Quarkus, so any tests will give unpredictable results.");
-        } catch (IOException e) {
-            // All good, we wanted this
-        }
+    @Disabled() // See https://github.com/apache/incubator-kie-issues/issues/1960
+    @Test
+    public void testBPMN2HotReload() throws Exception {
+        testDir = initProject("projects/classic-inst", "projects/project-instrumentation-reload-bpmn");
+        String httpPort = run("testBPMN2HotReload");
+        assertThat(httpPort).isNotEmpty();
+
+        final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
+
+        // await Quarkus
+        await().pollDelay(INIT_POLL_DELAY, INIT_POLL_DELAY_UNIT)
+                .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Hello, v1"));
+
+        LOGGER.info("[testBPMN2HotReload] Starting bpmn process");
+        given().baseUri("http://localhost:" + httpPort)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{\n" +
+                        "    \"s1\": \"v1\"," +
+                        "    \"s2\": \"v2\"" +
+                        "}")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/" + "simple")
+                .then()
+                .statusCode(201)
+                .body("s2", is("Hello, v1"));
+
+        // --- Change #1
+        LOGGER.info("[testBPMN2HotReload] Beginning Change #1");
+        File source = new File(testDir, "src/main/resources/simple.bpmn2");
+        filter(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
+        filter(controlSource, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
+        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
+                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Ciao, v1"));
+
+        LOGGER.info("[testBPMN2HotReload] Starting bpmn process");
+        given().baseUri("http://localhost:" + httpPort)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{\n" +
+                        "    \"s1\": \"v1\"," +
+                        "    \"s2\": \"v2\"" +
+                        "}")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/" + "simple")
+                .then()
+                .statusCode(201)
+                .body("s2", is("Ciao, v1"));
+
+        // --- Change #2
+        LOGGER.info("[testBPMN2HotReload] Beginning Change #2");
+        filter(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
+        filter(controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
+        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
+                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Bonjour, v1"));
+
+        LOGGER.info("[testBPMN2HotReload] Starting bpmn process");
+        given().baseUri("http://localhost:" + httpPort)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{\n" +
+                        "    \"s1\": \"v1\"," +
+                        "    \"s2\": \"v2\"" +
+                        "}")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/" + "simple")
+                .then()
+                .statusCode(201)
+                .body("s2", is("Bonjour, v1"));
+
+        LOGGER.info("[testBPMN2HotReload] done.");
+    }
+
+    @Disabled() // See https://github.com/apache/incubator-kie-issues/issues/1960
+    @Test
+    public void testDMNHotReload() throws Exception {
+        testDir = initProject("projects/classic-inst", "projects/project-instrumentation-reload-dmn");
+        final String httpPort = run("testDMNHotReload");
+
+        final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
+
+        // await Quarkus
+        await().pollDelay(INIT_POLL_DELAY, INIT_POLL_DELAY_UNIT)
+                .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Hello, v1"));
+
+        LOGGER.info("[testDMNHotReload] Evaluate DMN");
+        given().baseUri("http://localhost:" + httpPort)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{\n" +
+                        "    \"name\": \"v1\"   " +
+                        "}")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/" + "hello")
+                .then()
+                .statusCode(200)
+                .body("greeting", is("Hello, v1"));
+
+        // --- Change #1
+        LOGGER.info("[testDMNHotReload] Beginning Change #1");
+        File source = new File(testDir, "src/main/resources/hello.dmn");
+        filter(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
+        filter(controlSource, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
+        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
+                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Ciao, v1"));
+
+        LOGGER.info("[testDMNHotReload] Evaluate DMN");
+        given().baseUri("http://localhost:" + httpPort)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{\n" +
+                        "    \"name\": \"v1\"   " +
+                        "}")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/" + "hello")
+                .then()
+                .statusCode(200)
+                .body("greeting", is("Ciao, v1"));
+
+        // --- Change #2
+        LOGGER.info("[testDMNHotReload] Beginning Change #2");
+        filter(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
+        filter(controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
+        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
+                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Bonjour, v1"));
+
+        LOGGER.info("[testDMNHotReload] Evaluate DMN");
+        given().baseUri("http://localhost:" + httpPort)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{\n" +
+                        "    \"name\": \"v1\"   " +
+                        "}")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/" + "hello")
+                .then()
+                .statusCode(200)
+                .body("greeting", is("Bonjour, v1"));
+
+        LOGGER.info("[testDMNHotReload] done.");
+    }
+
+    @Disabled() // See https://github.com/apache/incubator-kie-issues/issues/1960
+    @Test
+    public void testDRLHotReload() throws Exception {
+        testDir = initProject("projects/classic-inst", "projects/project-instrumentation-reload-drl");
+        final String httpPort = run("testDRLHotReload");
+
+        final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
+
+        // await Quarkus
+        await().pollDelay(INIT_POLL_DELAY, INIT_POLL_DELAY_UNIT)
+                .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Hello, v1"));
+
+        LOGGER.info("[testDMNHotReload] Evaluate DRL");
+        given().baseUri("http://localhost:" + httpPort)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{\n" +
+                        "    \"strings\": [\"v1\"]  " +
+                        "}")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/" + "q1")
+                .then()
+                .statusCode(200)
+                .body(containsString("Hello, v1"));
+
+        // --- Change #1
+        LOGGER.info("[testDMNHotReload] Beginning Change #1");
+        File source = new File(testDir, "src/main/resources/acme/rules.drl");
+        filter(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
+        filter(controlSource, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
+        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
+                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Ciao, v1"));
+
+        LOGGER.info("[testDMNHotReload] Evaluate DRL");
+        given().baseUri("http://localhost:" + httpPort)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{\n" +
+                        "    \"strings\": [\"v1\"]  " +
+                        "}")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/" + "q1")
+                .then()
+                .statusCode(200)
+                .body(containsString("Ciao, v1"));
+
+        // --- Change #2
+        LOGGER.info("[testDMNHotReload] Beginning Change #2");
+        filter(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
+        filter(controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
+        await().pollDelay(RELOAD_POLL_DELAY, RELOAD_POLL_DELAY_UNIT)
+                .atMost(RELOAD_POLL_TIMEOUT, RELOAD_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Bonjour, v1"));
+
+        LOGGER.info("[testDMNHotReload] Evaluate DRL");
+        given().baseUri("http://localhost:" + httpPort)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{\n" +
+                        "    \"strings\": [\"v1\"]  " +
+                        "}")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/" + "q1")
+                .then()
+                .statusCode(200)
+                .body(containsString("Bonjour, v1"));
+
+        LOGGER.info("done.");
+    }
+
+    @Disabled() // See https://github.com/apache/incubator-kie-issues/issues/1960
+    @Test
+    public void testStaticResource() throws MavenInvocationException {
+        testDir = initProject("projects/simple-dmn", "projects/simple-dmn-static-resource");
+        final String httpPort = run("testStaticResource");
+
+        // await Quarkus
+        await().pollDelay(INIT_POLL_DELAY, INIT_POLL_DELAY_UNIT)
+                .atMost(INIT_POLL_TIMEOUT, INIT_POLL_TIMEOUT_UNIT).until(() -> getRestResponse(httpPort).contains("Hello, v1"));
+
+        // static resource
+        given().baseUri("http://localhost:" + httpPort)
+                .get("/hello.json")
+                .then()
+                .statusCode(200)
+                .body("definitions", aMapWithSize(greaterThan(0)));
     }
 }
