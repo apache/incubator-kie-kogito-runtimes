@@ -34,16 +34,16 @@ import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InMemmoryProcessInstances<T> implements MutableProcessInstances<T> {
+public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InMemmoryProcessInstances.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryProcessInstances.class);
 
     private final ConcurrentMap<String, byte[]> instances = new ConcurrentHashMap<>();
 
     private ProcessInstanceMarshallerService marshaller;
     private Process<T> process;
 
-    public InMemmoryProcessInstances(Process<T> process) {
+    public InMemoryProcessInstances(Process<T> process) {
         this.marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().withDefaultListeners().build();
         this.process = process;
     }

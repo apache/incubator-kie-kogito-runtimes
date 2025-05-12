@@ -52,7 +52,7 @@ import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.impl.Sig;
+import org.kie.kogito.process.SignalFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -120,7 +120,7 @@ public class CompensationTest extends JbpmBpmn2TestCase {
         ProcessInstance<IntermediateThrowEventModel> processInstance = process.createInstance(model);
         processInstance.start();
 
-        processInstance.send(Sig.of("Compensation", CompensationScope.IMPLICIT_COMPENSATION_PREFIX + "IntermediateThrowEvent"));
+        processInstance.send(SignalFactory.of("Compensation", CompensationScope.IMPLICIT_COMPENSATION_PREFIX + "IntermediateThrowEvent"));
         processInstance.completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);
 
         assertThat(processInstance.status()).isEqualTo(org.jbpm.process.instance.ProcessInstance.STATE_COMPLETED);
@@ -153,7 +153,7 @@ public class CompensationTest extends JbpmBpmn2TestCase {
         ProcessInstance<UserTaskBeforeAssociatedActivityModel> processInstance = process.createInstance(model);
         processInstance.start();
 
-        processInstance.send(Sig.of("Compensation", "_3"));
+        processInstance.send(SignalFactory.of("Compensation", "_3"));
 
         processInstance.completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);
         assertThat(processInstance.status()).isEqualTo(org.jbpm.process.instance.ProcessInstance.STATE_COMPLETED);
@@ -242,7 +242,7 @@ public class CompensationTest extends JbpmBpmn2TestCase {
         ProcessInstance<IntermediateThrowEventModel> processInstance = process.createInstance(model);
         processInstance.start();
 
-        processInstance.send(Sig.of("Cancel", null));
+        processInstance.send(SignalFactory.of("Cancel", null));
         processInstance.completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);
 
         // compensation activity (assoc. with script task) signaled *after* script task

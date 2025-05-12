@@ -89,6 +89,7 @@ import org.kie.internal.process.CorrelationKey;
 import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance.CancelType;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -431,18 +432,21 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             InternalKnowledgeRuntime kruntime = getKnowledgeRuntime();
             InternalProcessRuntime processRuntime = (InternalProcessRuntime) kruntime.getProcessRuntime();
             processRuntime.getProcessEventSupport().fireBeforeProcessCompleted(this, kruntime);
-            // JBPM-8094 - set state after event
-            super.setState(state, outcome);
 
-            // deactivate all node instances of this process instance
             while (!nodeInstances.isEmpty()) {
                 NodeInstance nodeInstance = nodeInstances.get(0);
-                nodeInstance.cancel();
+                nodeInstance.cancel(state == KogitoProcessInstance.STATE_COMPLETED ? CancelType.OBSOLETE : CancelType.ABORTED);
             }
+
             cancelTimer(processRuntime, slaTimerId);
             cancelTimer(processRuntime, cancelTimerId);
 
+            // deactivate listeners already
             removeEventListeners();
+            unregisterExternalEventNodeListeners();
+
+            super.setState(state, outcome);
+
             processRuntime.getProcessInstanceManager().removeProcessInstance(this);
             if (isSignalCompletion()) {
 
@@ -981,9 +985,12 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     private void removeEventListeners() {
         for (String type : externalEventListeners.keySet()) {
-            ((InternalProcessRuntime) getKnowledgeRuntime().getProcessRuntime())
-                    .getSignalManager().removeEventListener(type, this);
+            ((InternalProcessRuntime) getKnowledgeRuntime().getProcessRuntime()).getSignalManager().removeEventListener(type, this);
         }
+        getNodeInstances(true).stream()
+                .filter(EventBasedNodeInstanceInterface.class::isInstance)
+                .map(EventBasedNodeInstanceInterface.class::cast)
+                .forEach(EventBasedNodeInstanceInterface::removeEventListeners);
     }
 
     @Override

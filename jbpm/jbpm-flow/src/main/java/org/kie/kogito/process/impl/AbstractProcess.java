@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
@@ -66,8 +69,13 @@ import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.ProcessVersionResolver;
 import org.kie.kogito.process.Signal;
+import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.process.WorkItem;
+import org.kie.kogito.signal.ProcessInstanceResolver;
+import org.kie.kogito.signal.SignalManager;
+import org.kie.kogito.signal.SignalManagerHub;
 
+import static java.util.Collections.emptyList;
 import static org.kie.kogito.internal.process.workitem.KogitoWorkItemHandlerFactory.findAllKogitoWorkItemHandlersRegistered;
 
 @SuppressWarnings("unchecked")
@@ -88,6 +96,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
     private Lock processInitLock = new ReentrantLock();
     private CorrelationService correlations;
     private ProcessVersionResolver versionResolver;
+    private ProcessInstanceResolver<T> processInstanceResolver;
 
     protected AbstractProcess() {
         this(null, new LightProcessRuntimeServiceProvider());
@@ -215,6 +224,73 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         return this.processRuntime;
     }
 
+    class ProcessSignalManager implements SignalManager {
+
+        private ConcurrentMap<String, List<EventListener>> listeners = new ConcurrentHashMap<>();
+
+        @Override
+        public boolean accept(String type, Object event) {
+            if (listeners.containsKey(type)) {
+                return true;
+            }
+            return instances.stream().map(AbstractProcessInstance.class::cast).anyMatch(e -> List.of(e.processInstance().getEventTypes()).contains(type));
+        }
+
+        @Override
+        public void signalEvent(String type, Object event) {
+            // we signal memory first
+            List<String> idList = new ArrayList<>();
+            listeners.getOrDefault(type, emptyList()).forEach(processInstance -> {
+                if (processInstance instanceof KogitoProcessInstance) {
+                    KogitoProcessInstance kogitoProcessInstance = (KogitoProcessInstance) processInstance;
+                    idList.add(kogitoProcessInstance.getId());
+                    processInstance.signalEvent(type, event);
+                }
+            });
+
+            // we load the instances
+            List<AbstractProcessInstance<T>> processInstances = instances.stream()
+                    .map(e -> (AbstractProcessInstance<T>) e)
+                    .filter(e -> List.of(e.processInstance().getEventTypes()).contains(type))
+                    .toList();
+
+            for (AbstractProcessInstance<T> processInstance : processInstances.stream().filter(e -> !idList.contains(e.id())).toList()) {
+                processInstance.send(SignalFactory.of(type, event));
+            }
+        }
+
+        @Override
+        public void signalEvent(String id, String type, Object event) {
+            instances.findById(id).ifPresent(e -> e.send(SignalFactory.of(type, event)));
+        }
+
+        @Override
+        public void addEventListener(String type, EventListener eventListener) {
+            listeners.compute(type, (k, v) -> {
+                if (v == null) {
+                    v = new CopyOnWriteArrayList<>();
+                }
+                v.add(eventListener);
+                return v;
+            });
+        }
+
+        @Override
+        public void removeEventListener(String type, EventListener eventListener) {
+            listeners.compute(type, (k, v) -> {
+                if (v == null) {
+                    return null;
+                }
+                v.remove(eventListener);
+                if (v.isEmpty()) {
+                    return null;
+                }
+                return v;
+            });
+        }
+
+    }
+
     @Override
     public void activate() {
         if (this.activated) {
@@ -232,6 +308,29 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
                 }
             }
         }
+        // this belongs to only for the work item handler so we keep within the context of the current process instance loaded in memory
+        if (this.services.getSignalManager() instanceof SignalManagerHub signalManagerHub) {
+            processInstanceResolver = new ProcessInstanceResolver<T>() {
+
+                @Override
+                public List<ProcessInstance<T>> waitingForEvents(String eventType) {
+                    List<ProcessInstance<T>> list = instances.stream()
+                            .map(e -> (AbstractProcessInstance<T>) e)
+                            .filter(e -> List.of(e.processInstance().getEventTypes()).contains(eventType))
+                            .map(e -> (ProcessInstance<T>) e)
+                            .toList();
+                    return list;
+                }
+
+                @Override
+                public ProcessInstance<T> findById(String processInstanceId) {
+                    Optional<ProcessInstance<T>> instance = instances.findById(processInstanceId);
+                    return instance.orElse(null);
+                }
+            };
+            signalManagerHub.addProcessInstanceResolver(processInstanceResolver);
+        }
+
         this.activated = true;
     }
 
@@ -239,6 +338,9 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
     public void deactivate() {
         for (String startTimerId : startTimerInstances) {
             this.processRuntime.getJobsService().cancelJob(startTimerId);
+        }
+        if (this.services.getSignalManager() instanceof SignalManagerHub signalManagerHub) {
+            signalManagerHub.removeProcessInstanceResolver(processInstanceResolver);
         }
         this.activated = false;
     }
@@ -322,7 +424,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
                         parentKogitoProcessInstance.signalEvent(type, event);
                     } else {
                         //if not present ProcessInstanceManager try to signal instance from repository
-                        instances().findById(pi.getParentProcessInstanceId()).ifPresent(p -> p.send(Sig.of(type, event)));
+                        instances().findById(pi.getParentProcessInstanceId()).ifPresent(p -> p.send(SignalFactory.of(type, event)));
                     }
                 }
             }
