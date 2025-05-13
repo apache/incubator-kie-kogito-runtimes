@@ -39,9 +39,7 @@ public class SpringBootFaultToleranceAnnotator extends AbstractFaultToleranceAnn
     @Override
     public void addFaultToleranceAnnotations(MethodDeclaration methodDeclaration) {
 
-        String name = methodDeclaration.getAnnotationByName("Operation")
-                .map(this::getOperationName)
-                .orElse(methodDeclaration.getNameAsString());
+        String name = methodDeclaration.getNameAsString();
 
         methodDeclaration
                 .addAnnotation(new NormalAnnotationExpr(new Name(RETRY_ANNOTATION), NodeList.nodeList(new MemberValuePair("name", new StringLiteralExpr(name)))));
