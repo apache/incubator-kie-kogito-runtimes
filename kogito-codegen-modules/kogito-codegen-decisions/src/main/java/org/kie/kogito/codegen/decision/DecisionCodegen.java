@@ -34,6 +34,7 @@ import org.eclipse.microprofile.openapi.spi.OASFactoryResolver;
 import org.kie.api.io.ResourceType;
 import org.kie.dmn.core.compiler.DMNProfile;
 import org.kie.dmn.core.compiler.RuntimeTypeCheckOption;
+import org.kie.efesto.common.api.model.GeneratedResources;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 import static org.kie.dmn.core.assembler.DMNAssemblerService.DMN_PROFILE_PREFIX;
+import static org.kie.kogito.codegen.decision.DecisionCodegenUtils.generateModelFromGeneratedResources;
 import static org.kie.kogito.codegen.decision.DecisionCodegenUtils.generateModelsFromResources;
 
 public class DecisionCodegen extends AbstractGenerator {
@@ -104,6 +106,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
     public DecisionCodegen(KogitoBuildContext context, List<CollectedResource> cResources) {
         super(context, GENERATOR_NAME, new DecisionConfigGenerator(context));
+        LOGGER.debug("DecisionCodegen {}", cResources);
         Set<String> customDMNProfilesProperties = getCustomDMNProfilesProperties();
         customDMNProfiles.addAll(getCustomDMNProfiles(customDMNProfilesProperties, context.getClassLoader()));
         enableRuntimeTypeCheckOption = getEnableRuntimeTypeCheckOption();
@@ -112,6 +115,7 @@ public class DecisionCodegen extends AbstractGenerator {
 
     @Override
     public Optional<ApplicationSection> section() {
+        LOGGER.debug("section");
         return Optional.of(new DecisionContainerGenerator(
                 context(),
                 applicationCanonicalName(),
@@ -140,12 +144,13 @@ public class DecisionCodegen extends AbstractGenerator {
     protected Collection<GeneratedFile> internalGenerate() {
         LOGGER.debug("internalGenerate");
         Collection<GeneratedFile> generatedFiles = new ArrayList<>();
-        generateModelsFromResources(generatedFiles,
+        Map.Entry<String, GeneratedResources> generatedResourcesEntry = generateModelsFromResources(generatedFiles,
                 classesForManualReflection,
                 cResources,
                 customDMNProfiles,
                 new RuntimeTypeCheckOption(getEnableRuntimeTypeCheckOption()),
                 this);
+        generateModelFromGeneratedResources(generatedFiles, generatedResourcesEntry);
         return generatedFiles;
     }
 

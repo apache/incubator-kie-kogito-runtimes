@@ -53,6 +53,7 @@ import org.kie.efesto.common.api.identifiers.ModelLocalUriId;
 import org.kie.efesto.common.api.model.EfestoCompilationContext;
 import org.kie.efesto.common.api.model.GeneratedModelResource;
 import org.kie.efesto.common.api.model.GeneratedResources;
+import org.kie.efesto.common.core.storage.ContextStorage;
 import org.kie.efesto.compilationmanager.api.service.CompilationManager;
 import org.kie.efesto.compilationmanager.api.utils.SPIUtils;
 import org.kie.kogito.KogitoGAV;
@@ -64,9 +65,12 @@ import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static java.util.stream.Collectors.toList;
+import static org.kie.efesto.common.core.utils.JSONUtils.getGeneratedResourcesObject;
+import static org.kie.efesto.common.core.utils.JSONUtils.getGeneratedResourcesString;
 import static org.kie.kogito.codegen.api.Generator.REST_TYPE;
 import static org.kie.kogito.codegen.decision.CodegenUtils.getDefinitionsFileFromModel;
 import static org.kie.kogito.codegen.decision.DecisionCodegen.STRONGLY_TYPED_CONFIGURATION_KEY;
@@ -84,14 +88,15 @@ public class DecisionCodegenUtils {
     private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
     private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
 
-    static void generateModelsFromResources(Collection<GeneratedFile> generatedFiles,
+    static Map.Entry<String, GeneratedResources> generateModelsFromResources(Collection<GeneratedFile> generatedFiles,
             List<String> classesForManualReflection,
             List<CollectedResource> cResources,
             Set<DMNProfile> customDMNProfiles,
             RuntimeTypeCheckOption runtimeTypeCheckOption,
             DecisionCodegen generator) {
         Map<Resource, CollectedResource> r2cr = cResources.stream().collect(Collectors.toMap(CollectedResource::resource, Function.identity()));
-        List<DMNResource> resources = loadModelsAndValidate(generator.context(), r2cr, customDMNProfiles, runtimeTypeCheckOption);
+        Map.Entry<String, GeneratedResources> generatedResourcesEntry = loadModelsAndValidate(generator.context(), r2cr, customDMNProfiles, runtimeTypeCheckOption);
+        List<DMNResource> resources = getDMNResources(generatedResourcesEntry, r2cr);
         boolean stronglyTypedEnabled = Optional.ofNullable(generator.context())
                 .flatMap(c -> c.getApplicationProperty(STRONGLY_TYPED_CONFIGURATION_KEY))
                 .map(Boolean::parseBoolean)
@@ -106,9 +111,18 @@ public class DecisionCodegenUtils {
         }
         generateCloudEventsResources(generatedFiles, generator.context(), dmnModels);
         generateAndStoreDecisionModelResourcesProvider(generatedFiles, resources, generator.context(), generator.applicationCanonicalName());
+        return generatedResourcesEntry;
     }
 
-    static List<DMNResource> loadModelsAndValidate(KogitoBuildContext context, Map<Resource, CollectedResource> r2cr,
+    static List<DMNResource> getDMNResources(Map.Entry<String, GeneratedResources> generatedResourcesEntry, Map<Resource, CollectedResource> r2cr) {
+        return generatedResourcesEntry.getValue().stream()
+                .filter(GeneratedModelResource.class::isInstance)
+                .map(GeneratedModelResource.class::cast)
+                .map(generatedModelResource -> getDMNResourceFromGeneratedModelResource(generatedModelResource, r2cr))
+                .toList();
+    }
+
+    static Map.Entry<String, GeneratedResources> loadModelsAndValidate(KogitoBuildContext context, Map<Resource, CollectedResource> r2cr,
             Set<DMNProfile> customDMNProfiles,
             RuntimeTypeCheckOption runtimeTypeCheckOption) {
         DecisionValidation.dmnValidateResources(context, r2cr.keySet());
@@ -118,17 +132,49 @@ public class DecisionCodegenUtils {
         EfestoCompilationContext dmnCompilationContext = DmnCompilationContext.buildWithParentClassLoader(context.getClassLoader(), customDMNProfiles, runtimeTypeCheckOption);
         compilationManager.processResource(dmnCompilationContext, toProcessDmn);
         Map<String, GeneratedResources> generatedResourcesMap = dmnCompilationContext.getGeneratedResourcesMap();
-        return generatedResourcesMap.get("dmn").stream()
-                .filter(GeneratedModelResource.class::isInstance)
+        Map.Entry<String, GeneratedResources> toReturn = generatedResourcesMap.entrySet().stream().filter(entry -> entry.getKey().equals("dmn")).findFirst().orElseThrow(() -> new RuntimeException());
+        toReturn.getValue().stream().filter(GeneratedModelResource.class::isInstance)
                 .map(GeneratedModelResource.class::cast)
-                .map(generatedModelResource -> getDMNResourceFromGeneratedModelResource(generatedModelResource, r2cr))
-                .toList();
+                .forEach(generatedResource -> {
+                    GeneratedResources generatedResources = (GeneratedResources) dmnCompilationContext.getGeneratedResourcesMap().get("dmn");
+                    if (generatedResources == null) {
+                        ContextStorage.putEfestoCompilationContext(generatedResource.getModelLocalUriId(), dmnCompilationContext);
+                    } else {
+                        Optional<GeneratedModelResource> first = generatedResources.stream()
+                                .filter(GeneratedModelResource.class::isInstance)
+                                .map(GeneratedModelResource.class::cast)
+                                .filter(storedGeneratedResources -> storedGeneratedResources.getModelLocalUriId().equals(generatedResource.getModelLocalUriId()))
+                                .findFirst();
+                        // let's avoid overwrite an already compiled resources
+                        if (first.isEmpty() || first.get().getCompiledModel() == null) {
+                            ContextStorage.putEfestoCompilationContext(generatedResource.getModelLocalUriId(), dmnCompilationContext);
+                        }
+                    }
+                });
+        return generatedResourcesMap.entrySet().stream().filter(entry -> entry.getKey().equals("dmn")).findFirst().orElseThrow(() -> new RuntimeException());
     }
 
     static DMNResource getDMNResourceFromGeneratedModelResource(GeneratedModelResource generatedModelResource, Map<Resource, CollectedResource> r2cr) {
-        DMNModel dmnModel = (DMNModel) generatedModelResource.getCompiledModel();
+        DMNModel dmnModel = getDMNModelFromGeneratedModelResource(generatedModelResource);
         CollectedResource collectedResource = r2cr.get(dmnModel.getResource());
         return new DMNResource(dmnModel, collectedResource);
+    }
+
+    static DMNModel getDMNModelFromGeneratedModelResource(GeneratedModelResource generatedModelResource) {
+        DMNModel toReturn = (DMNModel) generatedModelResource.getCompiledModel();
+        if (toReturn == null) {
+            EfestoCompilationContext dmnCompilationContext = ContextStorage.getEfestoCompilationContext(generatedModelResource.getModelLocalUriId());
+            GeneratedResources generatedResources = (GeneratedResources) dmnCompilationContext.getGeneratedResourcesMap().get("dmn");
+            Optional<GeneratedModelResource> first = generatedResources.stream()
+                    .filter(GeneratedModelResource.class::isInstance)
+                    .map(GeneratedModelResource.class::cast)
+                    .filter(storedGeneratedResources -> storedGeneratedResources.getModelLocalUriId().equals(generatedModelResource.getModelLocalUriId()))
+                    .findFirst();
+            if (first.isPresent()) {
+                toReturn = (DMNModel) first.get().getCompiledModel();
+            }
+        }
+        return toReturn;
     }
 
     static void generateModel(Collection<GeneratedFile> files,
@@ -274,38 +320,36 @@ public class DecisionCodegenUtils {
         generatedFiles.add(new GeneratedFile(type, path, source));
     }
 
-    // TODO
+    static void generateModelFromGeneratedResources(Collection<GeneratedFile> files, Map.Entry<String, GeneratedResources> generatedResourcesEntry) {
+        String indexFileName = String.format("%s.%s%s", "IndexFile", generatedResourcesEntry.getKey(), "_json");
+        addUpdateGeneratedFile(files, indexFileName, generatedResourcesEntry.getValue());
+    }
 
-    //    static void generateModelFromGeneratedResources(Collection<GeneratedFile> files, Map.Entry<String, GeneratedResources> generatedResourcesEntry) {
-    //        String indexFileName = String.format("%s.%s%s", "IndexFile", generatedResourcesEntry.getKey(), "_json");
-    //        addUpdateGeneratedFile(files, indexFileName, generatedResourcesEntry.getValue());
-    //    }
-    //
-    //    static void addUpdateGeneratedFile(Collection<GeneratedFile> files, String indexFileName,
-    //            GeneratedResources newGeneratedResources) {
-    //        try {
-    //            Optional<GeneratedFile> existing = files.stream().filter(generatedFile -> generatedFile.type().equals(INDEX_FILE) && generatedFile.relativePath().equals(indexFileName))
-    //                    .findFirst();
-    //            String content;
-    //            if (existing.isPresent()) {
-    //                GeneratedFile generatedFile = existing.get();
-    //                content = getUpdatedGeneratedResourcesContent(generatedFile, newGeneratedResources);
-    //                files.remove(generatedFile);
-    //            } else {
-    //                content = getGeneratedResourcesString(newGeneratedResources);
-    //            }
-    //            files.add(new GeneratedFile(INDEX_FILE, indexFileName, content));
-    //        } catch (JsonProcessingException e) {
-    //            throw new IllegalStateException("Failed to serialize " + newGeneratedResources, e);
-    //        }
-    //    }
-    //
-    //    static String getUpdatedGeneratedResourcesContent(GeneratedFile generatedFile,
-    //            GeneratedResources newGeneratedResources) throws JsonProcessingException {
-    //        String oldContent = new String(generatedFile.contents());
-    //        GeneratedResources oldGeneratedResources = getGeneratedResourcesObject(oldContent);
-    //        oldGeneratedResources.addAll(newGeneratedResources);
-    //        return getGeneratedResourcesString(oldGeneratedResources);
-    //    }
+    static void addUpdateGeneratedFile(Collection<GeneratedFile> files, String indexFileName,
+            GeneratedResources newGeneratedResources) {
+        try {
+            Optional<GeneratedFile> existing = files.stream().filter(generatedFile -> generatedFile.type().equals(INDEX_FILE) && generatedFile.relativePath().equals(indexFileName))
+                    .findFirst();
+            String content;
+            if (existing.isPresent()) {
+                GeneratedFile generatedFile = existing.get();
+                content = getUpdatedGeneratedResourcesContent(generatedFile, newGeneratedResources);
+                files.remove(generatedFile);
+            } else {
+                content = getGeneratedResourcesString(newGeneratedResources);
+            }
+            files.add(new GeneratedFile(INDEX_FILE, indexFileName, content));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Failed to serialize " + newGeneratedResources, e);
+        }
+    }
+
+    static String getUpdatedGeneratedResourcesContent(GeneratedFile generatedFile,
+            GeneratedResources newGeneratedResources) throws JsonProcessingException {
+        String oldContent = new String(generatedFile.contents());
+        GeneratedResources oldGeneratedResources = getGeneratedResourcesObject(oldContent);
+        oldGeneratedResources.addAll(newGeneratedResources);
+        return getGeneratedResourcesString(oldGeneratedResources);
+    }
 
 }
