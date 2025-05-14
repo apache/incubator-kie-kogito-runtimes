@@ -108,6 +108,10 @@
       <artifactId>kogito-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-util</artifactId>
+    </dependency>
 
   </dependencies>
 

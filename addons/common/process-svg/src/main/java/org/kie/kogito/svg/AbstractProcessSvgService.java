@@ -34,6 +34,8 @@ import org.kie.kogito.svg.processor.SVGProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.drools.util.PortablePath;
+
 import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractProcessSvgService implements ProcessSvgService {
@@ -84,7 +86,7 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
     }
 
     private static Path getPath(String processId, Path baseDir) {
-        return PathUtils.resolveSecure(baseDir, processId + ".svg");
+        return PortablePath.resolveInternal(baseDir, processId + ".svg").toPath();
     }
 
     protected Optional<String> readFileContentFromClassPath(String fileName) {
