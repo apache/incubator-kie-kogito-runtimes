@@ -1801,7 +1801,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(child.instances().stream().count()).isEqualTo(1);
         org.kie.kogito.process.ProcessInstance<UserTaskChildModel> childInstance = child.instances().stream().findFirst().get();
 
-        ProcessTestHelper.completeWorkItem(childInstance, emptyMap());
+        childInstance.abort();
 
         assertThat(child.instances().stream().count()).isEqualTo(0);
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);

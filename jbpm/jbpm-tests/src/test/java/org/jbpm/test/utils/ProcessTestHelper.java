@@ -75,7 +75,7 @@ public class ProcessTestHelper {
             public MutableProcessInstances<?> createProcessInstances(Process<?> process) {
                 return (MutableProcessInstances<?>) new InMemoryProcessInstances((Process) process);
             }
-            
+
         });
         InMemoryJobContext context = new InMemoryJobContext(null, staticUnitOfWorkManager(), bpmnProcesses, null);
         staticJobService().clearJobExecutorFactories();
