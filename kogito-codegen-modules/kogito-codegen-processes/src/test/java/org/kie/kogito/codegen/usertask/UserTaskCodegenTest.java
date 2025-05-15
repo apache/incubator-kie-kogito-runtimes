@@ -27,6 +27,7 @@ import org.drools.codegen.common.rest.RestAnnotator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.process.ProcessCodegenException;
 import org.kie.kogito.codegen.process.util.CodegenUtil;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -34,6 +35,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.kie.kogito.codegen.process.ProcessResourceGeneratorTest.*;
 
 public class UserTaskCodegenTest {
@@ -125,6 +127,22 @@ public class UserTaskCodegenTest {
         userTaskCodegen.manageFaultTolerance(compilationUnit);
 
         testFaultToleranceAnnotationIsPresent(restEndpoints, context, true);
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
+    void testUserTaskFaultToleranceEnabledWithTransactionsDisabled(KogitoBuildContext.Builder contextBuilder) {
+        KogitoBuildContext context = contextBuilder.build();
+        context.setApplicationProperty(CodegenUtil.globalProperty(CodegenUtil.TRANSACTION_ENABLED), "false");
+
+        UserTaskCodegen userTaskCodegen = new UserTaskCodegen(context, Collections.emptyList());
+
+        CompilationUnit compilationUnit = userTaskCodegen.createRestEndpointCompilationUnit();
+
+        assertThatThrownBy(() -> {
+            userTaskCodegen.manageFaultTolerance(compilationUnit);
+        }).isInstanceOf(ProcessCodegenException.class)
+                .hasMessageContaining("Fault tolerance is enabled, but transactions are disabled. Please enable transactions before fault tolerance.");
     }
 
     protected Collection<MethodDeclaration> getRestMethods(CompilationUnit compilationUnit, KogitoBuildContext context) {

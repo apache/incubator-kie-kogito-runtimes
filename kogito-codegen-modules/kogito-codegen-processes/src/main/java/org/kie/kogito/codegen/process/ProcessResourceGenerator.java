@@ -412,6 +412,10 @@ public class ProcessResourceGenerator {
         }
     }
 
+    private boolean isTransactionEnabled() {
+        return transactionEnabled && context.hasDI() && !isServerless();
+    }
+
     /**
      * Conditionally add the <code>Transactional</code> annotation
      * 
@@ -419,7 +423,7 @@ public class ProcessResourceGenerator {
      *
      */
     protected void manageTransactional(CompilationUnit compilationUnit) {
-        if (transactionEnabled && context.hasDI() && !isServerless()) { // disabling transaction for serverless
+        if (isTransactionEnabled()) { // disabling transaction for serverless
             LOG.debug("Transaction is enabled, adding annotations...");
             DependencyInjectionAnnotator dependencyInjectionAnnotator = context.getDependencyInjectionAnnotator();
             getRestMethods(compilationUnit)
@@ -434,7 +438,10 @@ public class ProcessResourceGenerator {
      *
      */
     protected void manageFaultTolerance(CompilationUnit compilationUnit) {
-        if (faultToleranceEnabled && context.hasRest() && !isServerless()) {// disabling fault tolerance for serverless
+        if (faultToleranceEnabled && !isServerless()) {// disabling fault tolerance for serverless
+            if (!isTransactionEnabled()) {
+                throw new ProcessCodegenException("Fault tolerance is enabled, but transactions are disabled. Please enable transactions before fault tolerance.");
+            }
             LOG.debug("Fault tolerance is enabled, adding annotations...");
             FaultToleranceAnnotator annotator = lookFaultToleranceAnnotatorForContext(context);
             getRestMethods(compilationUnit)

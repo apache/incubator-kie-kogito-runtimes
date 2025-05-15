@@ -234,7 +234,7 @@ public class ProcessResourceGeneratorTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
     void testProcessRestResourceGenerationWithFaultToleranceEnabled(KogitoBuildContext.Builder contextBuilder) {
         String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
-        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName, false, true);
+        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName, true, true);
         CompilationUnit compilationUnit =
                 processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
         assertThat(compilationUnit).isNotNull();
@@ -248,6 +248,21 @@ public class ProcessResourceGeneratorTest {
         processResourceGenerator.manageFaultTolerance(compilationUnit);
         // the annotation is (conditionally) added after processResourceGenerator.manageFaultTolerance
         testFaultToleranceAnnotationIsPresent(restEndpoints, context, true);
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#restContextBuilders")
+    void testProcessRestResourceGenerationWithFaultToleranceEnabledWithTransactionsDisabled(KogitoBuildContext.Builder contextBuilder) {
+        String fileName = "src/test/resources/startsignal/StartSignalEventNoPayload.bpmn2";
+        ProcessResourceGenerator processResourceGenerator = getProcessResourceGenerator(contextBuilder, fileName, false, true);
+        CompilationUnit compilationUnit =
+                processResourceGenerator.createCompilationUnit(processResourceGenerator.createTemplatedGeneratorBuilder());
+        assertThat(compilationUnit).isNotNull();
+
+        assertThatThrownBy(() -> {
+            processResourceGenerator.manageFaultTolerance(compilationUnit);
+        }).isInstanceOf(ProcessCodegenException.class)
+                .hasMessageContaining("Fault tolerance is enabled, but transactions are disabled. Please enable transactions before fault tolerance.");
     }
 
     public static void testFaultToleranceAnnotationIsPresent(Collection<MethodDeclaration> restEndpoints, KogitoBuildContext context, boolean shouldAnnotationBeThere) {

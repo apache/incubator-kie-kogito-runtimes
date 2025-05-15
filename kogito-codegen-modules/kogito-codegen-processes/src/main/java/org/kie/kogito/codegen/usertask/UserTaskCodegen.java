@@ -52,7 +52,6 @@ import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.faultTolerance.FaultToleranceAnnotator;
 import org.kie.kogito.codegen.process.ProcessCodegenException;
 import org.kie.kogito.codegen.process.ProcessParsingException;
-import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.validation.ValidationException;
@@ -81,6 +80,7 @@ import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import static java.util.stream.Collectors.toList;
 import static org.kie.kogito.codegen.faultTolerance.FaultToleranceUtil.lookFaultToleranceAnnotatorForContext;
 import static org.kie.kogito.codegen.process.util.CodegenUtil.isFaultToleranceEnabled;
+import static org.kie.kogito.codegen.process.util.CodegenUtil.isTransactionEnabled;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.FAIL_ON_ERROR_PROPERTY;
 
 public class UserTaskCodegen extends AbstractGenerator {
@@ -196,7 +196,7 @@ public class UserTaskCodegen extends AbstractGenerator {
      *
      */
     protected void manageTransactional(CompilationUnit compilationUnit) {
-        if (CodegenUtil.isTransactionEnabled(this, context())) {
+        if (isTransactionEnabled(this, context())) {
             getRestMethods(compilationUnit).forEach(context().getDependencyInjectionAnnotator()::withTransactional);
         }
     }
@@ -209,6 +209,9 @@ public class UserTaskCodegen extends AbstractGenerator {
      */
     protected void manageFaultTolerance(CompilationUnit compilationUnit) {
         if (isFaultToleranceEnabled(context())) {
+            if (!isTransactionEnabled(this, context())) {
+                throw new ProcessCodegenException("Fault tolerance is enabled, but transactions are disabled. Please enable transactions before fault tolerance.");
+            }
             FaultToleranceAnnotator annotator = lookFaultToleranceAnnotatorForContext(context());
             getRestMethods(compilationUnit)
                     .forEach(annotator::addFaultToleranceAnnotations);
