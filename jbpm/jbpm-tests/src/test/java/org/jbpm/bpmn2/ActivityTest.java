@@ -99,7 +99,6 @@ import org.jbpm.bpmn2.service.ServiceTaskWebServiceModel;
 import org.jbpm.bpmn2.service.ServiceTaskWebServiceProcess;
 import org.jbpm.bpmn2.subprocess.AssignmentProcessModel;
 import org.jbpm.bpmn2.subprocess.AssignmentProcessProcess;
-import org.jbpm.bpmn2.subprocess.AssignmentSubProcessModel;
 import org.jbpm.bpmn2.subprocess.AssignmentSubProcessProcess;
 import org.jbpm.bpmn2.subprocess.CallActivity2Model;
 import org.jbpm.bpmn2.subprocess.CallActivity2Process;
@@ -124,6 +123,14 @@ import org.jbpm.bpmn2.subprocess.CallActivityWithIOexpressionProcess;
 import org.jbpm.bpmn2.subprocess.ErrorsBetweenProcessModel;
 import org.jbpm.bpmn2.subprocess.ErrorsBetweenProcessProcess;
 import org.jbpm.bpmn2.subprocess.ErrorsBetweenSubProcessProcess;
+import org.jbpm.bpmn2.subprocess.FlowChild1Model;
+import org.jbpm.bpmn2.subprocess.FlowChild1Process;
+import org.jbpm.bpmn2.subprocess.FlowChild2Model;
+import org.jbpm.bpmn2.subprocess.FlowChild2Process;
+import org.jbpm.bpmn2.subprocess.FlowChild3Model;
+import org.jbpm.bpmn2.subprocess.FlowChild3Process;
+import org.jbpm.bpmn2.subprocess.FlowMainModel;
+import org.jbpm.bpmn2.subprocess.FlowMainProcess;
 import org.jbpm.bpmn2.subprocess.InputMappingUsingValueModel;
 import org.jbpm.bpmn2.subprocess.InputMappingUsingValueProcess;
 import org.jbpm.bpmn2.subprocess.MainGroupAssignmentModel;
@@ -140,6 +147,10 @@ import org.jbpm.bpmn2.subprocess.SubProcessWithTypeVariableModel;
 import org.jbpm.bpmn2.subprocess.SubProcessWithTypeVariableProcess;
 import org.jbpm.bpmn2.subprocess.SubprocessGroupAssignmentModel;
 import org.jbpm.bpmn2.subprocess.SubprocessGroupAssignmentProcess;
+import org.jbpm.bpmn2.subprocess.UserTaskChildModel;
+import org.jbpm.bpmn2.subprocess.UserTaskChildProcess;
+import org.jbpm.bpmn2.subprocess.UserTaskMainModel;
+import org.jbpm.bpmn2.subprocess.UserTaskMainProcess;
 import org.jbpm.bpmn2.task.ReceiveTaskModel;
 import org.jbpm.bpmn2.task.ReceiveTaskProcess;
 import org.jbpm.bpmn2.task.SendTaskModel;
@@ -210,7 +221,9 @@ import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
+import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
@@ -1671,17 +1684,127 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     @Test
     public void testCallActivityWithDataAssignment() {
         Application app = ProcessTestHelper.newApplication();
-        org.kie.kogito.process.Process<AssignmentSubProcessModel> assignmentSubProcessProcess = AssignmentSubProcessProcess.newProcess(app);
-        AssignmentSubProcessModel assignmentSubProcessModel = assignmentSubProcessProcess.createModel();
-        org.kie.kogito.process.ProcessInstance<AssignmentSubProcessModel> assignmentSubProcessInstance = assignmentSubProcessProcess.createInstance(assignmentSubProcessModel);
-        org.kie.kogito.process.Process<AssignmentProcessModel> processDefinition = AssignmentProcessProcess.newProcess(app);
-        AssignmentProcessModel model = processDefinition.createModel();
-        model.setName("oldValue");
-        org.kie.kogito.process.ProcessInstance<AssignmentProcessModel> instance = processDefinition.createInstance(model);
+        org.kie.kogito.process.Process<AssignmentProcessModel> assignmentProcess = AssignmentProcessProcess.newProcess(app);
+        AssignmentSubProcessProcess.newProcess(app);
+
+        AssignmentProcessModel assignmentSubProcessModel = assignmentProcess.createModel();
+        assignmentSubProcessModel.setName("oldValue");
+        org.kie.kogito.process.ProcessInstance<AssignmentProcessModel> instance = assignmentProcess.createInstance(assignmentSubProcessModel);
         instance.start();
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
         assertThat(instance.variables().getMessage()).isEqualTo("Hello Genworth welcome to jBPMS!");
+    }
+
+    @Test
+    public void testAbortChildProcessFromParentProcess() {
+        Application app = ProcessTestHelper.newApplication();
+        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<UserTaskMainModel> main = UserTaskMainProcess.newProcess(app);
+        org.kie.kogito.process.Process<UserTaskChildModel> child = UserTaskChildProcess.newProcess(app);
+
+        UserTaskMainModel assignmentSubProcessModel = main.createModel();
+        org.kie.kogito.process.ProcessInstance<UserTaskMainModel> instance = main.createInstance(assignmentSubProcessModel);
+        instance.start();
+        instance.abort();
+
+        assertThat(child.instances().stream().count()).isEqualTo(0);
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
+    }
+
+    @Test
+    public void testAbortFirstChildProcessFromParentProcess() {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Human Task", new DefaultKogitoWorkItemHandler());
+        org.kie.kogito.process.Process<FlowMainModel> main = FlowMainProcess.newProcess(app);
+        org.kie.kogito.process.Process<FlowChild1Model> child1 = FlowChild1Process.newProcess(app);
+        org.kie.kogito.process.Process<FlowChild2Model> child2 = FlowChild2Process.newProcess(app);
+        org.kie.kogito.process.Process<FlowChild3Model> child3 = FlowChild3Process.newProcess(app);
+
+        // abort from first child
+        org.kie.kogito.process.ProcessInstance<FlowMainModel> instance = main.createInstance(main.createModel());
+        instance.start();
+        assertThat(child1.instances().stream().count()).isEqualTo(1);
+        instance.abort();
+
+        assertThat(child1.instances().stream().count()).isEqualTo(0);
+        assertThat(child2.instances().stream().count()).isEqualTo(0);
+        assertThat(child3.instances().stream().count()).isEqualTo(0);
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
+    }
+
+    @Test
+    public void testAbortSecondChildProcessFromParentProcess() {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Human Task", new DefaultKogitoWorkItemHandler());
+        org.kie.kogito.process.Process<FlowMainModel> main = FlowMainProcess.newProcess(app);
+        org.kie.kogito.process.Process<FlowChild1Model> child1 = FlowChild1Process.newProcess(app);
+        org.kie.kogito.process.Process<FlowChild2Model> child2 = FlowChild2Process.newProcess(app);
+        org.kie.kogito.process.Process<FlowChild3Model> child3 = FlowChild3Process.newProcess(app);
+
+        org.kie.kogito.process.ProcessInstance<FlowMainModel> instance = main.createInstance(main.createModel());
+        instance.start();
+
+        assertThat(child1.instances().stream().count()).isEqualTo(1);
+        org.kie.kogito.process.ProcessInstance<FlowChild1Model> childInstance1 = child1.instances().stream().findAny().get();
+        ProcessTestHelper.completeWorkItem(childInstance1, emptyMap());
+        assertThat(child2.instances().stream().count()).isEqualTo(1);
+
+        instance.abort();
+        assertThat(child1.instances().stream().count()).isEqualTo(0);
+        assertThat(child2.instances().stream().count()).isEqualTo(0);
+        assertThat(child3.instances().stream().count()).isEqualTo(0);
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
+    }
+
+    @Test
+    public void testAbortThirdChildProcessFromParentProcess() {
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerHandler(app, "Human Task", new DefaultKogitoWorkItemHandler());
+        org.kie.kogito.process.Process<FlowMainModel> main = FlowMainProcess.newProcess(app);
+        org.kie.kogito.process.Process<FlowChild1Model> child1 = FlowChild1Process.newProcess(app);
+        org.kie.kogito.process.Process<FlowChild2Model> child2 = FlowChild2Process.newProcess(app);
+        org.kie.kogito.process.Process<FlowChild3Model> child3 = FlowChild3Process.newProcess(app);
+
+        org.kie.kogito.process.ProcessInstance<FlowMainModel> instance = main.createInstance(main.createModel());
+        instance.start();
+
+        assertThat(child1.instances().stream().count()).isEqualTo(1);
+        org.kie.kogito.process.ProcessInstance<FlowChild1Model> childInstance1 = child1.instances().stream().findAny().get();
+        ProcessTestHelper.completeWorkItem(childInstance1, emptyMap());
+
+        assertThat(child2.instances().stream().count()).isEqualTo(1);
+        org.kie.kogito.process.ProcessInstance<FlowChild2Model> childInstance2 = child2.instances().stream().findAny().get();
+        ProcessTestHelper.completeWorkItem(childInstance2, emptyMap());
+
+        assertThat(child3.instances().stream().count()).isEqualTo(1);
+        instance.abort();
+        assertThat(child1.instances().stream().count()).isEqualTo(0);
+        assertThat(child2.instances().stream().count()).isEqualTo(0);
+        assertThat(child3.instances().stream().count()).isEqualTo(0);
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
+    }
+
+    @Test
+    public void testAbortChildProcessUponCompletion() {
+        Application app = ProcessTestHelper.newApplication();
+        TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<UserTaskMainModel> main = UserTaskMainProcess.newProcess(app);
+        org.kie.kogito.process.Process<UserTaskChildModel> child = UserTaskChildProcess.newProcess(app);
+
+        UserTaskMainModel assignmentSubProcessModel = main.createModel();
+        org.kie.kogito.process.ProcessInstance<UserTaskMainModel> instance = main.createInstance(assignmentSubProcessModel);
+        instance.start();
+
+        assertThat(child.instances().stream().count()).isEqualTo(1);
+        org.kie.kogito.process.ProcessInstance<UserTaskChildModel> childInstance = child.instances().stream().findFirst().get();
+
+        childInstance.abort();
+
+        assertThat(child.instances().stream().count()).isEqualTo(0);
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test

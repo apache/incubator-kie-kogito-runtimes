@@ -16,11 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.signal;
+package org.jbpm.bpmn2.support;
 
-public interface SignalManagerHub extends SignalManager {
+import org.kie.kogito.process.MutableProcessInstances;
+import org.kie.kogito.process.Process;
+import org.kie.kogito.process.ProcessInstancesFactory;
 
-    void addProcessInstanceResolver(ProcessInstanceResolver<?> processInstanceResolver);
+public class InMemoryProcessInstancesFactory implements ProcessInstancesFactory {
 
-    void removeProcessInstanceResolver(ProcessInstanceResolver<?> processInstanceResolver);
+    @Override
+    public MutableProcessInstances<?> createProcessInstances(Process<?> process) {
+        return new InMemoryProcessInstances(process);
+    }
+
 }

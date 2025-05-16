@@ -74,7 +74,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
         byte[] data = readBytesFromFile(processInstanceStorage);
         AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process, mode);
         if (pi != null && !ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-            disconnect(processInstanceStorage, pi);
+            connectInstance(processInstanceStorage, pi);
         }
         return Optional.of(pi);
     }
@@ -105,6 +105,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
                 throw new ProcessInstanceDuplicatedException(id);
             }
             storeProcessInstance(processInstanceStorage, instance);
+            connectInstance(processInstanceStorage, instance);
         }
     }
 
@@ -115,7 +116,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
             Path processInstanceStorage = Paths.get(storage.toString(), id);
             if (Files.exists(processInstanceStorage)) {
                 storeProcessInstance(processInstanceStorage, instance);
-                disconnect(processInstanceStorage, instance);
+                connectInstance(processInstanceStorage, instance);
             }
         }
     }
@@ -150,10 +151,9 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
         }
     }
 
-    protected void disconnect(Path processInstanceStorage, ProcessInstance instance) {
+    protected void connectInstance(Path processInstanceStorage, ProcessInstance instance) {
         Supplier<byte[]> supplier = () -> readBytesFromFile(processInstanceStorage);
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(supplier));
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     public String getMetadata(Path file, String key) {

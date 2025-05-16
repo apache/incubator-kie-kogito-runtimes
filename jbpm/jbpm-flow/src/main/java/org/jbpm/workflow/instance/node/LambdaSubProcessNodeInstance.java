@@ -45,6 +45,8 @@ import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.process.MutableProcessInstances;
+import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 
 /**
@@ -101,7 +103,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         if (!getSubProcessNode().isWaitForCompletion()) {
             triggerCompleted();
         } else if (processInstance.status() == KogitoProcessInstance.STATE_COMPLETED || processInstance.status() == KogitoProcessInstance.STATE_ABORTED) {
-            processInstanceCompleted((ProcessInstanceImpl) pi);
+            processInstanceCompleted((ProcessInstance) pi);
         } else {
             addProcessListener();
         }
@@ -118,16 +120,14 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     @Override
     public void cancel(CancelType cancelType) {
         super.cancel(cancelType);
-        if (getSubProcessNode() == null || !getSubProcessNode().isIndependent()) {
-            ProcessInstance processInstance = null;
-            KogitoProcessRuntime kruntime = (KogitoProcessRuntime) ((ProcessInstance) getProcessInstance()).getKnowledgeRuntime();
-
-            processInstance = (ProcessInstance) kruntime.getProcessInstance(processInstanceId);
-
-            if (processInstance != null) {
-                processInstance.setState(KogitoProcessInstance.STATE_ABORTED);
-            }
+        if (getSubProcessNode() != null && getSubProcessNode().isIndependent()) {
+            return;
         }
+
+        KogitoProcessRuntime kruntime = (KogitoProcessRuntime) ((ProcessInstance) getProcessInstance()).getKnowledgeRuntime();
+        Optional<AbstractProcessInstance> pi =
+                ((MutableProcessInstances) kruntime.getApplication().get(Processes.class).processById(this.getSubProcessNode().getProcessId()).instances()).findById(processInstanceId);
+        pi.ifPresent(e -> e.abort());
     }
 
     public String getProcessInstanceId() {
@@ -161,7 +161,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     @Override
     public void signalEvent(String type, Object event) {
         if (("processInstanceCompleted:" + processInstanceId).equals(type)) {
-            processInstanceCompleted((ProcessInstance) event);
+            this.processInstanceCompleted((ProcessInstance) event);
         } else {
             super.signalEvent(type, event);
         }
@@ -180,7 +180,6 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
             // handle exception as sub process failed with error code
             ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, faultName);
             if (exceptionScopeInstance != null) {
-
                 KogitoProcessContextImpl context = new KogitoProcessContextImpl(this.getProcessInstance().getKnowledgeRuntime());
                 context.setProcessInstance(this.getProcessInstance());
                 context.setNodeInstance(this);

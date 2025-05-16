@@ -504,7 +504,9 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         for (Map.Entry<String, Object> entry : workItem.getParameters().entrySet()) {
             variableScopeInstance.setVariable(entry.getKey(), entry.getValue());
         }
+
         kogitoProcessInstance.start();
+
         // start change the id
         this.exceptionHandlingProcessInstanceId = kogitoProcessInstance.id();
 
