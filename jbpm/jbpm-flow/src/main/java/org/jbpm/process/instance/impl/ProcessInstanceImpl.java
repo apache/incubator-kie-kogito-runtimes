@@ -147,6 +147,10 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
         return getProcess().getName();
     }
 
+    public void setInternalState(int state) {
+        this.state = state;
+    }
+
     @Override
     public void setState(final int state, String outcome) {
         this.outcome = outcome;

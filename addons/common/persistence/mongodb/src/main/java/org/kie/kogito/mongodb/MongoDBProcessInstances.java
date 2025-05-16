@@ -87,7 +87,7 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
         return find(id).map(piDoc -> {
             AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(piDoc, mode);
             if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-                reloadProcessInstance(pi, id);
+                connectProcessInstance(pi, id);
             }
             return pi;
         });
@@ -116,7 +116,6 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
         if (isActive(instance)) {
             updateStorage(id, instance, false);
         }
-        reloadProcessInstance(instance, id);
     }
 
     protected void updateStorage(String id, ProcessInstance<T> instance, boolean checkDuplicates) {
@@ -127,6 +126,7 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
         } else {
             updateInternal(id, instance, clientSession, doc);
         }
+        connectProcessInstance(instance, id);
     }
 
     private void createInternal(String id, ClientSession clientSession, Document doc) {
@@ -179,12 +179,11 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
         }
     }
 
-    private void reloadProcessInstance(ProcessInstance<T> instance, String id) {
+    private void connectProcessInstance(ProcessInstance<T> instance, String id) {
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> find(id).map(reloaded -> {
             setVersion(instance, reloaded.getLong(VERSION));
             return reloaded.toJson().getBytes();
         }).orElseThrow(() -> new IllegalArgumentException("process instance id " + id + " does not exists in mongodb"))));
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     private static void setVersion(ProcessInstance<?> instance, Long version) {

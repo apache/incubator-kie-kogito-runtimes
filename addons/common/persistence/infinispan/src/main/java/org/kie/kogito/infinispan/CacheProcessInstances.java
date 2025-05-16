@@ -93,11 +93,7 @@ public class CacheProcessInstances implements MutableProcessInstances {
 
     @Override
     public void update(String id, ProcessInstance instance) {
-        try {
-            updateStorage(id, instance, false);
-        } finally {
-            disconnect(id, instance);
-        }
+        updateStorage(id, instance, false);
     }
 
     @Override
@@ -131,10 +127,11 @@ public class CacheProcessInstances implements MutableProcessInstances {
                     cache.put(id, data);
                 }
             }
+            connectProcessInstance(id, instance);
         }
     }
 
-    private void disconnect(String id, ProcessInstance instance) {
+    private void connectProcessInstance(String id, ProcessInstance instance) {
         if (this.lock) {
             reloadWithLock(id, instance);
         } else {
@@ -149,13 +146,11 @@ public class CacheProcessInstances implements MutableProcessInstances {
             return versionedCache.getValue();
         };
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(supplier));
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     private void reload(String id, ProcessInstance instance) {
         Supplier<byte[]> supplier = () -> cache.get(id);
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(supplier));
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     @Override

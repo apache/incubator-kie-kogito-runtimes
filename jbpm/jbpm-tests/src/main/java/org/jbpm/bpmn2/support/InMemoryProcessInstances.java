@@ -58,21 +58,20 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
         LOGGER.info("find by id {}", id);
         AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process, mode);
         if (pi != null && !ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-            disconnect(pi);
+            connectProcessInstance(pi);
         }
         return Optional.of(pi);
     }
 
     @Override
     public void create(String id, ProcessInstance<T> instance) {
-        if (isActive(instance)) {
-            LOGGER.info("create instance {} for {}", id, process.id());
-            byte[] data = marshaller.marshallProcessInstance(instance);
-            byte[] oldValue = instances.putIfAbsent(id, data);
-            if (oldValue != null) {
-                throw new ProcessInstanceDuplicatedException(id);
-            }
+        LOGGER.info("create instance {} for {}", id, process.id());
+        byte[] data = marshaller.marshallProcessInstance(instance);
+        byte[] oldValue = instances.putIfAbsent(id, data);
+        if (oldValue != null) {
+            throw new ProcessInstanceDuplicatedException(id);
         }
+        connectProcessInstance(instance);
     }
 
     @Override
@@ -81,7 +80,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
             LOGGER.info("update instance {} for {}", id, process.id());
             byte[] data = marshaller.marshallProcessInstance(instance);
             instances.put(id, data);
-            disconnect(instance);
+            connectProcessInstance(instance);
         }
     }
 
@@ -101,14 +100,13 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
         return instances.values().stream()
                 .map(data -> {
                     AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process);
-                    disconnect(pi);
+                    connectProcessInstance(pi);
                     return (ProcessInstance<T>) pi;
                 });
     }
 
-    protected void disconnect(ProcessInstance<T> instance) {
+    protected void connectProcessInstance(ProcessInstance<T> instance) {
         Supplier<byte[]> supplier = () -> instances.get(instance.id());
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(supplier));
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 }
