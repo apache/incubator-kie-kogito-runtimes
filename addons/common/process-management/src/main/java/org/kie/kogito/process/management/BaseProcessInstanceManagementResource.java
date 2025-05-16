@@ -32,6 +32,8 @@ import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.jobs.JobDescription;
+import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
@@ -50,6 +52,9 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
     private static final String PROCESS_NOT_FOUND = "Process with id %s not found";
     private static final String PROCESS_INSTANCE_NOT_FOUND = "Process instance with id %s not found";
     private static final String PROCESS_INSTANCE_NOT_IN_ERROR = "Process instance with id %s is not in error state";
+
+    // How to get jobService bean
+    private JobsService jobsService;
 
     private Supplier<Processes> processes;
 
@@ -307,4 +312,22 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
     protected abstract T badRequestResponse(String message);
 
     protected abstract T notFoundResponse(String message);
+
+    public T doUpdateNodeInstanceSla(String processId, String processInstanceId, String nodeInstanceId, SlaPayload sla) {
+        return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
+            // Update Node SLA
+            processInstance.updateNodeSla(nodeInstanceId, sla);
+            // Update job expiration
+            jobsService.rescheduleJob(job);
+
+        });
+    }
+
+    public T doUpdateProcessInstanceSla(String processId, String processInstanceId, SlaPayload sla) {
+        return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
+            // Update Process SLA
+            // Update job expiration
+            return null;
+        });
+    }
 }

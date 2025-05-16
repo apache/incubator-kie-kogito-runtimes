@@ -42,4 +42,6 @@ public interface JobsService {
      * @return returns true if the cancellation was successful, otherwise false
      */
     boolean cancelJob(String id);
+
+    String rescheduleJob(JobDescription description);
 }

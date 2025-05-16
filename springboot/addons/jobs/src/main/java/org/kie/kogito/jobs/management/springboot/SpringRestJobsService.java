@@ -99,12 +99,29 @@ public class SpringRestJobsService extends RestJobsService {
         }
     }
 
+    @Override
+    public String rescheduleJob(JobDescription description) {
+        return restTemplate.patchForObject(getJobsServiceUri(), buildJobRequest(description), String.class);
+    }
+
     private HttpEntity<String> buildJobRequest(Job job) {
         String json;
         try {
             json = objectMapper.writeValueAsString(job);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("It was not possible to create the http request for the job: " + job, e);
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new HttpEntity<>(json, headers);
+    }
+
+    private HttpEntity<String> buildJobRequest(JobDescription description) {
+        String json;
+        try {
+            json = objectMapper.writeValueAsString(description);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("It was not possible to create the http request for the job: " + description, e);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

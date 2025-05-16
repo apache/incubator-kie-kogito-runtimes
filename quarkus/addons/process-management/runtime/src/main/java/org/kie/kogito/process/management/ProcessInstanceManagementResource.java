@@ -173,4 +173,21 @@ public class ProcessInstanceManagementResource extends BaseProcessInstanceManage
     public Response cancelProcessInstanceId(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId) {
         return doCancelProcessInstanceId(processId, processInstanceId);
     }
+
+    @Override
+    @GET
+    @Path("{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}/sla")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateNodeInstanceSla(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId, @PathParam("nodeInstanceId") String nodeInstanceId, SlaPayload slaPayload) {
+        return doUpdateNodeInstanceSla(processId, processInstanceId, nodeInstanceId, slaPayload);
+    }
+
+    @Override
+    @GET
+    @Path("{processId}/instances/{processInstanceId}/sla")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateProcessInstanceSla(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId, SlaPayload slaPayload) {
+        return doUpdateProcessInstanceSla(processId, processInstanceId, slaPayload);
+    }
+
 }

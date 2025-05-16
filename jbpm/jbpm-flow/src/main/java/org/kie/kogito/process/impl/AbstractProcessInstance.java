@@ -513,6 +513,23 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         });
     }
 
+    @Override
+    public void updateNodeSla(String nodeInstanceId, SlaPayload sla) {
+        processInstanceLockStrategy.executeOperation(id, () -> {
+            NodeInstance nodeInstance = processInstance()
+                    .getNodeInstances(true)
+                    .stream()
+                    .filter(ni -> ni.getStringId().equals(nodeInstanceId))
+                    .findFirst()
+                    .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
+
+            //Set node sla
+            //nodeInstance.setsla()
+            removeOnFinish();
+            return null;
+        });
+    }
+
     protected WorkflowProcessInstance processInstance() {
         if (this.processInstance == null) {
             reloadSupplier.accept(this);
