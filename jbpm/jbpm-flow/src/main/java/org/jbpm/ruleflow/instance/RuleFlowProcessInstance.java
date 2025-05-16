@@ -19,7 +19,6 @@
 package org.jbpm.ruleflow.instance;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.node.StartNode;
@@ -47,13 +46,4 @@ public class RuleFlowProcessInstance extends WorkflowProcessInstanceImpl {
         autoStartNodes.forEach(autoStartNode -> signalEvent(autoStartNode.getName(), null));
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof RuleFlowProcessInstance ruleFlowProcessInstance) {
-            return Objects.equals(this.getId(), ruleFlowProcessInstance.getId())
-                    && Objects.equals(this.getState(), ruleFlowProcessInstance.getState())
-                    && Objects.equals(this.getProcessId(), ruleFlowProcessInstance.getProcessId());
-        }
-        return false;
-    }
 }

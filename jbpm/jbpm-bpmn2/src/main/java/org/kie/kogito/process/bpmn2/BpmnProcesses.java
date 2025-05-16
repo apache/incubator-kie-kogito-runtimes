@@ -42,6 +42,7 @@ public class BpmnProcesses implements Processes {
     public BpmnProcesses addProcess(Process<? extends Model> process) {
         mappedProcesses.put(process.id(), process);
         ((AbstractProcess) process).setProcessInstancesFactory(processInstancesFactory);
+        process.activate();
         return this;
     }
 

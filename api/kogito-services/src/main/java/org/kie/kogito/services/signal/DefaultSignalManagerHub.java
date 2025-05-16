@@ -53,20 +53,20 @@ public class DefaultSignalManagerHub implements SignalManagerHub {
     public void signalEvent(String eventType, Object payload) {
         // we signal memory first
         List<String> idList = new ArrayList<>();
-        listeners.getOrDefault(eventType, emptyList()).forEach(processInstance -> {
-            if (processInstance instanceof KogitoProcessInstance) {
-                KogitoProcessInstance kogitoProcessInstance = (KogitoProcessInstance) processInstance;
+        listeners.getOrDefault(eventType, emptyList()).forEach(eventListener -> {
+            eventListener.signalEvent(eventType, payload);
+            if (eventListener instanceof KogitoProcessInstance kogitoProcessInstance) {
                 idList.add(kogitoProcessInstance.getId());
-                processInstance.signalEvent(eventType, payload);
             }
         });
 
-        workflowInstanceResolver.stream()
+        var processInstancesWaiting = workflowInstanceResolver.stream()
                 .map(e -> e.waitingForEvents(eventType))
                 .flatMap(List::stream)
                 .filter(p -> !idList.contains(p.id()))
-                .forEach(eventListener -> eventListener.send(SignalFactory.of(eventType, payload)));
+                .toList();
 
+        processInstancesWaiting.forEach(eventListener -> eventListener.send(SignalFactory.of(eventType, payload)));
     }
 
     @Override

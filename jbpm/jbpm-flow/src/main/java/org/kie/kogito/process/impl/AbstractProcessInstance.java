@@ -29,7 +29,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -91,8 +90,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     protected Integer status;
 
-    private final AtomicBoolean removed;
-
     protected String id;
     protected CorrelationKey correlationKey;
     protected String description;
@@ -121,10 +118,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
-        this.removed = new AtomicBoolean(false);
         this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
         setCorrelationKey(businessKey);
-
         Map<String, Object> map = bind(variables);
 
         org.kie.api.definition.process.Process processDefinition = process.get();
@@ -132,9 +127,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             ((WorkflowProcess) processDefinition).getInputValidator().ifPresent(v -> v.validate(map));
         }
         String processId = processDefinition.getId();
-        syncProcessInstance((WorkflowProcessInstance) ((CorrelationAwareProcessRuntime) rt).createProcessInstance(processId, correlationKey, map));
-        processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
 
+        WorkflowProcessInstance workflowProcessInstance = (WorkflowProcessInstance) ((CorrelationAwareProcessRuntime) rt).createProcessInstance(processId, correlationKey, map);
+        syncWorkflowInstanceState(workflowProcessInstance);
+        workflowProcessInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
+        internalSetProcessInstance(workflowProcessInstance);
         if (Objects.nonNull(correlation)) {
             this.correlationInstance = Optional.of(process.correlations().create(correlation, id()));
         }
@@ -148,27 +145,43 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
      * @param wpi
      */
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, org.kie.api.runtime.process.WorkflowProcessInstance wpi) {
-        this.process = process;
-        this.variables = variables;
-        syncProcessInstance((WorkflowProcessInstance) wpi);
-        unbind(variables, processInstance.getVariables());
-        this.removed = new AtomicBoolean(false);
-        this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
+        this(process, variables, null, wpi);
     }
 
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt, org.kie.api.runtime.process.WorkflowProcessInstance wpi) {
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
-        syncProcessInstance((WorkflowProcessInstance) wpi);
-        reconnect();
-        this.removed = new AtomicBoolean(false);
         this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
+
+        syncWorkflowInstanceState((WorkflowProcessInstance) wpi);
+    }
+
+    private void syncWorkflowInstanceState(WorkflowProcessInstance wpi) {
+        status = wpi.getState();
+        id = wpi.getStringId();
+        description = wpi.getDescription();
+        unbind(variables, wpi.getVariables());
+        setCorrelationKey(wpi.getCorrelationKey());
+    }
+
+    protected WorkflowProcessInstanceImpl internalLoadProcessInstanceState() {
+        LOG.debug("internal reload process instance {}", id);
+        if (this.processInstance == null) {
+            reloadSupplier.accept(this);
+            if (this.processInstance == null) {
+                throw new ProcessInstanceNotFoundException(id);
+            }
+        }
+        if (getProcessRuntime() != null) {
+            reconnect();
+        }
+        syncWorkflowInstanceState(processInstance);
+        return (WorkflowProcessInstanceImpl) this.processInstance;
     }
 
     protected void reconnect() {
-        LOG.debug("reconnect process {}", processInstance.getId());
-        //set correlation
+        LOG.debug("reconnect process instance {}", id);
         if (correlationInstance.isEmpty()) {
             correlationInstance = process().correlations().findByCorrelatedId(id());
         }
@@ -177,11 +190,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             processInstance.setKnowledgeRuntime(getProcessRuntime().getInternalKieRuntime());
         }
         getProcessRuntime().getProcessInstanceManager().setLock(((MutableProcessInstances<T>) process.instances()).lock());
-        processInstance.reconnect();
         processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
+        processInstance.reconnect();
         addCompletionEventListener();
-
-        unbind(variables, processInstance.getVariables());
     }
 
     private void addCompletionEventListener() {
@@ -191,31 +202,39 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         }
     }
 
+    protected void internalUnloadProcessInstanceState() {
+        if (processInstance == null) {
+            LOG.debug("internal unload process instance {} invocation. already disconnected", id);
+            return;
+        }
+        LOG.debug("internal unload process instance {}", id);
+        syncWorkflowInstanceState(processInstance);
+        if (status == STATE_ERROR) {
+            processError = buildProcessError();
+        }
+        if (processInstance.getKnowledgeRuntime() != null) {
+            processInstance.getMetaData().remove(KOGITO_PROCESS_INSTANCE);
+            disconnect();
+        }
+
+        processInstance = null;
+    }
+
+    protected void disconnect() {
+        if (processInstance == null) {
+            return;
+        }
+        removeCompletionListener();
+        LOG.debug("disconnect process instance state {}", processInstance.getId());
+        processInstance.disconnect();
+        processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, null);
+    }
+
     private void removeCompletionListener() {
         if (completionEventListener != null) {
             processInstance.removeEventListener("processInstanceCompleted:" + id, completionEventListener, false);
             completionEventListener = null;
         }
-    }
-
-    protected void disconnect() {
-
-        if (processInstance == null) {
-            return;
-        }
-
-        LOG.debug("disconnect process {}", processInstance.getId());
-
-        processInstance.disconnect();
-        processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, null);
-    }
-
-    private void syncProcessInstance(WorkflowProcessInstance wpi) {
-        internalSetProcessInstance(wpi);
-        status = wpi.getState();
-        id = wpi.getStringId();
-        description = wpi.getDescription();
-        setCorrelationKey(wpi.getCorrelationKey());
     }
 
     private void setCorrelationKey(String businessKey) {
@@ -242,24 +261,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.reloadSupplier = reloadSupplier;
     }
 
-    public void internalRemoveProcessInstance() {
-        if (processInstance == null) {
-            return;
-        }
-        status = processInstance.getState();
-        if (status == STATE_ERROR) {
-            processError = buildProcessError();
-        }
-        removeCompletionListener();
-        if (processInstance.getKnowledgeRuntime() != null) {
-            disconnect();
-        }
-
-        processInstance = null;
-    }
-
     public boolean hasHeader(String headerName) {
-        return processInstance().getHeaders().containsKey(headerName);
+        return internalLoadProcessInstanceState().getHeaders().containsKey(headerName);
     }
 
     @Override
@@ -279,43 +282,31 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void start(String trigger, String referenceId, Map<String, List<String>> headers) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            if (this.status != KogitoProcessInstance.STATE_PENDING) {
+        executeInWorkflowProcessInstance(pi -> {
+            if (pi.getState() != KogitoProcessInstance.STATE_PENDING) {
                 throw new IllegalStateException("Impossible to start process instance that already has started");
             }
-            this.status = KogitoProcessInstance.STATE_ACTIVE;
 
             if (referenceId != null) {
-                processInstance.setReferenceId(referenceId);
+                pi.setReferenceId(referenceId);
             }
 
             if (headers != null) {
-                this.processInstance.setHeaders(headers);
+                pi.setHeaders(headers);
             }
 
             getProcessRuntime().getProcessInstanceManager().setLock(((MutableProcessInstances<T>) process.instances()).lock());
-            getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
-            this.id = processInstance.getStringId();
             addCompletionEventListener();
-            ((MutableProcessInstances<T>) process.instances()).create(id, this);
-            KogitoProcessInstance kogitoProcessInstance = getProcessRuntime().getKogitoProcessRuntime().startProcessInstance(this.id, trigger);
-            if (kogitoProcessInstance.getState() != STATE_ABORTED && kogitoProcessInstance.getState() != STATE_COMPLETED) {
-                ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
-            }
-            unbind(variables, kogitoProcessInstance.getVariables());
-            if (this.processInstance != null) {
-                this.status = this.processInstance.getState();
-            }
+            getProcessRuntime().getKogitoProcessRuntime().startProcessInstance(pi.getId(), trigger);
             return null;
         });
     }
 
     @Override
     public void abort() {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            String pid = processInstance().getStringId();
+        executeInWorkflowProcessInstance(pi -> {
+            String pid = pi.getStringId();
             getProcessRuntime().getKogitoProcessRuntime().abortProcessInstance(pid);
-            removeOnFinish();
             return null;
         });
     }
@@ -330,12 +321,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public <S> void send(Signal<S> signal) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
+        executeInWorkflowProcessInstance(pi -> {
             if (signal.referenceId() != null) {
-                processInstance().setReferenceId(signal.referenceId());
+                pi.setReferenceId(signal.referenceId());
             }
-            processInstance().signalEvent(signal.channel(), signal.payload());
-            removeOnFinish();
+            pi.signalEvent(signal.channel(), signal.payload());
             return null;
         });
     }
@@ -372,8 +362,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public Date startDate() {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
-            return processInstance().getStartDate();
+        return executeInWorkflowProcessInstance(pi -> {
+            return pi.getStartDate();
         });
     }
 
@@ -399,10 +389,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     private T updateVariables(Map<String, Object> map) {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
+        return executeInWorkflowProcessInstance(pi -> {
             for (Entry<String, Object> entry : map.entrySet()) {
-                processInstance().setVariable(entry.getKey(), entry.getValue());
+                pi.setVariable(entry.getKey(), entry.getValue());
             }
+            syncWorkflowInstanceState(pi);
             ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
             return variables;
         });
@@ -410,7 +401,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public Optional<ProcessError> error() {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
+        return executeInWorkflowProcessInstance(pi -> {
             if (this.status == STATE_ERROR) {
                 return Optional.of(this.processError != null ? this.processError : buildProcessError());
             }
@@ -435,27 +426,21 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void startFrom(String nodeId, String referenceId, Map<String, List<String>> headers) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            processInstance.setStartDate(new Date());
-            processInstance.setState(STATE_ACTIVE);
-            getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
-
-            this.id = processInstance.getStringId();
-
+        executeInWorkflowProcessInstance(pi -> {
+            pi.setStartDate(new Date());
+            pi.setState(STATE_ACTIVE);
+            getProcessRuntime().getProcessInstanceManager().addProcessInstance(pi);
             addCompletionEventListener();
             if (referenceId != null) {
-                processInstance.setReferenceId(referenceId);
+                pi.setReferenceId(referenceId);
             }
             if (headers != null) {
-                this.processInstance.setHeaders(headers);
+                pi.setHeaders(headers);
             }
 
-            internalTriggerNode(nodeId);
+            internalTriggerNode(pi, nodeId);
+            syncWorkflowInstanceState(pi);
 
-            unbind(variables, processInstance.getVariables());
-            if (processInstance() != null) {
-                this.status = processInstance.getState();
-            }
             ((MutableProcessInstances<T>) process.instances()).create(id, this);
             return null;
         });
@@ -463,15 +448,13 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void triggerNode(String nodeId) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            internalTriggerNode(nodeId);
-            ((MutableProcessInstances<T>) process.instances()).update(id, this);
+        executeInWorkflowProcessInstance(pi -> {
+            internalTriggerNode(pi, nodeId);
             return null;
         });
     }
 
-    private void internalTriggerNode(String nodeId) {
-        WorkflowProcessInstance wfpi = processInstance();
+    private void internalTriggerNode(WorkflowProcessInstance wfpi, String nodeId) {
         RuleFlowProcess rfp = ((RuleFlowProcess) wfpi.getProcess());
 
         // we avoid create containers incorrectly
@@ -485,8 +468,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void cancelNodeInstance(String nodeInstanceId) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            NodeInstance nodeInstance = processInstance()
+        executeInWorkflowProcessInstance(pi -> {
+            NodeInstance nodeInstance = pi
                     .getNodeInstances(true)
                     .stream()
                     .filter(ni -> ni.getStringId().equals(nodeInstanceId))
@@ -494,57 +477,60 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                     .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
 
             nodeInstance.cancel();
-            removeOnFinish();
             return null;
         });
     }
 
     @Override
     public void retriggerNodeInstance(String nodeInstanceId) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            NodeInstance nodeInstance = processInstance()
+        executeInWorkflowProcessInstance(pi -> {
+            NodeInstance nodeInstance = pi
                     .getNodeInstances(true)
                     .stream()
                     .filter(ni -> ni.getStringId().equals(nodeInstanceId))
                     .findFirst()
                     .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
             ((NodeInstanceImpl) nodeInstance).retrigger(true);
-            removeOnFinish();
             return null;
         });
     }
 
-    protected WorkflowProcessInstance processInstance() {
-        if (this.processInstance == null) {
-            reloadSupplier.accept(this);
-            if (this.processInstance == null) {
-                throw new ProcessInstanceNotFoundException(id);
-            } else if (getProcessRuntime() != null) {
-                reconnect();
-            }
-        }
-        return this.processInstance;
+    /**
+     * this is intended to be used internal. Sometimes is required to perform low level operations that require some
+     * internal state of the process like obtaining the SLA or operating nodes instances.
+     * 
+     * @param <R>
+     * @param execution
+     * @return
+     */
+    public <R> R executeInWorkflowProcessInstance(Function<WorkflowProcessInstanceImpl, R> execution) {
+        return processInstanceLockStrategy.executeOperation(id, () -> {
+            WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
+            getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
+            int oldState = workflowProcessInstance.getState();
+            R outcome = execution.apply(workflowProcessInstance);
+            syncPersistence(oldState, workflowProcessInstance);
+            getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
+            internalUnloadProcessInstanceState();
+            return outcome;
+        });
     }
 
     @Override
     public Collection<KogitoNodeInstance> findNodes(Predicate<KogitoNodeInstance> predicate) {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
-            return processInstance().getKogitoNodeInstances(predicate, true);
-        });
+        return executeInWorkflowProcessInstance(pi -> pi.getKogitoNodeInstances(predicate, true));
     }
 
     @Override
     public WorkItem workItem(String workItemId, Policy... policies) {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
-            return processInstance().getNodeInstances(true).stream()
-                    .filter(WorkItemNodeInstance.class::isInstance)
-                    .map(WorkItemNodeInstance.class::cast)
-                    .filter(w -> enforceException(w.getWorkItem(), policies))
-                    .filter(ni -> ni.getWorkItemId().equals(workItemId))
-                    .map(this::toBaseWorkItem)
-                    .findAny()
-                    .orElseThrow(() -> new WorkItemNotFoundException("Work item with id " + workItemId + " was not found in process instance " + id(), workItemId));
-        });
+        return executeInWorkflowProcessInstance(pi -> pi.getNodeInstances(true).stream()
+                .filter(WorkItemNodeInstance.class::isInstance)
+                .map(WorkItemNodeInstance.class::cast)
+                .filter(w -> enforceException(w.getWorkItem(), policies))
+                .filter(ni -> ni.getWorkItemId().equals(workItemId))
+                .map(this::toBaseWorkItem)
+                .findAny()
+                .orElseThrow(() -> new WorkItemNotFoundException("Work item with id " + workItemId + " was not found in process instance " + id(), workItemId)));
     }
 
     private boolean enforceException(KogitoWorkItem kogitoWorkItem, Policy... policies) {
@@ -559,8 +545,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public List<WorkItem> workItems(Predicate<KogitoNodeInstance> p, Policy... policies) {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
-            return processInstance().getNodeInstances(true).stream()
+        return executeInWorkflowProcessInstance(pi -> {
+            return pi.getNodeInstances(true).stream()
                     .filter(p::test)
                     .filter(WorkItemNodeInstance.class::isInstance)
                     .map(WorkItemNodeInstance.class::cast)
@@ -597,103 +583,83 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void completeWorkItem(String workItemId, Map<String, Object> variables, Policy... policies) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            processInstance();
-            syncWorkItems();
+        executeInWorkflowProcessInstance(pi -> {
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().completeWorkItem(workItemId, variables, policies);
-            removeOnFinish();
             return null;
         });
     }
 
     @Override
     public <R> R updateWorkItem(String workItemId, Function<KogitoWorkItem, R> updater, Policy... policies) {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
-            processInstance();
-            syncWorkItems();
+        return executeInWorkflowProcessInstance(pi -> {
             R result = getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().updateWorkItem(workItemId, updater, policies);
-            ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
             return result;
         });
     }
 
     @Override
     public void abortWorkItem(String workItemId, Policy... policies) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            processInstance();
-            syncWorkItems();
+        executeInWorkflowProcessInstance(pi -> {
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().abortWorkItem(workItemId, policies);
-            removeOnFinish();
             return null;
         });
     }
 
     @Override
+
     public void transitionWorkItem(String workItemId, WorkItemTransition transition) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            processInstance();
-            syncWorkItems();
+        executeInWorkflowProcessInstance(pi -> {
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().transitionWorkItem(workItemId, transition);
-            removeOnFinish();
             return null;
         });
-    }
-
-    private void syncWorkItems() {
-        for (org.kie.api.runtime.process.NodeInstance nodeInstance : processInstance().getNodeInstances(true)) {
-            if (nodeInstance instanceof WorkItemNodeInstance workItemNodeInstance) {
-                workItemNodeInstance.internalRegisterWorkItem();
-            }
-        }
     }
 
     @Override
     public Set<EventDescription<?>> events() {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
-            return processInstance().getEventDescriptions();
+        return executeInWorkflowProcessInstance(pi -> {
+            return pi.getEventDescriptions();
         });
     }
 
     @Override
     public Collection<Milestone> milestones() {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
-            return processInstance().milestones();
+        return executeInWorkflowProcessInstance(pi -> {
+            return pi.milestones();
         });
     }
 
     @Override
     public Collection<TimerDescription> timers() {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
-            return processInstance().timers();
+        return executeInWorkflowProcessInstance(pi -> {
+            return pi.timers();
         });
     }
 
     @Override
     public Collection<AdHocFragment> adHocFragments() {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
-            return processInstance().adHocFragments();
+        return executeInWorkflowProcessInstance(pi -> {
+            return pi.adHocFragments();
         });
     }
 
-    protected void removeOnFinish() {
-        if (processInstance.getState() != KogitoProcessInstance.STATE_ACTIVE && processInstance.getState() != KogitoProcessInstance.STATE_ERROR) {
-            removeCompletionListener();
-            syncProcessInstance(processInstance);
-            remove();
-        } else {
-            ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
-        }
-        unbind(this.variables, processInstance().getVariables());
-        this.status = processInstance.getState();
-    }
-
-    private void remove() {
-        if (removed.getAndSet(true)) {
-            //already removed
+    protected void syncPersistence(int oldWorkflowProcessInstanceState, WorkflowProcessInstanceImpl workflowProcessInstanceImpl) {
+        if (oldWorkflowProcessInstanceState == KogitoProcessInstance.STATE_PENDING) {
+            ((MutableProcessInstances<T>) process.instances()).create(this.id(), this);
             return;
         }
-        correlationInstance.map(CorrelationInstance::getCorrelation).ifPresent(c -> process.correlations().delete(c));
-        ((MutableProcessInstances<T>) process.instances()).remove(this.id());
+
+        switch (workflowProcessInstanceImpl.getState()) {
+            case KogitoProcessInstance.STATE_ABORTED, KogitoProcessInstance.STATE_COMPLETED:
+                correlationInstance.map(CorrelationInstance::getCorrelation).ifPresent(c -> process.correlations().delete(c));
+                ((MutableProcessInstances<T>) process.instances()).remove(this.id());
+                break;
+            case KogitoProcessInstance.STATE_ACTIVE, KogitoProcessInstance.STATE_ERROR, KogitoProcessInstance.STATE_SUSPENDED:
+                ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
+                break;
+            case KogitoProcessInstance.STATE_PENDING:
+                ((MutableProcessInstances<T>) process.instances()).create(this.id(), this);
+                break;
+        }
     }
 
     // this must be overridden at compile time
@@ -763,7 +729,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     protected ProcessError buildProcessError() {
-        WorkflowProcessInstance pi = processInstance();
+        WorkflowProcessInstance pi = internalLoadProcessInstanceState();
 
         final String errorMessage = pi.getErrorMessage();
         final String nodeInError = pi.getNodeIdInError();
@@ -793,26 +759,28 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
             @Override
             public void retrigger() {
-                WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
-                NodeInstanceImpl ni = (NodeInstanceImpl) pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
-                clearError(pInstance);
-                getProcessRuntime().getProcessEventSupport().fireProcessRetriggered(pInstance, pInstance.getKnowledgeRuntime());
-                org.kie.api.runtime.process.NodeInstanceContainer nodeInstanceContainer = ni.getNodeInstanceContainer();
-                if (nodeInstanceContainer instanceof NodeInstance) {
-                    ((NodeInstance) nodeInstanceContainer).internalSetTriggerTime(new Date());
-                }
-                ni.internalSetRetrigger(true);
-                ni.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
-                removeOnFinish();
+                executeInWorkflowProcessInstance(pi -> {
+                    NodeInstanceImpl ni = (NodeInstanceImpl) pi.getByNodeDefinitionId(nodeInError, pi.getNodeContainer());
+                    clearError(pi);
+                    getProcessRuntime().getProcessEventSupport().fireProcessRetriggered(pi, pi.getKnowledgeRuntime());
+                    org.kie.api.runtime.process.NodeInstanceContainer nodeInstanceContainer = ni.getNodeInstanceContainer();
+                    if (nodeInstanceContainer instanceof NodeInstance) {
+                        ((NodeInstance) nodeInstanceContainer).internalSetTriggerTime(new Date());
+                    }
+                    ni.internalSetRetrigger(true);
+                    ni.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
+                    return null;
+                });
             }
 
             @Override
             public void skip() {
-                WorkflowProcessInstanceImpl pInstance = (WorkflowProcessInstanceImpl) processInstance();
-                NodeInstanceImpl ni = (NodeInstanceImpl) pInstance.getByNodeDefinitionId(nodeInError, pInstance.getNodeContainer());
-                clearError(pInstance);
-                ni.triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, true);
-                removeOnFinish();
+                executeInWorkflowProcessInstance(pi -> {
+                    NodeInstanceImpl ni = (NodeInstanceImpl) pi.getByNodeDefinitionId(nodeInError, pi.getNodeContainer());
+                    clearError(pi);
+                    ni.triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, true);
+                    return null;
+                });
             }
 
             private void clearError(WorkflowProcessInstanceImpl pInstance) {
@@ -829,13 +797,14 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         @Override
         public void signalEvent(String type, Object event) {
             ((WorkflowProcess) process.get()).getOutputValidator().ifPresent(v -> v.validate(processInstance.getVariables()));
-            removeOnFinish();
+            syncPersistence(processInstance.getState(), (WorkflowProcessInstanceImpl) processInstance);
         }
 
         @Override
         public String[] getEventTypes() {
             return new String[] { "processInstanceCompleted:" + processInstance.getStringId() };
         }
+
     }
 
     private class StringCorrelationKey implements CorrelationKey {

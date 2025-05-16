@@ -85,28 +85,27 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     @Override
     public void create(String id, ProcessInstance instance) {
         if (!isActive(instance)) {
-            disconnect(instance);
             return;
         }
         insertInternal(id, marshaller.marshallProcessInstance(instance));
+        connectProcessInstance(instance);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void update(String id, ProcessInstance instance) {
         if (!isActive(instance)) {
-            disconnect(instance);
             return;
         }
-        try {
-            if (lock) {
-                updateWithLock(id, marshaller.marshallProcessInstance(instance), instance.version());
-            } else {
-                updateInternal(id, marshaller.marshallProcessInstance(instance));
-            }
-        } finally {
-            disconnect(instance);
+
+        if (lock) {
+            updateWithLock(id, marshaller.marshallProcessInstance(instance), instance.version());
+        } else {
+            updateInternal(id, marshaller.marshallProcessInstance(instance));
         }
+
+        connectProcessInstance(instance);
+
     }
 
     @Override
@@ -119,7 +118,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         return findByIdInternal(id).map(r -> {
             AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(r, mode);
             if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-                disconnect(pi);
+                connectProcessInstance(pi);
             }
             return pi;
         });
@@ -150,12 +149,11 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         return this.lock;
     }
 
-    private void disconnect(ProcessInstance instance) {
+    private void connectProcessInstance(ProcessInstance instance) {
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> findByIdInternal(instance.id()).map(r -> {
             ((AbstractProcessInstance) instance).setVersion(r.getLong(VERSION));
             return r.getBuffer(PAYLOAD).getBytes();
         }).orElseThrow()));
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     private boolean insertInternal(String id, byte[] payload) {

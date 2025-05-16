@@ -24,9 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.jbpm.bpmn2.support.InMemoryProcessInstances;
+import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.api.event.process.ProcessNodeEvent;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
@@ -81,6 +83,10 @@ public class ProcessTestHelper {
         staticJobService().clearJobExecutorFactories();
         staticJobService().registerJobExecutorFactory(new InMemoryProcessJobExecutorFactory(context));
         return new StaticApplication(new StaticConfig(Addons.EMTPY, staticConfig), bpmnProcesses);
+    }
+
+    public static <R, T extends Model> R executeInWorkflowState(ProcessInstance<T> processInstance, Function<WorkflowProcessInstanceImpl, R> executionUnit) {
+        return ((AbstractProcessInstance<T>) processInstance).executeInWorkflowProcessInstance(executionUnit);
     }
 
     public static void registerProcessEventListener(Application app, KogitoProcessEventListener kogitoProcessEventListener) {
