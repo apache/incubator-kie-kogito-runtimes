@@ -30,12 +30,10 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.drools.util.PortablePath;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
-import org.kie.kogito.process.MutableProcessInstances;
+import org.kie.kogito.process.*;
 import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.ProcessInstanceDuplicatedException;
-import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 
 @SuppressWarnings({ "rawtypes" })
@@ -66,9 +64,9 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public Optional findById(String id, ProcessInstanceReadMode mode) {
-        Path processInstanceStorage = Paths.get(storage.toString(), id);
-        if (Files.notExists(processInstanceStorage)) {
+    public Optional<AbstractProcessInstance> findById(String id, ProcessInstanceReadMode mode) {
+        Path processInstanceStorage = PortablePath.resolveInternal(storage, id).toPath();
+        if (Files.notExists(processInstanceStorage) || !Files.isRegularFile(processInstanceStorage)) {
             return Optional.empty();
         }
         byte[] data = readBytesFromFile(processInstanceStorage);
@@ -76,7 +74,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
         if (pi != null && !ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
             disconnect(processInstanceStorage, pi);
         }
-        return Optional.of(pi);
+        return Optional.ofNullable(pi);
     }
 
     @Override
@@ -93,18 +91,21 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
 
     @Override
     public boolean exists(String id) {
-        return Files.exists(Paths.get(storage.toString(), id));
+        Path processInstanceStorage = PortablePath.resolveInternal(storage, id).toPath();
+        return Files.exists(processInstanceStorage) && Files.isRegularFile(processInstanceStorage);
     }
 
     @SuppressWarnings("unchecked")
     @Override
+
     public void create(String id, ProcessInstance instance) {
         if (isActive(instance)) {
-            Path processInstanceStorage = Paths.get(storage.toString(), id);
-            if (Files.exists(processInstanceStorage)) {
+            Path processInstanceStorage = PortablePath.resolveInternal(storage, id).toPath();
+            if (Files.notExists(processInstanceStorage) || !Files.isRegularFile(processInstanceStorage)) {
+                storeProcessInstance(processInstanceStorage, instance);
+            } else {
                 throw new ProcessInstanceDuplicatedException(id);
             }
-            storeProcessInstance(processInstanceStorage, instance);
         }
     }
 
@@ -112,8 +113,10 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     @Override
     public void update(String id, ProcessInstance instance) {
         if (isActive(instance)) {
-            Path processInstanceStorage = Paths.get(storage.toString(), id);
-            if (Files.exists(processInstanceStorage)) {
+            Path processInstanceStorage = PortablePath.resolveInternal(storage, id).toPath();
+            if (Files.notExists(processInstanceStorage) && !Files.isRegularFile(processInstanceStorage)) {
+                throw new ProcessInstanceNotFoundException(id);
+            } else {
                 storeProcessInstance(processInstanceStorage, instance);
                 disconnect(processInstanceStorage, instance);
             }
@@ -122,7 +125,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
 
     @Override
     public void remove(String id) {
-        Path processInstanceStorage = Paths.get(storage.toString(), id);
+        Path processInstanceStorage = PortablePath.resolveInternal(storage, id).toPath();
         try {
             Files.deleteIfExists(processInstanceStorage);
         } catch (IOException e) {

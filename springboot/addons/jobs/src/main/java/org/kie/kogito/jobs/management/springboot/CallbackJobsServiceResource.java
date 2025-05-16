@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.jbpm.compiler.canonical.RuleUnitHandler.logger;
 import static org.kie.kogito.jobs.JobDescription.JOBS_CALLBACK_URI;
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.JOBS_CALLBACK_POST_URI;
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.LIMIT;
@@ -81,7 +82,8 @@ public class CallbackJobsServiceResource {
                 JobCallbackPayload jobPayload = objectMapper.readValue(payload, JobCallbackPayload.class);
                 correlationId = jobPayload.getCorrelationId();
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload: " + payload + ". " + e.getMessage());
+                logger.warn("Payload parsing error", e);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload format. Please check the request body.");
             }
         }
 

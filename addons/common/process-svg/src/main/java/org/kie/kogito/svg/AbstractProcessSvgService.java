@@ -34,6 +34,8 @@ import org.kie.kogito.svg.processor.SVGProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.drools.util.PortablePath;
+
 import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractProcessSvgService implements ProcessSvgService {
@@ -67,20 +69,24 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
     @Override
     public Optional<String> getProcessSvg(String processId) {
         if (svgResourcesPath.isPresent()) {
-            Path path = Paths.get(svgResourcesPath.get(), processId + ".svg");
-            if (Files.exists(path)) {
-                try {
-                    return Optional.of(new String(Files.readAllBytes(path.toRealPath())));
-                } catch (IOException e) {
-                    throw new ProcessSVGException("Exception trying to read SVG file", e);
+            Path baseDir = Paths.get(svgResourcesPath.get());
+            try {
+                Path path = getPath(processId, baseDir);
+                if (Files.notExists(path) || !Files.isRegularFile(path) || !path.toRealPath().startsWith(baseDir.toRealPath())) {
+                    LOGGER.debug("Could not find {}.svg file in folder {}", processId, svgResourcesPath.get());
+                    return Optional.empty();
                 }
-            } else {
-                LOGGER.debug("Could not find {}.svg file in folder {}", processId, svgResourcesPath.get());
-                return Optional.empty();
+                return Optional.of(new String(Files.readAllBytes(path)));
+            } catch (IOException e) {
+                throw new ProcessSVGException("Exception trying to read SVG file", e);
             }
         } else {
             return readFileContentFromClassPath(processId + ".svg");
         }
+    }
+
+    private static Path getPath(String processId, Path baseDir) {
+        return PortablePath.resolveInternal(baseDir, processId + ".svg").toPath();
     }
 
     protected Optional<String> readFileContentFromClassPath(String fileName) {
