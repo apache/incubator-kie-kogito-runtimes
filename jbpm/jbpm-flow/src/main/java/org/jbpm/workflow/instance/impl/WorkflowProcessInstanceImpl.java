@@ -19,6 +19,7 @@
 package org.jbpm.workflow.instance.impl;
 
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -96,6 +97,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.internal.process.runtime.MessageException;
 import org.kie.kogito.jobs.DurationExpirationTime;
+import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.TimerDescription;
 import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
@@ -1449,4 +1451,24 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         return this.kogitoProcessInstance;
     }
 
+    public void updateSlaTimer(String nodeInstanceId, String slaTimerId, ZonedDateTime slaDueDate) {
+        ProcessInstanceJobDescription description =
+                ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
+                        .id(slaTimerId)
+                        .timerId("-1")
+                        .expirationTime(ExactExpirationTime.of(slaDueDate))
+                        .processInstanceId(getStringId())
+                        .processId(getProcessId())
+                        .nodeInstanceId(nodeInstanceId)
+                        .rootProcessId(getRootProcessId())
+                        .rootProcessInstanceId(getRootProcessInstanceId())
+                        .build();
+        JobsService jobsService = InternalProcessRuntime.asKogitoProcessRuntime(getKnowledgeRuntime().getProcessRuntime()).getJobsService();
+        jobsService.rescheduleJob(description);
+    }
+
+    public void updateSlaTimer(ZonedDateTime slaDueDate) {
+        updateSlaTimer(null, slaTimerId, slaDueDate);
+        this.slaDueDate = Date.from(slaDueDate.toInstant());
+    }
 }

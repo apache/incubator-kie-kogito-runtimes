@@ -631,6 +631,9 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
 
     }
 
+    public void updateSlaTimer(String nodeInstanceId, ZonedDateTime slaDueDate) {
+    }
+
     @Override
     public int getSlaCompliance() {
         return slaCompliance;

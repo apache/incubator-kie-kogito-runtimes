@@ -292,4 +292,11 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
         toReturn.add(slaTimer);
         return toReturn;
     }
+
+    @Override
+    public void updateSlaTimer(String nodeInstanceId, ZonedDateTime slaDueDate) {
+        ((WorkflowProcessInstanceImpl) getProcessInstance()).updateSlaTimer(nodeInstanceId, slaTimerId, slaDueDate);
+        this.slaDueDate = Date.from(slaDueDate.toInstant());
+    }
+
 }

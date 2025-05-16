@@ -494,4 +494,10 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
         return toReturn;
     }
+
+    @Override
+    public void updateSlaTimer(String nodeInstanceId, ZonedDateTime slaDueDate) {
+        ((WorkflowProcessInstanceImpl) getProcessInstance()).updateSlaTimer(nodeInstanceId, slaTimerId, slaDueDate);
+        this.slaDueDate = Date.from(slaDueDate.toInstant());
+    }
 }

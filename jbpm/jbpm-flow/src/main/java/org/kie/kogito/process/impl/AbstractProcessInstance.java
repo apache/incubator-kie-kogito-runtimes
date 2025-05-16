@@ -19,6 +19,7 @@
 package org.kie.kogito.process.impl;
 
 import java.lang.reflect.Field;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -511,7 +512,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                     .filter(ni -> ni.getStringId().equals(nodeInstanceId))
                     .findFirst()
                     .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
-
             nodeInstance.cancel();
             return null;
         });
@@ -531,6 +531,28 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         });
     }
 
+    @Override
+    public void updateNodeInstanceSla(String nodeInstanceId, ZonedDateTime slaDueDate) {
+        processInstanceLockStrategy.executeOperation(id, () -> {
+            NodeInstance nodeInstance = processInstance()
+                    .getNodeInstances(true)
+                    .stream()
+                    .filter(ni -> ni.getStringId().equals(nodeInstanceId))
+                    .findFirst()
+                    .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
+            ((NodeInstanceImpl) nodeInstance).updateSlaTimer(nodeInstanceId, slaDueDate);
+            return null;
+        });
+    }
+
+    @Override
+    public void updateProcessInstanceSla(ZonedDateTime slaDueDate) {
+        processInstanceLockStrategy.executeOperation(id, () -> {
+            ((WorkflowProcessInstanceImpl) processInstance).updateSlaTimer(slaDueDate);
+            return null;
+        });
+    }
+
     public <R> R executeInWorkflowProcessInstanceWrite(Function<WorkflowProcessInstanceImpl, R> execution) {
         checkWriteOnly();
         return executeInWorkflowProcessInstance(execution);
@@ -545,7 +567,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     /**
      * this is intended to be used internal. Sometimes is required to perform low level operations that require some
      * internal state of the process like obtaining the SLA or operating nodes instances.
-     * 
+     *
      * @param <R>
      * @param execution
      * @return
@@ -667,7 +689,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     @Override
-
     public void transitionWorkItem(String workItemId, WorkItemTransition transition) {
         executeInWorkflowProcessInstanceWrite(pi -> {
             getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().transitionWorkItem(workItemId, transition);
