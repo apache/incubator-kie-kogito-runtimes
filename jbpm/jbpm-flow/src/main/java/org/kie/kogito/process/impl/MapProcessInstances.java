@@ -22,34 +22,48 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import org.jbpm.workflow.instance.WorkflowProcessInstance;
+import org.kie.kogito.Model;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceDuplicatedException;
+import org.kie.kogito.process.ProcessInstanceNotFoundException;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 
-class MapProcessInstances<T> implements MutableProcessInstances<T> {
+class MapProcessInstances<T extends Model> implements MutableProcessInstances<T> {
 
-    private final ConcurrentHashMap<String, ProcessInstance<T>> instances = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, WorkflowProcessInstance> instances = new ConcurrentHashMap<>();
+    private AbstractProcess<T> process;
+
+    public MapProcessInstances(AbstractProcess<T> process) {
+        this.process = process;
+    }
 
     @Override
     public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
-        return Optional.ofNullable(instances.get(id));
+        WorkflowProcessInstance instance = instances.get(id);
+        if (instance == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(toProcessInstance(instance, mode));
     }
 
     @Override
     public void create(String id, ProcessInstance<T> instance) {
         if (isActive(instance)) {
-            ProcessInstance<T> existing = instances.putIfAbsent(id, instance);
+            WorkflowProcessInstance existing = instances.putIfAbsent(id, ((AbstractProcessInstance<T>) instance).internalGetProcessInstance());
             if (existing != null) {
                 throw new ProcessInstanceDuplicatedException(id);
             }
+            connectProcessInstance(instance);
         }
     }
 
     @Override
     public void update(String id, ProcessInstance<T> instance) {
         if (isActive(instance)) {
-            instances.put(id, instance);
+            instances.put(id, ((AbstractProcessInstance<T>) instance).internalGetProcessInstance());
+            connectProcessInstance(instance);
         }
     }
 
@@ -65,6 +79,26 @@ class MapProcessInstances<T> implements MutableProcessInstances<T> {
 
     @Override
     public Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode) {
-        return instances.values().stream();
+        return instances.values().stream().map(e -> toProcessInstance(e, mode));
+    }
+
+    private ProcessInstance<T> toProcessInstance(WorkflowProcessInstance instance, ProcessInstanceReadMode mode) {
+        if (mode.equals(ProcessInstanceReadMode.READ_ONLY)) {
+            return process.createReadOnlyInstance(instance);
+        }
+
+        ProcessInstance<T> processInstance = process.createInstance(instance);
+        connectProcessInstance(processInstance);
+        return processInstance;
+    }
+
+    protected void connectProcessInstance(ProcessInstance<T> instance) {
+        ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(pi -> {
+            WorkflowProcessInstance workflowProcessInstance = instances.get(instance.id());
+            if (workflowProcessInstance == null) {
+                throw new ProcessInstanceNotFoundException(instance.id());
+            }
+            ((AbstractProcessInstance<?>) instance).internalSetProcessInstance(workflowProcessInstance);
+        });
     }
 }
