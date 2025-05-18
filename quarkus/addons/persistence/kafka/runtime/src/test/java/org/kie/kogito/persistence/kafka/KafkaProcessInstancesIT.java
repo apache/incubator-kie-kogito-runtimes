@@ -28,10 +28,11 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
-import org.drools.io.ClassPathResource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.Application;
+import org.kie.kogito.Model;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.persistence.KafkaProcessInstancesFactory;
@@ -41,7 +42,7 @@ import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
-import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
+import org.kie.kogito.process.bpmn2.StaticApplicationAssembler;
 import org.kie.kogito.process.impl.StaticProcessConfig;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 import org.kie.kogito.testcontainers.KogitoKafkaContainer;
@@ -60,6 +61,7 @@ import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
 import static org.kie.kogito.persistence.kafka.KafkaPersistenceUtils.createTopologyForProcesses;
 import static org.kie.kogito.process.ProcessInstance.STATE_COMPLETED;
 import static org.kie.kogito.process.ProcessInstance.STATE_ERROR;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abort;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abortFirst;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirst;
@@ -113,11 +115,24 @@ public class KafkaProcessInstancesIT {
         });
     }
 
+    private BpmnProcess createProcess(String fileName) {
+        StaticProcessConfig processConfig = StaticProcessConfig.newStaticProcessConfigBuilder()
+                .withWorkItemHandler("Human Task", new DefaultKogitoWorkItemHandler())
+                .build();
+
+        Application application = StaticApplicationAssembler.instance().newStaticApplication(factory, processConfig, fileName);
+
+        org.kie.kogito.process.Processes container = application.get(org.kie.kogito.process.Processes.class);
+        String processId = container.processIds().stream().findFirst().get();
+        org.kie.kogito.process.Process<? extends Model> process = container.processById(processId);
+
+        abort(process.instances());
+        return (BpmnProcess) process;
+    }
+
     @Test
     void testFindByIdReadMode() {
-        StaticProcessConfig config = new StaticProcessConfig();
-        ((DefaultWorkItemHandlerConfig) config.workItemHandlers()).register("Human Task", new DefaultKogitoWorkItemHandler());
-        BpmnProcess process = BpmnProcess.from(config, new ClassPathResource("BPMN2-UserTask-Script.bpmn2")).get(0);
+        BpmnProcess process = createProcess("BPMN2-UserTask-Script.bpmn2");
 
         listener.setKafkaStreams(createStreams());
         process.setProcessInstancesFactory(factory);
@@ -155,9 +170,7 @@ public class KafkaProcessInstancesIT {
 
     @Test
     void testValuesReadMode() {
-        StaticProcessConfig config = new StaticProcessConfig();
-        ((DefaultWorkItemHandlerConfig) config.workItemHandlers()).register("Human Task", new DefaultKogitoWorkItemHandler());
-        BpmnProcess process = BpmnProcess.from(config, new ClassPathResource("BPMN2-UserTask.bpmn2")).get(0);
+        BpmnProcess process = createProcess("BPMN2-UserTaskt.bpmn2");
         listener.setKafkaStreams(createStreams());
         process.setProcessInstancesFactory(factory);
         process.configure();
@@ -180,9 +193,7 @@ public class KafkaProcessInstancesIT {
 
     @Test
     void testBasicFlow() {
-        StaticProcessConfig config = new StaticProcessConfig();
-        ((DefaultWorkItemHandlerConfig) config.workItemHandlers()).register("Human Task", new DefaultKogitoWorkItemHandler());
-        BpmnProcess process = BpmnProcess.from(config, new ClassPathResource("BPMN2-UserTask.bpmn2")).get(0);
+        BpmnProcess process = createProcess("BPMN2-UserTaskt.bpmn2");
         listener.setKafkaStreams(createStreams());
         process.setProcessInstancesFactory(factory);
         process.configure();

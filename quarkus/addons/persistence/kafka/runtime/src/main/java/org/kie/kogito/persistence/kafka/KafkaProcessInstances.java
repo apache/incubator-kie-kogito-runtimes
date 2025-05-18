@@ -170,6 +170,5 @@ public class KafkaProcessInstances implements MutableProcessInstances {
 
     protected void disconnect(ProcessInstance<?> instance) {
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> getProcessInstanceById(instance.id()).orElseThrow()));
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 }

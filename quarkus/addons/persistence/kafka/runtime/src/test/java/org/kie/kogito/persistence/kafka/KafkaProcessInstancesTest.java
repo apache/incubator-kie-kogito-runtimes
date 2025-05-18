@@ -44,7 +44,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.kie.kogito.persistence.kafka.KafkaPersistenceUtils.topicName;
-import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.*;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -206,7 +207,6 @@ public class KafkaProcessInstancesTest {
         assertThat(captor.getValue().key()).isEqualTo(storedId);
         assertThat(captor.getValue().topic()).isEqualTo(topicName());
 
-        verify(instance).internalRemoveProcessInstance();
         verify(marshaller).createdReloadFunction(any());
     }
 

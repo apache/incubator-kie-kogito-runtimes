@@ -25,9 +25,10 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.drools.io.ClassPathResource;
 import org.junit.jupiter.api.Test;
 import org.kie.flyway.initializer.KieFlywayInitializer;
+import org.kie.kogito.Application;
+import org.kie.kogito.Model;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.workitem.Policy;
@@ -37,8 +38,8 @@ import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnProcessInstance;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
+import org.kie.kogito.process.bpmn2.StaticApplicationAssembler;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
-import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 import org.kie.kogito.process.impl.StaticProcessConfig;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 
@@ -69,21 +70,20 @@ abstract class AbstractProcessInstancesIT {
                 .migrate();
     }
 
-    public static BpmnProcess createProcess(TestProcessInstancesFactory factory, String fileName) {
-        StaticProcessConfig config = new StaticProcessConfig();
-        ((DefaultWorkItemHandlerConfig) config.workItemHandlers()).register("Human Task", new DefaultKogitoWorkItemHandler());
-        BpmnProcess process = BpmnProcess.from(config, new ClassPathResource(fileName)).get(0);
-        process.setProcessInstancesFactory(factory);
-        process.configure();
-        abort(process.instances());
-        return process;
-    }
+    private BpmnProcess createProcess(DataSource dataSource, Boolean lock, String fileName) {
+        StaticProcessConfig processConfig = StaticProcessConfig.newStaticProcessConfigBuilder()
+                .withWorkItemHandler("Human Task", new DefaultKogitoWorkItemHandler())
+                .build();
 
-    public static BpmnProcess configure(boolean lock) {
-        BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-UserTask-Script.bpmn2")).get(0);
-        process.setProcessInstancesFactory(new TestProcessInstancesFactory(null, lock));
-        process.configure();
-        return process;
+        Application application = StaticApplicationAssembler.instance().newStaticApplication(new TestProcessInstancesFactory(dataSource, lock), processConfig, fileName);
+
+        org.kie.kogito.process.Processes container = application.get(org.kie.kogito.process.Processes.class);
+        String processId = container.processIds().stream().findFirst().get();
+        org.kie.kogito.process.Process<? extends Model> process = container.processById(processId);
+
+        abort(process.instances());
+        BpmnProcess compiledProcess = (BpmnProcess) process;
+        return compiledProcess;
     }
 
     boolean lock() {
@@ -94,8 +94,7 @@ abstract class AbstractProcessInstancesIT {
 
     @Test
     void testBasicTaskFlow() {
-        var factory = new TestProcessInstancesFactory(getDataSource(), lock());
-        BpmnProcess process = createProcess(factory, "BPMN2-UserTask.bpmn2");
+        BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(singletonMap("test", "test")));
         processInstance.start();
 
@@ -126,12 +125,11 @@ abstract class AbstractProcessInstancesIT {
 
     @Test
     void testMultipleProcesses() {
-        var factory = new TestProcessInstancesFactory(getDataSource(), lock());
-        BpmnProcess utProcess = createProcess(factory, "BPMN2-UserTask.bpmn2");
+        BpmnProcess utProcess = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> utProcessInstance = utProcess.createInstance(BpmnVariables.create());
         utProcessInstance.start();
 
-        BpmnProcess scriptProcess = createProcess(factory, "BPMN2-UserTask-Script.bpmn2");
+        BpmnProcess scriptProcess = createProcess(getDataSource(), lock(), "BPMN2-UserTask-Script.bpmn2");
         ProcessInstance<BpmnVariables> scriptProcessInstance = scriptProcess.createInstance(BpmnVariables.create());
         scriptProcessInstance.start();
 
@@ -160,9 +158,8 @@ abstract class AbstractProcessInstancesIT {
 
     @Test
     void testBasicFlow() {
-        var factory = new TestProcessInstancesFactory(getDataSource(), lock());
         final String businessKey = "manolo";
-        BpmnProcess process = createProcess(factory, "BPMN2-UserTask.bpmn2");
+        BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(businessKey, BpmnVariables.create(singletonMap("test",
                 "test")));
         processInstance.start();
@@ -182,7 +179,7 @@ abstract class AbstractProcessInstancesIT {
 
     @Test
     void testException() {
-        BpmnProcess process = configure(lock());
+        BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
         JDBCProcessInstances processInstances = (JDBCProcessInstances) process.instances();
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> processInstances.findById(TEST_ID));
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> processInstances.remove(TEST_ID));
@@ -190,8 +187,7 @@ abstract class AbstractProcessInstancesIT {
 
     @Test
     public void testUpdate() {
-        var factory = new TestProcessInstancesFactory(getDataSource(), lock());
-        BpmnProcess process = createProcess(factory, "BPMN2-UserTask.bpmn2");
+        BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(singletonMap("test", "test")));
         processInstance.start();
 
@@ -223,8 +219,7 @@ abstract class AbstractProcessInstancesIT {
 
     @Test
     public void testMigrateAll() throws Exception {
-        var factory = new TestProcessInstancesFactory(getDataSource(), lock());
-        BpmnProcess process = createProcess(factory, "BPMN2-UserTask.bpmn2");
+        BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance1 = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance1.start();
 
@@ -246,8 +241,7 @@ abstract class AbstractProcessInstancesIT {
 
     @Test
     public void testMigrateSingle() throws Exception {
-        var factory = new TestProcessInstancesFactory(getDataSource(), lock());
-        BpmnProcess process = createProcess(factory, "BPMN2-UserTask.bpmn2");
+        BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance1 = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance1.start();
 
@@ -279,8 +273,7 @@ abstract class AbstractProcessInstancesIT {
 
     @Test
     public void testRemove() {
-        var factory = new TestProcessInstancesFactory(getDataSource(), lock());
-        BpmnProcess process = createProcess(factory, "BPMN2-UserTask.bpmn2");
+        BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(singletonMap("test", "test")));
         processInstance.start();
 
@@ -300,9 +293,8 @@ abstract class AbstractProcessInstancesIT {
 
     @Test
     void testProcessWithDifferentVersion() {
-        var factory = new TestProcessInstancesFactory(getDataSource(), lock());
-        BpmnProcess processV1 = createProcess(factory, "BPMN2-UserTask.bpmn2");
-        BpmnProcess processV2 = createProcess(factory, "BPMN2-UserTask-v2.bpmn2");
+        BpmnProcess processV1 = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
+        BpmnProcess processV2 = createProcess(getDataSource(), lock(), "BPMN2-UserTask-V2.bpmn2");
 
         assertThat(processV1.process().getVersion()).isEqualTo("1.0");
         assertThat(processV2.process().getVersion()).isEqualTo("2.0");

@@ -27,7 +27,7 @@ import org.kie.kogito.codegen.AbstractCodegenIT;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
-import org.kie.kogito.process.impl.Sig;
+import org.kie.kogito.process.SignalFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -58,12 +58,12 @@ public class SubProcessIT extends AbstractCodegenIT {
         assertThat(subProcessInstance.variables().toMap()).hasSize(3).contains(
                 entry("constant", "aString"), entry("name", "test"), entry("review", null));
 
-        subProcessInstance.send(Sig.of("end", "another review"));
+        subProcessInstance.send(SignalFactory.of("end", "another review"));
         assertThat(subProcessInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
 
-        processInstance.send(Sig.of("end", null));
+        processInstance.send(SignalFactory.of("end", null));
 
         assertThat(processInstance.variables().toMap()).hasSize(2).contains(
                 entry("name", "test"), entry("review", "another review"));
