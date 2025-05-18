@@ -21,7 +21,6 @@ package org.kie.kogito.infinispan;
 import java.util.Collections;
 import java.util.List;
 
-import org.drools.io.ClassPathResource;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.jbpm.process.instance.impl.Action;
@@ -32,6 +31,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.process.Node;
+import org.kie.kogito.Application;
+import org.kie.kogito.Model;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
@@ -39,7 +40,7 @@ import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
-import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
+import org.kie.kogito.process.bpmn2.StaticApplicationAssembler;
 import org.kie.kogito.process.impl.StaticProcessConfig;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 import org.kie.kogito.testcontainers.KogitoInfinispanContainer;
@@ -53,6 +54,7 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ERROR;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abort;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abortFirst;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
@@ -83,13 +85,21 @@ class CacheProcessInstancesIT {
         }
     }
 
-    @Test
-    void testFindByIdReadMode() {
-        StaticProcessConfig config = new StaticProcessConfig();
-        ((DefaultWorkItemHandlerConfig) config.workItemHandlers()).register("Human Task", new DefaultKogitoWorkItemHandler());
-        BpmnProcess process = BpmnProcess.from(config, new ClassPathResource("BPMN2-UserTask-Script.bpmn2")).get(0);
+    private BpmnProcess createProcess(String fileName) {
+        StaticProcessConfig processConfig = StaticProcessConfig.newStaticProcessConfigBuilder()
+                .withWorkItemHandler("Human Task", new DefaultKogitoWorkItemHandler())
+                .build();
+
+        Application application = StaticApplicationAssembler.instance().newStaticApplication(new CacheProcessInstancesFactory(cacheManager), processConfig, fileName);
+
+        org.kie.kogito.process.Processes container = application.get(org.kie.kogito.process.Processes.class);
+        String processId = container.processIds().stream().findFirst().get();
+        org.kie.kogito.process.Process<? extends Model> process = container.processById(processId);
+
+        abort(process.instances());
+        BpmnProcess compiledProcess = (BpmnProcess) process;
         // workaround as BpmnProcess does not compile the scripts but just reads the xml
-        for (Node node : ((WorkflowProcess) process.get()).getNodes()) {
+        for (Node node : ((WorkflowProcess) ((BpmnProcess) process).process()).getNodes()) {
             if (node instanceof ActionNode) {
                 DroolsAction a = ((ActionNode) node).getAction();
                 a.setMetaData("Action", (Action) kcontext -> {
@@ -98,8 +108,12 @@ class CacheProcessInstancesIT {
                 });
             }
         }
-        process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
-        process.configure();
+        return compiledProcess;
+    }
+
+    @Test
+    void testFindByIdReadMode() {
+        BpmnProcess process = createProcess("BPMN2-UserTask-Script.bpmn2");
 
         ProcessInstance<BpmnVariables> mutablePi = process.createInstance(BpmnVariables.create(Collections.singletonMap("var", "value")));
 
@@ -131,11 +145,7 @@ class CacheProcessInstancesIT {
 
     @Test
     void testValuesReadMode() {
-        StaticProcessConfig config = new StaticProcessConfig();
-        ((DefaultWorkItemHandlerConfig) config.workItemHandlers()).register("Human Task", new DefaultKogitoWorkItemHandler());
-        BpmnProcess process = BpmnProcess.from(config, new ClassPathResource("BPMN2-UserTask.bpmn2")).get(0);
-        process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
-        process.configure();
+        BpmnProcess process = createProcess("BPMN2-UserTask-Script.bpmn2");
 
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
@@ -150,11 +160,7 @@ class CacheProcessInstancesIT {
 
     @Test
     void testBasicFlow() {
-        StaticProcessConfig config = new StaticProcessConfig();
-        ((DefaultWorkItemHandlerConfig) config.workItemHandlers()).register("Human Task", new DefaultKogitoWorkItemHandler());
-        BpmnProcess process = BpmnProcess.from(config, new ClassPathResource("BPMN2-UserTask.bpmn2")).get(0);
-        process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
-        process.configure();
+        BpmnProcess process = createProcess("BPMN2-UserTask-Script.bpmn2");
 
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 

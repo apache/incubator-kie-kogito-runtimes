@@ -24,15 +24,17 @@ import java.util.Optional;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.drools.io.ClassPathResource;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.Application;
+import org.kie.kogito.Model;
 import org.kie.kogito.mongodb.transaction.AbstractTransactionManager;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnProcessInstance;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
+import org.kie.kogito.process.bpmn2.StaticApplicationAssembler;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 import org.kie.kogito.process.impl.StaticProcessConfig;
@@ -50,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE_ID;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abort;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
 import static org.mockito.ArgumentMatchers.any;
@@ -62,15 +65,31 @@ import static org.mockito.Mockito.when;
 
 class PersistentProcessInstancesIT extends TestHelper {
 
+    private BpmnProcess createProcess(String name) {
+        StaticProcessConfig processConfig = StaticProcessConfig.newStaticProcessConfigBuilder()
+                .withWorkItemHandler("Human Task", new DefaultKogitoWorkItemHandler())
+                .build();
+
+        Application application =
+                StaticApplicationAssembler.instance().newStaticApplication(new MongoDBProcessInstancesFactory(getMongoClient(), getDisabledMongoDBTransactionManager()), processConfig, name);
+
+        org.kie.kogito.process.Processes container = application.get(org.kie.kogito.process.Processes.class);
+        String processId = container.processIds().stream().findFirst().get();
+        org.kie.kogito.process.Process<? extends Model> process = container.processById(processId);
+
+        BpmnProcess compiledProcess = (BpmnProcess) process;
+
+        abort(process.instances());
+        return compiledProcess;
+    }
+
     @Test
     void testMongoDBPersistence() {
         MongoDBProcessInstancesFactory factory = new MongoDBProcessInstancesFactory(getMongoClient(), getDisabledMongoDBTransactionManager());
 
         StaticProcessConfig config = new StaticProcessConfig();
         ((DefaultWorkItemHandlerConfig) config.workItemHandlers()).register("Human Task", new DefaultKogitoWorkItemHandler());
-        BpmnProcess process = BpmnProcess.from(config, new ClassPathResource("BPMN2-UserTask.bpmn2")).get(0);
-        process.setProcessInstancesFactory(factory);
-        process.configure();
+        BpmnProcess process = createProcess("BPMN2-UserTask.bpmn2");
 
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
@@ -128,7 +147,7 @@ class PersistentProcessInstancesIT extends TestHelper {
 
         StaticProcessConfig config = new StaticProcessConfig();
         ((DefaultWorkItemHandlerConfig) config.workItemHandlers()).register("Human Task", new DefaultKogitoWorkItemHandler());
-        BpmnProcess process = BpmnProcess.from(config, new ClassPathResource("BPMN2-UserTask.bpmn2")).get(0);
+        BpmnProcess process = createProcess("BPMN2-UserTask.bpmn2");
         process.setProcessInstancesFactory(new MongoDBProcessInstancesFactory(getMongoClient(), transactionExecutor));
         process.configure();
 
