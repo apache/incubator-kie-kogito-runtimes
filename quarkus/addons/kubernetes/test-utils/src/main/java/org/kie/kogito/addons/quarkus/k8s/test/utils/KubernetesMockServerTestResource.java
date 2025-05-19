@@ -67,4 +67,3 @@ public class KubernetesMockServerTestResource implements QuarkusTestResourceLife
         return server;
     }
 }
-
