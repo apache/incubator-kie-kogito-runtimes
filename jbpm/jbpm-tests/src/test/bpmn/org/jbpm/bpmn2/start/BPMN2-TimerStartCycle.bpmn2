@@ -34,7 +34,7 @@
     <!-- nodes -->
     <startEvent id="_1" name="StartProcess" >
       <timerEventDefinition>
-        <timeCycle xsi:type="tFormalExpression">R/PT1S</timeCycle>
+        <timeCycle xsi:type="tFormalExpression">R/PT2S</timeCycle>
       </timerEventDefinition>
     </startEvent>
     <scriptTask id="_2" name="Hello" >

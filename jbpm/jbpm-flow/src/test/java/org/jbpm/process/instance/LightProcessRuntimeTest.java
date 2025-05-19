@@ -18,6 +18,8 @@
  */
 package org.jbpm.process.instance;
 
+import java.util.Collections;
+
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
@@ -32,8 +34,6 @@ import org.kie.kogito.Config;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcessConfig;
-
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

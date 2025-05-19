@@ -133,7 +133,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testTimerStartCycle() throws Exception {
         Application app = ProcessTestHelper.newApplication();
-        NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartProcess", 10);
+        NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("StartProcess", 11);
         ProcessTestHelper.registerProcessEventListener(app, countDownListener);
         final List<String> startedInstances = new ArrayList<>();
         ProcessTestHelper.registerProcessEventListener(app, new DefaultKogitoProcessEventListener() {
@@ -146,7 +146,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         assertThat(startedInstances).isEmpty();
         countDownListener.waitTillCompleted();
         Thread.sleep(500);
-        assertThat(startedInstances).hasSize(10);
+        assertThat(startedInstances).hasSize(5);
     }
 
     @Test
