@@ -181,8 +181,9 @@ public class ProtobufProcessInstanceReader {
            }
         }
 
-        WorkflowContext workflowContext = processInstanceProtobuf.getContext();
-        buildWorkflowContext(processInstance, workflowContext);
+    WorkflowContext workflowContext = processInstanceProtobuf.getContext();
+
+    buildWorkflowContext(processInstance, workflowContext);
 
         KogitoProcessRuntime runtime = ((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS)).getProcessRuntime();
         Arrays.stream(listeners).forEach(e -> e.afterUnmarshallProcess(runtime, processInstance));
