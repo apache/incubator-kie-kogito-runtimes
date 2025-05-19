@@ -18,20 +18,22 @@
  */
 package org.jbpm.process.instance;
 
-import java.util.Collections;
-
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.kie.api.definition.process.WorkflowElementIdentifier;
 import org.kie.kogito.Application;
 import org.kie.kogito.Config;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcessConfig;
+
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,8 +87,14 @@ class LightProcessRuntimeTest {
 
     }
 
-    @Test
-    void testCreateTimerInstance() {
+    @ParameterizedTest
+    @CsvSource({
+            "R5/PT10S, 2, 5, 10000",
+            "PT10S, 1, -1, -1",
+            "R/PT1S, 2, -1, 1000"
+    })
+    void testCreateTimerInstance(String delay, int timerType, int repeatLimit, Long repeatInterval) {
+        repeatInterval = repeatInterval == -1 ? null : repeatInterval;
         LightProcessRuntimeServiceProvider services =
                 new LightProcessRuntimeServiceProvider();
 
@@ -102,11 +110,11 @@ class LightProcessRuntimeTest {
         when(application.get(Processes.class)).thenReturn(mock(Processes.class));
         LightProcessRuntime rt = new LightProcessRuntime(rtc, services, application);
         Timer timer = new Timer();
-        timer.setTimeType(Timer.TIME_CYCLE);
-        timer.setDelay("R5/PT10S");
+        timer.setTimeType(timerType);
+        timer.setDelay(delay);
         ExpirationTime timerInstance = rt.createTimerInstance(timer, runtime);
-        assertEquals(5, timerInstance.repeatLimit());
-        assertEquals(10000L, timerInstance.repeatInterval());
+        assertEquals(repeatLimit, timerInstance.repeatLimit());
+        assertEquals(repeatInterval, timerInstance.repeatInterval());
     }
 
 }
