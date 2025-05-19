@@ -509,6 +509,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
             int oldState = workflowProcessInstance.getState();
             R outcome = execution.apply(workflowProcessInstance);
+            syncWorkflowInstanceState(workflowProcessInstance);
             syncPersistence(oldState, workflowProcessInstance);
             getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
             internalUnloadProcessInstanceState();

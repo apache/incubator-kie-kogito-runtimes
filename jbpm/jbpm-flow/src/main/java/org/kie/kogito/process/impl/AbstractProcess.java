@@ -207,7 +207,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         if (isProcessFactorySet()) {
             this.instances = (MutableProcessInstances<T>) processInstancesFactory.createProcessInstances(this);
         } else {
-            this.instances = new MapProcessInstances<>();
+            this.instances = new MapProcessInstances<>(this);
         }
         return this;
     }
