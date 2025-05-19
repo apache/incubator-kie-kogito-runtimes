@@ -144,7 +144,7 @@ public class ProtobufProcessInstanceWriter {
         HeadersPersistentConfig headersConfig = context.get(MARSHALLER_HEADERS_CONFIG);
         if (workFlow.getHeaders() != null && headersConfig != null && headersConfig.enabled()) {
 
-        if (LOGGER.isDebugEnabled()) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Headers {} are associated to process instance {}", workFlow.getHeaders().keySet(), workFlow.getId());
             }
             Stream<Entry<String, List<String>>> stream = workFlow.getHeaders().entrySet().stream();
@@ -155,7 +155,7 @@ public class ProtobufProcessInstanceWriter {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Headers {} are stored for process instance {}", instance.getHeadersList().stream().map(HeaderEntry::getKey).collect(Collectors.joining()), workFlow.getId());
             }
-            
+
         }
 
         instance.addAllSwimlaneContext(buildSwimlaneContexts((SwimlaneContextInstance) workFlow.getContextInstance(SwimlaneContext.SWIMLANE_SCOPE)));
@@ -182,7 +182,7 @@ public class ProtobufProcessInstanceWriter {
                 }
                 LOGGER.info("Adding header {} from process instance {} for persistence", e.getKey(), workFlow.getId());
                 return true;
-             });
+            });
         }
         return stream;
     }
