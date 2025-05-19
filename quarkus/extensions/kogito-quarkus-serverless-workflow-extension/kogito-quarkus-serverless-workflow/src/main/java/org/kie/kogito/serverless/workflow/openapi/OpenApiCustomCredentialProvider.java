@@ -22,61 +22,58 @@ import io.quarkus.oidc.client.OidcClients;
 import io.quarkus.oidc.client.Tokens;
 import io.quarkus.runtime.configuration.ConfigurationException;
 
-
-
-
 @Dependent
 @Alternative
 @Specializes
 @Priority(10)
 public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
-  private static final String CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME = "sonataflow.security.%s.exchange-token";
+    private static final String CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME = "sonataflow.security.%s.exchange-token";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OpenApiCustomCredentialProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenApiCustomCredentialProvider.class);
 
+    @Override
+    public String getOauth2BearerToken(CredentialsContext input) {
+        String accessToken = super.getOauth2BearerToken(input);
+        ;
+        Optional<Boolean> exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class);
 
-  @Override
-  public String getOauth2BearerToken(CredentialsContext input) {
-    String accessToken = super.getOauth2BearerToken(input);;
-    Optional<Boolean> exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class);
+        if (exchangeToken.isPresent() && exchangeToken.get()) {
+            LOGGER.info("Oauth2 token exchange enabled for {}, will generate a tokens...", input.getAuthName());
+            OidcClients clients = Arc.container().instance(OidcClients.class).get();
+            OidcClient exchangeTokenClient = clients.getClient();
+            OidcClientConfig.Grant.Type exchangeTokenGrantType = ConfigProvider.getConfig().getValue("quarkus.oidc-client." + input.getAuthName() + "grant.type", OidcClientConfig.Grant.Type.class);
+            String exchangeTokenProperty;
 
-    if (exchangeToken.isPresent() && exchangeToken.get()) {
-      LOGGER.info("Oauth2 token exchange enabled for {}, will generate a tokens...", input.getAuthName());
-      OidcClients clients = Arc.container().instance(OidcClients.class).get();
-      OidcClient exchangeTokenClient = clients.getClient();
-      OidcClientConfig.Grant.Type exchangeTokenGrantType = ConfigProvider.getConfig().getValue("quarkus.oidc-client." + input.getAuthName() + "grant.type", OidcClientConfig.Grant.Type.class);
-      String exchangeTokenProperty;
-
-      if (exchangeTokenGrantType == OidcClientConfig.Grant.Type.EXCHANGE) {
-        exchangeTokenProperty = "subject_token";
-      } else if (exchangeTokenGrantType == OidcClientConfig.Grant.Type.JWT) {
-        exchangeTokenProperty = "assertion";
-      } else {
-        throw new ConfigurationException("Token exchange is required but OIDC client is configured " + "to use the " + exchangeTokenGrantType.getGrantType() + " grantType");
-      }
-      accessToken = exchangeTokenIfNeeded(accessToken, exchangeTokenClient, exchangeTokenProperty);
+            if (exchangeTokenGrantType == OidcClientConfig.Grant.Type.EXCHANGE) {
+                exchangeTokenProperty = "subject_token";
+            } else if (exchangeTokenGrantType == OidcClientConfig.Grant.Type.JWT) {
+                exchangeTokenProperty = "assertion";
+            } else {
+                throw new ConfigurationException("Token exchange is required but OIDC client is configured " + "to use the " + exchangeTokenGrantType.getGrantType() + " grantType");
+            }
+            accessToken = exchangeTokenIfNeeded(accessToken, exchangeTokenClient, exchangeTokenProperty);
+        }
+        return accessToken;
     }
-    return accessToken;
-  }
 
-  private String exchangeTokenIfNeeded(String token, OidcClient exchangeTokenClient, String exchangeTokenProperty) {
-    if (exchangeTokenClient != null) {
-      Tokens tokens;
-      try {
-        tokens = exchangeTokenClient.getTokens(Collections.singletonMap(exchangeTokenProperty, token)).await().indefinitely();
-        //TODO store the refresh token in an expiring cache
-        //TODO store the access token in an expiring cache
-        //TODO cache should expire before access/refresh token expire so they can be refreshed before (need to decode the JWT claim)
-        return tokens.getAccessToken();
-      } catch (OidcClientException e) {
-        // TODO try to refresh the access token with the cached refresh token
-        LOGGER.error("Error while exchanging oauth2 token", e);
-      }
+    private String exchangeTokenIfNeeded(String token, OidcClient exchangeTokenClient, String exchangeTokenProperty) {
+        if (exchangeTokenClient != null) {
+            Tokens tokens;
+            try {
+                tokens = exchangeTokenClient.getTokens(Collections.singletonMap(exchangeTokenProperty, token)).await().indefinitely();
+                //TODO store the refresh token in an expiring cache
+                //TODO store the access token in an expiring cache
+                //TODO cache should expire before access/refresh token expire so they can be refreshed before (need to decode the JWT claim)
+                return tokens.getAccessToken();
+            } catch (OidcClientException e) {
+                // TODO try to refresh the access token with the cached refresh token
+                LOGGER.error("Error while exchanging oauth2 token", e);
+            }
+        }
+        return token;
     }
-    return token;
-  }
 
-  public static String getCanonicalExchangeTokenConfigPropertyName(String authName) {
-    return String.format(CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME, authName);
-  }
+    public static String getCanonicalExchangeTokenConfigPropertyName(String authName) {
+        return String.format(CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME, authName);
+    }
 }
