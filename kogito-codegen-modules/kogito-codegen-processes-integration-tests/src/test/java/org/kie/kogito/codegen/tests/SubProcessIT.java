@@ -33,7 +33,6 @@ import org.kie.kogito.process.SignalFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
-import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirst;
 
 public class SubProcessIT extends AbstractCodegenIT {
 

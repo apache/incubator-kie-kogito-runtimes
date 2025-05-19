@@ -345,12 +345,16 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public T variables() {
-        return variables;
+        return delegateIfPresent(variables, p -> {
+            T model = process().createModel();
+            model.fromMap(p.getVariables());
+            return model;
+        });
     }
 
     @Override
     public int status() {
-        return status;
+        return delegateIfPresent(status, p -> p.getState());
     }
 
     @Override
@@ -370,7 +374,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public Date startDate() {
-        return startDate;
+        return delegateIfPresent(startDate, p -> p.getStartDate());
+    }
+
+    private <R> R delegateIfPresent(R defaultValue, Function<WorkflowProcessInstance, R> data) {
+        return this.processInstance == null ? defaultValue : data.apply((WorkflowProcessInstanceImpl) this.processInstance);
     }
 
     @Override
