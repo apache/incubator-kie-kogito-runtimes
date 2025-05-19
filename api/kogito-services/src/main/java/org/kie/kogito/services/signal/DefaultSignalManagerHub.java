@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.kie.api.runtime.process.EventListener;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.signal.ProcessInstanceResolver;
 import org.kie.kogito.signal.SignalManagerHub;

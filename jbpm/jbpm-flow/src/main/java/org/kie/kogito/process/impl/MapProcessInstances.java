@@ -50,13 +50,11 @@ class MapProcessInstances<T extends Model> implements MutableProcessInstances<T>
 
     @Override
     public void create(String id, ProcessInstance<T> instance) {
-        if (isActive(instance)) {
-            WorkflowProcessInstance existing = instances.putIfAbsent(id, ((AbstractProcessInstance<T>) instance).internalGetProcessInstance());
-            if (existing != null) {
-                throw new ProcessInstanceDuplicatedException(id);
-            }
-            connectProcessInstance(instance);
+        WorkflowProcessInstance existing = instances.putIfAbsent(id, ((AbstractProcessInstance<T>) instance).internalGetProcessInstance());
+        if (existing != null) {
+            throw new ProcessInstanceDuplicatedException(id);
         }
+        connectProcessInstance(instance);
     }
 
     @Override

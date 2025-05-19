@@ -153,9 +153,7 @@ public class CallActivityTaskIT extends AbstractCodegenIT {
         assertThat(wi.getName()).isEqualTo("MyTask");
         assertThat(wi.getPhaseStatus()).isEqualTo(UserTaskKogitoWorkItemHandler.ACTIVATED.getName());
 
-        KogitoWorkItemHandler handler = getWorkItemHandler(p, wi);
-        WorkItemTransition transition = handler.completeTransition(workItems.get(0).getPhaseStatus(), parameters, securityPolicy);
-        processInstance.transitionWorkItem(workItems.get(0).getId(), transition);
+        processInstance.completeWorkItem(wi.getId(), Collections.emptyMap());
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
@@ -192,9 +190,7 @@ public class CallActivityTaskIT extends AbstractCodegenIT {
         WorkItem wi = workItems.get(0);
         assertThat(wi.getName()).isEqualTo("MyTask");
 
-        KogitoWorkItemHandler handler = getWorkItemHandler(p, wi);
-        WorkItemTransition transition = handler.completeTransition(workItems.get(0).getPhaseStatus(), parameters, securityPolicy);
-        processInstance.transitionWorkItem(workItems.get(0).getId(), transition);
+        processInstance.completeWorkItem(wi.getId(), Collections.emptyMap());
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 

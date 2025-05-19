@@ -140,6 +140,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     private Map<String, List<KogitoEventListener>> eventListeners = new HashMap<>();
     private Map<String, List<KogitoEventListener>> externalEventListeners = new HashMap<>();
 
+    private KogitoEventListener compensationEventListener;
     private List<String> completedNodeIds = new ArrayList<>();
     private List<String> activatingNodeIds;
     private Map<String, Integer> iterationLevels = new HashMap<>();
@@ -535,7 +536,6 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     public void start(String trigger) {
         synchronized (this) {
             setStartDate(new Date());
-            registerExternalEventNodeListeners();
             // activate timer event sub processes
             org.kie.api.definition.process.Node[] nodes = getNodeContainer().getNodes();
             for (org.kie.api.definition.process.Node node : nodes) {
@@ -643,10 +643,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             }
         }
         if (getWorkflowProcess().getMetaData().containsKey(COMPENSATION)) {
-            addEventListener("Compensation", new CompensationEventListener(this), true);
-        }
-        if (getWorkflowProcess().getMetaData().containsKey(COMPENSATION)) {
-
+            this.compensationEventListener = new CompensationEventListener(this);
+            addEventListener("Compensation", compensationEventListener, true);
         }
     }
 
@@ -655,6 +653,10 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             if (node instanceof EventNode && "external".equals(((EventNode) node).getScope())) {
                 externalEventListeners.remove(((EventNode) node).getType());
             }
+        }
+        if (getWorkflowProcess().getMetaData().containsKey(COMPENSATION)) {
+            removeEventListener("Compensation", this.compensationEventListener, true);
+            this.compensationEventListener = null;
         }
     }
 
