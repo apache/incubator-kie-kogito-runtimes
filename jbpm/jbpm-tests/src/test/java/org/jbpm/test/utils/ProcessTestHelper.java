@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.jbpm.bpmn2.support.InMemoryProcessInstances;
+import org.jbpm.bpmn2.support.TestInMemoryProcessInstances;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.api.event.process.ProcessNodeEvent;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
@@ -75,7 +75,7 @@ public class ProcessTestHelper {
 
             @Override
             public MutableProcessInstances<?> createProcessInstances(Process<?> process) {
-                return (MutableProcessInstances<?>) new InMemoryProcessInstances((Process) process);
+                return (MutableProcessInstances<?>) new TestInMemoryProcessInstances((Process) process);
             }
 
         });

@@ -48,6 +48,18 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
         this.process = process;
     }
 
+    protected Process<T> getProcess() {
+        return process;
+    }
+
+    protected ProcessInstanceMarshallerService getMarshaller() {
+        return marshaller;
+    }
+
+    protected ConcurrentMap<String, byte[]> getInstances() {
+        return instances;
+    }
+
     @Override
     public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
         byte[] data = instances.get(id);
@@ -87,7 +99,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
     @Override
     public void remove(String id) {
         LOGGER.info("remove instance {} for {}", id, process.id());
-        instances.remove(id);
+
     }
 
     @Override
