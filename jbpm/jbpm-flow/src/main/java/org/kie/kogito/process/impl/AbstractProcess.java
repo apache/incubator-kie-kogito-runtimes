@@ -62,6 +62,7 @@ import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.ProcessVersionResolver;
@@ -243,9 +244,18 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
 
                 @Override
                 public List<ProcessInstance<T>> waitingForEvents(String eventType) {
-                    List<ProcessInstance<T>> list = instances.stream()
+                    List<ProcessInstance<T>> list = instances.stream(ProcessInstanceReadMode.MUTABLE)
                             .map(e -> (AbstractProcessInstance<T>) e)
-                            .filter(e -> List.of(e.internalLoadProcessInstanceState().getEventTypes()).contains(eventType))
+                            .map(pi -> {
+                                KogitoProcessRuntime runtime = getProcessRuntime();
+                                KogitoProcessInstance instance = runtime.getProcessInstance(pi.id());
+                                if (instance != null) {
+                                    return (AbstractProcessInstance<T>) instance.unwrap();
+                                }
+                                pi.internalLoadProcessInstanceState();
+                                return pi;
+                            })
+                            .filter(e -> List.of(e.processInstance.getEventTypes()).contains(eventType))
                             .map(e -> (ProcessInstance<T>) e)
                             .toList();
                     return list;

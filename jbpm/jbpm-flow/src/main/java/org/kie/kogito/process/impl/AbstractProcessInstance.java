@@ -88,7 +88,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     protected WorkflowProcessInstance processInstance;
 
     protected Integer status;
-
+    protected Date startDate;
     protected String id;
     protected CorrelationKey correlationKey;
     protected String description;
@@ -160,8 +160,13 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         status = wpi.getState();
         id = wpi.getStringId();
         description = wpi.getDescription();
+        startDate = wpi.getStartDate();
         unbind(variables, wpi.getVariables());
         setCorrelationKey(wpi.getCorrelationKey());
+    }
+
+    private boolean isProcessInstanceConnected() {
+        return this.rt != null;
     }
 
     protected WorkflowProcessInstanceImpl internalLoadProcessInstanceState() {
@@ -172,7 +177,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 throw new ProcessInstanceNotFoundException(id);
             }
         }
-        if (getProcessRuntime() != null) {
+        if (isProcessInstanceConnected()) {
             reconnect();
         }
         syncWorkflowInstanceState(processInstance);
@@ -215,8 +220,12 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             processInstance.getMetaData().remove(KOGITO_PROCESS_INSTANCE);
             disconnect();
         }
-
-        processInstance = null;
+        // we left the instance in read only mode once it is completed
+        if (status == STATE_COMPLETED || status == STATE_ABORTED) {
+            this.rt = null;
+        } else {
+            processInstance = null;
+        }
     }
 
     protected void disconnect() {
@@ -361,9 +370,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public Date startDate() {
-        return executeInWorkflowProcessInstance(pi -> {
-            return pi.getStartDate();
-        });
+        return startDate;
     }
 
     @Override
@@ -505,12 +512,16 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     public <R> R executeInWorkflowProcessInstance(Function<WorkflowProcessInstanceImpl, R> execution) {
         return processInstanceLockStrategy.executeOperation(id, () -> {
             WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
-            getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
+            if (isProcessInstanceConnected()) {
+                getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
+            }
             int oldState = workflowProcessInstance.getState();
             R outcome = execution.apply(workflowProcessInstance);
             syncWorkflowInstanceState(workflowProcessInstance);
             syncPersistence(oldState, workflowProcessInstance);
-            getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
+            if (isProcessInstanceConnected()) {
+                getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
+            }
             internalUnloadProcessInstanceState();
             return outcome;
         });
@@ -636,7 +647,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     protected void syncPersistence(int oldWorkflowProcessInstanceState, WorkflowProcessInstanceImpl workflowProcessInstanceImpl) {
-        if (oldWorkflowProcessInstanceState == KogitoProcessInstance.STATE_PENDING) {
+        if (reloadSupplier == null && oldWorkflowProcessInstanceState == KogitoProcessInstance.STATE_PENDING) {
             ((MutableProcessInstances<T>) process.instances()).create(this.id(), this);
             return;
         }

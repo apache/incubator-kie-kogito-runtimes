@@ -26,6 +26,7 @@ import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenIT;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.SignalFactory;
 
@@ -54,7 +55,7 @@ public class SubProcessIT extends AbstractCodegenIT {
 
         assertOne(subProcess.instances());
 
-        ProcessInstance<? extends Model> subProcessInstance = getFirst(subProcess.instances());
+        ProcessInstance<? extends Model> subProcessInstance = subProcess.instances().stream(ProcessInstanceReadMode.MUTABLE).findAny().orElse(null);
         assertThat(subProcessInstance.variables().toMap()).hasSize(3).contains(
                 entry("constant", "aString"), entry("name", "test"), entry("review", null));
 
