@@ -505,6 +505,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-launcher</artifactId>
+        <version>${version.org.junit.platform}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
         <version>${version.org.junit.jupiter}</version>
