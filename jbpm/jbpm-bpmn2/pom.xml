@@ -118,7 +118,7 @@
     </testResources>
 
     <plugins>
-      <!-- Unpack XSD resources from org.kie:kie-dmn-xsd-resources -->
+      <!-- Unpack XSD resources from org.kie.kogito:jbpm-xsd-resources -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
