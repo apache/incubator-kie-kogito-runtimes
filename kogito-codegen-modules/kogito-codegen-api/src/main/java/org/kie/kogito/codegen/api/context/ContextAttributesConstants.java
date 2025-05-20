@@ -27,6 +27,8 @@ public final class ContextAttributesConstants {
 
     public static final String PROCESS_AUTO_SVG_MAPPING = "processAutoSVGMapping";
 
+    public static final String KOGITO_FAULT_TOLERANCE_ENABLED = "kogito.faultToleranceEnabled";
+
     private ContextAttributesConstants() {
     }
 }

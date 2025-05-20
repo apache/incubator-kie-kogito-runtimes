@@ -16,15 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kogito.scenariosimulation.runner;
+package org.kie.kogito.codegen.faultTolerance.impl;
 
-import org.drools.scenariosimulation.backend.runner.ScenarioJunitActivator;
-import org.junit.runners.model.InitializationError;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.faultTolerance.FaultToleranceAnnotator;
 
-@Deprecated(since = "10.2", forRemoval = true)
-public class KogitoJunitActivator extends ScenarioJunitActivator {
+public abstract class AbstractFaultToleranceAnnotator implements FaultToleranceAnnotator {
 
-    public KogitoJunitActivator(Class<?> testClass) throws InitializationError {
-        super(testClass);
+    protected KogitoBuildContext context;
+
+    public AbstractFaultToleranceAnnotator(KogitoBuildContext context) {
+        this.context = context;
     }
 }

@@ -16,15 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kogito.scenariosimulation.runner;
+package org.kie.kogito.codegen.faultTolerance.impl;
 
-import org.drools.scenariosimulation.backend.runner.ScenarioJunitActivator;
-import org.junit.runners.model.InitializationError;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
-@Deprecated(since = "10.2", forRemoval = true)
-public class KogitoJunitActivator extends ScenarioJunitActivator {
+import com.github.javaparser.ast.body.MethodDeclaration;
 
-    public KogitoJunitActivator(Class<?> testClass) throws InitializationError {
-        super(testClass);
+public class QuarkusFaultToleranceAnnotator extends AbstractFaultToleranceAnnotator {
+
+    public static final String RETRY_ANNOTATION = "org.eclipse.microprofile.faulttolerance.Retry";
+
+    public QuarkusFaultToleranceAnnotator(KogitoBuildContext context) {
+        super(context);
+    }
+
+    @Override
+    public String getRetryAnnotationName() {
+        return RETRY_ANNOTATION;
+    }
+
+    @Override
+    public void addFaultToleranceAnnotations(MethodDeclaration methodDeclaration) {
+        methodDeclaration.addAnnotation(RETRY_ANNOTATION);
     }
 }

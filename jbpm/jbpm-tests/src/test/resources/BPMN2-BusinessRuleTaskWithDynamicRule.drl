@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,15 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kogito.scenariosimulation.runner;
+package defaultPackge
 
-import org.drools.scenariosimulation.backend.runner.ScenarioJunitActivator;
-import org.junit.runners.model.InitializationError;
 
-@Deprecated(since = "10.2", forRemoval = true)
-public class KogitoJunitActivator extends ScenarioJunitActivator {
+import org.jbpm.bpmn2.objects.Person;
 
-    public KogitoJunitActivator(Class<?> testClass) throws InitializationError {
-        super(testClass);
-    }
-}
+rule "Johns rule" ruleflow-group "JohnsRuleFlow"
+no-loop
+    when
+        $p : Person(name == null)
+    then
+        modify ($p){
+            setName("john")
+        }
+        System.out.println("Hello " + $p.getName());
+
+end
+
+rule "Marys Rule" ruleflow-group "MarysRuleFlow"
+no-loop
+    when
+        $p : Person(name == null)
+    then
+        modify ($p){
+            setName("mary")
+        }
+        System.out.println("Hello " + $p.getName());
+
+end
