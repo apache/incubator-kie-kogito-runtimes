@@ -517,7 +517,6 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${version.junit}</version>
-        <scope>test</scope>
       </dependency>
 
       <dependency>
