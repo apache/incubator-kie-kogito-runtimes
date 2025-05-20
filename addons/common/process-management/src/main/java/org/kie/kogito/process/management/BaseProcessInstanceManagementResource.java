@@ -317,9 +317,12 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             var jobId = processInstance.updateNodeInstanceSla(nodeInstanceId, Date.from(sla.getExpirationTime().toInstant()));
             System.out.println(jobId);
             // Update job expiration
+
+            //Requires timerId
             var jobDescription = ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
                     .id(jobId)
                     .expirationTime(ExactExpirationTime.of(sla.getExpirationTime()))
+                    .processInstanceId(processInstanceId)
                     .build();
             var job = jobsService.rescheduleJob(jobDescription);
             System.out.println(job);
