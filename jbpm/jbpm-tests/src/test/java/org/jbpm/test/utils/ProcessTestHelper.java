@@ -86,7 +86,7 @@ public class ProcessTestHelper {
     }
 
     public static <R, T extends Model> R executeInWorkflowState(ProcessInstance<T> processInstance, Function<WorkflowProcessInstanceImpl, R> executionUnit) {
-        return ((AbstractProcessInstance<T>) processInstance).executeInWorkflowProcessInstance(executionUnit);
+        return ((AbstractProcessInstance<T>) processInstance).executeInWorkflowProcessInstanceWrite(executionUnit);
     }
 
     public static void registerProcessEventListener(Application app, KogitoProcessEventListener kogitoProcessEventListener) {

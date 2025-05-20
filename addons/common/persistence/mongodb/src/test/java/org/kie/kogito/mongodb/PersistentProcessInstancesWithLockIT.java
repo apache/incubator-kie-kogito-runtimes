@@ -34,7 +34,6 @@ import org.kie.kogito.process.impl.StaticProcessConfig;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abort;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
@@ -66,6 +65,8 @@ class PersistentProcessInstancesWithLockIT extends TestHelper {
         BpmnProcess process = createProcess(factory);
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
+        processInstance.updateVariablesPartially(BpmnVariables.create(Collections.singletonMap("test", "test")));
+
         MongoDBProcessInstances<?> processInstances = new MongoDBProcessInstances<>(getMongoClient(), process, DB_NAME, getDisabledMongoDBTransactionManager(), true);
         assertOne(processInstances);
         Optional<?> foundOne = processInstances.findById(processInstance.id());
@@ -76,16 +77,14 @@ class PersistentProcessInstancesWithLockIT extends TestHelper {
         assertThat(instanceTwo.version()).isOne();
         ((AbstractProcessInstance) instanceTwo).startDate(); // force reload
         instanceOne.updateVariables(BpmnVariables.create(Collections.singletonMap("s", "test")));
-        try {
-            BpmnVariables testvar = BpmnVariables.create(Collections.singletonMap("ss", "test"));
-            instanceTwo.updateVariables(testvar);
-            fail("Updating process should have failed");
-        } catch (RuntimeException e) {
-            assertThat(e.getMessage()).isEqualTo("Process instance with id '" + instanceOne.id() + "' updated or deleted by other request");
-        }
+
+        BpmnVariables testvar = BpmnVariables.create(Collections.singletonMap("ss", "test"));
+        instanceTwo.updateVariables(testvar);
+        assertThat(instanceTwo.version()).isEqualTo(2L);
+
         foundOne = processInstances.findById(processInstance.id());
         instanceOne = (BpmnProcessInstance) foundOne.get();
-        assertThat(instanceOne.version()).isEqualTo(2L);
+        assertThat(instanceOne.version()).isEqualTo(3L);
 
         processInstances.remove(processInstance.id());
         assertEmpty(processInstances);
@@ -98,8 +97,9 @@ class PersistentProcessInstancesWithLockIT extends TestHelper {
         BpmnProcess process = createProcess(factory);
 
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
-
         processInstance.start();
+
+        processInstance.updateVariablesPartially(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
         MongoDBProcessInstances<?> processInstances = new MongoDBProcessInstances<>(getMongoClient(), process, DB_NAME, getDisabledMongoDBTransactionManager(), true);
         Optional<?> foundOne = processInstances.findById(processInstance.id());

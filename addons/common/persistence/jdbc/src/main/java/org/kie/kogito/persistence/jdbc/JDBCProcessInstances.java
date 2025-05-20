@@ -84,9 +84,11 @@ public class JDBCProcessInstances implements MutableProcessInstances {
                 if (!isUpdated) {
                     throw new ProcessInstanceOptimisticLockingException(id);
                 }
+                ((AbstractProcessInstance) instance).setVersion(instance.version() + 1);
             } else {
                 repository.updateInternal(process.id(), process.version(), UUID.fromString(id), marshaller.marshallProcessInstance(instance));
             }
+            connectInstance(instance);
         } else {
             LOGGER.warn("Process instance id: {}, state: {} is not active, skipping update", id, instance.status());
         }
@@ -113,11 +115,7 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     public Optional<ProcessInstance<?>> findById(String id, ProcessInstanceReadMode mode) {
         LOGGER.debug("Find process instance id: {}, mode: {}", id, mode);
         return repository.findByIdInternal(process.id(), process.version(), UUID.fromString(id)).map(r -> {
-            AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(r, mode);
-            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-                connectInstance(pi);
-            }
-            return pi;
+            return (AbstractProcessInstance) unmarshall(r, mode);
         });
     }
 
@@ -125,11 +123,7 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     public Optional<ProcessInstance<?>> findByBusinessKey(String businessKey, ProcessInstanceReadMode mode) {
         LOGGER.debug("Find process instance using business Key : {}", businessKey);
         return repository.findByBusinessKey(process.id(), process.version(), businessKey).map(r -> {
-            AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(r, mode);
-            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-                connectInstance(pi);
-            }
-            return pi;
+            return (AbstractProcessInstance) unmarshall(r, mode);
         });
     }
 
@@ -143,6 +137,7 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     private ProcessInstance<?> unmarshall(Repository.Record record, ProcessInstanceReadMode mode) {
         ProcessInstance<?> instance = marshaller.unmarshallProcessInstance(record.getPayload(), process, mode);
         ((AbstractProcessInstance<?>) instance).setVersion(record.getVersion());
+        connectInstance(instance);
         return instance;
     }
 

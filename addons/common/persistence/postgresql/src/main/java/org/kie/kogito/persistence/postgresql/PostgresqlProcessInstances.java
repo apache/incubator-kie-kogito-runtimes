@@ -100,6 +100,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
 
         if (lock) {
             updateWithLock(id, marshaller.marshallProcessInstance(instance), instance.version());
+            ((AbstractProcessInstance) instance).setVersion(instance.version() + 1);
         } else {
             updateInternal(id, marshaller.marshallProcessInstance(instance));
         }
@@ -116,11 +117,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     @Override
     public Optional<ProcessInstance> findById(String id, ProcessInstanceReadMode mode) {
         return findByIdInternal(id).map(r -> {
-            AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(r, mode);
-            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-                connectProcessInstance(pi);
-            }
-            return pi;
+            return (AbstractProcessInstance) unmarshall(r, mode);
         });
     }
 
@@ -141,6 +138,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     private ProcessInstance<?> unmarshall(Row r, ProcessInstanceReadMode mode) {
         AbstractProcessInstance instance = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(r.getBuffer(PAYLOAD).getBytes(), process, mode);
         instance.setVersion(r.getLong(VERSION));
+        connectProcessInstance(instance);
         return instance;
     }
 

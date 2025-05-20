@@ -73,9 +73,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
         }
         byte[] data = readBytesFromFile(processInstanceStorage);
         AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process, mode);
-        if (pi != null && !ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-            connectInstance(processInstanceStorage, pi);
-        }
+        connectInstance(processInstanceStorage, pi);
         return Optional.of(pi);
     }
 
@@ -85,7 +83,12 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
             return Files.walk(storage)
                     .filter(file -> !Files.isDirectory(file))
                     .map(this::readBytesFromFile)
-                    .map(marshaller.createUnmarshallFunction(process, mode));
+                    .map(data -> {
+                        ProcessInstance pi = marshaller.unmarshallProcessInstance(data, process, mode);
+                        Path processInstanceStorage = Paths.get(storage.toString(), pi.id());
+                        connectInstance(processInstanceStorage, pi);
+                        return pi;
+                    });
         } catch (IOException e) {
             throw new UncheckedIOException("Unable to read process instances ", e);
         }
