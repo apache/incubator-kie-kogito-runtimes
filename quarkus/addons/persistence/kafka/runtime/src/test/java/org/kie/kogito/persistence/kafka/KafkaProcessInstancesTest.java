@@ -85,7 +85,7 @@ public class KafkaProcessInstancesTest {
         instances = new KafkaProcessInstances(process, producer);
         instances.setStore(store);
         instances.setMarshaller(marshaller);
-        lenient().when(marshaller.createUnmarshallFunction(any(), any())).thenCallRealMethod();
+        lenient().when(marshaller.unmarshallProcessInstance(any(), any())).thenCallRealMethod();
     }
 
     @Test
@@ -188,7 +188,6 @@ public class KafkaProcessInstancesTest {
     @Test
     public void testProcessInstancesSize() {
         doReturn(mock(KeyValueIterator.class)).when(store).prefixScan(eq(processId), any());
-
         assertEmpty(instances);
     }
 
