@@ -33,6 +33,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
+import org.kie.kogito.Model;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -43,7 +44,7 @@ import org.kie.kogito.process.impl.AbstractProcessInstance;
 import static java.lang.String.format;
 import static org.kie.kogito.persistence.kafka.KafkaPersistenceUtils.topicName;
 
-public class KafkaProcessInstances implements MutableProcessInstances {
+public class KafkaProcessInstances<T extends Model> implements MutableProcessInstances<T> {
 
     private Process<?> process;
     private KafkaProducer<String, byte[]> producer;
@@ -114,7 +115,7 @@ public class KafkaProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public void create(String id, ProcessInstance instance) {
+    public void create(String id, ProcessInstance<T> instance) {
         if (isActive(instance)) {
             if (getProcessInstanceById(id).isPresent()) {
                 throw new ProcessInstanceDuplicatedException(id);
@@ -124,16 +125,17 @@ public class KafkaProcessInstances implements MutableProcessInstances {
             } catch (Exception e) {
                 throw new RuntimeException("Unable to persist process instance id: " + id, e);
             }
+            connectInstance(instance);
         }
     }
 
     @Override
-    public void update(String id, ProcessInstance instance) {
+    public void update(String id, ProcessInstance<T> instance) {
         if (isActive(instance)) {
             byte[] data = marshaller.marshallProcessInstance(instance);
             try {
                 sendKafkaRecord(id, data);
-                disconnect(instance);
+                connectInstance(instance);
             } catch (Exception e) {
                 throw new RuntimeException("Unable to update process instance id: " + id, e);
             }
@@ -150,25 +152,31 @@ public class KafkaProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public Optional<ProcessInstance<?>> findById(String id, ProcessInstanceReadMode mode) {
+    public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
         return getProcessInstanceById(id).map(r -> {
-            AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.createUnmarshallFunction(process, mode).apply(r);
-            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-                disconnect(pi);
-            }
+            AbstractProcessInstance<T> pi = (AbstractProcessInstance<T>) marshaller.unmarshallProcessInstance(r, process, mode);
+            connectInstance(pi);
             return pi;
         });
     }
 
     @Override
-    public Stream<ProcessInstance<?>> stream(ProcessInstanceReadMode mode) {
+    public Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode) {
         KeyValueIterator<String, byte[]> iterator = getStore().prefixScan(getProcess().id(), Serdes.String().serializer());
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
                 .map(k -> k.value)
-                .map(marshaller.createUnmarshallFunction(process, mode)).onClose(iterator::close);
+                .map(data -> {
+                    AbstractProcessInstance<T> pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process, mode);
+                    connectInstance(pi);
+                    return (ProcessInstance<T>) pi;
+                })
+                .onClose(iterator::close);
     }
 
-    protected void disconnect(ProcessInstance<?> instance) {
+    protected void connectInstance(ProcessInstance<?> instance) {
+        if (instance == null) {
+            return;
+        }
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> getProcessInstanceById(instance.id()).orElseThrow()));
     }
 }

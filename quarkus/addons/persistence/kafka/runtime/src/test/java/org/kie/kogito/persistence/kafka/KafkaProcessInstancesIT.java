@@ -132,12 +132,9 @@ public class KafkaProcessInstancesIT {
 
     @Test
     void testFindByIdReadMode() {
-        BpmnProcess process = createProcess("BPMN2-UserTask-Script.bpmn2");
-
         listener.setKafkaStreams(createStreams());
-        process.setProcessInstancesFactory(factory);
-        process.configure();
         listener.getKafkaStreams().start();
+        BpmnProcess process = createProcess("BPMN2-UserTask-Script.bpmn2");
 
         ProcessInstances<BpmnVariables> instances = process.instances();
         assertEmpty(instances);
@@ -170,11 +167,9 @@ public class KafkaProcessInstancesIT {
 
     @Test
     void testValuesReadMode() {
-        BpmnProcess process = createProcess("BPMN2-UserTaskt.bpmn2");
         listener.setKafkaStreams(createStreams());
-        process.setProcessInstancesFactory(factory);
-        process.configure();
         listener.getKafkaStreams().start();
+        BpmnProcess process = createProcess("BPMN2-UserTask.bpmn2");
 
         ProcessInstances<BpmnVariables> instances = process.instances();
         assertEmpty(instances);
@@ -193,11 +188,9 @@ public class KafkaProcessInstancesIT {
 
     @Test
     void testBasicFlow() {
-        BpmnProcess process = createProcess("BPMN2-UserTaskt.bpmn2");
         listener.setKafkaStreams(createStreams());
-        process.setProcessInstancesFactory(factory);
-        process.configure();
         listener.getKafkaStreams().start();
+        BpmnProcess process = createProcess("BPMN2-UserTask.bpmn2");
 
         ProcessInstances<BpmnVariables> instances = process.instances();
         assertEmpty(instances);
