@@ -44,8 +44,8 @@
 
     <!-- dependencies versions -->
     <version.com.networknt>1.0.86</version.com.networknt>
-    <version.com.fasterxml.jackson>2.18.2</version.com.fasterxml.jackson>
-    <version.com.fasterxml.jackson.databind>2.18.2</version.com.fasterxml.jackson.databind>
+    <version.com.fasterxml.jackson>2.18.4</version.com.fasterxml.jackson>
+    <version.com.fasterxml.jackson.databind>2.18.4</version.com.fasterxml.jackson.databind>
     <version.com.jayway.jsonpath>2.9.0</version.com.jayway.jsonpath>
     <version.com.ongres.scram>2.1</version.com.ongres.scram>
     <version.net.minidev.jsonsmart>2.4.10</version.net.minidev.jsonsmart>
