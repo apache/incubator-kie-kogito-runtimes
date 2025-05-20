@@ -25,7 +25,7 @@ import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Alternative;
 import jakarta.enterprise.inject.Specializes;
-import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
@@ -40,6 +40,8 @@ import io.quarkus.oidc.client.OidcClients;
 import io.quarkus.oidc.client.Tokens;
 import io.quarkus.runtime.configuration.ConfigurationException;
 
+import static io.quarkiverse.openapi.generator.providers.AbstractAuthProvider.getHeaderName;
+
 @Dependent
 @Alternative
 @Specializes
@@ -51,9 +53,14 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
 
     @Override
     public String getOauth2BearerToken(CredentialsContext input) {
-        String accessToken = super.getOauth2BearerToken(input);
-        ;
+        String authorizationHeaderName = getHeaderName(input.getOpenApiSpecId(), input.getAuthName()) != null ? getHeaderName(input.getOpenApiSpecId(), input.getAuthName())
+                : HttpHeaders.AUTHORIZATION;
+        String accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
         Optional<Boolean> exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class);
+
+        if (accessToken == null || accessToken.isBlank()) {
+            throw new ConfigurationException("An access token is required in the header %s (default is %s) but none was provided".formatted(authorizationHeaderName, HttpHeaders.AUTHORIZATION));
+        }
 
         if (exchangeToken.isPresent() && exchangeToken.get()) {
             LOGGER.info("Oauth2 token exchange enabled for {}, will generate a tokens...", input.getAuthName());
