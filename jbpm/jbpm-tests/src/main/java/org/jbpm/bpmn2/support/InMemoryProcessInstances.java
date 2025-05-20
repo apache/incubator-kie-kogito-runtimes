@@ -69,9 +69,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
 
         LOGGER.info("find by id {}", id);
         AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process, mode);
-        if (pi != null && !ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-            connectProcessInstance(pi);
-        }
+        connectProcessInstance(pi);
         return Optional.of(pi);
     }
 

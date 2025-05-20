@@ -123,7 +123,7 @@ class MongoDBProcessInstancesIT {
                 .build();
 
         Application application =
-                StaticApplicationAssembler.instance().newStaticApplication(new MongoDBProcessInstancesFactory(mongoClient, transactionManager), processConfig, "BPMN2-UserTask.bpmn2");
+                StaticApplicationAssembler.instance().newStaticApplication(new MongoDBProcessInstancesFactory(mongoClient, transactionManager), processConfig, name);
 
         org.kie.kogito.process.Processes container = application.get(org.kie.kogito.process.Processes.class);
         String processId = container.processIds().stream().findFirst().get();

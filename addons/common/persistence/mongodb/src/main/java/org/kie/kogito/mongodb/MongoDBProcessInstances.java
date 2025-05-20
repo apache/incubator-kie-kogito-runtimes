@@ -85,11 +85,7 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
     @Override
     public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
         return find(id).map(piDoc -> {
-            AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(piDoc, mode);
-            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-                connectProcessInstance(pi, id);
-            }
-            return pi;
+            return (AbstractProcessInstance) unmarshall(piDoc, mode);
         });
     }
 
@@ -103,6 +99,7 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
     private ProcessInstance<T> unmarshall(Document document, ProcessInstanceReadMode mode) {
         ProcessInstance<T> instance = (ProcessInstance<T>) marshaller.unmarshallProcessInstance(document.toJson().getBytes(), process, mode);
         setVersion(instance, document.getLong(VERSION));
+        connectProcessInstance(instance, instance.id());
         return instance;
     }
 

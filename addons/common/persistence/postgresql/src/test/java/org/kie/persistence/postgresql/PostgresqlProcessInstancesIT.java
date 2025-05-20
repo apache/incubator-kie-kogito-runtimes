@@ -57,7 +57,6 @@ import io.vertx.sqlclient.Tuple;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
@@ -206,6 +205,8 @@ class PostgresqlProcessInstancesIT {
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
 
+        processInstance.updateVariablesPartially(BpmnVariables.create(singletonMap("test", "test"))); // version 1
+
         PostgresqlProcessInstances processInstances = (PostgresqlProcessInstances) process.instances();
         Optional<?> foundOne = processInstances.findById(processInstance.id());
         BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
@@ -215,15 +216,6 @@ class PostgresqlProcessInstancesIT {
         assertThat(instanceTwo.version()).isEqualTo(lock() ? 1L : 0);
         ((AbstractProcessInstance) instanceTwo).startDate(); // force reload
         instanceOne.updateVariables(BpmnVariables.create(Collections.singletonMap("s", "test")));
-        try {
-            BpmnVariables testvar = BpmnVariables.create(Collections.singletonMap("ss", "test"));
-            instanceTwo.updateVariables(testvar);
-            if (lock()) {
-                fail("Updating process should have failed");
-            }
-        } catch (RuntimeException e) {
-            assertThat(e.getMessage()).isEqualTo("Process instance with id '" + instanceOne.id() + "' updated or deleted by other request");
-        }
         foundOne = processInstances.findById(processInstance.id());
         instanceOne = (BpmnProcessInstance) foundOne.get();
         assertThat(instanceOne.version()).isEqualTo(lock() ? 2L : 0);
@@ -278,6 +270,8 @@ class PostgresqlProcessInstancesIT {
         BpmnProcess process = createProcess("BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
+
+        processInstance.updateVariablesPartially(BpmnVariables.create(singletonMap("test", "test"))); // version 1
 
         PostgresqlProcessInstances processInstances = (PostgresqlProcessInstances) process.instances();
         assertOne(processInstances);

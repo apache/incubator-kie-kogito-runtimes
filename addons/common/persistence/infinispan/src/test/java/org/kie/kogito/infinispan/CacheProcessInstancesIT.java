@@ -152,7 +152,7 @@ class CacheProcessInstancesIT {
         processInstance.start();
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        ProcessInstance<BpmnVariables> pi = getFirst(instances);
+        ProcessInstance<BpmnVariables> pi = instances.stream(ProcessInstanceReadMode.READ_ONLY).findAny().get();
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
         abortFirst(instances);
         assertEmpty(instances);
@@ -162,7 +162,7 @@ class CacheProcessInstancesIT {
     void testBasicFlow() {
         BpmnProcess process = createProcess("BPMN2-UserTask-Script.bpmn2");
 
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("s", "test")));
 
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);

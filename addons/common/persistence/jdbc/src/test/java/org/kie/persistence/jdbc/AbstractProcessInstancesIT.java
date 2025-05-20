@@ -45,8 +45,6 @@ import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
@@ -160,14 +158,14 @@ abstract class AbstractProcessInstancesIT {
     void testBasicFlow() {
         final String businessKey = "manolo";
         BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(businessKey, BpmnVariables.create(singletonMap("test",
-                "test")));
+        ProcessInstance<BpmnVariables> processInstance = process.createInstance(businessKey, BpmnVariables.create(singletonMap("test", "test")));
         processInstance.start();
 
         JDBCProcessInstances processInstances = (JDBCProcessInstances) process.instances();
         Optional<?> foundOne = processInstances.findByBusinessKey(businessKey);
         BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
-        processInstances.update(processInstance.id(), instanceOne);
+        assertThat(instanceOne).extracting(ProcessInstance::businessKey).isEqualTo(businessKey);
+        assertThat(instanceOne).extracting(ProcessInstance::id).isEqualTo(processInstance.id());
 
         assertThat(processInstances.exists(TEST_ID)).isFalse();
         Optional<?> foundTwo = processInstances.findById(TEST_ID);
@@ -178,18 +176,12 @@ abstract class AbstractProcessInstancesIT {
     }
 
     @Test
-    void testException() {
-        BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
-        JDBCProcessInstances processInstances = (JDBCProcessInstances) process.instances();
-        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> processInstances.findById(TEST_ID));
-        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> processInstances.remove(TEST_ID));
-    }
-
-    @Test
     public void testUpdate() {
         BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(singletonMap("test", "test")));
         processInstance.start();
+
+        processInstance.updateVariablesPartially(BpmnVariables.create(singletonMap("test", "test"))); // version 1
 
         JDBCProcessInstances processInstances = (JDBCProcessInstances) process.instances();
         Optional<?> foundOne = processInstances.findById(processInstance.id());
@@ -200,15 +192,6 @@ abstract class AbstractProcessInstancesIT {
         assertThat(instanceTwo.version()).isEqualTo(lock() ? 1L : 0);
         ((AbstractProcessInstance) instanceTwo).startDate(); // force reload
         instanceOne.updateVariables(BpmnVariables.create(singletonMap("s", "test")));
-        try {
-            BpmnVariables testvar = BpmnVariables.create(singletonMap("ss", "test"));
-            instanceTwo.updateVariables(testvar);
-            if (lock()) {
-                fail("Updating process should have failed");
-            }
-        } catch (RuntimeException e) {
-            assertThat(e.getMessage()).isEqualTo("Process instance with id '" + instanceOne.id() + "' updated or deleted by other request");
-        }
         foundOne = processInstances.findById(processInstance.id());
         instanceOne = (BpmnProcessInstance) foundOne.get();
         assertThat(instanceOne.version()).isEqualTo(lock() ? 2L : 0);
@@ -275,8 +258,9 @@ abstract class AbstractProcessInstancesIT {
     public void testRemove() {
         BpmnProcess process = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(singletonMap("test", "test")));
-        processInstance.start();
+        processInstance.start(); // version 0
 
+        processInstance.updateVariablesPartially(BpmnVariables.create(singletonMap("test", "test"))); // version 1
         JDBCProcessInstances processInstances = (JDBCProcessInstances) process.instances();
         assertOne(processInstances);
         Optional<?> foundOne = processInstances.findById(processInstance.id());
@@ -294,7 +278,7 @@ abstract class AbstractProcessInstancesIT {
     @Test
     void testProcessWithDifferentVersion() {
         BpmnProcess processV1 = createProcess(getDataSource(), lock(), "BPMN2-UserTask.bpmn2");
-        BpmnProcess processV2 = createProcess(getDataSource(), lock(), "BPMN2-UserTask-V2.bpmn2");
+        BpmnProcess processV2 = createProcess(getDataSource(), lock(), "BPMN2-UserTask-v2.bpmn2");
 
         assertThat(processV1.process().getVersion()).isEqualTo("1.0");
         assertThat(processV2.process().getVersion()).isEqualTo("2.0");

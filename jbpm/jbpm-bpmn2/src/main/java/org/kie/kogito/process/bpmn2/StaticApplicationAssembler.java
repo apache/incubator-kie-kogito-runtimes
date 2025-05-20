@@ -54,7 +54,10 @@ public class StaticApplicationAssembler {
     }
 
     public Application newStaticApplication(ProcessInstancesFactory processInstanceFactory, ProcessConfig processConfig, String... resources) {
-        return newStaticApplication(processInstanceFactory, processConfig, List.of(resources).stream().map(ClassPathResource::new).toArray(ClassPathResource[]::new));
+        ClassPathResource[] classPathResources = List.of(resources).stream()
+                .map(r -> new ClassPathResource(r, Thread.currentThread().getContextClassLoader()))
+                .toArray(ClassPathResource[]::new);
+        return newStaticApplication(processInstanceFactory, processConfig, classPathResources);
     }
 
     public Application newStaticApplication(ProcessInstancesFactory processInstanceFactory, ProcessConfig processConfig, Resource... resources) {

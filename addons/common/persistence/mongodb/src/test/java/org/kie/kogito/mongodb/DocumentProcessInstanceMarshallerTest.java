@@ -25,7 +25,6 @@ import java.util.Collections;
 import org.bson.Document;
 import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
@@ -46,11 +45,7 @@ class DocumentProcessInstanceMarshallerTest {
             ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies()
                     .withContextEntries(singletonMap(MarshallerContextName.MARSHALLER_FORMAT, MarshallerContextName.MARSHALLER_FORMAT_JSON)).build();
 
-    static BpmnProcess process;
-    static Document doc;
-
-    @BeforeAll
-    static void setup() throws URISyntaxException, IOException {
+    private BpmnProcess newProcess() throws URISyntaxException, IOException {
         StaticProcessConfig processConfig = StaticProcessConfig.newStaticProcessConfigBuilder()
                 .withWorkItemHandler("Human Task", new DefaultKogitoWorkItemHandler())
                 .build();
@@ -59,19 +54,17 @@ class DocumentProcessInstanceMarshallerTest {
 
         org.kie.kogito.process.Processes container = application.get(org.kie.kogito.process.Processes.class);
         String processId = container.processIds().stream().findFirst().get();
-        org.kie.kogito.process.Process<? extends Model> process = container.processById(processId);
+        org.kie.kogito.process.Process<? extends Model> compiledProcess = container.processById(processId);
 
-        abort(process.instances());
-        BpmnProcess compiledProcess = (BpmnProcess) process;
-        process = compiledProcess;
-
+        abort(compiledProcess.instances());
+        return (BpmnProcess) compiledProcess;
     }
 
     @Test
-    void testMarshalProcessInstance() {
+    void testMarshalProcessInstance() throws Exception {
+        BpmnProcess process = newProcess();
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(singletonMap("test", "testValue")));
-        processInstance.start();
-        doc = Document.parse(new String(marshaller.marshallProcessInstance(processInstance)));
+        Document doc = Document.parse(new String(marshaller.marshallProcessInstance(processInstance)));
         assertThat(doc).as("Marshalled value should not be null").isNotNull()
                 .containsEntry("id", processInstance.id())
                 .containsEntry("description", processInstance.description());
@@ -81,22 +74,25 @@ class DocumentProcessInstanceMarshallerTest {
     }
 
     @Test
-    void testUnmarshalProcessInstance() {
-        ProcessInstance<BpmnVariables> processInstance = (ProcessInstance<BpmnVariables>) marshaller.unmarshallProcessInstance(doc.toJson().getBytes(), process);
+    void testUnmarshalProcessInstance() throws Exception {
+        BpmnProcess process = newProcess();
+
+        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "testValue")));
+        byte[] data = marshaller.marshallProcessInstance(processInstance);
+        Document doc = Document.parse(new String(data));
         assertThat(processInstance).as("Unmarshalled value should not be null").isNotNull();
         assertThat(processInstance.id()).isEqualTo(doc.get("id"));
-        assertThat(processInstance.description()).isEqualTo(doc.get("description"))
-                .isEqualTo("User Task");
+        assertThat(processInstance.description()).isEqualTo(doc.get("description")).isEqualTo("User Task");
         BpmnVariables variables = processInstance.variables();
         String testVar = (String) variables.get("test");
         assertThat(testVar).isEqualTo("testValue");
     }
 
     @Test
-    void testProcessInstanceReadOnly() {
+    void testProcessInstanceReadOnly() throws Exception {
+        BpmnProcess process = newProcess();
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "testValue")));
-        processInstance.start();
-        doc = Document.parse(new String(marshaller.marshallProcessInstance(processInstance)));
+        Document doc = Document.parse(new String(marshaller.marshallProcessInstance(processInstance)));
         ProcessInstance<BpmnVariables> processInstanceReadOnly = (ProcessInstance<BpmnVariables>) marshaller.unmarshallProcessInstance(doc.toJson().getBytes(), process);
         assertThat(processInstanceReadOnly).as("Unmarshalled value should not be null").isNotNull();
         ProcessInstance<BpmnVariables> pi = (ProcessInstance<BpmnVariables>) marshaller.unmarshallReadOnlyProcessInstance(doc.toJson().getBytes(), process);
