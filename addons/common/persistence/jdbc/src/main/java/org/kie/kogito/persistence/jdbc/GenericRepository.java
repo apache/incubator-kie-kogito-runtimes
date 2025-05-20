@@ -207,14 +207,19 @@ public class GenericRepository extends Repository {
                 statement.setString(2, processVersion);
             }
             ResultSet resultSet = close.nest(statement.executeQuery());
-            return StreamSupport.stream(new Spliterators.AbstractSpliterator<Record>(
-                    Long.MAX_VALUE, Spliterator.ORDERED) {
+            return StreamSupport.stream(new Spliterators.AbstractSpliterator<Record>(Long.MAX_VALUE, Spliterator.ORDERED) {
                 @Override
                 public boolean tryAdvance(Consumer<? super Record> action) {
                     try {
                         boolean hasNext = resultSet.next();
                         if (hasNext) {
                             action.accept(from(resultSet));
+                        } else {
+                            try {
+                                close.close();
+                            } catch (Exception e) {
+                                throw uncheckedException(e, "Error finding all process instances, for processId %s", processId);
+                            }
                         }
                         return hasNext;
                     } catch (SQLException e) {
