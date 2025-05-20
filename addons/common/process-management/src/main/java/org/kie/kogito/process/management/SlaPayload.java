@@ -1,19 +1,22 @@
 package org.kie.kogito.process.management;
 
-import org.kie.kogito.jobs.ExpirationTime;
+import java.time.ZonedDateTime;
 
 public class SlaPayload {
-    ExpirationTime expirationTime;
+    private ZonedDateTime expirationTime;
 
-    public SlaPayload(ExpirationTime expirationTime) {
+    public SlaPayload() {
+    }
+
+    public SlaPayload(ZonedDateTime expirationTime) {
         this.expirationTime = expirationTime;
     }
 
-    public ExpirationTime getExpirationTime() {
+    public ZonedDateTime getExpirationTime() {
         return expirationTime;
     }
 
-    public void setExpirationTime(ExpirationTime expirationTime) {
+    public void setExpirationTime(ZonedDateTime expirationTime) {
         this.expirationTime = expirationTime;
     }
 }

@@ -18,10 +18,7 @@
  */
 package org.kie.kogito.process.management;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -32,8 +29,9 @@ import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
-import org.kie.kogito.jobs.JobDescription;
+import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
@@ -316,9 +314,21 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
     public T doUpdateNodeInstanceSla(String processId, String processInstanceId, String nodeInstanceId, SlaPayload sla) {
         return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
             // Update Node SLA
-            processInstance.updateNodeSla(nodeInstanceId, sla);
+            var jobId = processInstance.updateNodeInstanceSla(nodeInstanceId, Date.from(sla.getExpirationTime().toInstant()));
+            System.out.println(jobId);
             // Update job expiration
-            jobsService.rescheduleJob(job);
+            var jobDescription = ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
+                    .id(jobId)
+                    .expirationTime(ExactExpirationTime.of(sla.getExpirationTime()))
+                    .build();
+            var job = jobsService.rescheduleJob(jobDescription);
+            System.out.println(job);
+
+            if (processInstance.status() == ProcessInstance.STATE_ERROR) {
+                throw ProcessInstanceExecutionException.fromError(processInstance);
+            } else {
+                return buildOkResponse(processInstance.variables());
+            }
 
         });
     }

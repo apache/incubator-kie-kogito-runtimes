@@ -491,7 +491,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                     .filter(ni -> ni.getStringId().equals(nodeInstanceId))
                     .findFirst()
                     .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
-
             nodeInstance.cancel();
             removeOnFinish();
             return null;
@@ -514,19 +513,17 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     @Override
-    public void updateNodeSla(String nodeInstanceId, SlaPayload sla) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
+    public String updateNodeInstanceSla(String nodeInstanceId, Date slaDueDate) {
+        return processInstanceLockStrategy.executeOperation(id, () -> {
             NodeInstance nodeInstance = processInstance()
                     .getNodeInstances(true)
                     .stream()
                     .filter(ni -> ni.getStringId().equals(nodeInstanceId))
                     .findFirst()
                     .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
-
-            //Set node sla
-            //nodeInstance.setsla()
+            ((NodeInstanceImpl) nodeInstance).internalSetSlaDueDate(slaDueDate);
             removeOnFinish();
-            return null;
+            return nodeInstance.getSlaTimerId();
         });
     }
 

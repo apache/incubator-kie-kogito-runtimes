@@ -43,5 +43,5 @@ public interface JobsService {
      */
     boolean cancelJob(String id);
 
-    String rescheduleJob(JobDescription description);
+    String rescheduleJob(JobDescription jobDescription);
 }

@@ -116,6 +116,21 @@ public class VertxJobsService extends RestJobsService {
         return true;
     }
 
+    @Override
+    public String rescheduleJob(JobDescription jobDescription) {
+        final Job job = buildJob(jobDescription, null);
+        client.patch(JOBS_PATH).sendJson(job, res -> {
+            int status = res.result() != null ? res.result().statusCode() : 0;
+            if (res.succeeded() && status == 200) {
+                LOGGER.debug("Creating of the job {} done with status code {} ", job, status);
+                System.out.println(res.result().bodyAsString());
+            } else {
+                LOGGER.error("Scheduling of job {} failed with response code {}", job, status, res.cause());
+            }
+        });
+        return "SUCCESS";
+    }
+
     private void configureMapper(ObjectMapper mapper) {
         mapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);

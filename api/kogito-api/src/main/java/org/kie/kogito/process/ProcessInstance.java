@@ -266,7 +266,8 @@ public interface ProcessInstance<T> {
     void cancelNodeInstance(String nodeInstanceId);
 
     void retriggerNodeInstance(String nodeInstanceId);
-    void updateNodeSla(String nodeInstanceId, SlaPayload sla);
+
+    String updateNodeInstanceSla(String nodeInstanceId, Date slaDueDate);
 
     Set<EventDescription<?>> events();
 

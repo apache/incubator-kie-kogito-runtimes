@@ -18,6 +18,9 @@
  */
 package org.kie.kogito.jobs.management.springboot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.kie.kogito.jobs.JobDescription;
 import org.kie.kogito.jobs.management.RestJobsService;
 import org.kie.kogito.jobs.service.api.Job;
@@ -100,8 +103,11 @@ public class SpringRestJobsService extends RestJobsService {
     }
 
     @Override
-    public String rescheduleJob(JobDescription description) {
-        return restTemplate.patchForObject(getJobsServiceUri(), buildJobRequest(description), String.class);
+    public String rescheduleJob(JobDescription jobDescription) {
+        LOGGER.debug("Job to be scheduled {} with callback URL {}", jobDescription, null);
+        final Job job = buildJob(jobDescription, null);
+        final HttpEntity<String> request = buildJobRequest(job);
+        return restTemplate.patchForObject(getJobsServiceUri(), request, String.class);
     }
 
     private HttpEntity<String> buildJobRequest(Job job) {
@@ -116,12 +122,14 @@ public class SpringRestJobsService extends RestJobsService {
         return new HttpEntity<>(json, headers);
     }
 
-    private HttpEntity<String> buildJobRequest(JobDescription description) {
+    private HttpEntity<String> buildJobRequest(String id) {
         String json;
         try {
-            json = objectMapper.writeValueAsString(description);
+            Map<String, String> job = new HashMap<>();
+            job.put("id", id);
+            json = objectMapper.writeValueAsString(job);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("It was not possible to create the http request for the job: " + description, e);
+            throw new RuntimeException("It was not possible to create the http request for the job id: " + id, e);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -24,11 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.kie.kogito.jobs.JobDescription;
 import org.kie.kogito.jobs.JobsService;
@@ -108,6 +104,19 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
             }
         }
         return false;
+    }
+
+    @Override
+    public String rescheduleJob(JobDescription jobDescription) {
+        LOGGER.debug("Reschedule Job: {}", jobDescription.id());
+        if (scheduledJobs.containsKey(jobDescription.id())) {
+            ScheduledFuture<?> future = scheduledJobs.remove(jobDescription.id());
+            if (!future.isDone()) {
+                future.cancel(true);
+                return scheduleJob(jobDescription);
+            }
+        }
+        return "";
     }
 
     protected long calculateDelay(JobDescription description) {
