@@ -130,8 +130,7 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     @Override
     public Stream<ProcessInstance<?>> stream(ProcessInstanceReadMode mode) {
         LOGGER.debug("Find process instance values using mode: {}", mode);
-        return repository.findAllInternal(process.id(), process.version())
-                .map(r -> unmarshall(r, mode));
+        return repository.findAllInternal(process.id(), process.version()).map(r -> unmarshall(r, mode));
     }
 
     private ProcessInstance<?> unmarshall(Repository.Record record, ProcessInstanceReadMode mode) {
