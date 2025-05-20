@@ -40,7 +40,7 @@ import static org.kie.kogito.quarkus.workflows.KeycloakServiceMock.KEYCLOAK_EXCH
 
 public class TokenExchangeExternalServicesMock implements QuarkusTestResourceLifecycleManager {
 
-    public static final String PROPAGATED_AUTHORIZATION_TOKEN = "PROPAGATED_AUTHORIZATION_TOKEN";
+    public static final String BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN = "BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN";
 
     private static final String BEARER = "Bearer ";
 
@@ -58,7 +58,7 @@ public class TokenExchangeExternalServicesMock implements QuarkusTestResourceLif
         stubForExternalService("/token-exchange-external-service/withExchange", KEYCLOAK_EXCHANGED_ACCESS_TOKEN);
 
         // stub the /token-exchange-external-service/withExchangeAndPropagation invocation with the expected token
-        stubForExternalService("/token-exchange-external-service/withExchangeAndPropagation", PROPAGATED_AUTHORIZATION_TOKEN);
+        stubForExternalService("/token-exchange-external-service/withExchangeAndPropagation", BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN);
 
         // stub token-exchange-external-service/withoutExchange invocation with the expected token, no propagation nor
         //  exchange are produced in this case but the service must receive the token provided by Keycloak since it has
