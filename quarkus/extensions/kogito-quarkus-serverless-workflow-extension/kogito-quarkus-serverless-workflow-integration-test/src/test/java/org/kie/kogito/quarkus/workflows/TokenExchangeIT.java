@@ -31,10 +31,10 @@ import io.restassured.path.json.JsonPath;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import static org.kie.kogito.quarkus.workflows.ExternalServiceMock.SUCCESSFUL_QUERY;
-import static org.kie.kogito.quarkus.workflows.TokenExchangeExternalServicesMock.PROPAGATED_AUTHORIZATION_TOKEN;
+import static org.kie.kogito.quarkus.workflows.TokenExchangeExternalServicesMock.BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN;
 import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcessInstance;
 
-@QuarkusTestResource(TokenPropagationExternalServicesMock.class)
+@QuarkusTestResource(TokenExchangeExternalServicesMock.class)
 @QuarkusTestResource(KeycloakServiceMock.class)
 @QuarkusIntegrationTest
 class TokenExchangeIT {
@@ -46,7 +46,7 @@ class TokenExchangeIT {
         Map<String, String> headers = new HashMap<>();
         // prepare the headers to pass to the token_propagation SW.
         // service token-propagation-external-service1 and token-propagation-external-service2 will receive the AUTHORIZATION_TOKEN 
-        headers.put(HttpHeaders.AUTHORIZATION, PROPAGATED_AUTHORIZATION_TOKEN);
+        headers.put(HttpHeaders.AUTHORIZATION, BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN);
 
         JsonPath jsonPath = newProcessInstance("/token_exchange", processInput, headers);
         Assertions.assertThat(jsonPath.getString("id")).isNotBlank();
