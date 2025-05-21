@@ -32,10 +32,12 @@ import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
+import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksIterator;
 
+@SuppressWarnings("unchecked")
 public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
 
     private final Process<T> process;
@@ -55,11 +57,13 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
 
     private class RockSplitIterator extends AbstractSpliterator<ProcessInstance<T>> implements Closeable {
 
-        private final RocksIterator iterator;
+        private RocksIterator iterator;
+        private ProcessInstanceReadMode mode;
 
-        protected RockSplitIterator(RocksIterator iterator) {
+        protected RockSplitIterator(RocksIterator iterator, ProcessInstanceReadMode mode) {
             super(Integer.MAX_VALUE, 0);
             this.iterator = iterator;
+            this.mode = mode;
             iterator.seekToFirst();
         }
 
@@ -67,7 +71,7 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
         public boolean tryAdvance(Consumer<? super ProcessInstance<T>> action) {
             boolean hasNext = iterator.isValid();
             if (hasNext) {
-                action.accept(unmarshall(iterator.value()));
+                action.accept(unmarshall(iterator.value(), mode));
                 iterator.next();
                 hasNext = iterator.isValid();
             }
@@ -84,7 +88,7 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
     public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
         try {
             byte[] data = db.get(id.getBytes());
-            return data == null ? Optional.empty() : Optional.of(unmarshall(data));
+            return data == null ? Optional.empty() : Optional.of(unmarshall(data, mode));
         } catch (RocksDBException ex) {
             throw new IllegalStateException(ex);
         }
@@ -92,7 +96,7 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
 
     @Override
     public Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode) {
-        RocksDBProcessInstances<T>.RockSplitIterator iterator = new RockSplitIterator(db.newIterator());
+        RocksDBProcessInstances<T>.RockSplitIterator iterator = new RockSplitIterator(db.newIterator(), mode);
         return StreamSupport.stream(iterator, false).onClose(iterator::close);
     }
 
@@ -114,6 +118,7 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
     public void update(String id, ProcessInstance<T> instance) {
         try {
             db.put(id.getBytes(), marshaller.marshallProcessInstance(instance));
+            connectProcessInstance(instance);
         } catch (RocksDBException ex) {
             throw new IllegalStateException(ex);
         }
@@ -128,8 +133,19 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private ProcessInstance<T> unmarshall(byte[] data) {
-        return (ProcessInstance<T>) marshaller.unmarshallProcessInstance(data, process);
+    private ProcessInstance<T> unmarshall(byte[] data, ProcessInstanceReadMode mode) {
+        AbstractProcessInstance<?> pi = (AbstractProcessInstance<?>) marshaller.unmarshallProcessInstance(data, process, mode);
+        connectProcessInstance(pi);
+        return (ProcessInstance<T>) pi;
+    }
+
+    private void connectProcessInstance(ProcessInstance<?> pi) {
+        ((AbstractProcessInstance<?>) pi).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> {
+            try {
+                return db.get(pi.id().getBytes());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }));
     }
 }
