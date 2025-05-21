@@ -53,13 +53,9 @@ status:
   conditions:
   - type: Available
     status: 'True'
-    lastUpdateTime: '2022-08-22T17:30:30Z'
-    lastTransitionTime: '2022-08-22T17:30:30Z'
     message: Deployment config has minimum availability.
   - type: Progressing
     status: 'True'
-    lastUpdateTime: '2022-08-22T17:30:34Z'
-    lastTransitionTime: '2022-08-22T17:30:34Z'
     reason: NewReplicationControllerAvailable
     message: >-
       replication controller "example-dc-with-service-1" successfully rolled
