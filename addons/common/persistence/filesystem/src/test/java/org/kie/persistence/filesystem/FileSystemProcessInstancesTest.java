@@ -54,7 +54,7 @@ import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STAT
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abort;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abortFirst;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
-import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirst;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirstReadOnly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
@@ -128,7 +128,7 @@ class FileSystemProcessInstancesTest {
         processInstance.start();
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        ProcessInstance<BpmnVariables> pi = getFirst(instances);
+        ProcessInstance<BpmnVariables> pi = getFirstReadOnly(instances);
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
         abortFirst(instances);
         assertEmpty(instances);

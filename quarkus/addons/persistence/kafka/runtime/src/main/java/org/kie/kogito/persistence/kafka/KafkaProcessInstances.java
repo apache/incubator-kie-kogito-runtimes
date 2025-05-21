@@ -146,6 +146,10 @@ public class KafkaProcessInstances<T extends Model> implements MutableProcessIns
     public void remove(String id) {
         try {
             sendKafkaRecord(id, null);
+            // this avoids generates a race condition as one thing is send to kafka and the other is to be processed by the table.
+            while (exists(id)) {
+                Thread.sleep(100L);
+            }
         } catch (Exception e) {
             throw new RuntimeException("Unable to remove process instance id: " + id, e);
         }

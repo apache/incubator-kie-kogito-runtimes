@@ -62,7 +62,6 @@ import static org.kie.kogito.persistence.kafka.KafkaPersistenceUtils.createTopol
 import static org.kie.kogito.process.ProcessInstance.STATE_COMPLETED;
 import static org.kie.kogito.process.ProcessInstance.STATE_ERROR;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abort;
-import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abortFirst;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirst;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirstReadOnly;
@@ -162,7 +161,9 @@ public class KafkaProcessInstancesIT {
         assertThat(readOnlyPi.variables().toMap()).containsExactly(entry("var", "value"));
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> readOnlyPi.abort());
 
-        instances.findById(mutablePi.id()).get().abort();
+        awaitTillOne(instances);
+        ProcessInstance<BpmnVariables> mutablePI = getFirst(instances);
+        mutablePI.abort();
         awaitTillEmpty(instances);
     }
 
@@ -183,7 +184,9 @@ public class KafkaProcessInstancesIT {
 
         ProcessInstance<BpmnVariables> pi = getFirstReadOnly(instances);
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
-        abortFirst(instances);
+        awaitTillOne(instances);
+        ProcessInstance<BpmnVariables> mutablePI = getFirst(instances);
+        mutablePI.abort();
         awaitTillEmpty(instances);
     }
 

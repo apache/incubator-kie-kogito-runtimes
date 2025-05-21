@@ -28,11 +28,11 @@ import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.kie.kogito.persistence.kafka.KafkaPersistenceUtils.storeName;
+
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
-import static org.kie.kogito.persistence.kafka.KafkaPersistenceUtils.storeName;
 
 @ApplicationScoped
 public class KafkaStreamsStateListener implements KafkaStreams.StateListener {
@@ -74,6 +74,7 @@ public class KafkaStreamsStateListener implements KafkaStreams.StateListener {
     }
 
     private void setStore(KafkaProcessInstances pi) {
+
         pi.setStore(streams.store(StoreQueryParameters.fromNameAndType(storeName(), QueryableStoreTypes.keyValueStore())));
     }
 
