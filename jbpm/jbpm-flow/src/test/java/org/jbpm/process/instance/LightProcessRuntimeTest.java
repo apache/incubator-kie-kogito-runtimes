@@ -90,8 +90,8 @@ class LightProcessRuntimeTest {
     @ParameterizedTest
     @CsvSource({
             "R5/PT10S, 2, 5, 10000",
-            "PT10S, 1, -1, -1",
-            "R/PT1S, 2, -1, 1000"
+            "PT10S, 1, 0, -1",
+            "R/PT1S, 2, 0, 1000"
     })
     void testCreateTimerInstance(String delay, int timerType, int repeatLimit, Long repeatInterval) {
         repeatInterval = repeatInterval == -1 ? null : repeatInterval;
