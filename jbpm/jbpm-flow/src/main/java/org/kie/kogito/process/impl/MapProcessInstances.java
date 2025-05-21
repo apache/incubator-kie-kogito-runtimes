@@ -81,11 +81,13 @@ class MapProcessInstances<T extends Model> implements MutableProcessInstances<T>
     }
 
     private ProcessInstance<T> toProcessInstance(WorkflowProcessInstance instance, ProcessInstanceReadMode mode) {
+        ProcessInstance<T> processInstance = null;
         if (mode.equals(ProcessInstanceReadMode.READ_ONLY)) {
-            return process.createReadOnlyInstance(instance);
+            processInstance = process.createReadOnlyInstance(instance);
+        } else {
+            processInstance = process.createInstance(instance);
         }
 
-        ProcessInstance<T> processInstance = process.createInstance(instance);
         connectProcessInstance(processInstance);
         return processInstance;
     }

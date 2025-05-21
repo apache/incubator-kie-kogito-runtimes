@@ -48,6 +48,7 @@ import org.kie.internal.process.CorrelationAwareProcessRuntime;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.process.CorrelationProperty;
 import org.kie.kogito.Model;
+import org.kie.kogito.Models;
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.correlation.Correlation;
 import org.kie.kogito.correlation.CorrelationInstance;
@@ -351,9 +352,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public T variables() {
         return delegateIfPresent(variables, p -> {
-            T model = process().createModel();
-            model.fromMap(p.getVariables());
-            return model;
+            return variables;
         });
     }
 
@@ -671,8 +670,15 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     protected void syncPersistence(int oldWorkflowProcessInstanceState, WorkflowProcessInstanceImpl workflowProcessInstanceImpl) {
-        if (reloadSupplier == null && oldWorkflowProcessInstanceState == KogitoProcessInstance.STATE_PENDING) {
-            ((MutableProcessInstances<T>) process.instances()).create(this.id(), this);
+        List<Integer> inactive = List.of(KogitoProcessInstance.STATE_ABORTED, KogitoProcessInstance.STATE_COMPLETED);
+
+        // if the load  supplier is null means is not yet managed by the persistence tier
+        // so we need to create it
+        if (reloadSupplier == null) {
+            if (!inactive.contains(workflowProcessInstanceImpl.getState())) {
+                // the process is not finished so we store it for the first time
+                ((MutableProcessInstances<T>) process.instances()).create(this.id(), this);
+            }
             return;
         }
 
@@ -713,6 +719,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         if (vmap == null) {
             return;
         }
+        Models.setId(variables, id);
         try {
             for (Field f : variables.getClass().getDeclaredFields()) {
                 f.setAccessible(true);
