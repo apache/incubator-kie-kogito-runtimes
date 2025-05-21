@@ -35,7 +35,7 @@
 
   <properties>
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>3.20.0</version.io.quarkus>
+    <version.io.quarkus>3.20.1</version.io.quarkus>
     <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>
     <version.org.springframework.boot>3.4.5</version.org.springframework.boot>
     <version.org.apache.kafka>3.9.0</version.org.apache.kafka>
@@ -73,7 +73,7 @@
     <version.jakarta.validation-api>3.0.2</version.jakarta.validation-api>
     <version.jakarta.xml.bind-api>4.0.1</version.jakarta.xml.bind-api>
 
-    <version.io.netty>4.1.118.Final</version.io.netty>
+    <version.io.netty>4.1.119.Final</version.io.netty>
 
     <version.io.cloudevents>3.0.0</version.io.cloudevents>
     <!--
@@ -88,7 +88,7 @@
     <version.org.postgresql>42.7.5</version.org.postgresql>
     <version.com.h2>2.3.232</version.com.h2> <!-- Overriding version 2.3.230 to fix https://github.com/h2database/h2database/issues/4079 -->
     <version.io.serverlessworkflow>4.1.0.Final</version.io.serverlessworkflow>
-    <version.io.smallrye-open-api>4.0.8</version.io.smallrye-open-api>
+    <version.io.smallrye-open-api>4.0.10</version.io.smallrye-open-api>
     <version.io.smallrye-config>3.11.4</version.io.smallrye-config>
     <version.org.awaitility>4.2.2</version.org.awaitility>
 
@@ -99,7 +99,7 @@
     <version.io.vertx>4.5.13</version.io.vertx>
     <version.io.grpc>1.69.1</version.io.grpc>
 
-    <version.io.quarkus.camel>3.20.0</version.io.quarkus.camel>
+    <version.io.quarkus.camel>3.20.1</version.io.quarkus.camel>
 
     <version.io.swagger.parser.v3>2.1.19</version.io.swagger.parser.v3>
     <version.io.swagger.core.v3>2.2.19</version.io.swagger.core.v3>
@@ -135,9 +135,9 @@
     <version.org.junit.jupiter>5.12.2</version.org.junit.jupiter>
     <version.org.junit.platform>1.12.2</version.org.junit.platform><!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.mockito>5.17.0</version.org.mockito>
-    <version.org.testcontainers>1.20.1</version.org.testcontainers>
+    <version.org.testcontainers>1.20.6</version.org.testcontainers>
     <version.org.xmlunit-core>2.10.0</version.org.xmlunit-core>
-    <version.io.rest-assured>5.5.0</version.io.rest-assured>
+    <version.io.rest-assured>5.5.1</version.io.rest-assured>
 
     <version.net.byte-buddy>1.15.11</version.net.byte-buddy>
 
