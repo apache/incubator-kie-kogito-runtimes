@@ -29,9 +29,6 @@ import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
-import org.kie.kogito.jobs.ExactExpirationTime;
-import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
@@ -50,9 +47,6 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
     private static final String PROCESS_NOT_FOUND = "Process with id %s not found";
     private static final String PROCESS_INSTANCE_NOT_FOUND = "Process instance with id %s not found";
     private static final String PROCESS_INSTANCE_NOT_IN_ERROR = "Process instance with id %s is not in error state";
-
-    // How to get jobService bean
-    private JobsService jobsService;
 
     private Supplier<Processes> processes;
 
@@ -313,34 +307,19 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
 
     public T doUpdateNodeInstanceSla(String processId, String processInstanceId, String nodeInstanceId, SlaPayload sla) {
         return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
-            // Update Node SLA
-            var jobId = processInstance.updateNodeInstanceSla(nodeInstanceId, Date.from(sla.getExpirationTime().toInstant()));
-            System.out.println(jobId);
-            // Update job expiration
-
-            //Requires timerId
-            var jobDescription = ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
-                    .id(jobId)
-                    .expirationTime(ExactExpirationTime.of(sla.getExpirationTime()))
-                    .processInstanceId(processInstanceId)
-                    .build();
-            var job = jobsService.rescheduleJob(jobDescription);
-            System.out.println(job);
-
-            if (processInstance.status() == ProcessInstance.STATE_ERROR) {
-                throw ProcessInstanceExecutionException.fromError(processInstance);
-            } else {
-                return buildOkResponse(processInstance.variables());
-            }
-
+            processInstance.updateNodeInstanceSla(nodeInstanceId, sla.getExpirationTime());
+            Map<String, Object> message = new HashMap<>();
+            message.put("message", nodeInstanceId + " sla due date updated");
+            return buildOkResponse(message);
         });
     }
 
     public T doUpdateProcessInstanceSla(String processId, String processInstanceId, SlaPayload sla) {
         return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
-            // Update Process SLA
-            // Update job expiration
-            return null;
+            processInstance.updateProcessInstanceSla(sla.getExpirationTime());
+            Map<String, Object> message = new HashMap<>();
+            message.put("message", processInstanceId + " sla due date updated");
+            return buildOkResponse(message);
         });
     }
 }

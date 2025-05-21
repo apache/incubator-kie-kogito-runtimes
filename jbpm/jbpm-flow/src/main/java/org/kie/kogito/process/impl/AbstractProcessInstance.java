@@ -19,6 +19,7 @@
 package org.kie.kogito.process.impl;
 
 import java.lang.reflect.Field;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -513,17 +514,24 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     @Override
-    public String updateNodeInstanceSla(String nodeInstanceId, Date slaDueDate) {
-        return processInstanceLockStrategy.executeOperation(id, () -> {
+    public void updateNodeInstanceSla(String nodeInstanceId, ZonedDateTime slaDueDate) {
+        processInstanceLockStrategy.executeOperation(id, () -> {
             NodeInstance nodeInstance = processInstance()
                     .getNodeInstances(true)
                     .stream()
                     .filter(ni -> ni.getStringId().equals(nodeInstanceId))
                     .findFirst()
                     .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
-            ((NodeInstanceImpl) nodeInstance).internalSetSlaDueDate(slaDueDate);
-            removeOnFinish();
-            return nodeInstance.getSlaTimerId();
+            ((NodeInstanceImpl) nodeInstance).updateSlaTimer(nodeInstanceId, slaDueDate);
+            return null;
+        });
+    }
+
+    @Override
+    public void updateProcessInstanceSla(ZonedDateTime slaDueDate) {
+        processInstanceLockStrategy.executeOperation(id, () -> {
+            ((WorkflowProcessInstanceImpl) processInstance).updateSlaTimer(slaDueDate);
+            return null;
         });
     }
 

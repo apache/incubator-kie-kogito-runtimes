@@ -19,6 +19,7 @@
 package org.jbpm.workflow.instance.node;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -277,6 +278,12 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
             dataType = new NamedDataType(variable.getName(), variable.getType());
         }
         return Collections.singleton(new BaseEventDescription(getEventType(), getNodeDefinitionId(), getNodeName(), "signal", getStringId(), getProcessInstance().getStringId(), dataType));
+    }
+
+    @Override
+    public void updateSlaTimer(String nodeInstanceId, ZonedDateTime slaDueDate) {
+        ((WorkflowProcessInstanceImpl) getProcessInstance()).updateSlaTimer(nodeInstanceId, slaTimerId, slaDueDate);
+        this.slaDueDate = Date.from(slaDueDate.toInstant());
     }
 
 }

@@ -96,7 +96,8 @@ public abstract class AbstractReactiveMessagingJobsService implements JobsServic
 
     @Override
     public String rescheduleJob(JobDescription jobDescription) {
-        return "";
+        cancelJob(jobDescription.id());
+        return scheduleJob(jobDescription);
     }
 
     protected Message<String> decorate(Message<String> message) {

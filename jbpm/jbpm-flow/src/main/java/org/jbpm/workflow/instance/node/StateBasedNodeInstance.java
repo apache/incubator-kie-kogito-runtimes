@@ -18,6 +18,7 @@
  */
 package org.jbpm.workflow.instance.node;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -466,5 +467,11 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
         KogitoProcessContext context = ContextFactory.fromNode(this);
         context.getContextData().put("Exception", e);
         return context;
+    }
+
+    @Override
+    public void updateSlaTimer(String nodeInstanceId, ZonedDateTime slaDueDate) {
+        ((WorkflowProcessInstanceImpl) getProcessInstance()).updateSlaTimer(nodeInstanceId, slaTimerId, slaDueDate);
+        this.slaDueDate = Date.from(slaDueDate.toInstant());
     }
 }

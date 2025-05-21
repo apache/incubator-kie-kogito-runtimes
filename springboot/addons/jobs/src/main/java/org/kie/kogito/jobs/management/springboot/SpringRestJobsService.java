@@ -104,6 +104,7 @@ public class SpringRestJobsService extends RestJobsService {
 
     @Override
     public String rescheduleJob(JobDescription jobDescription) {
+        // Do we need callback url
         LOGGER.debug("Job to be scheduled {} with callback URL {}", jobDescription, null);
         final Job job = buildJob(jobDescription, null);
         final HttpEntity<String> request = buildJobRequest(job);

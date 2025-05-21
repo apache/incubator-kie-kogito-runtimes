@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.process;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -267,8 +268,6 @@ public interface ProcessInstance<T> {
 
     void retriggerNodeInstance(String nodeInstanceId);
 
-    String updateNodeInstanceSla(String nodeInstanceId, Date slaDueDate);
-
     Set<EventDescription<?>> events();
 
     /**
@@ -288,4 +287,8 @@ public interface ProcessInstance<T> {
     long version();
 
     Optional<? extends Correlation<?>> correlation();
+
+    void updateNodeInstanceSla(String nodeInstanceId, ZonedDateTime slaDueDate);
+
+    void updateProcessInstanceSla(ZonedDateTime slaDueDate);
 }
