@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProcessInstancesTestUtils {
 
     public static <T> ProcessInstance<T> getFirst(ProcessInstances<T> processInstances) {
-        try (Stream<ProcessInstance<T>> stream = processInstances.stream()) {
+        try (Stream<ProcessInstance<T>> stream = processInstances.stream(ProcessInstanceReadMode.MUTABLE)) {
             return stream.findFirst().orElseThrow();
         }
     }
