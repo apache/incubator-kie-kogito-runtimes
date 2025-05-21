@@ -27,7 +27,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.state.KeyValueIterator;
-import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.apache.kafka.streams.state.KeyValueStore;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,7 +69,7 @@ public class KafkaProcessInstancesTest {
     Process process;
 
     @Mock
-    ReadOnlyKeyValueStore<String, byte[]> store;
+    KeyValueStore<String, byte[]> store;
 
     @Mock
     ProcessInstanceMarshallerService marshaller;

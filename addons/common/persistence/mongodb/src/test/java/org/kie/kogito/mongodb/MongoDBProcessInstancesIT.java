@@ -70,7 +70,7 @@ import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abort;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abortFirst;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
-import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirst;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirstReadOnly;
 
 @Testcontainers
 class MongoDBProcessInstancesIT {
@@ -285,7 +285,7 @@ class MongoDBProcessInstancesIT {
         processInstance.start();
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        ProcessInstance<BpmnVariables> pi = getFirst(instances);
+        ProcessInstance<BpmnVariables> pi = getFirstReadOnly(instances);
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
         abortFirst(instances);
         assertEmpty(instances);
