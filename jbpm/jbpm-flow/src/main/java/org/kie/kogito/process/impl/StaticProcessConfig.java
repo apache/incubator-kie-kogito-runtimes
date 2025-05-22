@@ -161,5 +161,10 @@ public class StaticProcessConfig implements ProcessConfig {
             ((DefaultProcessEventListenerConfig) StaticProcessConfig.this.processEventListenerConfig).register(listener);
             return this;
         }
+
+        public StaticProcessConfigBuilder withCalendar(BusinessCalendar businessCalendar) {
+            StaticProcessConfig.this.businessCalendar = businessCalendar;
+            return this;
+        }
     }
 }

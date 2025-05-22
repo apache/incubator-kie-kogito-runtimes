@@ -41,6 +41,7 @@ import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.workitem.builtin.SystemOutWorkItemHandler;
 import org.jbpm.test.utils.ProcessTestHelper;
+import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -135,7 +136,8 @@ public class CompensationTest extends JbpmBpmn2TestCase {
         Map<String, Object> params = new HashMap<>();
         params.put("x", "0");
         KogitoProcessInstance processInstance = kruntime.startProcess("CompensationEventSubProcess", params);
-
+        WorkflowProcessInstanceImpl pi = (WorkflowProcessInstanceImpl) processInstance;
+        pi.reconnect();
         assertProcessInstanceActive(processInstance.getStringId(), kruntime);
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);
         assertProcessVarValue(processInstance, "x", "1");
@@ -201,7 +203,8 @@ public class CompensationTest extends JbpmBpmn2TestCase {
         Map<String, Object> params = new HashMap<>();
         params.put("x", "0");
         KogitoProcessInstance processInstance = kruntime.startProcess("InSubSubProcess", params);
-
+        WorkflowProcessInstanceImpl pi = (WorkflowProcessInstanceImpl) processInstance;
+        pi.reconnect();
         kruntime.signalEvent("Compensation", "_C-2", processInstance.getStringId());
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItem().getStringId(), null);

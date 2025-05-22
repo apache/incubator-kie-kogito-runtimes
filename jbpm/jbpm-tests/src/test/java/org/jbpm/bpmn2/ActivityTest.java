@@ -178,6 +178,7 @@ import org.jbpm.workflow.core.impl.DataDefinition;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.Assignment;
 import org.jbpm.workflow.core.node.WorkItemNode;
+import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.DynamicUtils;
@@ -227,6 +228,7 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
+import static org.jbpm.test.utils.ProcessTestHelper.findRemovedInstance;
 
 public class ActivityTest extends JbpmBpmn2TestCase {
 
@@ -521,7 +523,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("ActorId")).isEqualTo("john");
-        instance.completeWorkItem(workItem.getStringId(), Collections.emptyMap(), SecurityPolicy.of("john", Collections.emptyList()));
+        instance.completeWorkItem(workItem.getStringId(), emptyMap(), SecurityPolicy.of("john", Collections.emptyList()));
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
@@ -539,7 +541,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("ActorId")).isEqualTo("john");
 
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john");
+        ProcessTestHelper.completeWorkItem(instance, emptyMap(), "john");
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
@@ -557,7 +559,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "mary");
+        ProcessTestHelper.completeWorkItem(instance, emptyMap(), "mary");
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
@@ -575,7 +577,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "bayron");
+        ProcessTestHelper.completeWorkItem(instance, emptyMap(), "bayron");
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
@@ -593,7 +595,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john", "IT");
+        ProcessTestHelper.completeWorkItem(instance, emptyMap(), "john", "IT");
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
@@ -611,7 +613,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john", "HR");
+        ProcessTestHelper.completeWorkItem(instance, emptyMap(), "john", "HR");
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
@@ -629,7 +631,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "bayron");
+        ProcessTestHelper.completeWorkItem(instance, emptyMap(), "bayron");
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
@@ -647,7 +649,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         try {
-            ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john", "HR");
+            ProcessTestHelper.completeWorkItem(instance, emptyMap(), "john", "HR");
         } catch (Throwable e) {
             assertThat(e).isInstanceOf(InvalidTransitionException.class);
         }
@@ -667,7 +669,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         try {
-            ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), null);
+            ProcessTestHelper.completeWorkItem(instance, emptyMap(), null);
         } catch (Throwable e) {
             assertThat(e).isInstanceOf(InvalidTransitionException.class);
         }
@@ -687,7 +689,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john");
+        ProcessTestHelper.completeWorkItem(instance, emptyMap(), "john");
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
@@ -705,7 +707,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "mary", "IT");
+        ProcessTestHelper.completeWorkItem(instance, emptyMap(), "mary", "IT");
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
@@ -723,7 +725,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "mary", "HR");
+        ProcessTestHelper.completeWorkItem(instance, emptyMap(), "mary", "HR");
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
@@ -741,7 +743,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "bayron");
+        ProcessTestHelper.completeWorkItem(instance, emptyMap(), "bayron");
 
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
@@ -787,8 +789,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "CustomTask", workItemHandler);
         org.kie.kogito.process.Process<SingleTaskWithVarDefModel> singleTaskWithVarDefModelProcess = SingleTaskWithVarDefProcess.newProcess(app);
-        SingleTaskWithVarDefModel singleTaskWithVarDefModel = singleTaskWithVarDefModelProcess.createModel();
-        ProcessInstance<SingleTaskWithVarDefModel> singleTaskWithVarDefModelProcessInstance = singleTaskWithVarDefModelProcess.createInstance(singleTaskWithVarDefModel);
+
         org.kie.kogito.process.Process<InputMappingUsingValueModel> processDefinition = InputMappingUsingValueProcess.newProcess(app);
         InputMappingUsingValueModel model = processDefinition.createModel();
         org.kie.kogito.process.ProcessInstance<InputMappingUsingValueModel> instance = processDefinition.createInstance(model);
@@ -800,8 +801,11 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         Object value = workItem.getParameter("TaskName");
         assertThat(value).isNotNull().isEqualTo("test string");
 
-        singleTaskWithVarDefModelProcessInstance.completeWorkItem(workItem.getStringId(), Collections.emptyMap());
-        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        ProcessInstance<SingleTaskWithVarDefModel> singleTaskWithVarDefModelProcessInstance = singleTaskWithVarDefModelProcess.instances().stream().findAny().orElse(null);
+        singleTaskWithVarDefModelProcessInstance.completeWorkItem(workItem.getStringId(), emptyMap());
+
+        assertThat(findRemovedInstance(app, instance.id()))
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -825,7 +829,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(processInstance.variables().getVar4()).isNotNull().hasToString("40");
         assertThat(processInstance.variables().getVar5()).isNotNull().hasToString("50");
 
-        ProcessTestHelper.completeWorkItem(processInstance, Collections.emptyMap(), "john");
+        ProcessTestHelper.completeWorkItem(processInstance, emptyMap(), "john");
         assertThat(processInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
@@ -1278,7 +1282,10 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         ProcessInstance<CallActivityWithBoundaryEventModel> processInstance = process.createInstance(model);
         processInstance.start();
         listener.waitTillCompleted(15000);
-        assertThat(processInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
+        assertThat(findRemovedInstance(app, processInstance.id()))
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+
         Collection<String> processNodes = process.findNodes(Objects::nonNull).stream().map(Node::getName).collect(Collectors.toSet());
         Collection<String> subProcessNodes = callActivitySubProcessWithBoundaryEventProcess.findNodes(Objects::nonNull).stream().map(Node::getName).collect(Collectors.toSet());
         assertThat(processNodes.containsAll(List.of("StartProcess",
@@ -1296,8 +1303,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         ProcessTestHelper.registerProcessEventListener(app, listener);
 
         org.kie.kogito.process.Process<CallActivitySubProcessWithBoundaryEventModel> callActivitySubProcessWithBoundaryEventProcess = CallActivitySubProcessWithBoundaryEventProcess.newProcess(app);
-        ProcessInstance<CallActivitySubProcessWithBoundaryEventModel> subProcessInstance =
-                callActivitySubProcessWithBoundaryEventProcess.createInstance(callActivitySubProcessWithBoundaryEventProcess.createModel());
+
         org.kie.kogito.process.Process<CallActivityProcessWithBoundaryEventModel> process = CallActivityProcessWithBoundaryEventProcess.newProcess(app);
         CallActivityProcessWithBoundaryEventModel model = process.createModel();
         ProcessInstance<CallActivityProcessWithBoundaryEventModel> processInstance = process.createInstance(model);
@@ -1306,8 +1312,14 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(processInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
         org.kie.kogito.internal.process.workitem.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
-        subProcessInstance.completeWorkItem(workItem.getStringId(), Collections.emptyMap());
-        assertThat(processInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
+        ProcessInstance<CallActivitySubProcessWithBoundaryEventModel> subProcessInstance = callActivitySubProcessWithBoundaryEventProcess.instances().stream().findAny().get();
+
+        subProcessInstance.completeWorkItem(workItem.getStringId(), emptyMap());
+
+        assertThat(findRemovedInstance(app, processInstance.id()))
+                .isPresent().get()
+                .extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
         assertThat(listener.tracked()).anyMatch(ProcessTestHelper.triggered("Call Activity 1"));
         assertThat(listener.tracked()).anyMatch(ProcessTestHelper.triggered("StartProcess"));
         assertThat(listener.tracked()).anyMatch(ProcessTestHelper.triggered("EndProcess"));
@@ -1349,7 +1361,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("ActorId")).isEqualTo("john");
-        instance.completeWorkItem(workItem.getStringId(), Collections.emptyMap(), SecurityPolicy.of("john", Collections.emptyList()));
+        instance.completeWorkItem(workItem.getStringId(), emptyMap(), SecurityPolicy.of("john", Collections.emptyList()));
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
@@ -1382,22 +1394,26 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         ProcessTestHelper.registerHandler(app, "task1", workItemHandler);
 
         org.kie.kogito.process.Process<CallActivitySubProcessBoundaryErrorModel> callActivitySubProcessBoundaryErrorProcess = CallActivitySubProcessBoundaryErrorProcess.newProcess(app);
-        ProcessInstance<CallActivitySubProcessBoundaryErrorModel> subProcessInstance = callActivitySubProcessBoundaryErrorProcess
-                .createInstance(callActivitySubProcessBoundaryErrorProcess.createModel());
         org.kie.kogito.process.Process<CallActivityProcessBoundaryErrorModel> process = CallActivityProcessBoundaryErrorProcess.newProcess(app);
+
         CallActivityProcessBoundaryErrorModel model = process.createModel();
         ProcessInstance<CallActivityProcessBoundaryErrorModel> processInstance = process.createInstance(model);
+
         processInstance.start();
 
         org.kie.kogito.internal.process.workitem.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
 
-        subProcessInstance.completeWorkItem(workItem.getStringId(), Collections.emptyMap());
+        ProcessInstance<CallActivitySubProcessBoundaryErrorModel> subProcessInstance = callActivitySubProcessBoundaryErrorProcess.instances().stream().findFirst().get();
+        subProcessInstance.completeWorkItem(workItem.getStringId(), emptyMap());
 
         workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
-        processInstance.completeWorkItem(workItem.getStringId(), Collections.emptyMap());
-        assertThat(processInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        processInstance.completeWorkItem(workItem.getStringId(), emptyMap());
+
+        assertThat(findRemovedInstance(app, processInstance.id()))
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+
         Collection<String> processNodes = process.findNodes(Objects::nonNull).stream().map(Node::getName).collect(Collectors.toSet());
         Collection<String> subProcessNodes = callActivitySubProcessBoundaryErrorProcess.findNodes(Objects::nonNull).stream()
                 .map(Node::getName).collect(Collectors.toSet());
@@ -1677,7 +1693,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
         org.kie.kogito.internal.process.workitem.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
-        instance.completeWorkItem(workItem.getStringId(), Collections.emptyMap());
+        instance.completeWorkItem(workItem.getStringId(), emptyMap());
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
@@ -1804,7 +1820,8 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         childInstance.abort();
 
         assertThat(child.instances().stream().count()).isEqualTo(0);
-        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(findRemovedInstance(app, instance.id()))
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
     }
 
     @Test
@@ -1997,7 +2014,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         processInstance.start();
         assertThat(processInstance.variables().getX()).isEqualTo("Entry");
         assertThat(processInstance.variables().getY()).isNull();
-        ProcessTestHelper.completeWorkItem(processInstance, Collections.emptyMap());
+        ProcessTestHelper.completeWorkItem(processInstance, emptyMap());
         assertThat(processInstance.variables().getY()).isEqualTo("Exit");
         assertThat(processInstance.variables().getSurname()).isEqualTo("tester");
         Set<String> nodes = tracker.tracked().stream().map(event -> event.getNodeInstance().getNodeName()).collect(Collectors.toSet());
@@ -2073,7 +2090,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         org.kie.kogito.internal.process.workitem.KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         assertThat(workItem.getParameter("ActorId")).isEqualTo("krisv");
-        instance.completeWorkItem(workItem.getStringId(), Collections.emptyMap());
+        instance.completeWorkItem(workItem.getStringId(), emptyMap());
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
@@ -2083,9 +2100,9 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
         org.kie.kogito.process.Process<SubprocessGroupAssignmentModel> subprocessGroupAssignmentProcess = SubprocessGroupAssignmentProcess.newProcess(app);
-        SubprocessGroupAssignmentModel subprocessGroupAssignmentModel = subprocessGroupAssignmentProcess.createModel();
-        ProcessInstance<SubprocessGroupAssignmentModel> subprocessGroupAssignmentProcessInstance = subprocessGroupAssignmentProcess.createInstance(subprocessGroupAssignmentModel);
+
         org.kie.kogito.process.Process<MainGroupAssignmentModel> processDefinition = MainGroupAssignmentProcess.newProcess(app);
+
         MainGroupAssignmentModel model = processDefinition.createModel();
         org.kie.kogito.process.ProcessInstance<MainGroupAssignmentModel> instance = processDefinition.createInstance(model);
         instance.start();
@@ -2095,9 +2112,12 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         workItems.forEach(workItem -> {
             assertThat(workItem).isNotNull();
             assertThat(workItem.getParameter("GroupId")).isEqualTo("GRUPA TESTOWA");
-            subprocessGroupAssignmentProcessInstance.completeWorkItem(workItem.getStringId(), Collections.emptyMap());
+            ProcessInstance<SubprocessGroupAssignmentModel> subprocessGroupAssignmentProcessInstance = subprocessGroupAssignmentProcess.instances()
+                    .stream().findFirst().get();
+            subprocessGroupAssignmentProcessInstance.completeWorkItem(workItem.getStringId(), emptyMap());
         });
-        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(findRemovedInstance(app, instance.id()))
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test

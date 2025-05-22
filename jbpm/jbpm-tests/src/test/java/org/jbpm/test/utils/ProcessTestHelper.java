@@ -22,12 +22,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.jbpm.bpmn2.support.TestInMemoryProcessInstances;
+import org.jbpm.bpmn2.support.InMemoryProcessInstancesFactory;
+import org.jbpm.bpmn2.support.TrackStateProcessListener;
+import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.api.event.process.ProcessNodeEvent;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
@@ -41,11 +44,8 @@ import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
-import org.kie.kogito.process.MutableProcessInstances;
-import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.bpmn2.BpmnProcesses;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
@@ -71,18 +71,20 @@ public class ProcessTestHelper {
 
     public static Application newApplication(ProcessConfig staticConfig) {
         BpmnProcesses bpmnProcesses = new BpmnProcesses();
-        bpmnProcesses.setProcessInstancesFactory(new ProcessInstancesFactory() {
-
-            @Override
-            public MutableProcessInstances<?> createProcessInstances(Process<?> process) {
-                return (MutableProcessInstances<?>) new TestInMemoryProcessInstances((Process) process);
-            }
-
-        });
+        bpmnProcesses.setProcessInstancesFactory(new InMemoryProcessInstancesFactory());
         InMemoryJobContext context = new InMemoryJobContext(null, staticUnitOfWorkManager(), bpmnProcesses, null);
         staticJobService().clearJobExecutorFactories();
         staticJobService().registerJobExecutorFactory(new InMemoryProcessJobExecutorFactory(context));
-        return new StaticApplication(new StaticConfig(Addons.EMTPY, staticConfig), bpmnProcesses);
+        Application app = new StaticApplication(new StaticConfig(Addons.EMTPY, staticConfig), bpmnProcesses);
+        ((DefaultProcessEventListenerConfig) app.config().get(ProcessConfig.class).processEventListeners()).register(new TrackStateProcessListener());
+        return app;
+    }
+
+    public static Optional<WorkflowProcessInstance> findRemovedInstance(Application app, String processInstanceId) {
+        TrackStateProcessListener trackStateProcessListener = (TrackStateProcessListener) ((DefaultProcessEventListenerConfig) app.config()
+                .get(ProcessConfig.class).processEventListeners()).listeners().stream()
+                        .filter(TrackStateProcessListener.class::isInstance).findFirst().get();
+        return Optional.ofNullable(trackStateProcessListener.findCompletedProcessInstance(processInstanceId));
     }
 
     public static <R, T extends Model> R executeInWorkflowState(ProcessInstance<T> processInstance, Function<WorkflowProcessInstanceImpl, R> executionUnit) {

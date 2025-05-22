@@ -115,6 +115,7 @@ import org.jbpm.process.workitem.builtin.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
 import org.jbpm.test.utils.ProcessTestHelper;
+import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.ProcessStartedEvent;
@@ -133,6 +134,7 @@ import org.w3c.dom.Document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.jbpm.test.utils.ProcessTestHelper.findRemovedInstance;
 
 public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
 
@@ -401,7 +403,8 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         instanceTimer.start();
         assertThat(instanceTimer.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
         assertThat(countDownListener.waitTillCompleted()).isTrue();
-        assertThat(instanceTimer.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(ProcessTestHelper.findRemovedInstance(app, instanceTimer.id()))
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -548,7 +551,8 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         assertThat(processInstance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
         countDownListener.waitTillCompleted();
         processEventListener.waitTillCompleted();
-        assertThat(processInstance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(findRemovedInstance(app, processInstance.id()))
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -570,7 +574,8 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         countDownListener.waitTillCompleted();
         processEventListener.waitTillCompleted();
 
-        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(ProcessTestHelper.findRemovedInstance(app, instance.id()))
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -708,7 +713,8 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         boolean processCompleted = processEventListener.waitTillCompleted();
         assertThat(timerCompleted).isTrue();
         assertThat(processCompleted).isTrue();
-        assertThat(instance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(findRemovedInstance(app, instance.id()))
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
