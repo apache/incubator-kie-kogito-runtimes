@@ -356,6 +356,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         });
     }
 
+    public void reload() {
+        executeInWorkflowProcessInstance(Function.identity());
+    }
+
     @Override
     public int status() {
         return delegateIfPresent(status, p -> p.getState());

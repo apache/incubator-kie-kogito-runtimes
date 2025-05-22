@@ -123,6 +123,10 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         if (getSubProcessNode() != null && getSubProcessNode().isIndependent()) {
             return;
         }
+        // not subprocess attached (before completion)
+        if (processInstanceId == null) {
+            return;
+        }
 
         KogitoProcessRuntime kruntime = (KogitoProcessRuntime) ((ProcessInstance) getProcessInstance()).getKnowledgeRuntime();
         Optional<AbstractProcessInstance> pi =
@@ -173,6 +177,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     }
 
     public void processInstanceCompleted(ProcessInstance processInstance) {
+        processInstanceId = null;
         removeEventListeners();
         handleOutMappings(processInstance);
         if (processInstance.getState() == KogitoProcessInstance.STATE_ABORTED) {

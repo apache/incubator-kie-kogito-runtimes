@@ -252,10 +252,13 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
                                 if (instance != null) {
                                     return (AbstractProcessInstance<T>) instance.unwrap();
                                 }
-                                pi.internalLoadProcessInstanceState();
                                 return pi;
                             })
-                            .filter(e -> List.of(e.processInstance.getEventTypes()).contains(eventType))
+                            .map(e -> (AbstractProcessInstance<T>) e)
+                            .filter(e -> {
+                                List<String> eventTypes = e.executeInWorkflowProcessInstanceRead(w -> List.of(w.getEventTypes()));
+                                return eventTypes.contains(eventType);
+                            })
                             .map(e -> (ProcessInstance<T>) e)
                             .toList();
                     return list;

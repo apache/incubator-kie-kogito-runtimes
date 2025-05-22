@@ -673,7 +673,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                         addErrorMessage(process,
                                 node,
                                 errors,
-                                "Boundary event missing variable in data assignment");
+                                "Boundary event missing variable in data sssassignment");
                     }
 
                     if (eventNode.getMetaData(MESSAGE_TYPE) == null) {

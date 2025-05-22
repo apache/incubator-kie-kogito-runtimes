@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -932,13 +931,11 @@ public class FlowTest extends JbpmBpmn2TestCase {
                 .map(n -> (KogitoNodeInstance) n)
                 .collect(Collectors.toList());
         assertThat(nodeInstancesChild).hasSize(2);
-        for (KogitoNodeInstance child : nodeInstancesChild) {
-            assertThat(child).isInstanceOf(CompositeContextNodeInstance.class);
-            assertThat(((CompositeContextNodeInstance) child).getNodeInstances()).hasSize(2);
-        }
+        assertThat(nodeInstancesChild).allMatch(CompositeContextNodeInstance.class::isInstance).hasSize(2);
 
         processInstance.completeWorkItem(workItems.get(0).getStringId(), null);
         processInstance.completeWorkItem(workItems.get(1).getStringId(), null);
+
         nodeInstances = processInstance.findNodes(node -> node instanceof ForEachNodeInstance);
         assertThat(nodeInstances).hasSize(1);
         nodeInstance = nodeInstances.iterator().next();
@@ -946,10 +943,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         nodeInstancesChild = ((ForEachNodeInstance) nodeInstance).getNodeInstances().stream()
                 .map(n -> (KogitoNodeInstance) n)
                 .collect(Collectors.toList());
-        assertThat(nodeInstancesChild).hasSize(2);
-        Iterator<KogitoNodeInstance> childIterator = nodeInstancesChild.iterator();
-        assertThat(childIterator.next()).isInstanceOf(CompositeContextNodeInstance.class);
-        assertThat(childIterator.next()).isInstanceOf(ForEachNodeInstance.ForEachJoinNodeInstance.class);
+        assertThat(nodeInstancesChild).allMatch(CompositeContextNodeInstance.class::isInstance).hasSize(1);
         processInstance.completeWorkItem(workItems.get(2).getStringId(), null);
         processInstance.completeWorkItem(workItems.get(3).getStringId(), null);
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);

@@ -18,32 +18,26 @@
  */
 package org.jbpm.bpmn2.support;
 
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessInstance;
+import org.jbpm.workflow.instance.WorkflowProcessInstance;
+import org.kie.api.event.process.ProcessCompletedEvent;
 
-public class TestInMemoryProcessInstances<T> extends InMemoryProcessInstances<T> {
+public class TrackStateProcessListener extends org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener {
 
-    private final ConcurrentMap<String, byte[]> removedInstances = new ConcurrentHashMap<>();
+    List<WorkflowProcessInstance> instances;
 
-    public TestInMemoryProcessInstances(Process<T> process) {
-        super(process);
+    public TrackStateProcessListener() {
+        instances = new ArrayList<>();
     }
 
     @Override
-    public void remove(String id) {
-        byte[] data = getInstances().remove(id);
-        if (data != null) {
-            removedInstances.put(id, data);
-        }
+    public void afterProcessCompleted(ProcessCompletedEvent event) {
+        instances.add((WorkflowProcessInstance) event.getProcessInstance());
     }
 
-    public Optional<ProcessInstance<T>> findDeletedById(String id) {
-        byte[] data = removedInstances.remove(id);
-        return Optional.of((ProcessInstance<T>) getMarshaller().unmarshallProcessInstance(data, getProcess(), true));
+    public WorkflowProcessInstance findCompletedProcessInstance(String id) {
+        return instances.stream().filter(e -> e.getStringId().equals(id)).findAny().orElse(null);
     }
-
 }

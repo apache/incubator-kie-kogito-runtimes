@@ -97,7 +97,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
     @Override
     public void remove(String id) {
         LOGGER.info("remove instance {} for {}", id, process.id());
-
+        instances.remove(id);
     }
 
     @Override
