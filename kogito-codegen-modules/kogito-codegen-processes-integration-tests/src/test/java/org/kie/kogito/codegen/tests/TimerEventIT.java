@@ -98,7 +98,7 @@ public class TimerEventIT extends AbstractCodegenIT {
         assertThat(listener.waitTillCompleted(TIME_OUT)).isTrue();
         assertThat(processEventListener.waitTillCompleted(TIME_OUT)).isTrue();
 
-        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test
@@ -125,7 +125,7 @@ public class TimerEventIT extends AbstractCodegenIT {
 
         assertThat(listener.waitTillCompleted(TIME_OUT)).isTrue();
         assertThat(processEventListener.waitTillCompleted(TIME_OUT)).isTrue();
-        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test
@@ -150,7 +150,7 @@ public class TimerEventIT extends AbstractCodegenIT {
 
         assertThat(listener.waitTillCompleted(TIME_OUT)).isTrue();
         assertThat(processEventListener.waitTillCompleted(TIME_OUT)).isTrue();
-        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test
@@ -175,7 +175,7 @@ public class TimerEventIT extends AbstractCodegenIT {
 
         assertThat(listener.waitTillCompleted(TIME_OUT)).isTrue();
         assertThat(processEventListener.waitTillCompleted(TIME_OUT)).isTrue();
-        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test
@@ -202,7 +202,7 @@ public class TimerEventIT extends AbstractCodegenIT {
 
         assertThat(listener.waitTillCompleted(TIME_OUT)).isTrue();
         assertThat(processEventListener.waitTillCompleted(TIME_OUT)).isTrue();
-        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test
@@ -227,7 +227,7 @@ public class TimerEventIT extends AbstractCodegenIT {
 
         assertThat(listener.waitTillCompleted(TIME_OUT)).isTrue();
         assertThat(processEventListener.waitTillCompleted(TIME_OUT)).isTrue();
-        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test

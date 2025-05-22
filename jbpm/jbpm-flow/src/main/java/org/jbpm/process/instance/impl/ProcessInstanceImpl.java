@@ -295,7 +295,6 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
     @Override
     public void disconnect() {
         ((InternalProcessRuntime) kruntime.getProcessRuntime()).getProcessInstanceManager().internalRemoveProcessInstance(this);
-        kruntime = null;
     }
 
     @Override

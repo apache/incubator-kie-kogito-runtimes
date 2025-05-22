@@ -137,6 +137,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         if (Objects.nonNull(correlation)) {
             this.correlationInstance = Optional.of(process.correlations().create(correlation, id()));
         }
+        syncPersistence((WorkflowProcessInstanceImpl) workflowProcessInstance);
     }
 
     /**
@@ -535,11 +536,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             if (isProcessInstanceConnected()) {
                 getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
             }
-            int oldState = workflowProcessInstance.getState();
             R outcome = execution.apply(workflowProcessInstance);
             syncWorkflowInstanceState(workflowProcessInstance);
             if (isProcessInstanceConnected()) {
-                syncPersistence(oldState, workflowProcessInstance);
+                syncPersistence(workflowProcessInstance);
                 getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
             }
             internalUnloadProcessInstanceState();
@@ -673,29 +673,21 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         });
     }
 
-    protected void syncPersistence(int oldWorkflowProcessInstanceState, WorkflowProcessInstanceImpl workflowProcessInstanceImpl) {
-        List<Integer> inactive = List.of(KogitoProcessInstance.STATE_ABORTED, KogitoProcessInstance.STATE_COMPLETED);
-
-        // if the load  supplier is null means is not yet managed by the persistence tier
-        // so we need to create it
-        if (reloadSupplier == null) {
-            if (!inactive.contains(workflowProcessInstanceImpl.getState())) {
-                // the process is not finished so we store it for the first time
-                ((MutableProcessInstances<T>) process.instances()).create(this.id(), this);
-            }
-            return;
-        }
-
+    protected void syncPersistence(WorkflowProcessInstanceImpl workflowProcessInstanceImpl) {
         switch (workflowProcessInstanceImpl.getState()) {
             case KogitoProcessInstance.STATE_ABORTED, KogitoProcessInstance.STATE_COMPLETED:
                 correlationInstance.map(CorrelationInstance::getCorrelation).ifPresent(c -> process.correlations().delete(c));
                 ((MutableProcessInstances<T>) process.instances()).remove(this.id());
                 break;
+            case KogitoProcessInstance.STATE_PENDING:
+                if (reloadSupplier == null) {
+                    ((MutableProcessInstances<T>) process.instances()).create(this.id(), this);
+                } else {
+                    ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
+                }
+                break;
             case KogitoProcessInstance.STATE_ACTIVE, KogitoProcessInstance.STATE_ERROR, KogitoProcessInstance.STATE_SUSPENDED:
                 ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
-                break;
-            case KogitoProcessInstance.STATE_PENDING:
-                ((MutableProcessInstances<T>) process.instances()).create(this.id(), this);
                 break;
         }
     }
