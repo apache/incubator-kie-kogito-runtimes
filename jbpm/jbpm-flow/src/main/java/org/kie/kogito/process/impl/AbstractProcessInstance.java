@@ -136,7 +136,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         if (Objects.nonNull(correlation)) {
             this.correlationInstance = Optional.of(process.correlations().create(correlation, id()));
         }
-        syncPersistence((WorkflowProcessInstanceImpl) workflowProcessInstance);
     }
 
     /**
@@ -287,6 +286,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void start(String trigger, String referenceId, Map<String, List<String>> headers) {
         executeInWorkflowProcessInstanceWrite(pi -> {
+            syncPersistence((WorkflowProcessInstanceImpl) pi);
             if (pi.getState() != KogitoProcessInstance.STATE_PENDING) {
                 throw new IllegalStateException("Impossible to start process instance that already has started");
             }
@@ -442,6 +442,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void startFrom(String nodeId, String referenceId, Map<String, List<String>> headers) {
         executeInWorkflowProcessInstanceWrite(pi -> {
+            syncPersistence((WorkflowProcessInstanceImpl) pi);
             pi.setStartDate(new Date());
             pi.setState(STATE_ACTIVE);
             getProcessRuntime().getProcessInstanceManager().addProcessInstance(pi);
