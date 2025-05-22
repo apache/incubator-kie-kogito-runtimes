@@ -31,6 +31,7 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.SignalFactory;
+import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.usertask.UserTaskConfig;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTasks;
@@ -122,6 +123,7 @@ public class GatewayIT extends AbstractCodegenIT {
         offer.setSalary(50000);
         userTaskInstance_1.transition(COMPLETE, Map.of("Offer", offer), IdentityProviders.of("mary"));
 
+        ((AbstractProcessInstance) processInstance).reload();
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
 }
