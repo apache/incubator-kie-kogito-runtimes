@@ -26,6 +26,8 @@ import org.kie.kogito.jobs.api.JobCallbackPayload;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.services.jobs.impl.TriggerJobCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,7 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.jbpm.compiler.canonical.RuleUnitHandler.logger;
 import static org.kie.kogito.jobs.JobDescription.JOBS_CALLBACK_URI;
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.JOBS_CALLBACK_POST_URI;
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.LIMIT;
@@ -51,6 +52,8 @@ import static org.kie.kogito.jobs.api.JobCallbackResourceDef.TIMER_ID;
 @RestController
 @RequestMapping(JOBS_CALLBACK_URI)
 public class CallbackJobsServiceResource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CallbackJobsServiceResource.class);
 
     @Autowired
     Processes processes;
@@ -82,7 +85,7 @@ public class CallbackJobsServiceResource {
                 JobCallbackPayload jobPayload = objectMapper.readValue(payload, JobCallbackPayload.class);
                 correlationId = jobPayload.getCorrelationId();
             } catch (Exception e) {
-                logger.warn("Payload parsing error", e);
+                LOGGER.warn("Payload parsing error", e);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload format. Please check the request body.");
             }
         }

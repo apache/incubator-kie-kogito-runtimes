@@ -28,13 +28,12 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+import org.drools.util.PathUtils;
 import org.kie.kogito.svg.dataindex.DataIndexClient;
 import org.kie.kogito.svg.dataindex.NodeInstance;
 import org.kie.kogito.svg.processor.SVGProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.drools.util.PortablePath;
 
 import static java.util.stream.Collectors.toList;
 
@@ -71,7 +70,7 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
         if (svgResourcesPath.isPresent()) {
             Path baseDir = Paths.get(svgResourcesPath.get());
             try {
-                Path path = getPath(processId, baseDir);
+                Path path = PathUtils.getSecuredPath(baseDir, processId);
                 if (Files.notExists(path) || !Files.isRegularFile(path) || !path.toRealPath().startsWith(baseDir.toRealPath())) {
                     LOGGER.debug("Could not find {}.svg file in folder {}", processId, svgResourcesPath.get());
                     return Optional.empty();
@@ -83,10 +82,6 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
         } else {
             return readFileContentFromClassPath(processId + ".svg");
         }
-    }
-
-    private static Path getPath(String processId, Path baseDir) {
-        return PortablePath.resolveInternal(baseDir, processId + ".svg").toPath();
     }
 
     protected Optional<String> readFileContentFromClassPath(String fileName) {

@@ -70,7 +70,7 @@ public abstract class ProcessSvgServiceTest {
 
         assertThatExceptionOfType(SecurityException.class)
                 .isThrownBy(() -> getTestedProcessSvgService().getProcessSvg("UnexistingProcessId"))
-                .withMessageContaining("Attempted path traversal");
+                .withMessageContaining("Path traversal attempt detected");
     }
 
     @Test

@@ -240,7 +240,7 @@ class FileSystemProcessInstancesTest {
 
         assertThatExceptionOfType(SecurityException.class)
                 .isThrownBy(() -> fsInstances.findById("../hack"))
-                .withMessageContaining("Attempted path traversal");
+                .withMessageContaining("Path traversal attempt detected");
     }
 
     @Test
@@ -251,7 +251,7 @@ class FileSystemProcessInstancesTest {
         pi.start();
         assertThatExceptionOfType(SecurityException.class)
                 .isThrownBy(() -> fsInstances.create("../malicious", pi))
-                .withMessageContaining("Attempted path traversal");
+                .withMessageContaining("Path traversal attempt detected");
     }
 
     @Test
@@ -262,7 +262,7 @@ class FileSystemProcessInstancesTest {
         pi.start();
         assertThatExceptionOfType(SecurityException.class)
                 .isThrownBy(() -> fsInstances.update("../../invalid", pi))
-                .withMessageContaining("Attempted path traversal");
+                .withMessageContaining("Path traversal attempt detected");
     }
 
     @Test
@@ -272,7 +272,7 @@ class FileSystemProcessInstancesTest {
 
         assertThatExceptionOfType(SecurityException.class)
                 .isThrownBy(() -> fsInstances.remove("../../../etc/passwd"))
-                .withMessageContaining("Attempted path traversal");
+                .withMessageContaining("Path traversal attempt detected");
     }
 
     private static class FileSystemProcessInstancesFactory extends AbstractProcessInstancesFactory {
