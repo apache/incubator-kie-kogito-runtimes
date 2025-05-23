@@ -105,6 +105,7 @@ public class DynamicNodeInstance extends CompositeContextNodeInstance {
         super.addEventListeners();
         getProcessInstance().getKnowledgeRuntime().getProcessRuntime().addEventListener(activationEventListener);
         getProcessInstance().getKnowledgeRuntime().getProcessRuntime().addEventListener(completeEventListener);
+
     }
 
     @Override
@@ -132,6 +133,7 @@ public class DynamicNodeInstance extends CompositeContextNodeInstance {
 
     @Override
     public void triggerCompleted(String outType) {
+        setState(KogitoProcessInstance.STATE_COMPLETED);
         if (getProcessInstance().getKnowledgeRuntime().getAgenda() != null) {
             ((InternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda()).getAgendaGroupsManager()
                     .deactivateRuleFlowGroup(getRuleFlowGroupName());

@@ -221,6 +221,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 
@@ -2099,23 +2100,38 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
-        org.kie.kogito.process.Process<SubprocessGroupAssignmentModel> subprocessGroupAssignmentProcess = SubprocessGroupAssignmentProcess.newProcess(app);
 
         org.kie.kogito.process.Process<MainGroupAssignmentModel> processDefinition = MainGroupAssignmentProcess.newProcess(app);
+        org.kie.kogito.process.Process<SubprocessGroupAssignmentModel> subprocessGroupAssignmentProcess = SubprocessGroupAssignmentProcess.newProcess(app);
 
         MainGroupAssignmentModel model = processDefinition.createModel();
         org.kie.kogito.process.ProcessInstance<MainGroupAssignmentModel> instance = processDefinition.createInstance(model);
         instance.start();
 
+        ProcessInstance<SubprocessGroupAssignmentModel> subInstance = subprocessGroupAssignmentProcess.instances().stream().findFirst().get();
         assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
-        List<org.kie.kogito.internal.process.workitem.KogitoWorkItem> workItems = workItemHandler.getWorkItems();
-        workItems.forEach(workItem -> {
+        assertThat(subInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        List<WorkItem> workItems = subInstance.workItems();
+        assertThat(workItems).hasSize(1);
+        for (WorkItem workItem : workItems) {
             assertThat(workItem).isNotNull();
-            assertThat(workItem.getParameter("GroupId")).isEqualTo("GRUPA TESTOWA");
-            ProcessInstance<SubprocessGroupAssignmentModel> subprocessGroupAssignmentProcessInstance = subprocessGroupAssignmentProcess.instances()
-                    .stream().findFirst().get();
-            subprocessGroupAssignmentProcessInstance.completeWorkItem(workItem.getStringId(), emptyMap());
-        });
+            assertThat(workItem.getParameters().get("GroupId")).isEqualTo("GRUPA TESTOWA");
+            subInstance.completeWorkItem(workItem.getId(), emptyMap());
+        }
+        assertThat(subInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
+        subInstance = subprocessGroupAssignmentProcess.instances().stream().findFirst().get();
+        assertThat(instance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        assertThat(subInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        workItems = subInstance.workItems();
+        assertThat(workItems).hasSize(1);
+        for (WorkItem workItem : workItems) {
+            assertThat(workItem).isNotNull();
+            assertThat(workItem.getParameters().get("GroupId")).isEqualTo("GRUPA TESTOWA");
+            subInstance.completeWorkItem(workItem.getId(), emptyMap());
+        }
+        assertThat(subInstance).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
         assertThat(findRemovedInstance(app, instance.id()))
                 .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
