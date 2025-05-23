@@ -36,7 +36,6 @@ import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceDuplicatedException;
-import org.kie.kogito.process.ProcessInstanceNotFoundException;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 
@@ -121,11 +120,9 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     @SuppressWarnings("unchecked")
     @Override
     public void update(String id, ProcessInstance instance) {
-        if (isActive(instance)) {
+        if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
             Path processInstanceStorage = PathUtils.getSecuredPath(storage, id);
-            if (Files.notExists(processInstanceStorage) || !Files.isRegularFile(processInstanceStorage)) {
-                throw new ProcessInstanceNotFoundException(id);
-            } else {
+            if (Files.exists(processInstanceStorage)) {
                 storeProcessInstance(processInstanceStorage, instance);
                 connectInstance(processInstanceStorage, instance);
             }

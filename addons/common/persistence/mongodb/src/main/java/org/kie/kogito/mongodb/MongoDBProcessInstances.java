@@ -110,7 +110,7 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
 
     @Override
     public void update(String id, ProcessInstance<T> instance) {
-        if (isActive(instance)) {
+        if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
             updateStorage(id, instance, false);
         }
     }
