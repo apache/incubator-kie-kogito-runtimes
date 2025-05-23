@@ -19,11 +19,7 @@
 package org.jbpm.workflow.instance.node;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
@@ -40,6 +36,7 @@ import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.jobs.TimerDescription;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
@@ -279,4 +276,18 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
         return Collections.singleton(new BaseEventDescription(getEventType(), getNodeDefinitionId(), getNodeName(), "signal", getStringId(), getProcessInstance().getStringId(), dataType));
     }
 
+    @Override
+    public Collection<TimerDescription> timers() {
+        if (slaTimerId == null) {
+            return super.timers();
+        }
+
+        Collection<TimerDescription> toReturn = super.timers();
+        TimerDescription slaTimer = TimerDescription.Builder.ofNodeInstance(this)
+                .timerId(slaTimerId)
+                .timerDescription("[SLA] " + resolveExpression(getNodeName()))
+                .build();
+        toReturn.add(slaTimer);
+        return toReturn;
+    }
 }

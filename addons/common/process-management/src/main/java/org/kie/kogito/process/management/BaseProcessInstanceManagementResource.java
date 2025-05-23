@@ -237,11 +237,6 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
                 return badRequestResponse(String.format("Failure getting timers for node instance '%s' from proces instance '%s', node instance couldn't be found", nodeInstanceId, processInstanceId));
             }
 
-            if (nodeInstances.size() > 1) {
-                return badRequestResponse(String.format("Failure getting timers for node instance '%s' from proces instance '%s', unexpected number of node instances found (%s)", nodeInstanceId,
-                        processInstanceId, nodeInstances.size()));
-            }
-
             return buildOkResponse(nodeInstances.iterator().next().timers());
         });
     }

@@ -155,17 +155,16 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
 
     @Override
     public Collection<TimerDescription> timers() {
-
-        if (this.timerId != null) {
-            Collection<TimerDescription> toReturn = super.timers();
-            TimerDescription timerDescription = TimerDescription.Builder.ofNodeInstance(this)
-                    .timerId(timerId)
-                    .timerDescription(resolveExpression(getNodeName()))
-                    .build();
-            toReturn.add(timerDescription);
-            return toReturn;
+        if (this.timerId == null) {
+            return super.timers();
         }
 
-        return super.timers();
+        Collection<TimerDescription> toReturn = super.timers();
+        TimerDescription timerDescription = TimerDescription.Builder.ofNodeInstance(this)
+                .timerId(timerId)
+                .timerDescription(resolveExpression(getNodeName()))
+                .build();
+        toReturn.add(timerDescription);
+        return toReturn;
     }
 }

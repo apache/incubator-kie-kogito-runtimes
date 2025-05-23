@@ -86,6 +86,11 @@ public interface KogitoWorkflowProcessInstance extends WorkflowProcessInstance, 
      */
     Collection<Milestone> milestones();
 
+    /**
+     * Returns the timers associated with the process instance.
+     *
+     * @return a collection of {@link TimerDescription} instances representing the timers for the process instance, never null.
+     */
     Collection<TimerDescription> timers();
 
     /**

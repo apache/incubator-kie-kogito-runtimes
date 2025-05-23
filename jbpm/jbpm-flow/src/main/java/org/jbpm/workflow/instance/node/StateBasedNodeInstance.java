@@ -462,11 +462,18 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
     @Override
     public Collection<TimerDescription> timers() {
+        Collection<TimerDescription> toReturn = super.timers();
+
+        if (slaTimerId != null) {
+            TimerDescription slaTimer = TimerDescription.Builder.ofNodeInstance(this)
+                    .timerId(slaTimerId)
+                    .timerDescription("[SLA] " + resolveExpression(getNodeName()))
+                    .build();
+            toReturn.add(slaTimer);
+        }
+
         if (timerInstancesReference != null) {
-            Collection<TimerDescription> toReturn = super.timers();
-
             Set<Timer> nodeTimers = getEventBasedNode().getTimers().keySet();
-
             for (Timer timer : nodeTimers) {
                 Optional<String> jobIdOptional = timerInstancesReference.entrySet()
                         .stream()
@@ -482,9 +489,8 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                     toReturn.add(timerDescription);
                 });
             }
-            return toReturn;
         }
 
-        return super.timers();
+        return toReturn;
     }
 }

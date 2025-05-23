@@ -85,5 +85,10 @@ public interface KogitoNodeInstance extends NodeInstance {
      */
     boolean isRetrigger();
 
+    /**
+     * Returns the timers associated with this node instance.
+     * 
+     * @return a collection of {@link TimerDescription} instances, never null.
+     */
     Collection<TimerDescription> timers();
 }

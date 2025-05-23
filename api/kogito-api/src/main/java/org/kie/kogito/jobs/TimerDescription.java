@@ -21,6 +21,9 @@ package org.kie.kogito.jobs;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 
+/**
+ * A description of a timer scheduled either by a ProcessInstance or a NodeInstance.
+ */
 public class TimerDescription {
 
     private final String processId;

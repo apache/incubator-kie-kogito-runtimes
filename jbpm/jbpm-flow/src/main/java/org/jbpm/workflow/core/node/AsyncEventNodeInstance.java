@@ -20,7 +20,6 @@ package org.jbpm.workflow.core.node;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -167,19 +166,20 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
     @Override
     public Collection<TimerDescription> timers() {
-        if (jobId != null) {
-            Collection<TimerDescription> toReturn = new ArrayList<>(super.timers());
-
-            TimerDescription timerDescription = TimerDescription.Builder.ofNodeInstance(this)
-                    .timerId(this.jobId)
-                    .timerDescription(resolveExpression(getNodeName()))
-                    .build();
-
-            toReturn.add(timerDescription);
-
-            return toReturn;
+        if (jobId == null) {
+            return super.timers();
         }
-        return super.timers();
+
+        Collection<TimerDescription> toReturn = super.timers();
+
+        TimerDescription timerDescription = TimerDescription.Builder.ofNodeInstance(this)
+                .timerId(this.jobId)
+                .timerDescription(resolveExpression(getNodeName()))
+                .build();
+
+        toReturn.add(timerDescription);
+
+        return toReturn;
     }
 
     @Override

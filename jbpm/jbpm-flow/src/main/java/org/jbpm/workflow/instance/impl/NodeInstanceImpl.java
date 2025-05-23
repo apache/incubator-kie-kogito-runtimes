@@ -116,15 +116,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
 
     @Override
     public Collection<TimerDescription> timers() {
-        Collection<TimerDescription> toReturn = new ArrayList<>();
-        if (slaTimerId != null) {
-            TimerDescription slaTimer = TimerDescription.Builder.ofNodeInstance(this)
-                    .timerId(slaTimerId)
-                    .timerDescription("[SLA] " + resolveExpression(getNodeName()))
-                    .build();
-            toReturn.add(slaTimer);
-        }
-        return toReturn;
+        return new ArrayList<>();
     }
 
     public void setNodeId(WorkflowElementIdentifier nodeId) {
