@@ -177,10 +177,13 @@ public class ProtobufProcessInstanceReader {
 
         if (processInstanceProtobuf.getHeadersList() != null) {
             processInstance.setHeaders(processInstanceProtobuf.getHeadersList().stream().collect(Collectors.toMap(HeaderEntry::getKey, HeaderEntry::getValueList)));
+                LOGGER.debug("Headers {} restored for process instance {}", processInstance.getHeaders().keySet(), processInstance.getId()));
+           }
         }
 
-        WorkflowContext workflowContext = processInstanceProtobuf.getContext();
-        buildWorkflowContext(processInstance, workflowContext);
+    WorkflowContext workflowContext = processInstanceProtobuf.getContext();
+
+    buildWorkflowContext(processInstance, workflowContext);
 
         KogitoProcessRuntime runtime = ((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS)).getProcessRuntime();
         Arrays.stream(listeners).forEach(e -> e.afterUnmarshallProcess(runtime, processInstance));
