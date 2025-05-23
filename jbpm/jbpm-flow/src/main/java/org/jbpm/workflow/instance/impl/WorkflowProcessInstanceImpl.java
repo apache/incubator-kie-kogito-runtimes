@@ -95,6 +95,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.internal.process.runtime.MessageException;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.jobs.TimerDescription;
 import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
@@ -1366,6 +1367,30 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                             .build();
                 })
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Collection<TimerDescription> timers() {
+
+        List<TimerDescription> toReturn = new ArrayList<>();
+
+        if (this.slaTimerId != null) {
+            toReturn.add(TimerDescription.Builder.ofProcessInstance(this)
+                    .timerId(slaTimerId)
+                    .timerDescription("[SLA-Process] " + getProcessName())
+                    .build());
+        }
+        if (this.cancelTimerId != null) {
+            toReturn.add(TimerDescription.Builder.ofProcessInstance(this)
+                    .timerId(slaTimerId)
+                    .timerDescription("[CANCEL-Process] " + getProcessName())
+                    .build());
+        }
+        getNodeInstances().stream().map(nodeInstance -> (KogitoNodeInstance) nodeInstance)
+                .flatMap(nodeInstance -> nodeInstance.timers().stream())
+                .forEach(toReturn::add);
+
+        return toReturn;
     }
 
     private <N extends org.kie.api.definition.process.Node> Stream<N> getNodesByType(Class<N> nodeClass) {

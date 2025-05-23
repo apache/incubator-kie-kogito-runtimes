@@ -19,12 +19,7 @@
 package org.jbpm.workflow.instance.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -61,6 +56,7 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.jobs.TimerDescription;
 import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +112,19 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     @Override
     public boolean isRetrigger() {
         return isRetrigger;
+    }
+
+    @Override
+    public Collection<TimerDescription> timers() {
+        Collection<TimerDescription> toReturn = new ArrayList<>();
+        if (slaTimerId != null) {
+            TimerDescription slaTimer = TimerDescription.Builder.ofNodeInstance(this)
+                    .timerId(slaTimerId)
+                    .timerDescription("[SLA] " + resolveExpression(getNodeName()))
+                    .build();
+            toReturn.add(slaTimer);
+        }
+        return toReturn;
     }
 
     public void setNodeId(WorkflowElementIdentifier nodeId) {

@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.jobs.TimerDescription;
 import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.Milestone;
 
@@ -84,6 +85,8 @@ public interface KogitoWorkflowProcessInstance extends WorkflowProcessInstance, 
      * @return Milestones defined in the process
      */
     Collection<Milestone> milestones();
+
+    Collection<TimerDescription> timers();
 
     /**
      * @return AdHocFragments from the process instances

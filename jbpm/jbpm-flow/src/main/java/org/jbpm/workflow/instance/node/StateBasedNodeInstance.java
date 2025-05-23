@@ -18,12 +18,7 @@
  */
 package org.jbpm.workflow.instance.node;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.ReteEvaluator;
@@ -48,10 +43,7 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.jobs.DurationExpirationTime;
-import org.kie.kogito.jobs.ExactExpirationTime;
-import org.kie.kogito.jobs.ExpirationTime;
-import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.jobs.*;
 import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
 import org.kie.kogito.process.expr.Expression;
 import org.kie.kogito.process.expr.ExpressionHandlerFactory;
@@ -466,5 +458,33 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
         KogitoProcessContext context = ContextFactory.fromNode(this);
         context.getContextData().put("Exception", e);
         return context;
+    }
+
+    @Override
+    public Collection<TimerDescription> timers() {
+        if (timerInstancesReference != null) {
+            Collection<TimerDescription> toReturn = super.timers();
+
+            Set<Timer> nodeTimers = getEventBasedNode().getTimers().keySet();
+
+            for (Timer timer : nodeTimers) {
+                Optional<String> jobIdOptional = timerInstancesReference.entrySet()
+                        .stream()
+                        .filter(entry -> String.valueOf(timer.getId()).equals(entry.getValue()))
+                        .findFirst()
+                        .map(Map.Entry::getKey);
+
+                jobIdOptional.ifPresent(jobId -> {
+                    TimerDescription timerDescription = TimerDescription.Builder.ofNodeInstance(this)
+                            .timerId(jobId)
+                            .timerDescription(resolveExpression(timer.getName()))
+                            .build();
+                    toReturn.add(timerDescription);
+                });
+            }
+            return toReturn;
+        }
+
+        return super.timers();
     }
 }

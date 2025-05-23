@@ -20,6 +20,8 @@ package org.jbpm.workflow.core.node;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -33,6 +35,7 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.jobs.TimerDescription;
 import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.services.uow.BaseWorkUnit;
@@ -160,6 +163,23 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
     public void setJobId(String jobId) {
         this.jobId = jobId;
+    }
+
+    @Override
+    public Collection<TimerDescription> timers() {
+        if (jobId != null) {
+            Collection<TimerDescription> toReturn = new ArrayList<>(super.timers());
+
+            TimerDescription timerDescription = TimerDescription.Builder.ofNodeInstance(this)
+                    .timerId(this.jobId)
+                    .timerDescription(resolveExpression(getNodeName()))
+                    .build();
+
+            toReturn.add(timerDescription);
+
+            return toReturn;
+        }
+        return super.timers();
     }
 
     @Override

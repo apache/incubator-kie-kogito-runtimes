@@ -162,6 +162,11 @@ class BaseProcessInstanceManagementResourceTest {
             }
 
             @Override
+            public Object getProcessInstanceTimers(String processId, String processInstanceId) {
+                return null;
+            }
+
+            @Override
             public Object retriggerInstanceInError(String processId, String processInstanceId) {
                 return null;
             }
@@ -178,6 +183,11 @@ class BaseProcessInstanceManagementResourceTest {
 
             @Override
             public Object retriggerNodeInstanceId(String processId, String processInstanceId, String nodeInstanceId) {
+                return null;
+            }
+
+            @Override
+            public Object getNodeInstanceTimers(String processId, String processInstanceId, String nodeInstanceId) {
                 return null;
             }
 

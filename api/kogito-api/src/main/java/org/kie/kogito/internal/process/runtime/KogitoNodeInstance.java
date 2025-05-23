@@ -18,11 +18,13 @@
  */
 package org.kie.kogito.internal.process.runtime;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
 import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.jobs.TimerDescription;
 
 public interface KogitoNodeInstance extends NodeInstance {
 
@@ -82,4 +84,6 @@ public interface KogitoNodeInstance extends NodeInstance {
      * @return true if this a retrigger node (see above), false otherwise
      */
     boolean isRetrigger();
+
+    Collection<TimerDescription> timers();
 }
