@@ -58,9 +58,11 @@ public abstract class ProcessSvgServiceTest {
         String fileContent = getTravelsSVGFile();
 
         Path svgPath = Paths.get("src/test/resources/META-INF/processSVG/").toAbsolutePath();
-        getTestedProcessSvgService().setSvgResourcesPath(Optional.of(svgPath.toString()));
 
-        Optional<String> svgContent = getTestedProcessSvgService().getProcessSvg(PROCESS_ID);
+        AbstractProcessSvgService svgService = getTestedProcessSvgService();
+        svgService.setSvgResourcesPath(Optional.of(svgPath.toString()));
+
+        Optional<String> svgContent = svgService.getProcessSvg(PROCESS_ID);
         assertThat(svgContent).isPresent().hasValue(fileContent);
     }
 
