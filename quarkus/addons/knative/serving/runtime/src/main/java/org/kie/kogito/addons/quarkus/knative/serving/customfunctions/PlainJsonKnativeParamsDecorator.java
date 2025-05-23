@@ -18,17 +18,28 @@
  */
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.jackson.utils.ObjectNodeListenerAware;
+import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.ID;
+import static org.kie.kogito.serverless.workflow.SWFConstants.MODEL_WORKFLOW_VAR;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator {
 
@@ -37,11 +48,39 @@ public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator
         if (isCloudEvent(KnativeFunctionPayloadSupplier.getPayload(parameters))) {
             throw new IllegalArgumentException(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
         }
-        super.decorate(workItem, parameters, request);
+        buildFromParams(workItem, parameters, request);
     }
 
     private static boolean isCloudEvent(Map<String, Object> payload) {
         List<String> cloudEventMissingAttributes = CloudEventUtils.getMissingAttributes(payload);
         return !payload.isEmpty() && (cloudEventMissingAttributes.isEmpty() || (cloudEventMissingAttributes.size() == 1 && cloudEventMissingAttributes.contains(ID)));
+    }
+
+    private void buildFromParams(KogitoWorkItem workItem, Map<String, Object> parameters, HttpRequest<?> request) {
+        Map<String, Object> inputModel = new HashMap<>();
+
+        Object inputModelObject = parameters.get(MODEL_WORKFLOW_VAR);
+        if (inputModelObject != null && inputModelObject instanceof ObjectNodeListenerAware) {
+            ObjectMapper mapper = new ObjectMapper();
+            ((ObjectNodeListenerAware) inputModelObject).fields().forEachRemaining(entry -> {
+                JsonNode value = entry.getValue();
+                Object rawValue = mapper.convertValue(value, Object.class);
+                inputModel.put(entry.getKey(), rawValue);
+            });
+        }
+
+        Set<String> keysFilter = Set.of(RestWorkItemHandler.REQUEST_TIMEOUT_IN_MILLIS, MODEL_WORKFLOW_VAR);
+        Map<String, Object> filteredParams = parameters.entrySet().stream()
+            .filter(entry -> !keysFilter.contains(entry.getKey()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (filteredParams.isEmpty()) {
+            Set<String> paramsRemove = super.extractHeadersQueries(workItem, inputModel, request);
+            if (inputModelObject != null && inputModelObject instanceof ObjectNodeListenerAware) {
+                ((ObjectNodeListenerAware) inputModelObject).remove(paramsRemove);
+            }
+        } else {
+            super.decorate(workItem, parameters, request);
+        }
     }
 }

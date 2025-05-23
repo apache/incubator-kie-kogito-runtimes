@@ -80,7 +80,10 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
 
         node.workParameter(KnativeWorkItemHandler.SERVICE_PROPERTY_NAME, operation.getService())
                 .workParameter(KnativeWorkItemHandler.PATH_PROPERTY_NAME, operation.getPath())
-                .workParameter(RestWorkItemHandler.METHOD, operation.getHttpMethod());
+                .workParameter(RestWorkItemHandler.METHOD, operation.getHttpMethod())
+                .workParameter(RestWorkItemHandler.RETURN_HEADERS, operation.returnHeaders())
+                .workParameter(RestWorkItemHandler.RETURN_STATUS_CODE, operation.returnStatusCode())
+                .workParameter(RestWorkItemHandler.FAIL_ON_STATUS_ERROR, operation.failOnStatusError());
 
         return addFunctionArgs(workflow,
                 fillWorkItemHandler(workflow, context, node, functionDef),
