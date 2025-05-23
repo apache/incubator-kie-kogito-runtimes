@@ -118,7 +118,9 @@ public class VertxJobsService extends RestJobsService {
 
     @Override
     public String rescheduleJob(JobDescription jobDescription) {
-        final Job job = buildJob(jobDescription, null);
+        String callback = getCallbackEndpoint(jobDescription);
+        LOGGER.debug("Job to be rescheduled {} with callback URL {}", jobDescription, callback);
+        final Job job = buildJob(jobDescription, callback);
         client.patch(JOBS_PATH).sendJson(job, res -> {
             int status = res.result() != null ? res.result().statusCode() : 0;
             if (res.succeeded() && status == 200) {
@@ -128,7 +130,7 @@ public class VertxJobsService extends RestJobsService {
                 LOGGER.error("Scheduling of job {} failed with response code {}", job, status, res.cause());
             }
         });
-        return "SUCCESS";
+        return "Job Rescheduled";
     }
 
     private void configureMapper(ObjectMapper mapper) {

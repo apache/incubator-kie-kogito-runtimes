@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -104,11 +105,19 @@ public class SpringRestJobsService extends RestJobsService {
 
     @Override
     public String rescheduleJob(JobDescription jobDescription) {
-        // Do we need callback url
-        LOGGER.debug("Job to be scheduled {} with callback URL {}", jobDescription, null);
-        final Job job = buildJob(jobDescription, null);
+        String callback = getCallbackEndpoint(jobDescription);
+        LOGGER.debug("Job to be rescheduled {} with callback URL {}", jobDescription, callback);
+        final Job job = buildJob(jobDescription, callback);
         final HttpEntity<String> request = buildJobRequest(job);
-        return restTemplate.patchForObject(getJobsServiceUri(), request, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(
+                getJobsServiceUri(),
+                HttpMethod.PATCH,
+                request,
+                String.class);
+        if (response.getStatusCode().isSameCodeAs(HttpStatusCode.valueOf(200))) {
+            LOGGER.debug("Rescheduling of the job {} done with status code {} ", job, response.getStatusCode());
+        }
+        return "Job Rescheduled";
     }
 
     private HttpEntity<String> buildJobRequest(Job job) {

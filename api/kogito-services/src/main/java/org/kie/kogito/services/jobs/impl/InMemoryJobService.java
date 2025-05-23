@@ -109,8 +109,10 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
     @Override
     public String rescheduleJob(JobDescription jobDescription) {
         LOGGER.debug("Reschedule Job: {}", jobDescription.id());
-        cancelJob(jobDescription.id());
-        return scheduleJob(jobDescription);
+        if (cancelJob(jobDescription.id())) {
+            return scheduleJob(jobDescription);
+        }
+        return "Job reschedule failed";
     }
 
     protected long calculateDelay(JobDescription description) {
