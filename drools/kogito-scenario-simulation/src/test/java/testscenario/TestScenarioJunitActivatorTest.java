@@ -16,19 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.codegen.api.context;
+package testscenario;
 
-public final class ContextAttributesConstants {
+import org.drools.scenariosimulation.backend.runner.TestScenarioActivator;
 
-    /**
-     * OpenAPI Generator Descriptors with information of every REST client generated indexed by the spec resource file.
-     */
-    public static final String OPENAPI_DESCRIPTORS = "openApiDescriptor";
-
-    public static final String PROCESS_AUTO_SVG_MAPPING = "processAutoSVGMapping";
-
-    public static final String KOGITO_FAULT_TOLERANCE_ENABLED = "kogito.faultToleranceEnabled";
-
-    private ContextAttributesConstants() {
-    }
+/**
+ * KogitoJunitActivator is a custom JUnit runner that enables the execution of Test Scenario files (*.scesim).
+ * This activator class, when executed, will load all scesim files available in the project and run them.
+ * Each row of the scenario will generate a test JUnit result.
+ */
+@TestScenarioActivator
+public class TestScenarioJunitActivatorTest {
 }

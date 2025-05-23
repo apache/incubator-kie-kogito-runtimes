@@ -16,15 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package testscenario;
+package org.kie.kogito.codegen.faultTolerance.impl;
 
-import org.kogito.scenariosimulation.runner.KogitoJunitActivator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.faultTolerance.FaultToleranceAnnotator;
 
-/**
- * KogitoJunitActivator is a custom JUnit runner that enables the execution of Test Scenario files (*.scesim).
- * This activator class, when executed, will load all scesim files available in the project and run them.
- * Each row of the scenario will generate a test JUnit result.
- */
-@org.junit.runner.RunWith(KogitoJunitActivator.class)
-public class KogitoScenarioJunitActivatorTest {
+public abstract class AbstractFaultToleranceAnnotator implements FaultToleranceAnnotator {
+
+    protected KogitoBuildContext context;
+
+    public AbstractFaultToleranceAnnotator(KogitoBuildContext context) {
+        this.context = context;
+    }
 }

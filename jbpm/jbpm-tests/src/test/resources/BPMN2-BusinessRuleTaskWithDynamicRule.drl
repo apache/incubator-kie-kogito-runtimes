@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,15 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.soup.project.datamodel.imports;
+package defaultPackge
 
-/**
- * Copied from kie-soup to avoid the dependency
- */
-public interface HasImports {
 
-    Imports getImports();
+import org.jbpm.bpmn2.objects.Person;
 
-    void setImports(final Imports imports);
+rule "Johns rule" ruleflow-group "JohnsRuleFlow"
+no-loop
+    when
+        $p : Person(name == null)
+    then
+        modify ($p){
+            setName("john")
+        }
+        System.out.println("Hello " + $p.getName());
 
-}
+end
+
+rule "Marys Rule" ruleflow-group "MarysRuleFlow"
+no-loop
+    when
+        $p : Person(name == null)
+    then
+        modify ($p){
+            setName("mary")
+        }
+        System.out.println("Hello " + $p.getName());
+
+end
