@@ -19,6 +19,7 @@
 package org.jbpm.workflow.instance.impl;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -634,6 +635,9 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
 
     protected void configureSla() {
 
+    }
+
+    public void updateSlaTimer(String nodeInstanceId, ZonedDateTime slaDueDate) {
     }
 
     @Override

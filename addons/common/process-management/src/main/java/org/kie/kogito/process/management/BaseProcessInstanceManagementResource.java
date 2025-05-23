@@ -18,10 +18,7 @@
  */
 package org.kie.kogito.process.management;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -307,4 +304,22 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
     protected abstract T badRequestResponse(String message);
 
     protected abstract T notFoundResponse(String message);
+
+    public T doUpdateNodeInstanceSla(String processId, String processInstanceId, String nodeInstanceId, SlaPayload sla) {
+        return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
+            processInstance.updateNodeInstanceSla(nodeInstanceId, sla.getExpirationTime());
+            Map<String, Object> message = new HashMap<>();
+            message.put("message", nodeInstanceId + " sla due date updated");
+            return buildOkResponse(message);
+        });
+    }
+
+    public T doUpdateProcessInstanceSla(String processId, String processInstanceId, SlaPayload sla) {
+        return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
+            processInstance.updateProcessInstanceSla(sla.getExpirationTime());
+            Map<String, Object> message = new HashMap<>();
+            message.put("message", processInstanceId + " sla due date updated");
+            return buildOkResponse(message);
+        });
+    }
 }

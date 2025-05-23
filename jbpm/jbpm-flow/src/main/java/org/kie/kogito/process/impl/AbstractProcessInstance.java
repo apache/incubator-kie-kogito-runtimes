@@ -19,6 +19,7 @@
 package org.kie.kogito.process.impl;
 
 import java.lang.reflect.Field;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -491,7 +492,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                     .filter(ni -> ni.getStringId().equals(nodeInstanceId))
                     .findFirst()
                     .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
-
             nodeInstance.cancel();
             removeOnFinish();
             return null;
@@ -509,6 +509,28 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                     .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
             ((NodeInstanceImpl) nodeInstance).retrigger(true);
             removeOnFinish();
+            return null;
+        });
+    }
+
+    @Override
+    public void updateNodeInstanceSla(String nodeInstanceId, ZonedDateTime slaDueDate) {
+        processInstanceLockStrategy.executeOperation(id, () -> {
+            NodeInstance nodeInstance = processInstance()
+                    .getNodeInstances(true)
+                    .stream()
+                    .filter(ni -> ni.getStringId().equals(nodeInstanceId))
+                    .findFirst()
+                    .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
+            ((NodeInstanceImpl) nodeInstance).updateSlaTimer(nodeInstanceId, slaDueDate);
+            return null;
+        });
+    }
+
+    @Override
+    public void updateProcessInstanceSla(ZonedDateTime slaDueDate) {
+        processInstanceLockStrategy.executeOperation(id, () -> {
+            ((WorkflowProcessInstanceImpl) processInstance).updateSlaTimer(slaDueDate);
             return null;
         });
     }
