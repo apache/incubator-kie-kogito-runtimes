@@ -88,6 +88,9 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     public static final String PARAMS_DECORATOR = "ParamsDecorator";
     public static final String PATH_PARAM_RESOLVER = "PathParamResolver";
     public static final String AUTH_METHOD = "AuthMethod";
+    public static final String RETURN_HEADERS = "return_headers";
+    public static final String RETURN_STATUS_CODE = "return_status_code";
+    public static final String FAIL_ON_STATUS_ERROR = "fail_on_status_error";
 
     public static final String REQUEST_TIMEOUT_IN_MILLIS = "RequestTimeout";
 
@@ -95,7 +98,7 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     public static final int DEFAULT_SSL_PORT = 443;
 
     private static final Logger logger = LoggerFactory.getLogger(RestWorkItemHandler.class);
-    private static final RestWorkItemHandlerResult DEFAULT_RESULT_HANDLER = new DefaultRestWorkItemHandlerResult();
+    private RestWorkItemHandlerResult DEFAULT_RESULT_HANDLER;
     private static final RestWorkItemHandlerBodyBuilder DEFAULT_BODY_BUILDER = new DefaultWorkItemHandlerBodyBuilder();
     private static final ParamsDecorator DEFAULT_PARAMS_DECORATOR = new PrefixParamsDecorator();
     private static final PathParamResolver DEFAULT_PATH_PARAM_RESOLVER = new DefaultPathParamResolver();
@@ -128,6 +131,12 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         if (endPoint == null) {
             throw new IllegalArgumentException("Missing required parameter " + URL);
         }
+
+        boolean failOnStatusError = getParam(parameters, FAIL_ON_STATUS_ERROR, Boolean.class, true);
+
+        boolean returnHeaders = getParam(parameters, RETURN_HEADERS, Boolean.class, false);
+        boolean returnStatusCode = getParam(parameters, RETURN_STATUS_CODE, Boolean.class, false);
+        DEFAULT_RESULT_HANDLER = new DefaultRestWorkItemHandlerResult(returnHeaders, returnStatusCode);
 
         HttpMethod method = getParam(parameters, METHOD, HttpMethod.class, HttpMethod.GET);
         RestWorkItemHandlerResult resultHandler = getClassParam(parameters, RESULT_HANDLER, RestWorkItemHandlerResult.class, DEFAULT_RESULT_HANDLER, resultHandlers);
@@ -188,7 +197,7 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
                 ? sendJson(request, bodyBuilder.apply(parameters), requestTimeout)
                 : send(request, requestTimeout);
         int statusCode = response.statusCode();
-        if (statusCode < 200 || statusCode >= 300) {
+        if (failOnStatusError && (statusCode < 200 || statusCode >= 300)) {
             throw new WorkItemExecutionException(Integer.toString(statusCode), "Request for endpoint " + endPoint + " failed with message: " + response.statusMessage());
         }
 
