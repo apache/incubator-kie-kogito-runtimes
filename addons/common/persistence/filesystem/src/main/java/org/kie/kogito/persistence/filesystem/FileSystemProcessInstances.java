@@ -118,7 +118,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     public void update(String id, ProcessInstance instance) {
         if (isActive(instance)) {
             Path processInstanceStorage = PathUtils.getSecuredPath(storage, id);
-            if (Files.notExists(processInstanceStorage) && !Files.isRegularFile(processInstanceStorage)) {
+            if (Files.notExists(processInstanceStorage) || !Files.isRegularFile(processInstanceStorage)) {
                 throw new ProcessInstanceNotFoundException(id);
             } else {
                 storeProcessInstance(processInstanceStorage, instance);
