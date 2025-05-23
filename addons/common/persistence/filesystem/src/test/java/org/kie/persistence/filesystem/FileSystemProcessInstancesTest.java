@@ -57,6 +57,7 @@ import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
 import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirstReadOnly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -146,8 +147,8 @@ class FileSystemProcessInstancesTest {
         FileSystemProcessInstances fileSystemBasedStorage = (FileSystemProcessInstances) process.instances();
         assertThat(fileSystemBasedStorage.exists(processInstance.id())).isTrue();
         verify(fileSystemBasedStorage).create(any(), any());
-        verify(fileSystemBasedStorage, times(1)).setMetadata(any(), eq(FileSystemProcessInstances.PI_DESCRIPTION), eq("User Task"));
-        verify(fileSystemBasedStorage, times(1)).setMetadata(any(), eq(FileSystemProcessInstances.PI_STATUS), eq("1"));
+        verify(fileSystemBasedStorage, atLeastOnce()).setMetadata(any(), eq(FileSystemProcessInstances.PI_DESCRIPTION), eq("User Task"));
+        verify(fileSystemBasedStorage, atLeastOnce()).setMetadata(any(), eq(FileSystemProcessInstances.PI_STATUS), eq("1"));
 
         String testVar = (String) processInstance.variables().get("test");
         assertThat(testVar).isEqualTo("test");
@@ -213,8 +214,8 @@ class FileSystemProcessInstancesTest {
         FileSystemProcessInstances fileSystemBasedStorage = (FileSystemProcessInstances) process.instances();
         assertThat(fileSystemBasedStorage.exists(processInstance.id())).isTrue();
         verify(fileSystemBasedStorage).create(processInstance.id(), processInstance);
-        verify(fileSystemBasedStorage, times(1)).setMetadata(any(), eq(FileSystemProcessInstances.PI_DESCRIPTION), eq("User Task"));
-        verify(fileSystemBasedStorage, times(1)).setMetadata(any(), eq(FileSystemProcessInstances.PI_STATUS), eq("1"));
+        verify(fileSystemBasedStorage, atLeastOnce()).setMetadata(any(), eq(FileSystemProcessInstances.PI_DESCRIPTION), eq("User Task"));
+        verify(fileSystemBasedStorage, atLeastOnce()).setMetadata(any(), eq(FileSystemProcessInstances.PI_STATUS), eq("1"));
 
         String testVar = (String) processInstance.variables().get("test");
         assertThat(testVar).isEqualTo("test");
