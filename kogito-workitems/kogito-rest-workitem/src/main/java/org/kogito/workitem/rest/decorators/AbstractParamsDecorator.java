@@ -18,9 +18,11 @@
  */
 package org.kogito.workitem.rest.decorators;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 
@@ -30,18 +32,7 @@ public abstract class AbstractParamsDecorator implements ParamsDecorator {
 
     @Override
     public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
-        Iterator<Entry<String, Object>> iter = parameters.entrySet().iterator();
-        while (iter.hasNext()) {
-            Entry<String, Object> entry = iter.next();
-            String key = entry.getKey();
-            if (isHeaderParameter(key)) {
-                request.putHeader(toHeaderKey(key), entry.getValue().toString());
-                iter.remove();
-            } else if (isQueryParameter(key)) {
-                request.addQueryParam(toQueryKey(key), entry.getValue().toString());
-                iter.remove();
-            }
-        }
+        extractHeadersQueries(item, parameters, request);
     }
 
     protected String toHeaderKey(String key) {
@@ -50,6 +41,23 @@ public abstract class AbstractParamsDecorator implements ParamsDecorator {
 
     protected String toQueryKey(String key) {
         return key;
+    }
+
+    protected Set<String> extractHeadersQueries(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
+        Set<String> consideredParams = new HashSet<>();
+
+        Iterator<Entry<String, Object>> iter = parameters.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<String, Object> entry = iter.next();
+            String key = entry.getKey();
+            if (isHeaderParameter(key) || isQueryParameter(key)) {
+                request.putHeader(isHeaderParameter(key) ? toHeaderKey(key) : toQueryKey(key), entry.getValue().toString());
+                consideredParams.add(key);
+                iter.remove();
+            }
+        }
+
+        return consideredParams;
     }
 
     protected abstract boolean isHeaderParameter(String key);

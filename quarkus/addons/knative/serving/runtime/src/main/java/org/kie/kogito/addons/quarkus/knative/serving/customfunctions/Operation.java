@@ -37,6 +37,12 @@ public final class Operation {
     static final String PATH_PARAMETER_NAME = "path";
 
     static final String METHOD_PARAMETER_NAME = "method";
+    
+    static final String RETURN_HEADERS_PARAMETER_NAME = "returnHeaders";
+
+    static final String RETURN_STATUS_CODE_PARAMETER_NAME = "returnStatusCode";
+
+    static final String FAIL_ON_STATUS_ERROR_PARAMETER_NAME = "failOnStatusError";
 
     private final String service;
 
@@ -46,11 +52,20 @@ public final class Operation {
 
     private final HttpMethod httpMethod;
 
+    private final boolean returnHeaders;
+
+    private final boolean returnStatusCode;
+
+    private final boolean failOnStatusError;
+
     private Operation(Builder builder) {
         this.service = Objects.requireNonNull(builder.service);
         this.path = builder.path != null ? builder.path : "/";
         this.isCloudEvent = builder.isCloudEvent;
         this.httpMethod = builder.httpMethod;
+        this.returnHeaders = builder.returnHeaders;
+        this.returnStatusCode = builder.returnStatusCode;
+        this.failOnStatusError = builder.failOnStatusError;
         validate(this);
     }
 
@@ -81,6 +96,18 @@ public final class Operation {
         return httpMethod;
     }
 
+    public boolean returnHeaders() {
+        return returnHeaders;
+    }
+
+    public boolean returnStatusCode() {
+        return returnStatusCode;
+    }
+
+    public boolean failOnStatusError() {
+        return failOnStatusError;
+    }
+
     public static Operation parse(String value) {
         String[] parts = value.split("\\?", 2);
 
@@ -96,6 +123,9 @@ public final class Operation {
                 .withPath(params.get(PATH_PARAMETER_NAME))
                 .withIsCloudEvent(Boolean.parseBoolean(params.get(CLOUD_EVENT_PARAMETER_NAME)))
                 .withMethod(HttpMethod.valueOf(params.getOrDefault(METHOD_PARAMETER_NAME, DEFAULT_HTTP_METHOD.name()).toUpperCase()))
+                .withReturnHeaders(Boolean.parseBoolean(params.get(RETURN_HEADERS_PARAMETER_NAME)))
+                .withReturnStatusCode(Boolean.parseBoolean(params.get(RETURN_STATUS_CODE_PARAMETER_NAME)))
+                .withFailOnStatusError(Boolean.parseBoolean(params.get(FAIL_ON_STATUS_ERROR_PARAMETER_NAME)))
                 .build();
     }
 
@@ -113,6 +143,9 @@ public final class Operation {
         }
         Operation operation = (Operation) o;
         return isCloudEvent == operation.isCloudEvent
+                && returnHeaders == operation.returnHeaders
+                && returnStatusCode == operation.returnStatusCode
+                && failOnStatusError == operation.failOnStatusError
                 && Objects.equals(service, operation.service)
                 && Objects.equals(path, operation.path)
                 && Objects.equals(httpMethod, operation.httpMethod);
@@ -125,12 +158,15 @@ public final class Operation {
                 ", path='" + path + '\'' +
                 ", isCloudEvent=" + isCloudEvent +
                 ", httpMethod=" + httpMethod +
+                ", returnHeaders=" + returnHeaders +
+                ", returnStatusCode=" + returnStatusCode +
+                ", failOnStatusError=" + failOnStatusError +
                 '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(service, path, isCloudEvent, httpMethod);
+        return Objects.hash(service, path, isCloudEvent, httpMethod, returnHeaders, returnStatusCode, failOnStatusError);
     }
 
     public static class Builder {
@@ -142,6 +178,12 @@ public final class Operation {
         private boolean isCloudEvent;
 
         private HttpMethod httpMethod = DEFAULT_HTTP_METHOD;
+
+        private boolean returnHeaders;
+
+        private boolean returnStatusCode;
+
+        private boolean failOnStatusError;
 
         private Builder() {
         }
@@ -163,6 +205,21 @@ public final class Operation {
 
         public Builder withMethod(HttpMethod httpMethod) {
             this.httpMethod = httpMethod;
+            return this;
+        }
+
+        public Builder withReturnHeaders(boolean returnHeaders) {
+            this.returnHeaders = returnHeaders;
+            return this;
+        }
+
+        public Builder withReturnStatusCode(boolean returnStatusCode) {
+            this.returnStatusCode = returnStatusCode;
+            return this;
+        }
+
+        public Builder withFailOnStatusError(boolean failOnStatusError) {
+            this.failOnStatusError = failOnStatusError;
             return this;
         }
 
