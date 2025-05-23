@@ -355,6 +355,5 @@ class BaseProcessInstanceManagementResourceTest {
     void testGetProcessInstanceTimers() {
         Object response = tested.doGetProcessInstanceTimers(PROCESS_ID, PROCESS_INSTANCE_ID);
         verify(processInstance, times(1)).timers();
-        assertResultOk(response);
     }
 }

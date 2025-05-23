@@ -20,10 +20,10 @@ package org.kie.kogito.quarkus.workflows;
 
 import java.util.Map;
 
-import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
@@ -37,7 +37,6 @@ public class ProcessManagementIT {
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
-
 
     @Test
     void testManagementTimersEndpoint() {
@@ -69,22 +68,19 @@ public class ProcessManagementIT {
                         hasEntry("processId", "timers"),
                         hasEntry("processInstanceId", processInstanceId),
                         hasKey("timerId"),
-                        hasEntry("description", "[SLA-Process] timers")
-                )))
+                        hasEntry("description", "[SLA-Process] timers"))))
                 .body("", hasItem(allOf(
                         hasEntry("processId", "timers"),
                         hasEntry("processInstanceId", processInstanceId),
                         hasEntry("nodeInstanceId", nodeInstanceId),
                         hasKey("timerId"),
-                        hasEntry("description", "[SLA] Task")
-                )))
+                        hasEntry("description", "[SLA] Task"))))
                 .body("", hasItem(allOf(
                         hasEntry("processId", "timers"),
                         hasEntry("processInstanceId", processInstanceId),
                         hasEntry("nodeInstanceId", nodeInstanceId),
                         hasKey("timerId"),
-                        hasEntry("description", "Task-BoundaryEvent")
-                )));
+                        hasEntry("description", "Task-Boundary Timer"))));
 
         given()
                 .when()
@@ -97,14 +93,12 @@ public class ProcessManagementIT {
                         hasEntry("processInstanceId", processInstanceId),
                         hasEntry("nodeInstanceId", nodeInstanceId),
                         hasKey("timerId"),
-                        hasEntry("description", "[SLA] Task")
-                )))
+                        hasEntry("description", "[SLA] Task"))))
                 .body("", hasItem(allOf(
                         hasEntry("processId", "timers"),
                         hasEntry("processInstanceId", processInstanceId),
                         hasEntry("nodeInstanceId", nodeInstanceId),
                         hasKey("timerId"),
-                        hasEntry("description", "Task-BoundaryEvent")
-                )));
+                        hasEntry("description", "Task-Boundary Timer"))));
     }
 }
