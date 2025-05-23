@@ -175,6 +175,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
         unbind(variables, wpi.getVariables());
         setCorrelationKey(wpi.getCorrelationKey());
+
+        if (this.status == STATE_COMPLETED || this.status == STATE_ERROR) {
+            ((WorkflowProcess) process.get()).getOutputValidator().ifPresent(v -> v.validate(processInstance.getVariables()));
+        }
     }
 
     private boolean isProcessInstanceConnected() {
