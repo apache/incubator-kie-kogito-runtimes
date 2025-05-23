@@ -44,6 +44,7 @@ import org.drools.mvel.MVELSafeHelper;
 import org.drools.mvel.util.MVELEvaluator;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.ContextResolver;
+import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.timer.DateTimeUtils;
@@ -417,6 +418,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     @Override
     public void setState(final int state, String outcome) {
+
         // TODO move most of this to ProcessInstanceImpl
         if (state == KogitoProcessInstance.STATE_COMPLETED
                 || state == KogitoProcessInstance.STATE_ABORTED) {
@@ -441,6 +443,10 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
             cancelTimer(processRuntime, slaTimerId);
             cancelTimer(processRuntime, cancelTimerId);
+
+            if (state == KogitoProcessInstance.STATE_ABORTED && automaticCompensation()) {
+                signalEvent(Metadata.COMPENSATION, CompensationScope.IMPLICIT_COMPENSATION_PREFIX + getProcessId());
+            }
 
             // deactivate listeners already
             removeEventListeners();
@@ -642,7 +648,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 }
             }
         }
-        if (getWorkflowProcess().getMetaData().containsKey(COMPENSATION)) {
+        if (getWorkflowProcess().getMetaData().containsKey(COMPENSATION) || getWorkflowProcess().getMetaData().containsKey(Metadata.COMPENSATE_WHEN_ABORTED)) {
             this.compensationEventListener = new CompensationEventListener(this);
             addEventListener("Compensation", compensationEventListener, true);
         }
@@ -654,7 +660,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 externalEventListeners.remove(((EventNode) node).getType());
             }
         }
-        if (getWorkflowProcess().getMetaData().containsKey(COMPENSATION)) {
+        if (getWorkflowProcess().getMetaData().containsKey(COMPENSATION) || getWorkflowProcess().getMetaData().containsKey(Metadata.COMPENSATE_WHEN_ABORTED)) {
             removeEventListener("Compensation", this.compensationEventListener, true);
             this.compensationEventListener = null;
         }

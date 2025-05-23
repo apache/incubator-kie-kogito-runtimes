@@ -27,7 +27,6 @@ import java.util.Map;
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
-import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.impl.XmlProcessDumper;
 import org.jbpm.process.core.impl.XmlProcessDumperFactory;
 import org.jbpm.process.instance.ContextInstance;
@@ -158,13 +157,10 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
     }
 
     public void internalSetState(final int state) {
-        if (state == KogitoProcessInstance.STATE_ABORTED && automaticCompensation()) {
-            signalEvent(Metadata.COMPENSATION, CompensationScope.IMPLICIT_COMPENSATION_PREFIX + process.getId());
-        }
         this.state = state;
     }
 
-    private boolean automaticCompensation() {
+    protected boolean automaticCompensation() {
         return process.getMetaData().containsKey(Metadata.COMPENSATE_WHEN_ABORTED);
     }
 
