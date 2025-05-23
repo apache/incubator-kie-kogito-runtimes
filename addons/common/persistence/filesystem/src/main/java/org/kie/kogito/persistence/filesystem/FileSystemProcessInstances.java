@@ -106,11 +106,9 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
     @Override
 
     public void create(String id, ProcessInstance instance) {
-        if (isActive(instance)) {
+        if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
             Path processInstanceStorage = PathUtils.getSecuredPath(storage, id);
-            if (Files.notExists(processInstanceStorage) || !Files.isRegularFile(processInstanceStorage)) {
-                storeProcessInstance(processInstanceStorage, instance);
-            } else {
+            if (Files.exists(processInstanceStorage)) {
                 throw new ProcessInstanceDuplicatedException(id);
             }
 

@@ -287,11 +287,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void start(String trigger, String referenceId, Map<String, List<String>> headers) {
         executeInWorkflowProcessInstanceWrite(pi -> {
-            syncPersistence((WorkflowProcessInstanceImpl) pi);
             if (pi.getState() != KogitoProcessInstance.STATE_PENDING) {
                 throw new IllegalStateException("Impossible to start process instance that already has started");
             }
-
+            syncPersistence((WorkflowProcessInstanceImpl) pi);
             if (referenceId != null) {
                 pi.setReferenceId(referenceId);
             }

@@ -113,7 +113,7 @@ public class CacheProcessInstances implements MutableProcessInstances {
 
     @SuppressWarnings("unchecked")
     protected void updateStorage(String id, ProcessInstance instance, boolean checkDuplicates) {
-        if (isActive(instance)) {
+        if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
             byte[] data = marshaller.marshallProcessInstance(instance);
             if (checkDuplicates) {
                 byte[] existing = cache.putIfAbsent(id, data);
