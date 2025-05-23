@@ -213,7 +213,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     private void handleOutMappings(ProcessInstance processInstance) {
 
         SubProcessFactory subProcessFactory = getSubProcessNode().getSubProcessFactory();
-        org.kie.kogito.process.ProcessInstance<?> pi = ((org.kie.kogito.process.ProcessInstance<?>) processInstance.getMetaData().get("KogitoProcessInstance"));
+        org.kie.kogito.process.ProcessInstance<?> pi = ((org.kie.kogito.process.ProcessInstance<?>) processInstance.unwrap());
         if (pi != null) {
             subProcessFactory.unbind(ContextFactory.fromNode(this), pi.variables());
         }

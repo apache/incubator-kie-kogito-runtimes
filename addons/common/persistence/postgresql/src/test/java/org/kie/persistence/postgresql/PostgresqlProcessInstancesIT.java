@@ -21,7 +21,6 @@ package org.kie.persistence.postgresql;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -205,19 +204,13 @@ class PostgresqlProcessInstancesIT {
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
 
-        processInstance.updateVariablesPartially(BpmnVariables.create(singletonMap("test", "test"))); // version 1
-
         PostgresqlProcessInstances processInstances = (PostgresqlProcessInstances) process.instances();
-        Optional<?> foundOne = processInstances.findById(processInstance.id());
-        BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
-        foundOne = processInstances.findById(processInstance.id());
-        BpmnProcessInstance instanceTwo = (BpmnProcessInstance) foundOne.get();
+        BpmnProcessInstance instanceOne = (BpmnProcessInstance) processInstances.findById(processInstance.id()).get();
+        BpmnProcessInstance instanceTwo = (BpmnProcessInstance) processInstances.findById(processInstance.id()).get();
         assertThat(instanceOne.version()).isEqualTo(lock() ? 1L : 0);
         assertThat(instanceTwo.version()).isEqualTo(lock() ? 1L : 0);
-        ((AbstractProcessInstance) instanceTwo).startDate(); // force reload
         instanceOne.updateVariables(BpmnVariables.create(Collections.singletonMap("s", "test")));
-        foundOne = processInstances.findById(processInstance.id());
-        instanceOne = (BpmnProcessInstance) foundOne.get();
+        instanceOne = (BpmnProcessInstance) processInstances.findById(processInstance.id()).get();
         assertThat(instanceOne.version()).isEqualTo(lock() ? 2L : 0);
 
         processInstances.remove(processInstance.id());
@@ -271,14 +264,10 @@ class PostgresqlProcessInstancesIT {
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
 
-        processInstance.updateVariablesPartially(BpmnVariables.create(singletonMap("test", "test"))); // version 1
-
         PostgresqlProcessInstances processInstances = (PostgresqlProcessInstances) process.instances();
         assertOne(processInstances);
-        Optional<?> foundOne = processInstances.findById(processInstance.id());
-        BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
-        foundOne = processInstances.findById(processInstance.id());
-        BpmnProcessInstance instanceTwo = (BpmnProcessInstance) foundOne.get();
+        BpmnProcessInstance instanceOne = (BpmnProcessInstance) processInstances.findById(processInstance.id()).get();
+        BpmnProcessInstance instanceTwo = (BpmnProcessInstance) processInstances.findById(processInstance.id()).get();
         assertThat(instanceOne.version()).isEqualTo(lock() ? 1L : 0);
         assertThat(instanceTwo.version()).isEqualTo(lock() ? 1L : 0);
 

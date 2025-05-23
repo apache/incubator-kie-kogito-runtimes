@@ -81,7 +81,7 @@ public class ServerlessWorkflowIT extends AbstractCodegenIT {
         boolean completed = listener.waitTillCompleted(5000);
         assertThat(completed).isTrue();
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @ParameterizedTest

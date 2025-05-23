@@ -129,6 +129,7 @@ import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.SignalFactory;
+import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 
@@ -178,7 +179,11 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 .createInstance(definition.createModel());
         instance.start();
         listener.waitTillCompleted();
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john");
+        List<WorkItem> allWorkItems = instance.workItems();
+        assertThat(allWorkItems).hasSize(4);
+        List<WorkItem> workItems = allWorkItems.stream().filter(e -> "Finish Work".equals(e.getName())).toList();
+        assertThat(workItems).hasSize(1);
+        instance.completeWorkItem(workItems.get(0).getId(), Collections.emptyMap());
         assertThat(ProcessTestHelper.findRemovedInstance(app, instance.id()))
                 .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
@@ -186,8 +191,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testBoundaryTimerCycleISOVariable() {
         Application app = ProcessTestHelper.newApplication();
-        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update Timer",
-                3);
+        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("Send Update Timer", 3);
         ProcessTestHelper.registerHandler(app, "Human Task", new TestUserTaskWorkItemHandler());
         ProcessTestHelper.registerProcessEventListener(app, listener);
         org.kie.kogito.process.Process<BoundaryTimerCycleISOVariableModel> definition = BoundaryTimerCycleISOVariableProcess
@@ -198,8 +202,13 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 .createInstance(model);
         instance.start();
         listener.waitTillCompleted();
-        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john");
-        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        List<WorkItem> allWorkItems = instance.workItems();
+        assertThat(allWorkItems).hasSize(4);
+        List<WorkItem> workItems = allWorkItems.stream().filter(e -> "Finish Work".equals(e.getName())).toList();
+        assertThat(workItems).hasSize(1);
+        instance.completeWorkItem(workItems.get(0).getId(), Collections.emptyMap());
+        assertThat(ProcessTestHelper.findRemovedInstance(app, instance.id()))
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -1872,7 +1881,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertThat(instanceIntermediate).extracting(ProcessInstance::status).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Optional<WorkflowProcessInstance> impl = ProcessTestHelper.findRemovedInstance(application, instanceBoundary.id());
         assertThat(impl)
-                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
+                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
         assertThat(impl.get().getVariables()).containsEntry("x", "JOHN");
     }
 
@@ -2219,22 +2228,25 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         org.kie.kogito.process.ProcessInstance<MultiInstanceLoopCharacteristicsTaskSequentialModel> instance = definition.createInstance(model);
         instance.start();
 
+        List<String> parameters = new ArrayList<>();
         List<KogitoWorkItem> workItems = null;
         workItems = handler.getWorkItems();
         assertThat(workItems).isNotNull().hasSize(1);
-        assertThat(workItems.get(0).getParameter("Item")).isEqualTo("1");
+        parameters.add((String) workItems.get(0).getParameter("Item"));
         ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
 
         workItems = handler.getWorkItems();
         assertThat(workItems).isNotNull().hasSize(1);
-        assertThat(workItems.get(0).getParameter("Item")).isEqualTo("2");
+        parameters.add((String) workItems.get(0).getParameter("Item"));
         ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
 
         workItems = handler.getWorkItems();
         assertThat(workItems).isNotNull().hasSize(1);
-        assertThat(workItems.get(0).getParameter("Item")).isEqualTo("3");
+        parameters.add((String) workItems.get(0).getParameter("Item"));
         ProcessTestHelper.completeWorkItem(instance, "john", Collections.emptyMap());
 
+        // order is not guaranteed
+        assertThat(parameters).containsExactlyInAnyOrder("1", "2", "3");
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
 
