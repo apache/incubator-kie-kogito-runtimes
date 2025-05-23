@@ -18,6 +18,17 @@
  */
 package org.kie.kogito.pmml.openapi;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import org.kie.pmml.api.enums.DATA_TYPE;
+import org.kie.pmml.api.enums.FIELD_USAGE_TYPE;
+import org.kie.pmml.api.models.Interval;
+import org.kie.pmml.api.models.MiningField;
+
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.fasterxml.jackson.databind.node.DecimalNode;
@@ -30,16 +41,6 @@ import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ShortNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import org.kie.pmml.api.enums.DATA_TYPE;
-import org.kie.pmml.api.enums.FIELD_USAGE_TYPE;
-import org.kie.pmml.api.models.Interval;
-import org.kie.pmml.api.models.MiningField;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.BOOLEAN;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.DOUBLE;
