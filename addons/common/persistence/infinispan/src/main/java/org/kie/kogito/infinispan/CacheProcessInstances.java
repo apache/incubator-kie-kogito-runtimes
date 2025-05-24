@@ -68,36 +68,37 @@ public class CacheProcessInstances implements MutableProcessInstances {
 
     private Optional<? extends ProcessInstance> findInternal(String id, ProcessInstanceReadMode mode) {
         byte[] data = cache.get(id);
-        return data == null ? Optional.empty() : Optional.of(marshaller.unmarshallProcessInstance(data, process, mode));
+        return data == null ? Optional.empty() : Optional.of(unmarshall(data, null, mode));
     }
 
     private Optional<? extends ProcessInstance> findWithLock(String id, ProcessInstanceReadMode mode) {
-        return Optional.ofNullable(cache.getWithMetadata(id)).map(record -> unmarshall(record, mode));
+        return Optional.ofNullable(cache.getWithMetadata(id)).map(record -> unmarshall(record.getValue(), record.getVersion(), mode));
     }
 
     @Override
     public Stream<? extends ProcessInstance> stream(ProcessInstanceReadMode mode) {
         if (lock) {
             CloseableIterator<Entry<Object, MetadataValue<Object>>> iterator = cache.retrieveEntriesWithMetadata(null, 1000);
-            return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false).map(v -> unmarshall(v.getValue(), mode)).onClose(iterator::close);
+            return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
+                    .map(v -> unmarshall((byte[]) v.getValue().getValue(), v.getValue().getVersion(), mode))
+                    .onClose(iterator::close);
         } else {
-            return cache.values().parallelStream().map(marshaller.createUnmarshallFunction(process, mode));
+            return cache.values().stream().map(data -> unmarshall(data, null, mode));
         }
     }
 
-    private <T> ProcessInstance<?> unmarshall(MetadataValue<T> versionedCache, ProcessInstanceReadMode mode) {
-        ProcessInstance<?> instance = marshaller.unmarshallProcessInstance((byte[]) versionedCache.getValue(), process, mode);
-        ((AbstractProcessInstance) instance).setVersion(versionedCache.getVersion());
+    private <T> ProcessInstance<?> unmarshall(byte[] data, Long version, ProcessInstanceReadMode mode) {
+        ProcessInstance<?> instance = marshaller.unmarshallProcessInstance(data, process, mode);
+        if (version != null) {
+            ((AbstractProcessInstance) instance).setVersion(version);
+        }
+        connectProcessInstance(instance.id(), instance);
         return instance;
     }
 
     @Override
     public void update(String id, ProcessInstance instance) {
-        try {
-            updateStorage(id, instance, false);
-        } finally {
-            disconnect(id, instance);
-        }
+        updateStorage(id, instance, false);
     }
 
     @Override
@@ -112,7 +113,7 @@ public class CacheProcessInstances implements MutableProcessInstances {
 
     @SuppressWarnings("unchecked")
     protected void updateStorage(String id, ProcessInstance instance, boolean checkDuplicates) {
-        if (isActive(instance)) {
+        if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
             byte[] data = marshaller.marshallProcessInstance(instance);
             if (checkDuplicates) {
                 byte[] existing = cache.putIfAbsent(id, data);
@@ -131,10 +132,11 @@ public class CacheProcessInstances implements MutableProcessInstances {
                     cache.put(id, data);
                 }
             }
+            connectProcessInstance(id, instance);
         }
     }
 
-    private void disconnect(String id, ProcessInstance instance) {
+    private void connectProcessInstance(String id, ProcessInstance instance) {
         if (this.lock) {
             reloadWithLock(id, instance);
         } else {
@@ -149,13 +151,11 @@ public class CacheProcessInstances implements MutableProcessInstances {
             return versionedCache.getValue();
         };
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(supplier));
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     private void reload(String id, ProcessInstance instance) {
         Supplier<byte[]> supplier = () -> cache.get(id);
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(supplier));
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     @Override

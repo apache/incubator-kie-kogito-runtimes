@@ -27,7 +27,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.state.KeyValueIterator;
-import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.apache.kafka.streams.state.KeyValueStore;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.kie.kogito.persistence.kafka.KafkaPersistenceUtils.topicName;
-import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.*;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -68,7 +69,7 @@ public class KafkaProcessInstancesTest {
     Process process;
 
     @Mock
-    ReadOnlyKeyValueStore<String, byte[]> store;
+    KeyValueStore<String, byte[]> store;
 
     @Mock
     ProcessInstanceMarshallerService marshaller;
@@ -84,7 +85,7 @@ public class KafkaProcessInstancesTest {
         instances = new KafkaProcessInstances(process, producer);
         instances.setStore(store);
         instances.setMarshaller(marshaller);
-        lenient().when(marshaller.createUnmarshallFunction(any(), any())).thenCallRealMethod();
+        lenient().when(marshaller.unmarshallProcessInstance(any(), any())).thenCallRealMethod();
     }
 
     @Test
@@ -187,7 +188,6 @@ public class KafkaProcessInstancesTest {
     @Test
     public void testProcessInstancesSize() {
         doReturn(mock(KeyValueIterator.class)).when(store).prefixScan(eq(processId), any());
-
         assertEmpty(instances);
     }
 
@@ -206,7 +206,6 @@ public class KafkaProcessInstancesTest {
         assertThat(captor.getValue().key()).isEqualTo(storedId);
         assertThat(captor.getValue().topic()).isEqualTo(topicName());
 
-        verify(instance).internalRemoveProcessInstance();
         verify(marshaller).createdReloadFunction(any());
     }
 

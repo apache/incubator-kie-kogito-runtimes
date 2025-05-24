@@ -84,29 +84,29 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     @SuppressWarnings("unchecked")
     @Override
     public void create(String id, ProcessInstance instance) {
-        if (!isActive(instance)) {
-            disconnect(instance);
+        if (!isActive(instance) && instance.status() != ProcessInstance.STATE_PENDING) {
             return;
         }
         insertInternal(id, marshaller.marshallProcessInstance(instance));
+        connectProcessInstance(instance);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void update(String id, ProcessInstance instance) {
-        if (!isActive(instance)) {
-            disconnect(instance);
+        if (!isActive(instance) && instance.status() != ProcessInstance.STATE_PENDING) {
             return;
         }
-        try {
-            if (lock) {
-                updateWithLock(id, marshaller.marshallProcessInstance(instance), instance.version());
-            } else {
-                updateInternal(id, marshaller.marshallProcessInstance(instance));
-            }
-        } finally {
-            disconnect(instance);
+
+        if (lock) {
+            updateWithLock(id, marshaller.marshallProcessInstance(instance), instance.version());
+            ((AbstractProcessInstance) instance).setVersion(instance.version() + 1);
+        } else {
+            updateInternal(id, marshaller.marshallProcessInstance(instance));
         }
+
+        connectProcessInstance(instance);
+
     }
 
     @Override
@@ -117,11 +117,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     @Override
     public Optional<ProcessInstance> findById(String id, ProcessInstanceReadMode mode) {
         return findByIdInternal(id).map(r -> {
-            AbstractProcessInstance pi = (AbstractProcessInstance) unmarshall(r, mode);
-            if (!ProcessInstanceReadMode.READ_ONLY.equals(mode)) {
-                disconnect(pi);
-            }
-            return pi;
+            return (AbstractProcessInstance) unmarshall(r, mode);
         });
     }
 
@@ -142,6 +138,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     private ProcessInstance<?> unmarshall(Row r, ProcessInstanceReadMode mode) {
         AbstractProcessInstance instance = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(r.getBuffer(PAYLOAD).getBytes(), process, mode);
         instance.setVersion(r.getLong(VERSION));
+        connectProcessInstance(instance);
         return instance;
     }
 
@@ -150,12 +147,11 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         return this.lock;
     }
 
-    private void disconnect(ProcessInstance instance) {
+    private void connectProcessInstance(ProcessInstance instance) {
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> findByIdInternal(instance.id()).map(r -> {
             ((AbstractProcessInstance) instance).setVersion(r.getLong(VERSION));
             return r.getBuffer(PAYLOAD).getBytes();
         }).orElseThrow()));
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance();
     }
 
     private boolean insertInternal(String id, byte[] payload) {
