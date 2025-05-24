@@ -258,12 +258,14 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
                             .filter(e -> {
                                 List<String> eventTypes = null;
                                 // this instances is already in memory and connected so we just need to get the event types.
-                                // to avoid messup with the lifecycle
+                                // to avoid mssing up with the lifecycle
                                 if (e.internalGetProcessInstance() != null) {
                                     eventTypes = List.of(e.internalGetProcessInstance().getEventTypes());
                                 } else {
-                                    // we proces the events
-                                    eventTypes = e.executeInWorkflowProcessInstanceRead(w -> List.of(w.getEventTypes()));
+                                    // we process the events wih
+                                    e.internalLoadState();
+                                    eventTypes = List.of(e.internalGetProcessInstance().getEventTypes());
+                                    e.internalUnloadState();
                                 }
                                 return eventTypes.contains(eventType);
                             })
