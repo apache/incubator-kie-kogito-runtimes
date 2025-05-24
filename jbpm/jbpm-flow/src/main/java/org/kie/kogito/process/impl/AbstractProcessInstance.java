@@ -194,19 +194,23 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         return this.rt != null;
     }
 
-    protected WorkflowProcessInstanceImpl internalLoadProcessInstanceState() {
+    public WorkflowProcessInstanceImpl internalLoadProcessInstanceState() {
         LOG.debug("internal reload process instance {}", id);
+        internalLoadState();
+        if (isProcessInstanceConnected()) {
+            reconnect();
+        }
+        syncWorkflowInstanceState(processInstance);
+        return (WorkflowProcessInstanceImpl) this.processInstance;
+    }
+
+    public void internalLoadState() {
         if (this.processInstance == null) {
             reloadSupplier.accept(this);
             if (this.processInstance == null) {
                 throw new ProcessInstanceNotFoundException(id);
             }
         }
-        if (isProcessInstanceConnected()) {
-            reconnect();
-        }
-        syncWorkflowInstanceState(processInstance);
-        return (WorkflowProcessInstanceImpl) this.processInstance;
     }
 
     protected void reconnect() {
@@ -223,7 +227,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         processInstance.reconnect();
     }
 
-    protected void internalUnloadProcessInstanceState() {
+    public void internalUnloadProcessInstanceState() {
         if (processInstance == null) {
             LOG.debug("internal unload process instance {} invocation. already disconnected", id);
             return;
@@ -237,6 +241,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             processInstance.getMetaData().remove(KOGITO_PROCESS_INSTANCE);
             disconnect();
         }
+        internalUnloadState();
+    }
+
+    public void internalUnloadState() {
         // we left the instance in read only mode once it is completed
         if (status == STATE_COMPLETED || status == STATE_ABORTED) {
             this.rt = null;
