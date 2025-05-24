@@ -66,6 +66,7 @@ import org.kie.kogito.process.NodeNotFoundException;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.kie.kogito.process.ProcessInstanceNotFoundException;
 import org.kie.kogito.process.Signal;
 import org.kie.kogito.process.WorkItem;
@@ -126,7 +127,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
         org.kie.api.definition.process.Process processDefinition = process.get();
         if (processDefinition instanceof WorkflowProcess) {
-            ((WorkflowProcess) processDefinition).getInputValidator().ifPresent(v -> v.validate(map));
+            try {
+                ((WorkflowProcess) processDefinition).getInputValidator().ifPresent(v -> v.validate(map));
+            } catch (IllegalArgumentException e) {
+                throw new ProcessInstanceExecutionException(id, null, null, e.getMessage(), e);
+            }
         }
         String processId = processDefinition.getId();
 
@@ -177,7 +182,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         setCorrelationKey(wpi.getCorrelationKey());
 
         if (this.status == STATE_COMPLETED || this.status == STATE_ERROR) {
-            ((WorkflowProcess) process.get()).getOutputValidator().ifPresent(v -> v.validate(processInstance.getVariables()));
+            try {
+                ((WorkflowProcess) process.get()).getOutputValidator().ifPresent(v -> v.validate(wpi.getVariables()));
+            } catch (IllegalArgumentException e) {
+                throw new ProcessInstanceExecutionException(id, null, null, e.getMessage(), e);
+            }
         }
     }
 
