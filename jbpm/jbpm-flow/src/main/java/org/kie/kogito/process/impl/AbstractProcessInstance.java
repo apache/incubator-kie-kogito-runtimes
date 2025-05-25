@@ -248,7 +248,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         // we left the instance in read only mode once it is completed
         if (status == STATE_COMPLETED || status == STATE_ABORTED) {
             this.rt = null;
-        } else {
+        } else if (status != STATE_PENDING){
+            // already persisted. PENDING means that it has not started yet
             processInstance = null;
         }
     }
