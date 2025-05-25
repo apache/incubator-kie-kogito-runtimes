@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 public class ServerlessWorkflowIT extends AbstractCodegenIT {
 
@@ -81,7 +82,7 @@ public class ServerlessWorkflowIT extends AbstractCodegenIT {
         boolean completed = listener.waitTillCompleted(5000);
         assertThat(completed).isTrue();
 
-        assertThat(p.instances().stream().count()).isEqualTo(0);
+        await().until(() -> p.instances().stream().count() == 0);
     }
 
     @ParameterizedTest
