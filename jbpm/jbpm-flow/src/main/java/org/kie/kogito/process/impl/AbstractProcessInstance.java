@@ -548,7 +548,13 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
      * @return
      */
     public <R> R executeInWorkflowProcessInstanceRead(Function<WorkflowProcessInstanceImpl, R> execution) {
-        return executeInWorkflowProcessInstance(execution);
+        return processInstanceLockStrategy.executeOperation(id, () -> {
+            WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
+            R outcome = execution.apply(workflowProcessInstance);
+            syncWorkflowInstanceState(workflowProcessInstance);
+            internalUnloadProcessInstanceState();
+            return outcome;
+        });
     }
 
     private <R> R executeInWorkflowProcessInstance(Function<WorkflowProcessInstanceImpl, R> execution) {
