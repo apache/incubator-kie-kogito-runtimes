@@ -59,7 +59,7 @@
     <version.com.github.javaparser>3.26.3</version.com.github.javaparser>
     <version.com.fasterxml.jackson.datatype>2.18.2</version.com.fasterxml.jackson.datatype>
     <version.com.github.victools>4.37.0</version.com.github.victools>
-    <version.com.github.tomakehurst.wiremock>3.13.0</version.com.github.tomakehurst.wiremock>
+    <version.org.wiremock>3.13.0</version.org.wiremock>
     <version.com.google.protobuf>3.25.5</version.com.google.protobuf>
     <!-- We don't use gson directly. This is just to align versions of transitive dependencies -->
     <version.com.google.gson>2.10.1</version.com.google.gson>
@@ -664,13 +664,13 @@
       <dependency>
         <groupId>org.wiremock</groupId>
         <artifactId>wiremock</artifactId>
-        <version>${version.com.github.tomakehurst.wiremock}</version>
+        <version>${version.org.wiremock}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.wiremock</groupId>
         <artifactId>wiremock-standalone</artifactId>
-        <version>${version.com.github.tomakehurst.wiremock}</version>
+        <version>${version.org.wiremock}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
