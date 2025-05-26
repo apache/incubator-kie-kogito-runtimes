@@ -56,7 +56,6 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.jobs.TimerDescription;
 import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,11 +111,6 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     @Override
     public boolean isRetrigger() {
         return isRetrigger;
-    }
-
-    @Override
-    public Collection<TimerDescription> timers() {
-        return new ArrayList<>();
     }
 
     public void setNodeId(WorkflowElementIdentifier nodeId) {

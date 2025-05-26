@@ -18,10 +18,7 @@
  */
 package org.kie.kogito.internal.process.runtime;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.jobs.TimerDescription;
@@ -90,5 +87,7 @@ public interface KogitoNodeInstance extends NodeInstance {
      * 
      * @return a collection of {@link TimerDescription} instances, never null.
      */
-    Collection<TimerDescription> timers();
+    default Collection<TimerDescription> timers() {
+        return new ArrayList<>();
+    }
 }
