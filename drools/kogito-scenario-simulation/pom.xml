@@ -61,7 +61,8 @@
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-pmml</artifactId>
       </dependency>
-<!--       EFESTO -->
+     <!-- EFESTO -->
+      <!-- DRL -->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drl-compilation-common</artifactId>
@@ -69,6 +70,15 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drl-map-input-runtime</artifactId>
+      </dependency>
+      <!-- DMN -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-dmn-efesto-compilation</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-dmn-efesto-runtime</artifactId>
       </dependency>
 
 
@@ -97,12 +107,6 @@
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-scenario-simulation-api</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.kie.soup</groupId>
-                    <artifactId>kie-soup-project-datamodel-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -119,16 +123,6 @@
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
-                </exclusion>
-
-                <!-- KIE soup -->
-                <exclusion>
-                    <groupId>org.kie.soup</groupId>
-                    <artifactId>kie-soup-commons</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.kie.soup</groupId>
-                    <artifactId>kie-soup-project-datamodel-api</artifactId>
                 </exclusion>
 
                 <!-- MVEL support -->
@@ -156,6 +150,13 @@
                 </exclusion>
 
             </exclusions>
+        </dependency>
+
+        <!-- For unit test logging: configure in src/test/resources/logback.xml -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
