@@ -63,12 +63,17 @@ public class ProcessManagementIT {
                 .get("/management/processes/timers/instances/{processInstanceId}/timers", processInstanceId)
                 .then()
                 .statusCode(200)
-                .body("$.size()", equalTo(3))
+                .body("$.size()", equalTo(4))
                 .body("", hasItem(allOf(
                         hasEntry("processId", "timers"),
                         hasEntry("processInstanceId", processInstanceId),
                         hasKey("timerId"),
                         hasEntry("description", "[SLA-Process] timers"))))
+                .body("", hasItem(allOf(
+                        hasEntry("processId", "timers"),
+                        hasEntry("processInstanceId", processInstanceId),
+                        hasKey("timerId"),
+                        hasEntry("description", "[CANCEL-Process] timers"))))
                 .body("", hasItem(allOf(
                         hasEntry("processId", "timers"),
                         hasEntry("processInstanceId", processInstanceId),

@@ -44,6 +44,8 @@ import org.kie.kogito.timer.TimerInstance;
 
 import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
 import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
+import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
+import static org.kie.kogito.internal.utils.ConversionUtils.isNotEmpty;
 
 /**
  * Runtime counterpart of an event node.
@@ -112,7 +114,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
     }
 
     private void cancelSlaTimer() {
-        if (this.slaTimerId != null && !this.slaTimerId.trim().isEmpty()) {
+        if (isNotEmpty(this.slaTimerId)) {
             JobsService jobService = ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getJobsService();
             jobService.cancelJob(this.slaTimerId);
             logger.debug("SLA Timer {} has been canceled", this.slaTimerId);
@@ -226,7 +228,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
         } else {
             getProcessInstance().addEventListener(eventType, getEventListener(), true);
         }
-        if (this.slaTimerId != null && !this.slaTimerId.trim().isEmpty()) {
+        if (isNotEmpty(this.slaTimerId)) {
             addTimerListener();
         }
     }
@@ -278,7 +280,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
 
     @Override
     public Collection<TimerDescription> timers() {
-        if (slaTimerId == null) {
+        if (isEmpty(slaTimerId)) {
             return super.timers();
         }
 

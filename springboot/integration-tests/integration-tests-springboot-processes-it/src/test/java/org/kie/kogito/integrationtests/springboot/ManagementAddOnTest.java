@@ -32,7 +32,9 @@ import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -154,12 +156,17 @@ class ManagementAddOnTest extends BaseRestTest {
                 .get("/management/processes/{processId}/instances/{processInstanceId}/timers", TIMERS, processInstanceId)
                 .then()
                 .statusCode(200)
-                .body("$.size()", equalTo(3))
+                .body("$.size()", equalTo(4))
                 .body("", hasItem(allOf(
                         hasEntry("processId", "timers"),
                         hasEntry("processInstanceId", processInstanceId),
                         hasKey("timerId"),
                         hasEntry("description", "[SLA-Process] timers"))))
+                .body("", hasItem(allOf(
+                        hasEntry("processId", "timers"),
+                        hasEntry("processInstanceId", processInstanceId),
+                        hasKey("timerId"),
+                        hasEntry("description", "[CANCEL-Process] timers"))))
                 .body("", hasItem(allOf(
                         hasEntry("processId", "timers"),
                         hasEntry("processInstanceId", processInstanceId),

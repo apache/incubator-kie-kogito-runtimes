@@ -121,6 +121,7 @@ import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
 import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
 import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
+import static org.kie.kogito.internal.utils.ConversionUtils.isNotEmpty;
 import static org.kie.kogito.process.flexible.ItemDescription.Status.ACTIVE;
 import static org.kie.kogito.process.flexible.ItemDescription.Status.AVAILABLE;
 import static org.kie.kogito.process.flexible.ItemDescription.Status.COMPLETED;
@@ -1374,15 +1375,15 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
         List<TimerDescription> toReturn = new ArrayList<>();
 
-        if (this.slaTimerId != null) {
+        if (isNotEmpty(this.slaTimerId)) {
             toReturn.add(TimerDescription.Builder.ofProcessInstance(this)
                     .timerId(slaTimerId)
                     .timerDescription("[SLA-Process] " + getProcessName())
                     .build());
         }
-        if (this.cancelTimerId != null) {
+        if (isNotEmpty(this.cancelTimerId)) {
             toReturn.add(TimerDescription.Builder.ofProcessInstance(this)
-                    .timerId(slaTimerId)
+                    .timerId(cancelTimerId)
                     .timerDescription("[CANCEL-Process] " + getProcessName())
                     .build());
         }

@@ -38,6 +38,9 @@
       <drools:metaData name="customSLADueDate">
         <drools:metaValue><![CDATA[200m]]></drools:metaValue>
       </drools:metaData>
+      <drools:metaData name="processDuration">
+        <drools:metaValue><![CDATA[PT1M]]></drools:metaValue>
+      </drools:metaData>
     </bpmn2:extensionElements>
     <bpmn2:sequenceFlow id="_2CCE6D96-07C9-4196-A3DA-2FA12675606B" sourceRef="_C64FDE83-9AE3-4BC8-94AC-14805BE0D3D3" targetRef="_A2B595B9-3809-487E-B354-677DE3EB9B83"/>
     <bpmn2:sequenceFlow id="_217C7B88-D29D-479F-9DDA-49C505B55DB3" sourceRef="_CB75879B-EB0D-4F28-AC61-E6FAA0126490" targetRef="_66215F0B-D52C-4DEF-8BAE-3524FD59A246"/>

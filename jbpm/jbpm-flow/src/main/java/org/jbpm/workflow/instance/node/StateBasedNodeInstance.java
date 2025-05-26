@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_ENVIRONMENT_KEY;
 import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
+import static org.kie.kogito.internal.utils.ConversionUtils.isNotEmpty;
 
 public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl implements EventBasedNodeInstanceInterface, KogitoEventListener {
 
@@ -324,7 +325,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
     @Override
     public void addEventListeners() {
-        if (timerInstances != null && (!timerInstances.isEmpty()) || (this.slaTimerId != null && !this.slaTimerId.trim().isEmpty())) {
+        if (timerInstances != null && (!timerInstances.isEmpty()) || isNotEmpty(this.slaTimerId)) {
             addTimerListener();
         }
         if (slaCompliance == KogitoProcessInstance.SLA_PENDING) {
@@ -409,7 +410,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
     }
 
     private void cancelSlaTimer() {
-        if (this.slaTimerId != null && !this.slaTimerId.trim().isEmpty()) {
+        if (isNotEmpty(this.slaTimerId)) {
             JobsService jobService = ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getJobsService();
             jobService.cancelJob(this.slaTimerId);
             logger.debug("SLA Timer {} has been canceled", this.slaTimerId);
@@ -464,7 +465,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
     public Collection<TimerDescription> timers() {
         Collection<TimerDescription> toReturn = super.timers();
 
-        if (slaTimerId != null) {
+        if (isNotEmpty(slaTimerId)) {
             TimerDescription slaTimer = TimerDescription.Builder.ofNodeInstance(this)
                     .timerId(slaTimerId)
                     .timerDescription("[SLA] " + resolveExpression(getNodeName()))

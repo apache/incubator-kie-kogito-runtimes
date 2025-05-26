@@ -43,6 +43,7 @@ import org.kie.kogito.uow.WorkUnit;
 
 import static org.jbpm.ruleflow.core.Metadata.ASYNC_WAITING;
 import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
+import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
 
 /**
  * Runtime counterpart of an event node.
@@ -166,7 +167,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
     @Override
     public Collection<TimerDescription> timers() {
-        if (jobId == null) {
+        if (isEmpty(jobId)) {
             return super.timers();
         }
 
