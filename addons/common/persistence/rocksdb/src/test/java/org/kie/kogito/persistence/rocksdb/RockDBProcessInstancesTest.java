@@ -42,6 +42,7 @@ import org.kie.kogito.Model;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
 import org.kie.kogito.process.bpmn2.StaticApplicationAssembler;
@@ -138,6 +139,22 @@ class RockDBProcessInstancesTest {
         try (Stream<ProcessInstance<?>> stream = pi.stream()) {
             assertThat(stream.count()).isZero();
         }
+    }
+
+    @Test
+    public void testSignalStorage() {
+        BpmnProcess process = createProcess("BPMN2-IntermediateCatchEventSignal.bpmn2");
+        RocksDBProcessInstances fsInstances = (RocksDBProcessInstances) process.instances();
+        ProcessInstance<BpmnVariables> pi1 = process.createInstance(BpmnVariables.create(Collections.singletonMap("name", "sig1")));
+        ProcessInstance<BpmnVariables> pi2 = process.createInstance(BpmnVariables.create(Collections.singletonMap("name", "sig2")));
+        pi1.start();
+        pi2.start();
+
+        pi1.workItems().forEach(wi -> pi1.completeWorkItem(wi.getId(), Collections.emptyMap()));
+        pi2.workItems().forEach(wi -> pi2.completeWorkItem(wi.getId(), Collections.emptyMap()));
+        process.send(SignalFactory.of("sig1", "SomeValue"));
+        process.send(SignalFactory.of("sig2", "SomeValue"));
+        assertThat(process.instances().stream().count()).isEqualTo(0);
     }
 
     WorkflowProcessInstance createProcessInstance() {

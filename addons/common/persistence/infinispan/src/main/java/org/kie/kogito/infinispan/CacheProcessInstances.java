@@ -84,7 +84,9 @@ public class CacheProcessInstances<T extends Model> implements MutableProcessIns
     }
 
     private Set<String> getUniqueEvents(ProcessInstance<T> instance) {
-        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toCollection(HashSet::new));
+        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes())
+                .map(e -> e + ":" + instance.id())
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     @Override

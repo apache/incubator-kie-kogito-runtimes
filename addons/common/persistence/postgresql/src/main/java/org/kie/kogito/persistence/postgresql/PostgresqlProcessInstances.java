@@ -152,9 +152,9 @@ public class PostgresqlProcessInstances<T extends Model> implements MutableProce
         try {
             Tuple parameters = null;
             if (process.version() != null) {
-                parameters = tuple(eventType, process.id());
-            } else {
                 parameters = tuple(eventType, process.id(), process.version());
+            } else {
+                parameters = tuple(eventType, process.id());
             }
             return getResultFromFuture(client.preparedQuery(FIND_ALL_WAITING_FOR_EVENT_TYPE + (process.version() == null ? IS_NULL : "= $3")).execute(parameters))
                     .map(r -> StreamSupport.stream(r.spliterator(), false)).orElse(Stream.empty())
@@ -239,7 +239,6 @@ public class PostgresqlProcessInstances<T extends Model> implements MutableProce
             PreparedQuery<RowSet<Row>> rows = null;
             if (process.version() == null) {
                 rows = client.preparedQuery(MIGRATE_INSTANCE + IS_NULL);
-
             } else {
                 rows = client.preparedQuery(MIGRATE_INSTANCE + "= $5");
             }

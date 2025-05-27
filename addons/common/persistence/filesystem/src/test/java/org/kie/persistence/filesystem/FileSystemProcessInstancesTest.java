@@ -35,6 +35,8 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.ProcessInstances;
+import org.kie.kogito.process.Processes;
+import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
@@ -66,19 +68,22 @@ class FileSystemProcessInstancesTest {
 
     private SecurityPolicy securityPolicy = SecurityPolicy.of("john", emptyList());
 
-    private BpmnProcess createProcess(String fileName) {
-        StaticProcessConfig processConfig = StaticProcessConfig.newStaticProcessConfigBuilder()
-                .withWorkItemHandler("Human Task", new DefaultKogitoWorkItemHandler())
-                .build();
-
-        Application application = StaticApplicationAssembler.instance().newStaticApplication(new FileSystemProcessInstancesFactory(), processConfig, fileName);
-
-        org.kie.kogito.process.Processes container = application.get(org.kie.kogito.process.Processes.class);
+    private BpmnProcess createProcess(String... fileName) {
+        org.kie.kogito.process.Processes container = createApplication(fileName).get(Processes.class);
         String processId = container.processIds().stream().findFirst().get();
         org.kie.kogito.process.Process<? extends Model> process = container.processById(processId);
 
         abort(process.instances());
         return (BpmnProcess) process;
+    }
+
+    private Application createApplication(String... fileName) {
+        StaticProcessConfig processConfig = StaticProcessConfig.newStaticProcessConfigBuilder()
+                .withWorkItemHandler("Human Task", new DefaultKogitoWorkItemHandler())
+                .build();
+
+        Application application = StaticApplicationAssembler.instance().newStaticApplication(new FileSystemProcessInstancesFactory(), processConfig, fileName);
+        return application;
     }
 
     @Test
@@ -278,6 +283,22 @@ class FileSystemProcessInstancesTest {
         assertThatExceptionOfType(SecurityException.class)
                 .isThrownBy(() -> fsInstances.remove("../../../etc/passwd"))
                 .withMessageContaining("Path traversal attempt detected");
+    }
+
+    @Test
+    public void testSignalStorage() {
+        BpmnProcess process = createProcess("BPMN2-IntermediateCatchEventSignal.bpmn2");
+        FileSystemProcessInstances fsInstances = (FileSystemProcessInstances) process.instances();
+        ProcessInstance<BpmnVariables> pi1 = process.createInstance(BpmnVariables.create(Collections.singletonMap("name", "sig1")));
+        ProcessInstance<BpmnVariables> pi2 = process.createInstance(BpmnVariables.create(Collections.singletonMap("name", "sig2")));
+        pi1.start();
+        pi2.start();
+
+        pi1.workItems().forEach(wi -> pi1.completeWorkItem(wi.getId(), Collections.emptyMap()));
+        pi2.workItems().forEach(wi -> pi2.completeWorkItem(wi.getId(), Collections.emptyMap()));
+        process.send(SignalFactory.of("sig1", "SomeValue"));
+        process.send(SignalFactory.of("sig2", "SomeValue"));
+        assertThat(process.instances().stream().count()).isEqualTo(0);
     }
 
     private static class FileSystemProcessInstancesFactory extends AbstractProcessInstancesFactory {

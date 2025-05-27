@@ -37,7 +37,7 @@ abstract class Repository {
     static final String MIGRATE_BULK = "UPDATE process_instances SET process_id = ?, process_version = ? WHERE process_id = ? ";
     static final String MIGRATE_INSTANCE = "UPDATE process_instances SET process_id = ?, process_version = ? WHERE id = ANY (?) and process_id = ? ";
     static final String FIND_ALL_WAITING_FOR_EVENT_TYPE =
-            "SELECT payload, version FROM event_types, process_instances WHERE process_instances.id = event_types.process_instance_id AND event_type = ? AND process_id = ?";
+            "SELECT payload, version FROM event_types, process_instances WHERE process_instances.id = event_types.process_instance_id AND process_id = ? AND event_type = ?";
     static final String DELETE_ALL_WAITING_FOR_EVENT_TYPE = "DELETE FROM event_types WHERE process_instance_id = ?";
     static final String INSERT_WAITING_FOR_EVENT_TYPE = "INSERT INTO event_types (process_instance_id, event_type) VALUES(?,?)";
 

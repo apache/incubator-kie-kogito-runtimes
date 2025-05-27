@@ -189,7 +189,9 @@ public class RocksDBProcessInstances<T extends Model> implements MutableProcessI
     }
 
     private Set<String> getUniqueEvents(ProcessInstance<T> instance) {
-        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toCollection(HashSet::new));
+        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes())
+                .map(e -> e + ":" + instance.id())
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     private ProcessInstance<T> unmarshall(byte[] data, ProcessInstanceReadMode mode) {

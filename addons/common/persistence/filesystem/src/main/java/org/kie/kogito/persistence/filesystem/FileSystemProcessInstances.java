@@ -123,8 +123,8 @@ public class FileSystemProcessInstances<T extends Model> implements MutableProce
             }
 
             storeProcessInstance(processInstanceStorage, instance);
-            connectInstance(processInstanceStorage, instance);
             storeEventType(instance);
+            connectInstance(processInstanceStorage, instance);
         }
     }
 
@@ -157,7 +157,8 @@ public class FileSystemProcessInstances<T extends Model> implements MutableProce
             if (!Files.exists(eventTypeStorage)) {
                 return Collections.<ProcessInstance<T>> emptyList().stream();
             }
-            List<String> processInstanceIds = Files.lines(eventTypeStorage)
+            List<String> processInstanceIds = Files.readAllLines(eventTypeStorage)
+                    .stream()
                     .filter(line -> line.startsWith(eventType + ":"))
                     .map(line -> line.substring(line.indexOf(":") + 1)).toList();
             List<ProcessInstance<T>> waitingInstances = new ArrayList<>();
@@ -179,7 +180,7 @@ public class FileSystemProcessInstances<T extends Model> implements MutableProce
             cleanEventType(instance.id());
             Set<String> eventTypes = Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toSet());
             for (String eventType : eventTypes) {
-                Files.writeString(eventTypeStorage, eventType + ":" + instance.id() + "\n", StandardOpenOption.APPEND);
+                Files.write(eventTypeStorage, (eventType + ":" + instance.id() + System.lineSeparator()).getBytes(), StandardOpenOption.APPEND);
             }
         } catch (IOException e) {
             throw new RuntimeException("Unable to store process instance with id " + instance.id(), e);
@@ -191,11 +192,11 @@ public class FileSystemProcessInstances<T extends Model> implements MutableProce
             if (!Files.exists(eventTypeStorage)) {
                 return;
             }
-            List<String> lines = Files.lines(eventTypeStorage)
+            List<String> lines = Files.readAllLines(eventTypeStorage).stream()
                     .filter(line -> !line.endsWith(":" + processInstanceId)).toList();
-            String fileContent = String.join("\n", lines);
+            String fileContent = String.join(System.lineSeparator(), lines);
 
-            Files.writeString(eventTypeStorage, fileContent, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(eventTypeStorage, (fileContent + System.lineSeparator()).getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException("Unable to store process instance events with id " + processInstanceId, e);
         }

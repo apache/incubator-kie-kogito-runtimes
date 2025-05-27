@@ -58,8 +58,8 @@ public class GenericRepository extends Repository {
             eventStatement.executeUpdate();
 
             for (String eventType : eventTypes) {
-                insertEventStatement.setString(2, id.toString());
-                insertEventStatement.setString(1, eventType);
+                insertEventStatement.setString(1, id.toString());
+                insertEventStatement.setString(2, eventType);
                 insertEventStatement.executeUpdate();
             }
 
@@ -93,8 +93,8 @@ public class GenericRepository extends Repository {
             eventStatement.executeUpdate();
 
             for (String eventType : eventTypes) {
-                insertEventStatement.setString(2, id.toString());
-                insertEventStatement.setString(1, eventType);
+                insertEventStatement.setString(1, id.toString());
+                insertEventStatement.setString(2, eventType);
                 insertEventStatement.executeUpdate();
             }
 
@@ -121,8 +121,8 @@ public class GenericRepository extends Repository {
             eventStatement.executeUpdate();
 
             for (String eventType : eventTypes) {
-                insertEventStatement.setString(2, id.toString());
-                insertEventStatement.setString(1, eventType);
+                insertEventStatement.setString(1, id.toString());
+                insertEventStatement.setString(2, eventType);
                 insertEventStatement.executeUpdate();
             }
 
@@ -188,7 +188,6 @@ public class GenericRepository extends Repository {
 
     @Override
     Stream<Record> findAllInternalWaitingFor(String processId, String processVersion, String eventType) {
-        CloseableWrapper close = new CloseableWrapper();
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(FIND_ALL_WAITING_FOR_EVENT_TYPE, processVersion));) {
             statement.setString(1, processId);
@@ -198,18 +197,14 @@ public class GenericRepository extends Repository {
             }
 
             List<Record> data = new ArrayList<>();
-            ResultSet resultSet = close.nest(statement.executeQuery());
+            ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 data.add(from(resultSet));
             }
+            resultSet.close();
             return data.stream();
         } catch (SQLException e) {
-            try {
-                close.close();
-            } catch (Exception ex) {
-                e.addSuppressed(ex);
-            }
-            throw uncheckedException(e, "Error finding all process instances, for processId %s", processId);
+            throw uncheckedException(e, "Error finding all process instances, for processId %s waiting for %s", processId, eventType);
         }
     }
 
