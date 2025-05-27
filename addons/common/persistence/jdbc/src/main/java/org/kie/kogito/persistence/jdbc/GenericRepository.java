@@ -23,7 +23,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -46,9 +48,21 @@ public class GenericRepository extends Repository {
     }
 
     @Override
-    void insertInternal(String processId, String processVersion, UUID id, byte[] payload, String businessKey) {
+    void insertInternal(String processId, String processVersion, UUID id, byte[] payload, String businessKey, String[] eventTypes) {
         try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(INSERT)) {
+                PreparedStatement statement = connection.prepareStatement(INSERT);
+                PreparedStatement eventStatement = connection.prepareStatement(DELETE_ALL_WAITING_FOR_EVENT_TYPE);
+                PreparedStatement insertEventStatement = connection.prepareStatement(sqlIncludingVersion(DELETE_ALL_WAITING_FOR_EVENT_TYPE, processVersion))) {
+
+            eventStatement.setString(1, id.toString());
+            eventStatement.executeUpdate();
+
+            for (String eventType : eventTypes) {
+                eventStatement.setString(2, id.toString());
+                eventStatement.setString(1, eventType);
+                insertEventStatement.executeUpdate();
+            }
+
             String processInstanceId = id.toString();
             statement.setString(1, processInstanceId);
             statement.setBytes(2, payload);
@@ -69,9 +83,21 @@ public class GenericRepository extends Repository {
     }
 
     @Override
-    void updateInternal(String processId, String processVersion, UUID id, byte[] payload) {
+    void updateInternal(String processId, String processVersion, UUID id, byte[] payload, String[] eventTypes) {
         try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(UPDATE, processVersion))) {
+                PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(UPDATE, processVersion));
+                PreparedStatement eventStatement = connection.prepareStatement(DELETE_ALL_WAITING_FOR_EVENT_TYPE);
+                PreparedStatement insertEventStatement = connection.prepareStatement(sqlIncludingVersion(DELETE_ALL_WAITING_FOR_EVENT_TYPE, processVersion))) {
+
+            eventStatement.setString(1, id.toString());
+            eventStatement.executeUpdate();
+
+            for (String eventType : eventTypes) {
+                eventStatement.setString(2, id.toString());
+                eventStatement.setString(1, eventType);
+                insertEventStatement.executeUpdate();
+            }
+
             statement.setBytes(1, payload);
             statement.setString(2, processId);
             statement.setString(3, id.toString());
@@ -85,9 +111,21 @@ public class GenericRepository extends Repository {
     }
 
     @Override
-    boolean updateWithLock(String processId, String processVersion, UUID id, byte[] payload, long version) {
+    boolean updateWithLock(String processId, String processVersion, UUID id, byte[] payload, long version, String[] eventTypes) {
         try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(UPDATE_WITH_LOCK, processVersion))) {
+                PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(UPDATE_WITH_LOCK, processVersion));
+                PreparedStatement eventStatement = connection.prepareStatement(DELETE_ALL_WAITING_FOR_EVENT_TYPE);
+                PreparedStatement insertEventStatement = connection.prepareStatement(sqlIncludingVersion(DELETE_ALL_WAITING_FOR_EVENT_TYPE, processVersion))) {
+
+            eventStatement.setString(1, id.toString());
+            eventStatement.executeUpdate();
+
+            for (String eventType : eventTypes) {
+                eventStatement.setString(2, id.toString());
+                eventStatement.setString(1, eventType);
+                insertEventStatement.executeUpdate();
+            }
+
             statement.setBytes(1, payload);
             statement.setLong(2, version + 1);
             statement.setString(3, processId);
@@ -106,7 +144,12 @@ public class GenericRepository extends Repository {
     @Override
     boolean deleteInternal(String processId, String processVersion, UUID id) {
         try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(DELETE, processVersion))) {
+                PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(DELETE, processVersion));
+                PreparedStatement eventStatement = connection.prepareStatement(DELETE_ALL_WAITING_FOR_EVENT_TYPE)) {
+
+            eventStatement.setString(1, id.toString());
+            eventStatement.executeUpdate();
+
             statement.setString(1, processId);
             statement.setString(2, id.toString());
             if (processVersion != null) {
@@ -141,6 +184,33 @@ public class GenericRepository extends Repository {
             throw uncheckedException(e, "Error finding process instance %s", id);
         }
         return Optional.empty();
+    }
+
+    @Override
+    Stream<Record> findAllInternalWaitingFor(String processId, String processVersion, String eventType) {
+        CloseableWrapper close = new CloseableWrapper();
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(FIND_ALL_WAITING_FOR_EVENT_TYPE, processVersion));) {
+            statement.setString(1, processId);
+            statement.setString(2, eventType);
+            if (processVersion != null) {
+                statement.setString(3, processVersion);
+            }
+
+            List<Record> data = new ArrayList<>();
+            ResultSet resultSet = close.nest(statement.executeQuery());
+            while (resultSet.next()) {
+                data.add(from(resultSet));
+            }
+            return data.stream();
+        } catch (SQLException e) {
+            try {
+                close.close();
+            } catch (Exception ex) {
+                e.addSuppressed(ex);
+            }
+            throw uncheckedException(e, "Error finding all process instances, for processId %s", processId);
+        }
     }
 
     @Override
@@ -273,4 +343,5 @@ public class GenericRepository extends Repository {
             throw uncheckedException(e, "Error updating process instance %s-%s", processId, processVersion);
         }
     }
+
 }

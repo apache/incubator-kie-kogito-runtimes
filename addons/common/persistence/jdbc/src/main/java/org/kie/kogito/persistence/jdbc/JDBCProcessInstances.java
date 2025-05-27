@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 
 import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
+import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.HeadersPersistentConfig;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
@@ -36,7 +37,7 @@ import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JDBCProcessInstances implements MutableProcessInstances {
+public class JDBCProcessInstances<T extends Model> implements MutableProcessInstances<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JDBCProcessInstances.class);
 
@@ -62,31 +63,31 @@ public class JDBCProcessInstances implements MutableProcessInstances {
         return findById(id).isPresent();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void create(String id, ProcessInstance instance) {
+    public void create(String id, ProcessInstance<T> instance) {
         LOGGER.debug("Creating process instance id: {}, processId: {}, processVersion: {}", id, process.id(), process.version());
         if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
-            repository.insertInternal(process.id(), process.version(), UUID.fromString(id), marshaller.marshallProcessInstance(instance), instance.businessKey());
+            String[] eventTypes = ((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes();
+            repository.insertInternal(process.id(), process.version(), UUID.fromString(id), marshaller.marshallProcessInstance(instance), instance.businessKey(), eventTypes);
             connectInstance(instance);
         } else {
             LOGGER.warn("Skipping create of process instance id: {}, state: {}", id, instance.status());
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void update(String id, ProcessInstance instance) {
+    public void update(String id, ProcessInstance<T> instance) {
         LOGGER.debug("Updating process instance id: {}, processId: {}, processVersion: {}", id, process.id(), process.version());
         if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
+            String[] eventTypes = ((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes();
             if (lock) {
-                boolean isUpdated = repository.updateWithLock(process.id(), process.version(), UUID.fromString(id), marshaller.marshallProcessInstance(instance), instance.version());
+                boolean isUpdated = repository.updateWithLock(process.id(), process.version(), UUID.fromString(id), marshaller.marshallProcessInstance(instance), instance.version(), eventTypes);
                 if (!isUpdated) {
                     throw new ProcessInstanceOptimisticLockingException(id);
                 }
-                ((AbstractProcessInstance) instance).setVersion(instance.version() + 1);
+                ((AbstractProcessInstance<T>) instance).setVersion(instance.version() + 1);
             } else {
-                repository.updateInternal(process.id(), process.version(), UUID.fromString(id), marshaller.marshallProcessInstance(instance));
+                repository.updateInternal(process.id(), process.version(), UUID.fromString(id), marshaller.marshallProcessInstance(instance), eventTypes);
             }
             connectInstance(instance);
         } else {
@@ -112,30 +113,36 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public Optional<ProcessInstance<?>> findById(String id, ProcessInstanceReadMode mode) {
+    public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
         LOGGER.debug("Find process instance id: {}, mode: {}", id, mode);
         return repository.findByIdInternal(process.id(), process.version(), UUID.fromString(id)).map(r -> {
-            return (AbstractProcessInstance) unmarshall(r, mode);
+            return (AbstractProcessInstance<T>) unmarshall(r, mode);
         });
     }
 
     @Override
-    public Optional<ProcessInstance<?>> findByBusinessKey(String businessKey, ProcessInstanceReadMode mode) {
+    public Stream<ProcessInstance<T>> waitingForEventType(String eventType, ProcessInstanceReadMode mode) {
+        LOGGER.debug("Find process instance waiting for {} using mode: {}", eventType, mode);
+        return repository.findAllInternalWaitingFor(process.id(), process.version(), eventType).map(r -> unmarshall(r, mode));
+    }
+
+    @Override
+    public Optional<ProcessInstance<T>> findByBusinessKey(String businessKey, ProcessInstanceReadMode mode) {
         LOGGER.debug("Find process instance using business Key : {}", businessKey);
         return repository.findByBusinessKey(process.id(), process.version(), businessKey).map(r -> {
-            return (AbstractProcessInstance) unmarshall(r, mode);
+            return (AbstractProcessInstance<T>) unmarshall(r, mode);
         });
     }
 
     @Override
-    public Stream<ProcessInstance<?>> stream(ProcessInstanceReadMode mode) {
+    public Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode) {
         LOGGER.debug("Find process instance values using mode: {}", mode);
         return repository.findAllInternal(process.id(), process.version()).map(r -> unmarshall(r, mode));
     }
 
-    private ProcessInstance<?> unmarshall(Repository.Record record, ProcessInstanceReadMode mode) {
-        ProcessInstance<?> instance = marshaller.unmarshallProcessInstance(record.getPayload(), process, mode);
-        ((AbstractProcessInstance<?>) instance).setVersion(record.getVersion());
+    private ProcessInstance<T> unmarshall(Repository.Record record, ProcessInstanceReadMode mode) {
+        AbstractProcessInstance<T> instance = (AbstractProcessInstance<T>) marshaller.unmarshallProcessInstance(record.getPayload(), process, mode);
+        instance.setVersion(record.getVersion());
         connectInstance(instance);
         return instance;
     }
