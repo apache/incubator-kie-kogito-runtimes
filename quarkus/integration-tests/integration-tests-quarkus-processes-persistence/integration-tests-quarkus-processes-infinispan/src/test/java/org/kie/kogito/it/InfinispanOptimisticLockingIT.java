@@ -19,8 +19,10 @@
 package org.kie.kogito.it;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
+import org.junit.jupiter.api.Disabled;
 
 @QuarkusIntegrationTest
+@Disabled("Disabled because of agreement to remove Infinispan code https://lists.apache.org/thread/zdhdyzrzqrp4v25btloyfgk60bry4stz")
 class InfinispanOptimisticLockingIT extends OptimisticLockingTest {
 
 }
