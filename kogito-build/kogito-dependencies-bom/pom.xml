@@ -105,6 +105,7 @@
     <version.io.swagger.core.v3>2.2.19</version.io.swagger.core.v3>
 
     <version.org.apache.commons>3.17.0</version.org.apache.commons>
+    <version.commons.io>2.19.0</version.commons.io>
 
     <version.org.graalvm.nativeimage>23.1.2</version.org.graalvm.nativeimage>
 
@@ -199,6 +200,12 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
         <version>${version.apache.commons.commons-compress}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${version.commons.io}</version>
       </dependency>
 
       <dependency>
