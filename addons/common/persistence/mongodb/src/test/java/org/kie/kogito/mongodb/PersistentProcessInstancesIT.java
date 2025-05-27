@@ -160,7 +160,7 @@ class PersistentProcessInstancesIT extends TestHelper {
         verify(mongoCollection, times(2)).find(eq(clientSession), eq(Filters.eq(PROCESS_INSTANCE_ID, id)));
 
         mongodbInstance.remove(id);
-        verify(mongoCollection, times(1)).deleteOne(eq(clientSession), eq(Filters.eq(PROCESS_INSTANCE_ID, id)));
+        verify(mongoCollection, times(2)).deleteOne(eq(clientSession), eq(Filters.eq(PROCESS_INSTANCE_ID, id)));
 
         WorkflowProcessInstance updatePi = ((AbstractProcessInstance<?>) process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")))).internalGetProcessInstance();
         updatePi.setId(id);
@@ -172,7 +172,7 @@ class PersistentProcessInstancesIT extends TestHelper {
         when(mockUpdateProcessInstance.process()).thenReturn(process);
 
         mongodbInstance.update(id, mockUpdateProcessInstance);
-        verify(mongoCollection, times(1)).replaceOne(eq(clientSession), eq(Filters.eq(PROCESS_INSTANCE_ID, id)), any());
+        verify(mongoCollection, times(2)).replaceOne(eq(clientSession), eq(Filters.eq(PROCESS_INSTANCE_ID, id)), any());
 
         WorkflowProcessInstance createPi = ((AbstractProcessInstance<?>) process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")))).internalGetProcessInstance();
         createPi.setId(id);
@@ -184,7 +184,7 @@ class PersistentProcessInstancesIT extends TestHelper {
         when(mockCreateProcessInstance.process()).thenReturn(process);
 
         mongodbInstance.create(id, mockCreateProcessInstance);
-        verify(mongoCollection, times(1)).insertOne(eq(clientSession), any());
+        verify(mongoCollection, times(2)).insertOne(eq(clientSession), any());
     }
 
     private class MongoDBProcessInstancesFactory extends AbstractProcessInstancesFactory {
