@@ -52,14 +52,14 @@ public class GenericRepository extends Repository {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(INSERT);
                 PreparedStatement eventStatement = connection.prepareStatement(DELETE_ALL_WAITING_FOR_EVENT_TYPE);
-                PreparedStatement insertEventStatement = connection.prepareStatement(sqlIncludingVersion(DELETE_ALL_WAITING_FOR_EVENT_TYPE, processVersion))) {
+                PreparedStatement insertEventStatement = connection.prepareStatement(INSERT_WAITING_FOR_EVENT_TYPE)) {
 
             eventStatement.setString(1, id.toString());
             eventStatement.executeUpdate();
 
             for (String eventType : eventTypes) {
-                eventStatement.setString(2, id.toString());
-                eventStatement.setString(1, eventType);
+                insertEventStatement.setString(2, id.toString());
+                insertEventStatement.setString(1, eventType);
                 insertEventStatement.executeUpdate();
             }
 
@@ -87,14 +87,14 @@ public class GenericRepository extends Repository {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(UPDATE, processVersion));
                 PreparedStatement eventStatement = connection.prepareStatement(DELETE_ALL_WAITING_FOR_EVENT_TYPE);
-                PreparedStatement insertEventStatement = connection.prepareStatement(sqlIncludingVersion(DELETE_ALL_WAITING_FOR_EVENT_TYPE, processVersion))) {
+                PreparedStatement insertEventStatement = connection.prepareStatement(INSERT_WAITING_FOR_EVENT_TYPE)) {
 
             eventStatement.setString(1, id.toString());
             eventStatement.executeUpdate();
 
             for (String eventType : eventTypes) {
-                eventStatement.setString(2, id.toString());
-                eventStatement.setString(1, eventType);
+                insertEventStatement.setString(2, id.toString());
+                insertEventStatement.setString(1, eventType);
                 insertEventStatement.executeUpdate();
             }
 
@@ -115,14 +115,14 @@ public class GenericRepository extends Repository {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(UPDATE_WITH_LOCK, processVersion));
                 PreparedStatement eventStatement = connection.prepareStatement(DELETE_ALL_WAITING_FOR_EVENT_TYPE);
-                PreparedStatement insertEventStatement = connection.prepareStatement(sqlIncludingVersion(DELETE_ALL_WAITING_FOR_EVENT_TYPE, processVersion))) {
+                PreparedStatement insertEventStatement = connection.prepareStatement(INSERT_WAITING_FOR_EVENT_TYPE)) {
 
             eventStatement.setString(1, id.toString());
             eventStatement.executeUpdate();
 
             for (String eventType : eventTypes) {
-                eventStatement.setString(2, id.toString());
-                eventStatement.setString(1, eventType);
+                insertEventStatement.setString(2, id.toString());
+                insertEventStatement.setString(1, eventType);
                 insertEventStatement.executeUpdate();
             }
 

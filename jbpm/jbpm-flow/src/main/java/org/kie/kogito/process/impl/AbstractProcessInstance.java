@@ -288,7 +288,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     public boolean hasHeader(String headerName) {
-        return executeInWorkflowProcessInstanceWrite(pi -> {
+        return executeInWorkflowProcessInstanceRead(pi -> {
             return pi.getHeaders().containsKey(headerName);
         });
     }

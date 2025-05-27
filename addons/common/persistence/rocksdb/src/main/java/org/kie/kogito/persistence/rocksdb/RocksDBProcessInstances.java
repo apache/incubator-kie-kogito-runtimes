@@ -19,9 +19,13 @@
 package org.kie.kogito.persistence.rocksdb;
 
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -43,6 +47,7 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
     private final Process<T> process;
     private final ProcessInstanceMarshallerService marshaller;
     private final RocksDB db;
+    private String eventKey;
 
     public RocksDBProcessInstances(Process<T> process, RocksDB db) {
         this(process, db, null);
@@ -53,6 +58,7 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
         marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().withDefaultListeners()
                 .withContextEntry(MarshallerContextName.MARSHALLER_HEADERS_CONFIG, headersConfig).build();
         this.db = db;
+        this.eventKey = process.id() + "-" + process.version() + ".events";
     }
 
     private class RockSplitIterator extends AbstractSpliterator<ProcessInstance<T>> implements Closeable {
@@ -70,12 +76,21 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
         @Override
         public boolean tryAdvance(Consumer<? super ProcessInstance<T>> action) {
             boolean hasNext = iterator.isValid();
-            if (hasNext) {
+            if (!hasNext) {
+                iterator.close();
+                return false;
+            }
+
+            while(iterator.isValid()) {
+                if(eventKey.equals(new String(iterator.key()))) {
+                    iterator.next();
+                    continue;
+                }
                 action.accept(unmarshall(iterator.value(), mode));
                 iterator.next();
-                hasNext = iterator.isValid();
+                return true;
             }
-            return hasNext;
+            return false;
         }
 
         @Override
@@ -101,6 +116,27 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
     }
 
     @Override
+    public Stream<ProcessInstance<T>> waitingForEventType(String eventType, ProcessInstanceReadMode mode) {
+        try {
+            byte[] eventData = db.get(this.eventKey.getBytes());
+            if (eventData == null) {
+                return Collections.<ProcessInstance<T>> emptyList().stream();
+            }
+            String list = new String(eventData);
+            List<String> processInstancesId = Stream.of(list.split(",")).filter(e -> e.startsWith(eventType + ":")).map(e -> e.substring(e.indexOf(":") + 1)).toList();
+
+            List<ProcessInstance<T>> waitingInstances = new ArrayList<>();
+            for (String processInstanceId : processInstancesId) {
+                byte[] processData = db.get(processInstanceId.getBytes());
+                waitingInstances.add(unmarshall(processData, mode));
+            }
+            return waitingInstances.stream();
+        } catch (RocksDBException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    @Override
     public boolean exists(String id) {
         try {
             return db.get(id.getBytes()) != null;
@@ -115,19 +151,42 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
     }
 
     @Override
-    public void update(String id, ProcessInstance<T> instance) {
+    public synchronized void update(String id, ProcessInstance<T> instance) {
         try {
             db.put(id.getBytes(), marshaller.marshallProcessInstance(instance));
             connectProcessInstance(instance);
+            List<String> events = clearEventTypes(instance.id());
+            events.addAll(computeEvents(instance));
+            db.put(this.eventKey.getBytes(), toBytes(events));
         } catch (RocksDBException ex) {
             throw new IllegalStateException(ex);
         }
     }
 
+    private byte[] toBytes(List<String> events) {
+        return String.join(",", events).getBytes();
+    }
+
+    private List<String> computeEvents(ProcessInstance<T> instance) {
+        if (instance instanceof AbstractProcessInstance abstractProcessInstance) {
+            return List.of(abstractProcessInstance.internalGetProcessInstance().getEventTypes());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<String> clearEventTypes(String processInstanceId) throws RocksDBException {
+        byte[] eventData = db.get(this.eventKey.getBytes());
+        String list = eventData != null ? new String(eventData) : new String();
+        return Stream.of(list.split(",")).filter(e -> !e.endsWith(":" + processInstanceId)).collect(Collectors.toCollection(ArrayList::new));
+    }
+
     @Override
-    public void remove(String id) {
+    public synchronized void remove(String id) {
         try {
             db.delete(id.getBytes());
+            List<String> events = clearEventTypes(id);
+            db.put(this.eventKey.getBytes(), toBytes(events));
         } catch (RocksDBException ex) {
             throw new IllegalStateException(ex);
         }
@@ -148,4 +207,5 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
             }
         }));
     }
+
 }

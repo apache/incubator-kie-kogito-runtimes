@@ -39,7 +39,7 @@ abstract class Repository {
     static final String FIND_ALL_WAITING_FOR_EVENT_TYPE =
             "SELECT payload, version FROM event_types, process_instances WHERE process_instances.id = event_types.process_instance_id AND event_type = ? AND process_id = ?";
     static final String DELETE_ALL_WAITING_FOR_EVENT_TYPE = "DELETE FROM event_types WHERE process_instance_id = ?";
-    static final String INSERT_WAITING_FOR_EVENT_TYPE = "INSERT process_instance_id, event_type VALUES(?,?)";
+    static final String INSERT_WAITING_FOR_EVENT_TYPE = "INSERT INTO event_types (process_instance_id, event_type) VALUES(?,?)";
 
     static class Record {
         private final byte[] payload;

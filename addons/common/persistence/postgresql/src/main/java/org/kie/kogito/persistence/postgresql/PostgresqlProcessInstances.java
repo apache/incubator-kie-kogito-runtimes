@@ -18,8 +18,10 @@
  */
 package org.kie.kogito.persistence.postgresql;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +62,10 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     private static final String UPDATE_WITH_LOCK = "UPDATE process_instances SET payload = $1, version = $2 WHERE process_id = $3 and id = $4 and version = $5 and process_version ";
     private static final String MIGRATE_BULK = "UPDATE process_instances SET process_id = $1, process_version = $2 WHERE process_id = $3 and process_version ";
     private static final String MIGRATE_INSTANCE = "UPDATE process_instances SET process_id = $1, process_version = $2 WHERE process_id = $3 and id = ANY ($4) and process_version ";
+    static final String FIND_ALL_WAITING_FOR_EVENT_TYPE =
+            "SELECT payload, version FROM event_types, process_instances WHERE process_instances.id = event_types.process_instance_id AND event_type = $1 AND process_id = $2 AND process_version ";
+    static final String DELETE_ALL_WAITING_FOR_EVENT_TYPE = "DELETE FROM event_types WHERE process_instance_id = $1";
+    static final String INSERT_WAITING_FOR_EVENT_TYPE = "INSERT INTO event_types (process_instance_id, event_type) VALUES($1,$2)";
 
     private final Process<?> process;
     private final PgPool client;
@@ -87,7 +93,8 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         if (!isActive(instance) && instance.status() != ProcessInstance.STATE_PENDING) {
             return;
         }
-        insertInternal(id, marshaller.marshallProcessInstance(instance));
+        String[] eventTypes = ((AbstractProcessInstance) instance).internalGetProcessInstance().getEventTypes();
+        insertInternal(id, marshaller.marshallProcessInstance(instance), eventTypes);
         connectProcessInstance(instance);
     }
 
@@ -98,11 +105,12 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
             return;
         }
 
+        String[] eventTypes = ((AbstractProcessInstance) instance).internalGetProcessInstance().getEventTypes();
         if (lock) {
-            updateWithLock(id, marshaller.marshallProcessInstance(instance), instance.version());
+            updateWithLock(id, marshaller.marshallProcessInstance(instance), instance.version(), eventTypes);
             ((AbstractProcessInstance) instance).setVersion(instance.version() + 1);
         } else {
-            updateInternal(id, marshaller.marshallProcessInstance(instance));
+            updateInternal(id, marshaller.marshallProcessInstance(instance), eventTypes);
         }
 
         connectProcessInstance(instance);
@@ -135,6 +143,27 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         }
     }
 
+    @Override
+    public Stream<ProcessInstance> waitingForEventType(String eventType, ProcessInstanceReadMode mode) {
+        try {
+            Tuple parameters = null;
+            if (process.version() != null) {
+                parameters = tuple(eventType, process.id());
+            } else {
+                parameters = tuple(eventType, process.id(), process.version());
+            }
+            return getResultFromFuture(client.preparedQuery(FIND_ALL_WAITING_FOR_EVENT_TYPE + (process.version() == null ? IS_NULL : "= $3")).execute(parameters))
+                    .map(r -> StreamSupport.stream(r.spliterator(), false)).orElse(Stream.empty())
+                    .map(row -> unmarshall(row, mode));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw uncheckedException(e, "Error finding all process instances, for processId %s", process.id());
+        } catch (ExecutionException | TimeoutException e) {
+            throw uncheckedException(e, "Error finding all process instances, for processId %s", process.id());
+        }
+
+    }
+
     private ProcessInstance<?> unmarshall(Row r, ProcessInstanceReadMode mode) {
         AbstractProcessInstance instance = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(r.getBuffer(PAYLOAD).getBytes(), process, mode);
         instance.setVersion(r.getLong(VERSION));
@@ -154,11 +183,21 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         }).orElseThrow()));
     }
 
-    private boolean insertInternal(String id, byte[] payload) {
+    private boolean insertInternal(String id, byte[] payload, String[] eventTypes) {
         try {
-            Future<RowSet<Row>> future = client.preparedQuery(INSERT)
-                    .execute(Tuple.of(id, Buffer.buffer(payload), process.id(), process.version(), 0L));
-            return getExecutedResult(future);
+            Tuple tuple = Tuple.of(id, Buffer.buffer(payload), process.id(), process.version(), 0L);
+            Future<RowSet<Row>> future = client.preparedQuery(INSERT).execute(tuple);
+            boolean inserted = getExecutedResult(future);
+
+            List<Tuple> tupleEvents = new ArrayList<>();
+            for (String eventType : eventTypes) {
+                tupleEvents.add(Tuple.of(id, eventType));
+            }
+
+            if (!tupleEvents.isEmpty()) {
+                executeFuture(client.preparedQuery(INSERT_WAITING_FOR_EVENT_TYPE).executeBatch(tupleEvents));
+            }
+            return inserted;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw uncheckedException(e, "Error inserting process instance %s", id);
@@ -210,12 +249,22 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         }
     }
 
-    private boolean updateInternal(String id, byte[] payload) {
+    private boolean updateInternal(String id, byte[] payload, String[] eventTypes) {
         try {
             Future<RowSet<Row>> future =
                     client.preparedQuery(UPDATE + (process.version() == null ? IS_NULL : "= $4"))
                             .execute(tuple(Buffer.buffer(payload), process.id(), id));
-            return getExecutedResult(future);
+
+            boolean result = getExecutedResult(future);
+            executeFuture(client.preparedQuery(DELETE_ALL_WAITING_FOR_EVENT_TYPE).execute(Tuple.of(id)));
+            List<Tuple> tupleEvents = new ArrayList<>();
+            for (String eventType : eventTypes) {
+                tupleEvents.add(Tuple.of(id, eventType));
+            }
+            if (!tupleEvents.isEmpty()) {
+                executeFuture(client.preparedQuery(INSERT_WAITING_FOR_EVENT_TYPE).executeBatch(tupleEvents));
+            }
+            return result;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw uncheckedException(e, "Error updating process instance %s", id);
@@ -228,7 +277,9 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         try {
             Future<RowSet<Row>> future = client.preparedQuery(DELETE + (process.version() == null ? IS_NULL : "= $3"))
                     .execute(tuple(process.id(), id));
-            return getExecutedResult(future);
+            boolean result = getExecutedResult(future);
+            executeFuture(client.preparedQuery(DELETE_ALL_WAITING_FOR_EVENT_TYPE).execute(Tuple.of(id)));
+            return result;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw uncheckedException(e, "Error deleting process instance %s", id);
@@ -248,11 +299,15 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
 
     private Optional<RowSet<Row>> getResultFromFuture(Future<RowSet<Row>> future) throws ExecutionException, TimeoutException, InterruptedException {
         try {
-            return Optional.ofNullable(future.toCompletionStage().toCompletableFuture().get(queryTimeoutMillis, TimeUnit.MILLISECONDS));
+            return Optional.ofNullable(executeFuture(future));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw e;
         }
+    }
+
+    private <R> R executeFuture(Future<R> future) throws InterruptedException, ExecutionException, TimeoutException {
+        return future.toCompletionStage().toCompletableFuture().get(queryTimeoutMillis, TimeUnit.MILLISECONDS);
     }
 
     private Optional<Row> findByIdInternal(String id) {
@@ -277,15 +332,22 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         return tuple;
     }
 
-    private boolean updateWithLock(String id, byte[] payload, long version) {
+    private boolean updateWithLock(String id, byte[] payload, long version, String[] eventTypes) {
         try {
             Future<RowSet<Row>> future = client.preparedQuery(UPDATE_WITH_LOCK + (process.version() == null ? IS_NULL : "= $6"))
                     .execute(tuple(Buffer.buffer(payload), version + 1, process.id(), id, version));
-            boolean result = getExecutedResult(future);
-            if (!result) {
+            if (!getExecutedResult(future)) {
                 throw new ProcessInstanceOptimisticLockingException(id);
             }
-            return result;
+            executeFuture(client.preparedQuery(DELETE_ALL_WAITING_FOR_EVENT_TYPE).execute(Tuple.of(id)));
+            List<Tuple> tupleEvents = new ArrayList<>();
+            for (String eventType : eventTypes) {
+                tupleEvents.add(Tuple.of(id, eventType));
+            }
+            if (!tupleEvents.isEmpty()) {
+                executeFuture(client.preparedQuery(INSERT_WAITING_FOR_EVENT_TYPE).executeBatch(tupleEvents));
+            }
+            return true;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ProcessInstanceOptimisticLockingException e) {
@@ -295,4 +357,5 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         }
         return false;
     }
+
 }
