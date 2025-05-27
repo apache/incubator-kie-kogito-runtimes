@@ -244,7 +244,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
 
                 @Override
                 public List<ProcessInstance<T>> waitingForEvents(String eventType) {
-                    List<ProcessInstance<T>> list = instances.stream(ProcessInstanceReadMode.MUTABLE)
+                    List<ProcessInstance<T>> list = instances.waitingForEventType(eventType, ProcessInstanceReadMode.MUTABLE)
                             .map(e -> (AbstractProcessInstance<T>) e)
                             .map(pi -> {
                                 KogitoProcessRuntime runtime = getProcessRuntime();
@@ -253,19 +253,6 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
                                     return (AbstractProcessInstance<T>) instance.unwrap();
                                 }
                                 return pi;
-                            })
-                            .map(e -> (AbstractProcessInstance<T>) e)
-                            .filter(e -> {
-                                List<String> eventTypes = null;
-                                // this instance is already in memory and connected so we just need to get the event types.
-                                // to avoid messing up with the life cycle
-                                if (e.internalGetProcessInstance() != null) {
-                                    eventTypes = List.of(e.internalGetProcessInstance().getEventTypes());
-                                } else {
-                                    // we process the events with read only operation
-                                    eventTypes = e.executeInWorkflowProcessInstanceRead(w -> List.of(w.getEventTypes()));
-                                }
-                                return eventTypes.contains(eventType);
                             })
                             .map(e -> (ProcessInstance<T>) e)
                             .toList();

@@ -18,13 +18,18 @@
  */
 package org.jbpm.bpmn2.support;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
+import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -39,6 +44,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryProcessInstances.class);
 
     private final ConcurrentMap<String, byte[]> instances = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, List<String>> eventTypes = new ConcurrentHashMap<>();
 
     private ProcessInstanceMarshallerService marshaller;
     private Process<T> process;
@@ -82,6 +88,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
             throw new ProcessInstanceDuplicatedException(id);
         }
         connectProcessInstance(instance);
+        mergeEventTypes(instance);
     }
 
     @Override
@@ -91,6 +98,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
             byte[] data = marshaller.marshallProcessInstance(instance);
             instances.put(id, data);
             connectProcessInstance(instance);
+            mergeEventTypes(instance);
         }
     }
 
@@ -98,6 +106,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
     public void remove(String id) {
         LOGGER.info("remove instance {} for {}", id, process.id());
         instances.remove(id);
+        cleanEventTypes(id);
     }
 
     @Override
@@ -118,5 +127,46 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
     protected void connectProcessInstance(ProcessInstance<T> instance) {
         Supplier<byte[]> supplier = () -> instances.get(instance.id());
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(supplier));
+    }
+
+    @Override
+    public Stream<ProcessInstance<T>> waitingForEventType(String eventType, ProcessInstanceReadMode mode) {
+        List<String> processInstanceIds = eventTypes.getOrDefault(eventType, Collections.emptyList());
+        List<ProcessInstance<T>> waitingInstances = new ArrayList<>();
+
+        for (String processInstanceId : processInstanceIds) {
+            AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(instances.get(processInstanceId), process, mode);
+            connectProcessInstance(pi);
+            waitingInstances.add(pi);
+        }
+        return waitingInstances.stream();
+    }
+
+    private void mergeEventTypes(ProcessInstance<T> instance) {
+        cleanEventTypes(instance.id());
+        WorkflowProcessInstance workflowInstance = ((AbstractProcessInstance) instance).internalGetProcessInstance();
+        for (String eventType : workflowInstance.getEventTypes()) {
+            eventTypes.compute(eventType, (k, v) -> {
+                List<String> instancesId = v;
+                if (instancesId == null) {
+                    instancesId = new CopyOnWriteArrayList<>();
+                }
+                instancesId.add(instance.id());
+                return !instancesId.isEmpty() ? instancesId : null;
+            });
+        }
+    }
+
+    private void cleanEventTypes(String processInstanceId) {
+        for (String eventType : eventTypes.keySet()) {
+            eventTypes.compute(eventType, (k, v) -> {
+                List<String> instancesId = v;
+                if (instancesId == null) {
+                    instancesId = new CopyOnWriteArrayList<>();
+                }
+                instancesId.remove(processInstanceId);
+                return !instancesId.isEmpty() ? instancesId : null;
+            });
+        }
     }
 }

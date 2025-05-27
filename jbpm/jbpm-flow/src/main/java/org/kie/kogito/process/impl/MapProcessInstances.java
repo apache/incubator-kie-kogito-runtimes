@@ -18,8 +18,13 @@
  */
 package org.kie.kogito.process.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
@@ -34,6 +39,8 @@ class MapProcessInstances<T extends Model> implements MutableProcessInstances<T>
 
     private final ConcurrentHashMap<String, WorkflowProcessInstance> instances = new ConcurrentHashMap<>();
     private AbstractProcess<T> process;
+
+    private final ConcurrentMap<String, List<String>> eventTypes = new ConcurrentHashMap<>();
 
     public MapProcessInstances(AbstractProcess<T> process) {
         this.process = process;
@@ -55,6 +62,7 @@ class MapProcessInstances<T extends Model> implements MutableProcessInstances<T>
             throw new ProcessInstanceDuplicatedException(id);
         }
         connectProcessInstance(instance);
+        mergeEventTypes(instance);
     }
 
     @Override
@@ -62,12 +70,14 @@ class MapProcessInstances<T extends Model> implements MutableProcessInstances<T>
         if (isActive(instance)) {
             instances.put(id, ((AbstractProcessInstance<T>) instance).internalGetProcessInstance());
             connectProcessInstance(instance);
+            mergeEventTypes(instance);
         }
     }
 
     @Override
     public void remove(String id) {
         instances.remove(id);
+        cleanEventTypes(id);
     }
 
     @Override
@@ -78,6 +88,19 @@ class MapProcessInstances<T extends Model> implements MutableProcessInstances<T>
     @Override
     public Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode) {
         return instances.values().stream().map(e -> toProcessInstance(e, mode));
+    }
+
+    @Override
+    public Stream<ProcessInstance<T>> waitingForEventType(String eventType, ProcessInstanceReadMode mode) {
+        List<String> processInstanceIds = eventTypes.getOrDefault(eventType, Collections.emptyList());
+        List<ProcessInstance<T>> waitingInstances = new ArrayList<>();
+
+        for (String processInstanceId : processInstanceIds) {
+            AbstractProcessInstance pi = (AbstractProcessInstance) toProcessInstance(instances.get(processInstanceId), mode);
+            connectProcessInstance(pi);
+            waitingInstances.add(pi);
+        }
+        return waitingInstances.stream();
     }
 
     private ProcessInstance<T> toProcessInstance(WorkflowProcessInstance instance, ProcessInstanceReadMode mode) {
@@ -101,4 +124,33 @@ class MapProcessInstances<T extends Model> implements MutableProcessInstances<T>
             ((AbstractProcessInstance<?>) instance).internalSetProcessInstance(workflowProcessInstance);
         });
     }
+
+    private void mergeEventTypes(ProcessInstance<T> instance) {
+        cleanEventTypes(instance.id());
+        WorkflowProcessInstance workflowInstance = ((AbstractProcessInstance) instance).internalGetProcessInstance();
+        for (String eventType : workflowInstance.getEventTypes()) {
+            eventTypes.compute(eventType, (k, v) -> {
+                List<String> instancesId = v;
+                if (instancesId == null) {
+                    instancesId = new CopyOnWriteArrayList<>();
+                }
+                instancesId.add(instance.id());
+                return !instancesId.isEmpty() ? instancesId : null;
+            });
+        }
+    }
+
+    private void cleanEventTypes(String processInstanceId) {
+        for (String eventType : eventTypes.keySet()) {
+            eventTypes.compute(eventType, (k, v) -> {
+                List<String> instancesId = v;
+                if (instancesId == null) {
+                    instancesId = new CopyOnWriteArrayList<>();
+                }
+                instancesId.remove(processInstanceId);
+                return !instancesId.isEmpty() ? instancesId : null;
+            });
+        }
+    }
+
 }

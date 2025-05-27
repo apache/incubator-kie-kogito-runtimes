@@ -288,7 +288,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     public boolean hasHeader(String headerName) {
-        return internalLoadProcessInstanceState().getHeaders().containsKey(headerName);
+        return executeInWorkflowProcessInstanceWrite(pi -> {
+            return pi.getHeaders().containsKey(headerName);
+        });
     }
 
     @Override
@@ -689,7 +691,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public Collection<TimerDescription> timers() {
-        return executeInWorkflowProcessInstance(pi -> {
+        return executeInWorkflowProcessInstanceRead(pi -> {
             return pi.timers();
         });
     }
