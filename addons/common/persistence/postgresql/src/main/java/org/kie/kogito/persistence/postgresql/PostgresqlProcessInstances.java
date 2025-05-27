@@ -20,17 +20,20 @@ package org.kie.kogito.persistence.postgresql;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
+import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.HeadersPersistentConfig;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
@@ -47,8 +50,7 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
-@SuppressWarnings({ "rawtypes" })
-public class PostgresqlProcessInstances implements MutableProcessInstances {
+public class PostgresqlProcessInstances<T extends Model> implements MutableProcessInstances<T> {
 
     private static final String VERSION = "version";
     private static final String PAYLOAD = "payload";
@@ -87,28 +89,26 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         return findById(id).isPresent();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void create(String id, ProcessInstance instance) {
+    public void create(String id, ProcessInstance<T> instance) {
         if (!isActive(instance) && instance.status() != ProcessInstance.STATE_PENDING) {
             return;
         }
-        String[] eventTypes = ((AbstractProcessInstance) instance).internalGetProcessInstance().getEventTypes();
+        String[] eventTypes = getUniqueEvents(instance);
         insertInternal(id, marshaller.marshallProcessInstance(instance), eventTypes);
         connectProcessInstance(instance);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void update(String id, ProcessInstance instance) {
+    public void update(String id, ProcessInstance<T> instance) {
         if (!isActive(instance) && instance.status() != ProcessInstance.STATE_PENDING) {
             return;
         }
 
-        String[] eventTypes = ((AbstractProcessInstance) instance).internalGetProcessInstance().getEventTypes();
+        String[] eventTypes = getUniqueEvents(instance);
         if (lock) {
             updateWithLock(id, marshaller.marshallProcessInstance(instance), instance.version(), eventTypes);
-            ((AbstractProcessInstance) instance).setVersion(instance.version() + 1);
+            ((AbstractProcessInstance<T>) instance).setVersion(instance.version() + 1);
         } else {
             updateInternal(id, marshaller.marshallProcessInstance(instance), eventTypes);
         }
@@ -117,20 +117,24 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
 
     }
 
+    private String[] getUniqueEvents(ProcessInstance<T> instance) {
+        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toCollection(HashSet::new)).toArray(String[]::new);
+    }
+
     @Override
     public void remove(String id) {
         deleteInternal(id);
     }
 
     @Override
-    public Optional<ProcessInstance> findById(String id, ProcessInstanceReadMode mode) {
+    public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
         return findByIdInternal(id).map(r -> {
-            return (AbstractProcessInstance) unmarshall(r, mode);
+            return (AbstractProcessInstance<T>) unmarshall(r, mode);
         });
     }
 
     @Override
-    public Stream<ProcessInstance> stream(ProcessInstanceReadMode mode) {
+    public Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode) {
         try {
             return getResultFromFuture(client.preparedQuery(FIND_ALL + (process.version() == null ? IS_NULL : "= $2")).execute(tuple(process.id())))
                     .map(r -> StreamSupport.stream(r.spliterator(), false)).orElse(Stream.empty())
@@ -144,7 +148,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public Stream<ProcessInstance> waitingForEventType(String eventType, ProcessInstanceReadMode mode) {
+    public Stream<ProcessInstance<T>> waitingForEventType(String eventType, ProcessInstanceReadMode mode) {
         try {
             Tuple parameters = null;
             if (process.version() != null) {
@@ -164,8 +168,8 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
 
     }
 
-    private ProcessInstance<?> unmarshall(Row r, ProcessInstanceReadMode mode) {
-        AbstractProcessInstance instance = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(r.getBuffer(PAYLOAD).getBytes(), process, mode);
+    private ProcessInstance<T> unmarshall(Row r, ProcessInstanceReadMode mode) {
+        AbstractProcessInstance<T> instance = (AbstractProcessInstance<T>) marshaller.unmarshallProcessInstance(r.getBuffer(PAYLOAD).getBytes(), process, mode);
         instance.setVersion(r.getLong(VERSION));
         connectProcessInstance(instance);
         return instance;
@@ -176,9 +180,9 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         return this.lock;
     }
 
-    private void connectProcessInstance(ProcessInstance instance) {
-        ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> findByIdInternal(instance.id()).map(r -> {
-            ((AbstractProcessInstance) instance).setVersion(r.getLong(VERSION));
+    private void connectProcessInstance(ProcessInstance<T> instance) {
+        ((AbstractProcessInstance<T>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> findByIdInternal(instance.id()).map(r -> {
+            ((AbstractProcessInstance<T>) instance).setVersion(r.getLong(VERSION));
             return r.getBuffer(PAYLOAD).getBytes();
         }).orElseThrow()));
     }

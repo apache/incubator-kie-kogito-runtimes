@@ -19,11 +19,14 @@
 package org.kie.kogito.mongodb;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -120,6 +123,10 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
         return instance;
     }
 
+    private Set<String> getUniqueEvents(ProcessInstance<T> instance) {
+        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toCollection(HashSet::new));
+    }
+
     @Override
     public void create(String id, ProcessInstance<T> instance) {
         updateStorage(id, instance, true);
@@ -135,10 +142,7 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
     protected void updateStorage(String id, ProcessInstance<T> instance, boolean checkDuplicates) {
         ClientSession clientSession = transactionManager.getClientSession();
         Document doc = Document.parse(new String(marshaller.marshallProcessInstance(instance)));
-        List<String> eventTypes = new ArrayList<>();
-        if (instance instanceof AbstractProcessInstance<T> abstractProcessInstance) {
-            eventTypes.addAll(List.of(abstractProcessInstance.internalGetProcessInstance().getEventTypes()));
-        }
+        Set<String> eventTypes = getUniqueEvents(instance);
         if (checkDuplicates) {
             createInternal(id, clientSession, doc, eventTypes);
         } else {
@@ -147,7 +151,7 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
         connectProcessInstance(instance, id);
     }
 
-    private void createInternal(String id, ClientSession clientSession, Document doc, List<String> eventTypes) {
+    private void createInternal(String id, ClientSession clientSession, Document doc, Set<String> eventTypes) {
         if (exists(id)) {
             throw new ProcessInstanceDuplicatedException(id);
         } else {
@@ -165,7 +169,7 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
         }
     }
 
-    private void updateInternal(String id, ProcessInstance<T> instance, ClientSession clientSession, Document doc, List<String> eventTypes) {
+    private void updateInternal(String id, ProcessInstance<T> instance, ClientSession clientSession, Document doc, Set<String> eventTypes) {
         Bson filters = Filters.eq(PROCESS_INSTANCE_ID, id);
         UpdateResult result;
         if (lock) {

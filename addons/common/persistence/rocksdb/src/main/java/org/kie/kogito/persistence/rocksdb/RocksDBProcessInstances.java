@@ -21,8 +21,10 @@ package org.kie.kogito.persistence.rocksdb;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ import java.util.stream.StreamSupport;
 
 import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
+import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.HeadersPersistentConfig;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
@@ -41,8 +44,9 @@ import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksIterator;
 
-@SuppressWarnings("unchecked")
-public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
+import static java.util.stream.Collectors.toCollection;
+
+public class RocksDBProcessInstances<T extends Model> implements MutableProcessInstances<T> {
 
     private final Process<T> process;
     private final ProcessInstanceMarshallerService marshaller;
@@ -81,8 +85,8 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
                 return false;
             }
 
-            while(iterator.isValid()) {
-                if(eventKey.equals(new String(iterator.key()))) {
+            while (iterator.isValid()) {
+                if (eventKey.equals(new String(iterator.key()))) {
                     iterator.next();
                     continue;
                 }
@@ -155,41 +159,37 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
         try {
             db.put(id.getBytes(), marshaller.marshallProcessInstance(instance));
             connectProcessInstance(instance);
-            List<String> events = clearEventTypes(instance.id());
-            events.addAll(computeEvents(instance));
+            Set<String> events = clearEventTypes(instance.id());
+            events.addAll(getUniqueEvents(instance));
             db.put(this.eventKey.getBytes(), toBytes(events));
         } catch (RocksDBException ex) {
             throw new IllegalStateException(ex);
         }
     }
 
-    private byte[] toBytes(List<String> events) {
+    private byte[] toBytes(Set<String> events) {
         return String.join(",", events).getBytes();
     }
 
-    private List<String> computeEvents(ProcessInstance<T> instance) {
-        if (instance instanceof AbstractProcessInstance abstractProcessInstance) {
-            return List.of(abstractProcessInstance.internalGetProcessInstance().getEventTypes());
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
-    private List<String> clearEventTypes(String processInstanceId) throws RocksDBException {
+    private Set<String> clearEventTypes(String processInstanceId) throws RocksDBException {
         byte[] eventData = db.get(this.eventKey.getBytes());
         String list = eventData != null ? new String(eventData) : new String();
-        return Stream.of(list.split(",")).filter(e -> !e.endsWith(":" + processInstanceId)).collect(Collectors.toCollection(ArrayList::new));
+        return Stream.of(list.split(",")).filter(e -> !e.endsWith(":" + processInstanceId)).collect(toCollection(HashSet::new));
     }
 
     @Override
     public synchronized void remove(String id) {
         try {
             db.delete(id.getBytes());
-            List<String> events = clearEventTypes(id);
+            Set<String> events = clearEventTypes(id);
             db.put(this.eventKey.getBytes(), toBytes(events));
         } catch (RocksDBException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+
+    private Set<String> getUniqueEvents(ProcessInstance<T> instance) {
+        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toCollection(HashSet::new));
     }
 
     private ProcessInstance<T> unmarshall(byte[] data, ProcessInstanceReadMode mode) {

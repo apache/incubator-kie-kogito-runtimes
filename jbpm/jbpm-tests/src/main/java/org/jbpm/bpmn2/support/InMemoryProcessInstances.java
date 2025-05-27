@@ -22,14 +22,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
+import org.kie.kogito.Model;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -39,7 +42,7 @@ import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
+public class InMemoryProcessInstances<T extends Model> implements MutableProcessInstances<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryProcessInstances.class);
 
@@ -74,7 +77,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
         }
 
         LOGGER.info("find by id {}", id);
-        AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process, mode);
+        AbstractProcessInstance<T> pi = (AbstractProcessInstance<T>) marshaller.unmarshallProcessInstance(data, process, mode);
         connectProcessInstance(pi);
         return Optional.of(pi);
     }
@@ -118,7 +121,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
     public Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode) {
         return instances.values().stream()
                 .map(data -> {
-                    AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process);
+                    AbstractProcessInstance<T> pi = (AbstractProcessInstance<T>) marshaller.unmarshallProcessInstance(data, process);
                     connectProcessInstance(pi);
                     return (ProcessInstance<T>) pi;
                 });
@@ -135,7 +138,7 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
         List<ProcessInstance<T>> waitingInstances = new ArrayList<>();
 
         for (String processInstanceId : processInstanceIds) {
-            AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(instances.get(processInstanceId), process, mode);
+            AbstractProcessInstance<T> pi = (AbstractProcessInstance<T>) marshaller.unmarshallProcessInstance(instances.get(processInstanceId), process, mode);
             connectProcessInstance(pi);
             waitingInstances.add(pi);
         }
@@ -144,8 +147,9 @@ public class InMemoryProcessInstances<T> implements MutableProcessInstances<T> {
 
     private void mergeEventTypes(ProcessInstance<T> instance) {
         cleanEventTypes(instance.id());
-        WorkflowProcessInstance workflowInstance = ((AbstractProcessInstance) instance).internalGetProcessInstance();
-        for (String eventType : workflowInstance.getEventTypes()) {
+        WorkflowProcessInstance workflowInstance = ((AbstractProcessInstance<T>) instance).internalGetProcessInstance();
+        Set<String> uniqueEventTypes = Stream.of(workflowInstance.getEventTypes()).collect(Collectors.toSet());
+        for (String eventType : uniqueEventTypes) {
             eventTypes.compute(eventType, (k, v) -> {
                 List<String> instancesId = v;
                 if (instancesId == null) {

@@ -20,9 +20,11 @@ package org.kie.kogito.infinispan;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Supplier;
@@ -79,6 +81,10 @@ public class CacheProcessInstances<T extends Model> implements MutableProcessIns
 
     private Optional<ProcessInstance<T>> findWithLock(String id, ProcessInstanceReadMode mode) {
         return Optional.ofNullable(cache.getWithMetadata(id)).map(record -> unmarshall(record.getValue(), record.getVersion(), mode));
+    }
+
+    private Set<String> getUniqueEvents(ProcessInstance<T> instance) {
+        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toCollection(HashSet::new));
     }
 
     @Override
@@ -144,7 +150,7 @@ public class CacheProcessInstances<T extends Model> implements MutableProcessIns
             }
             cache.compute(this.eventKey, (key, value) -> {
                 List<String> events = clearEventTypes(value, id);
-                events.addAll(computeEvents(instance));
+                events.addAll(getUniqueEvents(instance));
                 return toBytes(events);
             });
             connectProcessInstance(id, instance);
@@ -201,14 +207,6 @@ public class CacheProcessInstances<T extends Model> implements MutableProcessIns
 
     private byte[] toBytes(List<String> events) {
         return String.join(",", events).getBytes();
-    }
-
-    private List<String> computeEvents(ProcessInstance<T> instance) {
-        if (instance instanceof AbstractProcessInstance abstractProcessInstance) {
-            return List.of(abstractProcessInstance.internalGetProcessInstance().getEventTypes());
-        } else {
-            return Collections.emptyList();
-        }
     }
 
     private List<String> clearEventTypes(byte[] eventData, String processInstanceId) {

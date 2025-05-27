@@ -23,7 +23,6 @@ import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -32,11 +31,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.drools.util.PathUtils;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
+import org.kie.kogito.Model;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -44,7 +46,7 @@ import org.kie.kogito.process.ProcessInstanceDuplicatedException;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 
-public class FileSystemProcessInstances<T> implements MutableProcessInstances<T> {
+public class FileSystemProcessInstances<T extends Model> implements MutableProcessInstances<T> {
 
     public static final String PI_DESCRIPTION = "ProcessInstanceDescription";
     public static final String PI_STATUS = "ProcessInstanceStatus";
@@ -82,7 +84,7 @@ public class FileSystemProcessInstances<T> implements MutableProcessInstances<T>
             return Optional.empty();
         }
         byte[] data = readBytesFromFile(processInstanceStorage);
-        AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process, mode);
+        AbstractProcessInstance<T> pi = (AbstractProcessInstance<T>) marshaller.unmarshallProcessInstance(data, process, mode);
         connectInstance(processInstanceStorage, pi);
         return Optional.of(pi);
     }
@@ -96,7 +98,7 @@ public class FileSystemProcessInstances<T> implements MutableProcessInstances<T>
                     .filter(file -> !file.equals(eventTypeStorage))
                     .map(this::readBytesFromFile)
                     .map(data -> {
-                        ProcessInstance pi = marshaller.unmarshallProcessInstance(data, process, mode);
+                        ProcessInstance<T> pi = (ProcessInstance<T>) marshaller.unmarshallProcessInstance(data, process, mode);
                         Path processInstanceStorage = PathUtils.getSecuredPath(storage.toString(), pi.id());
                         connectInstance(processInstanceStorage, pi);
                         return pi;
@@ -162,7 +164,7 @@ public class FileSystemProcessInstances<T> implements MutableProcessInstances<T>
             for (String processInstanceId : processInstanceIds) {
                 Path processInstanceStorage = PathUtils.getSecuredPath(storage, processInstanceId);
                 byte[] data = readBytesFromFile(processInstanceStorage);
-                AbstractProcessInstance pi = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(data, process, mode);
+                AbstractProcessInstance<T> pi = (AbstractProcessInstance<T>) marshaller.unmarshallProcessInstance(data, process, mode);
                 connectInstance(processInstanceStorage, pi);
                 waitingInstances.add(pi);
             }
@@ -175,7 +177,7 @@ public class FileSystemProcessInstances<T> implements MutableProcessInstances<T>
     protected void storeEventType(ProcessInstance<?> instance) {
         try {
             cleanEventType(instance.id());
-            String[] eventTypes = ((AbstractProcessInstance) instance).internalGetProcessInstance().getEventTypes();
+            Set<String> eventTypes = Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toSet());
             for (String eventType : eventTypes) {
                 Files.writeString(eventTypeStorage, eventType + ":" + instance.id() + "\n", StandardOpenOption.APPEND);
             }

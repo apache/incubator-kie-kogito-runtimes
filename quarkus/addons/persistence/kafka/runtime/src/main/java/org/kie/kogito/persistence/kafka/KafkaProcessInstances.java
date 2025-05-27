@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.persistence.kafka;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -182,5 +183,10 @@ public class KafkaProcessInstances<T extends Model> implements MutableProcessIns
             return;
         }
         ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> getProcessInstanceById(instance.id()).orElseThrow()));
+    }
+
+    @Override
+    public Stream<ProcessInstance<T>> waitingForEventType(String eventType, ProcessInstanceReadMode mode) {
+        return Collections.<ProcessInstance<T>> emptyList().stream();
     }
 }

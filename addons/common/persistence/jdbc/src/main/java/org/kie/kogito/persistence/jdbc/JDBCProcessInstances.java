@@ -18,8 +18,10 @@
  */
 package org.kie.kogito.persistence.jdbc;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.sql.DataSource;
@@ -63,11 +65,15 @@ public class JDBCProcessInstances<T extends Model> implements MutableProcessInst
         return findById(id).isPresent();
     }
 
+    private String[] getUniqueEvents(ProcessInstance<T> instance) {
+        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toCollection(HashSet::new)).toArray(String[]::new);
+    }
+
     @Override
     public void create(String id, ProcessInstance<T> instance) {
         LOGGER.debug("Creating process instance id: {}, processId: {}, processVersion: {}", id, process.id(), process.version());
         if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
-            String[] eventTypes = ((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes();
+            String[] eventTypes = getUniqueEvents(instance);
             repository.insertInternal(process.id(), process.version(), UUID.fromString(id), marshaller.marshallProcessInstance(instance), instance.businessKey(), eventTypes);
             connectInstance(instance);
         } else {
@@ -79,7 +85,7 @@ public class JDBCProcessInstances<T extends Model> implements MutableProcessInst
     public void update(String id, ProcessInstance<T> instance) {
         LOGGER.debug("Updating process instance id: {}, processId: {}, processVersion: {}", id, process.id(), process.version());
         if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
-            String[] eventTypes = ((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes();
+            String[] eventTypes = getUniqueEvents(instance);
             if (lock) {
                 boolean isUpdated = repository.updateWithLock(process.id(), process.version(), UUID.fromString(id), marshaller.marshallProcessInstance(instance), instance.version(), eventTypes);
                 if (!isUpdated) {
