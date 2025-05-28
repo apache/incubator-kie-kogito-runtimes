@@ -326,7 +326,7 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
         return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
             processInstance.updateNodeInstanceSla(nodeInstanceId, sla.getExpirationTime());
             Map<String, Object> message = new HashMap<>();
-            message.put("message", nodeInstanceId + " sla due date updated");
+            message.put("message", "Node Instance '" + nodeInstanceId + "' SLA due date successfully updated");
             return buildOkResponse(message);
         });
     }
@@ -335,7 +335,7 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
         return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
             processInstance.updateProcessInstanceSla(sla.getExpirationTime());
             Map<String, Object> message = new HashMap<>();
-            message.put("message", processInstanceId + " sla due date updated");
+            message.put("message", "Process Instance '" + processInstanceId + "' SLA due date successfully updated");
             return buildOkResponse(message);
         });
     }

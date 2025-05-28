@@ -149,13 +149,14 @@ public class ProcessInstanceManagementRestController extends BaseProcessInstance
 
     @Override
     @PatchMapping(value = "{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}/sla")
-    public ResponseEntity updateNodeInstanceSla(String processId, String processInstanceId, String nodeInstanceId, SlaPayload slaPayload) {
+    public ResponseEntity updateNodeInstanceSla(@PathVariable("processId") String processId, @PathVariable("processInstanceId") String processInstanceId,
+            @PathVariable("nodeInstanceId") String nodeInstanceId, @RequestBody SlaPayload slaPayload) {
         return doUpdateNodeInstanceSla(processId, processInstanceId, nodeInstanceId, slaPayload);
     }
 
     @Override
     @PatchMapping(value = "{processId}/instances/{processInstanceId}/sla")
-    public ResponseEntity updateProcessInstanceSla(String processId, String processInstanceId, SlaPayload slaPayload) {
+    public ResponseEntity updateProcessInstanceSla(@PathVariable("processId") String processId, @PathVariable("processInstanceId") String processInstanceId, @RequestBody SlaPayload slaPayload) {
         return doUpdateProcessInstanceSla(processId, processInstanceId, slaPayload);
     }
 
