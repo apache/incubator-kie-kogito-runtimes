@@ -293,10 +293,11 @@ class FileSystemProcessInstancesTest {
         ProcessInstance<BpmnVariables> pi2 = process.createInstance(BpmnVariables.create(Collections.singletonMap("name", "sig2")));
         pi1.start();
         pi2.start();
-
+        assertThat(process.instances().stream().count()).isEqualTo(2);
         pi1.workItems().forEach(wi -> pi1.completeWorkItem(wi.getId(), Collections.emptyMap()));
         pi2.workItems().forEach(wi -> pi2.completeWorkItem(wi.getId(), Collections.emptyMap()));
         process.send(SignalFactory.of("sig1", "SomeValue"));
+        assertThat(process.instances().stream().count()).isEqualTo(1);
         process.send(SignalFactory.of("sig2", "SomeValue"));
         assertThat(process.instances().stream().count()).isEqualTo(0);
     }
