@@ -19,6 +19,7 @@
 package org.jbpm.workflow.instance.node;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -42,6 +43,7 @@ import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
 import org.kie.kogito.timer.TimerInstance;
 
+import static java.util.Objects.isNull;
 import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
 import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
 import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
@@ -294,9 +296,19 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
     }
 
     @Override
-    public void updateSlaTimer(String nodeInstanceId, ZonedDateTime slaDueDate) {
-        ((WorkflowProcessInstanceImpl) getProcessInstance()).updateSlaTimer(nodeInstanceId, slaTimerId, slaDueDate);
+    public void rescheduleSlaTimer(ZonedDateTime slaDueDate) {
+        if (isNull(slaDueDate)) {
+            throw new IllegalArgumentException("Cannot update SLA: SLAslaDueDate cannot be null");
+        }
+
+        if (isEmpty(slaTimerId)) {
+            throw new IllegalStateException("Cannot update SLA: Node has NO SLA configured");
+        }
+        InternalProcessRuntime processRuntime = ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime());
+        processRuntime.getProcessEventSupport().fireBeforeNodeStateChanged(this, getProcessInstance().getKnowledgeRuntime());
+        ((WorkflowProcessInstanceImpl) getProcessInstance()).rescheduleTimer(slaTimerId, slaDueDate, getId());
         this.slaDueDate = Date.from(slaDueDate.toInstant());
+        processRuntime.getProcessEventSupport().fireAfterNodeStateChanged(this, getProcessInstance().getKnowledgeRuntime());
     }
 
 }

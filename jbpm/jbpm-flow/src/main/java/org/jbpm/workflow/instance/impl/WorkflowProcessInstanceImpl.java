@@ -115,6 +115,7 @@ import org.mvel2.integration.impl.ImmutableDefaultFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.isNull;
 import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_ENVIRONMENT_KEY;
 import static org.jbpm.ruleflow.core.Metadata.COMPENSATION;
 import static org.jbpm.ruleflow.core.Metadata.CONDITION;
@@ -125,6 +126,7 @@ import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
 import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
 import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
+import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
 import static org.kie.kogito.internal.utils.ConversionUtils.isNotEmpty;
 import static org.kie.kogito.process.flexible.ItemDescription.Status.ACTIVE;
 import static org.kie.kogito.process.flexible.ItemDescription.Status.AVAILABLE;
@@ -1451,10 +1453,14 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         return this.kogitoProcessInstance;
     }
 
-    public void updateSlaTimer(String nodeInstanceId, String slaTimerId, ZonedDateTime slaDueDate) {
+    public void rescheduleTimer(String timerId, ZonedDateTime slaDueDate) {
+        rescheduleTimer(timerId, slaDueDate, null);
+    }
+
+    public void rescheduleTimer(String timerId, ZonedDateTime slaDueDate, String nodeInstanceId) {
         ProcessInstanceJobDescription description =
                 ProcessInstanceJobDescription.newProcessInstanceJobDescriptionBuilder()
-                        .id(slaTimerId)
+                        .id(timerId)
                         .timerId("-1")
                         .expirationTime(ExactExpirationTime.of(slaDueDate))
                         .processInstanceId(getStringId())
@@ -1467,8 +1473,18 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         jobsService.rescheduleJob(description);
     }
 
-    public void updateSlaTimer(ZonedDateTime slaDueDate) {
-        updateSlaTimer(null, slaTimerId, slaDueDate);
+    public void rescheduleSlaTimer(ZonedDateTime slaDueDate) {
+        if (isNull(slaDueDate)) {
+            throw new IllegalArgumentException("Cannot update SLA: slaDueDate cannot be null");
+        }
+
+        if (isEmpty(slaTimerId)) {
+            throw new IllegalStateException("Cannot update SLA: Process Instance has NO SLA configured");
+        }
+        InternalProcessRuntime processRuntime = ((InternalProcessRuntime) getKnowledgeRuntime().getProcessRuntime());
+        processRuntime.getProcessEventSupport().fireBeforeProcessStateChanged(this, getKnowledgeRuntime());
+        rescheduleTimer(slaTimerId, slaDueDate);
         this.slaDueDate = Date.from(slaDueDate.toInstant());
+        processRuntime.getProcessEventSupport().fireAfterProcessStateChanged(this, getKnowledgeRuntime());
     }
 }
