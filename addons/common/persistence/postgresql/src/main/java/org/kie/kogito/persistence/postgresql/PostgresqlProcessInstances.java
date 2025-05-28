@@ -150,12 +150,7 @@ public class PostgresqlProcessInstances<T extends Model> implements MutableProce
     @Override
     public Stream<ProcessInstance<T>> waitingForEventType(String eventType, ProcessInstanceReadMode mode) {
         try {
-            Tuple parameters = null;
-            if (process.version() != null) {
-                parameters = tuple(eventType, process.id(), process.version());
-            } else {
-                parameters = tuple(eventType, process.id());
-            }
+            Tuple parameters = tuple(eventType, process.id());;
             return getResultFromFuture(client.preparedQuery(FIND_ALL_WAITING_FOR_EVENT_TYPE + (process.version() == null ? IS_NULL : "= $3")).execute(parameters))
                     .map(r -> StreamSupport.stream(r.spliterator(), false)).orElse(Stream.empty())
                     .map(row -> unmarshall(row, mode));
