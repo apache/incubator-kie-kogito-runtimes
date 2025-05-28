@@ -139,14 +139,18 @@ public class KafkaProcessInstances<T extends Model> implements MutableProcessIns
             }
             try {
                 sendKafkaRecord(id, marshaller.marshallProcessInstance(instance));
-                Set<String> eventTypes = clearEventTypes(id);
-                eventTypes.addAll(getUniqueEvents(instance));
-                sendEventKafkaRecord(toBytes(eventTypes));
+                updateEvents(instance);
                 connectInstance(instance);
             } catch (Exception e) {
                 throw new RuntimeException("Unable to persist process instance id: " + id, e);
             }
         }
+    }
+
+    public void updateEvents(ProcessInstance<T> instance) throws Exception {
+        Set<String> eventTypes = clearEventTypes(instance.id());
+        eventTypes.addAll(getUniqueEvents(instance));
+        sendEventKafkaRecord(toBytes(eventTypes));
     }
 
     @Override
@@ -155,9 +159,7 @@ public class KafkaProcessInstances<T extends Model> implements MutableProcessIns
             byte[] data = marshaller.marshallProcessInstance(instance);
             try {
                 sendKafkaRecord(id, data);
-                Set<String> eventTypes = clearEventTypes(id);
-                eventTypes.addAll(getUniqueEvents(instance));
-                sendEventKafkaRecord(toBytes(eventTypes));
+                updateEvents(instance);
                 connectInstance(instance);
             } catch (Exception e) {
                 throw new RuntimeException("Unable to update process instance id: " + id, e);
@@ -169,8 +171,7 @@ public class KafkaProcessInstances<T extends Model> implements MutableProcessIns
     public void remove(String id) {
         try {
             sendKafkaRecord(id, null);
-            Set<String> eventTypes = clearEventTypes(id);
-            sendEventKafkaRecord(toBytes(eventTypes));
+            clearEvents(id);
             // this avoids generates a race condition as one thing is send to kafka and the other is to be processed by the table.
             while (exists(id)) {
                 Thread.sleep(100L);
@@ -178,6 +179,11 @@ public class KafkaProcessInstances<T extends Model> implements MutableProcessIns
         } catch (Exception e) {
             throw new RuntimeException("Unable to remove process instance id: " + id, e);
         }
+    }
+
+    public void clearEvents(String id) throws Exception {
+        Set<String> eventTypes = clearEventTypes(id);
+        sendEventKafkaRecord(toBytes(eventTypes));
     }
 
     @Override
