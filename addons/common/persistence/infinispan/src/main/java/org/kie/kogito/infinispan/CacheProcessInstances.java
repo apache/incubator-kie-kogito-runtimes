@@ -49,7 +49,7 @@ import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 
 public class CacheProcessInstances<T extends Model> implements MutableProcessInstances<T> {
-
+    private final String EVENT_SEPARATOR = "::";
     private final RemoteCache<String, byte[]> cache;
     private final ProcessInstanceMarshallerService marshaller;
     private final org.kie.kogito.process.Process<?> process;
@@ -85,7 +85,7 @@ public class CacheProcessInstances<T extends Model> implements MutableProcessIns
 
     private Set<String> getUniqueEvents(ProcessInstance<T> instance) {
         return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes())
-                .map(e -> e + ":" + instance.id())
+                .map(e -> e + EVENT_SEPARATOR + instance.id())
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
@@ -119,10 +119,8 @@ public class CacheProcessInstances<T extends Model> implements MutableProcessIns
     @Override
     public void remove(String processInstanceId) {
         cache.remove(processInstanceId);
-        cache.compute(this.eventKey, (key, value) -> {
-            List<String> events = clearEventTypes(value, processInstanceId);
-            return toBytes(events);
-        });
+        List<String> events = clearEventTypes(cache.get(this.eventKey), processInstanceId);
+        cache.put(this.eventKey, toBytes(events));
     }
 
     @Override
@@ -150,11 +148,11 @@ public class CacheProcessInstances<T extends Model> implements MutableProcessIns
                     cache.put(id, data);
                 }
             }
-            cache.compute(this.eventKey, (key, value) -> {
-                List<String> events = clearEventTypes(value, id);
-                events.addAll(getUniqueEvents(instance));
-                return toBytes(events);
-            });
+
+            List<String> events = clearEventTypes(cache.get(this.eventKey), id);
+            events.addAll(getUniqueEvents(instance));
+            cache.put(this.eventKey, toBytes(events));
+
             connectProcessInstance(id, instance);
         }
     }
@@ -198,11 +196,14 @@ public class CacheProcessInstances<T extends Model> implements MutableProcessIns
             return Collections.<ProcessInstance<T>> emptyList().stream();
         }
         String list = new String(eventData);
-        List<String> processInstancesId = Stream.of(list.split(",")).filter(e -> e.startsWith(eventType + ":")).map(e -> e.substring(e.indexOf(":") + 1)).toList();
+        List<String> processInstancesId = Stream.of(list.split(","))
+                .filter(e -> e.startsWith(eventType + EVENT_SEPARATOR))
+                .map(e -> e.substring(e.indexOf(EVENT_SEPARATOR) + EVENT_SEPARATOR.length()))
+                .toList();
 
         List<ProcessInstance<T>> waitingInstances = new ArrayList<>();
         for (String processInstanceId : processInstancesId) {
-            waitingInstances.add(findById(processInstanceId).get());
+            findById(processInstanceId).ifPresent(waitingInstances::add);
         }
         return waitingInstances.stream();
     }
@@ -213,7 +214,9 @@ public class CacheProcessInstances<T extends Model> implements MutableProcessIns
 
     private List<String> clearEventTypes(byte[] eventData, String processInstanceId) {
         String list = eventData != null ? new String(eventData) : new String();
-        return Stream.of(list.split(",")).filter(e -> !e.endsWith(":" + processInstanceId)).collect(Collectors.toCollection(ArrayList::new));
+        return Stream.of(list.split(","))
+                .filter(e -> !e.endsWith(EVENT_SEPARATOR + processInstanceId))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
 }

@@ -47,7 +47,7 @@ import org.rocksdb.RocksIterator;
 import static java.util.stream.Collectors.toCollection;
 
 public class RocksDBProcessInstances<T extends Model> implements MutableProcessInstances<T> {
-
+    private final String EVENT_SEPARATOR = "::";
     private final Process<T> process;
     private final ProcessInstanceMarshallerService marshaller;
     private final RocksDB db;
@@ -127,7 +127,10 @@ public class RocksDBProcessInstances<T extends Model> implements MutableProcessI
                 return Collections.<ProcessInstance<T>> emptyList().stream();
             }
             String list = new String(eventData);
-            List<String> processInstancesId = Stream.of(list.split(",")).filter(e -> e.startsWith(eventType + ":")).map(e -> e.substring(e.indexOf(":") + 1)).toList();
+            List<String> processInstancesId = Stream.of(list.split(","))
+                    .filter(e -> e.startsWith(eventType + EVENT_SEPARATOR))
+                    .map(e -> e.substring(e.indexOf(EVENT_SEPARATOR) + EVENT_SEPARATOR.length()))
+                    .toList();
 
             List<ProcessInstance<T>> waitingInstances = new ArrayList<>();
             for (String processInstanceId : processInstancesId) {
@@ -174,7 +177,7 @@ public class RocksDBProcessInstances<T extends Model> implements MutableProcessI
     private Set<String> clearEventTypes(String processInstanceId) throws RocksDBException {
         byte[] eventData = db.get(this.eventKey.getBytes());
         String list = eventData != null ? new String(eventData) : new String();
-        return Stream.of(list.split(",")).filter(e -> !e.endsWith(":" + processInstanceId)).collect(toCollection(HashSet::new));
+        return Stream.of(list.split(",")).filter(e -> !e.endsWith(EVENT_SEPARATOR + processInstanceId)).collect(toCollection(HashSet::new));
     }
 
     @Override
@@ -190,7 +193,7 @@ public class RocksDBProcessInstances<T extends Model> implements MutableProcessI
 
     private Set<String> getUniqueEvents(ProcessInstance<T> instance) {
         return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes())
-                .map(e -> e + ":" + instance.id())
+                .map(e -> e + EVENT_SEPARATOR + instance.id())
                 .collect(Collectors.toCollection(HashSet::new));
     }
 

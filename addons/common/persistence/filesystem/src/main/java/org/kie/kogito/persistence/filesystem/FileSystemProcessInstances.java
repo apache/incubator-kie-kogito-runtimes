@@ -47,7 +47,7 @@ import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 
 public class FileSystemProcessInstances<T extends Model> implements MutableProcessInstances<T> {
-
+    private final String EVENT_SEPARATOR = "::";
     public static final String PI_DESCRIPTION = "ProcessInstanceDescription";
     public static final String PI_STATUS = "ProcessInstanceStatus";
 
@@ -160,7 +160,7 @@ public class FileSystemProcessInstances<T extends Model> implements MutableProce
             List<String> processInstanceIds = Files.readAllLines(eventTypeStorage)
                     .stream()
                     .filter(line -> line.startsWith(eventType + ":"))
-                    .map(line -> line.substring(line.indexOf(":") + 1)).toList();
+                    .map(line -> line.substring(line.indexOf(EVENT_SEPARATOR) + EVENT_SEPARATOR.length())).toList();
             List<ProcessInstance<T>> waitingInstances = new ArrayList<>();
             for (String processInstanceId : processInstanceIds) {
                 Path processInstanceStorage = PathUtils.getSecuredPath(storage, processInstanceId);
@@ -180,7 +180,7 @@ public class FileSystemProcessInstances<T extends Model> implements MutableProce
             cleanEventType(instance.id());
             Set<String> eventTypes = Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toSet());
             for (String eventType : eventTypes) {
-                Files.write(eventTypeStorage, (eventType + ":" + instance.id() + System.lineSeparator()).getBytes(), StandardOpenOption.APPEND);
+                Files.write(eventTypeStorage, (eventType + EVENT_SEPARATOR + instance.id() + System.lineSeparator()).getBytes(), StandardOpenOption.APPEND);
             }
         } catch (IOException e) {
             throw new RuntimeException("Unable to store process instance with id " + instance.id(), e);
@@ -193,7 +193,7 @@ public class FileSystemProcessInstances<T extends Model> implements MutableProce
                 return;
             }
             List<String> lines = Files.readAllLines(eventTypeStorage).stream()
-                    .filter(line -> !line.endsWith(":" + processInstanceId)).toList();
+                    .filter(line -> !line.endsWith(EVENT_SEPARATOR + processInstanceId)).toList();
             String fileContent = String.join(System.lineSeparator(), lines);
 
             Files.write(eventTypeStorage, (fileContent + System.lineSeparator()).getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
