@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.event.impl.adapter;
 
-import org.kie.api.event.process.ProcessStartedEvent;
+import org.kie.api.event.process.ProcessStateEvent;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.process.ProcessInstanceStateEventBody;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
@@ -26,13 +26,12 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 public class ProcessStateEventDataEventAdapter extends AbstractDataEventAdapter {
 
     public ProcessStateEventDataEventAdapter() {
-        super(ProcessStartedEvent.class);
+        super(ProcessStateEvent.class);
     }
 
     @Override
     public DataEvent<?> adapt(Object payload) {
-        ProcessStartedEvent event = (ProcessStartedEvent) payload;
+        ProcessStateEvent event = (ProcessStateEvent) payload;
         return adapt(event, ProcessInstanceStateEventBody.EVENT_TYPE_UPDATED, ((KogitoProcessInstance) event.getProcessInstance()).getStartDate());
     }
-
 }
