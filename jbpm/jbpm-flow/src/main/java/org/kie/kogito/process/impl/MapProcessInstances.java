@@ -20,11 +20,14 @@ package org.kie.kogito.process.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
@@ -127,8 +130,8 @@ class MapProcessInstances<T extends Model> implements MutableProcessInstances<T>
 
     private void mergeEventTypes(ProcessInstance<T> instance) {
         cleanEventTypes(instance.id());
-        WorkflowProcessInstance workflowInstance = ((AbstractProcessInstance) instance).internalGetProcessInstance();
-        for (String eventType : workflowInstance.getEventTypes()) {
+        String[] events = getUniqueEvents(instance);
+        for (String eventType : events) {
             eventTypes.compute(eventType, (k, v) -> {
                 List<String> instancesId = v;
                 if (instancesId == null) {
@@ -151,6 +154,13 @@ class MapProcessInstances<T extends Model> implements MutableProcessInstances<T>
                 return !instancesId.isEmpty() ? instancesId : null;
             });
         }
+    }
+
+    private String[] getUniqueEvents(ProcessInstance<T> instance) {
+        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(HashSet::new))
+                .toArray(String[]::new);
     }
 
 }
