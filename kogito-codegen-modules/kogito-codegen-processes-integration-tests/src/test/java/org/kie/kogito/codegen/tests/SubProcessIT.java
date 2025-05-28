@@ -63,7 +63,7 @@ public class SubProcessIT extends AbstractCodegenIT {
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
 
-        processInstance.send(SignalFactory.of("end", null));
+        processInstance.send(SignalFactory.of("end", "my"));
 
         assertThat(processInstance.variables().toMap()).hasSize(2).contains(
                 entry("name", "test"), entry("review", "another review"));

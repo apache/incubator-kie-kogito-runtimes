@@ -41,6 +41,7 @@ import org.jbpm.util.ContextFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.SubProcessFactory;
 import org.jbpm.workflow.core.node.SubProcessNode;
+import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
@@ -215,7 +216,9 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         SubProcessFactory subProcessFactory = getSubProcessNode().getSubProcessFactory();
         org.kie.kogito.process.ProcessInstance<?> pi = ((org.kie.kogito.process.ProcessInstance<?>) processInstance.unwrap());
         if (pi != null) {
-            subProcessFactory.unbind(ContextFactory.fromNode(this), pi.variables());
+            Model model = (Model) pi.process().createModel();
+            model.fromMap(processInstance.getVariables());
+            subProcessFactory.unbind(ContextFactory.fromNode(this), model);
         }
     }
 
