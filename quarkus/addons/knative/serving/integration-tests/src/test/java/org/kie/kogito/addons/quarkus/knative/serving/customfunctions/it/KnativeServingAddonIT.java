@@ -282,6 +282,87 @@ class KnativeServingAddonIT {
                 .statusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
     }
 
+    @Test
+    void executeWithHeadersAsPlainJson() {
+        mockExecuteWithHeadersEndpoint();
+
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON).when()
+                .post("/headersKnativeFunction")
+                .then()
+                .statusCode(HttpURLConnection.HTTP_CREATED)
+                .body("workflowdata.message", is("Headers added successfully"));
+    }
+
+    @Test
+    void executeWithQueryParametersAsPlainJson() {
+        mockExecuteWithQueryParametersPostEndpoint();
+
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON).when()
+                .post("/queryParamsKnativeFunctionPost")
+                .then()
+                .statusCode(HttpURLConnection.HTTP_CREATED)
+                .body("workflowdata.message", is("Query parameters added successfully"));
+    }
+
+    @Test
+    void executeWithHeadersAndQueryParametersAsPlainJson() {
+        mockExecuteWithHeadersAndQueryParametersPostEndpoint();
+
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON).when()
+                .post("/headersAndQueryParamsKnativeFunctionPost")
+                .then()
+                .statusCode(HttpURLConnection.HTTP_CREATED)
+                .body("workflowdata.message", is("Headers and query parameters added successfully"));
+    }
+
+    @Test
+    void executeWithQueryParametersGet() {
+        mockExecuteWithQueryParametersEndpoint();
+
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON).when()
+                .post("/queryParamsKnativeFunction")
+                .then()
+                .statusCode(HttpURLConnection.HTTP_CREATED)
+                .body("workflowdata.message", is("Query parameters added successfully"));
+    }
+
+    @Test
+    void executeWithHeadersAndQueryParametersGet() {
+        mockExecuteWithHeadersAndQueryParametersEndpoint();
+
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON).when()
+                .post("/headersAndQueryParamsKnativeFunction")
+                .then()
+                .statusCode(HttpURLConnection.HTTP_CREATED)
+                .body("workflowdata.message", is("Headers and query parameters added successfully"));
+    }
+
+    @Test
+    void executeWithHeadersAsCloudEvent() {
+        mockExecuteWithHeadersCloudEventEndpoint();
+
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON).when()
+                .post("/cloudEventHeadersKnativeFunction")
+                .then()
+                .statusCode(HttpURLConnection.HTTP_CREATED)
+                .body("workflowdata.message", is("CloudEvents with headers are awesome!"))
+                .body("workflowdata.object", is(JsonNodeFactory.instance.objectNode()
+                        .put("long", 42L)
+                        .put("String", "xpto").toPrettyString()));
+    }
+
     private void mockExecuteTimeoutEndpoint() {
         wireMockServer.stubFor(post(urlEqualTo("/timeout"))
                 .willReturn(aResponse()
@@ -348,5 +429,74 @@ class KnativeServingAddonIT {
                         .withHeader("Content-Type", "application/json")
                         .withJsonBody(JsonNodeFactory.instance.objectNode()
                                 .put("message", JsonNodeFactory.instance.arrayNode().add(23).add(24).toPrettyString()))));
+    }
+
+    private void mockExecuteWithHeadersEndpoint() {
+        wireMockServer.stubFor(post(urlEqualTo("/headersFunction"))
+                .withHeader("Test", equalTo("test"))
+                .withHeader("Authorization", equalTo("Bearer token"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withJsonBody(JsonNodeFactory.instance.objectNode()
+                                .put("message", "Headers added successfully"))));
+    }
+
+    private void mockExecuteWithQueryParametersPostEndpoint() {
+        wireMockServer.stubFor(post(urlEqualTo("/queryParamsFunction?param2=value2&param1=value1"))
+                .withRequestBody(equalToJson(JsonNodeFactory.instance.objectNode()
+                                .put("param3", "value3")
+                                .toString()))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withJsonBody(JsonNodeFactory.instance.objectNode()
+                                .put("message", "Query parameters added successfully"))));
+    }
+
+    private void mockExecuteWithHeadersAndQueryParametersPostEndpoint() {
+        wireMockServer.stubFor(post(urlEqualTo("/headersAndQueryParamsFunction?param1=value1"))
+                .withRequestBody(equalToJson(JsonNodeFactory.instance.objectNode()
+                                        .put("param2", "value2")
+                                        .toString()))
+                .withHeader("Authorization", equalTo("Bearer token"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withJsonBody(JsonNodeFactory.instance.objectNode()
+                                .put("message", "Headers and query parameters added successfully"))));
+    }
+
+    private void mockExecuteWithQueryParametersEndpoint() {
+        wireMockServer.stubFor(get(urlEqualTo("/queryParamsFunction?QUERY_param3=value3&param1=value1&param2=value2"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withJsonBody(JsonNodeFactory.instance.objectNode()
+                                .put("message", "Query parameters added successfully"))));
+    }
+
+    private void mockExecuteWithHeadersAndQueryParametersEndpoint() {
+        wireMockServer.stubFor(get(urlEqualTo("/headersAndQueryParamsFunction?param1=value1"))
+                .withHeader("Authorization", equalTo("Bearer token"))
+                .willReturn(aResponse()
+                        .withStatus(HttpURLConnection.HTTP_OK)
+                        .withHeader("Content-Type", "application/json")
+                        .withJsonBody(JsonNodeFactory.instance.objectNode()
+                                .put("message", "Headers and query parameters added successfully"))));
+    }
+
+    private void mockExecuteWithHeadersCloudEventEndpoint() {
+        wireMockServer.stubFor(post(urlEqualTo(CLOUD_EVENT_PATH))
+                .withHeader("Test", equalTo("test"))
+                .withHeader("Authorization", equalTo("Bearer token"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8)
+                        .withJsonBody(JsonNodeFactory.instance.objectNode()
+                                .put("message", "CloudEvents with headers are awesome!")
+                                .put("object", JsonNodeFactory.instance.objectNode()
+                                        .put("long", 42L)
+                                        .put("String", "xpto").toPrettyString()))));
     }
 }
