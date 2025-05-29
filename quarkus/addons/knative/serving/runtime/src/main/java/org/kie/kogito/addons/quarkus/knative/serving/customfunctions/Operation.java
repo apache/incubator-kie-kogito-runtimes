@@ -125,7 +125,7 @@ public final class Operation {
                 .withMethod(HttpMethod.valueOf(params.getOrDefault(METHOD_PARAMETER_NAME, DEFAULT_HTTP_METHOD.name()).toUpperCase()))
                 .withReturnHeaders(Boolean.parseBoolean(params.get(RETURN_HEADERS_PARAMETER_NAME)))
                 .withReturnStatusCode(Boolean.parseBoolean(params.get(RETURN_STATUS_CODE_PARAMETER_NAME)))
-                .withFailOnStatusError(Boolean.parseBoolean(params.get(FAIL_ON_STATUS_ERROR_PARAMETER_NAME)))
+                .withFailOnStatusError(Boolean.parseBoolean(params.getOrDefault(FAIL_ON_STATUS_ERROR_PARAMETER_NAME, "true")))
                 .build();
     }
 
