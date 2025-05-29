@@ -37,7 +37,7 @@ public final class Operation {
     static final String PATH_PARAMETER_NAME = "path";
 
     static final String METHOD_PARAMETER_NAME = "method";
-    
+
     static final String RETURN_HEADERS_PARAMETER_NAME = "returnHeaders";
 
     static final String RETURN_STATUS_CODE_PARAMETER_NAME = "returnStatusCode";

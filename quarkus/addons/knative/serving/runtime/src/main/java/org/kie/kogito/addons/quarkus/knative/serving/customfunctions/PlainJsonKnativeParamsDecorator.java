@@ -71,8 +71,8 @@ public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator
 
         Set<String> keysFilter = Set.of(RestWorkItemHandler.REQUEST_TIMEOUT_IN_MILLIS, MODEL_WORKFLOW_VAR);
         Map<String, Object> filteredParams = parameters.entrySet().stream()
-            .filter(entry -> !keysFilter.contains(entry.getKey()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .filter(entry -> !keysFilter.contains(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         if (filteredParams.isEmpty()) {
             Set<String> paramsRemove = super.extractHeadersQueries(workItem, inputModel, request);
