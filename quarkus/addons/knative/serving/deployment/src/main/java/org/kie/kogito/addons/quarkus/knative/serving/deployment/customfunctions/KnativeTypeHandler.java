@@ -34,7 +34,6 @@ import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.PlainJsonKn
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
-import org.kie.kogito.serverless.workflow.suppliers.CollectionParamsDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 
