@@ -19,7 +19,6 @@
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,14 +31,14 @@ import org.kie.kogito.jackson.utils.ObjectNodeListenerAware;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.ID;
 import static org.kie.kogito.serverless.workflow.SWFConstants.MODEL_WORKFLOW_VAR;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator {
 
