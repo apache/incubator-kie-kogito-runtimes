@@ -19,22 +19,22 @@
 
 package org.jbpm.process.instance.event;
 
-import org.kie.api.event.process.ProcessNodeStateEvent;
+import org.kie.api.event.process.ProcessNodeStateChangeEvent;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
-public class KogitoProcessNodeStateEventImpl extends AbstractProcessNodeEvent implements ProcessNodeStateEvent {
+public class KogitoProcessNodeStateChangeEventImpl extends AbstractProcessNodeEvent implements ProcessNodeStateChangeEvent {
 
     private static final long serialVersionUID = 510l;
 
-    public KogitoProcessNodeStateEventImpl(NodeInstance nodeInstance, KieRuntime kruntime, String identity) {
+    public KogitoProcessNodeStateChangeEventImpl(NodeInstance nodeInstance, KieRuntime kruntime, String identity) {
         super(nodeInstance, nodeInstance.getProcessInstance(), kruntime, identity);
     }
 
     @Override
     public String toString() {
-        return "==>[ProcessNodeStateEvent(nodeId=" + getNodeInstance().getNodeId() + "; id=" + ((KogitoNodeInstance) getNodeInstance()).getStringId()
+        return "==>[ProcessNodeStateChangeEvent(nodeId=" + getNodeInstance().getNodeId() + "; id=" + ((KogitoNodeInstance) getNodeInstance()).getStringId()
                 + "; nodeName=" + getNodeInstance().getNodeName() + "; processName=" + getProcessInstance().getProcessName() + "; processId=" + getProcessInstance().getProcessId() + ")]";
     }
 }

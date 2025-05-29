@@ -73,11 +73,13 @@ public class RuleAwareProcessEventListener implements ProcessEventListener {
         // do nothing
     }
 
-    public void beforeNodeStateChange(ProcessNodeStateEvent event) {
+    @Override
+    public void onProcessStateChanged(ProcessStateChangeEvent event) {
         // do nothing
     }
 
-    public void afterNodeStateChange(ProcessNodeStateEvent event) {
+    @Override
+    public void onNodeStateChanged(ProcessNodeStateChangeEvent event) {
         // do nothing
     }
 

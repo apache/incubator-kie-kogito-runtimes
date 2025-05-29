@@ -103,15 +103,9 @@ public class KogitoProcessEventSupportImpl implements KogitoProcessEventSupport 
     }
 
     @Override
-    public void fireBeforeProcessStateChanged(KogitoProcessInstance instance, KieRuntime kruntime) {
-        final ProcessStateEvent event = new ProcessStateEventImpl(instance, kruntime, identityProvider.getName());
-        notifyAllListeners(l -> l.beforeProcessStateChanged(event));
-    }
-
-    @Override
-    public void fireAfterProcessStateChanged(KogitoProcessInstance instance, KieRuntime kruntime) {
-        final ProcessStateEvent event = new ProcessStateEventImpl(instance, kruntime, identityProvider.getName());
-        notifyAllListeners(l -> l.afterProcessStateChanged(event));
+    public void fireOnProcessStateChanged(KogitoProcessInstance instance, KieRuntime kruntime) {
+        final ProcessStateChangeEvent event = new ProcessStateChangeEventImpl(instance, kruntime, identityProvider.getName());
+        notifyAllListeners(l -> l.onProcessStateChanged(event));
     }
 
     @Override
@@ -139,15 +133,9 @@ public class KogitoProcessEventSupportImpl implements KogitoProcessEventSupport 
     }
 
     @Override
-    public void fireBeforeNodeStateChanged(KogitoNodeInstance nodeInstance, KieRuntime kruntime) {
-        final ProcessNodeStateEvent event = new KogitoProcessNodeStateEventImpl(nodeInstance, kruntime, identityProvider.getName());
-        notifyAllListeners(l -> l.beforeNodeStateChanged(event));
-    }
-
-    @Override
-    public void fireAfterNodeStateChanged(KogitoNodeInstance nodeInstance, KieRuntime kruntime) {
-        final ProcessNodeStateEvent event = new KogitoProcessNodeStateEventImpl(nodeInstance, kruntime, identityProvider.getName());
-        notifyAllListeners(l -> l.afterNodeStateChanged(event));
+    public void fireOnNodeStateChanged(KogitoNodeInstance nodeInstance, KieRuntime kruntime) {
+        final ProcessNodeStateChangeEvent event = new KogitoProcessNodeStateChangeEventImpl(nodeInstance, kruntime, identityProvider.getName());
+        notifyAllListeners(l -> l.onNodeStateChanged(event));
     }
 
     @Override

@@ -50,13 +50,8 @@ public class KogitoProcessEventListenerAdapter implements KogitoProcessEventList
     }
 
     @Override
-    public void beforeProcessStateChanged(ProcessStateEvent event) {
-        delegate.beforeProcessStateChanged(event);
-    }
-
-    @Override
-    public void afterProcessStateChanged(ProcessStateEvent event) {
-        delegate.afterProcessStateChanged(event);
+    public void onProcessStateChanged(ProcessStateChangeEvent event) {
+        delegate.onProcessStateChanged(event);
     }
 
     @Override
@@ -80,13 +75,8 @@ public class KogitoProcessEventListenerAdapter implements KogitoProcessEventList
     }
 
     @Override
-    public void beforeNodeStateChanged(ProcessNodeStateEvent event) {
-        delegate.beforeNodeStateChanged(event);
-    }
-
-    @Override
-    public void afterNodeStateChanged(ProcessNodeStateEvent event) {
-        delegate.afterNodeStateChanged(event);
+    public void onNodeStateChanged(ProcessNodeStateChangeEvent event) {
+        delegate.onNodeStateChanged(event);
     }
 
     @Override

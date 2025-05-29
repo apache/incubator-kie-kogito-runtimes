@@ -38,9 +38,7 @@ public interface KogitoProcessEventSupport {
 
     void fireAfterProcessCompleted(KogitoProcessInstance instance, KieRuntime kruntime);
 
-    void fireBeforeProcessStateChanged(KogitoProcessInstance instance, KieRuntime kruntime);
-
-    void fireAfterProcessStateChanged(KogitoProcessInstance instance, KieRuntime kruntime);
+    void fireOnProcessStateChanged(KogitoProcessInstance instance, KieRuntime kruntime);
 
     void fireBeforeNodeTriggered(KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
@@ -50,9 +48,7 @@ public interface KogitoProcessEventSupport {
 
     void fireAfterNodeLeft(KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
-    void fireBeforeNodeStateChanged(KogitoNodeInstance nodeInstance, KieRuntime kruntime);
-
-    void fireAfterNodeStateChanged(KogitoNodeInstance nodeInstance, KieRuntime kruntime);
+    void fireOnNodeStateChanged(KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
     void fireBeforeVariableChanged(String id, String instanceId, Object oldValue, Object newValue, List<String> tags,
             KogitoProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kruntime);

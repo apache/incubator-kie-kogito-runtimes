@@ -633,7 +633,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     }
 
     public void rescheduleSlaTimer(ZonedDateTime slaDueDate) {
-        throw new RuntimeException("Unsupported operation");
+        throw new UnsupportedOperationException("Unsupported operation");
     }
 
     @Override

@@ -16,22 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.event.impl.adapter;
+package org.jbpm.process.instance.event;
 
-import org.kie.api.event.process.ProcessStateEvent;
-import org.kie.kogito.event.DataEvent;
-import org.kie.kogito.event.process.ProcessInstanceStateEventBody;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.api.event.process.ProcessStateChangeEvent;
+import org.kie.api.runtime.KieRuntime;
+import org.kie.api.runtime.process.ProcessInstance;
 
-public class ProcessStateEventDataEventAdapter extends AbstractDataEventAdapter {
+public class ProcessStateChangeEventImpl extends ProcessEvent implements ProcessStateChangeEvent {
 
-    public ProcessStateEventDataEventAdapter() {
-        super(ProcessStateEvent.class);
+    private static final long serialVersionUID = 510l;
+
+    public ProcessStateChangeEventImpl(ProcessInstance instance, KieRuntime kruntime, String identity) {
+        super(instance, kruntime, identity);
     }
 
     @Override
-    public DataEvent<?> adapt(Object payload) {
-        ProcessStateEvent event = (ProcessStateEvent) payload;
-        return adapt(event, ProcessInstanceStateEventBody.EVENT_TYPE_UPDATED, ((KogitoProcessInstance) event.getProcessInstance()).getStartDate());
+    public String toString() {
+        return "==>[ProcessStateChangeEvent(name=" + getProcessInstance().getProcessName() + "; id=" + getProcessInstance().getProcessId() + ")]";
     }
+
 }

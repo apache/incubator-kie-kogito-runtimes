@@ -57,7 +57,12 @@ public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventLis
     }
 
     @Override
-    public void afterProcessStateChanged(ProcessStateEvent event) {
+    public void onProcessStateChanged(ProcessStateChangeEvent event) {
+        intercept(event);
+    }
+
+    @Override
+    public void onNodeStateChanged(ProcessNodeStateChangeEvent event) {
         intercept(event);
     }
 
@@ -78,11 +83,6 @@ public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventLis
 
     @Override
     public void afterNodeLeft(ProcessNodeLeftEvent event) {
-        intercept(event);
-    }
-
-    @Override
-    public void afterNodeStateChanged(ProcessNodeStateEvent event) {
         intercept(event);
     }
 

@@ -1482,9 +1482,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             throw new IllegalStateException("Cannot update SLA: Process Instance has NO SLA configured");
         }
         InternalProcessRuntime processRuntime = ((InternalProcessRuntime) getKnowledgeRuntime().getProcessRuntime());
-        processRuntime.getProcessEventSupport().fireBeforeProcessStateChanged(this, getKnowledgeRuntime());
         rescheduleTimer(slaTimerId, slaDueDate);
         this.slaDueDate = Date.from(slaDueDate.toInstant());
-        processRuntime.getProcessEventSupport().fireAfterProcessStateChanged(this, getKnowledgeRuntime());
+        processRuntime.getProcessEventSupport().fireOnProcessStateChanged(this, getKnowledgeRuntime());
     }
 }

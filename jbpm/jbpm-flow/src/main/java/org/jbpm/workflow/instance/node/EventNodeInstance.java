@@ -305,10 +305,9 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
             throw new IllegalStateException("Cannot update SLA: Node has NO SLA configured");
         }
         InternalProcessRuntime processRuntime = ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime());
-        processRuntime.getProcessEventSupport().fireBeforeNodeStateChanged(this, getProcessInstance().getKnowledgeRuntime());
         ((WorkflowProcessInstanceImpl) getProcessInstance()).rescheduleTimer(slaTimerId, slaDueDate, getId());
         this.slaDueDate = Date.from(slaDueDate.toInstant());
-        processRuntime.getProcessEventSupport().fireAfterNodeStateChanged(this, getProcessInstance().getKnowledgeRuntime());
+        processRuntime.getProcessEventSupport().fireOnNodeStateChanged(this, getProcessInstance().getKnowledgeRuntime());
     }
 
 }
