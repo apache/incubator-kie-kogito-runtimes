@@ -533,9 +533,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void updateNodeInstanceSla(String nodeInstanceId, ZonedDateTime slaDueDate) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            NodeInstance nodeInstance = processInstance()
-                    .getNodeInstances(true)
+        executeInWorkflowProcessInstanceRead(pi -> {
+            NodeInstance nodeInstance = pi.getNodeInstances(true)
                     .stream()
                     .filter(ni -> ni.getId().equals(nodeInstanceId))
                     .findFirst()
@@ -548,8 +547,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void updateProcessInstanceSla(ZonedDateTime slaDueDate) {
-        processInstanceLockStrategy.executeOperation(id, () -> {
-            ((WorkflowProcessInstanceImpl) processInstance()).rescheduleSlaTimer(slaDueDate);
+        executeInWorkflowProcessInstanceRead(pi -> {
+            pi.rescheduleSlaTimer(slaDueDate);
             return null;
         });
     }

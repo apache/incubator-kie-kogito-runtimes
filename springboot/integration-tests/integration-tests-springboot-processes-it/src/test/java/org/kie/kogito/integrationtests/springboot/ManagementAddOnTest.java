@@ -241,6 +241,36 @@ class ManagementAddOnTest extends BaseRestTest {
                 .body("message", equalTo("Node Instance '" + nodeInstanceId + "' SLA due date successfully updated"));
     }
 
+    @Test
+    public void testRescheduleSLATimersProcessInstanceWithoutSLAsConfigured() {
+        String processInstanceId = givenGreetingsProcess();
+
+        given()
+                .body(new SlaPayload(ZonedDateTime.now()))
+                .contentType(ContentType.JSON)
+                .patch("/management/processes/{processId}/instances/{processInstanceId}/sla", GREETINGS, processInstanceId)
+                .then()
+                .statusCode(400)
+                .body(equalTo("Cannot update SLA: Process Instance has NO SLA configured"));
+
+        String nodeInstanceId = given()
+                .when()
+                .get("/management/processes/{processId}/instances/{processInstanceId}/nodeInstances", GREETINGS, processInstanceId)
+                .then()
+                .statusCode(200)
+                .body("$.size()", equalTo(2))
+                .extract().path("[0].nodeInstanceId");
+
+        given()
+                .body(new SlaPayload(ZonedDateTime.now()))
+                .contentType(ContentType.JSON)
+                .when()
+                .patch("/management/processes/{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}/sla", GREETINGS, processInstanceId, nodeInstanceId)
+                .then()
+                .statusCode(400)
+                .body(equalTo("Cannot update SLA: Node has NO SLA configured"));
+    }
+
     private String givenGreetingsProcess() {
         return given().contentType(ContentType.JSON)
                 .when()
