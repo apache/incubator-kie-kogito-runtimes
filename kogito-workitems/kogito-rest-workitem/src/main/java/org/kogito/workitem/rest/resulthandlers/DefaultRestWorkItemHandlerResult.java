@@ -42,7 +42,8 @@ public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResu
     }
 
     @Override
-    public Object apply(HttpResponse<Buffer> response, Class<?> target) {;
+    public Object apply(HttpResponse<Buffer> response, Class<?> target) {
+        ;
         Map<String, Object> result = new HashMap<>();
 
         try {
@@ -51,14 +52,12 @@ public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResu
             if (!this.returnHeaders && !this.returnStatusCode) {
                 return body;
             }
-    
+
             if (body instanceof Map) {
                 ((Map<?, ?>) body).forEach((key, value) -> result.put(String.valueOf(key), value));
             } else if (body instanceof JsonNode && ((JsonNode) body).isObject()) {
                 JsonNode node = (JsonNode) body;
-                node.fields().forEachRemaining(entry ->
-                    result.put(entry.getKey(), extractJsonNodeValue(entry.getValue()))
-                );
+                node.fields().forEachRemaining(entry -> result.put(entry.getKey(), extractJsonNodeValue(entry.getValue())));
             } else {
                 result.put("body", body);
             }
@@ -77,12 +76,18 @@ public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResu
     }
 
     private static Object extractJsonNodeValue(JsonNode node) {
-        if (node.isTextual()) return node.textValue();
-        if (node.isInt()) return node.intValue();
-        if (node.isLong()) return node.longValue();
-        if (node.isDouble()) return node.doubleValue();
-        if (node.isBoolean()) return node.booleanValue();
-        if (node.isNull()) return null;
+        if (node.isTextual())
+            return node.textValue();
+        if (node.isInt())
+            return node.intValue();
+        if (node.isLong())
+            return node.longValue();
+        if (node.isDouble())
+            return node.doubleValue();
+        if (node.isBoolean())
+            return node.booleanValue();
+        if (node.isNull())
+            return null;
         return node.toString();
     }
 }
