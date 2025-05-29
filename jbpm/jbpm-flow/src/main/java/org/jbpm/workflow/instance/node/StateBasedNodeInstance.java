@@ -501,7 +501,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
     @Override
     public void rescheduleSlaTimer(ZonedDateTime slaDueDate) {
         if (isNull(slaDueDate)) {
-            throw new IllegalArgumentException("Cannot update SLA: SLAslaDueDate cannot be null");
+            throw new IllegalArgumentException("Cannot update SLA: slaDueDate cannot be null");
         }
 
         if (isEmpty(slaTimerId)) {
