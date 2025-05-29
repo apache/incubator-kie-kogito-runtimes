@@ -50,8 +50,12 @@ public abstract class AbstractParamsDecorator implements ParamsDecorator {
         while (iter.hasNext()) {
             Entry<String, Object> entry = iter.next();
             String key = entry.getKey();
-            if (isHeaderParameter(key) || isQueryParameter(key)) {
-                request.putHeader(isHeaderParameter(key) ? toHeaderKey(key) : toQueryKey(key), entry.getValue().toString());
+            if (isHeaderParameter(key)) {
+                request.putHeader(toHeaderKey(key), entry.getValue().toString());
+                consideredParams.add(key);
+                iter.remove();
+            } else if (isQueryParameter(key)) {
+                request.addQueryParam(toQueryKey(key), entry.getValue().toString());
                 consideredParams.add(key);
                 iter.remove();
             }
