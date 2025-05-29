@@ -178,9 +178,9 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     }
 
     public void processInstanceCompleted(ProcessInstance processInstance) {
-        processInstanceId = null;
         removeEventListeners();
         handleOutMappings(processInstance);
+        processInstanceId = null;
         if (processInstance.getState() == KogitoProcessInstance.STATE_ABORTED) {
             String faultName = processInstance.getOutcome() == null ? "" : processInstance.getOutcome();
             // handle exception as sub process failed with error code
