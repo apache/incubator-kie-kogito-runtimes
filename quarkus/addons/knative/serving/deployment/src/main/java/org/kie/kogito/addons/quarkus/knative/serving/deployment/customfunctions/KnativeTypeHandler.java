@@ -27,6 +27,7 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.CloudEventKnativeParamsDecorator;
+import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.GetParamsDecorator;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Operation;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.PlainJsonKnativeParamsDecorator;
@@ -65,12 +66,12 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
 
         Operation operation = Operation.parse(trimCustomOperation(functionDef));
 
+        if (!payloadFields.isEmpty()) {
+            node.workParameter(PAYLOAD_FIELDS_PROPERTY_NAME, payloadFields);
+        }
         if (HttpMethod.GET.equals(operation.getHttpMethod())) {
-            node.workParameter(RestWorkItemHandler.PARAMS_DECORATOR, new CollectionParamsDecoratorSupplier(List.of(), payloadFields));
+            node.workParameter(RestWorkItemHandler.PARAMS_DECORATOR, GetParamsDecorator.class.getName());
         } else {
-            if (!payloadFields.isEmpty()) {
-                node.workParameter(PAYLOAD_FIELDS_PROPERTY_NAME, payloadFields);
-            }
             if (operation.isCloudEvent()) {
                 node.workParameter(RestWorkItemHandler.PARAMS_DECORATOR, CloudEventKnativeParamsDecorator.class.getName());
             } else {
