@@ -146,7 +146,7 @@ public abstract class AbstractProcessRuntime implements InternalProcessRuntime {
                 // when using ISO date/time period is not set
                 long[] repeatValues = DateTimeUtils.parseRepeatableDateTime(timer.getDelay());
                 if (repeatValues.length == 3) {
-                    int repeatLimit = repeatValues[0] < 0 ? 0: (int) repeatValues[0];
+                    int repeatLimit = repeatValues[0] < 0 ? 0 : (int) repeatValues[0];
                     return DurationExpirationTime.repeat(repeatValues[1], repeatValues[2], repeatLimit);
                 } else {
                     long delay = repeatValues[0];
