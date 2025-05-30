@@ -533,21 +533,20 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void updateNodeInstanceSla(String nodeInstanceId, ZonedDateTime slaDueDate) {
-        executeInWorkflowProcessInstanceRead(pi -> {
+        executeInWorkflowProcessInstanceWrite(pi -> {
             NodeInstance nodeInstance = pi.getNodeInstances(true)
                     .stream()
                     .filter(ni -> ni.getId().equals(nodeInstanceId))
                     .findFirst()
                     .orElseThrow(() -> new NodeInstanceNotFoundException(this.id, nodeInstanceId));
             ((NodeInstanceImpl) nodeInstance).rescheduleSlaTimer(slaDueDate);
-            ((MutableProcessInstances<T>) process.instances()).update(this.id(), this);
             return null;
         });
     }
 
     @Override
     public void updateProcessInstanceSla(ZonedDateTime slaDueDate) {
-        executeInWorkflowProcessInstanceRead(pi -> {
+        executeInWorkflowProcessInstanceWrite(pi -> {
             pi.rescheduleSlaTimer(slaDueDate);
             return null;
         });
