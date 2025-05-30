@@ -89,7 +89,8 @@ class KnativeServingAddonIT {
 
         @BeforeEach
         void beforeEach() {
-                createKnativeServiceIfNotExists(mockServer.getClient(), "knative/quarkus-greeting.yaml", NAMESPACE, SERVICENAME, remoteServiceUrl);
+                createKnativeServiceIfNotExists(mockServer.getClient(), "knative/quarkus-greeting.yaml", NAMESPACE,
+                                SERVICENAME, remoteServiceUrl);
         }
 
         @Test
@@ -147,7 +148,8 @@ class KnativeServingAddonIT {
                                 .post("/arrayKnativeFunction")
                                 .then()
                                 .statusCode(HttpURLConnection.HTTP_CREATED)
-                                .body("workflowdata.message", is(JsonNodeFactory.instance.arrayNode().add(23).add(24).toPrettyString()));
+                                .body("workflowdata.message", is(
+                                                JsonNodeFactory.instance.arrayNode().add(23).add(24).toPrettyString()));
         }
 
         @Test
@@ -220,7 +222,8 @@ class KnativeServingAddonIT {
                                                 .put("String", "xpto").toPrettyString()));
 
                 wireMockServer.verify(postRequestedFor(urlEqualTo(CLOUD_EVENT_PATH))
-                                .withRequestBody(matchingJsonPath("$.id", WireMock.matching(AT_LEAST_ONE_NON_WHITE_CHARACTER_REGEX)))
+                                .withRequestBody(matchingJsonPath("$.id",
+                                                WireMock.matching(AT_LEAST_ONE_NON_WHITE_CHARACTER_REGEX)))
                                 .withHeader("Content-Type", equalTo(APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8)));
         }
 
@@ -385,7 +388,8 @@ class KnativeServingAddonIT {
                                                                 .put("message", "CloudEvents are awesome!")
                                                                 .put("object", JsonNodeFactory.instance.objectNode()
                                                                                 .put("long", 42L)
-                                                                                .put("String", "xpto").toPrettyString()))));
+                                                                                .put("String", "xpto")
+                                                                                .toPrettyString()))));
         }
 
         private void mockExecuteWithEmptyParametersEndpoint() {
@@ -422,13 +426,15 @@ class KnativeServingAddonIT {
         private void mockExecuteWithArrayEndpoint() {
                 wireMockServer.stubFor(post(urlEqualTo("/arrayFunction"))
                                 .withRequestBody(equalToJson(JsonNodeFactory.instance.objectNode()
-                                                .set("array", JsonNodeFactory.instance.arrayNode().add("Javierito").add("Pepito"))
+                                                .set("array", JsonNodeFactory.instance.arrayNode().add("Javierito")
+                                                                .add("Pepito"))
                                                 .toString()))
                                 .willReturn(aResponse()
                                                 .withStatus(HttpURLConnection.HTTP_OK)
                                                 .withHeader("Content-Type", "application/json")
                                                 .withJsonBody(JsonNodeFactory.instance.objectNode()
-                                                                .put("message", JsonNodeFactory.instance.arrayNode().add(23).add(24).toPrettyString()))));
+                                                                .put("message", JsonNodeFactory.instance.arrayNode()
+                                                                                .add(23).add(24).toPrettyString()))));
         }
 
         private void mockExecuteWithHeadersEndpoint() {
@@ -468,7 +474,8 @@ class KnativeServingAddonIT {
         }
 
         private void mockExecuteWithQueryParametersEndpoint() {
-                wireMockServer.stubFor(get(urlEqualTo("/queryParamsFunction?QUERY_param3=value3&param1=value1&param2=value2"))
+                wireMockServer.stubFor(get(
+                                urlEqualTo("/queryParamsFunction?QUERY_param3=value3&param1=value1&param2=value2"))
                                 .willReturn(aResponse()
                                                 .withStatus(HttpURLConnection.HTTP_OK)
                                                 .withHeader("Content-Type", "application/json")
@@ -497,6 +504,7 @@ class KnativeServingAddonIT {
                                                                 .put("message", "CloudEvents with headers are awesome!")
                                                                 .put("object", JsonNodeFactory.instance.objectNode()
                                                                                 .put("long", 42L)
-                                                                                .put("String", "xpto").toPrettyString()))));
+                                                                                .put("String", "xpto")
+                                                                                .toPrettyString()))));
         }
 }

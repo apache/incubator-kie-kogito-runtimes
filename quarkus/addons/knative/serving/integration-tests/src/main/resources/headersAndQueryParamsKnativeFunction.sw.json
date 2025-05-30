@@ -20,7 +20,7 @@
           "functionRef": {
             "refName": "greet",
             "arguments": {
-              "QUERY_param1": "value1",
+              "param1": "value1",
               "HEADER_Authorization": "Bearer token"
             }
           }
