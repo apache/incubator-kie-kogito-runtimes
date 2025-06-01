@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.kie.sonataflow</groupId>
     <artifactId>sonataflow-addons-quarkus-python-parent</artifactId>
-    <version>999-SNAPSHOT</version>
+    <version>999-20250601-SNAPSHOT</version>
   </parent>
   <artifactId>sonataflow-addons-quarkus-python-deployment</artifactId>
   <name>SonataFlow:: Addons :: Quarkus:: Serverless Workflow:: Python:: Deployment</name>
