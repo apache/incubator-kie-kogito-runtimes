@@ -44,7 +44,7 @@ public abstract class SpringMessageConsumer<M extends Model, D> extends Abstract
     private ExecutorService executor;
 
     protected void init(Process<M> process, String trigger, Class<D> objectClass, EventReceiver eventReceiver) {
-        executor = factory.getExecutorService(trigger);
+        executor = factory.newExecutorService();
         init(application, process, trigger, eventReceiver, objectClass, processService, executor, Collections.emptySet());
     }
 

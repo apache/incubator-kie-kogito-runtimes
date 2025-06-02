@@ -16,12 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.event.thread;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 
-public interface EventExecutorServiceFactory {
-
-    public ExecutorService newExecutorService();
-
+public class ThrowExceptionExecutionHandler implements RejectedExecutionHandler {
+    @Override
+    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+        throw new RejectedExecutionException("No mor events can be processed at this point. Increase number of threads");
+    }
 }

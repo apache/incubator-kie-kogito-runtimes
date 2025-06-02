@@ -18,14 +18,11 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.kie.kogito.event.EventExecutorServiceFactory;
 import org.kie.kogito.event.KogitoEventStreams;
-import org.kie.kogito.event.KogitoThreadPoolFactory;
+import org.kie.kogito.event.thread.DefaultEventThreadPool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,8 +36,7 @@ public class SpringEventExecutorServiceFactory implements EventExecutorServiceFa
     int queueSize;
 
     @Override
-    public ExecutorService getExecutorService(String channelName) {
-        return new ThreadPoolExecutor(1, numThreads, 1L, TimeUnit.MINUTES, new ArrayBlockingQueue<>(queueSize), new KogitoThreadPoolFactory(KogitoEventStreams.THREAD_NAME),
-                new ThreadPoolExecutor.CallerRunsPolicy());
+    public ExecutorService newExecutorService() {
+        return new DefaultEventThreadPool(5, numThreads, queueSize);
     }
 }

@@ -16,12 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.event.thread;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-public interface EventExecutorServiceFactory {
+public class DefaultEventThreadPool extends ThreadPoolExecutor {
 
-    public ExecutorService newExecutorService();
+    public DefaultEventThreadPool(int corePoolSize, int maximumPoolSize, int queueSize) {
+        super(corePoolSize, maximumPoolSize, 1L, TimeUnit.MINUTES, new ArrayBlockingQueue<>(queueSize), new ThrowExceptionExecutionHandler());
+    }
 
 }

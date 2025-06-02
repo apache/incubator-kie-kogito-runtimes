@@ -23,11 +23,11 @@ import java.util.concurrent.ExecutorService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.event.EventExecutorServiceFactory;
 import org.kie.kogito.event.KogitoEventStreams;
+import org.kie.kogito.event.thread.DefaultEventThreadPool;
 
 import io.quarkus.arc.DefaultBean;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 @DefaultBean
@@ -39,11 +39,9 @@ public class QuarkusEventExecutorServiceFactory implements EventExecutorServiceF
     @ConfigProperty(name = KogitoEventStreams.QUEUE_SIZE_PROPERTY, defaultValue = KogitoEventStreams.DEFAULT_QUEUE_SIZE)
     int queueSize;
 
-    @Inject
-    QuarkusEmitterController emitterStatus;
-
     @Override
-    public ExecutorService getExecutorService(String channelName) {
-        return new QuarkusEventThreadPool(numThreads, queueSize, emitterStatus, channelName);
+    public ExecutorService newExecutorService() {
+        return new DefaultEventThreadPool(5, numThreads, queueSize);
     }
+
 }
