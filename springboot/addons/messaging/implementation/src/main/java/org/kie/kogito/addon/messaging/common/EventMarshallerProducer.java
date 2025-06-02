@@ -16,27 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.cloudevents.spring;
+package org.kie.kogito.addon.messaging.common;
 
-import java.util.concurrent.ExecutorService;
-
-import org.kie.kogito.event.EventExecutorServiceFactory;
-import org.kie.kogito.event.KogitoEventStreams;
-import org.kie.kogito.event.thread.DefaultEventThreadPool;
-import org.springframework.beans.factory.annotation.Value;
+import org.kie.kogito.event.CloudEventMarshaller;
+import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.event.impl.StringCloudEventMarshaller;
+import org.kie.kogito.event.impl.StringEventMarshaller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Configuration
-public class SpringEventExecutorServiceFactory implements EventExecutorServiceFactory {
+public class EventMarshallerProducer {
 
-    @Value("${" + KogitoEventStreams.MAX_THREADS_PROPERTY + ":#{" + KogitoEventStreams.DEFAULT_MAX_THREADS + "}}")
-    int numThreads;
+    @Autowired
+    ObjectMapper mapper;
 
-    @Value("${" + KogitoEventStreams.QUEUE_SIZE_PROPERTY + ":#{" + KogitoEventStreams.DEFAULT_QUEUE_SIZE + "}}")
-    int queueSize;
+    @Bean
+    public EventMarshaller<String> stringEventMarshaller() {
+        return new StringEventMarshaller(mapper);
+    }
 
-    @Override
-    public ExecutorService newExecutorService() {
-        return new DefaultEventThreadPool(5, numThreads, queueSize);
+    @Bean
+    public CloudEventMarshaller<String> stringCloudEventMarshaller() {
+        return new StringCloudEventMarshaller(mapper);
     }
 }
