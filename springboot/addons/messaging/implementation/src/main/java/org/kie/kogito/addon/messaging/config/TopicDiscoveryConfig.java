@@ -18,29 +18,20 @@
  */
 package org.kie.kogito.addon.messaging.config;
 
-import org.kie.kogito.event.CloudEventMarshaller;
-import org.kie.kogito.event.EventMarshaller;
-import org.kie.kogito.event.impl.StringCloudEventMarshaller;
-import org.kie.kogito.event.impl.StringEventMarshaller;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
+import org.kie.kogito.addon.cloudevents.DefaultTopicDiscovery;
+import org.kie.kogito.event.TopicDiscovery;
+import org.kie.kogito.event.cloudevents.CloudEventMeta;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Configuration
-public class EventMarshallerProducer {
-
-    @Autowired
-    ObjectMapper mapper;
+public class TopicDiscoveryConfig {
 
     @Bean
-    public EventMarshaller<String> stringEventMarshaller() {
-        return new StringEventMarshaller(mapper);
+    public TopicDiscovery stringEventMarshaller(List<CloudEventMeta> meta) {
+        return new DefaultTopicDiscovery(meta);
     }
 
-    @Bean
-    public CloudEventMarshaller<String> stringCloudEventMarshaller() {
-        return new StringCloudEventMarshaller(mapper);
-    }
 }

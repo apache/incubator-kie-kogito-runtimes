@@ -61,8 +61,7 @@ public class SpringKafkaCloudEventEmitter<M> implements EventEmitter {
         try {
             return emitter
                     .send(
-                            env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + event.getType(),
-                                    defaultTopicName),
+                            env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + event.getType(), defaultTopicName),
                             configBean.useCloudEvents() ? ceMarshaller.marshall(event.asCloudEvent(ceMarshaller.cloudEventDataFactory())) : marshaller.marshall(event.getData()))
                     .thenApply(r -> null);
         } catch (IOException e) {

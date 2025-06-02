@@ -18,10 +18,10 @@
  */
 package org.kie.kogito.addon.messaging.config;
 
-import org.kie.kogito.event.CloudEventUnmarshallerFactory;
-import org.kie.kogito.event.EventUnmarshaller;
-import org.kie.kogito.event.impl.JacksonEventDataUnmarshaller;
-import org.kie.kogito.event.impl.ObjectCloudEventUnmarshallerFactory;
+import org.kie.kogito.event.CloudEventMarshaller;
+import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.event.impl.StringCloudEventMarshaller;
+import org.kie.kogito.event.impl.StringEventMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,18 +29,18 @@ import org.springframework.context.annotation.Configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
-public class EventUnmarshallerProducer {
+public class EventMarshallerConfig {
 
     @Autowired
-    ObjectMapper objectMapper;
+    ObjectMapper mapper;
 
     @Bean
-    public EventUnmarshaller<Object> getEventDataConverter() {
-        return new JacksonEventDataUnmarshaller<>(objectMapper);
+    public EventMarshaller<String> stringEventMarshaller() {
+        return new StringEventMarshaller(mapper);
     }
 
     @Bean
-    public CloudEventUnmarshallerFactory<Object> getCloudEventConverter() {
-        return new ObjectCloudEventUnmarshallerFactory(objectMapper);
+    public CloudEventMarshaller<String> stringCloudEventMarshaller() {
+        return new StringCloudEventMarshaller(mapper);
     }
 }

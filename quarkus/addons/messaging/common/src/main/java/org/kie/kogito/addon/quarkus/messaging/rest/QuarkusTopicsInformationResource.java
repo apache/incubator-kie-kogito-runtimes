@@ -18,11 +18,11 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.rest;
 
-import org.kie.kogito.addon.cloudevents.AbstractTopicsInformationResource;
-import org.kie.kogito.event.TopicDiscovery;
-import org.kie.kogito.event.cloudevents.CloudEventMeta;
+import java.util.List;
 
-import jakarta.annotation.PostConstruct;
+import org.kie.kogito.event.Topic;
+import org.kie.kogito.event.TopicDiscovery;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
@@ -33,22 +33,15 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("/messaging/topics")
 @ApplicationScoped()
-public class QuarkusTopicsInformationResource extends AbstractTopicsInformationResource {
+public class QuarkusTopicsInformationResource {
 
     @Inject
-    private TopicDiscovery topicDiscovery;
-
-    @Inject
-    private Instance<CloudEventMeta> cloudEventMetaIterable;
-
-    @PostConstruct
-    private void onPostConstruct() {
-        setup(topicDiscovery, cloudEventMetaIterable);
-    }
+    private Instance<TopicDiscovery> topicDiscovery;
 
     @GET()
     @Produces(MediaType.APPLICATION_JSON)
     public jakarta.ws.rs.core.Response getTopics() {
-        return jakarta.ws.rs.core.Response.ok(getTopicList()).build();
+        List<Topic> topics = topicDiscovery.stream().map(TopicDiscovery::getTopics).flatMap(List::stream).toList();
+        return jakarta.ws.rs.core.Response.ok(topics).build();
     }
 }

@@ -45,23 +45,6 @@ public class QuarkusEventThreadPoolTest {
         private AtomicInteger stopCounter = new AtomicInteger(0);
         private AtomicInteger resumeCounter = new AtomicInteger(0);
 
-        @Override
-        public boolean resume(String channelName) {
-            boolean result = super.resume(channelName);
-            if (result) {
-                resumeCounter.incrementAndGet();
-            }
-            return result;
-        }
-
-        @Override
-        public boolean stop(String channelName) {
-            boolean result = super.stop(channelName);
-            if (result) {
-                stopCounter.incrementAndGet();
-            }
-            return result;
-        }
     }
 
     private CounterQuarkusEmitterController controller;
