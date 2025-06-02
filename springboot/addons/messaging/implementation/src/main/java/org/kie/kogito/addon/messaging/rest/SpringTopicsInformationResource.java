@@ -16,39 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.quarkus.messaging.common;
+package org.kie.kogito.addon.messaging.rest;
+
+import java.util.List;
 
 import org.kie.kogito.addon.cloudevents.AbstractTopicsInformationResource;
+import org.kie.kogito.event.Topic;
 import org.kie.kogito.event.TopicDiscovery;
 import org.kie.kogito.event.cloudevents.CloudEventMeta;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
+@RestController
+@RequestMapping("/messaging/topics")
+@Component()
+public class SpringTopicsInformationResource extends AbstractTopicsInformationResource {
 
-@Path("/messaging/topics")
-@ApplicationScoped()
-public class QuarkusTopicsInformationResource extends AbstractTopicsInformationResource {
-
-    @Inject
-    private TopicDiscovery topicDiscovery;
-
-    @Inject
-    private Instance<CloudEventMeta> cloudEventMetaIterable;
-
-    @PostConstruct
-    private void onPostConstruct() {
+    @Autowired
+    public SpringTopicsInformationResource(TopicDiscovery topicDiscovery, List<CloudEventMeta> cloudEventMetaIterable) {
         setup(topicDiscovery, cloudEventMetaIterable);
     }
 
-    @GET()
-    @Produces(MediaType.APPLICATION_JSON)
-    public jakarta.ws.rs.core.Response getTopics() {
-        return jakarta.ws.rs.core.Response.ok(getTopicList()).build();
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Topic>> getTopics() {
+        return ResponseEntity.ok(getTopicList());
     }
 }

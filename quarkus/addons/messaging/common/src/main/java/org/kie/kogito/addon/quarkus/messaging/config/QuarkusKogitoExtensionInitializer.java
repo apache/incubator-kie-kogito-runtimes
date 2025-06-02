@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.messaging.common;
+package org.kie.kogito.addon.quarkus.messaging.config;
 
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.event.cloudevents.extension.KogitoPredictionsExtension;
@@ -24,25 +24,25 @@ import org.kie.kogito.event.cloudevents.extension.KogitoProcessExtension;
 import org.kie.kogito.event.cloudevents.extension.KogitoRulesExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cloudevents.jackson.JsonFormat;
+import io.quarkus.runtime.Startup;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 /**
  * The goal of this bean is to register the Kogito CloudEvent extension
  * that allows the system to correctly parse Kogito extension attributes.
  */
-@Component
-public class SpringBootKogitoExtensionInitializer {
+@Startup
+public class QuarkusKogitoExtensionInitializer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SpringBootKogitoExtensionInitializer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(QuarkusKogitoExtensionInitializer.class);
 
-    @Autowired
+    @Inject
     ObjectMapper mapper;
 
     @PostConstruct

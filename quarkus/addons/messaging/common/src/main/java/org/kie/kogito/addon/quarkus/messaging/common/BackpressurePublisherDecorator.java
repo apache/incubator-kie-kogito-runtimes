@@ -19,6 +19,7 @@
 package org.kie.kogito.addon.quarkus.messaging.common;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
+import org.kie.kogito.addon.quarkus.messaging.endpoint.BackpressureKogitoEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,22 +62,10 @@ public class BackpressurePublisherDecorator implements PublisherDecorator {
 
     private class BackpressureProcessor extends MultiOperatorProcessor<Message<?>, Message<?>> {
 
-        private String channelName;
-
         public BackpressureProcessor(MultiSubscriber<? super Message<?>> downstream, String channelName) {
             super(downstream);
-            this.channelName = channelName;
             emitter.registerHandler(channelName, () -> super.request(1));
         }
 
-        @Override
-        public void request(final long n) {
-            if (emitter.isEnabled(channelName)) {
-                logger.trace("Requesting {} elements", n);
-                super.request(n);
-            } else {
-                logger.trace("Blocking {} elements", n);
-            }
-        }
     }
 }

@@ -16,13 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.quarkus.messaging.common;
+package org.kie.kogito.addon.quarkus.messaging.endpoint;
 
-public interface QuarkusEmitterController {
+import java.util.HashMap;
+import java.util.Map;
 
-    boolean resume(String channelName);
+import jakarta.enterprise.context.ApplicationScoped;
 
-    boolean stop(String channelName);
+@ApplicationScoped
+public class BackpressureKogitoEmitter {
 
-    boolean isEnabled(String channelName);
+    private Map<String, Runnable> handlers = new HashMap<>();
+
+    public void registerHandler(String channelName, Runnable runnable) {
+        handlers.put(channelName, runnable);
+    }
 }

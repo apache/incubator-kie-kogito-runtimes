@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.addon.quarkus.messaging.endpoint.BackpressureKogitoEmitter;
 
 import net.jcip.annotations.NotThreadSafe;
 

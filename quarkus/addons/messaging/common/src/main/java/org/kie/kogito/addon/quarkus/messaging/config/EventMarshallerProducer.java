@@ -16,31 +16,64 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.messaging.common;
+package org.kie.kogito.addon.quarkus.messaging.config;
 
 import org.kie.kogito.event.CloudEventMarshaller;
 import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.event.impl.ByteArrayCloudEventMarshaller;
+import org.kie.kogito.event.impl.ByteArrayEventMarshaller;
+import org.kie.kogito.event.impl.NoOpCloudEventMarshaller;
+import org.kie.kogito.event.impl.NoOpEventMarshaller;
 import org.kie.kogito.event.impl.StringCloudEventMarshaller;
 import org.kie.kogito.event.impl.StringEventMarshaller;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Configuration
+import io.quarkus.arc.DefaultBean;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
+
+@ApplicationScoped
 public class EventMarshallerProducer {
 
-    @Autowired
+    @Inject
     ObjectMapper mapper;
 
-    @Bean
+    @Produces
+    @DefaultBean
     public EventMarshaller<String> stringEventMarshaller() {
         return new StringEventMarshaller(mapper);
     }
 
-    @Bean
+    @Produces
+    @DefaultBean
+    public EventMarshaller<byte[]> byteArrayEventMarshaller() {
+        return new ByteArrayEventMarshaller(mapper);
+    }
+
+    @Produces
+    @DefaultBean
+    public EventMarshaller<Object> defaultEventMarshaller() {
+        return new NoOpEventMarshaller();
+    }
+
+    @Produces
+    @DefaultBean
     public CloudEventMarshaller<String> stringCloudEventMarshaller() {
         return new StringCloudEventMarshaller(mapper);
+    }
+
+    @Produces
+    @DefaultBean
+    public CloudEventMarshaller<byte[]> byteArrayCloudEventMarshaller() {
+        return new ByteArrayCloudEventMarshaller(mapper);
+    }
+
+    @Produces
+    @DefaultBean
+    public CloudEventMarshaller<Object> defaultCloudEventMarshaller() {
+        return new NoOpCloudEventMarshaller(mapper);
     }
 }

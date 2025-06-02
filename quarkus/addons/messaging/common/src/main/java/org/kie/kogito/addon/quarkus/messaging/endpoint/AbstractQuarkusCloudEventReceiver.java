@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.quarkus.messaging.common;
+package org.kie.kogito.addon.quarkus.messaging.endpoint;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -27,6 +27,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
+import org.kie.kogito.addon.quarkus.messaging.common.QuarkusCloudEventConverter;
+import org.kie.kogito.addon.quarkus.messaging.common.QuarkusDataEventConverter;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.Converter;
 import org.kie.kogito.event.DataEvent;
