@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
 
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kie.kogito.jackson.utils.ObjectNodeListenerAware;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
@@ -59,9 +59,10 @@ public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator
         Map<String, Object> inputModel = new HashMap<>();
 
         Object inputModelObject = parameters.get(MODEL_WORKFLOW_VAR);
-        if (inputModelObject != null && inputModelObject instanceof ObjectNodeListenerAware) {
+
+        if (inputModelObject != null && inputModelObject instanceof ObjectNode) {
             ObjectMapper mapper = new ObjectMapper();
-            ((ObjectNodeListenerAware) inputModelObject).fields().forEachRemaining(entry -> {
+            ((ObjectNode) inputModelObject).fields().forEachRemaining(entry -> {
                 JsonNode value = entry.getValue();
                 Object rawValue = mapper.convertValue(value, Object.class);
                 inputModel.put(entry.getKey(), rawValue);
@@ -75,8 +76,8 @@ public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator
 
         if (filteredParams.isEmpty()) {
             Set<String> paramsRemove = super.extractHeadersQueries(workItem, inputModel, request);
-            if (inputModelObject != null && inputModelObject instanceof ObjectNodeListenerAware) {
-                ((ObjectNodeListenerAware) inputModelObject).remove(paramsRemove);
+            if (inputModelObject != null && inputModelObject instanceof ObjectNode) {
+                ((ObjectNode) inputModelObject).remove(paramsRemove);
             }
         } else {
             super.decorate(workItem, parameters, request);
