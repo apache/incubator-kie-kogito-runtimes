@@ -1,0 +1,27 @@
+openapi: 3.0.3
+info:
+  title: Simple server API
+  description: |-
+    Simple server API
+  version: 1.0.0
+tags:
+  - name: Simple server API
+    description: Simple server API
+servers:
+  - url: /
+paths:
+  /simple:
+    get:
+      summary: Send requests to simple server with simple JWT security scheme
+      description: Send requests to simple server to check the auth header
+      operationId: getWithSimpleBearerTokenSecurityScheme
+      responses:
+        "200":
+          description: Successful operation
+      security:
+        - SimpleBearerToken: []
+components:
+  securitySchemes:
+    SimpleBearerToken:
+     type: http
+     scheme: bearer
