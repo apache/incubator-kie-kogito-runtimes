@@ -20,7 +20,6 @@ package org.kie.kogito.codegen.decision;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -28,15 +27,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.kie.api.builder.Message.Level;
 import org.kie.dmn.api.core.DMNMessage;
-import org.kie.dmn.api.core.DMNModel;
-import org.kie.dmn.core.compiler.profiles.ExtendedDMNProfile;
 import org.kie.dmn.model.api.DMNModelInstrumentedBase;
 import org.kie.dmn.model.api.DecisionTable;
 import org.kie.dmn.model.api.Definitions;
 import org.kie.dmn.model.api.FunctionDefinition;
 import org.kie.dmn.model.api.NamedElement;
-import org.kie.dmn.validation.DMNValidator;
-import org.kie.dmn.validation.dtanalysis.DMNDTAnalyser;
 import org.kie.dmn.validation.dtanalysis.model.DTAnalysis;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.slf4j.Logger;
@@ -118,35 +113,6 @@ public class DecisionValidation {
             sb.append(prefixer.apply(msg));
             sb.append(computeMessage.apply(msg));
             logFn.accept(sb.toString());
-        }
-    }
-
-    /**
-     * Performs ANALYZE_DECISION_TABLE for DMN Decision Table (static) analysis
-     */
-    static void dmnValidateDecisionTablesInModels(KogitoBuildContext context, Collection<DMNModel> dmnModels) {
-        ValidationOption validateOption = fromContext(context);
-        if (validateOption == ValidationOption.DISABLED) {
-            LOG.info("DMN Validation was set to DISABLED, skipping Decision Table (static) analysis.");
-            return;
-        }
-
-        LOG.info("Initializing DMN DT Validator...");
-        DMNDTAnalyser dmndtAnalyser = new DMNDTAnalyser(Arrays.asList(new ExtendedDMNProfile())); // TODO pending DROOLS-5072 refactoring
-        LOG.info("DMN DT Validator initialized.");
-        for (DMNModel model : dmnModels) {
-            LOG.info("Analysing decision tables in DMN Model '{}' ...", model.getName());
-            List<DTAnalysis> results = dmndtAnalyser.analyse(model, new HashSet<>(Arrays.asList(DMNValidator.Validation.ANALYZE_DECISION_TABLE)));
-            if (results.isEmpty()) {
-                LOG.info(" no decision tables found.");
-            } else {
-                for (DTAnalysis r : results) {
-                    LOG.info(" analysis for decision table '{}':", nameOrIDOfTable(r));
-                    List<DMNMessage> messages = r.asDMNMessages();
-                    logValidationMessages(messages, p -> "  ", DMNMessage::getMessage);
-                    processMessagesHandleErrors(validateOption, messages);
-                }
-            }
         }
     }
 
