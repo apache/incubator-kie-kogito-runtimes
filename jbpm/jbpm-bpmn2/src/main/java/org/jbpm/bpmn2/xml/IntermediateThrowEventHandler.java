@@ -30,7 +30,7 @@ import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.instance.impl.actions.HandleEscalationAction;
 import org.jbpm.process.instance.impl.actions.HandleMessageAction;
-import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
+import org.jbpm.process.instance.impl.actions.SignalEventProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
@@ -232,7 +232,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
                 }
 
                 DroolsConsequenceAction action = createJavaAction(
-                        new SignalProcessInstanceAction(signalName,
+                        new SignalEventProcessInstanceAction(signalName,
                                 variable,
                                 inputVariable,
                                 (String) actionNode.getMetaData("customScope")));

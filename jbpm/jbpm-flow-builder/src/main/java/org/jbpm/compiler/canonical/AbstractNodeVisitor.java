@@ -38,8 +38,8 @@ import org.jbpm.process.core.datatype.DataTypeResolver;
 import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
 import org.jbpm.process.instance.impl.ReturnValueEvaluator;
 import org.jbpm.process.instance.impl.actions.HandleEscalationAction;
-import org.jbpm.process.instance.impl.actions.ProduceEventAction;
-import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
+import org.jbpm.process.instance.impl.actions.MessageEventProcessInstanceAction;
+import org.jbpm.process.instance.impl.actions.SignalEventProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.factory.MappableNodeFactory;
 import org.jbpm.util.JbpmClassLoaderUtil;
@@ -435,7 +435,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
 
     public static ObjectCreationExpr buildSignalAction(String signalName, String variable, String inputVariable, String scope) {
         return new ObjectCreationExpr(null,
-                parseClassOrInterfaceType(SignalProcessInstanceAction.class.getCanonicalName()),
+                parseClassOrInterfaceType(SignalEventProcessInstanceAction.class.getCanonicalName()),
                 new NodeList<>(new StringLiteralExpr(signalName), variable != null ? new StringLiteralExpr(variable.replace("\"", "\\\""))
                         : new CastExpr(
                                 parseClassOrInterfaceType(String.class.getCanonicalName()), new NullLiteralExpr()),
@@ -468,7 +468,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
 
     protected ObjectCreationExpr buildProducerAction(Node node, ProcessMetaData metadata) {
         TriggerMetaData trigger = TriggerMetaData.of(node, (String) node.getMetaData().get(Metadata.MAPPING_VARIABLE_INPUT));
-        return buildProducerAction(parseClassOrInterfaceType(ProduceEventAction.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseClassOrInterfaceType(trigger.getDataType()))),
+        return buildProducerAction(parseClassOrInterfaceType(MessageEventProcessInstanceAction.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseClassOrInterfaceType(trigger.getDataType()))),
                 trigger, metadata);
 
     }

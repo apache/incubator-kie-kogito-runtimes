@@ -28,7 +28,7 @@ import org.jbpm.bpmn2.core.Message;
 import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.instance.impl.actions.HandleMessageAction;
-import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
+import org.jbpm.process.instance.impl.actions.SignalEventProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.Node;
@@ -166,7 +166,7 @@ public class EndEventHandler extends AbstractNodeHandler {
                 }
 
                 DroolsConsequenceAction action = createJavaAction(
-                        new SignalProcessInstanceAction(signalName, variable, inputVariable, (String) endNode.getMetaData("customScope")));
+                        new SignalEventProcessInstanceAction(signalName, variable, inputVariable, (String) endNode.getMetaData("customScope")));
 
                 List<DroolsAction> actions = new ArrayList<>();
                 actions.add(action);

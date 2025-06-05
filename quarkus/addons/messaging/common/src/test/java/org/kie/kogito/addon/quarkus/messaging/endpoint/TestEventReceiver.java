@@ -18,17 +18,27 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.endpoint;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
+import org.kie.kogito.event.EventUnmarshaller;
 
-@ApplicationScoped
-public class BackpressureKogitoEmitter {
+import jakarta.inject.Inject;
 
-    private Map<String, Runnable> handlers = new HashMap<>();
+public class TestEventReceiver<T> {
 
-    public void registerHandler(String channelName, Runnable runnable) {
-        handlers.put(channelName, runnable);
+    @Inject
+    TestEventProcessor eventProcessor;
+
+    @Inject
+    EventUnmarshaller<T> eventUnmarshaller;
+
+    @Incoming("test")
+    public void receive(Message<T> event) {
+        try {
+            eventProcessor.processReceive((TestEvent) eventUnmarshaller.unmarshall(event.getPayload(), null, null));
+        } catch (IOException e) {
+        }
     }
 }

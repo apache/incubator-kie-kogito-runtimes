@@ -26,8 +26,7 @@ import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventUnmarshaller;
 
-public class QuarkusDataEventConverter<I, T> implements
-        Converter<Message<I>, DataEvent<T>> {
+public class QuarkusDataEventConverter<I, T> implements Converter<Message<I>, DataEvent<T>> {
 
     private final Class<T> objectClass;
     private final EventUnmarshaller<I> unmarshaller;

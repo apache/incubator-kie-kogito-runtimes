@@ -66,7 +66,7 @@ import org.jbpm.process.instance.impl.MVELInterpretedReturnValueEvaluator;
 import org.jbpm.process.instance.impl.ReturnValueEvaluator;
 import org.jbpm.process.instance.impl.actions.CancelNodeInstanceAction;
 import org.jbpm.process.instance.impl.actions.ProcessInstanceCompensationAction;
-import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
+import org.jbpm.process.instance.impl.actions.SignalEventProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
@@ -494,7 +494,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
         String signalName = "Escalation-" + attachedTo + (escalationCode != null ? "-" + escalationCode : "");
         DroolsConsequenceAction action =
-                createJavaAction(new SignalProcessInstanceAction(signalName, variable, null, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                createJavaAction(new SignalEventProcessInstanceAction(signalName, variable, null, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
         exceptionHandler.setAction(action);
         exceptionHandler.setFaultVariable(variable);
         exceptionScope.setExceptionHandler(escalationCode, exceptionHandler);
@@ -528,7 +528,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
 
         String variable = ((EventNode) node).getVariableName();
-        SignalProcessInstanceAction signalAction = new SignalProcessInstanceAction("Error-" + attachedTo + "-" + errorCode, variable, null, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE);
+        SignalEventProcessInstanceAction signalAction = new SignalEventProcessInstanceAction("Error-" + attachedTo + "-" + errorCode, variable, null, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE);
         DroolsConsequenceAction action = createJavaAction(signalAction);
         exceptionHandler.setAction(action);
         exceptionHandler.setFaultVariable(variable);
@@ -558,8 +558,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         if (timeDuration != null) {
             timer.setDelay(timeDuration);
             timer.setTimeType(Timer.TIME_DURATION);
-            DroolsConsequenceAction consequenceAction = createJavaAction(new SignalProcessInstanceAction("Timer-" + attachedTo + "-" + timeDuration + "-" + node.getId().toExternalFormat(),
-                    kcontext -> kcontext.getNodeInstance().getStringId(), SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+            DroolsConsequenceAction consequenceAction = createJavaAction(new SignalEventProcessInstanceAction("Timer-" + attachedTo + "-" + timeDuration + "-" + node.getId().toExternalFormat(),
+                    kcontext -> kcontext.getNodeInstance().getStringId(), SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
             compositeNode.addTimer(timer, consequenceAction);
         } else if (timeCycle != null) {
             int index = timeCycle.indexOf("###");
@@ -574,15 +574,15 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
             String finalTimeCycle = timeCycle;
 
             DroolsConsequenceAction action =
-                    createJavaAction(new SignalProcessInstanceAction(
+                    createJavaAction(new SignalEventProcessInstanceAction(
                             "Timer-" + attachedTo + "-" + finalTimeCycle + (timer.getPeriod() == null ? "" : "###" + timer.getPeriod()) + "-" + node.getId().toExternalFormat(),
-                            kcontext -> kcontext.getNodeInstance().getStringId(), SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                            kcontext -> kcontext.getNodeInstance().getStringId(), SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
             compositeNode.addTimer(timer, action);
         } else if (timeDate != null) {
             timer.setDate(timeDate);
             timer.setTimeType(Timer.TIME_DATE);
-            DroolsConsequenceAction action = createJavaAction(new SignalProcessInstanceAction("Timer-" + attachedTo + "-" + timeDate + "-" + node.getId().toExternalFormat(),
-                    kcontext -> kcontext.getNodeInstance().getStringId(), SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+            DroolsConsequenceAction action = createJavaAction(new SignalEventProcessInstanceAction("Timer-" + attachedTo + "-" + timeDate + "-" + node.getId().toExternalFormat(),
+                    kcontext -> kcontext.getNodeInstance().getStringId(), SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
             compositeNode.addTimer(timer, action);
         }
 
@@ -916,7 +916,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 
                                             ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
                                             DroolsConsequenceAction action = new DroolsConsequenceAction("java", "");
-                                            action.setMetaData("Action", new SignalProcessInstanceAction(signalType, faultVariable, null, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                                            action.setMetaData("Action", new SignalEventProcessInstanceAction(signalType, faultVariable, null, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
                                             exceptionHandler.setAction(action);
                                             exceptionHandler.setFaultVariable(faultVariable);
                                             eventSubProcessHandlers.add(faultCode);

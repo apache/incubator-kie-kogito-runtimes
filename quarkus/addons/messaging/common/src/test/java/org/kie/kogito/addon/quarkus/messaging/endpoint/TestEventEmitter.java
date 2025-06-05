@@ -16,26 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.addon.quarkus.messaging.endpoint;
 
-import java.util.concurrent.CompletionStage;
+import java.io.IOException;
 
-/**
- * It is responsible to interact with the external event service for event publishing.
- * One of its task is to transform the data event into the format expected by the external service.
- * 
- * @see EventMarshaller
- * @see CloudEventMarshaller
- */
-public interface EventEmitter extends AutoCloseable {
-    /**
-     * Publish event to the channel. it will automatically marshalled from the data 
-     * 
-     * @param event data will be send to the channel
-     */
-    CompletionStage<Void> emit(Object event);
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.kie.kogito.event.EventMarshaller;
 
-    @Override
-    default void close() throws Exception {
+import jakarta.inject.Inject;
+
+public class TestEventEmitter {
+
+    @Channel("test")
+    Emitter<Object> testEventEmitter; 
+
+    @Inject
+    EventMarshaller<Object> eventMarshaller;
+
+    public void send(Object event) {
+        try {
+            testEventEmitter.send(eventMarshaller.marshall(event));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

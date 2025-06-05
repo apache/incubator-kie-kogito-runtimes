@@ -57,7 +57,7 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
             Message<M> message = messageDecorator.decorate(getMessage(dataEvent))
                     .withNack(e -> {
                         logger.error("Error publishing event {}", dataEvent, e);
-                        return CompletableFuture.completedFuture(null);
+                        return CompletableFuture.failedFuture(e);
                     });
             emit(message);
             return message.getAck().get();
@@ -78,7 +78,10 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
         if (event.getId() == null || event.getType() == null || event.getSource() == null || event.getSpecVersion() == null) {
             return Optional.empty();
         }
-        OutgoingCloudEventMetadataBuilder<Object> builder = OutgoingCloudEventMetadata.builder().withId(event.getId()).withSource(event.getSource()).withType(event.getType())
+        OutgoingCloudEventMetadataBuilder<Object> builder = OutgoingCloudEventMetadata.builder()
+                .withId(event.getId())
+                .withSource(event.getSource())
+                .withType(event.getType())
                 .withSubject(event.getSubject())
                 .withDataContentType(event.getDataContentType()).withDataSchema(event.getDataSchema()).withSpecVersion(event.getSpecVersion().toString())
                 .withTimestamp(event.getTime().toZonedDateTime());

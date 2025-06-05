@@ -41,7 +41,7 @@ import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.process.instance.impl.ReturnValueEvaluator;
 import org.jbpm.process.instance.impl.actions.CancelNodeInstanceAction;
-import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
+import org.jbpm.process.instance.impl.actions.SignalEventProcessInstanceAction;
 import org.jbpm.process.instance.impl.util.VariableUtil;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.workflow.core.DroolsAction;
@@ -400,7 +400,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
 
         final DroolsConsequenceAction signalAction = new DroolsConsequenceAction("java", null);
         signalAction.setMetaData(ACTION,
-                new SignalProcessInstanceAction(ERROR_TYPE_PREFIX + attachedTo + "-" + errorCode, variable, inputVariable, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                new SignalEventProcessInstanceAction(ERROR_TYPE_PREFIX + attachedTo + "-" + errorCode, variable, inputVariable, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
         exceptionHandler.setAction(signalAction);
         exceptionHandler.setFaultVariable(variable);
         final String code = Optional.ofNullable(hasErrorCode)
