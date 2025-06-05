@@ -43,8 +43,14 @@ public class NodeInstanceFactoryRegistry {
     private static Optional<NodeInstanceFactoryRegistry> getFactoryRegistryFromEnvironment(Environment environment) {
         if (environment != null && environment.get(NODE_INSTANCE_FACTORY_REGISTRY_KEY) != null) {
             String factoryRegistryClassName = (String) environment.get(NODE_INSTANCE_FACTORY_REGISTRY_KEY);
-            return Optional.ofNullable(LOADED_NODE_INSTANCE_FACTORY_REGISTRIES.computeIfAbsent(factoryRegistryClassName,
-                    className -> CodegenNodeInstanceFactoryRegistry.class.getName().equals(className) ? new CodegenNodeInstanceFactoryRegistry() : null));
+            return Optional.of(LOADED_NODE_INSTANCE_FACTORY_REGISTRIES.computeIfAbsent(factoryRegistryClassName,
+                    className -> {
+                        try {
+                            return (NodeInstanceFactoryRegistry) Class.forName(className, true, JbpmClassLoaderUtil.findClassLoader()).getConstructor().newInstance();
+                        } catch (Exception e) {
+                            throw new RuntimeException("Could not create an instance of NodeInstanceFactoryRegistry with java type '" + className + "'", e);
+                        }
+                    }));
         }
         return Optional.empty();
     }
