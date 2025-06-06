@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/serverlessworkflow/specification/refs/heads/0.8.x/schema/workflow.json
+id: event-with-headers
+specVersion: "0.8"
+key: lock-flow
+version: "1.0.0"
+events:
+  - type: lock-event
+    kind: consumed
+    name: lock-event
+    source: local
+functions:
+  - name: sysLog
+    type: custom
+    operation: sysout:INFO
+  - name: getWithSimpleBearerTokenSecurityScheme
+    operation: specs/simple-server.yaml#getWithSimpleBearerTokenSecurityScheme
+start: listenToLock
+states:
+  - name: listenToLock
+    type: event
+    onEvents:
+      - eventRefs:
+          - lock-event
+        actions:
+          - functionRef:
+              refName: sysLog
+              arguments:
+                message: ${ "Lock received " + .name + " -- with headers " + ($WORKFLOW.headers | tostring) }
+    transition: sendRESTRequest
+  - name: sendRESTRequest
+    type: operation
+    actions:
+      - name: "getWithSimpleBearerTokenSecurityScheme"
+        functionRef:
+          refName: getWithSimpleBearerTokenSecurityScheme
+    end: true
