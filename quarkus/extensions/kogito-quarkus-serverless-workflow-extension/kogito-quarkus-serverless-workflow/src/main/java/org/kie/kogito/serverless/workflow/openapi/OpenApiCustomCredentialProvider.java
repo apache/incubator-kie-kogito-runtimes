@@ -1,0 +1,129 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.kie.kogito.serverless.workflow.openapi;
+
+import java.util.Collections;
+import java.util.Optional;
+
+import jakarta.annotation.Priority;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Specializes;
+import jakarta.ws.rs.core.HttpHeaders;
+
+import org.eclipse.microprofile.config.ConfigProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.quarkiverse.openapi.generator.providers.ConfigCredentialsProvider;
+import io.quarkus.arc.Arc;
+import io.quarkus.oidc.client.OidcClient;
+import io.quarkus.oidc.client.OidcClientConfig;
+import io.quarkus.oidc.client.OidcClientException;
+import io.quarkus.oidc.client.OidcClients;
+import io.quarkus.oidc.client.Tokens;
+import io.quarkus.runtime.configuration.ConfigurationException;
+
+import static io.quarkiverse.openapi.generator.providers.AbstractAuthProvider.getHeaderName;
+
+@RequestScoped
+@Alternative
+@Specializes
+@Priority(10)
+public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
+    private static final String CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME = "sonataflow.security.%s.exchange-token";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenApiCustomCredentialProvider.class);
+
+    @Override
+    public String getApiKey(CredentialsContext input) {
+        LOGGER.error("========> getApiKey");
+        return super.getApiKey(input);
+    }
+
+    @Override
+    public String getBasicUsername(CredentialsContext input) {
+        LOGGER.error("========> getBasicUsername");
+        return super.getBasicUsername(input);
+    }
+
+    @Override
+    public String getBasicPassword(CredentialsContext input) {
+        LOGGER.error("========> getBasicPassword");
+        return super.getBasicPassword(input);
+    }
+
+    @Override
+    public String getBearerToken(CredentialsContext input) {
+        LOGGER.error("========> getBearerToken");
+        return super.getBearerToken(input);
+    }
+
+    @Override
+    public String getOauth2BearerToken(CredentialsContext input) {
+        LOGGER.error("========> getOauth2BearerToken");
+        String authorizationHeaderName = getHeaderName(input.getOpenApiSpecId(), input.getAuthName()) != null ? getHeaderName(input.getOpenApiSpecId(), input.getAuthName())
+                : HttpHeaders.AUTHORIZATION;
+        String accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
+        Optional<Boolean> exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class);
+
+        if (accessToken == null || accessToken.isBlank()) {
+            throw new ConfigurationException("An access token is required in the header %s (default is %s) but none was provided".formatted(authorizationHeaderName, HttpHeaders.AUTHORIZATION));
+        }
+
+        if (exchangeToken.isPresent() && exchangeToken.get()) {
+            LOGGER.info("Oauth2 token exchange enabled for {}, will generate a tokens...", input.getAuthName());
+            OidcClients clients = Arc.container().instance(OidcClients.class).get();
+            OidcClient exchangeTokenClient = clients.getClient();
+            OidcClientConfig.Grant.Type exchangeTokenGrantType = ConfigProvider.getConfig().getValue("quarkus.oidc-client." + input.getAuthName() + "grant.type", OidcClientConfig.Grant.Type.class);
+            String exchangeTokenProperty;
+
+            if (exchangeTokenGrantType == OidcClientConfig.Grant.Type.EXCHANGE) {
+                exchangeTokenProperty = "subject_token";
+            } else if (exchangeTokenGrantType == OidcClientConfig.Grant.Type.JWT) {
+                exchangeTokenProperty = "assertion";
+            } else {
+                throw new ConfigurationException("Token exchange is required but OIDC client is configured " + "to use the " + exchangeTokenGrantType.getGrantType() + " grantType");
+            }
+            accessToken = exchangeTokenIfNeeded(accessToken, exchangeTokenClient, exchangeTokenProperty);
+        }
+        return accessToken;
+    }
+
+    private String exchangeTokenIfNeeded(String token, OidcClient exchangeTokenClient, String exchangeTokenProperty) {
+        if (exchangeTokenClient != null) {
+            Tokens tokens;
+            try {
+                tokens = exchangeTokenClient.getTokens(Collections.singletonMap(exchangeTokenProperty, token)).await().indefinitely();
+                //TODO store the refresh token in an expiring cache
+                //TODO store the access token in an expiring cache
+                //TODO cache should expire before access/refresh token expire so they can be refreshed before (need to decode the JWT claim)
+                return tokens.getAccessToken();
+            } catch (OidcClientException e) {
+                // TODO try to refresh the access token with the cached refresh token
+                LOGGER.error("Error while exchanging oauth2 token", e);
+            }
+        }
+        return token;
+    }
+
+    public static String getCanonicalExchangeTokenConfigPropertyName(String authName) {
+        return String.format(CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME, authName);
+    }
+}
