@@ -18,7 +18,6 @@
  */
 package org.jbpm.process.instance.impl.actions;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractEventProcessInstanceAction implements Action {
+
+    public static String WORK_ITEM_HANDLER_EXTERNAL_NAME = "External Send Task";
 
     private static final Logger LOG = LoggerFactory.getLogger(SignalEventProcessInstanceAction.class);
 
@@ -112,7 +113,7 @@ public abstract class AbstractEventProcessInstanceAction implements Action {
             case EXTERNAL_SCOPE:
                 KogitoWorkItemImpl workItem = new KogitoWorkItemImpl();
                 workItem.setId(UUID.randomUUID().toString());
-                workItem.setName(getWorkItemHandlerName());
+                workItem.setName(WORK_ITEM_HANDLER_EXTERNAL_NAME);
                 workItem.setNodeInstanceId(context.getNodeInstance().getStringId());
                 workItem.setProcessInstanceId(context.getProcessInstance().getStringId());
                 workItem.setProcessInstance(processInstance);
@@ -132,8 +133,6 @@ public abstract class AbstractEventProcessInstanceAction implements Action {
     }
 
     protected abstract void notifyEvent(KogitoProcessContext context, KogitoProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kieRuntime, String eventType, Object event);
-
-    public abstract String getWorkItemHandlerName();
 
     public String getEventTypeExpression() {
         return eventTypeTemplate;

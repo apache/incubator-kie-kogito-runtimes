@@ -468,7 +468,8 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
 
     protected ObjectCreationExpr buildProducerAction(Node node, ProcessMetaData metadata) {
         TriggerMetaData trigger = TriggerMetaData.of(node, (String) node.getMetaData().get(Metadata.MAPPING_VARIABLE_INPUT));
-        return buildProducerAction(parseClassOrInterfaceType(MessageEventProcessInstanceAction.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseClassOrInterfaceType(trigger.getDataType()))),
+        return buildProducerAction(
+                parseClassOrInterfaceType(MessageEventProcessInstanceAction.class.getCanonicalName()),
                 trigger, metadata);
 
     }
@@ -477,9 +478,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
         metadata.addTrigger(trigger);
         return new ObjectCreationExpr(null, actionClass, NodeList.nodeList(
                 new StringLiteralExpr(trigger.getName()),
-                new StringLiteralExpr(trigger.getModelRef()),
-                new LambdaExpr(NodeList.nodeList(),
-                        new NameExpr("producer_" + trigger.getOwnerId()))));
+                new StringLiteralExpr(trigger.getModelRef())));
     }
 
     protected void visitCompensationScope(ContextContainer process, BlockStmt body) {

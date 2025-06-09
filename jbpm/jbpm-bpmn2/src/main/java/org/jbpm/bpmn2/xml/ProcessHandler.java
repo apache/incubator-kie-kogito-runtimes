@@ -528,7 +528,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
 
         String variable = ((EventNode) node).getVariableName();
-        SignalEventProcessInstanceAction signalAction = new SignalEventProcessInstanceAction("Error-" + attachedTo + "-" + errorCode, variable, null, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE);
+        SignalEventProcessInstanceAction signalAction =
+                new SignalEventProcessInstanceAction("Error-" + attachedTo + "-" + errorCode, variable, null, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE);
         DroolsConsequenceAction action = createJavaAction(signalAction);
         exceptionHandler.setAction(action);
         exceptionHandler.setFaultVariable(variable);
@@ -916,7 +917,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 
                                             ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
                                             DroolsConsequenceAction action = new DroolsConsequenceAction("java", "");
-                                            action.setMetaData("Action", new SignalEventProcessInstanceAction(signalType, faultVariable, null, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                                            action.setMetaData("Action",
+                                                    new SignalEventProcessInstanceAction(signalType, faultVariable, null, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
                                             exceptionHandler.setAction(action);
                                             exceptionHandler.setFaultVariable(faultVariable);
                                             eventSubProcessHandlers.add(faultCode);

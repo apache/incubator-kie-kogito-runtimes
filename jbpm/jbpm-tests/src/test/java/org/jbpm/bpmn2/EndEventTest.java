@@ -20,6 +20,7 @@ package org.jbpm.bpmn2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.jbpm.bpmn2.escalation.EscalationEndEventModel;
 import org.jbpm.bpmn2.escalation.EscalationEndEventProcess;
@@ -45,12 +46,15 @@ import org.jbpm.bpmn2.event.SignalEndEventModel;
 import org.jbpm.bpmn2.event.SignalEndEventProcess;
 import org.jbpm.bpmn2.event.SubprocessWithParallelSplitTerminateModel;
 import org.jbpm.bpmn2.event.SubprocessWithParallelSplitTerminateProcess;
+import org.jbpm.bpmn2.support.MockSendTaskWorkItemHandler;
 import org.jbpm.process.workitem.builtin.SystemOutWorkItemHandler;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
-import org.kie.kogito.event.impl.MessageProducer;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
+import org.kie.kogito.internal.process.workitem.WorkItemTransition;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.SignalFactory;
 
@@ -101,15 +105,15 @@ public class EndEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testMessageEnd() throws Exception {
         Application app = ProcessTestHelper.newApplication();
-        MessageEndEventProcess definition = (MessageEndEventProcess) MessageEndEventProcess.newProcess(app);
         StringBuilder message = new StringBuilder();
-        definition.setProducer__2(new MessageProducer<String>() {
-
+        ProcessTestHelper.registerHandler(app, new MockSendTaskWorkItemHandler() {
             @Override
-            public void produce(KogitoProcessInstance pi, String eventData) {
-                message.append(eventData);
+            public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workitem, WorkItemTransition transition) {
+                message.append((String) workitem.getResult("Data"));
+                return Optional.empty();
             }
         });
+        MessageEndEventProcess definition = (MessageEndEventProcess) MessageEndEventProcess.newProcess(app);
         MessageEndEventModel model = definition.createModel();
         model.setX("MyValue");
         org.kie.kogito.process.ProcessInstance<MessageEndEventModel> instance = definition.createInstance(model);

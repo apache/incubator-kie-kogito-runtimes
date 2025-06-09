@@ -71,6 +71,7 @@ import org.jbpm.bpmn2.subprocess.EventSubprocessMessageModel;
 import org.jbpm.bpmn2.subprocess.EventSubprocessMessageProcess;
 import org.jbpm.bpmn2.subprocess.EventSubprocessSignalWithTransformationModel;
 import org.jbpm.bpmn2.subprocess.EventSubprocessSignalWithTransformationProcess;
+import org.jbpm.bpmn2.support.MockSendTaskWorkItemHandler;
 import org.jbpm.bpmn2.test.RequirePersistence;
 import org.jbpm.bpmn2.timer.IntermediateTimerEventMIModel;
 import org.jbpm.bpmn2.timer.IntermediateTimerEventMIProcess;
@@ -116,7 +117,6 @@ import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.Application;
-import org.kie.kogito.event.impl.MessageProducer;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
@@ -1028,17 +1028,18 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testMessageIntermediateThrow() throws Exception {
         Application app = ProcessTestHelper.newApplication();
-
-        ProcessTestHelper.registerHandler(app, "Send Task", new SendTaskHandler());
-        IntermediateThrowEventMessageProcess definition = (IntermediateThrowEventMessageProcess) IntermediateThrowEventMessageProcess
-                .newProcess(app);
         StringBuilder builder = new StringBuilder();
-        definition.setProducer__2(new MessageProducer<String>() {
+        ProcessTestHelper.registerHandler(app, "Send Task", new SendTaskHandler());
+        ProcessTestHelper.registerHandler(app, new MockSendTaskWorkItemHandler() {
             @Override
-            public void produce(KogitoProcessInstance pi, String eventData) {
-                builder.append(eventData);
+            public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workitem, WorkItemTransition transition) {
+                builder.append((String) workitem.getResult("Data"));
+                return Optional.empty();
             }
         });
+        IntermediateThrowEventMessageProcess definition = (IntermediateThrowEventMessageProcess) IntermediateThrowEventMessageProcess
+                .newProcess(app);
+
         IntermediateThrowEventMessageModel model = definition.createModel();
 
         model.setX("MyValue");
@@ -1889,14 +1890,17 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     public void testMessageIntermediateThrowWithTransformation() throws Exception {
         StringBuilder messageContent = new StringBuilder();
         Application application = ProcessTestHelper.newApplication();
-        IntermediateThrowEventMessageWithTransformationProcess definition = (IntermediateThrowEventMessageWithTransformationProcess) IntermediateThrowEventMessageWithTransformationProcess
-                .newProcess(application);
-        definition.setProducer__2(new MessageProducer<String>() {
+        ProcessTestHelper.registerHandler(application, new MockSendTaskWorkItemHandler() {
             @Override
-            public void produce(KogitoProcessInstance pi, String eventData) {
-                messageContent.append(eventData);
+            public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workitem, WorkItemTransition transition) {
+                messageContent.append((String) workitem.getResult("Data"));
+                return Optional.empty();
             }
         });
+
+        IntermediateThrowEventMessageWithTransformationProcess definition = (IntermediateThrowEventMessageWithTransformationProcess) IntermediateThrowEventMessageWithTransformationProcess
+                .newProcess(application);
+
         IntermediateThrowEventMessageWithTransformationModel model = definition.createModel();
         model.setX("MyValue");
         ProcessInstance<IntermediateThrowEventMessageWithTransformationModel> instance = definition

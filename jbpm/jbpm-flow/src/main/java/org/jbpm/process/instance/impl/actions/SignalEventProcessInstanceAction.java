@@ -44,9 +44,4 @@ public class SignalEventProcessInstanceAction extends AbstractEventProcessInstan
         context.getKogitoProcessRuntime().getProcessEventSupport().fireOnSignal(processInstance, nodeInstance, kieRuntime, eventType, event);
     }
 
-    @Override
-    public String getWorkItemHandlerName() {
-        return "External Send Task";
-    }
-
 }

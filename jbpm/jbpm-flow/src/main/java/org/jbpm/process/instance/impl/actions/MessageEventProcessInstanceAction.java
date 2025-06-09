@@ -34,11 +34,6 @@ public class MessageEventProcessInstanceAction extends AbstractEventProcessInsta
     }
 
     @Override
-    public String getWorkItemHandlerName() {
-        return "External Send Task";
-    }
-
-    @Override
     protected void notifyEvent(KogitoProcessContext context, KogitoProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kieRuntime, String eventType, Object event) {
         context.getKogitoProcessRuntime().getProcessEventSupport().fireOnMessage(processInstance, context.getNodeInstance(), kieRuntime, eventType, event);
     }
