@@ -18,13 +18,15 @@
  */
 package org.kie.kogito.serverless.workflow.openapi;
 
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jbpm.process.instance.KogitoProcessContextImpl;
 import org.jbpm.util.ContextFactory;
 import org.jbpm.workflow.core.WorkflowProcess;
@@ -38,6 +40,9 @@ import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 import io.quarkus.restclient.runtime.RestClientBuilderFactory;
 
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler {
 
@@ -46,11 +51,23 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
     @Override
     protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
         Class<T> clazz = getRestClass();
-        RestClientBuilder builder = RestClientBuilderFactory.build(clazz, calculatedConfigKey(workItem));
-        ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach(builder::header);
-        workItem.getProcessInstance().getHeaders().entrySet().stream().filter(e -> !excludedHeaders.contains(e.getKey())).forEach(e -> e.getValue().forEach(v -> builder.header(e.getKey(), v)));
+        T ref = RestClientBuilderFactory.build(clazz, calculatedConfigKey(workItem)).register(new ClientRequestFilter() {
+            @Override
+            public void filter(ClientRequestContext requestContext) throws IOException {
+                MultivaluedMap<String, Object> contextHeaders = requestContext.getHeaders();
+                ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> contextHeaders.put(k, Collections.singletonList(v)));
+                Map<String, List<String>> headers = workItem.getProcessInstance().getHeaders();
+                if (headers != null) {
+                    headers.forEach((k, v) -> {
+                        if (!excludedHeaders.contains(k)) {
+                            contextHeaders.putIfAbsent(k, (List) v);
+                        }
+                    });
+                }
+            }
+        }, Integer.MIN_VALUE).build(clazz);
         try {
-            return internalExecute(builder.build(clazz), parameters);
+            return internalExecute(ref, parameters);
         } catch (WebApplicationException ex) {
             throw new WorkItemExecutionException(Integer.toString(ex.getResponse().getStatus()), ex.getMessage());
         }
