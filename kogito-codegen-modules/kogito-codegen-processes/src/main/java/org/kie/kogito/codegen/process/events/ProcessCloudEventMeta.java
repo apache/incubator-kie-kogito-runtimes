@@ -37,9 +37,21 @@ public class ProcessCloudEventMeta extends CloudEventMeta {
         this.processId = processId;
         this.triggerName = trigger.getName();
 
-        this.setKind(TriggerMetaData.TriggerType.ProduceMessage.equals(trigger.getType()) ? EventKind.PRODUCED : EventKind.CONSUMED);
-        this.setType(this.getKind() == EventKind.PRODUCED ? DataEventAttrBuilder.toType(triggerName, processId) : triggerName);
-        this.setSource(this.getKind() == EventKind.PRODUCED ? DataEventAttrBuilder.toSource(processId) : "");
+        switch (trigger.getType()) {
+            case ConsumeMessage:
+            case ConsumeSignal:
+                this.setKind(EventKind.CONSUMED);
+                this.setType(triggerName);
+                this.setSource("");
+                break;
+            case ProduceMessage:
+            case ProduceSignal:
+                this.setKind(EventKind.PRODUCED);
+                this.setType(DataEventAttrBuilder.toType(triggerName, processId));
+                this.setSource(DataEventAttrBuilder.toSource(processId));
+                break;
+        }
+
     }
 
     public String getProcessId() {

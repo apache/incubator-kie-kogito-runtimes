@@ -20,10 +20,12 @@ package org.kie.kogito.codegen.process.events;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.jbpm.ruleflow.core.Metadata;
 import org.kie.kogito.codegen.core.events.CloudEventMetaBuilder;
 import org.kie.kogito.codegen.process.ProcessContainerGenerator;
 import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
@@ -35,22 +37,37 @@ public class ProcessCloudEventMetaBuilder implements CloudEventMetaBuilder<Proce
     }
 
     public Set<ProcessCloudEventMeta> build(Set<ProcessContainerGenerator> sourceModel) {
-        return this.build(sourceModel.stream().flatMap(
-                p -> p.getProcesses().stream().map(ProcessGenerator::getProcessExecutable))
+        return this.build(sourceModel.stream()
+                .map(ProcessContainerGenerator::getProcesses)
+                .flatMap(List::stream)
+                .map(ProcessGenerator::getProcessExecutable)
                 .collect(Collectors.toSet()));
     }
 
     @Override
     public Set<ProcessCloudEventMeta> build(Collection<ProcessExecutableModelGenerator> sourceModel) {
-        if (sourceModel != null) {
-            return sourceModel
-                    .stream()
-                    .filter(m -> m.generate().getTriggers() != null && !m.generate().getTriggers().isEmpty())
-                    .flatMap(m -> m.generate().getTriggers().stream()
-                            .filter(t -> !TriggerMetaData.TriggerType.Signal.equals(t.getType()))
-                            .map(ce -> new ProcessCloudEventMeta(m.getProcessId(), ce)))
-                    .collect(Collectors.toSet());
+        if (sourceModel == null) {
+            return Collections.emptySet();
         }
-        return Collections.emptySet();
+
+        return sourceModel.stream()
+                .map(this::toProcessCloudEvent)
+                .flatMap(List::stream)
+                .collect(Collectors.toSet());
     }
+
+    public List<ProcessCloudEventMeta> toProcessCloudEvent(ProcessExecutableModelGenerator generator) {
+        String processId = generator.getProcessId();
+        List<TriggerMetaData> triggerMetadata = generator.generate().getTriggers();
+        if (triggerMetadata == null) {
+            return Collections.emptyList();
+        }
+
+        return triggerMetadata
+                .stream()
+                .filter(metadata -> Metadata.EXTERNAL_SCOPE.equals(metadata.getScope()))
+                .map(ce -> new ProcessCloudEventMeta(processId, ce))
+                .toList();
+    }
+
 }

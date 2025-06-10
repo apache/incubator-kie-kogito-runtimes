@@ -206,6 +206,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
                 if (!inputs.isEmpty()) {
                     String signalType = inputs.get(0).getTarget().getType();
                     eventNode.setMetaData(SIGNAL_TYPE, signalType);
+                    eventNode.setMetaData(TRIGGER_TYPE, CONSUME_MESSAGE);
                 }
 
             }

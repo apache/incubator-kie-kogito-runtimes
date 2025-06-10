@@ -33,6 +33,7 @@ import org.jbpm.compiler.xml.core.ExtensibleXmlParser;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.event.NonAcceptingEventTypeFilter;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
@@ -407,7 +408,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                     throw new ProcessParsingValidationException("Could not find message " + messageRef);
                 }
                 eventNode.setMetaData("MessageType", message.getType());
-                eventNode.setMetaData("TriggerType", "ConsumeMessage");
+                eventNode.setMetaData("TriggerType", Metadata.CONSUME_MESSAGE);
                 eventNode.setMetaData("TriggerRef", message.getName());
                 eventNode.setMetaData(MESSAGE_REF, message.getId());
                 List<EventFilter> eventFilters = new ArrayList<>();

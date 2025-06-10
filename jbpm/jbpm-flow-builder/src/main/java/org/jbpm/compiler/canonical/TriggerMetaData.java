@@ -18,10 +18,12 @@
  */
 package org.jbpm.compiler.canonical;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.drools.util.StringUtils;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
@@ -40,7 +42,16 @@ public class TriggerMetaData {
     public enum TriggerType {
         ConsumeMessage,
         ProduceMessage,
-        Signal
+        ConsumeSignal,
+        ProduceSignal;
+
+        static public boolean isSignal(TriggerType type) {
+            return List.of(ConsumeSignal, ProduceSignal).contains(type);
+        }
+
+        static public boolean isMessage(TriggerType type) {
+            return List.of(ConsumeMessage, ProduceMessage).contains(type);
+        }
     }
 
     // name of the trigger derived from message or signal
@@ -59,6 +70,7 @@ public class TriggerMetaData {
     private final Node node;
     // indicates if the whole event should be consumed or just the data
     private final CompositeCorrelation correlation;
+    private String scope;
 
     public static TriggerMetaData of(Node node) {
         return of(node, (String) node.getMetaData().get(MAPPING_VARIABLE));
@@ -74,10 +86,11 @@ public class TriggerMetaData {
                 mappingVariable,
                 getOwnerId(node),
                 (Boolean) nodeMetaData.get(DATA_ONLY),
+                (String) nodeMetaData.getOrDefault(Metadata.CUSTOM_SCOPE, Metadata.PROCESS_INSTANCE_SCOPE),
                 (CompositeCorrelation) nodeMetaData.get(CORRELATION_ATTRIBUTES)).validate();
     }
 
-    private TriggerMetaData(Node node, String name, TriggerType type, String dataType, String modelRef, String ownerId, Boolean dataOnly, CompositeCorrelation correlation) {
+    private TriggerMetaData(Node node, String name, TriggerType type, String dataType, String modelRef, String ownerId, Boolean dataOnly, String scope, CompositeCorrelation correlation) {
         this.node = node;
         this.name = name;
         this.type = type;
@@ -85,6 +98,7 @@ public class TriggerMetaData {
         this.modelRef = modelRef;
         this.ownerId = ownerId;
         this.dataOnly = dataOnly == null || dataOnly.booleanValue();
+        this.scope = scope;
         this.correlation = correlation;
     }
 
@@ -116,18 +130,20 @@ public class TriggerMetaData {
         return dataOnly;
     }
 
+    public String getScope() {
+        return scope;
+    }
+
     public CompositeCorrelation getCorrelation() {
         return correlation;
     }
 
     private TriggerMetaData validate() {
-        if (TriggerType.ConsumeMessage.equals(type) || TriggerType.ProduceMessage.equals(type)) {
+        if (TriggerType.isMessage(type) && (StringUtils.isEmpty(name) || StringUtils.isEmpty(dataType))) {
+            throw new IllegalArgumentException("Message Trigger information is not complete " + this);
+        }
 
-            if (StringUtils.isEmpty(name) ||
-                    StringUtils.isEmpty(dataType)) {
-                throw new IllegalArgumentException("Message Trigger information is not complete " + this);
-            }
-        } else if (TriggerType.Signal.equals(type) && StringUtils.isEmpty(name)) {
+        if (TriggerType.isSignal(type) && StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Signal Trigger information is not complete " + this);
         }
 
@@ -147,13 +163,13 @@ public class TriggerMetaData {
             return false;
         TriggerMetaData other = (TriggerMetaData) obj;
         return Objects.equals(dataType, other.dataType) && Objects.equals(modelRef, other.modelRef) && Objects.equals(
-                name, other.name) && Objects.equals(ownerId, other.ownerId) && type == other.type;
+                name, other.name) && Objects.equals(ownerId, other.ownerId) && type == other.type && scope.equals(other.scope);
     }
 
     @Override
     public String toString() {
         return "TriggerMetaData [name=" + name + ", type=" + type + ", dataType=" + dataType + ", modelRef=" +
-                modelRef + ", ownerId=" + ownerId + "]";
+                modelRef + ", ownerId=" + ownerId + ", scope=" + scope + "]";
     }
 
     private static String getOwnerId(Node node) {

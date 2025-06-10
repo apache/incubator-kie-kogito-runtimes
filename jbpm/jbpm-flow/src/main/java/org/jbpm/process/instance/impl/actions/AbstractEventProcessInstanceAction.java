@@ -34,18 +34,17 @@ import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.jbpm.ruleflow.core.Metadata.DEFAULT_SCOPE;
+import static org.jbpm.ruleflow.core.Metadata.EXTERNAL_SCOPE;
+import static org.jbpm.ruleflow.core.Metadata.PROCESS_INSTANCE_SCOPE;
+
 public abstract class AbstractEventProcessInstanceAction implements Action {
 
     public static String WORK_ITEM_HANDLER_EXTERNAL_NAME = "External Send Task";
 
     private static final Logger LOG = LoggerFactory.getLogger(SignalEventProcessInstanceAction.class);
 
-    public static final String DEFAULT_SCOPE = "default";
-    public static final String PROCESS_INSTANCE_SCOPE = "processInstance";
-    public static final String EXTERNAL_SCOPE = "external";
     public static final String UNSET_SCOPE = System.getProperty("org.jbpm.signals.defaultscope", PROCESS_INSTANCE_SCOPE);
-
-    private static final long serialVersionUID = 1L;
 
     private String eventTypeTemplate;
     private String variableNameExpression;

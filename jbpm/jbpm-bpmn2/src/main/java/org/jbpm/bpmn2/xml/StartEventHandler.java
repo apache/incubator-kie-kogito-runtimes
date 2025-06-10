@@ -48,6 +48,8 @@ import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import static org.jbpm.ruleflow.core.Metadata.CONSUME_MESSAGE;
+import static org.jbpm.ruleflow.core.Metadata.CONSUME_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_COMPENSATION;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_CONDITIONAL;
@@ -137,7 +139,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                 }
                 startNode.setMetaData(EVENT_TYPE, EVENT_TYPE_SIGNAL);
                 startNode.setMetaData(MESSAGE_TYPE, type);
-                startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.Signal.name());
+                startNode.setMetaData(TRIGGER_TYPE, CONSUME_SIGNAL);
                 Signal signal = findSignalByName(parser, type);
                 if (signal != null) {
                     String eventType = signal.getStructureRef();
@@ -157,9 +159,9 @@ public class StartEventHandler extends AbstractNodeHandler {
                 }
                 startNode.setMetaData(EVENT_TYPE, EVENT_TYPE_MESSAGE);
                 startNode.setMetaData(MESSAGE_TYPE, message.getType());
-                startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.ConsumeMessage.name());
                 startNode.setMetaData(TRIGGER_REF, message.getName());
                 startNode.setMetaData(MESSAGE_REF, message.getId());
+                startNode.setMetaData(TRIGGER_TYPE, CONSUME_MESSAGE);
 
                 addTriggerWithInMappings(startNode, "Message-" + message.getName(), message.getId(), ((RuleFlowProcess) parser.getMetaData().get("CurrentProcessDefinition")).getCorrelationManager());
             } else if ("timerEventDefinition".equals(nodeName)) {
@@ -190,7 +192,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     startNode.setMetaData(FAULT_CODE, error.getErrorCode());
                     startNode.setMetaData(MESSAGE_TYPE, error.getErrorCode());
                     startNode.setMetaData(TRIGGER_REF, error.getErrorCode());
-                    startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.Signal.name());
+                    startNode.setMetaData(TRIGGER_TYPE, Metadata.CONSUME_SIGNAL);
 
                     addTriggerWithInMappings(startNode, "Error-" + error.getErrorCode());
                 }

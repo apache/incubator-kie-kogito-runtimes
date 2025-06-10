@@ -30,6 +30,8 @@ public class Metadata {
     public static final String SIGNAL_TYPE = "SignalType";
     public static final String PRODUCE_MESSAGE = "ProduceMessage";
     public static final String CONSUME_MESSAGE = "ConsumeMessage";
+    public static final String PRODUCE_SIGNAL = "ProduceSignal";
+    public static final String CONSUME_SIGNAL = "ConsumeSignal";
     public static final String NODE_TYPE = "NodeType";
     public static final String TRIGGER_TYPE = "TriggerType";
     public static final String TRIGGER_EXPRESSION = "TriggerExpression";
@@ -50,6 +52,9 @@ public class Metadata {
     public static final String EVENT_TYPE_LINK = "link";
     public static final String EVENT_TYPE_ESCALATION = "Escalation";
     public static final String CUSTOM_SCOPE = "customScope";
+    public static final String DEFAULT_SCOPE = "default";
+    public static final String PROCESS_INSTANCE_SCOPE = "processInstance";
+    public static final String EXTERNAL_SCOPE = "external";
     public static final String ATTACHED_TO = "AttachedTo";
     public static final String TIME_CYCLE = "TimeCycle";
     public static final String TIME_DURATION = "TimeDuration";
