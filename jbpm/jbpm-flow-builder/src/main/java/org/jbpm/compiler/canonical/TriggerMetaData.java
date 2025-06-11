@@ -52,6 +52,10 @@ public class TriggerMetaData {
         static public boolean isMessage(TriggerType type) {
             return List.of(ConsumeMessage, ProduceMessage).contains(type);
         }
+
+        static public boolean isConsumer(TriggerType type) {
+            return List.of(ConsumeMessage, ConsumeSignal).contains(type);
+        }
     }
 
     // name of the trigger derived from message or signal

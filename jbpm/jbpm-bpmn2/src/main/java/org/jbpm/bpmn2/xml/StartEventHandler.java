@@ -26,7 +26,6 @@ import org.jbpm.bpmn2.core.Error;
 import org.jbpm.bpmn2.core.Escalation;
 import org.jbpm.bpmn2.core.Message;
 import org.jbpm.bpmn2.core.Signal;
-import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.compiler.xml.compiler.XmlDumper;
@@ -162,6 +161,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                 startNode.setMetaData(TRIGGER_REF, message.getName());
                 startNode.setMetaData(MESSAGE_REF, message.getId());
                 startNode.setMetaData(TRIGGER_TYPE, CONSUME_MESSAGE);
+                startNode.setMetaData(Metadata.CUSTOM_SCOPE, Metadata.EXTERNAL_SCOPE);
 
                 addTriggerWithInMappings(startNode, "Message-" + message.getName(), message.getId(), ((RuleFlowProcess) parser.getMetaData().get("CurrentProcessDefinition")).getCorrelationManager());
             } else if ("timerEventDefinition".equals(nodeName)) {

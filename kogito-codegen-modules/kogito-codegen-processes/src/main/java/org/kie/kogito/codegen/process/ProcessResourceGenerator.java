@@ -556,8 +556,8 @@ public class ProcessResourceGenerator {
 
     private boolean isStartSignalTriggerFilter(TriggerMetaData trigger) {
 
-        // Checking trigger type is Signal
-        if (!trigger.getType().equals(TriggerMetaData.TriggerType.Signal)) {
+        // Checking trigger type is consumer
+        if (!(TriggerMetaData.TriggerType.isConsumer(trigger.getType()))) {
             return false;
         }
 

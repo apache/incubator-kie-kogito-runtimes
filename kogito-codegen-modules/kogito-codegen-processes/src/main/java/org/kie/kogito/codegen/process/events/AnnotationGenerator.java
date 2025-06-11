@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.cloudevents.quarkus.deployment;
+package org.kie.kogito.codegen.process.events;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;

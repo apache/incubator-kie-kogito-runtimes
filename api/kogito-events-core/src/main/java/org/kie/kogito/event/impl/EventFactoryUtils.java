@@ -22,17 +22,12 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.kie.kogito.event.DataEvent;
-import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventEmitterFactory;
 import org.kie.kogito.event.EventFactory;
-import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.EventReceiverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,15 +42,6 @@ public class EventFactoryUtils {
         return ServiceLoader.load(clazz).stream().map(Provider::get).sorted().collect(Collectors.toList());
     }
 
-    public static EventReceiver getEventReceiver(String trigger) {
-        return getInstance(trigger, receivers, () -> new EventReceiver() {
-            @Override
-            public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> dataClass) {
-                // default receiver does nothing
-            }
-        });
-    }
-
     private static <T extends EventFactory<?>> void ready(Iterable<T> factories) {
         factories.forEach(EventFactory::ready);
     }
@@ -68,16 +54,6 @@ public class EventFactoryUtils {
                 logger.error("Error closing factory", ex);
             }
         }
-    }
-
-    public static EventEmitter getEventEmitter(String trigger) {
-        return getInstance(trigger, emitters, () -> new EventEmitter() {
-            @Override
-            public CompletionStage<Void> emit(DataEvent<?> dataEvent) {
-                // default emitter does nothing
-                return CompletableFuture.completedStage(null);
-            }
-        });
     }
 
     private static <T, V extends Function<String, T>> T getInstance(String trigger, Collection<V> services, Supplier<T> defaultValue) {

@@ -30,6 +30,7 @@ import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.timer.Timer;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.jbpm.workflow.core.Node;
@@ -48,6 +49,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import static org.jbpm.ruleflow.core.Metadata.CONSUME_MESSAGE;
+import static org.jbpm.ruleflow.core.Metadata.CONSUME_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_CONDITIONAL;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_LINK;
@@ -206,7 +208,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
                 if (!inputs.isEmpty()) {
                     String signalType = inputs.get(0).getTarget().getType();
                     eventNode.setMetaData(SIGNAL_TYPE, signalType);
-                    eventNode.setMetaData(TRIGGER_TYPE, CONSUME_MESSAGE);
+                    eventNode.setMetaData(TRIGGER_TYPE, CONSUME_SIGNAL);
                 }
 
             }
@@ -243,6 +245,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
                 eventNode.setMetaData(TRIGGER_TYPE, CONSUME_MESSAGE);
                 eventNode.setMetaData(TRIGGER_REF, message.getName());
                 eventNode.setMetaData(MESSAGE_REF, message.getId());
+                eventNode.setMetaData(Metadata.CUSTOM_SCOPE, Metadata.EXTERNAL_SCOPE);
                 List<EventFilter> eventFilters = new ArrayList<>();
                 EventTypeFilter eventFilter = new EventTypeFilter();
                 eventFilter.setCorrelationManager(((RuleFlowProcess) parser.getMetaData().get("CurrentProcessDefinition")).getCorrelationManager());

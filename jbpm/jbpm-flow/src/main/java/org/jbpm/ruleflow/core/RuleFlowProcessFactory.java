@@ -400,7 +400,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
 
         final DroolsConsequenceAction signalAction = new DroolsConsequenceAction("java", null);
         signalAction.setMetaData(ACTION,
-                new SignalEventProcessInstanceAction(ERROR_TYPE_PREFIX + attachedTo + "-" + errorCode, variable, inputVariable, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                new SignalEventProcessInstanceAction(ERROR_TYPE_PREFIX + attachedTo + "-" + errorCode, variable, inputVariable, Metadata.PROCESS_INSTANCE_SCOPE));
         exceptionHandler.setAction(signalAction);
         exceptionHandler.setFaultVariable(variable);
         final String code = Optional.ofNullable(hasErrorCode)

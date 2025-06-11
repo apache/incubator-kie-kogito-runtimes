@@ -44,8 +44,6 @@ import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE_INPUT;
 
 public class ProduceEventActionSupplier extends SWFProduceEventAction implements ExpressionSupplier {
 
-    private static final long serialVersionUID = 1L;
-
     public ProduceEventActionSupplier(Workflow workflow, String trigger, String varName, JsonNode data) {
         this(workflow, trigger, varName, data, Collections.emptyMap());
     }
@@ -80,4 +78,5 @@ public class ProduceEventActionSupplier extends SWFProduceEventAction implements
             return producer;
         }
     }
+
 }

@@ -16,18 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package $Package$;
+package org.kie.kogito.codegen.process.events;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public interface ClassGenerator {
 
-import jakarta.inject.Qualifier;
+    String getCode();
 
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.TYPE})
-public @interface Channel {
+    String getPath();
 
 }

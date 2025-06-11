@@ -411,6 +411,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                 eventNode.setMetaData("TriggerType", Metadata.CONSUME_MESSAGE);
                 eventNode.setMetaData("TriggerRef", message.getName());
                 eventNode.setMetaData(MESSAGE_REF, message.getId());
+                eventNode.setMetaData(Metadata.CUSTOM_SCOPE, Metadata.EXTERNAL_SCOPE);
                 List<EventFilter> eventFilters = new ArrayList<>();
                 EventTypeFilter eventFilter = new EventTypeFilter();
                 eventFilter.setCorrelationManager(((RuleFlowProcess) parser.getMetaData().get("CurrentProcessDefinition")).getCorrelationManager());

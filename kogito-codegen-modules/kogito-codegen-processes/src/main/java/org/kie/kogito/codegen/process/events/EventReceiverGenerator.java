@@ -16,20 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.cloudevents.quarkus.deployment;
+package org.kie.kogito.codegen.process.events;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.event.CloudEventMarshaller;
-import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
+import org.kie.kogito.event.EventUnmarshaller;
 
-public class EventEmitterGenerator extends EventGenerator {
+public class EventReceiverGenerator extends EventGenerator {
 
-    public EventEmitterGenerator(KogitoBuildContext context, ChannelInfo channelInfo) {
-        super(context, channelInfo, "EventEmitter");
-        if (channelInfo.getCloudEventMode().filter(mode -> mode == CloudEventMode.STRUCTURED).isPresent()) {
-            generateMarshallerField("marshaller", "setCloudEventMarshaller", CloudEventMarshaller.class);
+    public EventReceiverGenerator(KogitoBuildContext context, ChannelInfo channelInfo) {
+        super(context, channelInfo, "EventReceiver");
+        if (context.getApplicationProperty("kogito.messaging.as-cloudevents", Boolean.class).orElse(true)) {
+            generateMarshallerField("unmarshaller", "setCloudEventUnmarshaller", CloudEventUnmarshallerFactory.class);
         } else {
-            generateMarshallerField("marshaller", "setEventDataMarshaller", EventMarshaller.class);
+            generateMarshallerField("unmarshaller", "setEventDataUnmarshaller", EventUnmarshaller.class);
         }
     }
+
 }

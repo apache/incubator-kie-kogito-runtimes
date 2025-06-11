@@ -29,7 +29,7 @@ import jakarta.inject.Inject;
 public class TestEventEmitter {
 
     @Channel("test")
-    Emitter<Object> testEventEmitter; 
+    Emitter<Object> testEventEmitter;
 
     @Inject
     EventMarshaller<Object> eventMarshaller;

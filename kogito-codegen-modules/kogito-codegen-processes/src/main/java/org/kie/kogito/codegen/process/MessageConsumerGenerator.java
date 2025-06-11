@@ -97,7 +97,7 @@ public class MessageConsumerGenerator {
         this.generator = TemplatedGenerator.builder()
                 .withTargetTypeName(resourceClazzName)
                 .withPackageName(processPackageName)
-                .build(context, "MessageConsumer");
+                .build(context, "messaging/MessageConsumer");
         this.clazz = generator.compilationUnitOrThrow("Cannot generate message consumer");
         clazz.addImport(modelfqcn);
     }

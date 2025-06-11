@@ -18,6 +18,7 @@
  */
 package org.jbpm.process.instance.impl.actions;
 
+import org.jbpm.ruleflow.core.Metadata;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
@@ -26,7 +27,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 public class MessageEventProcessInstanceAction extends AbstractEventProcessInstanceAction {
 
     public MessageEventProcessInstanceAction(String eventType, String event) {
-        super(eventType, event, DEFAULT_SCOPE);
+        super(eventType, event, Metadata.DEFAULT_SCOPE);
     }
 
     public MessageEventProcessInstanceAction(String eventType, String event, String scope) {

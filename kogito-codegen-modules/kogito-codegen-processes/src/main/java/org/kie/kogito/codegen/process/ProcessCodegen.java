@@ -21,7 +21,15 @@ package org.kie.kogito.codegen.process;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
@@ -30,11 +38,16 @@ import org.drools.io.InternalResource;
 import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
 import org.jbpm.bpmn2.xml.BPMNExtensionsSemanticModule;
 import org.jbpm.bpmn2.xml.BPMNSemanticModule;
-import org.jbpm.compiler.canonical.*;
+import org.jbpm.compiler.canonical.ModelMetaData;
+import org.jbpm.compiler.canonical.ProcessMetaData;
+import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
+import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.jbpm.compiler.canonical.WorkItemModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.core.SemanticModules;
 import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.core.validation.ProcessValidatorRegistry;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.instance.WorkflowProcessParameters;
 import org.kie.api.definition.process.Process;
@@ -411,27 +424,31 @@ public class ProcessCodegen extends AbstractGenerator {
             }
 
             if (metaData.getTriggers() != null) {
-
-                for (TriggerMetaData trigger : metaData.getTriggers()) {
-
+                List<TriggerMetaData> externalTriggers = metaData.getTriggers().stream().filter(trigger -> Metadata.EXTERNAL_SCOPE.equals(trigger.getScope())).toList();
+                for (TriggerMetaData trigger : externalTriggers) {
                     // generate message consumers for processes with message start events
-                    if (trigger.getType().equals(TriggerMetaData.TriggerType.ConsumeMessage)) {
-                        MessageConsumerGenerator messageConsumerGenerator =
-                                megs.computeIfAbsent(new ProcessCloudEventMeta(workFlowProcess.getId(), trigger), k -> new MessageConsumerGenerator(
-                                        context(),
-                                        workFlowProcess,
-                                        modelClassGenerator.className(),
-                                        execModelGen.className(),
-                                        applicationCanonicalName(),
-                                        trigger));
-                        metaData.addConsumer(trigger.getName(), messageConsumerGenerator.compilationUnit());
-                    } else if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
-                        MessageProducerGenerator messageProducerGenerator = new MessageProducerGenerator(
-                                context(),
-                                workFlowProcess,
-                                trigger);
-                        mpgs.add(messageProducerGenerator);
-                        metaData.addProducer(trigger.getName(), messageProducerGenerator.compilationUnit());
+                    switch (trigger.getType()) {
+                        case ConsumeMessage:
+                        case ConsumeSignal:
+                            MessageConsumerGenerator messageConsumerGenerator =
+                                    megs.computeIfAbsent(new ProcessCloudEventMeta(workFlowProcess.getId(), trigger), k -> new MessageConsumerGenerator(
+                                            context(),
+                                            workFlowProcess,
+                                            modelClassGenerator.className(),
+                                            execModelGen.className(),
+                                            applicationCanonicalName(),
+                                            trigger));
+                            metaData.addConsumer(trigger.getName(), messageConsumerGenerator.compilationUnit());
+                            break;
+                        case ProduceMessage:
+                        case ProduceSignal:
+                            MessageProducerGenerator messageProducerGenerator = new MessageProducerGenerator(
+                                    context(),
+                                    workFlowProcess,
+                                    trigger);
+                            mpgs.add(messageProducerGenerator);
+                            metaData.addProducer(trigger.getName(), messageProducerGenerator.compilationUnit());
+                            break;
                     }
                 }
             }

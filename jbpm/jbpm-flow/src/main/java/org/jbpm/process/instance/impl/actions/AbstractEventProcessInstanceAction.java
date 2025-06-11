@@ -96,7 +96,7 @@ public abstract class AbstractEventProcessInstanceAction implements Action {
         }
         // compute inputs for throwing
         Map<String, Object> inputSet = new HashMap<>();
-        inputSet.put("Data", eventPayload);
+        inputSet.put("Data", transform(context, eventPayload));
 
         String eventType = VariableUtil.resolveVariable(this.eventTypeTemplate, context.getNodeInstance());
 
@@ -129,6 +129,10 @@ public abstract class AbstractEventProcessInstanceAction implements Action {
                 break;
         }
 
+    }
+
+    protected Object transform(KogitoProcessContext context, Object payload) {
+        return payload;
     }
 
     protected abstract void notifyEvent(KogitoProcessContext context, KogitoProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kieRuntime, String eventType, Object event);

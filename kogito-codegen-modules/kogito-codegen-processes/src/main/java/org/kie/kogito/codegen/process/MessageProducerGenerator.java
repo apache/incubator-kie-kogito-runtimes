@@ -74,7 +74,7 @@ public class MessageProducerGenerator {
         this.generator = TemplatedGenerator.builder()
                 .withTargetTypeName(resourceClazzName)
                 .withPackageName(processPackageName)
-                .build(context, templateName);
+                .build(context, "messaging/" + templateName);
         this.clazz = generator.compilationUnitOrThrow("Cannot generate message producer");
     }
 

@@ -494,7 +494,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
         String signalName = "Escalation-" + attachedTo + (escalationCode != null ? "-" + escalationCode : "");
         DroolsConsequenceAction action =
-                createJavaAction(new SignalEventProcessInstanceAction(signalName, variable, null, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                createJavaAction(new SignalEventProcessInstanceAction(signalName, variable, null, Metadata.PROCESS_INSTANCE_SCOPE));
         exceptionHandler.setAction(action);
         exceptionHandler.setFaultVariable(variable);
         exceptionScope.setExceptionHandler(escalationCode, exceptionHandler);
@@ -529,7 +529,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 
         String variable = ((EventNode) node).getVariableName();
         SignalEventProcessInstanceAction signalAction =
-                new SignalEventProcessInstanceAction("Error-" + attachedTo + "-" + errorCode, variable, null, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE);
+                new SignalEventProcessInstanceAction("Error-" + attachedTo + "-" + errorCode, variable, null, Metadata.PROCESS_INSTANCE_SCOPE);
         DroolsConsequenceAction action = createJavaAction(signalAction);
         exceptionHandler.setAction(action);
         exceptionHandler.setFaultVariable(variable);
@@ -560,7 +560,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
             timer.setDelay(timeDuration);
             timer.setTimeType(Timer.TIME_DURATION);
             DroolsConsequenceAction consequenceAction = createJavaAction(new SignalEventProcessInstanceAction("Timer-" + attachedTo + "-" + timeDuration + "-" + node.getId().toExternalFormat(),
-                    kcontext -> kcontext.getNodeInstance().getStringId(), SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                    kcontext -> kcontext.getNodeInstance().getStringId(), Metadata.PROCESS_INSTANCE_SCOPE));
             compositeNode.addTimer(timer, consequenceAction);
         } else if (timeCycle != null) {
             int index = timeCycle.indexOf("###");
@@ -577,13 +577,13 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
             DroolsConsequenceAction action =
                     createJavaAction(new SignalEventProcessInstanceAction(
                             "Timer-" + attachedTo + "-" + finalTimeCycle + (timer.getPeriod() == null ? "" : "###" + timer.getPeriod()) + "-" + node.getId().toExternalFormat(),
-                            kcontext -> kcontext.getNodeInstance().getStringId(), SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                            kcontext -> kcontext.getNodeInstance().getStringId(), Metadata.PROCESS_INSTANCE_SCOPE));
             compositeNode.addTimer(timer, action);
         } else if (timeDate != null) {
             timer.setDate(timeDate);
             timer.setTimeType(Timer.TIME_DATE);
             DroolsConsequenceAction action = createJavaAction(new SignalEventProcessInstanceAction("Timer-" + attachedTo + "-" + timeDate + "-" + node.getId().toExternalFormat(),
-                    kcontext -> kcontext.getNodeInstance().getStringId(), SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                    kcontext -> kcontext.getNodeInstance().getStringId(), Metadata.PROCESS_INSTANCE_SCOPE));
             compositeNode.addTimer(timer, action);
         }
 
@@ -918,7 +918,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                                             ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
                                             DroolsConsequenceAction action = new DroolsConsequenceAction("java", "");
                                             action.setMetaData("Action",
-                                                    new SignalEventProcessInstanceAction(signalType, faultVariable, null, SignalEventProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+                                                    new SignalEventProcessInstanceAction(signalType, faultVariable, null, Metadata.PROCESS_INSTANCE_SCOPE));
                                             exceptionHandler.setAction(action);
                                             exceptionHandler.setFaultVariable(faultVariable);
                                             eventSubProcessHandlers.add(faultCode);
@@ -1044,8 +1044,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
             final org.kie.api.definition.process.NodeContainer parentContainer, final String compensationHandlerId) {
         process.getMetaData().put("Compensation", true);
 
-        assert parentContainer instanceof ContextContainer
-                : "Expected parent node to be a CompositeContextNode, not a " + parentContainer.getClass().getSimpleName();
+        assert parentContainer instanceof ContextContainer : "Expected parent node to be a CompositeContextNode, not a " + parentContainer.getClass().getSimpleName();
 
         ContextContainer contextContainer = (ContextContainer) parentContainer;
         CompensationScope scope = null;

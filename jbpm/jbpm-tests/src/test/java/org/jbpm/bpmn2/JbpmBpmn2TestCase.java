@@ -38,7 +38,7 @@ import org.jbpm.bpmn2.audit.KogitoWorkingMemoryInMemoryLogger;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.event.DefaultSignalManagerFactory;
 import org.jbpm.process.instance.impl.DefaultProcessInstanceManagerFactory;
-import org.jbpm.process.instance.impl.actions.SignalEventProcessInstanceAction;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,7 +100,7 @@ public abstract class JbpmBpmn2TestCase {
     protected void logTestStartAndSetup(TestInfo testInfo) {
         logger.info(" >>> {} <<<", testInfo.getDisplayName());
         // this is to preserve the same behavior when executing over ksession
-        System.setProperty("org.jbpm.signals.defaultscope", SignalEventProcessInstanceAction.DEFAULT_SCOPE);
+        System.setProperty("org.jbpm.signals.defaultscope", Metadata.DEFAULT_SCOPE);
     }
 
     @AfterEach

@@ -29,11 +29,11 @@ import java.util.concurrent.CompletionStage;
  */
 public interface EventEmitter extends AutoCloseable {
     /**
-     * Publish event to the channel. it will automatically marshalled from the data 
+     * Publish event to the channel. it will automatically marshalled from the data
      * 
      * @param event data will be send to the channel
      */
-    CompletionStage<Void> emit(Object event);
+    CompletionStage<Void> emit(DataEvent<?> dataEvent);
 
     @Override
     default void close() throws Exception {

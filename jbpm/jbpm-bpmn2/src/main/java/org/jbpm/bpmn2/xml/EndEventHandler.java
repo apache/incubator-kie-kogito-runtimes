@@ -200,6 +200,7 @@ public class EndEventHandler extends AbstractNodeHandler {
                 endNode.setMetaData(Metadata.MESSAGE_TYPE, message.getType());
                 endNode.setMetaData(Metadata.TRIGGER_TYPE, PRODUCE_MESSAGE);
                 endNode.setMetaData(Metadata.TRIGGER_REF, message.getName());
+                endNode.setMetaData(Metadata.CUSTOM_SCOPE, Metadata.EXTERNAL_SCOPE);
                 List<DroolsAction> actions = new ArrayList<>();
 
                 DroolsConsequenceAction action = createJavaAction(new HandleMessageAction(message.getType(), variable));
