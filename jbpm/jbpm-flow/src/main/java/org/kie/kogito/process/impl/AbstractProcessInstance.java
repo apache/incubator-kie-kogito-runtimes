@@ -587,13 +587,17 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             if (isProcessInstanceConnected()) {
                 getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
             }
-            R outcome = execution.apply(workflowProcessInstance);
-            syncWorkflowInstanceState(workflowProcessInstance);
-            if (isProcessInstanceConnected()) {
-                syncPersistence(workflowProcessInstance);
-                getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
+            R outcome = null;
+            try {
+                outcome = execution.apply(workflowProcessInstance);
+            } finally {
+                syncWorkflowInstanceState(workflowProcessInstance);
+                internalUnloadProcessInstanceState();
+                if (isProcessInstanceConnected()) {
+                    getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
+                    syncPersistence(workflowProcessInstance);
+                }
             }
-            internalUnloadProcessInstanceState();
             return outcome;
         });
     }
