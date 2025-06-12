@@ -23,7 +23,7 @@ import java.util.Collections;
 import org.jbpm.bpmn2.async.ComplexAsyncModel;
 import org.jbpm.bpmn2.async.ComplexAsyncProcess;
 import org.jbpm.test.utils.ProcessTestHelper;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.RepeatedTest;
 import org.kie.kogito.Application;
 import org.kie.kogito.handlers.StatusTrackerService_createStatusTracker__2B159DC3_EA7B_46A3_A632_7952108A565D_Handler;
 import org.kie.kogito.handlers.StatusTrackerService_createStatusTracker__657C59C4_205E_4800_8BEB_B63703D1008B_Handler;
@@ -33,10 +33,11 @@ import org.kie.kogito.handlers.StatusTrackerService_createStatusTracker__F2291D5
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class AsyncTest {
 
-    @Test
+    @RepeatedTest(value = 1000)
     public void testComplexAsyncProcess() {
         Application app = ProcessTestHelper.newApplication();
         ProcessTestHelper.registerHandler(app, "Human Task", new DefaultKogitoWorkItemHandler());
@@ -50,10 +51,15 @@ public class AsyncTest {
         ComplexAsyncModel model = processDefinition.createModel();
         org.kie.kogito.process.ProcessInstance<ComplexAsyncModel> instance = processDefinition.createInstance(model);
         instance.start();
+        await().until(() -> instance.workItems().size() > 0);
         ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap());
+        await().until(() -> instance.workItems().size() > 0);
         ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap());
+        await().until(() -> instance.workItems().size() > 0);
         ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap());
+        await().until(() -> instance.workItems().size() > 0);
         ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap());
+        await().until(() -> instance.workItems().size() > 0);
         ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap());
         assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
     }
