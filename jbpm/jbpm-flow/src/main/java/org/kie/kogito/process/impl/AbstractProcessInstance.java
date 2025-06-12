@@ -575,7 +575,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         return processInstanceLockStrategy.executeOperation(id, () -> {
             WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
             R outcome = execution.apply(workflowProcessInstance);
-            syncWorkflowInstanceState(workflowProcessInstance);
             internalUnloadProcessInstanceState();
             return outcome;
         });
@@ -591,12 +590,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             try {
                 outcome = execution.apply(workflowProcessInstance);
             } finally {
-                syncWorkflowInstanceState(workflowProcessInstance);
                 internalUnloadProcessInstanceState();
-                if (isProcessInstanceConnected()) {
-                    getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
-                    syncPersistence(workflowProcessInstance);
-                }
+            }
+            if (isProcessInstanceConnected()) {
+                getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
+                syncPersistence(workflowProcessInstance);
             }
             return outcome;
         });
