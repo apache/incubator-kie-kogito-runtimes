@@ -25,7 +25,7 @@
   <parent>
     <artifactId>kogito-quarkus-bom</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>10.1.999-SNAPSHOT</version>
+    <version>10.1.999-20250615-SNAPSHOT</version>
     <relativePath>../bom/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
