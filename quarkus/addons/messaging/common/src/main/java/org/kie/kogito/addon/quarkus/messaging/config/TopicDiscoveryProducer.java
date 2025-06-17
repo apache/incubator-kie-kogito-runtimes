@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kie.kogito.addon.cloudevents.DefaultTopicDiscovery;
@@ -25,16 +26,21 @@ import org.kie.kogito.event.TopicDiscovery;
 import org.kie.kogito.event.cloudevents.CloudEventMeta;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class TopicDiscoveryProducer {
 
-    @Produces
     @Inject
-    public TopicDiscovery stringEventMarshaller(List<CloudEventMeta> meta) {
-        return new DefaultTopicDiscovery(meta);
+    Instance<CloudEventMeta> cloudEventMeta;
+
+    @Produces
+    public TopicDiscovery stringEventMarshaller() {
+        List<CloudEventMeta> cloudEventsMeta = new ArrayList<>();
+        cloudEventMeta.stream().forEach(cloudEventsMeta::add);
+        return new DefaultTopicDiscovery(cloudEventsMeta);
     }
 
 }

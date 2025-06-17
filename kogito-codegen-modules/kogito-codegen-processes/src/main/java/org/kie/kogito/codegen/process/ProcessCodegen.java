@@ -65,6 +65,10 @@ import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
+import org.kie.kogito.codegen.process.events.ChannelInfo;
+import org.kie.kogito.codegen.process.events.ChannelInfoFactory;
+import org.kie.kogito.codegen.process.events.EventEmitterGenerator;
+import org.kie.kogito.codegen.process.events.EventReceiverGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMeta;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
 import org.kie.kogito.codegen.process.util.CodegenUtil;
@@ -451,6 +455,18 @@ public class ProcessCodegen extends AbstractGenerator {
                             break;
                     }
                 }
+            }
+
+            for (String consumerEventType : metaData.getConsumers().keySet()) {
+                ChannelInfo channelInfo = ChannelInfoFactory.newChannelInfo(context(), consumerEventType, "QuarkusReceiver", true, ChannelInfoFactory.INCOMING_DEFAULT_CHANNEL, Collections.emptyMap());
+                EventReceiverGenerator eventReceiverGenerator = new EventReceiverGenerator(context(), channelInfo);
+                storeFile(MESSAGE_CONSUMER_TYPE, eventReceiverGenerator.getPath(), eventReceiverGenerator.getCode());
+            }
+
+            for (String producerEventType : metaData.getProducers().keySet()) {
+                ChannelInfo channelInfo = ChannelInfoFactory.newChannelInfo(context(), producerEventType, "QuarkusReceiver", true, ChannelInfoFactory.OUTGOING_DEFAULT_CHANNEL, Collections.emptyMap());
+                EventEmitterGenerator eventEmitterGenerator = new EventEmitterGenerator(context(), channelInfo);
+                storeFile(MESSAGE_PRODUCER_TYPE, eventEmitterGenerator.getPath(), eventEmitterGenerator.getCode());
             }
 
             processGenerators.add(p);

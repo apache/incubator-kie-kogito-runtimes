@@ -19,27 +19,31 @@
 package $Package$;
 
 
-import java.util.concurrent.CompletionStage;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
-import org.kie.kogito.addon.quarkus.messaging.endpoint.AbstractQuarkusCloudEventReceiver;
+import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventEmitter;
 
 import io.quarkus.runtime.Startup;
 
 @Startup
 @ApplicationScoped
-public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$Type$> {
-    @Incoming("$Trigger$")
-    public CompletionStage<?> onEvent(Message<$Type$> message) {
-        return produce(message);
+public class $Trigger$EventEmitter extends AbstractQuarkusCloudEventEmitter<$Type$> {
+    @Inject
+    @Channel("$Trigger$")
+    Emitter<$Type$> emitter;
+    
+    @Override
+    protected void emit (Message<$Type$> message) {
+        emitter.send(message);
     }
-      
+    
     @PostConstruct
-    void init() {
+    void init () {
     }
 }

@@ -30,7 +30,6 @@ import javax.lang.model.SourceVersion;
 
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.jbpm.compiler.canonical.ProcessMetaData;
-import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.Model;
@@ -516,33 +515,6 @@ public class ProcessGenerator {
             }
         }
 
-        if (!processMetaData.getTriggers().isEmpty()) {
-
-            for (TriggerMetaData trigger : processMetaData.getTriggers()) {
-                // add message produces as field
-                if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
-                    String producerFieldType = packageName + "." + typeName + "MessageProducer_" + trigger.getOwnerId();
-                    String producerFieldName = "producer_" + trigger.getOwnerId();
-
-                    FieldDeclaration producerFieldDeclaration = new FieldDeclaration()
-                            .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, producerFieldType), producerFieldName));
-                    cls.addMember(producerFieldDeclaration);
-
-                    if (context.hasDI()) {
-                        context.getDependencyInjectionAnnotator().withInjection(producerFieldDeclaration);
-                    } else {
-
-                        AssignExpr assignExpr = new AssignExpr(
-                                new FieldAccessExpr(new ThisExpr(), producerFieldName),
-                                new ObjectCreationExpr().setType(producerFieldType),
-                                AssignExpr.Operator.ASSIGN);
-
-                        cls.getConstructors().forEach(c -> c.getBody().addStatement(assignExpr));
-
-                    }
-                }
-            }
-        }
         cls.getMembers().sort(new BodyDeclarationComparator());
         return cls;
     }

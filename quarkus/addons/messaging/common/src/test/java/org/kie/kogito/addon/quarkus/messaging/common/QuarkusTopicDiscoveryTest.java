@@ -44,7 +44,7 @@ class QuarkusTopicDiscoveryTest {
                 entry("mp.messaging.incoming.kogito_incoming_stream.connector", "smallrye-kafka"),
                 entry("mp.messaging.incoming.kogito_incoming_stream.topic", "mycooltopic"));
 
-        final List<Topic> topics = discovery.getTopics(Collections.emptyList());
+        final List<Topic> topics = discovery.getTopics();
         assertThat(topics).hasSize(2);
         expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
     }
@@ -61,7 +61,7 @@ class QuarkusTopicDiscoveryTest {
                 entry("mp.messaging.incoming.kogito_incoming_stream.connector", "smallrye-kafka"),
                 entry("mp.messaging.incoming.kogito_incoming_stream.topic", "mycooltopic"));
 
-        final List<Topic> topics = discovery.getTopics(Collections.emptyList());
+        final List<Topic> topics = discovery.getTopics();
         assertThat(topics).hasSize(2);
         expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
     }
@@ -84,7 +84,7 @@ class QuarkusTopicDiscoveryTest {
                 return Optional.empty();
             }
         };
-        final List<Topic> topics = discovery.getTopics(eventsMeta);
+        final List<Topic> topics = discovery.getTopics();
         assertThat(topics).hasSize(2);
         expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
     }
@@ -100,7 +100,7 @@ class QuarkusTopicDiscoveryTest {
                 return Optional.empty();
             }
         };
-        final List<Topic> topics = discovery.getTopics(Collections.emptyList());
+        final List<Topic> topics = discovery.getTopics();
         assertThat(topics).isEmpty();
     }
 

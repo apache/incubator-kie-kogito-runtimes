@@ -61,7 +61,7 @@ public abstract class EventGenerator implements ClassGenerator {
         this.channelInfo = channelInfo;
         template = TemplatedGenerator.builder()
                 .withTargetTypeName(className)
-                .build(context, templateName);
+                .build(context, "events/" + templateName);
         generator = template.compilationUnitOrThrow("Cannot generate " + templateName);
         clazz = generator.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new InvalidTemplateException(template, "Cannot find class declaration"));
         clazz.setName(className);

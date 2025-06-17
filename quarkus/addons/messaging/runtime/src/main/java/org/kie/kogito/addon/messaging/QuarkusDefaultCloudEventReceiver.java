@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.addon.messaging;
 
-import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventReceiver;
+import org.kie.kogito.addon.quarkus.messaging.endpoint.AbstractQuarkusCloudEventReceiver;
 import org.kie.kogito.config.ConfigBean;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.EventUnmarshaller;

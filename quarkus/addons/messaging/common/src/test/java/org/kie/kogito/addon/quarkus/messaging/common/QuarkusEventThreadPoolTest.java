@@ -27,9 +27,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.microprofile.reactive.messaging.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.addon.quarkus.messaging.endpoint.BackpressureKogitoEmitter;
+import org.kie.kogito.addon.quarkus.messaging.endpoint.AbstractQuarkusCloudEventEmitter;
 
 import net.jcip.annotations.NotThreadSafe;
 
@@ -41,9 +42,15 @@ public class QuarkusEventThreadPoolTest {
 
     private static final String CHANNEL_NAME = "nevermind";
 
-    private class CounterQuarkusEmitterController extends BackpressureKogitoEmitter {
+    private class CounterQuarkusEmitterController extends AbstractQuarkusCloudEventEmitter<String> {
         private AtomicInteger stopCounter = new AtomicInteger(0);
         private AtomicInteger resumeCounter = new AtomicInteger(0);
+
+        @Override
+        protected void emit(Message<String> message) {
+            // TODO Auto-generated method stub
+
+        }
 
     }
 
@@ -97,7 +104,7 @@ public class QuarkusEventThreadPoolTest {
     }
 
     private void testIt(int numThreads, int queueSize, int count) throws InterruptedException, ExecutionException {
-        ExecutorService executor = new QuarkusEventThreadPool(numThreads, queueSize, controller, CHANNEL_NAME);
+        ExecutorService executor = new QuarkusEventExecutorServiceFactory().newExecutorService();
         final AtomicInteger counter = new AtomicInteger(0);
         List<Callable<Integer>> runnables = new ArrayList<>();
         for (int i = 0; i < count; i++) {

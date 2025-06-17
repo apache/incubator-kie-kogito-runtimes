@@ -89,7 +89,7 @@ public class ChannelInfo {
     public Optional<String> getMarshaller() {
         return marshaller;
     }
-    
+
     public Optional<CloudEventMode> getCloudEventMode() {
         return cloudEventMode;
     }
