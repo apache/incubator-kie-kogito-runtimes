@@ -65,12 +65,16 @@ public abstract class EventGenerator implements ClassGenerator {
         generator = template.compilationUnitOrThrow("Cannot generate " + templateName);
         clazz = generator.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new InvalidTemplateException(template, "Cannot find class declaration"));
         clazz.setName(className);
+
         String annotationName = null;
         if (!channelInfo.isDefault()) {
             annotationName = StringUtils.ucFirst(polishClassName(channelInfo, "Qualifier"));
         }
         this.annotationName = Optional.ofNullable(annotationName);
         this.fullAnnotationName = this.annotationName.map(a -> packageName + '.' + a);
+        if (context.hasDI()) {
+            context.getDependencyInjectionAnnotator().withNamed(clazz, channelInfo.getChannelName());
+        }
         clazz.findAll(StringLiteralExpr.class)
                 .forEach(str -> str.setString(str.asString().replace("$Trigger$", channelInfo.getChannelName())));
         clazz.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, channelInfo.getClassName()));

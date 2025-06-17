@@ -29,9 +29,6 @@ import org.eclipse.microprofile.reactive.messaging.Message;
 
 import org.kie.kogito.addon.quarkus.messaging.endpoint.AbstractQuarkusCloudEventReceiver;
 
-import io.quarkus.runtime.Startup;
-
-@Startup
 @ApplicationScoped
 public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$Type$> {
     @Incoming("$Trigger$")

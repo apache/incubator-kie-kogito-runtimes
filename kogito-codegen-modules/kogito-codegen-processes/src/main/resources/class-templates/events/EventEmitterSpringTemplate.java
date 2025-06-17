@@ -18,32 +18,53 @@
  */
 package $Package$;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.concurrent.CompletionStage;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import org.kie.kogito.config.ConfigBean;
+import org.kie.kogito.event.CloudEventMarshaller;
+import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.EventEmitter;
+import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.event.KogitoEventStreams;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.Message;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventEmitter;
+/**
+ * Spring implementation delegating to kafka template
+ */
+@Component
+public class $Trigger$EventEmitter implements EventEmitter {
 
-import io.quarkus.runtime.Startup;
+    @Autowired
+    org.springframework.kafka.core.KafkaTemplate<String, $Type$> emitter;
+    @Value(value = "${kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + ":" + KogitoEventStreams.OUTGOING + "}")
+    String defaultTopicName;
+    @Autowired
+    Environment env;
+    @Autowired
+    EventMarshaller<$Type$> marshaller;
+    @Autowired
+    CloudEventMarshaller<$Type$> ceMarshaller;
+    @Autowired
+    ConfigBean configBean;
+    @Autowired
+    ObjectMapper mapper;
 
-@Startup
-@ApplicationScoped
-public class $Trigger$EventEmitter extends AbstractQuarkusCloudEventEmitter<$Type$> {
-    @Inject
-    @Channel("$Trigger$")
-    Emitter<$Type$> emitter;
-    
     @Override
-    protected void emit (Message<$Type$> message) {
-        emitter.send(message);
+    public void emit(DataEvent<?> event) {
+        try {
+            String topic = env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + event.getType(), defaultTopicName);
+            $Type$ data = configBean.useCloudEvents() ? ceMarshaller.marshall(event.asCloudEvent(ceMarshaller.cloudEventDataFactory())) : marshaller.marshall(event.getData()));
+            emitter.send(topic, data);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
-    
-    @PostConstruct
-    void init () {
-    }
+
 }

@@ -26,7 +26,7 @@ public class EventEmitterGenerator extends EventGenerator {
 
     public EventEmitterGenerator(KogitoBuildContext context, ChannelInfo channelInfo) {
         super(context, channelInfo, "EventEmitter");
-        if (channelInfo.getCloudEventMode().filter(mode -> mode == CloudEventMode.STRUCTURED).isPresent()) {
+        if (channelInfo.getCloudEventMode().orElse(CloudEventMode.STRUCTURED).equals(CloudEventMode.STRUCTURED)) {
             generateMarshallerField("marshaller", "setCloudEventMarshaller", CloudEventMarshaller.class);
         } else {
             generateMarshallerField("marshaller", "setEventDataMarshaller", EventMarshaller.class);

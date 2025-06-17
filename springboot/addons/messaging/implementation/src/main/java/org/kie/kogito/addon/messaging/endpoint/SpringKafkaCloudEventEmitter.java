@@ -20,7 +20,6 @@ package org.kie.kogito.addon.messaging.endpoint;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.concurrent.CompletionStage;
 
 import org.kie.kogito.config.ConfigBean;
 import org.kie.kogito.event.CloudEventMarshaller;
@@ -57,13 +56,11 @@ public class SpringKafkaCloudEventEmitter<M> implements EventEmitter {
     ObjectMapper mapper;
 
     @Override
-    public CompletionStage<Void> emit(DataEvent<?> event) {
+    public void emit(DataEvent<?> event) {
         try {
-            return emitter
-                    .send(
-                            env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + event.getType(), defaultTopicName),
-                            configBean.useCloudEvents() ? ceMarshaller.marshall(event.asCloudEvent(ceMarshaller.cloudEventDataFactory())) : marshaller.marshall(event.getData()))
-                    .thenApply(r -> null);
+            String topic = env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + event.getType(), defaultTopicName);
+            M data = configBean.useCloudEvents() ? ceMarshaller.marshall(event.asCloudEvent(ceMarshaller.cloudEventDataFactory())) : marshaller.marshall(event.getData());
+            emitter.send(topic, data);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
@@ -47,7 +48,6 @@ import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.core.SemanticModules;
 import org.jbpm.process.core.impl.ProcessImpl;
 import org.jbpm.process.core.validation.ProcessValidatorRegistry;
-import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.instance.WorkflowProcessParameters;
 import org.kie.api.definition.process.Process;
@@ -69,7 +69,6 @@ import org.kie.kogito.codegen.process.events.ChannelInfo;
 import org.kie.kogito.codegen.process.events.ChannelInfoFactory;
 import org.kie.kogito.codegen.process.events.EventEmitterGenerator;
 import org.kie.kogito.codegen.process.events.EventReceiverGenerator;
-import org.kie.kogito.codegen.process.events.ProcessCloudEventMeta;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
 import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
@@ -316,8 +315,6 @@ public class ProcessCodegen extends AbstractGenerator {
         List<ProcessInstanceGenerator> pis = new ArrayList<>();
         List<ProcessExecutableModelGenerator> processExecutableModelGenerators = new ArrayList<>();
         List<ProcessResourceGenerator> rgs = new ArrayList<>(); // REST resources
-        Map<ProcessCloudEventMeta, MessageConsumerGenerator> megs = new HashMap<>(); // message endpoints/consumers
-        List<MessageProducerGenerator> mpgs = new ArrayList<>(); // message producers
 
         Map<String, ModelClassGenerator> processIdToModelGenerator = new HashMap<>();
         Map<String, InputModelClassGenerator> processIdToInputModelGenerator = new HashMap<>();
@@ -427,44 +424,24 @@ public class ProcessCodegen extends AbstractGenerator {
                 rgs.add(processResourceGenerator);
             }
 
-            if (metaData.getTriggers() != null) {
-                List<TriggerMetaData> externalTriggers = metaData.getTriggers().stream().filter(trigger -> Metadata.EXTERNAL_SCOPE.equals(trigger.getScope())).toList();
-                for (TriggerMetaData trigger : externalTriggers) {
-                    // generate message consumers for processes with message start events
-                    switch (trigger.getType()) {
-                        case ConsumeMessage:
-                        case ConsumeSignal:
-                            MessageConsumerGenerator messageConsumerGenerator =
-                                    megs.computeIfAbsent(new ProcessCloudEventMeta(workFlowProcess.getId(), trigger), k -> new MessageConsumerGenerator(
-                                            context(),
-                                            workFlowProcess,
-                                            modelClassGenerator.className(),
-                                            execModelGen.className(),
-                                            applicationCanonicalName(),
-                                            trigger));
-                            metaData.addConsumer(trigger.getName(), messageConsumerGenerator.compilationUnit());
-                            break;
-                        case ProduceMessage:
-                        case ProduceSignal:
-                            MessageProducerGenerator messageProducerGenerator = new MessageProducerGenerator(
-                                    context(),
-                                    workFlowProcess,
-                                    trigger);
-                            mpgs.add(messageProducerGenerator);
-                            metaData.addProducer(trigger.getName(), messageProducerGenerator.compilationUnit());
-                            break;
-                    }
-                }
-            }
+            Set<String> consumerTriggers = metaData.getTriggers().stream()
+                    .filter(trigger -> TriggerMetaData.TriggerType.isConsumer(trigger.getType()))
+                    .map(TriggerMetaData::getName)
+                    .collect(Collectors.toCollection(HashSet::new));
 
-            for (String consumerEventType : metaData.getConsumers().keySet()) {
-                ChannelInfo channelInfo = ChannelInfoFactory.newChannelInfo(context(), consumerEventType, "QuarkusReceiver", true, ChannelInfoFactory.INCOMING_DEFAULT_CHANNEL, Collections.emptyMap());
+            for (String consumerEventType : consumerTriggers) {
+                ChannelInfo channelInfo =
+                        ChannelInfoFactory.newChannelInfo(context(), consumerEventType, "QuarkusReceiver", true, ChannelInfoFactory.INCOMING_DEFAULT_CHANNEL, Collections.emptyMap());
                 EventReceiverGenerator eventReceiverGenerator = new EventReceiverGenerator(context(), channelInfo);
                 storeFile(MESSAGE_CONSUMER_TYPE, eventReceiverGenerator.getPath(), eventReceiverGenerator.getCode());
             }
 
-            for (String producerEventType : metaData.getProducers().keySet()) {
-                ChannelInfo channelInfo = ChannelInfoFactory.newChannelInfo(context(), producerEventType, "QuarkusReceiver", true, ChannelInfoFactory.OUTGOING_DEFAULT_CHANNEL, Collections.emptyMap());
+            Set<String> producerTriggers = metaData.getTriggers().stream()
+                    .filter(trigger -> TriggerMetaData.TriggerType.isProducer(trigger.getType()))
+                    .map(TriggerMetaData::getName)
+                    .collect(Collectors.toCollection(HashSet::new));
+            for (String producerEventType : producerTriggers) {
+                ChannelInfo channelInfo = ChannelInfoFactory.newChannelInfo(context(), producerEventType, "QuarkusEmitter", true, ChannelInfoFactory.OUTGOING_DEFAULT_CHANNEL, Collections.emptyMap());
                 EventEmitterGenerator eventEmitterGenerator = new EventEmitterGenerator(context(), channelInfo);
                 storeFile(MESSAGE_PRODUCER_TYPE, eventEmitterGenerator.getPath(), eventEmitterGenerator.getCode());
             }
@@ -532,16 +509,6 @@ public class ProcessCodegen extends AbstractGenerator {
                         resourceGenerator.generate());
                 storeFile(MODEL_TYPE, WorkItemModelClassGenerator.generatedFilePath(resourceGenerator.getTaskModelFactoryClassName()), resourceGenerator.getTaskModelFactory());
             }
-        }
-
-        for (MessageConsumerGenerator messageConsumerGenerator : megs.values()) {
-            storeFile(MESSAGE_CONSUMER_TYPE, messageConsumerGenerator.generatedFilePath(),
-                    messageConsumerGenerator.generate());
-        }
-
-        for (MessageProducerGenerator messageProducerGenerator : mpgs) {
-            storeFile(MESSAGE_PRODUCER_TYPE, messageProducerGenerator.generatedFilePath(),
-                    messageProducerGenerator.generate());
         }
 
         for (ProcessGenerator p : ps) {
