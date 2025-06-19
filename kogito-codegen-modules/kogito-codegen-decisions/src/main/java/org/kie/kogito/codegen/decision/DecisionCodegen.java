@@ -165,7 +165,7 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     boolean getEnableRuntimeTypeCheckOption() {
-        ConfigValue configValue = ConfigProvider.getConfig().getConfigValue("org.kie.dmn.runtime.typecheck");
+        ConfigValue configValue = ConfigProvider.getConfig().getConfigValue(RuntimeTypeCheckOption.PROPERTY_NAME);
         return configValue != null && configValue.getValue() != null && !configValue.getValue().isEmpty() ? Boolean.parseBoolean(configValue.getValue())
                 : getEnableRuntimeTypeCheckOptionFromProperties();
 
