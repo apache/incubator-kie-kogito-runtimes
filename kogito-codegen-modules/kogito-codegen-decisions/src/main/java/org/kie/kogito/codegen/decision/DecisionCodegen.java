@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.drools.codegen.common.GeneratedFile;
+import org.eclipse.microprofile.config.ConfigProvider;
+import org.eclipse.microprofile.config.ConfigValue;
 import org.eclipse.microprofile.openapi.spi.OASFactoryResolver;
 import org.kie.api.io.ResourceType;
 import org.kie.dmn.core.compiler.DMNProfile;
@@ -163,6 +165,13 @@ public class DecisionCodegen extends AbstractGenerator {
     }
 
     boolean getEnableRuntimeTypeCheckOption() {
+        ConfigValue configValue = ConfigProvider.getConfig().getConfigValue("org.kie.dmn.runtime.typecheck");
+        return configValue != null && configValue.getValue() != null && !configValue.getValue().isEmpty() ? Boolean.parseBoolean(configValue.getValue())
+                : getEnableRuntimeTypeCheckOptionFromProperties();
+
+    }
+
+    boolean getEnableRuntimeTypeCheckOptionFromProperties() {
         Map<String, String> propertiesMap = this.context().getPropertiesMap();
         return Boolean.parseBoolean(propertiesMap.getOrDefault(RuntimeTypeCheckOption.PROPERTY_NAME, "false"));
     }
