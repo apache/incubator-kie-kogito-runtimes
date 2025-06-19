@@ -121,18 +121,12 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-oidc-client-deployment</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-oidc-common-deployment</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-jwt-build-deployment</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jsonp-deployment</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
