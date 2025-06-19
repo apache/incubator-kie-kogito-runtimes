@@ -25,6 +25,7 @@ public class CaseInsensitiveSet extends TreeSet<String> {
     private static final long serialVersionUID = 1L;
 
     public CaseInsensitiveSet(String... initialContent) {
+        // default TreeSet case insensitive comparator does not support null, therefore using a custom one
         super((o1, o2) -> {
             if (o1 == null) {
                 if (o2 == null) {
@@ -35,11 +36,7 @@ public class CaseInsensitiveSet extends TreeSet<String> {
             } else if (o2 == null) {
                 return 1;
             }
-            int diff = o1.length() - o2.length();
-            for (int i = 0; diff == 0 && i < o1.length(); i++) {
-                diff = Character.toLowerCase(o1.charAt(i)) - Character.toLowerCase(o2.charAt(i));
-            }
-            return diff;
+            return String.CASE_INSENSITIVE_ORDER.compare(o1, o2);
 
         });
         for (String item : initialContent) {
