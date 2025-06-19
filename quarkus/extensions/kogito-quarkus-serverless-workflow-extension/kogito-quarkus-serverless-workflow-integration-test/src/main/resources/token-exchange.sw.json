@@ -24,7 +24,7 @@
     {
       "name": "executeQueryWithExchangeAndWithPropagation",
       "type": "rest",
-      "operation": "specs/token-propagation-external-service3.yaml#withExchangeAndPropagation"
+      "operation": "specs/token-exchange-external-service.yaml#withExchangeAndPropagation"
     }
   ],
   "states": [
