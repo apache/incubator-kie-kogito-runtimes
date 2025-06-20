@@ -250,22 +250,26 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
             ((InternalProcessRuntime) kruntime.getProcessRuntime())
                     .getProcessEventSupport().fireBeforeNodeTriggered(this, kruntime);
         }
+
+        captureExecutionException(() -> internalTrigger(from, type));
+
+        if (!hidden) {
+            ((InternalProcessRuntime) kruntime.getProcessRuntime())
+                    .getProcessEventSupport().fireAfterNodeTriggered(this, kruntime);
+        }
+    }
+
+    protected void captureExecutionException(Runnable runnable) {
         try {
-            internalTrigger(from, type);
+            runnable.run();
         } catch (Exception e) {
             if (!WORKFLOW_PARAM_TRANSACTIONS.get(getProcessInstance().getProcess())) {
                 logger.error("Node instance causing process instance error in id {} in a non transactional environment", this.getStringId());
                 captureError(e);
-                return;
             } else {
                 logger.error("Node instance causing process instance error in id {} in a transactional environment (Wrapping)", this.getStringId());
                 throw new ProcessInstanceExecutionException(this.getProcessInstance().getId(), this.getNodeDefinitionId(), this.getId(), e.getMessage(), e);
             }
-            // stop after capturing error
-        }
-        if (!hidden) {
-            ((InternalProcessRuntime) kruntime.getProcessRuntime())
-                    .getProcessEventSupport().fireAfterNodeTriggered(this, kruntime);
         }
     }
 
@@ -465,8 +469,10 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
             ((InternalProcessRuntime) kruntime.getProcessRuntime())
                     .getProcessEventSupport().fireBeforeNodeLeft(this, kruntime);
         }
+
         // trigger next node
-        nodeInstance.trigger(this, type);
+        captureExecutionException(() -> nodeInstance.trigger(this, type));
+
         Collection<Connection> outgoing = getNode().getOutgoingConnections(type);
         for (Connection conn : outgoing) {
             if (conn.getTo().getId().equals(nodeInstance.getNodeId())) {
