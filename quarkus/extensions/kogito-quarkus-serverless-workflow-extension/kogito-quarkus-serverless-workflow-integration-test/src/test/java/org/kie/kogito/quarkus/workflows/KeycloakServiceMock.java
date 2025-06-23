@@ -28,6 +28,7 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
@@ -60,7 +61,7 @@ public class KeycloakServiceMock implements QuarkusTestResourceLifecycleManager 
 
     public static final String AUTH_REQUEST_BODY = "grant_type=client_credentials";
 
-    public static final String EXCHANGE_AUTH_REQUEST_BODY = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange";
+    public static final String EXCHANGE_AUTH_REQUEST_BODY = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange.*";
 
     private WireMockServer wireMockServer;
 
@@ -81,7 +82,7 @@ public class KeycloakServiceMock implements QuarkusTestResourceLifecycleManager 
         stubFor(post(KEY_CLOAK_EXCHANGE_SERVICE_TOKEN_PATH_VALUE)
                 .withHeader(CONTENT_TYPE, equalTo(APPLICATION_FORM_URLENCODED))
                 .withBasicAuth(CLIENT_ID, SECRET)
-                .withRequestBody(equalTo(EXCHANGE_AUTH_REQUEST_BODY))
+                .withRequestBody(matching(EXCHANGE_AUTH_REQUEST_BODY))
                 .willReturn(aResponse()
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(exchangeTokenResult())));
