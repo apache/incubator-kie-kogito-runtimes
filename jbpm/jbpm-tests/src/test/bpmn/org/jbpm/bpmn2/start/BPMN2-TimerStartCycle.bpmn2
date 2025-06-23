@@ -29,13 +29,16 @@
              xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
              xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
              xmlns:tns="http://www.jboss.org/drools">
-  <itemDefinition id="_isCheckedItem" structureRef="java.lang.Boolean"/>
-  <process processType="Private" isExecutable="true" id="ScriptTask" name="ScriptTask Process" tns:packageName="com.sample" >
-    <property id="isCheckedCheckbox" itemSubjectRef="_isCheckedItem"/>
+
+  <process processType="Private" isExecutable="true" id="TimerStartCycle" name="Minimal Process" tns:packageName="org.jbpm.bpmn2.start" >
     <!-- nodes -->
-    <startEvent id="_1" name="StartProcess" />
-    <scriptTask id="_2" name="Hello" scriptFormat="http://www.java.com/java" >
-      <script>System.out.println("Hello World");kcontext.setVariable("isCheckedCheckbox", true);</script>
+    <startEvent id="_1" name="StartProcess" >
+      <timerEventDefinition>
+        <timeCycle xsi:type="tFormalExpression">R/PT2S</timeCycle>
+      </timerEventDefinition>
+    </startEvent>
+    <scriptTask id="_2" name="Hello" >
+      <script>System.out.println("Triggered ...");</script>
     </scriptTask>
     <endEvent id="_3" name="EndProcess" >
         <terminateEventDefinition/>
@@ -48,7 +51,7 @@
   </process>
 
   <bpmndi:BPMNDiagram>
-    <bpmndi:BPMNPlane bpmnElement="ScriptTask" >
+    <bpmndi:BPMNPlane bpmnElement="Minimal" >
       <bpmndi:BPMNShape bpmnElement="_1" >
         <dc:Bounds x="16" y="16" width="48" height="48" />
       </bpmndi:BPMNShape>

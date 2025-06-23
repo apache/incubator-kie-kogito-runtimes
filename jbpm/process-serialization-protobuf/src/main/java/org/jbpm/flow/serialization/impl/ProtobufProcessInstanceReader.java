@@ -101,7 +101,7 @@ public class ProtobufProcessInstanceReader {
         processInstance.setInternalProcess(((AbstractProcess<?>) context.get(MarshallerContextName.MARSHALLER_PROCESS)).get());
 
         processInstance.setId(processInstanceProtobuf.getId());
-        processInstance.setState(processInstanceProtobuf.getState());
+        processInstance.setInternalState(processInstanceProtobuf.getState());
         processInstance.setSignalCompletion(processInstanceProtobuf.getSignalCompletion());
 
         if (processInstanceProtobuf.hasStartDate()) {
@@ -176,7 +176,11 @@ public class ProtobufProcessInstanceReader {
         }
 
         if (processInstanceProtobuf.getHeadersList() != null) {
-            processInstance.setHeaders(processInstanceProtobuf.getHeadersList().stream().collect(Collectors.toMap(HeaderEntry::getKey, HeaderEntry::getValueList)));
+            Map<String, List<String>> headers = processInstanceProtobuf.getHeadersList().stream().collect(Collectors.toMap(HeaderEntry::getKey, HeaderEntry::getValueList));
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Headers {} restored for workflow {}", headers.keySet(), processInstanceProtobuf.getId());
+            }
+            processInstance.setHeaders(headers);
         }
 
         WorkflowContext workflowContext = processInstanceProtobuf.getContext();
