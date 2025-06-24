@@ -42,7 +42,7 @@ public final class GetParamsDecorator extends PrefixParamsDecorator {
 
     @Override
     protected boolean isHeaderParameter(String key) {
-        return this.getParams.containsKey(key) ? super.isHeaderParameter(key) : false;
+        return this.getParams.containsKey(key) && super.isHeaderParameter(key);
     }
 
     @Override
