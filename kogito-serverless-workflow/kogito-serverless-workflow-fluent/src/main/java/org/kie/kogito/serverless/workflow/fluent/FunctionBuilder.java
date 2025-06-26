@@ -100,6 +100,9 @@ public class FunctionBuilder {
         return custom(name, ServiceTypeHandler.SERVICE_TYPE + CUSTOM_TYPE_SEPARATOR + langName + CUSTOM_TYPE_SEPARATOR + moduleName + ServiceTypeHandler.INTFC_SEPARATOR + methodName);
     }
 
+    /**
+     * @deprecated Replaced by {@link #log(WorkflowLogLevel)}
+     */
     @Deprecated
     public static FunctionBuilder log(String name, WorkflowLogLevel level) {
         return custom(name, SYSOUT_TYPE + CUSTOM_TYPE_SEPARATOR + level);

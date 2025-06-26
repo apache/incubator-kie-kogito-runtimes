@@ -118,6 +118,9 @@ public class ActionBuilder {
         return new ActionBuilder(new Action().withFunctionRef(new FunctionRef().withRefName(functionName).withArguments(args)));
     }
 
+    /**
+     * @deprecated Replaced by {@link #log(WorkflowLogLevel)}
+     */
     @Deprecated
     public static ActionBuilder log(String functionName, String message) {
         return call(functionName, logArgs(message));
