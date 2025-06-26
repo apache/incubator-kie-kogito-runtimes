@@ -87,8 +87,11 @@ public class DecisionCodegenUtils {
             SPIUtils.getCompilationManager(true).orElseThrow(() -> new RuntimeException("Compilation Manager not " +
                     "available"));
 
-    private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
-    private static final String domainDashboardDmnTemplate = "/grafana-dashboard-template/blank-dashboard.json";
+    private static final String OPERATIONAL_DASHBOARD_DMN_TEMPLATE = "/grafana-dashboard-template/operational-dashboard-template.json";
+    private static final String DOMAIN_DASHBOARD_DMN_TEMPLATE = "/grafana-dashboard-template/blank-dashboard.json";
+
+    private DecisionCodegenUtils() {
+    }
 
     static Map.Entry<String, GeneratedResources> generateModelsFromResources(Collection<GeneratedFile> generatedFiles,
             List<String> classesForManualReflection,
@@ -135,7 +138,6 @@ public class DecisionCodegenUtils {
             validations.add(DMNValidator.Validation.VALIDATE_SCHEMA);
             validations.add(DMNValidator.Validation.VALIDATE_MODEL);
         }
-        //DecisionValidation.dmnValidateResources(context, r2cr.keySet());
         Set<Resource> dmnResources = r2cr.keySet();
         ModelLocalUriId dmnModelLocalUriId = new ModelLocalUriId(LocalUri.Root.append("dmn").append("scesim"));
         DMNResourceSetResource toProcessDmn = new DMNResourceSetResource(dmnResources, dmnModelLocalUriId);
@@ -305,7 +307,7 @@ public class DecisionCodegenUtils {
         Definitions definitions = resourceGenerator.getDmnModel().getDefinitions();
         List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect(toList());
         Optional<String> operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
-                operationalDashboardDmnTemplate,
+                OPERATIONAL_DASHBOARD_DMN_TEMPLATE,
                 resourceGenerator.getNameURL(),
                 context.getPropertiesMap(),
                 resourceGenerator.getNameURL(),
@@ -314,7 +316,7 @@ public class DecisionCodegenUtils {
         String dashboardName = GrafanaConfigurationWriter.buildDashboardName(context.getGAV(), resourceGenerator.getNameURL());
         operationalDashboard.ifPresent(dashboard -> generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, dashboardName + ".json")));
         Optional<String> domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(
-                domainDashboardDmnTemplate,
+                DOMAIN_DASHBOARD_DMN_TEMPLATE,
                 resourceGenerator.getNameURL(),
                 context.getPropertiesMap(),
                 resourceGenerator.getNameURL(),
