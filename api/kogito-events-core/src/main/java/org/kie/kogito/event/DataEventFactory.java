@@ -68,7 +68,9 @@ public class DataEventFactory {
 
     public static <T> DataEvent<T> from(T eventData, String trigger, KogitoProcessInstance pi, Map<String, Object> contextAttributes) {
         AbstractDataEvent<T> ce = (AbstractDataEvent<T>) from(eventData, trigger, URI.create("/process/" + pi.getProcessId()), Optional.empty(), ProcessMeta.fromKogitoProcessInstance(pi));
-        contextAttributes.forEach((k, v) -> ce.addExtensionAttribute(k, v));
+        if (contextAttributes != null) {
+            contextAttributes.forEach((k, v) -> ce.addExtensionAttribute(k, v));
+        }
         return ce;
     }
 

@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.serverless.workflow.actions;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -36,21 +35,13 @@ public class SWFProduceEventAction extends ProduceEventAction<JsonNode> {
 
     protected final String exprLang;
     protected final JsonNode data;
-    protected final Map<String, String> contextAttrs;
+    protected final JsonNode contextAttrs;
 
-    public SWFProduceEventAction(String triggerName, String varName, Supplier<MessageProducerWithContext<JsonNode>> supplier, String exprLang, JsonNode data) {
-        this(triggerName, varName, supplier, exprLang, data, Map.of());
-    }
-
-    public SWFProduceEventAction(String triggerName, String varName, Supplier<MessageProducerWithContext<JsonNode>> supplier, String exprLang, JsonNode data, Map<String, String> contextAttrs) {
+    public SWFProduceEventAction(String triggerName, String varName, Supplier<MessageProducerWithContext<JsonNode>> supplier, String exprLang, JsonNode data, JsonNode contextAttrs) {
         super(triggerName, varName, supplier);
         this.exprLang = exprLang;
         this.data = data;
         this.contextAttrs = contextAttrs;
-    }
-
-    private static Map<String, Object> toObjectMap(Map<String, String> contextAttrs) {
-        return Collections.<String, Object> unmodifiableMap(contextAttrs);
     }
 
     @Override
@@ -60,9 +51,7 @@ public class SWFProduceEventAction extends ProduceEventAction<JsonNode> {
 
     @Override
     protected Map<String, Object> getContextAttrs(Object object, KogitoProcessContext context) {
-        return contextAttrs != null && !contextAttrs.isEmpty()
-                ? (Map<String, Object>) JsonObjectUtils.toJavaValue(
-                        JsonNodeVisitor.transformNode(JsonObjectUtils.fromValue(contextAttrs), node -> ExpressionHandlerUtils.transform(node, object, context, exprLang), JsonNode::isTextual))
-                : toObjectMap(contextAttrs);
+        return (Map<String, Object>) JsonObjectUtils
+                .toJavaValue(JsonNodeVisitor.transformNode(JsonObjectUtils.fromValue(contextAttrs), node -> ExpressionHandlerUtils.transform(node, object, context, exprLang), JsonNode::isTextual));
     }
 }
