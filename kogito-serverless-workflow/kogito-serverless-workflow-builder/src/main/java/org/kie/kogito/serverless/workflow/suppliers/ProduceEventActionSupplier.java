@@ -19,6 +19,8 @@
 package org.kie.kogito.serverless.workflow.suppliers;
 
 import java.io.UncheckedIOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import org.jbpm.compiler.canonical.AbstractNodeVisitor;
@@ -26,7 +28,7 @@ import org.jbpm.compiler.canonical.ExpressionSupplier;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.process.core.event.StaticMessageProducer;
-import org.kie.kogito.event.impl.MessageProducer;
+import org.kie.kogito.event.impl.MessageProducerWithContext;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.serverless.workflow.actions.SWFProduceEventAction;
@@ -48,7 +50,11 @@ public class ProduceEventActionSupplier extends SWFProduceEventAction implements
     private static final long serialVersionUID = 1L;
 
     public ProduceEventActionSupplier(Workflow workflow, String trigger, String varName, JsonNode data) {
-        super(trigger, varName, new MessageProducerSupplier(trigger), workflow.getExpressionLang(), data);
+        this(workflow, trigger, varName, data, Collections.emptyMap());
+    }
+
+    public ProduceEventActionSupplier(Workflow workflow, String trigger, String varName, JsonNode data, Map<String, String> contextAttributes) {
+        super(trigger, varName, new MessageProducerSupplier(trigger), workflow.getExpressionLang(), data, contextAttributes);
     }
 
     @Override
@@ -65,9 +71,9 @@ public class ProduceEventActionSupplier extends SWFProduceEventAction implements
         }
     }
 
-    private static class MessageProducerSupplier implements Supplier<MessageProducer<JsonNode>> {
+    private static class MessageProducerSupplier implements Supplier<MessageProducerWithContext<JsonNode>> {
 
-        private MessageProducer<JsonNode> producer;
+        private MessageProducerWithContext<JsonNode> producer;
         private final String trigger;
 
         public MessageProducerSupplier(String trigger) {
@@ -75,7 +81,7 @@ public class ProduceEventActionSupplier extends SWFProduceEventAction implements
         }
 
         @Override
-        public MessageProducer<JsonNode> get() {
+        public MessageProducerWithContext<JsonNode> get() {
             if (producer == null) {
                 producer = new StaticMessageProducer<>(trigger);
             }

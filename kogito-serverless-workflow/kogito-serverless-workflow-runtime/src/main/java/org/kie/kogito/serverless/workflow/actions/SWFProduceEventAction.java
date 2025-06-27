@@ -18,10 +18,12 @@
  */
 package org.kie.kogito.serverless.workflow.actions;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import org.jbpm.process.instance.impl.actions.ProduceEventAction;
-import org.kie.kogito.event.impl.MessageProducer;
+import org.kie.kogito.event.impl.MessageProducerWithContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonNodeVisitor;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
@@ -34,19 +36,33 @@ public class SWFProduceEventAction extends ProduceEventAction<JsonNode> {
 
     protected final String exprLang;
     protected final JsonNode data;
+    protected final Map<String, String> contextAttrs;
 
-    public SWFProduceEventAction(String triggerName, String varName, Supplier<MessageProducer<JsonNode>> supplier, String exprLang, JsonNode data) {
+    public SWFProduceEventAction(String triggerName, String varName, Supplier<MessageProducerWithContext<JsonNode>> supplier, String exprLang, JsonNode data) {
+        this(triggerName, varName, supplier, exprLang, data, Map.of());
+    }
+
+    public SWFProduceEventAction(String triggerName, String varName, Supplier<MessageProducerWithContext<JsonNode>> supplier, String exprLang, JsonNode data, Map<String, String> contextAttrs) {
         super(triggerName, varName, supplier);
         this.exprLang = exprLang;
         this.data = data;
+        this.contextAttrs = contextAttrs;
+    }
+
+    private static Map<String, Object> toObjectMap(Map<String, String> contextAttrs) {
+        return Collections.<String, Object> unmodifiableMap(contextAttrs);
     }
 
     @Override
     protected JsonNode getObject(Object object, KogitoProcessContext context) {
-        if (data != null) {
-            return JsonNodeVisitor.transformTextNode(data, node -> ExpressionHandlerUtils.transform(node, object, context, exprLang));
-        } else {
-            return JsonObjectUtils.fromValue(object);
-        }
+        return data != null ? JsonNodeVisitor.transformTextNode(data, node -> ExpressionHandlerUtils.transform(node, object, context, exprLang)) : JsonObjectUtils.fromValue(object);
+    }
+
+    @Override
+    protected Map<String, Object> getContextAttrs(Object object, KogitoProcessContext context) {
+        return contextAttrs != null && !contextAttrs.isEmpty()
+                ? (Map<String, Object>) JsonObjectUtils.toJavaValue(
+                        JsonNodeVisitor.transformNode(JsonObjectUtils.fromValue(contextAttrs), node -> ExpressionHandlerUtils.transform(node, object, context, exprLang), JsonNode::isTextual))
+                : toObjectMap(contextAttrs);
     }
 }
