@@ -55,7 +55,7 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
     @Override
     public Optional<String> getOauth2BearerToken(CredentialsContext input) {
         LOGGER.debug("Calling OpenApiCustomCredentialProvider.getOauth2BearerToken for {}", input.getAuthName());
-        String authorizationHeaderName = getHeaderName(input.getOpenApiSpecId(), input.getAuthName()) != null ? getHeaderName(input.getOpenApiSpecId(), input.getAuthName())
+        String authorizationHeaderName = Optional.ofNullable(getHeaderName(input.getOpenApiSpecId(), input.getAuthName())).orElse(HttpHeaders.AUTHORIZATION);        
                 : HttpHeaders.AUTHORIZATION;
         Optional<Boolean> exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class);
         String accessToken = null;
