@@ -25,7 +25,7 @@
     <parent>
         <artifactId>jbpm</artifactId>
         <groupId>org.kie.kogito</groupId>
-        <version>999-SNAPSHOT</version>
+        <version>999-20250629-SNAPSHOT</version>
     </parent>
 
     <artifactId>jbpm-flow-migration</artifactId>
