@@ -55,8 +55,7 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
     @Override
     public Optional<String> getOauth2BearerToken(CredentialsContext input) {
         LOGGER.debug("Calling OpenApiCustomCredentialProvider.getOauth2BearerToken for {}", input.getAuthName());
-        String authorizationHeaderName = Optional.ofNullable(getHeaderName(input.getOpenApiSpecId(), input.getAuthName())).orElse(HttpHeaders.AUTHORIZATION);        
-                : HttpHeaders.AUTHORIZATION;
+        String authorizationHeaderName = Optional.ofNullable(getHeaderName(input.getOpenApiSpecId(), input.getAuthName())).orElse(HttpHeaders.AUTHORIZATION);
         Optional<Boolean> exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class);
         String accessToken = null;
 
@@ -69,8 +68,11 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
 
             LOGGER.info("Oauth2 token exchange enabled for {}, will generate a tokens...", input.getAuthName());
             OidcClients clients = Arc.container().instance(OidcClients.class).get();
-            OidcClient exchangeTokenClient = clients.getClient(input.getAuthName());
+            if (clients == null) {
+                throw new ConfigurationException("No OIDC client was found. Hint: make sure the dependency io.quarkus:quarkus-oidc-client is provided and/or configure it in the properties.");
+            }
 
+            OidcClient exchangeTokenClient = clients.getClient(input.getAuthName());
             if (exchangeTokenClient == null) {
                 throw new ConfigurationException("No OIDC client was found for %s. Hint: configure it in the properties.".formatted(input.getAuthName()));
             }

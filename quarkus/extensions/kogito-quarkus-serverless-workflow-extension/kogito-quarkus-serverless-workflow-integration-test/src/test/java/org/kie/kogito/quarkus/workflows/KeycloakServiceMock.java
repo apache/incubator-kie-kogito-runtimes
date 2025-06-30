@@ -42,14 +42,14 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
  */
 public class KeycloakServiceMock implements QuarkusTestResourceLifecycleManager {
 
-    public static final String KEY_CLOAK_SERVICE_URL = "keycloak.mock.service.url";
-    public static final String KEY_CLOAK_SERVICE_TOKEN_PATH = "keycloak.mock.service.token-path";
+    public static final String KEYCLOAK_SERVICE_URL = "keycloak.mock.service.url";
+    public static final String KEYCLOAK_SERVICE_TOKEN_PATH = "keycloak.mock.service.token-path";
 
-    public static final String KEY_CLOAK_EXCHANGE_SERVICE_TOKEN_PATH = "keycloak.mock.exchange-service.token-path";
+    public static final String KEYCLOAK_EXCHANGE_SERVICE_TOKEN_PATH = "keycloak.mock.exchange-service.token-path";
     public static final String REALM = "kogito-tests";
     public static final String EXCHANGE_REALM = "kogito-exchange-tests";
-    public static final String KEY_CLOAK_SERVICE_TOKEN_PATH_VALUE = "/realms/" + REALM + "/protocol/openid-connect/token";
-    public static final String KEY_CLOAK_EXCHANGE_SERVICE_TOKEN_PATH_VALUE = "/realms/" + EXCHANGE_REALM + "/protocol/openid-connect/token";
+    public static final String KEYCLOAK_SERVICE_TOKEN_PATH_VALUE = "/realms/" + REALM + "/protocol/openid-connect/token";
+    public static final String KEYCLOAK_EXCHANGE_SERVICE_TOKEN_PATH_VALUE = "/realms/" + EXCHANGE_REALM + "/protocol/openid-connect/token";
     public static final String CLIENT_ID = "kogito-app";
     public static final String SECRET = "secret";
     public static final String KEYCLOAK_ACCESS_TOKEN = "KEYCLOAK_ACCESS_TOKEN";
@@ -71,7 +71,7 @@ public class KeycloakServiceMock implements QuarkusTestResourceLifecycleManager 
         wireMockServer.start();
         configureFor(wireMockServer.port());
 
-        stubFor(post(KEY_CLOAK_SERVICE_TOKEN_PATH_VALUE)
+        stubFor(post(KEYCLOAK_SERVICE_TOKEN_PATH_VALUE)
                 .withHeader(CONTENT_TYPE, equalTo(APPLICATION_FORM_URLENCODED))
                 .withBasicAuth(CLIENT_ID, SECRET)
                 .withRequestBody(equalTo(AUTH_REQUEST_BODY))
@@ -79,7 +79,7 @@ public class KeycloakServiceMock implements QuarkusTestResourceLifecycleManager 
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(getTokenResult())));
 
-        stubFor(post(KEY_CLOAK_EXCHANGE_SERVICE_TOKEN_PATH_VALUE)
+        stubFor(post(KEYCLOAK_EXCHANGE_SERVICE_TOKEN_PATH_VALUE)
                 .withHeader(CONTENT_TYPE, equalTo(APPLICATION_FORM_URLENCODED))
                 .withBasicAuth(CLIENT_ID, SECRET)
                 .withRequestBody(matching(EXCHANGE_AUTH_REQUEST_BODY))
@@ -88,9 +88,9 @@ public class KeycloakServiceMock implements QuarkusTestResourceLifecycleManager 
                         .withBody(exchangeTokenResult())));
 
         Map<String, String> properties = new HashMap<>();
-        properties.put(KEY_CLOAK_SERVICE_URL, wireMockServer.baseUrl());
-        properties.put(KEY_CLOAK_SERVICE_TOKEN_PATH, KEY_CLOAK_SERVICE_TOKEN_PATH_VALUE);
-        properties.put(KEY_CLOAK_EXCHANGE_SERVICE_TOKEN_PATH, KEY_CLOAK_EXCHANGE_SERVICE_TOKEN_PATH_VALUE);
+        properties.put(KEYCLOAK_SERVICE_URL, wireMockServer.baseUrl());
+        properties.put(KEYCLOAK_SERVICE_TOKEN_PATH, KEYCLOAK_SERVICE_TOKEN_PATH_VALUE);
+        properties.put(KEYCLOAK_EXCHANGE_SERVICE_TOKEN_PATH, KEYCLOAK_EXCHANGE_SERVICE_TOKEN_PATH_VALUE);
         return properties;
     }
 
