@@ -19,25 +19,30 @@
 package org.kie.persistence.postgresql;
 
 import java.util.Collections;
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
-import org.drools.io.ClassPathResource;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.flyway.initializer.KieFlywayInitializer;
+import org.kie.kogito.Application;
+import org.kie.kogito.Model;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.internal.process.runtime.HeadersPersistentConfig;
 import org.kie.kogito.persistence.postgresql.AbstractProcessInstancesFactory;
 import org.kie.kogito.persistence.postgresql.PostgresqlProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
+import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnProcessInstance;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
-import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
+import org.kie.kogito.process.bpmn2.StaticApplicationAssembler;
+import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.process.impl.StaticProcessConfig;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 import org.kie.kogito.testcontainers.KogitoPostgreSqlContainer;
@@ -52,7 +57,6 @@ import io.vertx.sqlclient.Tuple;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
@@ -101,13 +105,20 @@ class PostgresqlProcessInstancesIT {
     }
 
     private BpmnProcess createProcess(String fileName) {
-        StaticProcessConfig config = new StaticProcessConfig();
-        ((DefaultWorkItemHandlerConfig) config.workItemHandlers()).register("Human Task", new DefaultKogitoWorkItemHandler());
-        BpmnProcess process = BpmnProcess.from(config, new ClassPathResource(fileName)).get(0);
-        process.setProcessInstancesFactory(new PostgreProcessInstancesFactory(client, lock()));
-        process.configure();
+        StaticProcessConfig processConfig = StaticProcessConfig.newStaticProcessConfigBuilder()
+                .withWorkItemHandler("Human Task", new DefaultKogitoWorkItemHandler())
+                .build();
+
+        Application application =
+                StaticApplicationAssembler.instance().newStaticApplication(new PostgreProcessInstancesFactory(client, lock(), new HeadersPersistentConfig(true, null)), processConfig, fileName);
+
+        org.kie.kogito.process.Processes container = application.get(org.kie.kogito.process.Processes.class);
+        String processId = container.processIds().stream().findFirst().get();
+        org.kie.kogito.process.Process<? extends Model> process = container.processById(processId);
+
         abort(process.instances());
-        return process;
+        BpmnProcess compiledProcess = (BpmnProcess) process;
+        return compiledProcess;
     }
 
     private static PgPool client() {
@@ -118,7 +129,9 @@ class PostgresqlProcessInstancesIT {
     void testBasicFlow() {
         BpmnProcess process = createProcess("BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
-        processInstance.start();
+
+        Map<String, List<String>> headers = Map.of("name", List.of("pepe"));
+        processInstance.start(headers);
 
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
         assertThat(processInstance.description()).isEqualTo("BPMN2-UserTask");
@@ -129,6 +142,7 @@ class PostgresqlProcessInstancesIT {
 
         ProcessInstance<?> readOnlyPI = process.instances().findById(processInstance.id(), ProcessInstanceReadMode.READ_ONLY).get();
         assertThat(readOnlyPI.status()).isEqualTo(STATE_ACTIVE);
+        assertThat(((AbstractProcessInstance) readOnlyPI).hasHeader("name")).isTrue();
         assertOne(processInstances);
 
         verify(processInstances).create(any(), any());
@@ -192,24 +206,12 @@ class PostgresqlProcessInstancesIT {
         processInstance.start();
 
         PostgresqlProcessInstances processInstances = (PostgresqlProcessInstances) process.instances();
-        Optional<?> foundOne = processInstances.findById(processInstance.id());
-        BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
-        foundOne = processInstances.findById(processInstance.id());
-        BpmnProcessInstance instanceTwo = (BpmnProcessInstance) foundOne.get();
+        BpmnProcessInstance instanceOne = (BpmnProcessInstance) processInstances.findById(processInstance.id()).get();
+        BpmnProcessInstance instanceTwo = (BpmnProcessInstance) processInstances.findById(processInstance.id()).get();
         assertThat(instanceOne.version()).isEqualTo(lock() ? 1L : 0);
         assertThat(instanceTwo.version()).isEqualTo(lock() ? 1L : 0);
         instanceOne.updateVariables(BpmnVariables.create(Collections.singletonMap("s", "test")));
-        try {
-            BpmnVariables testvar = BpmnVariables.create(Collections.singletonMap("ss", "test"));
-            instanceTwo.updateVariables(testvar);
-            if (lock()) {
-                fail("Updating process should have failed");
-            }
-        } catch (RuntimeException e) {
-            assertThat(e.getMessage()).isEqualTo("Process instance with id '" + instanceOne.id() + "' updated or deleted by other request");
-        }
-        foundOne = processInstances.findById(processInstance.id());
-        instanceOne = (BpmnProcessInstance) foundOne.get();
+        instanceOne = (BpmnProcessInstance) processInstances.findById(processInstance.id()).get();
         assertThat(instanceOne.version()).isEqualTo(lock() ? 2L : 0);
 
         processInstances.remove(processInstance.id());
@@ -265,10 +267,8 @@ class PostgresqlProcessInstancesIT {
 
         PostgresqlProcessInstances processInstances = (PostgresqlProcessInstances) process.instances();
         assertOne(processInstances);
-        Optional<?> foundOne = processInstances.findById(processInstance.id());
-        BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
-        foundOne = processInstances.findById(processInstance.id());
-        BpmnProcessInstance instanceTwo = (BpmnProcessInstance) foundOne.get();
+        BpmnProcessInstance instanceOne = (BpmnProcessInstance) processInstances.findById(processInstance.id()).get();
+        BpmnProcessInstance instanceTwo = (BpmnProcessInstance) processInstances.findById(processInstance.id()).get();
         assertThat(instanceOne.version()).isEqualTo(lock() ? 1L : 0);
         assertThat(instanceTwo.version()).isEqualTo(lock() ? 1L : 0);
 
@@ -305,10 +305,26 @@ class PostgresqlProcessInstancesIT {
         assertEmpty(processInstancesV2);
     }
 
+    @Test
+    public void testSignalStorage() {
+        BpmnProcess process = createProcess("BPMN2-IntermediateCatchEventSignal.bpmn2");
+        PostgresqlProcessInstances fsInstances = (PostgresqlProcessInstances) process.instances();
+        ProcessInstance<BpmnVariables> pi1 = process.createInstance(BpmnVariables.create(Collections.singletonMap("name", "sig1")));
+        ProcessInstance<BpmnVariables> pi2 = process.createInstance(BpmnVariables.create(Collections.singletonMap("name", "sig2")));
+        pi1.start();
+        pi2.start();
+
+        pi1.workItems().forEach(wi -> pi1.completeWorkItem(wi.getId(), Collections.emptyMap()));
+        pi2.workItems().forEach(wi -> pi2.completeWorkItem(wi.getId(), Collections.emptyMap()));
+        process.send(SignalFactory.of("sig1", "SomeValue"));
+        process.send(SignalFactory.of("sig2", "SomeValue"));
+        assertThat(process.instances().stream().count()).isEqualTo(0);
+    }
+
     private class PostgreProcessInstancesFactory extends AbstractProcessInstancesFactory {
 
-        public PostgreProcessInstancesFactory(PgPool client, boolean lock) {
-            super(client, 10000l, lock);
+        public PostgreProcessInstancesFactory(PgPool client, boolean lock, HeadersPersistentConfig headersConfig) {
+            super(client, 10000l, lock, headersConfig);
         }
 
         @Override

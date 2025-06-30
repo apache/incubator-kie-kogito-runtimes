@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.process;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.Policy;
 import org.kie.kogito.internal.process.workitem.WorkItemTransition;
+import org.kie.kogito.jobs.TimerDescription;
 import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.Milestone;
 
@@ -276,6 +278,8 @@ public interface ProcessInstance<T> {
      */
     Collection<Milestone> milestones();
 
+    Collection<TimerDescription> timers();
+
     /**
      * Returns the process adHocFragments
      *
@@ -286,4 +290,8 @@ public interface ProcessInstance<T> {
     long version();
 
     Optional<? extends Correlation<?>> correlation();
+
+    void updateNodeInstanceSla(String nodeInstanceId, ZonedDateTime slaDueDate);
+
+    void updateProcessInstanceSla(ZonedDateTime slaDueDate);
 }

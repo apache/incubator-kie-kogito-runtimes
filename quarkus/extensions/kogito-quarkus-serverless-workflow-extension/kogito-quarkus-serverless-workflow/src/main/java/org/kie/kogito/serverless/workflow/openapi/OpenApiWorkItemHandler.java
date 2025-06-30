@@ -20,7 +20,9 @@ package org.kie.kogito.serverless.workflow.openapi;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,6 +32,7 @@ import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.kogito.event.cloudevents.extension.ProcessMeta;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.WorkItemExecutionException;
+import org.kie.kogito.internal.utils.CaseInsensitiveSet;
 import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
@@ -39,8 +42,11 @@ import io.quarkus.restclient.runtime.RestClientBuilderFactory;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler {
+
+    private static final Collection<String> excludedHeaders = new CaseInsensitiveSet("User-Agent", "Host", "Content-Length", "Accept", "Accept-Encoding", "Connection");
 
     @Override
     protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
@@ -48,9 +54,18 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
         T ref = RestClientBuilderFactory.build(clazz, calculatedConfigKey(workItem)).register(new ClientRequestFilter() {
             @Override
             public void filter(ClientRequestContext requestContext) throws IOException {
-                ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> requestContext.getHeaders().put(k, Collections.singletonList(v)));
+                MultivaluedMap<String, Object> contextHeaders = requestContext.getHeaders();
+                ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> contextHeaders.put(k, Collections.singletonList(v)));
+                Map<String, List<String>> headers = workItem.getProcessInstance().getHeaders();
+                if (headers != null) {
+                    headers.forEach((k, v) -> {
+                        if (!excludedHeaders.contains(k)) {
+                            contextHeaders.putIfAbsent(k, (List) v);
+                        }
+                    });
+                }
             }
-        }).build(clazz);
+        }, Integer.MIN_VALUE).build(clazz);
         try {
             return internalExecute(ref, parameters);
         } catch (WebApplicationException ex) {

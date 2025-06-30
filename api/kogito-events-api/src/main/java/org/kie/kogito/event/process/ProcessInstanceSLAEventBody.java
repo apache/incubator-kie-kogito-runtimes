@@ -22,6 +22,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Set;
 
 import org.kie.kogito.event.DataEvent;
 
@@ -69,7 +70,7 @@ public class ProcessInstanceSLAEventBody implements KogitoMarshallEventSupport, 
     }
 
     @Override
-    public void readEvent(DataInput in) throws IOException {
+    public void readEvent(DataInput in, Set<KogitoMarshallEventFlag> flags) throws IOException {
         nodeDefinitionId = in.readUTF();
         nodeName = readUTF(in);
         nodeType = in.readUTF();
@@ -132,7 +133,8 @@ public class ProcessInstanceSLAEventBody implements KogitoMarshallEventSupport, 
 
     @Override
     public String toString() {
-        return "ProcessErrorEventBody [processId=" + processId + ", processInstanceId=" + processInstanceId + ", nodeDefinitionId=" + nodeDefinitionId + ", nodeInstanceId=" + nodeInstanceId + "]";
+        return "ProcessInstanceSLAEventBody [processId=" + processId + ", processInstanceId=" + processInstanceId + ", nodeDefinitionId=" + nodeDefinitionId + ", nodeInstanceId=" + nodeInstanceId
+                + "]";
     }
 
     public static Builder create() {

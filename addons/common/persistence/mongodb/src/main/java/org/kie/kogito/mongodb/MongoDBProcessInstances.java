@@ -18,10 +18,15 @@
  */
 package org.kie.kogito.mongodb;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -32,6 +37,7 @@ import org.bson.conversions.Bson;
 import org.jbpm.flow.serialization.MarshallerContextName;
 import org.jbpm.flow.serialization.ProcessInstanceMarshallerService;
 import org.kie.kogito.Model;
+import org.kie.kogito.internal.process.runtime.HeadersPersistentConfig;
 import org.kie.kogito.mongodb.transaction.AbstractTransactionManager;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.ProcessInstance;
@@ -51,7 +57,6 @@ import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.result.UpdateResult;
 
-import static java.util.Collections.singletonMap;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE_ID;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE_ID_INDEX;
 
@@ -61,16 +66,24 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
     private org.kie.kogito.process.Process<?> process;
     private ProcessInstanceMarshallerService marshaller;
     private final MongoCollection<Document> collection;
+    private final MongoCollection<Document> events;
     private final AbstractTransactionManager transactionManager;
     private final boolean lock;
 
     public MongoDBProcessInstances(MongoClient mongoClient, org.kie.kogito.process.Process<?> process, String dbName, AbstractTransactionManager transactionManager, boolean lock) {
+        this(mongoClient, process, dbName, transactionManager, lock, null);
+    }
+
+    public MongoDBProcessInstances(MongoClient mongoClient, org.kie.kogito.process.Process<?> process, String dbName, AbstractTransactionManager transactionManager, boolean lock,
+            HeadersPersistentConfig headersConfig) {
         this.process = process;
         this.collection = Objects.requireNonNull(getCollection(mongoClient, process.id(), dbName));
+        this.events = Objects.requireNonNull(getCollection(mongoClient, process.id() + "-events", dbName));
         this.marshaller = ProcessInstanceMarshallerService.newBuilder()
                 .withDefaultObjectMarshallerStrategies()
                 .withDefaultListeners()
-                .withContextEntries(singletonMap(MarshallerContextName.MARSHALLER_FORMAT, MarshallerContextName.MARSHALLER_FORMAT_JSON))
+                .withContextEntry(MarshallerContextName.MARSHALLER_FORMAT, MarshallerContextName.MARSHALLER_FORMAT_JSON)
+                .withContextEntry(MarshallerContextName.MARSHALLER_HEADERS_CONFIG, headersConfig)
                 .build();
         this.transactionManager = Objects.requireNonNull(transactionManager);
         this.lock = lock;
@@ -78,7 +91,22 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
 
     @Override
     public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
-        return find(id).map(piDoc -> unmarshall(piDoc, mode));
+        return find(id).map(piDoc -> {
+            return (AbstractProcessInstance<T>) unmarshall(piDoc, mode);
+        });
+    }
+
+    @Override
+    public Stream<ProcessInstance<T>> waitingForEventType(String eventType, ProcessInstanceReadMode mode) {
+        ClientSession clientSession = transactionManager.getClientSession();
+        Bson eventTypeFilter = Filters.all("eventTypes", eventType);
+        List<String> processInstancesId = new ArrayList<>();
+
+        events.find(eventTypeFilter).forEach(e -> processInstancesId.add(e.getString("id")));
+
+        Bson filters = Filters.in("id", processInstancesId);
+        MongoCursor<Document> docs = (clientSession == null ? collection.find(filters) : collection.find(clientSession, filters)).iterator();
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(docs, Spliterator.ORDERED), false).map(doc -> unmarshall(doc, mode)).onClose(docs::close);
     }
 
     @Override
@@ -91,7 +119,12 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
     private ProcessInstance<T> unmarshall(Document document, ProcessInstanceReadMode mode) {
         ProcessInstance<T> instance = (ProcessInstance<T>) marshaller.unmarshallProcessInstance(document.toJson().getBytes(), process, mode);
         setVersion(instance, document.getLong(VERSION));
+        connectProcessInstance(instance, instance.id());
         return instance;
+    }
+
+    private Set<String> getUniqueEvents(ProcessInstance<T> instance) {
+        return Stream.of(((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getEventTypes()).collect(Collectors.toCollection(HashSet::new));
     }
 
     @Override
@@ -101,47 +134,60 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
 
     @Override
     public void update(String id, ProcessInstance<T> instance) {
-        if (isActive(instance)) {
+        if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
             updateStorage(id, instance, false);
         }
-        reloadProcessInstance(instance, id);
     }
 
     protected void updateStorage(String id, ProcessInstance<T> instance, boolean checkDuplicates) {
         ClientSession clientSession = transactionManager.getClientSession();
         Document doc = Document.parse(new String(marshaller.marshallProcessInstance(instance)));
+        Set<String> eventTypes = getUniqueEvents(instance);
         if (checkDuplicates) {
-            createInternal(id, clientSession, doc);
+            createInternal(id, clientSession, doc, eventTypes);
         } else {
-            updateInternal(id, instance, clientSession, doc);
+            updateInternal(id, instance, clientSession, doc, eventTypes);
         }
+        connectProcessInstance(instance, id);
     }
 
-    private void createInternal(String id, ClientSession clientSession, Document doc) {
+    private void createInternal(String id, ClientSession clientSession, Document doc, Set<String> eventTypes) {
         if (exists(id)) {
             throw new ProcessInstanceDuplicatedException(id);
         } else {
+            Document eventsDocument = new Document()
+                    .append("id", id)
+                    .append("eventTypes", eventTypes);
             doc.put(VERSION, 0L);
             if (clientSession != null) {
                 collection.insertOne(clientSession, doc);
+                events.insertOne(clientSession, eventsDocument);
             } else {
                 collection.insertOne(doc);
+                events.insertOne(eventsDocument);
             }
         }
     }
 
-    private void updateInternal(String id, ProcessInstance<T> instance, ClientSession clientSession, Document doc) {
+    private void updateInternal(String id, ProcessInstance<T> instance, ClientSession clientSession, Document doc, Set<String> eventTypes) {
         Bson filters = Filters.eq(PROCESS_INSTANCE_ID, id);
         UpdateResult result;
         if (lock) {
             doc.put(VERSION, instance.version() + 1);
             filters = Filters.and(Filters.eq(PROCESS_INSTANCE_ID, id), Filters.eq(VERSION, instance.version()));
         }
+        Document eventsDocument = new Document()
+                .append("id", id)
+                .append("eventTypes", eventTypes);
+
         if (clientSession != null) {
             result = collection.replaceOne(clientSession, filters, doc);
+            events.replaceOne(clientSession, filters, eventsDocument);
         } else {
             result = collection.replaceOne(filters, doc);
+            events.replaceOne(filters, eventsDocument);
         }
+
         if (lock && result.getModifiedCount() != 1) {
             throw new ProcessInstanceOptimisticLockingException(id);
         }
@@ -162,13 +208,15 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
         ClientSession clientSession = transactionManager.getClientSession();
         if (clientSession != null) {
             collection.deleteOne(clientSession, Filters.eq(PROCESS_INSTANCE_ID, id));
+            events.deleteOne(clientSession, Filters.eq(PROCESS_INSTANCE_ID, id));
         } else {
             collection.deleteOne(Filters.eq(PROCESS_INSTANCE_ID, id));
+            events.deleteOne(Filters.eq(PROCESS_INSTANCE_ID, id));
         }
     }
 
-    private void reloadProcessInstance(ProcessInstance<T> instance, String id) {
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(marshaller.createdReloadFunction(() -> find(id).map(reloaded -> {
+    private void connectProcessInstance(ProcessInstance<T> instance, String id) {
+        ((AbstractProcessInstance<?>) instance).internalSetReloadSupplier(marshaller.createdReloadFunction(() -> find(id).map(reloaded -> {
             setVersion(instance, reloaded.getLong(VERSION));
             return reloaded.toJson().getBytes();
         }).orElseThrow(() -> new IllegalArgumentException("process instance id " + id + " does not exists in mongodb"))));

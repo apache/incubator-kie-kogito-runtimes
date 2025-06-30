@@ -18,10 +18,7 @@
  */
 package org.kie.kogito.process.management;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -31,6 +28,7 @@ import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
@@ -227,6 +225,22 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
         });
     }
 
+    public T doGetProcessInstanceTimers(String processId, String processInstanceId) {
+        return executeOnProcessInstance(processId, processInstanceId, processInstance -> buildOkResponse(processInstance.timers()));
+    }
+
+    public T doGetNodeInstanceTimers(String processId, String processInstanceId, String nodeInstanceId) {
+        return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
+            Collection<KogitoNodeInstance> nodeInstances = processInstance.findNodes(nodeInstance -> nodeInstance.getId().equals(nodeInstanceId));
+
+            if (nodeInstances.isEmpty()) {
+                return badRequestResponse(String.format("Failure getting timers for node instance '%s' from proces instance '%s', node instance couldn't be found", nodeInstanceId, processInstanceId));
+            }
+
+            return buildOkResponse(nodeInstances.iterator().next().timers());
+        });
+    }
+
     public T doCancelProcessInstanceId(String processId, String processInstanceId) {
 
         return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
@@ -307,4 +321,30 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
     protected abstract T badRequestResponse(String message);
 
     protected abstract T notFoundResponse(String message);
+
+    public T doUpdateNodeInstanceSla(String processId, String processInstanceId, String nodeInstanceId, SlaPayload sla) {
+        return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
+            try {
+                processInstance.updateNodeInstanceSla(nodeInstanceId, sla.getExpirationTime());
+                Map<String, Object> message = new HashMap<>();
+                message.put("message", "Node Instance '" + nodeInstanceId + "' SLA due date successfully updated");
+                return buildOkResponse(message);
+            } catch (Exception e) {
+                return badRequestResponse(e.getMessage());
+            }
+        });
+    }
+
+    public T doUpdateProcessInstanceSla(String processId, String processInstanceId, SlaPayload sla) {
+        return executeOnProcessInstance(processId, processInstanceId, processInstance -> {
+            try {
+                processInstance.updateProcessInstanceSla(sla.getExpirationTime());
+                Map<String, Object> message = new HashMap<>();
+                message.put("message", "Process Instance '" + processInstanceId + "' SLA due date successfully updated");
+                return buildOkResponse(message);
+            } catch (Exception e) {
+                return badRequestResponse(e.getMessage());
+            }
+        });
+    }
 }

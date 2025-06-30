@@ -72,6 +72,14 @@ public class ProcessInstanceMarshallerService {
             return this;
         }
 
+        @SuppressWarnings("unchecked")
+        public <T> Builder withContextEntry(MarshallerContextName<T> key, T value) {
+            if (value != null) {
+                ProcessInstanceMarshallerService.this.contextEntries.put((MarshallerContextName<Object>) key, value);
+            }
+            return this;
+        }
+
         public Builder withDefaultListeners() {
             ServiceLoader<ProcessInstanceMarshallerListener> loader = ServiceLoader.load(ProcessInstanceMarshallerListener.class);
 
@@ -196,6 +204,7 @@ public class ProcessInstanceMarshallerService {
                         processInstanceMarshallerFactory.newKogitoProcessInstanceMarshaller();
                 marshaller.reloadProcessInstance(context, processInstance);
             } catch (Exception e) {
+                e.printStackTrace();
                 LOGGER.warn("Process Instance {} cannot be reloaded", processInstance.id(), e);
             }
         };
