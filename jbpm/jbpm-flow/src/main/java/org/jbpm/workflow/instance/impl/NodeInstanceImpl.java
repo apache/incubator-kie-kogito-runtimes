@@ -264,10 +264,19 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
             runnable.run();
         } catch (Exception e) {
             if (!WORKFLOW_PARAM_TRANSACTIONS.get(getProcessInstance().getProcess())) {
-                logger.error("Node instance causing process instance error in id {} in a non transactional environment", this.getStringId());
+                logger.error("Error executing node instance '{}' (node '{}' id: '{}') in process instance '{}' (process: '{}') in a non transactional environment  ", getStringId(), getNodeName(),
+                        getNodeDefinitionId(), processInstance.getId(), processInstance.getProcessId());
                 captureError(e);
             } else {
-                logger.error("Node instance causing process instance error in id {} in a transactional environment (Wrapping)", this.getStringId());
+                // Checking if the exception has been already wrapped by the actual node instance to avoid unnecessary wrappings.
+                if (e instanceof ProcessInstanceExecutionException executionException && getId().equals(executionException.getFailedNodeInstanceId())) {
+                    logger.debug("Exception already wrapped by node instance '{}' (node '{}' id: '{}') in process instance '{}' (process: '{}')... propagating exception.", getStringId(),
+                            getNodeName(),
+                            getNodeDefinitionId(), processInstance.getId(), processInstance.getProcessId());
+                    throw executionException;
+                }
+                logger.error("Error executing node instance '{}' (node '{}' id: '{}') in process instance '{}' (process: '{}') in a transactional environment (Wrapping)", getStringId(), getNodeName(),
+                        getNodeDefinitionId(), processInstance.getId(), processInstance.getProcessId());
                 throw new ProcessInstanceExecutionException(this.getProcessInstance().getId(), this.getNodeDefinitionId(), this.getId(), e.getMessage(), e);
             }
         }
