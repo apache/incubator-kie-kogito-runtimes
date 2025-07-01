@@ -862,7 +862,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                         ((NodeInstance) nodeInstanceContainer).internalSetTriggerTime(new Date());
                     }
 
-                    if (Objects.isNull(nodeInstanceInError.getLeaveTime()) && Objects.isNull(nodeInstanceInError.getCancelType())) {
+                    if (Objects.nonNull(nodeInstanceInError) && Objects.isNull(nodeInstanceInError.getLeaveTime()) && Objects.isNull(nodeInstanceInError.getCancelType())) {
                         // Cancelling the node instance in error before retriggering if it is active to avoid duplicated node instances.
                         // This is required when dealing with work items (ej: Human Tasks)
                         nodeInstanceInError.cancel();
