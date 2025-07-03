@@ -21,10 +21,10 @@ package org.kie.kogito.it;
 
 import java.util.Map;
 
-import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.usertask.model.TransitionInfo;
 
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
