@@ -16,20 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.test.quarkus.kafka;
+package org.kie.kogito.serverless.workflow.executor.events;
 
-import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.EventEmitter;
 
-public class KafkaTestClient extends KafkaTypedTestClient<String, StringSerializer, StringDeserializer> {
-    public KafkaTestClient(String hosts) {
-        super(hosts, StringSerializer.class, StringDeserializer.class);
+import com.fasterxml.jackson.databind.JsonNode;
+
+import io.cloudevents.jackson.JsonCloudEventData;
+
+public class InMemoryEventEmitter implements EventEmitter {
+
+    private CloudEventReceiver eventReceiver;
+
+    InMemoryEventEmitter(CloudEventReceiver eventReceiver) {
+        this.eventReceiver = eventReceiver;
     }
 
-    public KafkaTestClient(String hosts, Properties additionalConfig) {
-        super(hosts, additionalConfig, StringSerializer.class, StringDeserializer.class);
+    @Override
+    public CompletionStage<Void> emit(DataEvent<?> dataEvent) {
+        eventReceiver.onEvent(dataEvent.asCloudEvent(o -> JsonCloudEventData.wrap((JsonNode) o)));
+        return CompletableFuture.completedStage(null);
     }
-
 }

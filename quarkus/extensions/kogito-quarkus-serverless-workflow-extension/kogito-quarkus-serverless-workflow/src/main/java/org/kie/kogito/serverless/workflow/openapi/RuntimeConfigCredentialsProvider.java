@@ -16,20 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.test.quarkus.kafka;
+package org.kie.kogito.serverless.workflow.openapi;
 
-import java.util.Properties;
+import java.util.Optional;
 
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+import io.quarkiverse.openapi.generator.providers.ConfigCredentialsProvider;
+import io.quarkiverse.openapi.generator.providers.CredentialsContext;
+import io.quarkus.restclient.runtime.RestClientBuilderFactory;
 
-public class KafkaTestClient extends KafkaTypedTestClient<String, StringSerializer, StringDeserializer> {
-    public KafkaTestClient(String hosts) {
-        super(hosts, StringSerializer.class, StringDeserializer.class);
+import jakarta.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
+public class RuntimeConfigCredentialsProvider extends ConfigCredentialsProvider {
+
+    protected String getConfigKey(CredentialsContext context) {
+        return RestClientBuilderFactory.buildConfigKey(context.getOpenApiSpecId(),
+                Optional.ofNullable((String) context.getRequestContext().getProperty(OpenApiWorkItemHandler.CONFIG_KEY_SUFFIX_PROP)));
     }
-
-    public KafkaTestClient(String hosts, Properties additionalConfig) {
-        super(hosts, additionalConfig, StringSerializer.class, StringDeserializer.class);
-    }
-
 }

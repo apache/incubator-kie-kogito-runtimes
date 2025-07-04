@@ -17,5 +17,4 @@
 # under the License.
 #
 
-quarkus.smallrye-openapi.management.enabled=true
-quarkus.keycloak.devservices.enabled=false
+org.kie.kogito.serverless.workflow.executor.events.InMemoryEventEmitterFactory

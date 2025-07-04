@@ -16,20 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.test.quarkus.kafka;
+package org.kie.kogito.event.impl;
 
-import java.util.Properties;
+import java.util.Map;
 
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
-public class KafkaTestClient extends KafkaTypedTestClient<String, StringSerializer, StringDeserializer> {
-    public KafkaTestClient(String hosts) {
-        super(hosts, StringSerializer.class, StringDeserializer.class);
+public interface MessageProducerWithContext<D> extends MessageProducer<D> {
+
+    default void produce(KogitoProcessInstance pi, D eventData) {
+        produce(pi, eventData, Map.of());
     }
 
-    public KafkaTestClient(String hosts, Properties additionalConfig) {
-        super(hosts, additionalConfig, StringSerializer.class, StringDeserializer.class);
-    }
-
+    void produce(KogitoProcessInstance pi, D eventData, Map<String, Object> contextAttrs);
 }

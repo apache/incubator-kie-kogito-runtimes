@@ -16,20 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.test.quarkus.kafka;
+package org.kie.kogito.internal.utils;
 
-import java.util.Properties;
+import java.util.TreeSet;
 
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+public class CaseInsensitiveSet extends TreeSet<String> {
 
-public class KafkaTestClient extends KafkaTypedTestClient<String, StringSerializer, StringDeserializer> {
-    public KafkaTestClient(String hosts) {
-        super(hosts, StringSerializer.class, StringDeserializer.class);
+    private static final long serialVersionUID = 1L;
+
+    public CaseInsensitiveSet(String... initialContent) {
+        // default TreeSet case insensitive comparator does not support null, therefore using a custom one
+        super((o1, o2) -> {
+            if (o1 == null) {
+                if (o2 == null) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            } else if (o2 == null) {
+                return 1;
+            }
+            return String.CASE_INSENSITIVE_ORDER.compare(o1, o2);
+
+        });
+        for (String item : initialContent) {
+            add(item);
+        }
     }
-
-    public KafkaTestClient(String hosts, Properties additionalConfig) {
-        super(hosts, additionalConfig, StringSerializer.class, StringDeserializer.class);
-    }
-
 }

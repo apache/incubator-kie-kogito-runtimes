@@ -16,20 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.test.quarkus.kafka;
+package org.kie.kogito.serverless.workflow.executor.events;
 
-import java.util.Properties;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+public class InMemoryEventShared {
 
-public class KafkaTestClient extends KafkaTypedTestClient<String, StringSerializer, StringDeserializer> {
-    public KafkaTestClient(String hosts) {
-        super(hosts, StringSerializer.class, StringDeserializer.class);
+    public static final InMemoryEventShared INSTANCE = new InMemoryEventShared();
+
+    private Map<String, CloudEventReceiver> receivers = new ConcurrentHashMap<>();
+
+    public Map<String, CloudEventReceiver> receivers() {
+        return receivers;
     }
 
-    public KafkaTestClient(String hosts, Properties additionalConfig) {
-        super(hosts, additionalConfig, StringSerializer.class, StringDeserializer.class);
-    }
+    private InMemoryEventShared() {
 
+    }
 }
