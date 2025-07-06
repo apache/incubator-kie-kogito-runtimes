@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.kie</groupId>
     <artifactId>kie-addons-quarkus-process-dynamic-parent</artifactId>
-    <version>10.1.999-SNAPSHOT</version>
+    <version>10.1.999-20250706-SNAPSHOT</version>
   </parent>
   <artifactId>kie-addons-quarkus-process-dynamic-deployment</artifactId>
   <name>KIE Add-On Process Instance Dynamic Calls - Deployment</name>
