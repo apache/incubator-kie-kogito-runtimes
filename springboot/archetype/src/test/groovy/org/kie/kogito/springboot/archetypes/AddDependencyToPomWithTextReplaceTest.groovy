@@ -47,7 +47,7 @@ class AddDependencyToPomWithTextReplaceTest extends Specification {
 
         then:
         Node pomXml = new XmlParser().parseText(pomFile)
-        pomXml.depthFirst().dependencies.dependency.size() == 8
+        pomXml.depthFirst().dependencies.dependency.size() == 9
     }
 
 }

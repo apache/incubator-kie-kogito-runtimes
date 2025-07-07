@@ -34,7 +34,7 @@ class AddDependencyToPomWithXmlTest extends Specification {
         Node pomXml = new XmlParser().parse(this.getClass().getResourceAsStream(pomFile))
 
         expect:
-        pomXml.depthFirst().dependencies.dependency.size() == 5
+        pomXml.depthFirst().dependencies.dependency.size() == 6
     }
 
     def "Add a new dependency to original pom.xml"() {
@@ -47,7 +47,7 @@ class AddDependencyToPomWithXmlTest extends Specification {
         pomXml.dependencies[0].children().add(0, newDep)
 
         then:
-        pomXml.depthFirst().dependencies.dependency.size() == 6
+        pomXml.depthFirst().dependencies.dependency.size() == 7
     }
 
     def "Add a list of new dependencies to original pom.xml"() {
@@ -65,7 +65,7 @@ class AddDependencyToPomWithXmlTest extends Specification {
         }
 
         then:
-        pomXml.depthFirst().dependencies.dependency.size() == 8
+        pomXml.depthFirst().dependencies.dependency.size() == 9
 
     }
 }
