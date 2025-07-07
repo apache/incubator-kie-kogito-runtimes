@@ -19,6 +19,7 @@
 package org.kie.kogito.springboot.archetypes
 
 import spock.lang.Specification
+import groovy.xml.XmlParser
 
 import java.nio.charset.StandardCharsets
 

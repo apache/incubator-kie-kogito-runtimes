@@ -20,6 +20,7 @@ package org.kie.kogito.springboot.archetypes
 
 
 import spock.lang.Specification
+import groovy.xml.XmlParser
 
 /*
 Use this file to test the changes in the archetype-post-generate.groovy
