@@ -54,7 +54,9 @@ import org.kie.kogito.event.impl.EventFactoryUtils;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
+import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.Process;
+import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.Processes;
@@ -66,6 +68,9 @@ import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
 import org.kie.kogito.serverless.workflow.utils.MultiSourceConfigResolver;
+import org.kie.kogito.services.jobs.impl.InMemoryJobContext;
+import org.kie.kogito.services.jobs.impl.InMemoryJobService;
+import org.kie.kogito.services.jobs.impl.InMemoryProcessJobExecutorFactory;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
@@ -231,6 +236,10 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
             UnitOfWorkManager manager, ExecutorService executor) {
         super(new StaticConfig(new Addons(Collections.emptySet()), new StaticProcessConfig(new CachedWorkItemHandlerConfig(),
                 new DefaultProcessEventListenerConfig(listeners), manager), new StaticConfigBean()));
+        JobsService jobService = config().get(ProcessConfig.class).jobsService();
+        if (jobService instanceof InMemoryJobService inMemoryJobService) {
+            inMemoryJobService.registerJobExecutorFactory(new InMemoryProcessJobExecutorFactory(new InMemoryJobContext(null, manager, processes, null)));
+        }
         if (!properties.isEmpty()) {
             ConfigResolverHolder.setConfigResolver(MultiSourceConfigResolver.withSystemProperties(properties));
         }
