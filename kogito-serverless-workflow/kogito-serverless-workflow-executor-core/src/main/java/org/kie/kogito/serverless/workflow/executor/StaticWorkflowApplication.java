@@ -56,7 +56,6 @@ import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.Processes;
@@ -71,6 +70,7 @@ import org.kie.kogito.serverless.workflow.utils.MultiSourceConfigResolver;
 import org.kie.kogito.services.jobs.impl.InMemoryJobContext;
 import org.kie.kogito.services.jobs.impl.InMemoryJobService;
 import org.kie.kogito.services.jobs.impl.InMemoryProcessJobExecutorFactory;
+import org.kie.kogito.services.jobs.impl.StaticJobService;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
@@ -144,6 +144,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
         private Optional<UnitOfWorkManager> manager = Optional.empty();
         private Collection<EventPublisher> publishers = new ArrayList<>();
         private ExecutorService executor;
+        private Optional<JobsService> jobsService = Optional.empty();
 
         private WorkflowApplicationBuilder() {
         }
@@ -184,6 +185,11 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
             return this;
         }
 
+        public WorkflowApplicationBuilder withJobsService(JobsService jobsService) {
+            this.jobsService = Optional.ofNullable(jobsService);
+            return this;
+        }
+
         public StaticWorkflowApplication build() {
             if (properties == null) {
                 this.properties = loadApplicationDotProperties();
@@ -191,7 +197,8 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
             Map<String, SynchronousQueue<JsonNodeModel>> queues = new ConcurrentHashMap<>();
             listeners.add(new StaticCompletionEventListener(queues));
             StaticWorkflowApplication application =
-                    new StaticWorkflowApplication(properties, queues, listeners, manager.orElseGet(() -> new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory())), executor);
+                    new StaticWorkflowApplication(properties, queues, listeners, manager.orElseGet(() -> new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory())), executor,
+                            jobsService.orElseGet(() -> StaticJobService.staticJobService()));
             application.applicationRegisters.forEach(register -> register.register(application));
             EventManager eventManager = application.manager.eventManager();
             eventManager.setService(serviceName);
@@ -233,11 +240,10 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     }
 
     private StaticWorkflowApplication(Map<String, Object> properties, Map<String, SynchronousQueue<JsonNodeModel>> queues, Collection<KogitoProcessEventListener> listeners,
-            UnitOfWorkManager manager, ExecutorService executor) {
+            UnitOfWorkManager manager, ExecutorService executor, JobsService jobsService) {
         super(new StaticConfig(new Addons(Collections.emptySet()), new StaticProcessConfig(new CachedWorkItemHandlerConfig(),
-                new DefaultProcessEventListenerConfig(listeners), manager), new StaticConfigBean()));
-        JobsService jobService = config().get(ProcessConfig.class).jobsService();
-        if (jobService instanceof InMemoryJobService inMemoryJobService) {
+                new DefaultProcessEventListenerConfig(listeners), manager, jobsService), new StaticConfigBean()));
+        if (jobsService instanceof InMemoryJobService inMemoryJobService) {
             inMemoryJobService.registerJobExecutorFactory(new InMemoryProcessJobExecutorFactory(new InMemoryJobContext(null, manager, processes, null)));
         }
         if (!properties.isEmpty()) {
