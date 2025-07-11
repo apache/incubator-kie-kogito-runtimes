@@ -157,7 +157,7 @@ public class RestWorkItemHandlerTest {
     public void testEmptyInputModel() {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode objectNode = objectMapper.createObjectNode().put("id", 26).put("name", "pepe");
-        RestWorkItemHandlerResult resultHandler = new DefaultRestWorkItemHandlerResult();
+        RestWorkItemHandlerResult resultHandler = new DefaultRestWorkItemHandlerResult(false, false);
         HttpResponse<Buffer> response = mock(HttpResponse.class);
         when(response.bodyAsJson(ObjectNode.class)).thenReturn(objectNode);
         assertThat(resultHandler.apply(response, ObjectNode.class)).isSameAs(objectNode);

@@ -29,8 +29,11 @@ import io.vertx.core.http.HttpMethod;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Operation.CLOUD_EVENT_PARAMETER_NAME;
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Operation.FAIL_ON_STATUS_ERROR_PARAMETER_NAME;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Operation.METHOD_PARAMETER_NAME;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Operation.PATH_PARAMETER_NAME;
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Operation.RETURN_HEADERS_PARAMETER_NAME;
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Operation.RETURN_STATUS_CODE_PARAMETER_NAME;
 
 class OperationTest {
 
@@ -38,23 +41,32 @@ class OperationTest {
 
     public static Stream<Arguments> parseSource() {
         return Stream.of(
-                Arguments.of(SERVICE, Operation.builder().withService(SERVICE).build()),
+                Arguments.of(SERVICE, Operation.builder().withService(SERVICE).withFailOnStatusError(true).build()),
 
-                Arguments.of("service?", Operation.builder().withService(SERVICE).build()),
+                Arguments.of("service?", Operation.builder().withService(SERVICE).withFailOnStatusError(true).build()),
 
-                Arguments.of("service?" + PATH_PARAMETER_NAME + "=/my_path", Operation.builder().withService(SERVICE).withPath("/my_path").build()),
+                Arguments.of("service?" + PATH_PARAMETER_NAME + "=/my_path", Operation.builder().withService(SERVICE).withPath("/my_path").withFailOnStatusError(true).build()),
 
-                Arguments.of("service?" + CLOUD_EVENT_PARAMETER_NAME + "=true", Operation.builder().withService(SERVICE).withIsCloudEvent(true).build()),
+                Arguments.of("service?" + CLOUD_EVENT_PARAMETER_NAME + "=true", Operation.builder().withService(SERVICE).withFailOnStatusError(true).withIsCloudEvent(true).build()),
 
-                Arguments.of("service?" + METHOD_PARAMETER_NAME + "=GET", Operation.builder().withService(SERVICE).withMethod(HttpMethod.GET).build()),
+                Arguments.of("service?" + METHOD_PARAMETER_NAME + "=GET", Operation.builder().withService(SERVICE).withFailOnStatusError(true).withMethod(HttpMethod.GET).build()),
 
-                Arguments.of("service?" + METHOD_PARAMETER_NAME + "=get", Operation.builder().withService(SERVICE).withMethod(HttpMethod.GET).build()),
+                Arguments.of("service?" + METHOD_PARAMETER_NAME + "=get", Operation.builder().withService(SERVICE).withFailOnStatusError(true).withMethod(HttpMethod.GET).build()),
 
                 Arguments.of("service?" + PATH_PARAMETER_NAME + "=/my_path&" + CLOUD_EVENT_PARAMETER_NAME + "=true",
-                        Operation.builder().withService(SERVICE).withPath("/my_path").withIsCloudEvent(true).build()),
+                        Operation.builder().withService(SERVICE).withPath("/my_path").withFailOnStatusError(true).withIsCloudEvent(true).build()),
 
                 Arguments.of("service?" + PATH_PARAMETER_NAME + "=/my_path&" + CLOUD_EVENT_PARAMETER_NAME + "=false&" + METHOD_PARAMETER_NAME + "=GET",
-                        Operation.builder().withService(SERVICE).withPath("/my_path").withIsCloudEvent(false).withMethod(HttpMethod.GET).build()));
+                        Operation.builder().withService(SERVICE).withPath("/my_path").withFailOnStatusError(true).withIsCloudEvent(false).withMethod(HttpMethod.GET).build()),
+
+                Arguments.of("service?" + FAIL_ON_STATUS_ERROR_PARAMETER_NAME + "=false",
+                        Operation.builder().withService(SERVICE).withFailOnStatusError(false).build()),
+
+                Arguments.of("service?" + RETURN_HEADERS_PARAMETER_NAME + "=true",
+                        Operation.builder().withService(SERVICE).withFailOnStatusError(true).withReturnHeaders(true).build()),
+
+                Arguments.of("service?" + RETURN_STATUS_CODE_PARAMETER_NAME + "=true",
+                        Operation.builder().withService(SERVICE).withFailOnStatusError(true).withReturnStatusCode(true).build()));
     }
 
     public static Stream<Arguments> invalidOperationSource() {
