@@ -104,7 +104,7 @@
     <version.io.swagger.parser.v3>2.1.20</version.io.swagger.parser.v3>
     <version.io.swagger.core.v3>2.2.19</version.io.swagger.core.v3>
 
-    <version.org.apache.commons>3.17.0</version.org.apache.commons>
+    <version.org.apache.commons>3.18.0</version.org.apache.commons>
     <version.commons.io>2.19.0</version.commons.io>
 
     <version.org.graalvm.nativeimage>23.1.2</version.org.graalvm.nativeimage>
