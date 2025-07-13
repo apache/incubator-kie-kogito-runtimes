@@ -26,7 +26,7 @@ under the License.
     <parent>
         <artifactId>jbpm-deps-groups</artifactId>
         <groupId>org.kie.kogito</groupId>
-        <version>10.1.999-SNAPSHOT</version>
+        <version>10.1.999-20250713-SNAPSHOT</version>
     </parent>
 
     <artifactId>jbpm-deps-group-compiler</artifactId>
