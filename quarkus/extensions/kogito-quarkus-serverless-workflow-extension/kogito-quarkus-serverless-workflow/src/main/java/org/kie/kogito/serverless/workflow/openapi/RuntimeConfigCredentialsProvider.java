@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.jackson.utils;
+package org.kie.kogito.serverless.workflow.openapi;
 
-import java.util.function.Function;
+import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import io.quarkiverse.openapi.generator.providers.ConfigCredentialsProvider;
+import io.quarkiverse.openapi.generator.providers.CredentialsContext;
+import io.quarkus.restclient.runtime.RestClientBuilderFactory;
 
-public class StringConverter implements Function<JsonNode, String> {
+import jakarta.enterprise.context.ApplicationScoped;
 
-    @Override
-    public String apply(JsonNode t) {
-        try {
-            return t.isNull() ? null : JsonObjectUtils.toString(t);
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Invalid value for json node " + t);
-        }
+@ApplicationScoped
+public class RuntimeConfigCredentialsProvider extends ConfigCredentialsProvider {
+
+    protected String getConfigKey(CredentialsContext context) {
+        return RestClientBuilderFactory.buildConfigKey(context.getOpenApiSpecId(),
+                Optional.ofNullable((String) context.getRequestContext().getProperty(OpenApiWorkItemHandler.CONFIG_KEY_SUFFIX_PROP)));
     }
 }

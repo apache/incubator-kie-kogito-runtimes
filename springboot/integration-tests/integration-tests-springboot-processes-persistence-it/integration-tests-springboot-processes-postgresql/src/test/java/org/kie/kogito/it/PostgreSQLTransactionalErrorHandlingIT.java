@@ -16,21 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.jackson.utils;
 
-import java.util.function.Function;
+package org.kie.kogito.it;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import org.kie.kogito.testcontainers.springboot.PostgreSqlSpringBootTestResource;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
-public class StringConverter implements Function<JsonNode, String> {
-
-    @Override
-    public String apply(JsonNode t) {
-        try {
-            return t.isNull() ? null : JsonObjectUtils.toString(t);
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Invalid value for json node " + t);
-        }
-    }
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
+@ContextConfiguration(initializers = PostgreSqlSpringBootTestResource.class)
+public class PostgreSQLTransactionalErrorHandlingIT extends TransactionalErrorHandlingTest {
 }

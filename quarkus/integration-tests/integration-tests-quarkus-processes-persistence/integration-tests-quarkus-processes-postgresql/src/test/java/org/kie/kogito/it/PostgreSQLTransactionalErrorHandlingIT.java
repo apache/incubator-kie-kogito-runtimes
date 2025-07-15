@@ -16,21 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.jackson.utils;
 
-import java.util.function.Function;
+package org.kie.kogito.it;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-public class StringConverter implements Function<JsonNode, String> {
-
-    @Override
-    public String apply(JsonNode t) {
-        try {
-            return t.isNull() ? null : JsonObjectUtils.toString(t);
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Invalid value for json node " + t);
-        }
-    }
+@QuarkusIntegrationTest
+public class PostgreSQLTransactionalErrorHandlingIT extends TransactionalErrorHandlingTest {
 }

@@ -16,21 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.jackson.utils;
+package org.kie.kogito.integrationtests.exception;
 
-import java.util.function.Function;
+public class ServiceException extends RuntimeException {
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-
-public class StringConverter implements Function<JsonNode, String> {
-
-    @Override
-    public String apply(JsonNode t) {
-        try {
-            return t.isNull() ? null : JsonObjectUtils.toString(t);
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Invalid value for json node " + t);
-        }
+    public ServiceException(String message) {
+        super(message);
     }
 }

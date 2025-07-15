@@ -16,11 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.integrationtests.excetpion;
+package org.kie.kogito.serverless.workflow.executor.events;
 
-public class ServiceException extends RuntimeException {
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-    public ServiceException(String message) {
-        super(message);
+public class InMemoryEventShared {
+
+    public static final InMemoryEventShared INSTANCE = new InMemoryEventShared();
+
+    private Map<String, CloudEventReceiver> receivers = new ConcurrentHashMap<>();
+
+    public Map<String, CloudEventReceiver> receivers() {
+        return receivers;
+    }
+
+    private InMemoryEventShared() {
+
     }
 }
