@@ -29,7 +29,7 @@ events:
     source: local
   - name: id-event
     source: local
-    type: produce
+    type: id-event
     kind: produced
 functions:
   - name: sysLog
