@@ -23,28 +23,43 @@ import java.util.Optional;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.internal.utils.ConversionUtils;
+import org.kie.kogito.serverless.workflow.openapi.cachemanagement.CachedTokens;
+import org.kie.kogito.serverless.workflow.openapi.cachemanagement.TokenEvictionHandler;
+import org.kie.kogito.serverless.workflow.openapi.cachemanagement.TokenExpirationPolicy;
+import org.kie.kogito.serverless.workflow.openapi.utils.CacheUtils;
+import org.kie.kogito.serverless.workflow.openapi.utils.ConfigReaderUtils;
+import org.kie.kogito.serverless.workflow.openapi.utils.OidcClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
 import io.quarkiverse.openapi.generator.providers.ConfigCredentialsProvider;
 import io.quarkiverse.openapi.generator.providers.CredentialsContext;
-import io.quarkus.arc.Arc;
 import io.quarkus.oidc.client.OidcClient;
 import io.quarkus.oidc.client.OidcClientConfig;
 import io.quarkus.oidc.client.OidcClientException;
-import io.quarkus.oidc.client.OidcClients;
 import io.quarkus.oidc.client.Tokens;
 import io.quarkus.runtime.configuration.ConfigurationException;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Priority;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Alternative;
 import jakarta.enterprise.inject.Specializes;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import static io.quarkiverse.openapi.generator.providers.AbstractAuthProvider.getHeaderName;
 
-@RequestScoped
+/**
+ * Custom credential provider that supports OAuth2 token exchange and caching.
+ *
+ * Configuration properties:
+ * - sonataflow.security.{authName}.exchange-token: Enable token exchange for the specified auth name
+ * - sonataflow.security.{authName}.token-exchange.expiration-buffer-seconds: Number of seconds before token expiration to refresh cache (default: 300)
+ */
+@ApplicationScoped
 @Alternative
 @Specializes
 @Priority(200)
@@ -53,62 +68,83 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenApiCustomCredentialProvider.class);
 
+    // Cache for storing token pairs - key format: processInstanceId:authName
+    private Cache<String, CachedTokens> tokenCache;
+
+    @PostConstruct
+    public void initCache() {
+        this.tokenCache = Caffeine.newBuilder()
+                .maximumSize(1000)
+                // Use custom expiration policy based on token expiration time
+                .expireAfter(new TokenExpirationPolicy())
+                // Set up eviction listener for callbacks
+                .removalListener(new TokenEvictionHandler(this).createRemovalListener())
+                .build();
+    }
+
     @Override
     public Optional<String> getOauth2BearerToken(CredentialsContext input) {
         LOGGER.debug("Calling OpenApiCustomCredentialProvider.getOauth2BearerToken for {}", input.getAuthName());
         String authorizationHeaderName = Optional.ofNullable(getHeaderName(input.getOpenApiSpecId(), input.getAuthName())).orElse(HttpHeaders.AUTHORIZATION);
-        boolean exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class).orElse(false);
+        boolean exchangeToken = ConfigReaderUtils.getExchangeTokenPropertyeValue(input).orElse(false);
         if (exchangeToken) {
             String accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
 
-            if (ConversionUtils.isEmpty(accessToken)) {
-                throw new ConfigurationException("An access token is required in the header %s (default is %s) but none was provided".formatted(authorizationHeaderName, HttpHeaders.AUTHORIZATION));
+        if (exchangeToken.isPresent() && exchangeToken.get()) {
+            LOGGER.info("Oauth2 token exchange enabled for {}, will generate tokens...", input.getAuthName());
+
+            String cacheKey = CacheUtils.buildCacheKey(input);
+            CachedTokens cachedTokens = tokenCache.getIfPresent(cacheKey);
+
+            if (cachedTokens != null) {
+                LOGGER.debug("Found cached tokens for cache key '{}'", cacheKey);
+
+                if (!cachedTokens.isExpiredNow()) {
+                    LOGGER.debug("Using valid cached access token for cache key '{}'", cacheKey);
+                    accessToken = cachedTokens.getAccessToken();
+                } else {
+                    LOGGER.info("Cached token for cache key '{}' is expired, falling back to new token exchange", cacheKey);
+                    tokenCache.invalidate(cacheKey);
+                }
+            }
+            if (accessToken == null) {
+                LOGGER.debug("Exchanging tokens and caching in '{}' ...", cacheKey);
+
+                accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
+                if (accessToken == null || accessToken.isBlank()) {
+                    throw new ConfigurationException(
+                            "An access token is required in the header %s (default is %s) but none was provided".formatted(authorizationHeaderName, HttpHeaders.AUTHORIZATION));
+                }
+                accessToken = performTokenExchange(accessToken, OidcClientUtils.getExchangeTokenClient(input.getAuthName()), input, cacheKey);
             }
 
-            LOGGER.info("Oauth2 token exchange enabled for {}, will generate a tokens...", input.getAuthName());
-            OidcClients clients = Arc.container().instance(OidcClients.class).get();
-            if (clients == null) {
-                throw new ConfigurationException("No OIDC client was found. Hint: make sure the dependency io.quarkus:quarkus-oidc-client is provided and/or configure it in the properties.");
-            }
-
-            OidcClient exchangeTokenClient = clients.getClient(input.getAuthName());
-            if (exchangeTokenClient == null) {
-                throw new ConfigurationException("No OIDC client was found for %s. Hint: configure it in the properties.".formatted(input.getAuthName()));
-            }
-            return Optional.of(exchangeTokenIfNeeded(accessToken, exchangeTokenClient, input.getAuthName()));
         }
         return Optional.empty();
     }
 
-    private String exchangeTokenIfNeeded(String token, OidcClient exchangeTokenClient, String authName) {
-        OidcClientConfig.Grant.Type exchangeTokenGrantType = ConfigProvider.getConfig().getValue("quarkus.oidc-client.%s.grant.type".formatted(authName), OidcClientConfig.Grant.Type.class);
+    private String performTokenExchange(String token, OidcClient exchangeTokenClient, CredentialsContext input, String cacheKey) {
+        OidcClientConfig.Grant.Type exchangeTokenGrantType = ConfigProvider.getConfig()
+                .getValue("quarkus.oidc-client.%s.grant.type".formatted(input.getAuthName()), OidcClientConfig.Grant.Type.class);
         try {
-            Tokens tokens = exchangeTokenClient.getTokens(Collections.singletonMap(getExchangeTokenProperty(exchangeTokenGrantType), token)).await().indefinitely();
+            Tokens tokens = exchangeTokenClient.getTokens(Collections.singletonMap(
+                    OidcClientUtils.getExchangeTokenProperty(exchangeTokenGrantType), token)).await().indefinitely();
 
-            //TODO store the refresh token in an expiring cache
-            //TODO store the access token in an expiring cache
-            //TODO cache should expire before access/refresh token expire so they can be refreshed before (need to decode the JWT claim)
+            CacheUtils.cacheTokens(this.tokenCache, cacheKey, tokens);
             return tokens.getAccessToken();
+
         } catch (OidcClientException e) {
-            // TODO try to refresh the access token with the cached refresh token
-            LOGGER.error("Error while exchanging oauth2 token. The provided input token will be used without exchange.", e);
+            LOGGER.error("Error while exchanging oauth2 token for cache key '{}'. Using original token.", cacheKey, e);
+            return token;
         }
-
-        return token;
     }
 
-    private static String getExchangeTokenProperty(OidcClientConfig.Grant.Type exchangeTokenGrantType) {
-        switch (exchangeTokenGrantType) {
-            case EXCHANGE:
-                return "subject_token";
-            case JWT:
-                return "assertion";
-        }
-        throw new ConfigurationException("Token exchange is required but OIDC client is configured to use the %s grantType".formatted(exchangeTokenGrantType.getGrantType()));
-
+    /**
+     * Gets the token cache instance.
+     *
+     * @return The token cache for storing token pairs
+     */
+    public Cache<String, CachedTokens> getTokenCache() {
+        return tokenCache;
     }
 
-    public static String getCanonicalExchangeTokenConfigPropertyName(String authName) {
-        return String.format(CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME, authName);
-    }
 }

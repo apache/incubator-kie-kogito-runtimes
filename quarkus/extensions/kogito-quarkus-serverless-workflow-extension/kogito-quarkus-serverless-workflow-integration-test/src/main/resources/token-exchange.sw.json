@@ -41,6 +41,32 @@
               "query": ".query"
             }
           }
+        },
+        {
+          "name": "executeQueryWithExchangeAction",
+          "sleep": {
+            "before": "PT1S"
+          },
+          "functionRef": {
+            "refName": "executeQueryWithExchange",
+            "arguments": {
+              "processInstanceId": "$WORKFLOW.instanceId",
+              "query": ".query"
+            }
+          }
+        },
+        {
+          "name": "executeQueryWithExchangeAction",
+          "sleep": {
+            "before": "PT10S"
+          },
+          "functionRef": {
+            "refName": "executeQueryWithExchange",
+            "arguments": {
+              "processInstanceId": "$WORKFLOW.instanceId",
+              "query": ".query"
+            }
+          }
         }
       ],
       "transition": "WithoutExchange",
