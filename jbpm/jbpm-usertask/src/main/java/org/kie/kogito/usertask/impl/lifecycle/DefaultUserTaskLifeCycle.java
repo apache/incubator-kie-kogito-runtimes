@@ -148,6 +148,7 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         }
         userTaskInstance.startNotStartedDeadlines();
         userTaskInstance.startNotStartedReassignments();
+        userTaskInstance.setActualOwner(null);
         return Optional.empty();
     }
 
