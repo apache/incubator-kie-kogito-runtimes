@@ -342,7 +342,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .statusCode(200)
                 .body("id", equalTo(taskId))
                 .body("status.name", equalTo("Reserved"))
-                .body("actualOwner",equalTo("john"));
+                .body("actualOwner", equalTo("john"));
 
         // Reassign Second Line Approval
         given()
@@ -356,7 +356,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .statusCode(200)
                 .body("id", equalTo(taskId))
                 .body("status.name", equalTo("Ready"))
-                .body("actualOwner",equalTo(null));
+                .body("actualOwner", equalTo(null));
 
         given()
                 .contentType(ContentType.JSON)
@@ -369,7 +369,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .statusCode(200)
                 .body("id", equalTo(taskId))
                 .body("status.name", equalTo("Reserved"))
-                .body("actualOwner",equalTo("jdoe"));
+                .body("actualOwner", equalTo("jdoe"));
 
         // Complete Second Line Approval
         given()
@@ -385,7 +385,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .body("status.name", equalTo("Completed"))
                 .body("status.terminate", equalTo("COMPLETED"))
                 .body("outputs.approved", equalTo(true))
-                .body("actualOwner",equalTo("jdoe"));
+                .body("actualOwner", equalTo("jdoe"));
 
         given()
                 .accept(ContentType.JSON)
