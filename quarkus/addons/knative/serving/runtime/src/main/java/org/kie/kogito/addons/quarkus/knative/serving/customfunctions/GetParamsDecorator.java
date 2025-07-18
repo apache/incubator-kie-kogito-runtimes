@@ -16,30 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kogito.workitem.rest.decorators;
+package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
-public class PrefixParamsDecorator extends AbstractParamsDecorator {
+import java.util.Map;
 
-    public static final String HEADER_PREFIX = "HEADER_";
-    public static final String QUERY_PREFIX = "QUERY_";
+import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
+
+import io.vertx.mutiny.ext.web.client.HttpRequest;
+
+public final class GetParamsDecorator extends PrefixParamsDecorator {
+
+    private Map<String, Object> getParams;
 
     @Override
-    protected boolean isHeaderParameter(String key) {
-        return key.startsWith(HEADER_PREFIX);
+    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
+        this.getParams = KnativeFunctionPayloadSupplier.getPayload(parameters);
+        super.decorate(item, parameters, request);
     }
 
     @Override
     protected boolean isQueryParameter(String key) {
-        return key.startsWith(QUERY_PREFIX);
+        return this.getParams.containsKey(key) && !super.isHeaderParameter(key);
     }
 
     @Override
-    protected String toHeaderKey(String key) {
-        return key.substring(HEADER_PREFIX.length());
+    protected boolean isHeaderParameter(String key) {
+        return this.getParams.containsKey(key) ? super.isHeaderParameter(key) : false;
     }
 
     @Override
     protected String toQueryKey(String key) {
-        return key.substring(QUERY_PREFIX.length());
+        return key;
     }
 }
