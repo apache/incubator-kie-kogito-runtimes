@@ -48,7 +48,7 @@ import static io.quarkiverse.openapi.generator.providers.AbstractAuthProvider.ge
 @Specializes
 @Priority(200)
 public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
-    private static final String CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME = "sonataflow.security.%s.exchange-token";
+    private static final String CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME = "sonataflow.security.auth.%s.exchange-token";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenApiCustomCredentialProvider.class);
 
