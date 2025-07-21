@@ -59,6 +59,19 @@ public final class CacheUtils {
     }
 
     /**
+     * Builds cache key in format: processInstanceId:authName
+     * 
+     * @param processInstanceId The process instance ID
+     * @param authName The authentication name
+     * @return Cache key in format processInstanceId:authName
+     */
+    public static String buildCacheKey(String processInstanceId, String authName) {
+        String cacheKey = processInstanceId + ":" + authName;
+        LOGGER.debug("Built cache key: '{}' for auth '{}' and process instance '{}'", cacheKey, authName, processInstanceId);
+        return cacheKey;
+    }
+
+    /**
      * Extracts authName from cache key in format: processInstanceId:authName
      * 
      * @param cacheKey The cache key
@@ -67,7 +80,6 @@ public final class CacheUtils {
     public static String extractAuthNameFromCacheKey(String cacheKey) {
         int colonIndex = cacheKey.indexOf(':');
         if (colonIndex == -1) {
-            // Fallback for legacy cache keys
             LOGGER.warn("Cache key '{}' does not contain ':' separator, treating as authName", cacheKey);
             return cacheKey;
         }

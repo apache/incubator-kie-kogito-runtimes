@@ -24,7 +24,7 @@ package org.kie.kogito.serverless.workflow.openapi.cachemanagement;
 public class CachedTokens {
     private final String accessToken;
     private final String refreshToken;
-    private final long expirationTime; // Unix timestamp
+    private final long expirationTime;
 
     public CachedTokens(String accessToken, String refreshToken, long expirationTime) {
         this.accessToken = accessToken;
