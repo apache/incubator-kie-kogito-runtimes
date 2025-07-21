@@ -39,6 +39,9 @@ import io.quarkus.oidc.client.Tokens;
  */
 public class TokenEvictionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenEvictionHandler.class);
+    public static final String LOG_PREFIX_TOKEN_REFRESH = "Attempting background token refresh";
+    public static final String LOG_PREFIX_REFRESH_COMPLETED = "Background refresh completed";
+    public static final String LOG_PREFIX_FAILED_TO_REFRESH_TOKEN = "Failed to refresh token";
 
     private final OpenApiCustomCredentialProvider provider;
 
@@ -75,15 +78,16 @@ public class TokenEvictionHandler {
      */
     private void onTokenExpired(String cacheKey, CachedTokens tokens, RemovalCause cause) {
         LOGGER.warn("OAuth2 tokens for cache key '{}' have expired/been evicted: {}", cacheKey, cause);
-
-        if (tokens.getRefreshToken() != null) {
-            CompletableFuture.runAsync(() -> {
-                try {
-                    refreshWithCachedToken(cacheKey, tokens.getRefreshToken());
-                } catch (Exception e) {
-                    LOGGER.error("Background token refresh failed for cache key '{}': {}", cacheKey, e.getMessage());
-                }
-            });
+        if (cause == RemovalCause.EXPIRED) {
+            if (tokens.getRefreshToken() != null) {
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        refreshWithCachedToken(cacheKey, tokens.getRefreshToken());
+                    } catch (Exception e) {
+                        LOGGER.error("Background token refresh failed for cache key '{}': {}", cacheKey, e.getMessage());
+                    }
+                });
+            }
         }
     }
 
@@ -94,7 +98,7 @@ public class TokenEvictionHandler {
      * @param refreshToken The refresh token to use for getting new tokens
      */
     private void refreshWithCachedToken(String cacheKey, String refreshToken) {
-        LOGGER.info("Attempting background token refresh for cache key '{}'", cacheKey);
+        LOGGER.info("{} - cache key '{}'", LOG_PREFIX_TOKEN_REFRESH, cacheKey);
 
         try {
             String authName = CacheUtils.extractAuthNameFromCacheKey(cacheKey);
@@ -105,8 +109,9 @@ public class TokenEvictionHandler {
             Tokens refreshedTokens = client.getTokens(Collections.singletonMap("refresh_token", refreshToken))
                     .await().indefinitely();
             CacheUtils.cacheTokens(this.provider.getTokenCache(), cacheKey, refreshedTokens);
+            LOGGER.info("{} - cache key '{}'", LOG_PREFIX_REFRESH_COMPLETED, cacheKey);
         } catch (Exception e) {
-            LOGGER.error("Failed to refresh token for cache key '{}': {}", cacheKey, e.getMessage());
+            LOGGER.error("{} - cache key '{}'", LOG_PREFIX_FAILED_TO_REFRESH_TOKEN, cacheKey, e);
         }
     }
 

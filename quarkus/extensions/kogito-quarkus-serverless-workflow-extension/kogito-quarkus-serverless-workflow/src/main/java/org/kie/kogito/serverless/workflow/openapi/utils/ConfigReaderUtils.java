@@ -28,9 +28,11 @@ import io.quarkiverse.openapi.generator.providers.CredentialsContext;
  * Utility class for reading configuration properties related to OAuth2 token exchange and caching.
  */
 public final class ConfigReaderUtils {
-    private static final String CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME = "sonataflow.security.%s.exchange-token";
-    private static final String CANONICAL_EXPIRATION_BUFFER_PROPERTY_NAME = "sonataflow.security.%s.exchange-token.expiration-buffer-seconds";
+    public static final String CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME = "sonataflow.security.auth.%s.exchange-token";
+    private static final String CANONICAL_EXPIRATION_BUFFER_PROPERTY_NAME = "sonataflow.security.auth.%s.exchange-token.expiration-buffer-seconds";
+    private static final String CANONICAL_MONITOR_EXPIRING_RATE_PROPERTY_NAME = "sonataflow.security.auth.exchange-token.monitor-expiring-rate-seconds";
     public static final long DEFAULT_EXPIRATION_BUFFER_SECONDS = 300; // 5 minutes
+    public static final long DEFAULT_MONITOR_EXPIRING_RATE_SECONDS = 60; // 1 minute
 
     private ConfigReaderUtils() {
         // Utility class - prevent instantiation
@@ -64,7 +66,7 @@ public final class ConfigReaderUtils {
      * @param input The credentials context
      * @return The exchange token property value
      */
-    public static Optional<Boolean> getExchangeTokenPropertyeValue(CredentialsContext input) {
+    public static Optional<Boolean> getExchangeTokenPropertyValue(CredentialsContext input) {
         return ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class);
     }
 
@@ -76,5 +78,16 @@ public final class ConfigReaderUtils {
      */
     public static String getCanonicalExchangeTokenConfigPropertyName(String authName) {
         return String.format(CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME, authName);
+    }
+
+    /**
+     * Gets the configured monitor expiring rate seconds.
+     *
+     * @return The configured buffer seconds, or default (60) if not configured
+     */
+    public static long getMonitorExpiringRateSeconds() {
+        return ConfigProvider.getConfig()
+                .getOptionalValue(CANONICAL_MONITOR_EXPIRING_RATE_PROPERTY_NAME, Long.class)
+                .orElse(DEFAULT_MONITOR_EXPIRING_RATE_SECONDS);
     }
 }

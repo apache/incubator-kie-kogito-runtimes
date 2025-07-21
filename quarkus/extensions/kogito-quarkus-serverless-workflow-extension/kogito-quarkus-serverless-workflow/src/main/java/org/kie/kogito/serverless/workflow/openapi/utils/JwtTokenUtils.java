@@ -49,7 +49,7 @@ public final class JwtTokenUtils {
             String[] parts = accessToken.split("\\.");
             if (parts.length != 3) {
                 LOGGER.warn("Invalid JWT token format while parsing token expiration, will use default expiration of 1 hour");
-                return System.currentTimeMillis() / 1000 + 5; // Default to 1 hour
+                return System.currentTimeMillis() / 1000 + 3600; // Default to 1 hour
             }
 
             String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
@@ -64,6 +64,6 @@ public final class JwtTokenUtils {
         }
 
         // Default expiration if parsing fails
-        return System.currentTimeMillis() / 1000 + 5; // 1 hour from now
+        return System.currentTimeMillis() / 1000 + 3600; // 1 hour from now
     }
 }
