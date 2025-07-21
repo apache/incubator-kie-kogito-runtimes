@@ -16,25 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.codegen.process.events.processor;
 
-import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
+import java.util.List;
+import java.util.Map;
 
-public class Subscription<T, S> {
-    private final Function<T, CompletionStage<?>> consumer;
-    private final Converter<S, T> converter;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
-    public Subscription(Function<T, CompletionStage<?>> consumer, Converter<S, T> converter) {
-        this.consumer = consumer;
-        this.converter = converter;
+public class SpringBootChannelInfoProcessor extends ChannelInfoProcessor {
+
+    public SpringBootChannelInfoProcessor(KogitoBuildContext context) {
+        super(context);
     }
 
-    public Function<T, CompletionStage<?>> getConsumer() {
-        return consumer;
+    @Override
+    public Map<String, String> filter(Map<String, String> applicationProperties) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public Converter<S, T> getConverter() {
-        return converter;
+    @Override
+    public List<ChannelInfo> toChannelInfo(Map<String, String> channelProperties) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

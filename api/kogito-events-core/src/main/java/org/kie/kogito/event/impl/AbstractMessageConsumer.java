@@ -50,8 +50,6 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
             ExecutorService executorService,
             Set<String> correlations) {
         this.trigger = trigger;
-        this.eventDispatcher = new ProcessEventDispatcher<>(process, getModelConverter(), processService, executorService, correlations, getDataResolver());
-        eventReceiver.subscribe(this::consume, dataClass);
         logger.info("Consumer for {} started", trigger);
     }
 

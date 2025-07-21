@@ -47,7 +47,6 @@ import jakarta.annotation.PostConstruct;
 public class SpringKafkaCloudEventReceiver implements EventReceiver {
 
     private static final Logger log = LoggerFactory.getLogger(SpringKafkaCloudEventReceiver.class);
-    private Collection<Subscription<Object, String>> consumers;
 
     @Autowired
     EventUnmarshaller<Object> eventDataUnmarshaller;
@@ -58,18 +57,6 @@ public class SpringKafkaCloudEventReceiver implements EventReceiver {
     @Autowired
     ConfigBean configBean;
 
-    @PostConstruct
-    private void init() {
-        consumers = new CopyOnWriteArrayList<>();
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Override
-    public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> clazz) {
-        consumers.add(
-                new Subscription(consumer, configBean.useCloudEvents() ? new CloudEventConverter<>(clazz, cloudEventUnmarshaller)
-                        : new DataEventConverter<>(clazz, eventDataUnmarshaller)));
-    }
 
     @KafkaListener(topics = { "#{springTopics.getIncomingTopics}" })
     public void receive(ConsumerRecord<String, String> message, Acknowledgment ack) throws InterruptedException {

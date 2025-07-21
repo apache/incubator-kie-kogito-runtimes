@@ -52,6 +52,11 @@ public class QuarkusEventThreadPoolTest {
 
         }
 
+        @Override
+        public String channelName() {
+            return "";
+        }
+
     }
 
     private CounterQuarkusEmitterController controller;

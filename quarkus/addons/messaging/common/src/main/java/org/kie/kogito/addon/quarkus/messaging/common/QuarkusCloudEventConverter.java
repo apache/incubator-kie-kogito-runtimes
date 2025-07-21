@@ -34,10 +34,9 @@ import io.cloudevents.SpecVersion;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.smallrye.reactive.messaging.ce.CloudEventMetadata;
 
-public class QuarkusCloudEventConverter<I, T> implements
-        Converter<Message<I>, DataEvent<T>> {
+public class QuarkusCloudEventConverter<I, T> implements Converter<Message<I>, DataEvent<T>> {
 
-    private final CloudEventUnmarshaller<I, T> unmarshaller;
+    private CloudEventUnmarshaller<I, T> unmarshaller;
 
     public QuarkusCloudEventConverter(CloudEventUnmarshaller<I, T> unmarshaller) {
         this.unmarshaller = unmarshaller;

@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.codegen.process.events;
+package org.kie.kogito.codegen.process.events.processor;
 
-import java.util.Collection;
 import java.util.Optional;
+
+import org.kie.kogito.codegen.process.events.CloudEventMode;
 
 public class ChannelInfo {
 
     private final String channelName;
     private final String className;
-    private final Collection<String> triggers;
 
     private final boolean isInput;
     private final boolean isDefault;
@@ -34,18 +34,13 @@ public class ChannelInfo {
 
     private final Optional<String> marshaller;
 
-    protected ChannelInfo(String channelName, Collection<String> triggers, String className, boolean isInput, boolean isDefault, Optional<String> marshaller, Optional<CloudEventMode> cloudEventMode) {
+    protected ChannelInfo(String channelName, String className, boolean isInput, boolean isDefault, Optional<String> marshaller, Optional<CloudEventMode> cloudEventMode) {
         this.className = className;
         this.channelName = channelName;
         this.isInput = isInput;
         this.isDefault = isDefault;
-        this.triggers = triggers;
         this.marshaller = marshaller;
         this.cloudEventMode = cloudEventMode;
-    }
-
-    public Collection<String> getTriggers() {
-        return triggers;
     }
 
     public String getChannelName() {
@@ -96,7 +91,7 @@ public class ChannelInfo {
 
     @Override
     public String toString() {
-        return "ChannelInfo [channelName=" + channelName + ", className=" + className + ", triggers=" + triggers
+        return "ChannelInfo [channelName=" + channelName + ", className=" + className
                 + ", isInput=" + isInput + ", isDefault=" + isDefault + ", cloudEventMode=" + cloudEventMode
                 + ", marshaller=" + marshaller + "]";
     }

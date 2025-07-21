@@ -19,6 +19,7 @@
 package org.kie.kogito.codegen.process.events;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.process.events.processor.ChannelInfo;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.EventUnmarshaller;
 

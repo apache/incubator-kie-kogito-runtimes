@@ -18,25 +18,39 @@
  */
 package $Package$;
 
-
 import java.util.concurrent.CompletionStage;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 
+
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
-import org.kie.kogito.addon.quarkus.messaging.endpoint.AbstractQuarkusCloudEventReceiver;
+import org.kie.kogito.process.Processes;
+import org.kie.kogito.process.Processes;
+import org.kie.kogito.process.SignalFactory;
+import org.kie.kogito.event.EventReceiver;
+
+import java.util.concurrent.CompletableFuture;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
-public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$Type$> {
+public class $Trigger$EventReceiver implements EventReceiver {
+
+    @Inject
+    Processes processes;
+
     @Incoming("$Trigger$")
     public CompletionStage<?> onEvent(Message<$Type$> message) {
-        return produce(message);
+        try {
+            for (String processId : processes.processIds()) {
+                processes.processById(processId).send(SignalFactory.of("$Trigger$", message.getPayload()));
+            }
+            return CompletableFuture.completedStage(null);
+        } catch (Throwable th) {
+            return CompletableFuture.failedStage(th);
+        }
     }
-      
-    @PostConstruct
-    void init() {
-    }
+
 }

@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
@@ -42,7 +42,6 @@ import org.jbpm.bpmn2.xml.BPMNSemanticModule;
 import org.jbpm.compiler.canonical.ModelMetaData;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
-import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.canonical.WorkItemModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.core.SemanticModules;
@@ -65,11 +64,11 @@ import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
-import org.kie.kogito.codegen.process.events.ChannelInfo;
-import org.kie.kogito.codegen.process.events.ChannelInfoFactory;
 import org.kie.kogito.codegen.process.events.EventEmitterGenerator;
 import org.kie.kogito.codegen.process.events.EventReceiverGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
+import org.kie.kogito.codegen.process.events.processor.ChannelInfo;
+import org.kie.kogito.codegen.process.events.processor.ChannelInfoProcessor;
 import org.kie.kogito.codegen.process.util.CodegenUtil;
 import org.kie.kogito.internal.SupportedExtensions;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -424,27 +423,36 @@ public class ProcessCodegen extends AbstractGenerator {
                 rgs.add(processResourceGenerator);
             }
 
-            Set<String> consumerTriggers = metaData.getTriggers().stream()
-                    .filter(trigger -> TriggerMetaData.TriggerType.isConsumer(trigger.getType()))
-                    .map(TriggerMetaData::getName)
-                    .collect(Collectors.toCollection(HashSet::new));
+            List<ChannelInfo> channelsInfo = ChannelInfoProcessor.newChannelInfoProcessor(context()).process();
 
-            for (String consumerEventType : consumerTriggers) {
-                ChannelInfo channelInfo =
-                        ChannelInfoFactory.newChannelInfo(context(), consumerEventType, "QuarkusReceiver", true, ChannelInfoFactory.INCOMING_DEFAULT_CHANNEL, Collections.emptyMap());
-                EventReceiverGenerator eventReceiverGenerator = new EventReceiverGenerator(context(), channelInfo);
+            List<ChannelInfo> emitters = channelsInfo.stream().filter(Predicate.not(ChannelInfo::isInput)).toList();
+            for (ChannelInfo emitter : emitters) {
+                EventEmitterGenerator eventEmitterGenerator = new EventEmitterGenerator(context(), emitter);
+                storeFile(MESSAGE_PRODUCER_TYPE, eventEmitterGenerator.getPath(), eventEmitterGenerator.getCode());
+            }
+
+            List<ChannelInfo> receivers = channelsInfo.stream().filter(ChannelInfo::isInput).toList();
+            for (ChannelInfo receiver : receivers) {
+                EventReceiverGenerator eventReceiverGenerator = new EventReceiverGenerator(context(), receiver);
                 storeFile(MESSAGE_CONSUMER_TYPE, eventReceiverGenerator.getPath(), eventReceiverGenerator.getCode());
             }
 
-            Set<String> producerTriggers = metaData.getTriggers().stream()
-                    .filter(trigger -> TriggerMetaData.TriggerType.isProducer(trigger.getType()))
-                    .map(TriggerMetaData::getName)
-                    .collect(Collectors.toCollection(HashSet::new));
-            for (String producerEventType : producerTriggers) {
-                ChannelInfo channelInfo = ChannelInfoFactory.newChannelInfo(context(), producerEventType, "QuarkusEmitter", true, ChannelInfoFactory.OUTGOING_DEFAULT_CHANNEL, Collections.emptyMap());
-                EventEmitterGenerator eventEmitterGenerator = new EventEmitterGenerator(context(), channelInfo);
-                storeFile(MESSAGE_PRODUCER_TYPE, eventEmitterGenerator.getPath(), eventEmitterGenerator.getCode());
-            }
+            //            Set<String> consumerTriggers = metaData.getTriggers().stream()
+            //                    .filter(trigger -> TriggerMetaData.TriggerType.isConsumer(trigger.getType()))
+            //                    .map(TriggerMetaData::getName)
+            //                    .collect(Collectors.toCollection(HashSet::new));
+            //
+            //            for (String consumerEventType : consumerTriggers) {
+            //                ChannelInfo channelInfo =
+            //                        ChannelInfoFactory.newChannelInfo(context(), consumerEventType, "QuarkusReceiver", true, ChannelInfoFactory.INCOMING_DEFAULT_CHANNEL, Collections.emptyMap());
+            //                EventReceiverGenerator eventReceiverGenerator = new EventReceiverGenerator(context(), channelInfo);
+            //                storeFile(MESSAGE_CONSUMER_TYPE, eventReceiverGenerator.getPath(), eventReceiverGenerator.getCode());
+            //            }
+            //
+            //            Set<String> producerTriggers = metaData.getTriggers().stream()
+            //                    .filter(trigger -> TriggerMetaData.TriggerType.isProducer(trigger.getType()))
+            //                    .map(TriggerMetaData::getName)
+            //                    .collect(Collectors.toCollection(HashSet::new));
 
             processGenerators.add(p);
 

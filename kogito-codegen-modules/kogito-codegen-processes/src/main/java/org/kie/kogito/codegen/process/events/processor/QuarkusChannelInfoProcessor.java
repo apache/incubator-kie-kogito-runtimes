@@ -16,19 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.codegen.process.events;
+package org.kie.kogito.codegen.process.events.processor;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.process.events.CloudEventMode;
+import org.kie.kogito.event.KogitoEventStreams;
 
-public class ChannelInfoFactory {
-
-    private ChannelInfoFactory() {
-    }
+public class QuarkusChannelInfoProcessor extends ChannelInfoProcessor {
 
     private static final String OUTGOING_PREFIX = "mp.messaging.outgoing.";
     private static final String INCOMING_PREFIX = "mp.messaging.incoming.";
@@ -47,9 +47,38 @@ public class ChannelInfoFactory {
     private static final String UNMARSHALLLER_PREFIX = KOGITO_MESSAGING_PREFIX + "unmarshaller.";
     private static final String KOGITO_EMITTER_PREFIX = KOGITO_MESSAGING_PREFIX + "emitter.";
 
-    public static ChannelInfo newChannelInfo(KogitoBuildContext config, String name, String prefix, boolean isInput, String defaultChannelName, Map<String, Collection<String>> triggers) {
+    public QuarkusChannelInfoProcessor(KogitoBuildContext context) {
+        super(context);
+    }
+
+    @Override
+    public Map<String, String> filter(Map<String, String> applicationProperties) {
+        return applicationProperties.entrySet().stream().filter(this::filterProperty).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private boolean filterProperty(Map.Entry<String, String> property) {
+        return property.getKey().startsWith(INCOMING_PREFIX) || property.getKey().startsWith(OUTGOING_PREFIX);
+    }
+
+    @Override
+    public List<ChannelInfo> toChannelInfo(Map<String, String> channelProperties) {
+        List<ChannelInfo> result = new ArrayList<>();
+        final String defaultIncomingChannel = channelProperties.getOrDefault(INCOMING_DEFAULT_CHANNEL, KogitoEventStreams.INCOMING);
+        final String defaultOutgoingChannel = channelProperties.getOrDefault(OUTGOING_DEFAULT_CHANNEL, KogitoEventStreams.OUTGOING);
+        for (String property : channelProperties.keySet().stream().filter(e -> e.endsWith(".topic")).toList()) {
+            if (property.startsWith(INCOMING_PREFIX)) {
+                result.add(newChannelInfo(getKogitoBuildContext(), property, INCOMING_PREFIX, true, defaultIncomingChannel));
+            } else if (property.startsWith(OUTGOING_PREFIX)) {
+                result.add(newChannelInfo(getKogitoBuildContext(), property, OUTGOING_PREFIX, false, defaultOutgoingChannel));
+            }
+        }
+
+        return result;
+    }
+
+    public ChannelInfo newChannelInfo(KogitoBuildContext config, String property, String prefix, boolean isInput, String defaultChannelName) {
+        String name = property.substring(prefix.length(), property.lastIndexOf('.'));
         return new ChannelInfo(name,
-                triggers.getOrDefault(name, Collections.singleton(name)),
                 getClassName(config.getApplicationProperty(getPropertyName(prefix, name, "value." + (isInput ? "deserializer" : "serializer")), String.class)),
                 isInput,
                 name.equals(defaultChannelName),
@@ -57,7 +86,7 @@ public class ChannelInfoFactory {
                 cloudEventMode(config, name, name));
     }
 
-    private static Optional<CloudEventMode> cloudEventMode(KogitoBuildContext config, String name, String property) {
+    private Optional<CloudEventMode> cloudEventMode(KogitoBuildContext config, String name, String property) {
         if (!config.getApplicationProperty("kogito.messaging.as-cloudevents", Boolean.class).orElse(true)) {
             return Optional.empty();
         }
@@ -77,11 +106,11 @@ public class ChannelInfoFactory {
         return Optional.of(connector.get().equals("quarkus-http") ? CloudEventMode.BINARY : CloudEventMode.STRUCTURED);
     }
 
-    private static Optional<CloudEventMode> getCloudEventMode(KogitoBuildContext config, String propName) {
+    private Optional<CloudEventMode> getCloudEventMode(KogitoBuildContext config, String propName) {
         return config.getApplicationProperty(propName).map(String::toUpperCase).map(CloudEventMode::valueOf);
     }
 
-    private static String getClassName(Optional<String> serializerClassName) {
+    private String getClassName(Optional<String> serializerClassName) {
         if (serializerClassName.isPresent()) {
             String value = serializerClassName.get();
             int indexOf = value.lastIndexOf(".");
@@ -99,7 +128,7 @@ public class ChannelInfoFactory {
         return "Object";
     }
 
-    private static final String getPropertyName(String prefix, String name, String suffix) {
+    private final String getPropertyName(String prefix, String name, String suffix) {
         return prefix + name + "." + suffix;
     }
 }

@@ -26,22 +26,23 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Message;
-
-import org.kie.kogito.addon.quarkus.messaging.endpoint.AbstractQuarkusCloudEventEmitter;
+import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.EventEmitter;
 
 @ApplicationScoped
-public class $Trigger$EventEmitter extends AbstractQuarkusCloudEventEmitter<$Type$> {
+public class $Trigger$EventEmitter implements EventEmitter {
 
     @Inject
     @Channel("$Trigger$")
     Emitter<$Type$> emitter;
 
     @Override
-    protected void emit (Message<$Type$> message) {
+    public void emit(DataEvent<?> message) {
         emitter.send(message);
     }
 
-    @PostConstruct
-    void init () {
+    public String channelName() {
+        return "$Trigger$";
     }
+
 }

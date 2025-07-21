@@ -33,6 +33,7 @@ import io.quarkus.arc.DefaultBean;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
@@ -43,7 +44,7 @@ public class EventMarshallerProducer {
 
     @Produces
     @DefaultBean
-    public EventMarshaller<String> stringEventMarshaller() {
+    public EventMarshaller<String> stringEventMarshaller(InjectionPoint injectPoint) {
         return new StringEventMarshaller(mapper);
     }
 

@@ -16,19 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.codegen.process.events.processor;
 
-/**
- * Event receiver interface.
- * 
- * Implementation are responsible for interacting with the external event publisher and transforming the events received into the model object.
- * 
- * @see EventUnmarshaller
- * @see CloudEventUnmarshaller
- */
-public interface EventReceiver extends AutoCloseable {
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+
+public class JavaChannelInfoProcessor extends ChannelInfoProcessor {
+
+    public JavaChannelInfoProcessor(KogitoBuildContext context) {
+        super(context);
+    }
 
     @Override
-    default void close() throws Exception {
+    public Map<String, String> filter(Map<String, String> applicationProperties) {
+        return applicationProperties;
     }
+
+    @Override
+    public List<ChannelInfo> toChannelInfo(Map<String, String> channelProperties) {
+        return Collections.emptyList();
+    }
+
 }

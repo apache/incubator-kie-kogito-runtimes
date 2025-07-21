@@ -26,6 +26,9 @@ package org.kie.kogito.event;
  * @see CloudEventMarshaller
  */
 public interface EventEmitter extends AutoCloseable {
+
+    String channelName();
+
     /**
      * Publish event to the channel. it will automatically marshalled from the data
      * 
