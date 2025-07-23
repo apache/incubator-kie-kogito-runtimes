@@ -89,9 +89,12 @@ class JavaRuleFlowProcessValidator extends RuleFlowProcessValidator {
 
     private void validateJava(ActionNode actionNode, List<ProcessValidationError> errors, RuleFlowProcess process) {
         DroolsConsequenceAction droolsAction = (DroolsConsequenceAction) actionNode.getAction();
+        String imports = process.getImports().stream().map(javaImport -> "import " + javaImport + ";\n").toString();
+
         ParseResult<CompilationUnit> parse = new JavaParser(new ParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new ReflectionTypeSolver())))
                 .parse("import org.kie.kogito.internal.process.runtime.KogitoProcessContext;\n" +
                         "import org.jbpm.process.instance.impl.Action;\n" +
+                        imports +
                         " class Test {\n" +
                         "    Action action = kcontext -> {" + droolsAction.getConsequence() + "\n};\n" +
                         "}");
