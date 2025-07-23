@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jbpm.process.core.ContextContainer;
@@ -89,7 +90,7 @@ class JavaRuleFlowProcessValidator extends RuleFlowProcessValidator {
 
     private void validateJava(ActionNode actionNode, List<ProcessValidationError> errors, RuleFlowProcess process) {
         DroolsConsequenceAction droolsAction = (DroolsConsequenceAction) actionNode.getAction();
-        String imports = process.getImports().stream().map(javaImport -> "import " + javaImport + ";\n").toString();
+        String imports = process.getImports().stream().map(javaImport -> "import " + javaImport + ";").collect(Collectors.joining("\n"));
 
         ParseResult<CompilationUnit> parse = new JavaParser(new ParserConfiguration().setSymbolResolver(new JavaSymbolSolver(new ReflectionTypeSolver())))
                 .parse("import org.kie.kogito.internal.process.runtime.KogitoProcessContext;\n" +
