@@ -209,7 +209,6 @@ class JavaRuleFlowProcessValidator extends RuleFlowProcessValidator {
                 unit.findAll(VariableDeclarationExpr.class).stream().flatMap(v -> v.getVariables().stream()).map(VariableDeclarator::getNameAsString).forEach(knownVariables::add);
                 resolveVariablesType(unit, knownVariables);
             } catch (UnsolvedSymbolException ex) {
-                System.out.println(ex);
                 if (LOGGER.isErrorEnabled()) {
                     VoidVisitor<Void> printer = new DefaultPrettyPrinterVisitor(new DefaultPrinterConfiguration());
                     unit.findFirst(BlockStmt.class).ifPresent(block -> {
