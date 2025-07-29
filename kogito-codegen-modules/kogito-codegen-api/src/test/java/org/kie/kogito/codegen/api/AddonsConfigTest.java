@@ -64,6 +64,6 @@ public class AddonsConfigTest {
         assertThat(builder().withProcessSVG(true).build().useProcessSVG()).isTrue();
 
         assertThat(DEFAULT.useSourceFiles()).isFalse();
-        assertThat(builder().withProcessSVG(true).build().useSourceFiles()).isTrue();
+        assertThat(builder().withSourceFiles(true).build().useSourceFiles()).isTrue();
     }
 }
