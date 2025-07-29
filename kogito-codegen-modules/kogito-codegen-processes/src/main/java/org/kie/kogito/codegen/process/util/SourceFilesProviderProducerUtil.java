@@ -36,9 +36,9 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
-public class SourceFilesProviderImplUtil {
+public class SourceFilesProviderProducerUtil {
 
-    private SourceFilesProviderImplUtil() {
+    private SourceFilesProviderProducerUtil() {
         // utility class, shouldn't be initialized
     }
 
@@ -92,7 +92,7 @@ public class SourceFilesProviderImplUtil {
         stringLiteral.setString(interpolated);
     }
 
-    private static String getResourceRelativePath(KogitoBuildContext context, Resource resource) {
+    static String getResourceRelativePath(KogitoBuildContext context, Resource resource) {
         String resourcePath = resource.getSourcePath();
 
         Path sourceFilePath = Path.of(resourcePath);

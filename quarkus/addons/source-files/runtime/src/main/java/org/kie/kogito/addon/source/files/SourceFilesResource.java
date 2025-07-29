@@ -24,17 +24,15 @@ import java.util.Collection;
 import org.kie.kogito.source.files.SourceFile;
 import org.kie.kogito.source.files.SourceFilesProvider;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@ApplicationScoped
 @Path("/management/processes/")
 public class SourceFilesResource extends BaseSourceFilesResource<Response> {
 
-    SourceFilesResource() {
+    public SourceFilesResource() {
         this(null);
         // CDI
     }

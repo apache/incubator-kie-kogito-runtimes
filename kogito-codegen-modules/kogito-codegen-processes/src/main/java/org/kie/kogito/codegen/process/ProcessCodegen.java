@@ -76,7 +76,7 @@ import static org.kie.kogito.codegen.process.util.BusinessCalendarUtil.condition
 import static org.kie.kogito.codegen.process.util.CodegenUtil.generatorProperty;
 import static org.kie.kogito.codegen.process.util.CodegenUtil.isFaultToleranceEnabled;
 import static org.kie.kogito.codegen.process.util.CodegenUtil.isTransactionEnabled;
-import static org.kie.kogito.codegen.process.util.SourceFilesProviderImplUtil.addSourceFilesToProvider;
+import static org.kie.kogito.codegen.process.util.SourceFilesProviderProducerUtil.addSourceFilesToProvider;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.buildDashboardName;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.generateOperationalDashboard;
 import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
