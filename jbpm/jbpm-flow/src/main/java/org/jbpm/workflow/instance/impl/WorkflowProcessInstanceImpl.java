@@ -682,7 +682,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         logger.debug("Signal {} received with data {} in process instance {}", type, event, getStringId());
         synchronized (this) {
             if (getState() != KogitoProcessInstance.STATE_ACTIVE) {
-                return;
+                throw new IllegalStateException("Current process instance state is not active");
             }
 
             if (TIMER_TRIGGERED_EVENT.equals(type)) {
