@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.quarkus.workflows;
+package org.kie.kogito.quarkus.token.persistence.workflows;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,8 +42,8 @@ import io.restassured.path.json.JsonPath;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import static io.restassured.RestAssured.given;
-import static org.kie.kogito.quarkus.workflows.ExternalServiceMock.SUCCESSFUL_QUERY;
-import static org.kie.kogito.quarkus.workflows.TokenExchangeExternalServicesMock.BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN;
+import static org.kie.kogito.quarkus.token.persistence.workflows.ExternalServiceMock.SUCCESSFUL_QUERY;
+import static org.kie.kogito.quarkus.token.persistence.workflows.TokenExchangeExternalServicesMock.BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN;
 import static org.kie.kogito.serverless.workflow.openapi.OpenApiCustomCredentialProvider.LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE;
 import static org.kie.kogito.serverless.workflow.openapi.OpenApiCustomCredentialProvider.LOG_PREFIX_FAILED_TOKEN_EXCHANGE;
 import static org.kie.kogito.serverless.workflow.openapi.OpenApiCustomCredentialProvider.LOG_PREFIX_STARTING_TOKEN_EXCHANGE;
@@ -146,11 +146,12 @@ class TokenExchangeIT {
         Assertions.assertThat(logLines).hasSizeGreaterThan(0);
 
         LOGGER.info("Analyzing {} log lines for OAuth2 token exchange patterns", logLines.size());
-
+        List<String> usedJDBCRepository = logLines.stream().filter(line -> line.contains(LOG_PREFIX_USED_REPOSITORY + ": JdbcTokenCacheRepository")).toList();
         List<String> usedInMemoryRepository = logLines.stream().filter(line -> line.contains(LOG_PREFIX_USED_REPOSITORY + ": InMemoryTokenCacheRepository")).toList();
-        Assertions.assertThat(usedInMemoryRepository).hasSize(1);
+        Assertions.assertThat(usedJDBCRepository).hasSize(1);
+        Assertions.assertThat(usedInMemoryRepository).hasSize(0);
 
-        LOGGER.info("InMemory repository was used as expected");
+        LOGGER.info("JDBC repository was used as expected");
 
         List<String> startTokenExchangeLogLines = logLines.stream().filter(line -> line.contains(LOG_PREFIX_STARTING_TOKEN_EXCHANGE)).toList();
         List<String> completedTokenExchangeLogLines = logLines.stream().filter(line -> line.contains(LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE)).toList();

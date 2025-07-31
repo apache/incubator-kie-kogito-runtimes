@@ -32,11 +32,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import javax.sql.DataSource;
-
 import org.kie.kogito.serverless.workflow.openapi.cachemanagement.CachedTokens;
-import org.kie.kogito.serverless.workflow.openapi.persistence.model.TokenCacheRecord;
-import org.kie.kogito.serverless.workflow.openapi.persistence.repository.TokenCacheRepository;
+import org.kie.kogito.serverless.workflow.openapi.persistence.TokenDataStore.TokenEntry;
 import org.kie.kogito.serverless.workflow.openapi.utils.CacheUtils;
 import org.kie.kogito.serverless.workflow.openapi.utils.ConfigReaderUtils;
 import org.slf4j.Logger;
@@ -51,11 +48,10 @@ import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 
 /**
- * Database-backed cache implementation that persists tokens to database
+ * Database-backed cache implementation that uses TokenDataStore for persistence
  * while maintaining in-memory cache for performance and token monitoring.
  */
 @ApplicationScoped
@@ -64,9 +60,7 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseTokenCache.class);
 
     @Inject
-    Instance<DataSource> dataSourceInstance;
-
-    private TokenCacheRepository repository;
+    TokenDataStore dataStore;
 
     // In-memory cache for performance
     private static final ConcurrentHashMap<String, CachedTokens> MEMORY_CACHE = new ConcurrentHashMap<>();
@@ -82,12 +76,8 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
 
     @PostConstruct
     public void init() {
-        if (!dataSourceInstance.isResolvable()) {
-            throw new IllegalStateException("DataSource is required for DatabaseTokenCache but none is available. " +
-                    "Please ensure a DataSource is configured.");
-        }
-        this.repository = new TokenCacheRepository(dataSourceInstance.get());
-        loadFromDatabase();
+        loadFromDataStore();
+
         refreshMonitoringScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "token-cache-refresh-monitor");
             t.setDaemon(true);
@@ -97,7 +87,8 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
         refreshMonitoringScheduler.scheduleWithFixedDelay(this::monitorExpiringTokens,
                 5, ConfigReaderUtils.getMonitorExpiringRateSeconds(), TimeUnit.SECONDS);
 
-        LOGGER.info("Database token cache initialized with monitoring enabled");
+        LOGGER.info("Database token cache initialized with {} backing store",
+                dataStore.getClass().getSimpleName());
     }
 
     @PreDestroy
@@ -131,13 +122,10 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
             }
         }
 
-        // Fallback to database
-        return repository.findByCacheKey(cacheKey)
-                .map(this::recordToTokens)
-                .filter(t -> !t.isExpiredNow())
+        return dataStore.retrieve(key)
                 .map(t -> {
                     // Load back into memory cache
-                    MEMORY_CACHE.put(cacheKey, t);
+                    MEMORY_CACHE.put(key, t);
                     return t;
                 })
                 .orElse(null);
@@ -148,16 +136,8 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
         // Store in memory for fast access
         CachedTokens previous = MEMORY_CACHE.put(key, value);
 
-        // Persist to database
         try {
-            String processInstanceId = CacheUtils.extractProcessInstanceIdFromCacheKey(key);
-            String authName = CacheUtils.extractAuthNameFromCacheKey(key);
-
-            TokenCacheRecord record = new TokenCacheRecord(
-                    processInstanceId, authName,
-                    value.getAccessToken(), value.getRefreshToken(), value.getExpirationTime());
-
-            repository.save(record);
+            dataStore.store(key, value);
             LOGGER.debug("Persisted token cache entry for key: {}", key);
 
             // Notify removal listener if we replaced an existing value
@@ -176,7 +156,7 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
         CachedTokens removed = MEMORY_CACHE.remove(cacheKey);
 
         try {
-            repository.deleteByCacheKey(cacheKey);
+            dataStore.remove(cacheKey);
             LOGGER.debug("Invalidated token cache entry for key: {}", cacheKey);
 
             // Notify removal listener
@@ -208,26 +188,14 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
     public void cleanUp() {
     }
 
-    // Convert record to CachedTokens
-    private CachedTokens recordToTokens(TokenCacheRecord record) {
-        return new CachedTokens(
-                record.getAccessToken(),
-                record.getRefreshToken(),
-                record.getExpirationTime());
-    }
-
-    // Load tokens from database on startup
-    private void loadFromDatabase() {
+    private void loadFromDataStore() {
         try {
-            repository.findAll().forEach(record -> {
-                if (!isExpired(record)) {
-                    String cacheKey = CacheUtils.buildCacheKey(record.getProcessInstanceId(), record.getAuthName());
-                    MEMORY_CACHE.put(cacheKey, recordToTokens(record));
-                }
-            });
-            LOGGER.info("Loaded {} token cache entries from database", MEMORY_CACHE.size());
+            List<TokenEntry> entries = dataStore.loadAll();
+            entries.forEach(entry -> MEMORY_CACHE.put(entry.cacheKey(), entry.tokens()));
+
+            LOGGER.info("Loaded {} token cache entries from data store", entries.size());
         } catch (Exception e) {
-            LOGGER.error("Failed to load token cache from database", e);
+            LOGGER.error("Failed to load token cache from data store", e);
         }
     }
 
@@ -278,11 +246,9 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
             } catch (Exception e) {
                 LOGGER.error("Error in removal listener for cache key: {}", key, e);
             }
+        } else {
+            LOGGER.warn("No removal listener set for cache key: {}", key);
         }
-    }
-
-    private boolean isExpired(TokenCacheRecord record) {
-        return System.currentTimeMillis() / 1000 >= record.getExpirationTime();
     }
 
     // Remaining Cache interface implementations...

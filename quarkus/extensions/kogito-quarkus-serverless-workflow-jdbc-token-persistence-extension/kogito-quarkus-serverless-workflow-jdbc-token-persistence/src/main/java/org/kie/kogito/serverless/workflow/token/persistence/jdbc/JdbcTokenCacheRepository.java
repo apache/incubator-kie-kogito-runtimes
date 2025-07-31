@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.serverless.workflow.openapi.persistence.repository;
+package org.kie.kogito.serverless.workflow.token.persistence.jdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,18 +28,26 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.kie.kogito.serverless.workflow.openapi.persistence.TokenCacheRepository;
 import org.kie.kogito.serverless.workflow.openapi.persistence.model.TokenCacheRecord;
 import org.kie.kogito.serverless.workflow.openapi.utils.CacheUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.annotation.Priority;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Alternative;
+
 /**
  * JDBC-based repository for token cache operations.
  * Follows the same pattern as other JDBC repositories in the codebase.
  */
-public class TokenCacheRepository {
+@ApplicationScoped
+@Alternative
+@Priority(200)
+public class JdbcTokenCacheRepository implements TokenCacheRepository {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TokenCacheRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTokenCacheRepository.class);
 
     // SQL queries following the same pattern as other JDBC repositories
     static final String INSERT =
@@ -55,10 +63,11 @@ public class TokenCacheRepository {
 
     private final DataSource dataSource;
 
-    public TokenCacheRepository(DataSource dataSource) {
+    public JdbcTokenCacheRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
+    @Override
     public TokenCacheRecord save(TokenCacheRecord record) {
         // Check if record exists first - use direct method since we have the components
         Optional<TokenCacheRecord> existing = findByKey(record.getProcessInstanceId(), record.getAuthName());
@@ -125,6 +134,7 @@ public class TokenCacheRepository {
         }
     }
 
+    @Override
     public Optional<TokenCacheRecord> findByKey(String processInstanceId, String authName) {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(FIND_BY_KEY)) {
@@ -144,6 +154,7 @@ public class TokenCacheRepository {
         }
     }
 
+    @Override
     public Optional<TokenCacheRecord> findByCacheKey(String cacheKey) {
         // Extract components from cache key and delegate to the main method
         String processInstanceId = CacheUtils.extractProcessInstanceIdFromCacheKey(cacheKey);
@@ -151,6 +162,7 @@ public class TokenCacheRepository {
         return findByKey(processInstanceId, authName);
     }
 
+    @Override
     public void deleteByKey(String processInstanceId, String authName) {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(DELETE_BY_KEY)) {
@@ -169,6 +181,7 @@ public class TokenCacheRepository {
         }
     }
 
+    @Override
     public void deleteByCacheKey(String cacheKey) {
         // Extract components from cache key and delegate to the main method
         String processInstanceId = CacheUtils.extractProcessInstanceIdFromCacheKey(cacheKey);
@@ -176,41 +189,7 @@ public class TokenCacheRepository {
         deleteByKey(processInstanceId, authName);
     }
 
-    public int deleteExpiredTokens() {
-        long currentTime = System.currentTimeMillis() / 1000;
-        try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(DELETE_EXPIRED)) {
-
-            statement.setLong(1, currentTime);
-            int deleted = statement.executeUpdate();
-
-            if (deleted > 0) {
-                LOGGER.debug("Deleted {} expired token cache records", deleted);
-            }
-            return deleted;
-        } catch (Exception e) {
-            throw new RuntimeException("Error deleting expired token cache records", e);
-        }
-    }
-
-    public List<TokenCacheRecord> findExpiringSoon(long expirationThreshold) {
-        try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_EXPIRING_SOON)) {
-
-            statement.setLong(1, expirationThreshold);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                List<TokenCacheRecord> results = new ArrayList<>();
-                while (resultSet.next()) {
-                    results.add(mapResultSetToRecord(resultSet));
-                }
-                return results;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error finding expiring token cache records", e);
-        }
-    }
-
+    @Override
     public List<TokenCacheRecord> findAll() {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
