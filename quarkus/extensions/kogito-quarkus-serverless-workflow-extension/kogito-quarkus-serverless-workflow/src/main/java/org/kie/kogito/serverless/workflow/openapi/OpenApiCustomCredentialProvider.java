@@ -56,13 +56,11 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
     public Optional<String> getOauth2BearerToken(CredentialsContext input) {
         LOGGER.debug("Calling OpenApiCustomCredentialProvider.getOauth2BearerToken for {}", input.getAuthName());
         String authorizationHeaderName = Optional.ofNullable(getHeaderName(input.getOpenApiSpecId(), input.getAuthName())).orElse(HttpHeaders.AUTHORIZATION);
-        Optional<Boolean> exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class);
-        String accessToken = null;
+boolean exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class).orElse(false);
+        if (exchangeToken) {
+            String accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
 
-        if (exchangeToken.isPresent() && exchangeToken.get()) {
-            accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
-
-            if (accessToken == null || accessToken.isBlank()) {
+            if (ConversionUtils.isEmpty(accessToken)) {
                 throw new ConfigurationException("An access token is required in the header %s (default is %s) but none was provided".formatted(authorizationHeaderName, HttpHeaders.AUTHORIZATION));
             }
 
@@ -76,17 +74,16 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
             if (exchangeTokenClient == null) {
                 throw new ConfigurationException("No OIDC client was found for %s. Hint: configure it in the properties.".formatted(input.getAuthName()));
             }
-
-            accessToken = exchangeTokenIfNeeded(accessToken, exchangeTokenClient, input.getAuthName());
+            return Optional.of(exchangeTokenIfNeeded(accessToken, exchangeTokenClient, input.getAuthName()));
         }
-        return accessToken == null ? Optional.empty() : Optional.of(accessToken);
+        return Optional.empty();
     }
 
     private String exchangeTokenIfNeeded(String token, OidcClient exchangeTokenClient, String authName) {
-        OidcClientConfig.Grant.Type exchangeTokenGrantType = ConfigProvider.getConfig().getValue("quarkus.oidc-client.%s.grant.type".formatted(authName), OidcClientConfig.Grant.Type.class);
-        Tokens tokens;
+OidcClientConfig.Grant.Type exchangeTokenGrantType = ConfigProvider.getConfig().getValue("quarkus.oidc-client.%s.grant.type".formatted(authName), OidcClientConfig.Grant.Type.class);
         try {
-            tokens = exchangeTokenClient.getTokens(Collections.singletonMap(getExchangeTokenProperty(exchangeTokenGrantType), token)).await().indefinitely();
+            Tokens tokens = exchangeTokenClient.getTokens(Collections.singletonMap(getExchangeTokenProperty(exchangeTokenGrantType), token)).await().indefinitely();
+        
             //TODO store the refresh token in an expiring cache
             //TODO store the access token in an expiring cache
             //TODO cache should expire before access/refresh token expire so they can be refreshed before (need to decode the JWT claim)
@@ -100,16 +97,14 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
     }
 
     private static String getExchangeTokenProperty(OidcClientConfig.Grant.Type exchangeTokenGrantType) {
-        String exchangeTokenProperty;
-
-        if (exchangeTokenGrantType == OidcClientConfig.Grant.Type.EXCHANGE) {
-            exchangeTokenProperty = "subject_token";
-        } else if (exchangeTokenGrantType == OidcClientConfig.Grant.Type.JWT) {
-            exchangeTokenProperty = "assertion";
-        } else {
-            throw new ConfigurationException("Token exchange is required but OIDC client is configured to use the %s grantType".formatted(exchangeTokenGrantType.getGrantType()));
+ switch (exchangeTokenGrantType) {
+            case EXCHANGE:
+                return "subject_token";
+            case JWT:
+                return "assertion";
         }
-        return exchangeTokenProperty;
+        throw new ConfigurationException("Token exchange is required but OIDC client is configured to use the %s grantType".formatted(exchangeTokenGrantType.getGrantType()));
+
     }
 
     public static String getCanonicalExchangeTokenConfigPropertyName(String authName) {
