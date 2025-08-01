@@ -100,9 +100,8 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
         String authorizationHeaderName = Optional.ofNullable(getHeaderName(input.getOpenApiSpecId(), input.getAuthName())).orElse(HttpHeaders.AUTHORIZATION);
         boolean exchangeToken = ConfigReaderUtils.getExchangeTokenPropertyValue(input).orElse(false);
         if (exchangeToken) {
-            String accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
+            String accessToken;
 
-        if (exchangeToken.isPresent() && exchangeToken.get()) {
             LOGGER.info("Oauth2 token exchange enabled for {}, will generate tokens...", input.getAuthName());
 
             String cacheKey = CacheUtils.buildCacheKey(input);
@@ -110,8 +109,9 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
             if (accessToken == null) {
                 accessToken = performTokenExchange(input, cacheKey, authorizationHeaderName);
             }
+            return Optional.ofNullable(accessToken);
         }
-        return accessToken == null ? Optional.empty() : Optional.of(accessToken);
+        return Optional.empty();
     }
 
     private String getAccessTokenFromCache(String cacheKey) {
@@ -138,9 +138,8 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
         LOGGER.info("Performing token exchange for '{}'", cacheKey);
 
         accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
-        if (accessToken == null || accessToken.isBlank()) {
-            throw new ConfigurationException(
-                    "An access token is required in the header %s (default is %s) but none was provided".formatted(authorizationHeaderName, HttpHeaders.AUTHORIZATION));
+        if (ConversionUtils.isEmpty(accessToken)) {
+            throw new ConfigurationException("An access token is required in the header %s (default is %s) but none was provided".formatted(authorizationHeaderName, HttpHeaders.AUTHORIZATION));
         }
         accessToken = exchangeToken(accessToken, OidcClientUtils.getExchangeTokenClient(input.getAuthName()), input, cacheKey);
         return accessToken;
