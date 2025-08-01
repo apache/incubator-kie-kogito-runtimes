@@ -17,32 +17,4 @@
 # under the License.
 ###
 
-target/
-/local
-
-**/.idea
-
-# Repository wide ignore mac DS_Store files
-.DS_Store
-
-# Eclipse, Netbeans and IntelliJ files
-!.gitignore
-!.github
-/nbproject
-/*.ipr
-/*.iws
-*.iml
-.settings/
-.project
-.classpath
-.factorypath
-.vscode
-.run/
-.checkstyle
-
-*.log
-
-# Apache RAT check excludes file
-!.rat-excludes
-
-quarkus/integration-tests/integration-tests-quarkus-gradle/integration-tests-quarkus-gradle-project/**
+src/main/resources/shared

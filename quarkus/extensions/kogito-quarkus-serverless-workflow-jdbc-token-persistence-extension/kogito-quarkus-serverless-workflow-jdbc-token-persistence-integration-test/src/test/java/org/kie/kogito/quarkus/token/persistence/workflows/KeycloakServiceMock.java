@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.quarkus.workflows;
+package org.kie.kogito.quarkus.token.persistence.workflows;
 
 import java.util.HashMap;
 import java.util.Map;
