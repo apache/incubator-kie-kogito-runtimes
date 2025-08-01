@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.kie.kogito.internal.utils.ConversionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,7 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
     public Optional<String> getOauth2BearerToken(CredentialsContext input) {
         LOGGER.debug("Calling OpenApiCustomCredentialProvider.getOauth2BearerToken for {}", input.getAuthName());
         String authorizationHeaderName = Optional.ofNullable(getHeaderName(input.getOpenApiSpecId(), input.getAuthName())).orElse(HttpHeaders.AUTHORIZATION);
-boolean exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class).orElse(false);
+        boolean exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonicalExchangeTokenConfigPropertyName(input.getAuthName()), Boolean.class).orElse(false);
         if (exchangeToken) {
             String accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
 
@@ -80,10 +81,10 @@ boolean exchangeToken = ConfigProvider.getConfig().getOptionalValue(getCanonical
     }
 
     private String exchangeTokenIfNeeded(String token, OidcClient exchangeTokenClient, String authName) {
-OidcClientConfig.Grant.Type exchangeTokenGrantType = ConfigProvider.getConfig().getValue("quarkus.oidc-client.%s.grant.type".formatted(authName), OidcClientConfig.Grant.Type.class);
+        OidcClientConfig.Grant.Type exchangeTokenGrantType = ConfigProvider.getConfig().getValue("quarkus.oidc-client.%s.grant.type".formatted(authName), OidcClientConfig.Grant.Type.class);
         try {
             Tokens tokens = exchangeTokenClient.getTokens(Collections.singletonMap(getExchangeTokenProperty(exchangeTokenGrantType), token)).await().indefinitely();
-        
+
             //TODO store the refresh token in an expiring cache
             //TODO store the access token in an expiring cache
             //TODO cache should expire before access/refresh token expire so they can be refreshed before (need to decode the JWT claim)
@@ -97,7 +98,7 @@ OidcClientConfig.Grant.Type exchangeTokenGrantType = ConfigProvider.getConfig().
     }
 
     private static String getExchangeTokenProperty(OidcClientConfig.Grant.Type exchangeTokenGrantType) {
- switch (exchangeTokenGrantType) {
+        switch (exchangeTokenGrantType) {
             case EXCHANGE:
                 return "subject_token";
             case JWT:
