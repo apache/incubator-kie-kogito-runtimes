@@ -42,6 +42,10 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-openapi-common</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-serverless-workflow-openapi-generated-deployment</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
