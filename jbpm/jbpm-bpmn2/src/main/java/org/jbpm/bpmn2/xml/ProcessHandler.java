@@ -28,23 +28,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jbpm.bpmn2.core.Association;
-import org.jbpm.bpmn2.core.Collaboration;
-import org.jbpm.bpmn2.core.CorrelationKey;
-import org.jbpm.bpmn2.core.CorrelationProperty;
-import org.jbpm.bpmn2.core.CorrelationSubscription;
-import org.jbpm.bpmn2.core.DataStore;
-import org.jbpm.bpmn2.core.Definitions;
+import org.jbpm.bpmn2.core.*;
 import org.jbpm.bpmn2.core.Error;
-import org.jbpm.bpmn2.core.Escalation;
-import org.jbpm.bpmn2.core.Expression;
-import org.jbpm.bpmn2.core.Interface;
-import org.jbpm.bpmn2.core.IntermediateLink;
-import org.jbpm.bpmn2.core.ItemDefinition;
-import org.jbpm.bpmn2.core.Lane;
-import org.jbpm.bpmn2.core.Message;
-import org.jbpm.bpmn2.core.SequenceFlow;
-import org.jbpm.bpmn2.core.Signal;
 import org.jbpm.compiler.xml.Handler;
 import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
@@ -216,7 +201,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         // This must be done *after* linkConnections(process, connections)
         //  because it adds hidden connections for compensations
         List<Association> associations = (List<Association>) process.getMetaData(ASSOCIATIONS);
-        linkAssociations((Definitions) process.getMetaData("Definitions"), process, associations);
+        linkAssociations((Definitions) process.getMetaData("Definitions"), process, associations, parser);
 
         List<Lane> lanes = (List<Lane>) process.getMetaData(LaneHandler.LANES);
         assignLanes(process, lanes);
@@ -347,7 +332,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         }
     }
 
-    private static Object findNodeOrDataStoreByUniqueId(Definitions definitions, NodeContainer nodeContainer, final String nodeRef, String errorMsg) {
+    private static Object findNodeOrDataStoreByUniqueId(Definitions definitions, NodeContainer nodeContainer, final String nodeRef, String errorMsg, Parser parser) {
         if (definitions != null) {
             List<DataStore> dataStores = definitions.getDataStores();
             if (dataStores != null) {
@@ -357,6 +342,11 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                     }
                 }
             }
+        }
+        Object artifact = ((ProcessBuildData) parser.getData()).getMetaData(nodeRef);
+        if (artifact instanceof TextAnnotation) {
+            logger.warn("Skipping association to TextAnnotation '{}'", nodeRef);
+            return artifact;
         }
         return findNodeByIdOrUniqueIdInMetadata(nodeContainer, nodeRef, errorMsg);
     }
@@ -643,14 +633,14 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         }
     }
 
-    public static void linkAssociations(Definitions definitions, NodeContainer nodeContainer, List<Association> associations) {
+    public static void linkAssociations(Definitions definitions, NodeContainer nodeContainer, List<Association> associations, Parser parser) {
         if (associations != null) {
             for (Association association : associations) {
                 String sourceRef = association.getSourceRef();
                 Object source = null;
                 try {
                     source = findNodeOrDataStoreByUniqueId(definitions, nodeContainer, sourceRef,
-                            "Could not find source [" + sourceRef + "] for association " + association.getId() + "]");
+                            "Could not find source [" + sourceRef + "] for association " + association.getId() + "]", parser);
                 } catch (IllegalArgumentException e) {
                     // source not found
                 }
@@ -658,7 +648,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                 Object target = null;
                 try {
                     target = findNodeOrDataStoreByUniqueId(definitions, nodeContainer, targetRef,
-                            "Could not find target [" + targetRef + "] for association [" + association.getId() + "]");
+                            "Could not find target [" + targetRef + "] for association [" + association.getId() + "]", parser);
                 } catch (IllegalArgumentException e) {
                     // target not found
                 }
