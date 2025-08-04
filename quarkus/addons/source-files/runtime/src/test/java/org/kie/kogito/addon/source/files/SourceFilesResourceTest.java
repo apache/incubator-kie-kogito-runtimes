@@ -22,20 +22,19 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.source.files.SourceFile;
 import org.kie.kogito.source.files.SourceFilesProvider;
 import org.mockito.Mock;
-
-import io.quarkus.test.junit.QuarkusTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import jakarta.ws.rs.core.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@QuarkusTest
+@ExtendWith(MockitoExtension.class)
 class SourceFilesResourceTest {
     private static final String PROCESS_ID = "processId";
 
@@ -46,9 +45,7 @@ class SourceFilesResourceTest {
 
     @BeforeEach
     void setup() {
-        sourceFilesTestResource = new SourceFilesResource();
-        mockSourceFileProvider = mock(SourceFilesProvider.class);
-        sourceFilesTestResource.setSourceFilesProvider(mockSourceFileProvider);
+        sourceFilesTestResource = new SourceFilesResource(mockSourceFileProvider);
     }
 
     @Test
