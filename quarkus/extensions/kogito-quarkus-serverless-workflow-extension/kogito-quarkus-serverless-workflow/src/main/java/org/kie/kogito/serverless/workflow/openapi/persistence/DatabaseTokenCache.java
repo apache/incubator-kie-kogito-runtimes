@@ -85,7 +85,7 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
         });
         // Use scheduleWithFixedDelay to ensure previous execution completes before next one starts
         refreshMonitoringScheduler.scheduleWithFixedDelay(this::monitorExpiringTokens,
-                5, ConfigReaderUtils.getMonitorExpiringRateSeconds(), TimeUnit.SECONDS);
+                5, ConfigReaderUtils.getMonitorRateSeconds(), TimeUnit.SECONDS);
 
         LOGGER.info("Database token cache initialized with {} backing store",
                 dataStore.getClass().getSimpleName());
@@ -218,7 +218,7 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
 
             MEMORY_CACHE.forEach((cacheKey, tokens) -> {
                 String authName = CacheUtils.extractAuthNameFromCacheKey(cacheKey);
-                long bufferSeconds = ConfigReaderUtils.getExpirationBufferSeconds(authName);
+                long bufferSeconds = ConfigReaderUtils.getProactiveRefreshSeconds(authName);
 
                 if (tokens.isExpiringSoon(bufferSeconds)) {
                     LOGGER.info("Token for cache key '{}' is expiring soon (expiration time: {}, cautionary buffer: {} seconds)", cacheKey, tokens.getExpirationTime(),

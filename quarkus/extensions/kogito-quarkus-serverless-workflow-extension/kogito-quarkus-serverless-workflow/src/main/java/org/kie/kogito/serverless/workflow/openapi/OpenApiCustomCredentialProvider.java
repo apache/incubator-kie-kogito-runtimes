@@ -57,8 +57,8 @@ import static io.quarkiverse.openapi.generator.providers.AbstractAuthProvider.ge
  * Custom credential provider that supports OAuth2 token exchange and caching.
  *
  * Configuration properties:
- * - sonataflow.security.{authName}.exchange-token: Enable token exchange for the specified auth name
- * - sonataflow.security.{authName}.token-exchange.expiration-buffer-seconds: Number of seconds before token expiration to refresh cache (default: 300)
+ * - sonataflow.security.{authName}.token-exchange.enabled: Enable token exchange for the specified auth name
+ * - sonataflow.security.{authName}.token-exchange.proactive-refresh-seconds: Number of seconds before token expiration to refresh cache (default: 300)
  */
 @ApplicationScoped
 @Alternative
@@ -88,7 +88,7 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
             LOGGER.info("Database token cache initialized with eviction handler");
         } else {
             LOGGER.info("No database token cache found, if {} enabled for any spec, you should configure the datasource otherwise the token exchange will not be cached",
-                    ConfigReaderUtils.CANONICAL_EXCHANGE_TOKEN_PROPERTY_NAME);
+                    ConfigReaderUtils.CANONICAL_TOKEN_EXCHANGE_ENABLED_PROPERTY_NAME);
             tokenCache = null;
         }
 
@@ -98,7 +98,7 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
     public Optional<String> getOauth2BearerToken(CredentialsContext input) {
         LOGGER.debug("Calling OpenApiCustomCredentialProvider.getOauth2BearerToken for {}", input.getAuthName());
         String authorizationHeaderName = Optional.ofNullable(getHeaderName(input.getOpenApiSpecId(), input.getAuthName())).orElse(HttpHeaders.AUTHORIZATION);
-        boolean exchangeToken = ConfigReaderUtils.getExchangeTokenPropertyValue(input).orElse(false);
+        boolean exchangeToken = ConfigReaderUtils.getTokenExchangeEnabledPropertyValue(input).orElse(false);
         if (exchangeToken) {
             String accessToken;
 
