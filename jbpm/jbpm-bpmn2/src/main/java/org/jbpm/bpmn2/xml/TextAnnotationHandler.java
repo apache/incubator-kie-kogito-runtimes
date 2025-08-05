@@ -15,6 +15,8 @@ import org.jbpm.workflow.core.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import static org.jbpm.ruleflow.core.Metadata.TEXT_ANNOTATIONS;
+
 public class TextAnnotationHandler extends org.jbpm.compiler.xml.core.BaseAbstractHandler implements Handler {
 
     public TextAnnotationHandler() {
@@ -44,11 +46,11 @@ public class TextAnnotationHandler extends org.jbpm.compiler.xml.core.BaseAbstra
         TextAnnotation annotation = new TextAnnotation();
         annotation.setId(id);
         Map<String, TextAnnotation> annotations =
-                (Map<String, TextAnnotation>) ((ProcessBuildData) parser.getData()).getMetaData("TextAnnotations");
+                (Map<String, TextAnnotation>) ((ProcessBuildData) parser.getData()).getMetaData(TEXT_ANNOTATIONS);
 
         if (annotations == null) {
             annotations = new HashMap<>();
-            ((ProcessBuildData) parser.getData()).setMetaData("TextAnnotations", annotations);
+            ((ProcessBuildData) parser.getData()).setMetaData(TEXT_ANNOTATIONS, annotations);
         }
         annotations.put(id, annotation);
 

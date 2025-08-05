@@ -108,6 +108,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import static org.jbpm.ruleflow.core.Metadata.TEXT_ANNOTATIONS;
 import static org.jbpm.workflow.instance.WorkflowProcessParameters.WORKFLOW_PARAM_MULTIPLE_CONNECTIONS;
 
 public class ProcessHandler extends BaseAbstractHandler implements Handler {
@@ -360,7 +361,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
             }
         }
         Map<String, TextAnnotation> annotations =
-                (Map<String, TextAnnotation>) ((ProcessBuildData) parser.getData()).getMetaData("TextAnnotations");
+                (Map<String, TextAnnotation>) ((ProcessBuildData) parser.getData()).getMetaData(TEXT_ANNOTATIONS);
 
         if (annotations != null) {
             TextAnnotation ta = annotations.get(nodeRef);
