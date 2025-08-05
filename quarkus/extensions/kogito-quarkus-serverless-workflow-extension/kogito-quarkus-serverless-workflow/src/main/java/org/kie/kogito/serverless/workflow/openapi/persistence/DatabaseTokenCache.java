@@ -19,31 +19,20 @@
 package org.kie.kogito.serverless.workflow.openapi.persistence;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import org.kie.kogito.serverless.workflow.openapi.cachemanagement.CachedTokens;
+import org.kie.kogito.serverless.workflow.openapi.cachemanagement.TokenRemovalCause;
 import org.kie.kogito.serverless.workflow.openapi.persistence.TokenDataStore.TokenEntry;
 import org.kie.kogito.serverless.workflow.openapi.utils.CacheUtils;
 import org.kie.kogito.serverless.workflow.openapi.utils.ConfigReaderUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Policy;
-import com.github.benmanes.caffeine.cache.RemovalCause;
-import com.github.benmanes.caffeine.cache.RemovalListener;
-import com.github.benmanes.caffeine.cache.stats.CacheStats;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -55,7 +44,7 @@ import jakarta.inject.Inject;
  * while maintaining in-memory cache for performance and token monitoring.
  */
 @ApplicationScoped
-public class DatabaseTokenCache implements Cache<String, CachedTokens> {
+public class DatabaseTokenCache {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseTokenCache.class);
 
@@ -66,7 +55,7 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
     private static final ConcurrentHashMap<String, CachedTokens> MEMORY_CACHE = new ConcurrentHashMap<>();
 
     // Removal listener for monitoring token evictions
-    private RemovalListener<String, CachedTokens> removalListener;
+    private Consumer<TokenRemovalEvent> removalListener;
 
     // Schedulers
     private ScheduledExecutorService refreshMonitoringScheduler;
@@ -98,27 +87,21 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
         }
     }
 
-    /**
-     * Set removal listener to maintain compatibility with existing TokenEvictionHandler
-     */
-    public void setRemovalListener(RemovalListener<String, CachedTokens> removalListener) {
+    public void setRemovalListener(Consumer<TokenRemovalEvent> removalListener) {
         this.removalListener = removalListener;
     }
 
-    @Override
     public CachedTokens getIfPresent(String key) {
-        String cacheKey = key;
-
         // Check memory cache first
-        CachedTokens tokens = MEMORY_CACHE.get(cacheKey);
+        CachedTokens tokens = MEMORY_CACHE.get(key);
         if (tokens != null) {
             if (!tokens.isExpiredNow()) {
                 return tokens;
             } else {
                 // Remove expired token from memory and notify removal listener
-                MEMORY_CACHE.remove(cacheKey);
-                notifyRemoval(cacheKey, tokens, RemovalCause.EXPIRED);
-                invalidate(cacheKey);
+                MEMORY_CACHE.remove(key);
+                notifyRemoval(key, tokens, TokenRemovalCause.EXPIRED);
+                invalidate(key);
             }
         }
 
@@ -131,7 +114,6 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
                 .orElse(null);
     }
 
-    @Override
     public void put(String key, CachedTokens value) {
         // Store in memory for fast access
         CachedTokens previous = MEMORY_CACHE.put(key, value);
@@ -142,7 +124,7 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
 
             // Notify removal listener if we replaced an existing value
             if (previous != null) {
-                notifyRemoval(key, previous, RemovalCause.REPLACED);
+                notifyRemoval(key, previous, TokenRemovalCause.REPLACED);
             }
 
         } catch (Exception e) {
@@ -150,42 +132,21 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
         }
     }
 
-    @Override
     public void invalidate(String key) {
-        String cacheKey = key;
-        CachedTokens removed = MEMORY_CACHE.remove(cacheKey);
+        CachedTokens removed = MEMORY_CACHE.remove(key);
 
         try {
-            dataStore.remove(cacheKey);
-            LOGGER.debug("Invalidated token cache entry for key: {}", cacheKey);
+            dataStore.remove(key);
+            LOGGER.debug("Invalidated token cache entry for key: {}", key);
 
             // Notify removal listener
             if (removed != null) {
-                notifyRemoval(cacheKey, removed, RemovalCause.EXPLICIT);
+                notifyRemoval(key, removed, TokenRemovalCause.EXPLICIT);
             }
 
         } catch (Exception e) {
-            LOGGER.error("Failed to invalidate token cache entry for key: {}", cacheKey, e);
+            LOGGER.error("Failed to invalidate token cache entry for key: {}", key, e);
         }
-    }
-
-    @Override
-    public void invalidateAll() {
-        // Notify removal listener for all entries
-        MEMORY_CACHE.forEach((key, value) -> notifyRemoval(key, value, RemovalCause.EXPLICIT));
-
-        MEMORY_CACHE.clear();
-        // Note: We don't clear the database to preserve tokens across restarts
-        LOGGER.debug("Invalidated all in-memory token cache entries");
-    }
-
-    @Override
-    public long estimatedSize() {
-        return MEMORY_CACHE.size();
-    }
-
-    @Override
-    public void cleanUp() {
     }
 
     private void loadFromDataStore() {
@@ -229,7 +190,7 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
 
             for (String cacheKey : tokensToRemove) {
                 LOGGER.info("Triggering proactive refresh for {}", cacheKey);
-                notifyRemoval(cacheKey, MEMORY_CACHE.remove(cacheKey), RemovalCause.EXPIRED);
+                notifyRemoval(cacheKey, MEMORY_CACHE.remove(cacheKey), TokenRemovalCause.EXPIRED);
             }
         } catch (Exception e) {
             LOGGER.error("Failed to monitor expiring tokens", e);
@@ -239,10 +200,10 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
     }
 
     // Notify removal listener if set
-    private void notifyRemoval(String key, CachedTokens value, RemovalCause cause) {
+    private void notifyRemoval(String key, CachedTokens value, TokenRemovalCause cause) {
         if (removalListener != null) {
             try {
-                removalListener.onRemoval(key, value, cause);
+                removalListener.accept(new TokenRemovalEvent(key, value, cause));
             } catch (Exception e) {
                 LOGGER.error("Error in removal listener for cache key: {}", key, e);
             }
@@ -251,65 +212,9 @@ public class DatabaseTokenCache implements Cache<String, CachedTokens> {
         }
     }
 
-    // Remaining Cache interface implementations...
-    @Override
-    public void putAll(Map<? extends String, ? extends CachedTokens> map) {
-        map.forEach(this::put);
-    }
-
-    @Override
-    public void invalidateAll(Iterable<? extends String> keys) {
-        keys.forEach(this::invalidate);
-    }
-
-    @Override
-    public CachedTokens get(String key, Function<? super String, ? extends CachedTokens> mappingFunction) {
-        CachedTokens value = getIfPresent(key);
-        if (value == null) {
-            value = mappingFunction.apply(key);
-            if (value != null) {
-                put(key, value);
-            }
-        }
-        return value;
-    }
-
-    @Override
-    public Map<String, CachedTokens> getAllPresent(Iterable<? extends String> keys) {
-        Map<String, CachedTokens> result = new HashMap<>();
-        keys.forEach(key -> {
-            CachedTokens value = getIfPresent(key);
-            if (value != null) {
-                result.put(key, value);
-            }
-        });
-        return result;
-    }
-
-    @Override
-    public Map<String, CachedTokens> getAll(Iterable<? extends String> keys,
-            Function<? super Set<? extends String>, ? extends Map<? extends String, ? extends CachedTokens>> mappingFunction) {
-        throw new UnsupportedOperationException("getAll with mappingFunction not supported");
-    }
-
-    public CompletableFuture<CachedTokens> get(String key,
-            Function<? super String, ? extends CachedTokens> mappingFunction,
-            Executor executor) {
-        return CompletableFuture.supplyAsync(() -> get(key, mappingFunction), executor);
-    }
-
-    @Override
-    public CacheStats stats() {
-        return CacheStats.empty();
-    }
-
-    @Override
-    public ConcurrentMap<String, CachedTokens> asMap() {
-        return new ConcurrentHashMap<>(MEMORY_CACHE);
-    }
-
-    @Override
-    public Policy<String, CachedTokens> policy() {
-        throw new UnsupportedOperationException("Policy access not supported");
+    /**
+     * Simple record to represent token removal events
+     */
+    public static record TokenRemovalEvent(String key, CachedTokens value, TokenRemovalCause cause) {
     }
 }

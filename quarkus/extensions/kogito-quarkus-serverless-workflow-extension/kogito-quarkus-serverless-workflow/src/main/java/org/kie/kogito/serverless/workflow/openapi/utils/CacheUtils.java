@@ -19,10 +19,9 @@
 package org.kie.kogito.serverless.workflow.openapi.utils;
 
 import org.kie.kogito.serverless.workflow.openapi.cachemanagement.CachedTokens;
+import org.kie.kogito.serverless.workflow.openapi.persistence.DatabaseTokenCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.github.benmanes.caffeine.cache.Cache;
 
 import io.quarkiverse.openapi.generator.providers.CredentialsContext;
 import io.quarkus.oidc.client.Tokens;
@@ -108,7 +107,7 @@ public final class CacheUtils {
      * @param cacheKey The cache key
      * @param refreshedTokens The refreshed tokens
      */
-    public static void cacheTokens(Cache<String, CachedTokens> tokenCache, String cacheKey, Tokens refreshedTokens) {
+    public static void cacheTokens(DatabaseTokenCache tokenCache, String cacheKey, Tokens refreshedTokens) {
         long expirationTime = JwtTokenUtils.parseTokenExpiration(refreshedTokens.getAccessToken());
 
         CachedTokens newCachedTokens = new CachedTokens(

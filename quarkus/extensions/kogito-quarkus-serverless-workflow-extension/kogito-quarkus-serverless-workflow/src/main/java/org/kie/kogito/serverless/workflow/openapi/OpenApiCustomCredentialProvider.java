@@ -32,8 +32,6 @@ import org.kie.kogito.serverless.workflow.openapi.utils.OidcClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.benmanes.caffeine.cache.Cache;
-
 import io.quarkiverse.openapi.generator.providers.ConfigCredentialsProvider;
 import io.quarkiverse.openapi.generator.providers.CredentialsContext;
 import io.quarkus.oidc.client.OidcClient;
@@ -169,7 +167,7 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
      *
      * @return The token cache for storing token pairs
      */
-    public Cache<String, CachedTokens> getTokenCache() {
+    public DatabaseTokenCache getTokenCache() {
         return tokenCache;
     }
 

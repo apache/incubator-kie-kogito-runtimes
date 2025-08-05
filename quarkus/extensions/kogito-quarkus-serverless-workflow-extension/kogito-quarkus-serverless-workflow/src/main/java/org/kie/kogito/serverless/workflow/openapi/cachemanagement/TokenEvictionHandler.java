@@ -20,15 +20,14 @@ package org.kie.kogito.serverless.workflow.openapi.cachemanagement;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import org.kie.kogito.serverless.workflow.openapi.OpenApiCustomCredentialProvider;
+import org.kie.kogito.serverless.workflow.openapi.persistence.DatabaseTokenCache;
 import org.kie.kogito.serverless.workflow.openapi.utils.CacheUtils;
 import org.kie.kogito.serverless.workflow.openapi.utils.OidcClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.github.benmanes.caffeine.cache.RemovalCause;
-import com.github.benmanes.caffeine.cache.RemovalListener;
 
 import io.quarkus.oidc.client.OidcClient;
 import io.quarkus.oidc.client.Tokens;
@@ -50,23 +49,15 @@ public class TokenEvictionHandler {
     }
 
     /**
-     * Creates a RemovalListener that can be used with Caffeine cache.
+     * Creates a removal listener that can be used with token cache.
      * 
-     * @return A RemovalListener that handles token eviction events
+     * @return A removal listener that handles token eviction events
      */
-    public RemovalListener<String, CachedTokens> createRemovalListener() {
-        return new TokenEvictionListener();
-    }
-
-    /**
-     * Inner class implementing RemovalListener for token cache eviction events.
-     */
-    private class TokenEvictionListener implements RemovalListener<String, CachedTokens> {
-        @Override
-        public void onRemoval(String key, CachedTokens value, RemovalCause cause) {
-            LOGGER.info("Token cache eviction for cache key '{}' - Cause: {}", key, cause);
-            onTokenExpired(key, value, cause);
-        }
+    public Consumer<DatabaseTokenCache.TokenRemovalEvent> createRemovalListener() {
+        return event -> {
+            LOGGER.info("Token cache eviction for cache key '{}' - Cause: {}", event.key(), event.cause());
+            onTokenExpired(event.key(), event.value(), event.cause());
+        };
     }
 
     /**
@@ -76,9 +67,9 @@ public class TokenEvictionHandler {
      * @param tokens The evicted token data
      * @param cause The reason for eviction
      */
-    private void onTokenExpired(String cacheKey, CachedTokens tokens, RemovalCause cause) {
+    private void onTokenExpired(String cacheKey, CachedTokens tokens, TokenRemovalCause cause) {
         LOGGER.warn("OAuth2 tokens for cache key '{}' have expired/been evicted: {}", cacheKey, cause);
-        if (cause == RemovalCause.EXPIRED) {
+        if (cause == TokenRemovalCause.EXPIRED) {
             if (tokens.getRefreshToken() != null) {
                 CompletableFuture.runAsync(() -> {
                     try {
