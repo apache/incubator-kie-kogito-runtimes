@@ -1,6 +1,8 @@
 package org.jbpm.bpmn2.xml;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.jbpm.bpmn2.core.*;
 import org.jbpm.bpmn2.core.Error;
@@ -30,10 +32,7 @@ public class TextAnnotationHandler extends org.jbpm.compiler.xml.core.BaseAbstra
             this.validPeers.add(Signal.class);
             this.validPeers.add(DataStore.class);
             this.validPeers.add(RuleFlowProcess.class);
-            this.validPeers.add(Node.class);
             this.validPeers.add(SequenceFlow.class);
-            this.validPeers.add(TextAnnotation.class);
-            this.validPeers.add(MetaDataHandler.MetaDataWrapper.class);
             this.allowNesting = false;
         }
     }
@@ -44,8 +43,14 @@ public class TextAnnotationHandler extends org.jbpm.compiler.xml.core.BaseAbstra
         String id = attrs.getValue("id");
         TextAnnotation annotation = new TextAnnotation();
         annotation.setId(id);
-        // Register the TextAnnotation by ID in ProcessBuildData
-        ((ProcessBuildData) parser.getData()).setMetaData(id, annotation);
+        Map<String, TextAnnotation> annotations =
+                (Map<String, TextAnnotation>) ((ProcessBuildData) parser.getData()).getMetaData("TextAnnotations");
+
+        if (annotations == null) {
+            annotations = new HashMap<>();
+            ((ProcessBuildData) parser.getData()).setMetaData("TextAnnotations", annotations);
+        }
+        annotations.put(id, annotation);
 
         return annotation;
     }

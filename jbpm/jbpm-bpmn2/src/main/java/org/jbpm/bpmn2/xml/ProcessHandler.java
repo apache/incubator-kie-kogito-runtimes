@@ -359,10 +359,15 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                 }
             }
         }
-        Object artifact = ((ProcessBuildData) parser.getData()).getMetaData(nodeRef);
-        if (artifact instanceof TextAnnotation) {
-            logger.warn("Skipping association to TextAnnotation '{}'", nodeRef);
-            return artifact;
+        Map<String, TextAnnotation> annotations =
+                (Map<String, TextAnnotation>) ((ProcessBuildData) parser.getData()).getMetaData("TextAnnotations");
+
+        if (annotations != null) {
+            TextAnnotation ta = annotations.get(nodeRef);
+            if (ta != null) {
+                logger.debug("Skipping association to TextAnnotation '{}'", nodeRef);
+                return ta;
+            }
         }
         return findNodeByIdOrUniqueIdInMetadata(nodeContainer, nodeRef, errorMsg);
     }
