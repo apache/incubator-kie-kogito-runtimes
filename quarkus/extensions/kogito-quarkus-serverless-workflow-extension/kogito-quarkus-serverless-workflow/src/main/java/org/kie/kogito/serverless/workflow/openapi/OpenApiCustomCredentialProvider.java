@@ -24,13 +24,19 @@ import java.util.Optional;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.serverless.workflow.openapi.cachemanagement.CachedTokens;
+import org.kie.kogito.serverless.workflow.openapi.cachemanagement.TokenCRUD;
 import org.kie.kogito.serverless.workflow.openapi.cachemanagement.TokenEvictionHandler;
-import org.kie.kogito.serverless.workflow.openapi.persistence.DatabaseTokenCache;
+import org.kie.kogito.serverless.workflow.openapi.cachemanagement.TokenPolicyManager;
+import org.kie.kogito.serverless.workflow.openapi.persistence.DatabaseTokenDataStore;
 import org.kie.kogito.serverless.workflow.openapi.utils.CacheUtils;
 import org.kie.kogito.serverless.workflow.openapi.utils.ConfigReaderUtils;
 import org.kie.kogito.serverless.workflow.openapi.utils.OidcClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.Scheduler;
 
 import io.quarkiverse.openapi.generator.providers.ConfigCredentialsProvider;
 import io.quarkiverse.openapi.generator.providers.CredentialsContext;
@@ -41,10 +47,10 @@ import io.quarkus.oidc.client.Tokens;
 import io.quarkus.runtime.configuration.ConfigurationException;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Alternative;
-import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.Specializes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -52,7 +58,8 @@ import jakarta.ws.rs.core.HttpHeaders;
 import static io.quarkiverse.openapi.generator.providers.AbstractAuthProvider.getHeaderName;
 
 /**
- * Custom credential provider that supports OAuth2 token exchange and caching.
+ * Custom credential provider that supports OAuth2 token exchange and caching using Caffeine cache
+ * with database persistence and per-token expiration management.
  *
  * Configuration properties:
  * - sonataflow.security.{authName}.token-exchange.enabled: Enable token exchange for the specified auth name
@@ -62,34 +69,34 @@ import static io.quarkiverse.openapi.generator.providers.AbstractAuthProvider.ge
 @Alternative
 @Specializes
 @Priority(200)
-public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
+public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider implements TokenCRUD {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenApiCustomCredentialProvider.class);
     public static final String LOG_PREFIX_STARTING_TOKEN_EXCHANGE = "STARTING TOKEN EXCHANGE";
     public static final String LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE = "COMPLETED TOKEN EXCHANGE";
     public static final String LOG_PREFIX_FAILED_TOKEN_EXCHANGE = "FAILED TOKEN EXCHANGE";
 
     @Inject
-    Instance<DatabaseTokenCache> tokenCacheInstance;
-
-    DatabaseTokenCache tokenCache;
+    private DatabaseTokenDataStore dataStore;
+    private LoadingCache<String, CachedTokens> tokenCache;
 
     @PostConstruct
     public void initCache() {
-        if (tokenCacheInstance.isResolvable()) {
-            tokenCache = tokenCacheInstance.get();
-            try {
-                tokenCache.setRemovalListener(new TokenEvictionHandler(this).createRemovalListener());
-            } catch (IllegalStateException e) {
-                LOGGER.error("Error while initializing the database for token cache. Token cache will not be available, make sure the datasource is correctly configured", e);
-                tokenCache = null;
-            }
-            LOGGER.info("Database token cache initialized with eviction handler");
-        } else {
-            LOGGER.info("No database token cache found, if {} enabled for any spec, you should configure the datasource otherwise the token exchange will not be cached",
-                    ConfigReaderUtils.CANONICAL_TOKEN_EXCHANGE_ENABLED_PROPERTY_NAME);
-            tokenCache = null;
-        }
+        this.tokenCache = Caffeine.newBuilder()
+                .expireAfter(TokenPolicyManager.createTokenExpiryPolicy())
+                .scheduler(Scheduler.systemScheduler())
+                .removalListener(new TokenEvictionHandler(this).createRemovalListener()) // Use TokenEvictionHandler's removal listener
+                .build(this::loadTokenFromDatabase);
 
+        LOGGER.info("Caffeine token cache initialized with per-token expiration");
+    }
+
+    /**
+     * Load token from database when cache miss occurs during refresh
+     */
+    private CachedTokens loadTokenFromDatabase(String cacheKey) {
+        return dataStore.retrieve(cacheKey)
+                .filter(tokens -> !tokens.isExpiredNow())
+                .orElse(null);
     }
 
     @Override
@@ -97,13 +104,13 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
         LOGGER.debug("Calling OpenApiCustomCredentialProvider.getOauth2BearerToken for {}", input.getAuthName());
         String authorizationHeaderName = Optional.ofNullable(getHeaderName(input.getOpenApiSpecId(), input.getAuthName())).orElse(HttpHeaders.AUTHORIZATION);
         boolean exchangeToken = ConfigReaderUtils.getTokenExchangeEnabledPropertyValue(input).orElse(false);
-        if (exchangeToken) {
-            String accessToken;
 
+        if (exchangeToken) {
             LOGGER.info("Oauth2 token exchange enabled for {}, will generate tokens...", input.getAuthName());
 
             String cacheKey = CacheUtils.buildCacheKey(input);
-            accessToken = getAccessTokenFromCache(cacheKey);
+            String accessToken = getAccessTokenFromCache(cacheKey);
+
             if (accessToken == null) {
                 accessToken = performTokenExchange(input, cacheKey, authorizationHeaderName);
             }
@@ -113,34 +120,37 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
     }
 
     private String getAccessTokenFromCache(String cacheKey) {
-        String accessToken = null;
+        if (tokenCache == null) {
+            return null;
+        }
 
-        if (tokenCache != null) {
-            CachedTokens cachedTokens = tokenCache.getIfPresent(cacheKey);
+        try {
+            CachedTokens cachedTokens = tokenCache.get(cacheKey);
             if (cachedTokens != null) {
                 LOGGER.debug("Found cached tokens for cache key '{}'", cacheKey);
                 if (!cachedTokens.isExpiredNow()) {
                     LOGGER.debug("Using valid cached access token for cache key '{}'", cacheKey);
-                    accessToken = cachedTokens.getAccessToken();
+                    return cachedTokens.getAccessToken();
                 } else {
                     LOGGER.info("Cached token for cache key '{}' is expired, falling back to new token exchange", cacheKey);
                     tokenCache.invalidate(cacheKey);
                 }
             }
+        } catch (Exception e) {
+            LOGGER.warn("Failed to retrieve token from cache for key '{}': {}", cacheKey, e.getMessage());
         }
-        return accessToken;
+        return null;
     }
 
     private String performTokenExchange(CredentialsContext input, String cacheKey, String authorizationHeaderName) {
-        String accessToken;
         LOGGER.info("Performing token exchange for '{}'", cacheKey);
 
-        accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
+        String accessToken = input.getRequestContext().getHeaderString(authorizationHeaderName);
         if (ConversionUtils.isEmpty(accessToken)) {
             throw new ConfigurationException("An access token is required in the header %s (default is %s) but none was provided".formatted(authorizationHeaderName, HttpHeaders.AUTHORIZATION));
         }
-        accessToken = exchangeToken(accessToken, OidcClientUtils.getExchangeTokenClient(input.getAuthName()), input, cacheKey);
-        return accessToken;
+
+        return exchangeToken(accessToken, OidcClientUtils.getExchangeTokenClient(input.getAuthName()), input, cacheKey);
     }
 
     private String exchangeToken(String token, OidcClient exchangeTokenClient, CredentialsContext input, String cacheKey) {
@@ -148,12 +158,15 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
                 .getValue("quarkus.oidc-client.%s.grant.type".formatted(input.getAuthName()), OidcClientConfig.Grant.Type.class);
         try {
             LOGGER.info("{} - Cache key: {}, Thread: {}", LOG_PREFIX_STARTING_TOKEN_EXCHANGE, cacheKey, Thread.currentThread().getName());
+
             Tokens tokens = exchangeTokenClient.getTokens(Collections.singletonMap(
                     OidcClientUtils.getExchangeTokenProperty(exchangeTokenGrantType), token)).await().indefinitely();
 
-            CacheUtils.cacheTokens(this.tokenCache, cacheKey, tokens);
-            LOGGER.info("{} - Cache key: {}, Thread: {}", LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE, cacheKey, Thread.currentThread().getName());
+            this.storeToken(cacheKey, tokens);
 
+            LOGGER.info("{} - Cache key: {}, Thread: {}, Token expires at: {}",
+                    LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE, cacheKey, Thread.currentThread().getName(),
+                    tokens.getAccessTokenExpiresAt());
             return tokens.getAccessToken();
 
         } catch (OidcClientException e) {
@@ -163,12 +176,43 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider {
     }
 
     /**
-     * Gets the token cache instance.
-     *
-     * @return The token cache for storing token pairs
+     * Store tokens in cache - used by TokenEvictionHandler for refresh operations
      */
-    public DatabaseTokenCache getTokenCache() {
-        return tokenCache;
+
+    @Override
+    public void storeToken(String cacheKey, Tokens tokens) {
+        CachedTokens cachedTokens = new CachedTokens(
+                tokens.getAccessToken(),
+                tokens.getRefreshToken(),
+                tokens.getAccessTokenExpiresAt());
+
+        this.tokenCache.put(cacheKey, cachedTokens);
+
+        try {
+            dataStore.store(cacheKey, cachedTokens);
+            LOGGER.debug("Persisted token for cache key {} using {}", cacheKey, dataStore.getClass().getSimpleName());
+        } catch (Exception e) {
+            LOGGER.error("Failed to persist token for key {} using {} ", cacheKey, dataStore.getClass().getSimpleName(), e);
+        }
+
+        LOGGER.debug("Stored token in cache for key: {}", cacheKey);
     }
 
+    @Override
+    public void deleteToken(String cacheKey) {
+        try {
+            dataStore.remove(cacheKey);
+            LOGGER.debug("Removed token for cache key {} using {}", cacheKey, dataStore.getClass().getSimpleName());
+        } catch (Exception e) {
+            LOGGER.error("Failed to remove token for key {} using {} ", cacheKey, dataStore.getClass().getSimpleName(), e);
+        }
+    }
+
+    @PreDestroy
+    public void cleanup() {
+        if (tokenCache != null) {
+            tokenCache.invalidateAll();
+            LOGGER.info("Token cache cleared on shutdown");
+        }
+    }
 }

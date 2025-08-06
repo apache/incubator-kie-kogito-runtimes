@@ -18,13 +18,10 @@
  */
 package org.kie.kogito.serverless.workflow.openapi.utils;
 
-import org.kie.kogito.serverless.workflow.openapi.cachemanagement.CachedTokens;
-import org.kie.kogito.serverless.workflow.openapi.persistence.DatabaseTokenCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.quarkiverse.openapi.generator.providers.CredentialsContext;
-import io.quarkus.oidc.client.Tokens;
 
 public final class CacheUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheUtils.class);
@@ -100,22 +97,4 @@ public final class CacheUtils {
         return cacheKey.substring(0, colonIndex);
     }
 
-    /**
-     * Caches the tokens for the given cache key.
-     * 
-     * @param tokenCache The cache to store the tokens
-     * @param cacheKey The cache key
-     * @param refreshedTokens The refreshed tokens
-     */
-    public static void cacheTokens(DatabaseTokenCache tokenCache, String cacheKey, Tokens refreshedTokens) {
-        long expirationTime = JwtTokenUtils.parseTokenExpiration(refreshedTokens.getAccessToken());
-
-        CachedTokens newCachedTokens = new CachedTokens(
-                refreshedTokens.getAccessToken(),
-                refreshedTokens.getRefreshToken(),
-                expirationTime);
-        tokenCache.put(cacheKey, newCachedTokens);
-
-        LOGGER.info("Successfully cached tokens for cache key '{}' (expires at {})", cacheKey, expirationTime);
-    }
 }
