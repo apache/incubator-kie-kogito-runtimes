@@ -16,28 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.serverless.workflow.token.persistence.jdbc;
 
-import javax.sql.DataSource;
+package org.kie.kogito.addons.quarkus.token.exchange.cache;
 
-import org.kie.kogito.addons.quarkus.token.exchange.persistence.TokenCacheRepository;
+import io.quarkus.oidc.client.Tokens;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Inject;
+public interface TokenCRUD {
+    public void storeToken(String cacheKey, Tokens tokens);
 
-/**
- * Producer for JDBC-based TokenCacheRepository implementation
- */
-@ApplicationScoped
-public class JdbcTokenCacheRepositoryProducer {
-
-    @Inject
-    DataSource dataSource;
-
-    @Produces
-    @ApplicationScoped
-    public TokenCacheRepository tokenCacheRepository() {
-        return new JdbcTokenCacheRepository(dataSource);
-    }
+    public void deleteToken(String cacheKey);
 }

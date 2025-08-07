@@ -42,15 +42,15 @@ import io.restassured.path.json.JsonPath;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import static io.restassured.RestAssured.given;
+import static org.kie.kogito.addons.quarkus.token.exchange.OpenApiCustomCredentialProvider.LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE;
+import static org.kie.kogito.addons.quarkus.token.exchange.OpenApiCustomCredentialProvider.LOG_PREFIX_FAILED_TOKEN_EXCHANGE;
+import static org.kie.kogito.addons.quarkus.token.exchange.OpenApiCustomCredentialProvider.LOG_PREFIX_STARTING_TOKEN_EXCHANGE;
+import static org.kie.kogito.addons.quarkus.token.exchange.cache.TokenEvictionHandler.LOG_PREFIX_FAILED_TO_REFRESH_TOKEN;
+import static org.kie.kogito.addons.quarkus.token.exchange.cache.TokenEvictionHandler.LOG_PREFIX_REFRESH_COMPLETED;
+import static org.kie.kogito.addons.quarkus.token.exchange.cache.TokenEvictionHandler.LOG_PREFIX_TOKEN_REFRESH;
+import static org.kie.kogito.addons.quarkus.token.exchange.persistence.DatabaseTokenDataStore.LOG_PREFIX_USED_REPOSITORY;
 import static org.kie.kogito.quarkus.workflows.ExternalServiceMock.SUCCESSFUL_QUERY;
 import static org.kie.kogito.quarkus.workflows.TokenExchangeExternalServicesMock.BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN;
-import static org.kie.kogito.serverless.workflow.openapi.OpenApiCustomCredentialProvider.LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE;
-import static org.kie.kogito.serverless.workflow.openapi.OpenApiCustomCredentialProvider.LOG_PREFIX_FAILED_TOKEN_EXCHANGE;
-import static org.kie.kogito.serverless.workflow.openapi.OpenApiCustomCredentialProvider.LOG_PREFIX_STARTING_TOKEN_EXCHANGE;
-import static org.kie.kogito.serverless.workflow.openapi.cachemanagement.TokenEvictionHandler.LOG_PREFIX_FAILED_TO_REFRESH_TOKEN;
-import static org.kie.kogito.serverless.workflow.openapi.cachemanagement.TokenEvictionHandler.LOG_PREFIX_REFRESH_COMPLETED;
-import static org.kie.kogito.serverless.workflow.openapi.cachemanagement.TokenEvictionHandler.LOG_PREFIX_TOKEN_REFRESH;
-import static org.kie.kogito.serverless.workflow.openapi.persistence.DatabaseTokenDataStore.LOG_PREFIX_USED_REPOSITORY;
 import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProcessInstanceNotExists;
 import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcessInstance;
 

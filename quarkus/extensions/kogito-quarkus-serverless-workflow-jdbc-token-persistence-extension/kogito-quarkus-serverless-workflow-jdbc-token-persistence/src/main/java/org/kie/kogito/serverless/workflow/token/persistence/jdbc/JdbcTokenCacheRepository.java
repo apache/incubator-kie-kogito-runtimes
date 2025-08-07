@@ -28,9 +28,9 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.kie.kogito.serverless.workflow.openapi.persistence.TokenCacheRepository;
-import org.kie.kogito.serverless.workflow.openapi.persistence.model.TokenCacheRecord;
-import org.kie.kogito.serverless.workflow.openapi.utils.CacheUtils;
+import org.kie.kogito.addons.quarkus.token.exchange.persistence.TokenCacheRepository;
+import org.kie.kogito.addons.quarkus.token.exchange.persistence.model.TokenCacheRecord;
+import org.kie.kogito.addons.quarkus.token.exchange.utils.CacheUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

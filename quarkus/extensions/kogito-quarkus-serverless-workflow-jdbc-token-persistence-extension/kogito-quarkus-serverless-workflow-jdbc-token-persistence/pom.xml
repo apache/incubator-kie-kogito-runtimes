@@ -65,6 +65,10 @@
       <groupId>jakarta.inject</groupId>
       <artifactId>jakarta.inject-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-addons-quarkus-token-exchange</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

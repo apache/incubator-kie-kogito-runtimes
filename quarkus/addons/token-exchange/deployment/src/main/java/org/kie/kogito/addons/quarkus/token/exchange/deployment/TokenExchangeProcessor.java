@@ -16,28 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.serverless.workflow.token.persistence.jdbc;
+package org.kie.kogito.addons.quarkus.token.exchange.deployment;
 
-import javax.sql.DataSource;
+import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-import org.kie.kogito.addons.quarkus.token.exchange.persistence.TokenCacheRepository;
+class TokenExchangeProcessor {
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Inject;
+    private static final String FEATURE = "kie-addons-token-exchange";
 
-/**
- * Producer for JDBC-based TokenCacheRepository implementation
- */
-@ApplicationScoped
-public class JdbcTokenCacheRepositoryProducer {
-
-    @Inject
-    DataSource dataSource;
-
-    @Produces
-    @ApplicationScoped
-    public TokenCacheRepository tokenCacheRepository() {
-        return new JdbcTokenCacheRepository(dataSource);
+    @BuildStep
+    FeatureBuildItem feature() {
+        return new FeatureBuildItem(FEATURE);
     }
 }

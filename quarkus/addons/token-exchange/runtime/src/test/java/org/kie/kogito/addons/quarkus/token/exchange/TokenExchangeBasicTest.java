@@ -16,28 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.serverless.workflow.token.persistence.jdbc;
+package org.kie.kogito.addons.quarkus.token.exchange;
 
-import javax.sql.DataSource;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.addons.quarkus.token.exchange.utils.OidcClientUtils;
 
-import org.kie.kogito.addons.quarkus.token.exchange.persistence.TokenCacheRepository;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Inject;
+class TokenExchangeBasicTest {
 
-/**
- * Producer for JDBC-based TokenCacheRepository implementation
- */
-@ApplicationScoped
-public class JdbcTokenCacheRepositoryProducer {
-
-    @Inject
-    DataSource dataSource;
-
-    @Produces
-    @ApplicationScoped
-    public TokenCacheRepository tokenCacheRepository() {
-        return new JdbcTokenCacheRepository(dataSource);
+    @Test
+    void testUtilityClassesAreAccessible() {
+        // Test that our moved classes are accessible
+        assertNotNull(OidcClientUtils.class);
     }
 }

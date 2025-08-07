@@ -16,28 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.serverless.workflow.token.persistence.jdbc;
-
-import javax.sql.DataSource;
-
-import org.kie.kogito.addons.quarkus.token.exchange.persistence.TokenCacheRepository;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Inject;
+package org.kie.kogito.addons.quarkus.token.exchange.cache;
 
 /**
- * Producer for JDBC-based TokenCacheRepository implementation
+ * Enumeration of the reasons why a cached entry was removed.
  */
-@ApplicationScoped
-public class JdbcTokenCacheRepositoryProducer {
+public enum TokenRemovalCause {
 
-    @Inject
-    DataSource dataSource;
+    /** The entry was automatically removed due to expiration. */
+    EXPIRED,
 
-    @Produces
-    @ApplicationScoped
-    public TokenCacheRepository tokenCacheRepository() {
-        return new JdbcTokenCacheRepository(dataSource);
-    }
+    /** The entry was manually removed by calling invalidate(). */
+    EXPLICIT,
+
+    /** The entry was replaced with a new value. */
+    REPLACED
 }
