@@ -59,7 +59,6 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
         return produce(message, (v, e) -> {
             if (e != null) {
                 LOGGER.error("Error processing message {}", message.getPayload(), e);
-                LOGGER.debug("NonAcking message {}", message);
                 message.nack(e);
             } else {
                 LOGGER.debug("Acking message {}", message);
