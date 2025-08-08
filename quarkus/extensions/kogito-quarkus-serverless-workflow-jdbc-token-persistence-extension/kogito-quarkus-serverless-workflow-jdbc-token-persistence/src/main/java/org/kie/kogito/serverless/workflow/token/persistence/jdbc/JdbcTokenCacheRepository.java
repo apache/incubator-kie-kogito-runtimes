@@ -21,9 +21,7 @@ package org.kie.kogito.serverless.workflow.token.persistence.jdbc;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.SQLException;
 import java.util.Optional;
 
 import javax.sql.DataSource;
@@ -51,15 +49,15 @@ public class JdbcTokenCacheRepository implements TokenCacheRepository {
 
     // SQL queries following the same pattern as other JDBC repositories
     static final String INSERT =
-            "INSERT INTO kogito_oauth2_token_cache (process_instance_id, auth_name, access_token, refresh_token, expiration_time, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    static final String UPDATE = "UPDATE kogito_oauth2_token_cache SET access_token = ?, refresh_token = ?, expiration_time = ?, updated_at = ? WHERE process_instance_id = ? AND auth_name = ?";
+            "INSERT INTO kogito_oauth2_token_cache (process_instance_id, auth_name, access_token, refresh_token, expiration_time) VALUES (?, ?, ?, ?, ?)";
+    static final String UPDATE = "UPDATE kogito_oauth2_token_cache SET access_token = ?, refresh_token = ?, expiration_time = ? WHERE process_instance_id = ? AND auth_name = ?";
     static final String FIND_BY_KEY =
-            "SELECT process_instance_id, auth_name, access_token, refresh_token, expiration_time, created_at, updated_at FROM kogito_oauth2_token_cache WHERE process_instance_id = ? AND auth_name = ?";
+            "SELECT process_instance_id, auth_name, access_token, refresh_token, expiration_time FROM kogito_oauth2_token_cache WHERE process_instance_id = ? AND auth_name = ?";
     static final String DELETE_BY_KEY = "DELETE FROM kogito_oauth2_token_cache WHERE process_instance_id = ? AND auth_name = ?";
     static final String DELETE_EXPIRED = "DELETE FROM kogito_oauth2_token_cache WHERE expiration_time < ?";
     static final String FIND_EXPIRING_SOON =
-            "SELECT process_instance_id, auth_name, access_token, refresh_token, expiration_time, created_at, updated_at FROM kogito_oauth2_token_cache WHERE expiration_time < ?";
-    static final String FIND_ALL = "SELECT process_instance_id, auth_name, access_token, refresh_token, expiration_time, created_at, updated_at FROM kogito_oauth2_token_cache";
+            "SELECT process_instance_id, auth_name, access_token, refresh_token, expiration_time FROM kogito_oauth2_token_cache WHERE expiration_time < ?";
+    static final String FIND_ALL = "SELECT process_instance_id, auth_name, access_token, refresh_token, expiration_time FROM kogito_oauth2_token_cache";
 
     private final DataSource dataSource;
 
@@ -70,7 +68,7 @@ public class JdbcTokenCacheRepository implements TokenCacheRepository {
     @Override
     public TokenCacheRecord save(TokenCacheRecord record) {
         // Check if record exists first - use direct method since we have the components
-        Optional<TokenCacheRecord> existing = findByKey(record.getProcessInstanceId(), record.getAuthName());
+        Optional<TokenCacheRecord> existing = findByKey(record.processInstanceId(), record.authName());
 
         if (existing.isPresent()) {
             return update(record);
@@ -83,26 +81,24 @@ public class JdbcTokenCacheRepository implements TokenCacheRepository {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(INSERT)) {
 
-            statement.setString(1, record.getProcessInstanceId());
-            statement.setString(2, record.getAuthName());
-            statement.setString(3, record.getAccessToken());
-            statement.setString(4, record.getRefreshToken());
-            statement.setLong(5, record.getExpirationTime());
-            statement.setTimestamp(6, Timestamp.from(record.getCreatedAt()));
-            statement.setTimestamp(7, Timestamp.from(record.getUpdatedAt()));
+            statement.setString(1, record.processInstanceId());
+            statement.setString(2, record.authName());
+            statement.setString(3, record.accessToken());
+            statement.setString(4, record.refreshToken());
+            statement.setLong(5, record.expirationTime());
 
             int executed = statement.executeUpdate();
             if (executed > 0) {
                 LOGGER.debug("Inserted token cache record for processInstanceId: {}, authName: {}",
-                        record.getProcessInstanceId(), record.getAuthName());
+                        record.processInstanceId(), record.authName());
                 return record;
             } else {
                 throw new RuntimeException("Failed to insert token cache record for processInstanceId: " +
-                        record.getProcessInstanceId() + ", authName: " + record.getAuthName());
+                        record.processInstanceId() + ", authName: " + record.authName());
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException("Error inserting token cache record for processInstanceId: " +
-                    record.getProcessInstanceId() + ", authName: " + record.getAuthName(), e);
+                    record.processInstanceId() + ", authName: " + record.authName(), e);
         }
     }
 
@@ -110,27 +106,24 @@ public class JdbcTokenCacheRepository implements TokenCacheRepository {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(UPDATE)) {
 
-            record.updateTimestamp(); // Update the timestamp
-
-            statement.setString(1, record.getAccessToken());
-            statement.setString(2, record.getRefreshToken());
-            statement.setLong(3, record.getExpirationTime());
-            statement.setTimestamp(4, Timestamp.from(record.getUpdatedAt()));
-            statement.setString(5, record.getProcessInstanceId());
-            statement.setString(6, record.getAuthName());
+            statement.setString(1, record.accessToken());
+            statement.setString(2, record.refreshToken());
+            statement.setLong(3, record.expirationTime());
+            statement.setString(4, record.processInstanceId());
+            statement.setString(5, record.authName());
 
             int executed = statement.executeUpdate();
             if (executed > 0) {
                 LOGGER.debug("Updated token cache record for processInstanceId: {}, authName: {}",
-                        record.getProcessInstanceId(), record.getAuthName());
+                        record.processInstanceId(), record.authName());
                 return record;
             } else {
                 throw new RuntimeException("Failed to update token cache record for processInstanceId: " +
-                        record.getProcessInstanceId() + ", authName: " + record.getAuthName());
+                        record.processInstanceId() + ", authName: " + record.authName());
             }
         } catch (Exception e) {
             throw new RuntimeException("Error updating token cache record for processInstanceId: " +
-                    record.getProcessInstanceId() + ", authName: " + record.getAuthName(), e);
+                    record.processInstanceId() + ", authName: " + record.authName(), e);
         }
     }
 
@@ -143,10 +136,7 @@ public class JdbcTokenCacheRepository implements TokenCacheRepository {
             statement.setString(2, authName);
 
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return Optional.of(mapResultSetToRecord(resultSet));
-                }
-                return Optional.empty();
+                return resultSet.next() ? Optional.of(mapResultSetToRecord(resultSet)) : Optional.empty();
             }
         } catch (Exception e) {
             throw new RuntimeException("Error finding token cache record by processInstanceId: " +
@@ -189,41 +179,12 @@ public class JdbcTokenCacheRepository implements TokenCacheRepository {
         deleteByKey(processInstanceId, authName);
     }
 
-    @Override
-    public List<TokenCacheRecord> findAll() {
-        try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                List<TokenCacheRecord> results = new ArrayList<>();
-                while (resultSet.next()) {
-                    results.add(mapResultSetToRecord(resultSet));
-                }
-                return results;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error finding all token cache records", e);
-        }
-    }
-
     private TokenCacheRecord mapResultSetToRecord(ResultSet resultSet) throws Exception {
-        TokenCacheRecord record = new TokenCacheRecord();
-        record.setProcessInstanceId(resultSet.getString("process_instance_id"));
-        record.setAuthName(resultSet.getString("auth_name"));
-        record.setAccessToken(resultSet.getString("access_token"));
-        record.setRefreshToken(resultSet.getString("refresh_token"));
-        record.setExpirationTime(resultSet.getLong("expiration_time"));
-
-        Timestamp createdAt = resultSet.getTimestamp("created_at");
-        if (createdAt != null) {
-            record.setCreatedAt(createdAt.toInstant());
-        }
-
-        Timestamp updatedAt = resultSet.getTimestamp("updated_at");
-        if (updatedAt != null) {
-            record.setUpdatedAt(updatedAt.toInstant());
-        }
-
-        return record;
+        return new TokenCacheRecord(
+                resultSet.getString("process_instance_id"),
+                resultSet.getString("auth_name"),
+                resultSet.getString("access_token"),
+                resultSet.getString("refresh_token"),
+                resultSet.getLong("expiration_time"));
     }
 }

@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.addons.quarkus.token.exchange.persistence;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.kie.kogito.addons.quarkus.token.exchange.persistence.model.TokenCacheRecord;
@@ -69,11 +68,4 @@ public interface TokenCacheRepository {
      * @param cacheKey the cache key
      */
     void deleteByCacheKey(String cacheKey);
-
-    /**
-     * Finds all token cache records.
-     *
-     * @return list of all records
-     */
-    List<TokenCacheRecord> findAll();
 }

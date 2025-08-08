@@ -48,7 +48,7 @@ import static org.kie.kogito.addons.quarkus.token.exchange.OpenApiCustomCredenti
 import static org.kie.kogito.addons.quarkus.token.exchange.cache.TokenEvictionHandler.LOG_PREFIX_FAILED_TO_REFRESH_TOKEN;
 import static org.kie.kogito.addons.quarkus.token.exchange.cache.TokenEvictionHandler.LOG_PREFIX_REFRESH_COMPLETED;
 import static org.kie.kogito.addons.quarkus.token.exchange.cache.TokenEvictionHandler.LOG_PREFIX_TOKEN_REFRESH;
-import static org.kie.kogito.addons.quarkus.token.exchange.persistence.DatabaseTokenDataStore.LOG_PREFIX_USED_REPOSITORY;
+import static org.kie.kogito.addons.quarkus.token.exchange.persistence.TokenDataStoreImpl.LOG_PREFIX_USED_REPOSITORY;
 import static org.kie.kogito.quarkus.workflows.ExternalServiceMock.SUCCESSFUL_QUERY;
 import static org.kie.kogito.quarkus.workflows.TokenExchangeExternalServicesMock.BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN;
 import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProcessInstanceNotExists;

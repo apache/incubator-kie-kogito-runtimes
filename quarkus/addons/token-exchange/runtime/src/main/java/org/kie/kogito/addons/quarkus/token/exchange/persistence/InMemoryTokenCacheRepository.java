@@ -19,8 +19,6 @@
 
 package org.kie.kogito.addons.quarkus.token.exchange.persistence;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import org.kie.kogito.addons.quarkus.token.exchange.persistence.model.TokenCacheRecord;
@@ -60,11 +58,6 @@ public class InMemoryTokenCacheRepository implements TokenCacheRepository {
     @Override
     public void deleteByCacheKey(String cacheKey) {
 
-    }
-
-    @Override
-    public List<TokenCacheRecord> findAll() {
-        return Collections.emptyList();
     }
 
 }

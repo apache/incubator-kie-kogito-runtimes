@@ -75,14 +75,14 @@ public class TokenEvictionHandler {
 
         // Handle proactive token refresh when cache entry expires (which happens before actual token expiration)
         if (cause == RemovalCause.EXPIRED) {
-            if (tokens.getRefreshToken() == null) {
+            if (tokens.refreshToken() == null) {
                 LOGGER.warn("OAuth2 tokens for cache key '{}' has no refresh token, the access token cannot be refreshed.", cacheKey);
                 return;
             }
 
             if (!tokens.isExpiredNow()) {
                 LOGGER.info("Triggering proactive token refresh for cache key '{}' (token still valid but refresh window reached)", cacheKey);
-                refreshWithCachedToken(cacheKey, tokens.getRefreshToken());
+                refreshWithCachedToken(cacheKey, tokens.refreshToken());
             }
         } else if (cause == RemovalCause.EXPLICIT) {
             LOGGER.info("Deleting OAuth2 tokens with cache key '{}' from persistence system", cacheKey);

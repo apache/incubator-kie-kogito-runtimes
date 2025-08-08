@@ -18,49 +18,19 @@
  */
 package org.kie.kogito.addons.quarkus.token.exchange.cache;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Data structure to hold both access and refresh tokens with expiration information.
  */
-public class CachedTokens {
-    private final String accessToken;
-    private final String refreshToken;
-    private final long expirationTime;
-
-    public CachedTokens(String accessToken, String refreshToken, long expirationTime) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-        this.expirationTime = expirationTime;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public long getExpirationTime() {
-        return expirationTime;
-    }
-
+public record CachedTokens(String accessToken, String refreshToken, long expirationTime) {
     /**
      * Checks if the token is expired right now.
      * 
      * @return true if the token is expired
      */
     public boolean isExpiredNow() {
-        return System.currentTimeMillis() / 1000 >= expirationTime;
-    }
-
-    /**
-     * Checks if the token is expiring soon based on the provided buffer.
-     * 
-     * @param bufferSeconds Number of seconds before expiration to consider "expiring soon"
-     * @return true if the token is expiring within the buffer time
-     */
-    public boolean isExpiringSoon(long bufferSeconds) {
-        return System.currentTimeMillis() / 1000 >= (expirationTime - bufferSeconds);
+        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) >= expirationTime;
     }
 
 }

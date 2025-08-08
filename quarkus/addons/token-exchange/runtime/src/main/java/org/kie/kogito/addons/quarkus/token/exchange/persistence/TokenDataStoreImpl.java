@@ -18,9 +18,8 @@
  */
 package org.kie.kogito.addons.quarkus.token.exchange.persistence;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
 
 import org.kie.kogito.addons.quarkus.token.exchange.cache.CachedTokens;
 import org.kie.kogito.addons.quarkus.token.exchange.persistence.model.TokenCacheRecord;
@@ -36,10 +35,10 @@ import jakarta.inject.Inject;
  * Database-backed implementation of TokenDataStore using JDBC.
  */
 @ApplicationScoped
-public class DatabaseTokenDataStore implements TokenDataStore {
+public class TokenDataStoreImpl implements TokenDataStore {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseTokenDataStore.class);
-    public static final String LOG_PREFIX_USED_REPOSITORY = "Database Token DataStore initialized with repository";
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenDataStoreImpl.class);
+    public static final String LOG_PREFIX_USED_REPOSITORY = "Token DataStore initialized with repository";
 
     @Inject
     private TokenCacheRepository repository;
@@ -58,7 +57,7 @@ public class DatabaseTokenDataStore implements TokenDataStore {
 
             TokenCacheRecord record = new TokenCacheRecord(
                     processInstanceId, authName,
-                    tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getExpirationTime());
+                    tokens.accessToken(), tokens.refreshToken(), tokens.expirationTime());
 
             repository.save(record);
             LOGGER.debug("Stored token cache entry for key: {}", cacheKey);
@@ -91,32 +90,19 @@ public class DatabaseTokenDataStore implements TokenDataStore {
         }
     }
 
-    @Override
-    public List<TokenEntry> loadAll() {
-        try {
-            return repository.findAll().stream()
-                    .filter(record -> !isExpired(record))
-                    .map(this::recordToTokenEntry)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            LOGGER.error("Failed to load all token cache entries", e);
-            return List.of();
-        }
-    }
-
     private CachedTokens recordToTokens(TokenCacheRecord record) {
         return new CachedTokens(
-                record.getAccessToken(),
-                record.getRefreshToken(),
-                record.getExpirationTime());
+                record.accessToken(),
+                record.refreshToken(),
+                record.expirationTime());
     }
 
     private TokenEntry recordToTokenEntry(TokenCacheRecord record) {
-        String cacheKey = CacheUtils.buildCacheKey(record.getProcessInstanceId(), record.getAuthName());
+        String cacheKey = CacheUtils.buildCacheKey(record.processInstanceId(), record.authName());
         return new TokenEntry(cacheKey, recordToTokens(record));
     }
 
     private boolean isExpired(TokenCacheRecord record) {
-        return System.currentTimeMillis() / 1000 >= record.getExpirationTime();
+        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) >= record.expirationTime();
     }
 }

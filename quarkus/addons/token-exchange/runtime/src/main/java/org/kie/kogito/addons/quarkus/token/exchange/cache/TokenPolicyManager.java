@@ -61,8 +61,8 @@ public class TokenPolicyManager {
         String authName = CacheUtils.extractAuthNameFromCacheKey(cacheKey);
         long proactiveRefreshSeconds = ConfigReaderUtils.getProactiveRefreshSeconds(authName);
 
-        long currentTimeSeconds = System.currentTimeMillis() / 1000;
-        long tokenExpirationSeconds = tokens.getExpirationTime();
+        long currentTimeSeconds = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
+        long tokenExpirationSeconds = tokens.expirationTime();
 
         // Schedule refresh proactiveRefreshSeconds before actual expiration
         long refreshTimeSeconds = tokenExpirationSeconds - proactiveRefreshSeconds;

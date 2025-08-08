@@ -18,6 +18,8 @@
  */
 package org.kie.kogito.addons.quarkus.token.exchange.utils;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -31,8 +33,8 @@ public final class ConfigReaderUtils {
     public static final String CANONICAL_TOKEN_EXCHANGE_ENABLED_PROPERTY_NAME = "sonataflow.security.auth.%s.token-exchange.enabled";
     private static final String CANONICAL_PROACTIVE_REFRESH_PROPERTY_NAME = "sonataflow.security.auth.%s.token-exchange.proactive-refresh-seconds";
     private static final String CANONICAL_MONITOR_RATE_PROPERTY_NAME = "sonataflow.security.auth.token-exchange.monitor-rate-seconds";
-    public static final long DEFAULT_PROACTIVE_REFRESH_SECONDS = 300; // 5 minutes
-    public static final long DEFAULT_MONITOR_RATE_SECONDS = 60; // 1 minute
+    public static final long DEFAULT_PROACTIVE_REFRESH_SECONDS = Duration.of(5, ChronoUnit.MINUTES).getSeconds();
+    public static final long DEFAULT_MONITOR_RATE_SECONDS = Duration.of(1, ChronoUnit.MINUTES).getSeconds();
 
     private ConfigReaderUtils() {
         // Utility class - prevent instantiation

@@ -26,8 +26,6 @@ CREATE TABLE kogito_oauth2_token_cache (
     access_token TEXT NOT NULL,
     refresh_token TEXT,
     expiration_time BIGINT NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
     PRIMARY KEY (process_instance_id, auth_name),
     CONSTRAINT fk_token_cache_process_instance 
         FOREIGN KEY (process_instance_id) 

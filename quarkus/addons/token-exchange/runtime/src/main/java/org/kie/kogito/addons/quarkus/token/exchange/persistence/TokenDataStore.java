@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.addons.quarkus.token.exchange.persistence;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.kie.kogito.addons.quarkus.token.exchange.cache.CachedTokens;
@@ -43,11 +42,6 @@ public interface TokenDataStore {
      * Remove tokens by cache key
      */
     void remove(String cacheKey);
-
-    /**
-     * Load all non-expired tokens
-     */
-    List<TokenEntry> loadAll();
 
     /**
      * Token entry with cache key and tokens

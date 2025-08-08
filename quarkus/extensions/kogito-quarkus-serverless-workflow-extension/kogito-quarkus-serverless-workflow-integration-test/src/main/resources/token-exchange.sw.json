@@ -43,7 +43,7 @@
           }
         },
         {
-          "name": "executeQueryWithExchangeAction",
+          "name": "executeQueryWithExchangeAction2",
           "sleep": {
             "before": "PT1S"
           },
@@ -56,7 +56,7 @@
           }
         },
         {
-          "name": "executeQueryWithExchangeAction",
+          "name": "executeQueryWithExchangeAction3",
           "sleep": {
             "before": "PT10S"
           },

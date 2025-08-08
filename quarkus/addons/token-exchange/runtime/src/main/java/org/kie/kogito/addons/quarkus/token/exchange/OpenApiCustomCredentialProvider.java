@@ -26,7 +26,7 @@ import org.kie.kogito.addons.quarkus.token.exchange.cache.CachedTokens;
 import org.kie.kogito.addons.quarkus.token.exchange.cache.TokenCRUD;
 import org.kie.kogito.addons.quarkus.token.exchange.cache.TokenEvictionHandler;
 import org.kie.kogito.addons.quarkus.token.exchange.cache.TokenPolicyManager;
-import org.kie.kogito.addons.quarkus.token.exchange.persistence.DatabaseTokenDataStore;
+import org.kie.kogito.addons.quarkus.token.exchange.persistence.TokenDataStoreImpl;
 import org.kie.kogito.addons.quarkus.token.exchange.utils.CacheUtils;
 import org.kie.kogito.addons.quarkus.token.exchange.utils.ConfigReaderUtils;
 import org.kie.kogito.addons.quarkus.token.exchange.utils.OidcClientUtils;
@@ -76,7 +76,7 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider i
     public static final String LOG_PREFIX_FAILED_TOKEN_EXCHANGE = "FAILED TOKEN EXCHANGE";
 
     @Inject
-    private DatabaseTokenDataStore dataStore;
+    private TokenDataStoreImpl dataStore;
     private LoadingCache<String, CachedTokens> tokenCache;
 
     @PostConstruct
@@ -94,9 +94,16 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider i
      * Load token from database when cache miss occurs during refresh
      */
     private CachedTokens loadTokenFromDatabase(String cacheKey) {
-        return dataStore.retrieve(cacheKey)
-                .filter(tokens -> !tokens.isExpiredNow())
-                .orElse(null);
+        Optional<CachedTokens> optionalToken = dataStore.retrieve(cacheKey);
+        if (optionalToken.isPresent()) {
+            if (optionalToken.get().isExpiredNow()) {
+                dataStore.remove(cacheKey);
+            } else {
+                return optionalToken.get();
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -130,7 +137,7 @@ public class OpenApiCustomCredentialProvider extends ConfigCredentialsProvider i
                 LOGGER.debug("Found cached tokens for cache key '{}'", cacheKey);
                 if (!cachedTokens.isExpiredNow()) {
                     LOGGER.debug("Using valid cached access token for cache key '{}'", cacheKey);
-                    return cachedTokens.getAccessToken();
+                    return cachedTokens.accessToken();
                 } else {
                     LOGGER.info("Cached token for cache key '{}' is expired, falling back to new token exchange", cacheKey);
                     tokenCache.invalidate(cacheKey);

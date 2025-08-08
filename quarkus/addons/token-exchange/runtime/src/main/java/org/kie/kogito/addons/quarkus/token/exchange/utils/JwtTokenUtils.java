@@ -18,7 +18,10 @@
  */
 package org.kie.kogito.addons.quarkus.token.exchange.utils;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +52,7 @@ public final class JwtTokenUtils {
             String[] parts = accessToken.split("\\.");
             if (parts.length != 3) {
                 LOGGER.warn("Invalid JWT token format while parsing token expiration, will use default expiration of 1 hour");
-                return System.currentTimeMillis() / 1000 + 3600; // Default to 1 hour
+                return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + Duration.of(1, ChronoUnit.HOURS).getSeconds();
             }
 
             String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
@@ -64,6 +67,6 @@ public final class JwtTokenUtils {
         }
 
         // Default expiration if parsing fails
-        return System.currentTimeMillis() / 1000 + 3600; // 1 hour from now
+        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + Duration.of(1, ChronoUnit.HOURS).getSeconds();
     }
 }
