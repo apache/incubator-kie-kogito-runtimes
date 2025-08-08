@@ -676,6 +676,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                 }
                 if (source == null || target == null) {
                     // TODO: ignoring this association for now
+                } else if (target instanceof TextAnnotation) {
+                    //Skipping associations to TextAnnotation
                 } else if (target instanceof DataStore || source instanceof DataStore) {
                     // TODO: ignoring data store associations for now
                 } else if (source instanceof EventNode) {

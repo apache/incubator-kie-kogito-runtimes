@@ -11,11 +11,13 @@ import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.Node;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import static org.jbpm.ruleflow.core.Metadata.TEXT_ANNOTATIONS;
+import static org.w3c.dom.Node.ELEMENT_NODE;
 
 public class TextAnnotationHandler extends org.jbpm.compiler.xml.core.BaseAbstractHandler implements Handler {
 
@@ -35,6 +37,7 @@ public class TextAnnotationHandler extends org.jbpm.compiler.xml.core.BaseAbstra
             this.validPeers.add(DataStore.class);
             this.validPeers.add(RuleFlowProcess.class);
             this.validPeers.add(SequenceFlow.class);
+            this.validPeers.add(TextAnnotation.class);
             this.allowNesting = false;
         }
     }
@@ -53,18 +56,28 @@ public class TextAnnotationHandler extends org.jbpm.compiler.xml.core.BaseAbstra
             ((ProcessBuildData) parser.getData()).setMetaData(TEXT_ANNOTATIONS, annotations);
         }
         annotations.put(id, annotation);
+        if (parser.getParent() instanceof RuleFlowProcess) {
+            RuleFlowProcess proc = (RuleFlowProcess) parser.getParent();
+            if (proc.getMetaData(TEXT_ANNOTATIONS) == null) {
+                proc.setMetaData(TEXT_ANNOTATIONS, annotations);
+            }
+        }
 
         return annotation;
     }
 
     @Override
     public Object end(String uri, String localName, Parser parser) throws SAXException {
-        parser.endElementBuilder();
-        return null;
+        Element el = parser.endElementBuilder();
+        TextAnnotation ta = (TextAnnotation) parser.getCurrent();
+        for (Node n = el.getFirstChild(); n != null; n = n.getNextSibling())
+            if (n.getNodeType() == ELEMENT_NODE && ("text".equals(n.getNodeName()) || n.getNodeName().endsWith(":text")))
+                ta.setText(n.getTextContent());
+        return ta;
     }
 
     @Override
     public Class<?> generateNodeFor() {
-        return null;
+        return TextAnnotation.class;
     }
 }
