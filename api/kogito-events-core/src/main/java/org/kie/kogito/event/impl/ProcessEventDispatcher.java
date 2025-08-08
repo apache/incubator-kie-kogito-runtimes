@@ -37,6 +37,7 @@ import org.kie.kogito.correlation.CorrelationInstance;
 import org.kie.kogito.correlation.SimpleCorrelation;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventDispatcher;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;
@@ -105,11 +106,17 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
     private Optional<ProcessInstance<M>> findById(String id) {
         LOGGER.debug("Received message with process instance id '{}'", id);
         Optional<ProcessInstance<M>> result = process.instances().findById(id);
+
+        result.ifPresent(processInstance -> {
+            if (processInstance.status() != KogitoProcessInstance.STATE_ACTIVE) {
+                throw new IllegalStateException("Current process instance is not active");
+            }
+        });
+
         if (LOGGER.isDebugEnabled() && result.isEmpty()) {
             LOGGER.debug("No instance found for process instance id '{}'", id);
         }
         return result;
-
     }
 
     private Optional<ProcessInstance<M>> findByBusinessKey(String key) {
