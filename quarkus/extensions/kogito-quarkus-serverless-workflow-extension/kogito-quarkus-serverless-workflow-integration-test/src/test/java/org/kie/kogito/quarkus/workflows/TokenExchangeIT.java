@@ -97,19 +97,6 @@ class TokenExchangeIT {
         validateOAuth2LogsFromFile(logFile);
     }
 
-    /*
-     * @Test
-     * void tokenExchangeMissingAuthorizationHeader() {
-     * // start a new process instance by sending the post query and collect the process instance id.
-     * String processInput = buildProcessInput(SUCCESSFUL_QUERY);
-     * Map<String, String> headers = new HashMap<>();
-     * 
-     * JsonPath jsonPath = newProcessInstance("/token_exchange", processInput, headers);
-     * Assertions.assertThat(jsonPath.getString("id")).isNotBlank();
-     * getProcessInstance(jsonPath.getString("id"));
-     * }
-     */
-
     private void validateCachingBehavior() {
         List<LoggedRequest> externalServiceRequests = TokenExchangeExternalServicesMock.getInstance().findAll(
                 WireMock.postRequestedFor(WireMock.urlEqualTo("/token-exchange-external-service/withExchange")));

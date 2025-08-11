@@ -20,6 +20,8 @@ package org.kie.kogito.addons.quarkus.token.exchange.cache;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.kie.kogito.addons.quarkus.token.exchange.utils.CacheUtils;
 import org.kie.kogito.addons.quarkus.token.exchange.utils.OidcClientUtils;
@@ -42,7 +44,11 @@ public class TokenEvictionHandler {
     public static final String LOG_PREFIX_REFRESH_COMPLETED = "Background refresh completed";
     public static final String LOG_PREFIX_FAILED_TO_REFRESH_TOKEN = "Failed to refresh token";
 
+    public static final int REFRESH_THREAD_AMOUNT = 10;
     private final TokenCRUD tokenCRUD;
+
+    private final ExecutorService tokenRefreshExecutor = Executors.newFixedThreadPool(REFRESH_THREAD_AMOUNT);
+
 
     public TokenEvictionHandler(TokenCRUD tokenCRUD) {
         this.tokenCRUD = tokenCRUD;
@@ -97,7 +103,7 @@ public class TokenEvictionHandler {
      * @param refreshToken The refresh token to use for getting new tokens
      */
     private void refreshWithCachedToken(String cacheKey, String refreshToken) {
-        CompletableFuture.runAsync(() -> {
+        tokenRefreshExecutor.submit(() -> {
             try {
                 LOGGER.info("{} - cache key '{}'", LOG_PREFIX_TOKEN_REFRESH, cacheKey);
 
