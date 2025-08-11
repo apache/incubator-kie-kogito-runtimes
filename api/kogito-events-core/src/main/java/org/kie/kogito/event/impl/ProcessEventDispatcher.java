@@ -109,7 +109,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
 
         result.ifPresent(processInstance -> {
             if (processInstance.status() != KogitoProcessInstance.STATE_ACTIVE) {
-                throw new IllegalStateException("Current process instance is not active");
+                throw new IllegalStateException(String.format("Process instance with id %s is not active", id));
             }
         });
 

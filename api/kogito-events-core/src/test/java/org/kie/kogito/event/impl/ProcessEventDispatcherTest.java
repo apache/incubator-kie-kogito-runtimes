@@ -39,6 +39,7 @@ import org.kie.kogito.correlation.SimpleCorrelation;
 import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventDispatcher;
 import org.kie.kogito.event.correlation.DefaultCorrelationService;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstances;
