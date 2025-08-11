@@ -19,7 +19,6 @@
 package org.kie.kogito.addons.quarkus.token.exchange.cache;
 
 import java.util.Collections;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
