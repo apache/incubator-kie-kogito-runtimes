@@ -172,8 +172,8 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
             } else {
                 defaultUserTaskInstance.setActualOwner(identityProvider.getName());
             }
-            checkUserHasPermission(userTaskInstance, identityProvider.getName());
         }
+        checkPermission(userTaskInstance, identityProvider);
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         return Optional.empty();
@@ -222,18 +222,12 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         return assignmentStrategy.computeAssignment(userTaskInstance, identityProvider).orElse(null);
     }
 
-    private void checkUserHasPermission(UserTaskInstance userTaskInstance, String identityProviderName) {
-        Set<String> excludedUsers = userTaskInstance.getExcludedUsers();
-        if (excludedUsers != null && excludedUsers.contains(identityProviderName)) {
-            String message = String.format("User '%s' is not authorized to perform an operation on user task '%s'",
-                    identityProviderName, userTaskInstance.getId());
-            throw new UserTaskInstanceNotAuthorizedException(message);
-        }
+    private void checkPermission(UserTaskInstance userTaskInstance, IdentityProvider identityProvider) {
+        this.checkPermission(userTaskInstance, identityProvider.getName(), identityProvider.getRoles());
+
     }
 
-    private void checkPermission(UserTaskInstance userTaskInstance, IdentityProvider identityProvider) {
-        String user = identityProvider.getName();
-        Collection<String> roles = identityProvider.getRoles();
+    private void checkPermission(UserTaskInstance userTaskInstance, String user, Collection<String> roles) {
 
         if (WORKFLOW_ENGINE_USER.equals(user)) {
             return;
@@ -255,11 +249,18 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
             return;
         }
 
+        Set<String> excludedUsers = userTaskInstance.getExcludedUsers();
+        if (excludedUsers != null && excludedUsers.contains(user)) {
+            String message = String.format("User '%s' is not authorized to perform an operation on user task '%s'",
+                    user, userTaskInstance.getId());
+            throw new UserTaskInstanceNotAuthorizedException(message);
+        }
+
         if (List.of(INACTIVE, ACTIVE).contains(userTaskInstance.getStatus())) {
             // there is no user
             Set<String> users = new HashSet<>(userTaskInstance.getPotentialUsers());
             users.removeAll(userTaskInstance.getExcludedUsers());
-            if (users.contains(identityProvider.getName())) {
+            if (users.contains(user)) {
                 return;
             }
 
