@@ -57,7 +57,7 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
     protected CompletionStage<?> produce(final Message<I> message) {
         LOGGER.debug("Received message {}", message);
         return produce(message, (v, e) -> {
-            if (e != null) {
+            if (e != null && e.getCause() != null && e.getCause() instanceof IllegalStateException) {
                 LOGGER.error("Error processing message {}", message.getPayload(), e);
                 message.nack(e);
             } else {
