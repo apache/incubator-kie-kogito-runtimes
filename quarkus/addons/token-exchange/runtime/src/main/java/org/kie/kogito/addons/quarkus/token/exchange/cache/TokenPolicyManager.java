@@ -59,7 +59,7 @@ public class TokenPolicyManager {
      */
     private static long calculateTimeToExpiration(String cacheKey, CachedTokens tokens) {
         String authName = CacheUtils.extractAuthNameFromCacheKey(cacheKey);
-        long proactiveRefreshSeconds = ConfigReaderUtils.getProactiveRefreshSeconds(authName);
+        long proactiveRefreshSeconds = Math.max(0, ConfigReaderUtils.getProactiveRefreshSeconds(authName));
 
         long currentTimeSeconds = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
         long tokenExpirationSeconds = tokens.expirationTime();

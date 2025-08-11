@@ -113,7 +113,7 @@ public class TokenEvictionHandler {
 
                 LOGGER.info("{} - cache key '{}'", LOG_PREFIX_REFRESH_COMPLETED, cacheKey);
             } catch (Exception e) {
-                LOGGER.error("{} - cache key '{}': {}", LOG_PREFIX_FAILED_TO_REFRESH_TOKEN, cacheKey, e.getMessage());
+                LOGGER.error("{} - cache key '{}': {}", LOG_PREFIX_FAILED_TO_REFRESH_TOKEN, cacheKey, e);
             }
         });
     }
