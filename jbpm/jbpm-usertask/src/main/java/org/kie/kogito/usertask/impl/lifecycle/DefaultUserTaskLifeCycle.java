@@ -233,8 +233,8 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
 
     private void checkPermission(UserTaskInstance userTaskInstance, IdentityProvider identityProvider) {
         String user = identityProvider.getName();
-
         Collection<String> roles = identityProvider.getRoles();
+
         if (WORKFLOW_ENGINE_USER.equals(user)) {
             return;
         }
@@ -271,10 +271,6 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
         }
 
         throw new UserTaskInstanceNotAuthorizedException("user " + user + " with roles " + roles + " not authorized to perform an operation on user task " + userTaskInstance.getId());
-    }
-
-    private static boolean checkUserPermission(UserTaskInstance userTaskInstance, IdentityProvider identityProvider) {
-        return userTaskInstance.getExcludedUsers().contains(identityProvider.getName());
     }
 
 }
