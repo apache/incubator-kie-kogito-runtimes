@@ -49,7 +49,6 @@ public class TokenEvictionHandler {
 
     private final ExecutorService tokenRefreshExecutor = Executors.newFixedThreadPool(REFRESH_THREAD_AMOUNT);
 
-
     public TokenEvictionHandler(TokenCRUD tokenCRUD) {
         this.tokenCRUD = tokenCRUD;
     }
