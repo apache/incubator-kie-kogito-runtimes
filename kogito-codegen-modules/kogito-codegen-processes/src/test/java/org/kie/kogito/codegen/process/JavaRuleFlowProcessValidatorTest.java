@@ -140,7 +140,7 @@ public class JavaRuleFlowProcessValidatorTest {
 
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("demo.lambda.ok");
         factory
-                .name("lambda-ok")
+                .name("lambda")
                 .packageName("com.myspace.demo")
                 .dynamic(false)
                 .version("1.0")
@@ -164,7 +164,7 @@ public class JavaRuleFlowProcessValidatorTest {
 
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("demo.lambda.bad");
         factory
-                .name("lambda-bad")
+                .name("lambda-exception")
                 .packageName("com.myspace.demo")
                 .dynamic(false)
                 .version("1.0")
