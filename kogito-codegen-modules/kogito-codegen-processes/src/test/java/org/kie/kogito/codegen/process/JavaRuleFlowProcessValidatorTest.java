@@ -131,6 +131,7 @@ public class JavaRuleFlowProcessValidatorTest {
         assertThatNoException()
                 .isThrownBy(() -> validator.validate(process));
     }
+
     @Test
     public void testScriptWithLambdaParameterRecognized() {
         // 'i' is declared by the lambda validator should NOT complain
