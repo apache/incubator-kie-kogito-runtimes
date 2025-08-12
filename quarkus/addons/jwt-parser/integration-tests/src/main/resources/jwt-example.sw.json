@@ -1,0 +1,46 @@
+{
+  "id": "jwt_example",
+  "version": "1.0",
+  "name": "JWT Token Processing Example",
+  "description": "Demonstrates JWT token parsing functionality as requested in Issue #1899",
+  "start": "extractUser",
+  "functions": [
+    {
+      "name": "extractUser",
+      "type": "custom",
+      "operation": "jwt-parser:extractUser"
+    }
+  ],
+  "states": [
+    {
+      "name": "extractUser",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "extractUserAction",
+          "functionRef": {
+            "refName": "extractUser",
+            "arguments": {
+              "token": "${ $WORKFLOW.headers.\"X-Authorization-acme_financial_auth\" }"
+            }
+          }
+        }
+      ],
+      "stateDataFilter": {
+        "output": "${ { user: .result.preferred_username } }"
+      },
+      "transition": "loanApproved"
+    },
+    {
+      "name": "loanApproved",
+      "type": "inject",
+      "data": {
+        "loanApproved": true
+      },
+      "stateDataFilter": {
+        "output": "${ { message: \"Congrats \\(.user)! Your loan has been approved!\", loanApproved } }"
+      },
+      "end": true
+    }
+  ]
+}
