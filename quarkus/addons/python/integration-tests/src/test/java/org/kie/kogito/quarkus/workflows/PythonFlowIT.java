@@ -37,7 +37,7 @@ class PythonFlowIT {
 
     @Test
     void testPythonService() {
-        given().contentType(ContentType.JSON).accept(ContentType.JSON).body("{\"x\" : 5}").post("/Factorial")
-                .then().statusCode(201).body("workflowdata.result", is(120));
+        given().contentType(ContentType.JSON).accept(ContentType.JSON).body("{\"x\" : 5, \"y\":3}").post("/Factorial")
+                .then().statusCode(201).body("workflowdata.factorial", is(120)).body("workflowdata.module", is(2.0f)).body("workflowdata.isClose", is(true));
     }
 }
