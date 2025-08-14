@@ -19,6 +19,7 @@
 package org.kie.kogito.serverless.workflow.python;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.kie.kogito.jackson.utils.FunctionBaseJsonNode;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
@@ -34,10 +35,10 @@ import jep.python.PyObject;
 public class PyObject2JsonNode extends FunctionBaseJsonNode {
 
     private static final long serialVersionUID = 1L;
-    private PyObject object;
+    private final PyObject object;
 
     public PyObject2JsonNode(PyObject object) {
-        this.object = object;
+        this.object = Objects.requireNonNull(object, "PyObject must not be null");
     }
 
     @Override

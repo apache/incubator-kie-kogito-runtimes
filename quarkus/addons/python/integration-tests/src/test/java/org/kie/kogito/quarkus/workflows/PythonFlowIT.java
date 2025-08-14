@@ -56,4 +56,17 @@ class PythonFlowIT {
                 .extract().as(JsonNode.class);
         assertThat(node.get("workflowdata").get("year").intValue()).isGreaterThanOrEqualTo(2025);
     }
+
+    @Test
+    public void testPythonDateTimeString() {
+        JsonNode node = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{}").when()
+                .post("/DateTimeString")
+                .then()
+                .statusCode(201)
+                .extract().as(JsonNode.class);
+        assertThat(node.get("workflowdata").get("date").textValue()).isNotNull();
+    }
 }
