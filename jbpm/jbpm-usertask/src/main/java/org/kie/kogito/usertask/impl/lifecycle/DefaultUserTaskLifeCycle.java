@@ -223,7 +223,6 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
 
     private void checkPermission(UserTaskInstance userTaskInstance, IdentityProvider identityProvider) {
         this.checkPermission(userTaskInstance, identityProvider.getName(), identityProvider.getRoles());
-
     }
 
     private void checkPermission(UserTaskInstance userTaskInstance, String user, Collection<String> roles) {
