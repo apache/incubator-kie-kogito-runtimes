@@ -173,7 +173,6 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
                 defaultUserTaskInstance.setActualOwner(identityProvider.getName());
             }
         }
-        checkPermission(userTaskInstance, identityProvider);
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         return Optional.empty();
