@@ -1,0 +1,15 @@
+---
+name: SonataFlow JWT Parser Add-On
+description: Add-on for SonataFlow to parse JWT tokens and extract claims in workflows
+metadata:
+  keywords:
+    - sonataflow
+    - jwt
+    - token
+    - authentication
+    - serverless
+    - workflows
+  categories:
+    - "security"
+    - "cloud"
+  status: "preview"
