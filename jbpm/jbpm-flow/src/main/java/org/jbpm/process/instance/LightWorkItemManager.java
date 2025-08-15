@@ -146,6 +146,7 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
         KogitoProcessInstance processInstance = processInstanceManager.getProcessInstance(workItem.getProcessInstanceStringId());
         workItem.setState(KogitoWorkItem.COMPLETED);
         processInstance.signalEvent("workItemCompleted", workItem);
+        internalRemoveWorkItem(workItemId);
     }
 
     @Override
@@ -157,6 +158,7 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
         KogitoProcessInstance processInstance = processInstanceManager.getProcessInstance(workItem.getProcessInstanceStringId());
         workItem.setState(KogitoWorkItem.ABORTED);
         processInstance.signalEvent("workItemAborted", workItem);
+        internalRemoveWorkItem(workItemId);
 
     }
 
@@ -211,10 +213,12 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
                     case COMPLETE:
                         workItem.setState(KogitoWorkItem.COMPLETED);
                         processInstance.signalEvent("workItemCompleted", workItem);
+                        internalRemoveWorkItem(workItem.getStringId());
                         break;
                     case ABORT:
                         workItem.setState(KogitoWorkItem.ABORTED);
                         processInstance.signalEvent("workItemAborted", workItem);
+                        internalRemoveWorkItem(workItem.getStringId());
                         break;
                 }
             }
