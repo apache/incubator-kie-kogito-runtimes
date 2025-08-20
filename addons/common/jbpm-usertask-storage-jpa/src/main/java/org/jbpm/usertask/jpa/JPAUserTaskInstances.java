@@ -19,6 +19,7 @@
 
 package org.jbpm.usertask.jpa;
 
+import jakarta.transaction.Transactional;
 import java.util.*;
 import java.util.function.Function;
 
@@ -31,6 +32,7 @@ import org.kie.kogito.usertask.UserTaskInstances;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Transactional
 public class JPAUserTaskInstances implements UserTaskInstances {
     public static final Logger LOGGER = LoggerFactory.getLogger(JPAUserTaskInstances.class);
 
