@@ -32,7 +32,6 @@ import org.kie.kogito.usertask.UserTaskInstances;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Transactional
 public class JPAUserTaskInstances implements UserTaskInstances {
     public static final Logger LOGGER = LoggerFactory.getLogger(JPAUserTaskInstances.class);
 
