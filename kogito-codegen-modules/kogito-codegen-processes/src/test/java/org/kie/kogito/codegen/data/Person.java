@@ -45,6 +45,7 @@ public class Person {
     private int age;
     private byte[] bytes;
     private boolean adult;
+    private Boolean married;
     private Person parent;
     private Person[] relatives;
     private Instant instant;
@@ -262,6 +263,14 @@ public class Person {
         this.expenses = expenses;
     }
 
+    public Boolean isMarried() {
+        return married;
+    }
+
+    public void setMarried(Boolean married) {
+        this.married = married;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
@@ -269,6 +278,7 @@ public class Person {
                 ", name='" + name + '\'' +
                 ", age=" + age +
                 ", adult=" + adult +
+                ", married=" + married +
                 ", parent=" + parent +
                 ", relatives=" + Arrays.toString(relatives) +
                 ", instant=" + instant +
@@ -292,12 +302,12 @@ public class Person {
         if (o == null || getClass() != o.getClass())
             return false;
         Person person = (Person) o;
-        return age == person.age && adult == person.adult && Objects.equals(name, person.name) && Objects.equals(parent, person.parent) && Objects.equals(ignoreMe, person.ignoreMe)
+        return age == person.age && adult == person.adult && married == person.married && Objects.equals(name, person.name) && Objects.equals(parent, person.parent) && Objects.equals(ignoreMe, person.ignoreMe)
                 && Objects.equals(addresses, person.addresses);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, age, adult, parent, ignoreMe, addresses);
+        return Objects.hash(name, age, adult, married, parent, ignoreMe, addresses);
     }
 }

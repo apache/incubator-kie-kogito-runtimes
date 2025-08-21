@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.kie.kogito.codegen.api.context.ContextAttributesConstants.KOGITO_FAULT_TOLERANCE_ENABLED;
+import static org.kie.kogito.codegen.api.context.ContextAttributesConstants.KOGITO_CODEGEN_BOOLEAN_OBJECT_ACCESSOR_BEHAVIOUR;
 
 public final class CodegenUtil {
 
@@ -123,4 +124,19 @@ public final class CodegenUtil {
 
         return !JavaKogitoBuildContext.CONTEXT_NAME.equals(context.name()) && isFaultToleranceEnabled;
     }
+
+    public static String getBooleanObjectAccessor(KogitoBuildContext context) {
+        return context.getApplicationProperty(KOGITO_CODEGEN_BOOLEAN_OBJECT_ACCESSOR_BEHAVIOUR)
+        .map(value -> {
+            switch (value) {
+                case "isPrefix": return "is";
+                case "javaBeans": return "get";
+                default: throw new IllegalArgumentException(
+                    "Property " + KOGITO_CODEGEN_BOOLEAN_OBJECT_ACCESSOR_BEHAVIOUR +
+                    " defined but does not contain proper value: expected 'isPrefix' or 'javaBeans'");
+            }
+        })
+        .orElse("is");
+    }
 }
+
