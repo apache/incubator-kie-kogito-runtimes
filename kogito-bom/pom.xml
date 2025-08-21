@@ -1843,33 +1843,33 @@
 
 	  <!-- Jobs -->
 	  <dependency>
-		<groupId>org.kie.kogito</groupId>
-		<artifactId>jobs-common</artifactId>
+		<groupId>org.kie</groupId>
+		<artifactId>jobs-common-embedded</artifactId>
 		<version>${project.version}</version>
 	  </dependency>
 	  <dependency>
-		<groupId>org.kie.kogito</groupId>
-		<artifactId>kogito-addons-common-jobs-jpa</artifactId>
+		<groupId>org.kie</groupId>
+		<artifactId>kogito-addons-common-embedded-jobs-jpa</artifactId>
 		<version>${project.version}</version>
   	  </dependency>
 	  <dependency>
-		<groupId>org.kie.kogito</groupId>
-		<artifactId>kogito-addons-quarkus-jobs-jpa</artifactId>
+		<groupId>org.kie</groupId>
+		<artifactId>kogito-addons-quarkus-embedded-jobs-jpa</artifactId>
 		<version>${project.version}</version>
 	  </dependency>
 	  <dependency>
-		<groupId>org.kie.kogito</groupId>
-		<artifactId>kogito-addons-springboot-jobs-jpa</artifactId>
+		<groupId>org.kie</groupId>
+		<artifactId>kogito-addons-springboot-embedded-jobs-jpa</artifactId>
 		<version>${project.version}</version>
 	  </dependency>
 	  <dependency>
-		<groupId>org.kie.kogito</groupId>
-		<artifactId>kogito-addons-quarkus-jobs</artifactId>
+		<groupId>org.kie</groupId>
+		<artifactId>kogito-addons-quarkus-embedded-jobs</artifactId>
 		<version>${project.version}</version>
 	  </dependency>
 	  <dependency>
-		<groupId>org.kie.kogito</groupId>
-		<artifactId>kogito-addons-springboot-jobs</artifactId>
+		<groupId>org.kie</groupId>
+		<artifactId>kogito-addons-springboot-embedded-jobs</artifactId>
 		<version>${project.version}</version>
 	  </dependency>
 
