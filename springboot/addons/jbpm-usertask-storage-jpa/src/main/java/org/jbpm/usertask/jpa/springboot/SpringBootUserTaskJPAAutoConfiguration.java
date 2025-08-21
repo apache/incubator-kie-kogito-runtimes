@@ -19,10 +19,10 @@
 
 package org.jbpm.usertask.jpa.springboot;
 
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
-@AutoConfiguration
+@SpringBootConfiguration
 @EntityScan("org.jbpm.usertask.jpa.model")
 public class SpringBootUserTaskJPAAutoConfiguration {
 }
