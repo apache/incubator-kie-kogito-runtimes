@@ -19,7 +19,6 @@
 
 package org.jbpm.usertask.jpa;
 
-import jakarta.transaction.Transactional;
 import java.util.*;
 import java.util.function.Function;
 
