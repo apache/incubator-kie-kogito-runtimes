@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import static java.util.Arrays.asList;
 
-public class Person {
+public class PersonWithBooleanObject {
 
     private static final String ADDRESS_SEPARATOR = "; ";
 
@@ -45,8 +45,9 @@ public class Person {
     private int age;
     private byte[] bytes;
     private boolean adult;
-    private Person parent;
-    private Person[] relatives;
+    private Boolean married;
+    private PersonWithBooleanObject parent;
+    private PersonWithBooleanObject[] relatives;
     private Instant instant;
     private LocalDateTime localDateTime;
     private LocalDate localDate;
@@ -68,10 +69,10 @@ public class Person {
 
     private transient List<Address> addresses = new ArrayList<>();
 
-    public Person() {
+    public PersonWithBooleanObject() {
     }
 
-    public Person(String name, int age) {
+    public PersonWithBooleanObject(String name, int age) {
         this.name = name;
         this.age = age;
         salary = Money.of(BigDecimal.valueOf(100));
@@ -116,7 +117,7 @@ public class Person {
     }
 
     public static void setStaticallyIgnoreMe(String staticallyIgnoreMe) {
-        Person.staticallyIgnoreMe = staticallyIgnoreMe;
+        PersonWithBooleanObject.staticallyIgnoreMe = staticallyIgnoreMe;
     }
 
     public void addAddress(final Address address) {
@@ -139,11 +140,11 @@ public class Person {
         this.id = id;
     }
 
-    public Person getParent() {
+    public PersonWithBooleanObject getParent() {
         return parent;
     }
 
-    public void setParent(Person parent) {
+    public void setParent(PersonWithBooleanObject parent) {
         this.parent = parent;
     }
 
@@ -215,11 +216,11 @@ public class Person {
         this.salary = salary;
     }
 
-    public Person[] getRelatives() {
+    public PersonWithBooleanObject[] getRelatives() {
         return relatives;
     }
 
-    public void setRelatives(Person[] relatives) {
+    public void setRelatives(PersonWithBooleanObject[] relatives) {
         this.relatives = relatives;
     }
 
@@ -262,6 +263,14 @@ public class Person {
         this.expenses = expenses;
     }
 
+    public Boolean isMarried() {
+        return married;
+    }
+
+    public void setMarried(Boolean married) {
+        this.married = married;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
@@ -269,6 +278,7 @@ public class Person {
                 ", name='" + name + '\'' +
                 ", age=" + age +
                 ", adult=" + adult +
+                ", married=" + married +
                 ", parent=" + parent +
                 ", relatives=" + Arrays.toString(relatives) +
                 ", instant=" + instant +
@@ -291,13 +301,14 @@ public class Person {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        Person person = (Person) o;
-        return age == person.age && adult == person.adult && Objects.equals(name, person.name) && Objects.equals(parent, person.parent) && Objects.equals(ignoreMe, person.ignoreMe)
+        PersonWithBooleanObject person = (PersonWithBooleanObject) o;
+        return age == person.age && adult == person.adult && married == person.married && Objects.equals(name, person.name) && Objects.equals(parent, person.parent)
+                && Objects.equals(ignoreMe, person.ignoreMe)
                 && Objects.equals(addresses, person.addresses);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, age, adult, parent, ignoreMe, addresses);
+        return Objects.hash(name, age, adult, married, parent, ignoreMe, addresses);
     }
 }
