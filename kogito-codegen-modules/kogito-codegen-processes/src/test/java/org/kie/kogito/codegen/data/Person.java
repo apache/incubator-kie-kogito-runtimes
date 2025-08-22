@@ -302,7 +302,8 @@ public class Person {
         if (o == null || getClass() != o.getClass())
             return false;
         Person person = (Person) o;
-        return age == person.age && adult == person.adult && married == person.married && Objects.equals(name, person.name) && Objects.equals(parent, person.parent) && Objects.equals(ignoreMe, person.ignoreMe)
+        return age == person.age && adult == person.adult && married == person.married && Objects.equals(name, person.name) && Objects.equals(parent, person.parent)
+                && Objects.equals(ignoreMe, person.ignoreMe)
                 && Objects.equals(addresses, person.addresses);
     }
 

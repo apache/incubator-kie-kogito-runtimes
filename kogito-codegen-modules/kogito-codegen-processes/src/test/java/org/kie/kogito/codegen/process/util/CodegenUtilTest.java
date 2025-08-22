@@ -25,8 +25,8 @@ import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.kie.kogito.codegen.process.util.CodegenUtil.*;
 import static org.kie.kogito.codegen.api.context.ContextAttributesConstants.KOGITO_CODEGEN_BOOLEAN_OBJECT_ACCESSOR_BEHAVIOUR;
+import static org.kie.kogito.codegen.process.util.CodegenUtil.*;
 
 public class CodegenUtilTest {
 
@@ -42,13 +42,15 @@ public class CodegenUtilTest {
         assertEquals("is", getBooleanObjectAccessor(context));
 
         context.setApplicationProperty(KOGITO_CODEGEN_BOOLEAN_OBJECT_ACCESSOR_BEHAVIOUR, "javaBeans");
-        assertEquals("get", getBooleanObjectAccessor(context));  
+        assertEquals("get", getBooleanObjectAccessor(context));
 
         context.setApplicationProperty(KOGITO_CODEGEN_BOOLEAN_OBJECT_ACCESSOR_BEHAVIOUR, "isPrefix");
-        assertEquals("is", getBooleanObjectAccessor(context));  
+        assertEquals("is", getBooleanObjectAccessor(context));
 
         context.setApplicationProperty(KOGITO_CODEGEN_BOOLEAN_OBJECT_ACCESSOR_BEHAVIOUR, "get1");
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {getBooleanObjectAccessor(context);});  
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            getBooleanObjectAccessor(context);
+        });
         assertEquals("Property " + KOGITO_CODEGEN_BOOLEAN_OBJECT_ACCESSOR_BEHAVIOUR + " defined but does not contain proper value: expected 'isPrefix' or 'javaBeans'", exception.getMessage());
     }
 }

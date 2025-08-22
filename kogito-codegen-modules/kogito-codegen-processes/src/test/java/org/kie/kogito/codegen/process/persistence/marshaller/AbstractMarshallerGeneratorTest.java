@@ -141,12 +141,14 @@ public abstract class AbstractMarshallerGeneratorTest<T> {
         assertThat(proto).isNotNull();
         assertThat(proto.getMessages()).hasSize(1);
 
-         MarshallerGenerator marshallerGenerator = withGenerator(PersonWithBooleanGetAccessor.class);
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {marshallerGenerator.generate(proto.serialize());});  
+        MarshallerGenerator marshallerGenerator = withGenerator(PersonWithBooleanGetAccessor.class);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            marshallerGenerator.generate(proto.serialize());
+        });
         assertEquals("Property " + KOGITO_CODEGEN_BOOLEAN_OBJECT_ACCESSOR_BEHAVIOUR + " defined but does not contain proper value: expected 'isPrefix' or 'javaBeans'", exception.getMessage());
-    
+
     }
-    
+
     @Test
     void testPersonWithListMarshallers() throws Exception {
         ProtoGenerator generator = protoGeneratorBuilder().withDataClasses(convertTypes(PersonWithList.class)).build(null);

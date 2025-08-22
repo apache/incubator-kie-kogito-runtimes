@@ -121,8 +121,8 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
             protoField.setComment(completeFieldComment);
             if (KOGITO_SERIALIZABLE.equals(protoType)) {
                 protoField.setOption(format("[%s = \"%s\"]", KOGITO_JAVA_CLASS_OPTION, pd.getPropertyType().getCanonicalName()));
-                
-            } else if("java.lang.Boolean".equals(fieldTypeString)) {
+
+            } else if ("java.lang.Boolean".equals(fieldTypeString)) {
                 protoField.setOption(format("[%s = \"%s\"]", KOGITO_JAVA_TYPE_BOOLEAN_OBJECT_OPTION, fieldTypeString));
             }
 

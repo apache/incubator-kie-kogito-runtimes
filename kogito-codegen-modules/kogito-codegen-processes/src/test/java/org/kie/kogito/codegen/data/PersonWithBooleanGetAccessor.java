@@ -67,14 +67,14 @@ public class PersonWithBooleanGetAccessor {
         this.id = id;
     }
 
-     public Boolean getMarried() {
+    public Boolean getMarried() {
         return married;
     }
 
     public void setMarried(Boolean married) {
         this.married = married;
     }
-    
+
     @Override
     public String toString() {
         return "Person{" +

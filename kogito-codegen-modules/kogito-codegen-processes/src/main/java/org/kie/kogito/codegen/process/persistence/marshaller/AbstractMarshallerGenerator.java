@@ -187,9 +187,9 @@ public abstract class AbstractMarshallerGenerator<T> implements MarshallerGenera
                         // has a mapped type
                         read = new MethodCallExpr(new NameExpr("reader"), "read" + protoStreamMethodType)
                                 .addArgument(new StringLiteralExpr(field.getName()));
-                                
-                        String accessor = protoStreamMethodType.equals("Boolean")?(field.getOptionByName(KOGITO_JAVA_TYPE_BOOLEAN_OBJECT_OPTION) != null ?
-                            booleanObjectAccessorProperty: "is") : "get";
+
+                        String accessor =
+                                protoStreamMethodType.equals("Boolean") ? (field.getOptionByName(KOGITO_JAVA_TYPE_BOOLEAN_OBJECT_OPTION) != null ? booleanObjectAccessorProperty : "is") : "get";
 
                         write = new MethodCallExpr(new NameExpr("writer"), "write" + protoStreamMethodType)
                                 .addArgument(new StringLiteralExpr(field.getName()))
