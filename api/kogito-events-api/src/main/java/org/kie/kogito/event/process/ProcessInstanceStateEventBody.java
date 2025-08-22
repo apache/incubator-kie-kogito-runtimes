@@ -46,6 +46,7 @@ public class ProcessInstanceStateEventBody implements KogitoMarshallEventSupport
     public static final int EVENT_TYPE_ENDED = 2;
     public static final int EVENT_TYPE_MIGRATED = 3;
     public static final int EVENT_TYPE_RETRIGGERED = 4;
+    public static final int EVENT_TYPE_UPDATED = 5;
 
     // common fields for events
     private Date eventDate;
@@ -82,6 +83,10 @@ public class ProcessInstanceStateEventBody implements KogitoMarshallEventSupport
 
     public Date slaDueDate;
 
+    private String cloudEventId;
+
+    private String cloudEventSource;
+
     @Override
     public void writeEvent(DataOutput out) throws IOException {
         writeInteger(out, eventType);
@@ -89,6 +94,8 @@ public class ProcessInstanceStateEventBody implements KogitoMarshallEventSupport
         writeInteger(out, state);
         writeUTFCollection(out, roles);
         writeDate(out, slaDueDate);
+        writeUTF(out, cloudEventId);
+        writeUTF(out, cloudEventSource);
     }
 
     @Override
@@ -98,6 +105,10 @@ public class ProcessInstanceStateEventBody implements KogitoMarshallEventSupport
         state = readInteger(in);
         roles = readUTFCollection(in, new LinkedHashSet<>());
         slaDueDate = readDate(in);
+        if (flags.contains(KogitoMarshallEventFlag.CLOUDEVENT_ID)) {
+            cloudEventId = readUTF(in);
+            cloudEventSource = readUTF(in);
+        }
     }
 
     @Override
@@ -112,6 +123,7 @@ public class ProcessInstanceStateEventBody implements KogitoMarshallEventSupport
         this.rootProcessInstanceId = dataEvent.getKogitoRootProcessInstanceId();
         this.processType = dataEvent.getKogitoProcessType();
         this.businessKey = dataEvent.getKogitoBusinessKey();
+
     }
 
     public Date getEventDate() {
@@ -162,6 +174,14 @@ public class ProcessInstanceStateEventBody implements KogitoMarshallEventSupport
         return rootProcessId;
     }
 
+    public String getCloudEventId() {
+        return cloudEventId;
+    }
+
+    public String getCloudEventSource() {
+        return cloudEventSource;
+    }
+
     public Integer getState() {
         return state;
     }
@@ -195,7 +215,8 @@ public class ProcessInstanceStateEventBody implements KogitoMarshallEventSupport
     public String toString() {
         return "ProcessInstanceStateEventBody [eventDate=" + eventDate + ", eventUser=" + eventUser + ", eventType=" + eventType + ", processId=" + processId + ", processVersion=" + processVersion
                 + ", processType=" + processType + ", processInstanceId=" + processInstanceId + ", businessKey=" + businessKey + ", processName=" + processName + ", parentInstanceId="
-                + parentInstanceId + ", rootProcessId=" + rootProcessId + ", rootProcessInstanceId=" + rootProcessInstanceId + ", state=" + state + ", roles=" + roles + "]";
+                + parentInstanceId + ", rootProcessId=" + rootProcessId + ", rootProcessInstanceId=" + rootProcessInstanceId + ", state=" + state + ", roles=" + roles
+                + ", cloudEventId=" + cloudEventId + " ,cloudEventSource=" + cloudEventSource + "]";
     }
 
     @Override
@@ -303,6 +324,12 @@ public class ProcessInstanceStateEventBody implements KogitoMarshallEventSupport
 
         public Builder slaDueDate(Date slaDueDate) {
             instance.slaDueDate = slaDueDate;
+            return this;
+        }
+
+        public Builder cloudEvent(String cloudEventId, String cloudEventSource) {
+            instance.cloudEventId = cloudEventId;
+            instance.cloudEventSource = cloudEventSource;
             return this;
         }
 

@@ -36,7 +36,6 @@ import java.util.function.BiFunction;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.util.PortablePath;
-import org.jbpm.process.instance.LightWorkItemManager;
 import org.junit.platform.commons.util.ClassLoaderUtils;
 import org.kie.kogito.Application;
 import org.kie.kogito.codegen.api.AddonsConfig;
@@ -48,10 +47,12 @@ import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.usertask.UserTaskCodegen;
-import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
-import org.kie.kogito.process.Process;
-import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.process.impl.AbstractProcess;
+import org.kie.kogito.process.ProcessConfig;
+import org.kie.kogito.process.Processes;
+import org.kie.kogito.services.jobs.impl.InMemoryJobContext;
+import org.kie.kogito.services.jobs.impl.InMemoryProcessJobExecutorFactory;
+import org.kie.kogito.services.jobs.impl.InMemoryUserTaskJobExecutorFactory;
+import org.kie.kogito.usertask.UserTasks;
 import org.kie.memorycompiler.CompilationResult;
 import org.kie.memorycompiler.JavaCompiler;
 import org.kie.memorycompiler.JavaCompilerFactory;
@@ -60,6 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.services.jobs.impl.StaticJobService.staticJobService;
 
 public abstract class AbstractCodegenIT {
 
@@ -210,7 +212,21 @@ public abstract class AbstractCodegenIT {
         @SuppressWarnings("unchecked")
         Class<Application> app = (Class<Application>) Class.forName(context.getPackageName() + ".Application", true, classloader);
 
-        return app.getDeclaredConstructor().newInstance();
+        Application application = app.getDeclaredConstructor().newInstance();
+
+        initTimer(application);
+
+        return application;
+    }
+
+    private void initTimer(Application app) {
+        Processes processes = app.get(Processes.class);
+        UserTasks userTasks = app.get(UserTasks.class);
+        ProcessConfig config = app.config().get(ProcessConfig.class);
+        InMemoryJobContext context = new InMemoryJobContext(null, config.unitOfWorkManager(), processes, userTasks);
+        staticJobService().clearJobExecutorFactories();
+        staticJobService().registerJobExecutorFactory(new InMemoryProcessJobExecutorFactory(context));
+        staticJobService().registerJobExecutorFactory(new InMemoryUserTaskJobExecutorFactory(context));
     }
 
     protected KogitoBuildContext newContext() {
@@ -262,7 +278,4 @@ public abstract class AbstractCodegenIT {
         }
     }
 
-    protected KogitoWorkItemHandler getWorkItemHandler(Process<?> p, WorkItem workItem) {
-        return ((LightWorkItemManager) ((AbstractProcess<?>) p).getProcessRuntime().getKogitoWorkItemManager()).getWorkItemHandler(workItem.getId());
-    }
 }

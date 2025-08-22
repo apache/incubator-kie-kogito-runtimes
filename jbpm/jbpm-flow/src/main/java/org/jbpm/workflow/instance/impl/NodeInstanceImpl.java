@@ -19,12 +19,8 @@
 package org.jbpm.workflow.instance.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.ZonedDateTime;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -184,10 +180,6 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         }
     }
 
-    public boolean isInversionOfControl() {
-        return false;
-    }
-
     @Override
     public CancelType getCancelType() {
         return cancelType;
@@ -254,22 +246,35 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
             ((InternalProcessRuntime) kruntime.getProcessRuntime())
                     .getProcessEventSupport().fireBeforeNodeTriggered(this, kruntime);
         }
-        try {
-            internalTrigger(from, type);
-        } catch (Exception e) {
-            if (!WORKFLOW_PARAM_TRANSACTIONS.get(getProcessInstance().getProcess())) {
-                logger.error("Node instance causing process instance error in id {} in a non transactional environment", this.getStringId());
-                captureError(e);
-                return;
-            } else {
-                logger.error("Node instance causing process instance error in id {} in a transactional environment (Wrapping)", this.getStringId());
-                throw new ProcessInstanceExecutionException(this.getProcessInstance().getId(), this.getNodeDefinitionId(), this.getId(), e.getMessage(), e);
-            }
-            // stop after capturing error
-        }
+
+        captureExecutionException(() -> internalTrigger(from, type));
+
         if (!hidden) {
             ((InternalProcessRuntime) kruntime.getProcessRuntime())
                     .getProcessEventSupport().fireAfterNodeTriggered(this, kruntime);
+        }
+    }
+
+    protected void captureExecutionException(Runnable runnable) {
+        try {
+            runnable.run();
+        } catch (Exception e) {
+            if (!WORKFLOW_PARAM_TRANSACTIONS.get(getProcessInstance().getProcess())) {
+                logger.error("Error executing node instance '{}' (node '{}' id: '{}') in process instance '{}' (process: '{}') in a non transactional environment  ", getStringId(), getNodeName(),
+                        getNodeDefinitionId(), processInstance.getId(), processInstance.getProcessId());
+                captureError(e);
+            } else {
+                // Checking if the exception has been already wrapped by the actual node instance to avoid unnecessary wrappings.
+                if (e instanceof ProcessInstanceExecutionException executionException && getId().equals(executionException.getFailedNodeInstanceId())) {
+                    logger.debug("Exception already wrapped by node instance '{}' (node '{}' id: '{}') in process instance '{}' (process: '{}')... propagating exception.", getStringId(),
+                            getNodeName(),
+                            getNodeDefinitionId(), processInstance.getId(), processInstance.getProcessId());
+                    throw executionException;
+                }
+                logger.error("Error executing node instance '{}' (node '{}' id: '{}') in process instance '{}' (process: '{}') in a transactional environment (Wrapping)", getStringId(), getNodeName(),
+                        getNodeDefinitionId(), processInstance.getId(), processInstance.getProcessId());
+                throw new ProcessInstanceExecutionException(this.getProcessInstance().getId(), this.getNodeDefinitionId(), this.getId(), e.getMessage(), e);
+            }
         }
     }
 
@@ -469,8 +474,10 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
             ((InternalProcessRuntime) kruntime.getProcessRuntime())
                     .getProcessEventSupport().fireBeforeNodeLeft(this, kruntime);
         }
+
         // trigger next node
-        nodeInstance.trigger(this, type);
+        captureExecutionException(() -> nodeInstance.trigger(this, type));
+
         Collection<Connection> outgoing = getNode().getOutgoingConnections(type);
         for (Connection conn : outgoing) {
             if (conn.getTo().getId().equals(nodeInstance.getNodeId())) {
@@ -493,17 +500,15 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         if (remove) {
             cancel();
         }
-        isRetrigger = true;
-        triggerNode(getNodeId(), !remove);
+        retriggerNode(nodeId, !remove);
     }
 
-    public void triggerNode(WorkflowElementIdentifier nodeId) {
-        triggerNode(nodeId, true);
-    }
-
-    public void triggerNode(WorkflowElementIdentifier nodeId, boolean fireEvents) {
-        org.jbpm.workflow.instance.NodeInstance nodeInstance = ((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer())
+    private void retriggerNode(WorkflowElementIdentifier nodeId, boolean fireEvents) {
+        NodeInstanceImpl nodeInstance = (NodeInstanceImpl) ((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer())
                 .getNodeInstance(((KogitoNode) getNode()).getParentContainer().getNode(nodeId));
+
+        nodeInstance.internalSetRetrigger(true);
+
         triggerNodeInstance(nodeInstance, Node.CONNECTION_DEFAULT_TYPE, fireEvents);
     }
 
@@ -634,6 +639,10 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
 
     protected void configureSla() {
 
+    }
+
+    public void rescheduleSlaTimer(ZonedDateTime slaDueDate) {
+        throw new UnsupportedOperationException("Unsupported operation");
     }
 
     @Override

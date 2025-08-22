@@ -27,6 +27,7 @@ import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,6 +35,7 @@ import org.kie.api.definition.process.WorkflowElementIdentifier;
 import org.kie.kogito.process.validation.ValidationException;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 public class JavaRuleFlowProcessValidatorTest {
 
@@ -100,4 +102,84 @@ public class JavaRuleFlowProcessValidatorTest {
                 .isThrownBy(() -> validator.validate(process))
                 .withMessageContaining(message);
     }
+
+    @Test
+    public void testScriptWithTrailingCommentLine() {
+        RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("demo.orders");
+        factory
+                .variable("order", new ObjectDataType("com.myspace.demo.Order"))
+                .variable("approver", new ObjectDataType("String"))
+                .name("orders")
+                .packageName("com.myspace.demo")
+                .dynamic(false)
+                .version("1.0")
+                .startNode(one)
+                .name("start")
+                .done()
+                .actionNode(two)
+                .name("Dump order 1")
+                .action("java", "System.out.println(\"test\");\n// this is a comment")
+                .done()
+                .endNode(three)
+                .name("end")
+                .terminate(false)
+                .done()
+                .connection(one, two)
+                .connection(two, three);
+        RuleFlowProcess process = factory.getProcess();
+        ProcessValidator validator = ProcessValidatorRegistry.getInstance().getValidator(process, null);
+        assertThatNoException()
+                .isThrownBy(() -> validator.validate(process));
+    }
+
+    @Test
+    public void testScriptWithLambdaParameterRecognized() {
+        // 'i' is declared by the lambda validator should NOT complain
+        String script =
+                "java.util.List<Integer> list = java.util.Arrays.asList(1,2,3);" +
+                        "Integer first = list.stream().filter(i -> i > 0).findFirst().orElse(null);";
+
+        RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("demo.lambda.ok");
+        factory
+                .name("lambda")
+                .packageName("com.myspace.demo")
+                .dynamic(false)
+                .version("1.0")
+                .startNode(one).name("start").done()
+                .actionNode(two).name("Lambda")
+                .action("java", script).done()
+                .endNode(three).name("end").terminate(false).done()
+                .connection(one, two).connection(two, three);
+
+        RuleFlowProcess process = factory.getProcess();
+        ProcessValidator validator = ProcessValidatorRegistry.getInstance().getValidator(process, null);
+        assertThatNoException().isThrownBy(() -> validator.validate(process));
+    }
+
+    @Test
+    public void testScriptWithUnknownVariableInsideLambdaFails() {
+        // 'j' is NOT declared anywhere validator should still catch unknowns
+        String script =
+                "java.util.List<Integer> list = java.util.Arrays.asList(1,2,3);" +
+                        "list.stream().filter(i -> j > 0).findFirst().orElse(null);";
+
+        RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("demo.lambda.bad");
+        factory
+                .name("lambda-exception")
+                .packageName("com.myspace.demo")
+                .dynamic(false)
+                .version("1.0")
+                .startNode(one).name("start").done()
+                .actionNode(two).name("Lambda")
+                .action("java", script).done()
+                .endNode(three).name("end").terminate(false).done()
+                .connection(one, two).connection(two, three);
+
+        RuleFlowProcess process = factory.getProcess();
+        ProcessValidator validator = ProcessValidatorRegistry.getInstance().getValidator(process, null);
+        assertThatExceptionOfType(ValidationException.class)
+                .isThrownBy(() -> validator.validate(process))
+                .withMessageContaining("uses unknown variable in the script: j");
+    }
+
 }

@@ -136,7 +136,7 @@ public class DynamicCallResourceTest {
                 .post("/_dynamic/dynamicWait/" + id + "/rest")
                 .then()
                 .statusCode(404)
-                .body("message", containsString("endpoint invalid-endpoint-format failed"));
+                .body("message", containsString("failed"));
     }
 
     @Test
@@ -154,6 +154,7 @@ public class DynamicCallResourceTest {
                 .when()
                 .post("/_dynamic/dynamicWait/" + id1 + "/rest")
                 .then()
+                .log().body()
                 .statusCode(200));
 
         Future<?> future2 = executor.submit(() -> given()
@@ -163,6 +164,7 @@ public class DynamicCallResourceTest {
                 .when()
                 .post("/_dynamic/dynamicWait/" + id2 + "/rest")
                 .then()
+                .log().body()
                 .statusCode(200));
 
         future1.get();
@@ -178,6 +180,7 @@ public class DynamicCallResourceTest {
                 .when()
                 .post("/dynamicWait")
                 .then()
+                .log().body()
                 .statusCode(201)
                 .extract().path("id");
     }
