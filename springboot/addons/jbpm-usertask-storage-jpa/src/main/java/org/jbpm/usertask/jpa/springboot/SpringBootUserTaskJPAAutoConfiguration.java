@@ -16,21 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.codegen.api.context;
 
-public final class ContextAttributesConstants {
+package org.jbpm.usertask.jpa.springboot;
 
-    /**
-     * OpenAPI Generator Descriptors with information of every REST client generated indexed by the spec resource file.
-     */
-    public static final String OPENAPI_DESCRIPTORS = "openApiDescriptor";
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
-    public static final String PROCESS_AUTO_SVG_MAPPING = "processAutoSVGMapping";
-
-    public static final String KOGITO_FAULT_TOLERANCE_ENABLED = "kogito.faultToleranceEnabled";
-
-    public static final String KOGITO_CODEGEN_BOOLEAN_OBJECT_ACCESSOR_BEHAVIOUR = "kogito.codegen.booleanObjectAccessorBehaviour";
-
-    private ContextAttributesConstants() {
-    }
+@SpringBootConfiguration
+@EntityScan("org.jbpm.usertask.jpa.model")
+public class SpringBootUserTaskJPAAutoConfiguration {
 }
