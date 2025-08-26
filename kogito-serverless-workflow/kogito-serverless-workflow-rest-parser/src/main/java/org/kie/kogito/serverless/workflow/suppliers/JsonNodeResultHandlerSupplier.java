@@ -20,7 +20,7 @@ package org.kie.kogito.serverless.workflow.suppliers;
 
 import java.util.function.Supplier;
 
-import org.kogito.workitem.rest.resulthandlers.JsonNodeResultHandler;
+import org.kie.kogito.serverless.workflow.rest.JsonNodeResultHandler;
 
 import com.github.javaparser.ast.expr.Expression;
 
