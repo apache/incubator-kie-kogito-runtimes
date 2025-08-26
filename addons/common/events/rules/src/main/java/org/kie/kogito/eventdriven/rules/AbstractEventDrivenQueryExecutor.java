@@ -45,7 +45,6 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData> i
         this.queryName = queryName;
         this.queryFunction = queryFunction;
         this.objectClass = objectClass;
-        controller.subscribe(this, objectClass);
     }
 
     @Override

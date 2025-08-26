@@ -25,8 +25,6 @@ import org.kie.kogito.event.EventReceiver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-
 @Component
 public class SpringBootEventDrivenDecisionController extends EventDrivenDecisionController {
 
@@ -35,8 +33,4 @@ public class SpringBootEventDrivenDecisionController extends EventDrivenDecision
         super(decisionModels, config, eventEmitter, eventReceiver);
     }
 
-    @PostConstruct
-    private void onPostConstruct() {
-        subscribe();
-    }
 }

@@ -46,6 +46,5 @@ public class QuarkusEventDrivenPredictionsController extends EventDrivenPredicti
     @PostConstruct
     private void onPostConstruct() {
         init(predictionModels, config, eventEmitter, eventReceiver);
-        subscribe();
     }
 }

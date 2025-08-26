@@ -21,9 +21,7 @@ package org.kie.kogito.eventdriven.decision;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,10 +37,8 @@ import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.Subscription;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
-import org.kie.kogito.event.impl.CloudEventConverter;
 import org.kie.kogito.event.impl.ObjectCloudEventUnmarshallerFactory;
 import org.mockito.ArgumentCaptor;
 

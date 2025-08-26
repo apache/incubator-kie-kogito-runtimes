@@ -18,6 +18,8 @@
  */
 package org.kie.kogito.event.impl;
 
+import java.util.Map;
+
 import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
@@ -48,7 +50,8 @@ public abstract class AbstractMessageProducer<D> implements MessageProducerWithC
     }
 
     @Override
-    public void produce(KogitoProcessInstance pi, D eventData) {
+    public void produce(KogitoProcessInstance pi, D eventData, Map<String, Object> contextAttrs) {
         emitter.emit(DataEventFactory.from(eventData, trigger, pi));
     }
+
 }

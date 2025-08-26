@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.serverless.workflow.actions;
 
-
 import java.util.function.Supplier;
 
 import org.jbpm.process.instance.impl.actions.AbstractEventProcessInstanceAction;
@@ -40,7 +39,6 @@ public class SWFProduceEventAction extends AbstractEventProcessInstanceAction {
     protected final JsonNode data;
     protected final JsonNode contextAttrs;
 
-
     public SWFProduceEventAction(String triggerName, String varName, Supplier<MessageProducerWithContext<JsonNode>> supplier, String exprLang, JsonNode data, JsonNode contextAttrs) {
         super(triggerName, varName, Metadata.EXTERNAL_SCOPE);
 
@@ -48,7 +46,6 @@ public class SWFProduceEventAction extends AbstractEventProcessInstanceAction {
         this.data = data;
         this.contextAttrs = contextAttrs;
     }
-
 
     protected Object transform(KogitoProcessContext context, Object object) {
         if (data != null) {

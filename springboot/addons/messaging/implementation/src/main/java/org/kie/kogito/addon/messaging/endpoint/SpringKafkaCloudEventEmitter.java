@@ -66,4 +66,9 @@ public class SpringKafkaCloudEventEmitter<M> implements EventEmitter {
         }
     }
 
+    @Override
+    public String channelName() {
+        return defaultTopicName;
+    }
+
 }

@@ -18,15 +18,8 @@
  */
 package org.kie.kogito.serverless.workflow.executor.events;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import io.cloudevents.jackson.JsonCloudEventData;
 
 public class InMemoryEventEmitter implements EventEmitter {
 
@@ -37,8 +30,12 @@ public class InMemoryEventEmitter implements EventEmitter {
     }
 
     @Override
-    public CompletionStage<Void> emit(DataEvent<?> dataEvent) {
-        eventReceiver.onEvent(dataEvent.asCloudEvent(o -> JsonCloudEventData.wrap((JsonNode) o)));
-        return CompletableFuture.completedStage(null);
+    public void emit(DataEvent<?> dataEvent) {
+        //        eventReceiver.onEvent(dataEvent.asCloudEvent(o -> JsonCloudEventData.wrap((JsonNode) o)));
+    }
+
+    @Override
+    public String channelName() {
+        return null;
     }
 }

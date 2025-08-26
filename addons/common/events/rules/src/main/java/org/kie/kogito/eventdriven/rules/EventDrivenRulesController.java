@@ -64,10 +64,6 @@ public class EventDrivenRulesController {
         this.eventReceiver = eventReceiver;
     }
 
-    public <D> void subscribe(EventDrivenQueryExecutor<D> queryExecutor, Class<D> objectClass) {
-        eventReceiver.subscribe(new RequestHandler<>(queryExecutor), objectClass);
-    }
-
     private class RequestHandler<T> implements Function<DataEvent<T>, CompletionStage<?>> {
 
         private EventDrivenQueryExecutor<T> queryExecutor;

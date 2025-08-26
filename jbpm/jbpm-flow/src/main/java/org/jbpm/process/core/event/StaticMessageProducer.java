@@ -30,4 +30,5 @@ public class StaticMessageProducer<D> extends AbstractMessageProducer<D> {
     public StaticMessageProducer(String trigger, EventEmitter emitter) {
         super(emitter, trigger);
     }
+
 }
