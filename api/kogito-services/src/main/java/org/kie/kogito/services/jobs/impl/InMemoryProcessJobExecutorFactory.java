@@ -77,11 +77,12 @@ public class InMemoryProcessJobExecutorFactory implements JobExecutorFactory {
     }
 
     protected Runnable processJobByDescription(JobsService jobService, InMemoryJobContext jobsConfiguration, ProcessJobDescription description) {
-        return new StartProcessOnExpiredTimer(jobService, jobsConfiguration, description.id(), description.process(), true, -1);
+        return new StartProcessOnExpiredTimer(jobService, jobsConfiguration, description.id(), jobsConfiguration.processes().processById(description.processId()), true, -1);
     }
 
     protected Runnable repeatableJobByDescription(JobsService jobService, InMemoryJobContext jobsConfiguration, ProcessJobDescription description) {
-        return new StartProcessOnExpiredTimer(jobService, jobsConfiguration, description.id(), description.process(), false, description.expirationTime().repeatLimit());
+        return new StartProcessOnExpiredTimer(jobService, jobsConfiguration, description.id(), jobsConfiguration.processes().processById(description.processId()), false,
+                description.expirationTime().repeatLimit());
     }
 
 }

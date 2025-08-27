@@ -82,6 +82,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
 
     protected boolean activated;
     protected KogitoProcessRuntime processRuntime;
+    protected InternalProcessRuntime internalProcessRuntime;
 
     private org.kie.api.definition.process.Process process;
     private Lock processInitLock = new ReentrantLock();
@@ -221,6 +222,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         if (this.activated) {
             return;
         }
+        this.internalProcessRuntime = LightProcessRuntime.of(app, Collections.singletonList(get()), services);
         this.processRuntime = createProcessRuntime().getKogitoProcessRuntime();
         configure();
         // this belongs to only for the work item handler so we keep within the context of the current process instance loaded in memory
@@ -310,7 +312,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
     protected abstract org.kie.api.definition.process.Process process();
 
     protected InternalProcessRuntime createProcessRuntime() {
-        return LightProcessRuntime.of(app, Collections.singletonList(get()), services);
+        return internalProcessRuntime;
     }
 
     protected boolean isProcessFactorySet() {
