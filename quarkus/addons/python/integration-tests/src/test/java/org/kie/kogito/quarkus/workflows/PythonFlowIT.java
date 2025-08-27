@@ -20,10 +20,13 @@ package org.kie.kogito.quarkus.workflows;
 
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusIntegrationTest
@@ -37,7 +40,33 @@ class PythonFlowIT {
 
     @Test
     void testPythonService() {
-        given().contentType(ContentType.JSON).accept(ContentType.JSON).body("{\"x\" : 5}").post("/Factorial")
-                .then().statusCode(201).body("workflowdata.result", is(120));
+        given().contentType(ContentType.JSON).accept(ContentType.JSON).body("{\"x\" : 5, \"y\":3}").post("/Factorial")
+                .then().statusCode(201).body("workflowdata.factorial", is(120)).body("workflowdata.module", is(2.0f)).body("workflowdata.isClose", is(true));
+    }
+
+    @Test
+    public void testPythonDateTime() {
+        JsonNode node = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{}").when()
+                .post("/DateTime")
+                .then()
+                .statusCode(201)
+                .extract().as(JsonNode.class);
+        assertThat(node.get("workflowdata").get("year").intValue()).isGreaterThanOrEqualTo(2025);
+    }
+
+    @Test
+    public void testPythonDateTimeString() {
+        JsonNode node = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{}").when()
+                .post("/DateTimeString")
+                .then()
+                .statusCode(201)
+                .extract().as(JsonNode.class);
+        assertThat(node.get("workflowdata").get("date").textValue()).isNotNull();
     }
 }
