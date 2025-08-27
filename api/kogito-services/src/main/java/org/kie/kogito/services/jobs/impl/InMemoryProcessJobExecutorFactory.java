@@ -28,7 +28,6 @@ import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.descriptors.ProcessJobDescription;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstanceOptimisticLockingException;
-import org.kie.kogito.process.Processes;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
