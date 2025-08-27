@@ -59,4 +59,9 @@ public class Bpmn2Import implements Serializable {
         this.namespace = namespace;
     }
 
+    @Override
+    public String toString() {
+        return type + "::" + location + "::" + namespace;
+    }
+
 }
