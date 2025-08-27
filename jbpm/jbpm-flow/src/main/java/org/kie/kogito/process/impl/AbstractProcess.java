@@ -263,6 +263,8 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         if (this.services.getSignalManager() instanceof SignalManagerHub signalManagerHub) {
             signalManagerHub.removeProcessInstanceResolver(processInstanceResolver);
         }
+        this.internalProcessRuntime.dispose();
+        this.internalProcessRuntime = null;
         this.activated = false;
     }
 

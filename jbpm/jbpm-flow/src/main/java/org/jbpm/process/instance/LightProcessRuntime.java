@@ -377,6 +377,8 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
 
     @Override
     public void dispose() {
+        removeProcessEventListeners();
+        initStartTimers();
         this.processEventSupport.reset();
         runtimeContext = null;
     }
