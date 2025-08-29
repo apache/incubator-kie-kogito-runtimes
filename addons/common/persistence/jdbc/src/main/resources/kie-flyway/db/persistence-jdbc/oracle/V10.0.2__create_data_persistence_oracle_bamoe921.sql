@@ -8,6 +8,14 @@ CREATE TABLE correlation_instances (
     CONSTRAINT correlation_instances_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE event_types
+(
+    process_instance_id VARCHAR2(36) NOT NULL,
+    event_type VARCHAR2(256) NOT NULL,
+
+    CONSTRAINT event_types_pk PRIMARY KEY (process_instance_id, event_type)
+);
+
 CREATE TABLE process_instances (
     id VARCHAR2(36) NOT NULL,
     payload BLOB NOT NULL,
