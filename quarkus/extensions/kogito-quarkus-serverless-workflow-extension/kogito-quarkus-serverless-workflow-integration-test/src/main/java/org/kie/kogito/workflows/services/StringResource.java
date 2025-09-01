@@ -16,21 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.serverless.workflow.actions;
+package org.kie.kogito.workflows.services;
 
-import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
-public class CollectorAction extends BaseExpressionAction {
+@Path("stringResource")
+public class StringResource {
 
-    private String outputVar;
-
-    public CollectorAction(String lang, String expr, String modelVar, String outputVar) {
-        super(lang, expr, modelVar);
-        this.outputVar = outputVar;
+    @POST
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Path("reverse")
+    public String reverse(String str) {
+        return new StringBuilder(str).reverse().toString();
     }
 
-    @Override
-    public void execute(KogitoProcessContext context) throws Exception {
-        expr.assign(ActionUtils.getJsonNode(context, modelVar), ActionUtils.getJsonNode(context, outputVar), context);
-    }
 }
