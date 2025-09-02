@@ -31,7 +31,7 @@ public class ProcessDefinitionRegistration implements InitializingBean {
     ProcessDefinitionEventRegistry processDefinitionRegistry;
 
     @Autowired
-    public ProcessDefinitionRegistration(Application application, @Value("kogito.service.url") String serviceUrl, @Autowired(required = false) Processes processes) {
+    public ProcessDefinitionRegistration(Application application, @Value("${kogito.service.url:#{null}}") String serviceUrl, @Autowired(required = false) Processes processes) {
         this.processes = processes;
         this.processDefinitionRegistry = new ProcessDefinitionEventRegistry(application, serviceUrl);
     }
