@@ -60,6 +60,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableSet;
 import static org.kie.kogito.jobs.descriptors.UserTaskInstanceJobDescription.newUserTaskInstanceJobDescriptionBuilder;
 import static org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycle.WORKFLOW_ENGINE_USER;
 
@@ -399,12 +400,28 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         return this.potentialUsers;
     }
 
+    @Override
     public void setPotentialUsers(Set<String> potentialUsers) {
         Set<String> oldValues = new HashSet<>(this.potentialUsers);
-        this.potentialUsers = potentialUsers;
-        if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.USER_OWNERS, oldValues, potentialUsers);
-        }
+        this.potentialUsers.clear();
+        this.potentialUsers.addAll(potentialUsers);
+        fireTaskAssignmentChange(AssignmentType.USER_OWNERS, oldValues, potentialUsers);
+        updatePersistence();
+    }
+
+    @Override
+    public void addPotentialUsers(Set<String> potentialUsers) {
+        Set<String> oldValues = new HashSet<>(this.potentialUsers);
+        this.potentialUsers.addAll(potentialUsers);
+        fireTaskAssignmentChange(AssignmentType.USER_OWNERS, oldValues, unmodifiableSet(this.potentialUsers));
+        updatePersistence();
+    }
+
+    @Override
+    public void removePotentialUsers(Set<String> potentialUsersToRemove) {
+        Set<String> oldValues = new HashSet<>(this.potentialUsers);
+        this.potentialUsers.removeAll(potentialUsersToRemove);
+        fireTaskAssignmentChange(AssignmentType.USER_OWNERS, oldValues, unmodifiableSet(this.potentialUsers));
         updatePersistence();
     }
 
@@ -437,12 +454,28 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         return this.adminUsers;
     }
 
+    @Override
     public void setAdminUsers(Set<String> adminUsers) {
         Set<String> oldValues = new HashSet<>(this.adminUsers);
-        this.adminUsers = adminUsers;
-        if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.ADMIN_USERS, oldValues, adminUsers);
-        }
+        this.adminUsers.clear();
+        this.adminUsers.addAll(adminUsers);
+        fireTaskAssignmentChange(AssignmentType.ADMIN_USERS, oldValues, adminUsers);
+        updatePersistence();
+    }
+
+    @Override
+    public void addAdminUsers(Set<String> adminUsers) {
+        Set<String> oldValues = new HashSet<>(this.adminUsers);
+        this.adminUsers.addAll(adminUsers);
+        fireTaskAssignmentChange(AssignmentType.ADMIN_USERS, oldValues, unmodifiableSet(this.adminUsers));
+        updatePersistence();
+    }
+
+    @Override
+    public void removeAdminUsers(Set<String> adminUsersToRemove) {
+        Set<String> oldValues = new HashSet<>(this.adminUsers);
+        this.adminUsers.removeAll(adminUsersToRemove);
+        fireTaskAssignmentChange(AssignmentType.ADMIN_USERS, oldValues, unmodifiableSet(this.adminUsers));
         updatePersistence();
     }
 
@@ -456,12 +489,28 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         return this.adminGroups;
     }
 
+    @Override
     public void setAdminGroups(Set<String> adminGroups) {
         Set<String> oldValues = new HashSet<>(this.adminGroups);
-        this.adminGroups = adminGroups;
-        if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.ADMIN_GROUPS, oldValues, adminGroups);
-        }
+        this.adminGroups.clear();
+        this.adminGroups.addAll(adminGroups);
+        fireTaskAssignmentChange(AssignmentType.ADMIN_GROUPS, oldValues, adminGroups);
+        updatePersistence();
+    }
+
+    @Override
+    public void addAdminGroups(Set<String> adminGroups) {
+        Set<String> oldValues = new HashSet<>(this.adminGroups);
+        this.adminGroups.addAll(adminGroups);
+        fireTaskAssignmentChange(AssignmentType.ADMIN_GROUPS, oldValues, unmodifiableSet(this.adminGroups));
+        updatePersistence();
+    }
+
+    @Override
+    public void removeAdminGroups(Set<String> adminGroupsToRemove) {
+        Set<String> oldValues = new HashSet<>(this.adminGroups);
+        this.adminGroups.removeAll(adminGroupsToRemove);
+        fireTaskAssignmentChange(AssignmentType.ADMIN_GROUPS, oldValues, unmodifiableSet(this.adminGroups));
         updatePersistence();
     }
 
@@ -475,12 +524,28 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         return this.excludedUsers;
     }
 
+    @Override
     public void setExcludedUsers(Set<String> excludedUsers) {
         Set<String> oldValues = new HashSet<>(this.excludedUsers);
-        this.excludedUsers = excludedUsers;
-        if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, AssignmentType.USERS_EXCLUDED, oldValues, excludedUsers);
-        }
+        this.excludedUsers.clear();
+        this.excludedUsers.addAll(excludedUsers); //excludedUsers passed into this method are immutable
+        fireTaskAssignmentChange(AssignmentType.USERS_EXCLUDED, oldValues, excludedUsers);
+        updatePersistence();
+    }
+
+    @Override
+    public void addExcludedUsers(Set<String> excludedUsers) {
+        Set<String> oldValues = new HashSet<>(this.excludedUsers);
+        this.excludedUsers.addAll(excludedUsers);
+        fireTaskAssignmentChange(AssignmentType.USERS_EXCLUDED, oldValues, unmodifiableSet(this.excludedUsers));
+        updatePersistence();
+    }
+
+    @Override
+    public void removeExcludedUsers(Set<String> excludedUsersToRemove) {
+        Set<String> oldValues = new HashSet<>(this.excludedUsers);
+        this.excludedUsers.removeAll(excludedUsersToRemove);
+        fireTaskAssignmentChange(AssignmentType.USERS_EXCLUDED, oldValues, unmodifiableSet(this.excludedUsers));
         updatePersistence();
     }
 
@@ -774,6 +839,12 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
             return;
         }
         reassign(reassignment);
+    }
+
+    private void fireTaskAssignmentChange(AssignmentType assignmentType, Set<String> oldValues, Set<String> newValues) {
+        if (this.userTaskEventSupport != null) {
+            this.userTaskEventSupport.fireOnUserTaskAssignmentChange(this, assignmentType, oldValues, newValues);
+        }
     }
 
     private void reassign(Reassignment reassignment) {

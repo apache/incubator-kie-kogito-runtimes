@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.List;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 
 import jakarta.inject.Inject;
 
@@ -271,6 +272,178 @@ public class UserTasksResource {
             @QueryParam("group") List<String> groups) {
         return userTaskService.getAttachment(taskId, attachmentId, identityProviderFactory.getOrImpersonateIdentity(user, groups))
                 .orElseThrow(() -> new UserTaskInstanceNotFoundException("Attachment " + attachmentId + " not found"));
+    }
+
+    @POST
+    @Path("/{taskId}/adminUsers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView addAdminUsers(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") List<String> groups,
+            @QueryParam("adminUsers") Set<String> adminUsers
+    ) {
+        return userTaskService.addAdminUsers(taskId, adminUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+    @PUT
+    @Path("/{taskId}/adminUsers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView setAdminUsers(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") List<String> groups,
+            @QueryParam("adminUsers") Set<String> adminUsers
+    ) {
+        return userTaskService.setAdminUsers(taskId, adminUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+
+    @DELETE
+    @Path("/{taskId}/adminUsers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView removeAdminUsers(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") Set<String> groups,
+            @QueryParam("adminUsers") Set<String> adminUsersToRemove
+    ) {
+        return userTaskService.removeAdminUsers(taskId, adminUsersToRemove, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+    @POST
+    @Path("/{taskId}/potentialUsers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView addPotentialUsers(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") List<String> groups,
+            @QueryParam("potentialUsers") Set<String> potentialUsers
+    ) {
+        return userTaskService.addPotentialUsers(taskId, potentialUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+    @PUT
+    @Path("/{taskId}/potentialUsers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView setPotentialUsers(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") List<String> groups,
+            @QueryParam("potentialUsers") Set<String> potentialUsers
+    ) {
+        return userTaskService.setPotentialUsers(taskId, potentialUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+
+    @DELETE
+    @Path("/{taskId}/potentialUsers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView removePotentialUsers(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") Set<String> groups,
+            @QueryParam("potentialUsers") Set<String> potentialUsersToRemove
+    ) {
+        return userTaskService.removePotentialUsers(taskId, potentialUsersToRemove, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+    @POST
+    @Path("/{taskId}/excludedUsers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView addExcludedUsers(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") List<String> groups,
+            @QueryParam("excludedUsers") Set<String> excludedUsers
+    ) {
+        return userTaskService.addExcludedUsers(taskId, excludedUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+    @PUT
+    @Path("/{taskId}/excludedUsers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView setExcludedUsers(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") List<String> groups,
+            @QueryParam("excludedUsers") Set<String> excludedUsers
+    ) {
+        return userTaskService.setExcludedUsers(taskId, excludedUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+
+    @DELETE
+    @Path("/{taskId}/excludedUsers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView removeExcludedUsers(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") Set<String> groups,
+            @QueryParam("excludedUsers") Set<String> excludedUsersToRemove
+    ) {
+        return userTaskService.removeExcludedUsers(taskId, excludedUsersToRemove, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+    @POST
+    @Path("/{taskId}/adminGroups")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView addAdminGroups(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") List<String> groups,
+            @QueryParam("adminGroups") Set<String> adminGroups
+    ) {
+        return userTaskService.addAdminGroups(taskId, adminGroups, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+    @PUT
+    @Path("/{taskId}/adminGroups")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView setAdminGroups(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") List<String> groups,
+            @QueryParam("adminGroups") Set<String> adminGroups
+    ) {
+        return userTaskService.setAdminGroups(taskId, adminGroups, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
+    }
+
+
+    @DELETE
+    @Path("/{taskId}/adminGroups")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserTaskView removeAdminGroups(
+            @PathParam("taskId") String taskId,
+            @QueryParam("user") String user,
+            @QueryParam("group") Set<String> groups,
+            @QueryParam("adminGroups") Set<String> adminGroupsToRemove
+    ) {
+        return userTaskService.removeAdminGroups(taskId, adminGroupsToRemove, identityProviderFactory.getOrImpersonateIdentity(user, groups))
+                .orElseThrow(UserTaskInstanceNotFoundException::new);
     }
 
 }

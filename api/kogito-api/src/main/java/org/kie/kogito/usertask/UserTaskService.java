@@ -21,6 +21,7 @@ package org.kie.kogito.usertask;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.usertask.model.Attachment;
@@ -61,4 +62,28 @@ public interface UserTaskService {
     Optional<Attachment> updateAttachment(String taskId, Attachment comment, IdentityProvider identity);
 
     Optional<Attachment> removeAttachment(String taskId, String commentId, IdentityProvider identity);
+
+    Optional<UserTaskView> addAdminUsers(String taskId, Set<String> adminUsers, IdentityProvider identity);
+
+    Optional<UserTaskView> removeAdminUsers(String taskId, Set<String> adminUsersToRemove, IdentityProvider identity);
+
+    Optional<UserTaskView> setAdminUsers(String taskId, Set<String> adminUsers, IdentityProvider identity);
+
+    Optional<UserTaskView> addPotentialUsers(String taskId, Set<String> potentialUsers, IdentityProvider identity);
+
+    Optional<UserTaskView> setPotentialUsers(String taskId, Set<String> potentialUsers, IdentityProvider identity);
+
+    Optional<UserTaskView> removePotentialUsers(String taskId, Set<String> potentialUsersToRemove, IdentityProvider identity);
+
+    Optional<UserTaskView> addExcludedUsers(String taskId, Set<String> excludedUsers, IdentityProvider identity);
+
+    Optional<UserTaskView> setExcludedUsers(String taskId, Set<String> excludedUsers, IdentityProvider identity);
+
+    Optional<UserTaskView> removeExcludedUsers(String taskId, Set<String> excludedUsersToRemove, IdentityProvider identity);
+
+    Optional<UserTaskView> addAdminGroups(String taskId, Set<String> adminGroups, IdentityProvider identity);
+
+    Optional<UserTaskView> setAdminGroups(String taskId, Set<String> adminGroups, IdentityProvider identity);
+
+    Optional<UserTaskView> removeAdminGroups(String taskId, Set<String> adminGroupsToRemove, IdentityProvider identity);
 }

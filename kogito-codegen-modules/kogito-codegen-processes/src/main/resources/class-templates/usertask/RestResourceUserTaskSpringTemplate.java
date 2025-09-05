@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 
 import org.jbpm.util.JsonSchemaUtil;
 import org.kie.kogito.auth.IdentityProviderFactory;
@@ -245,6 +246,114 @@ public class UserTasksResource {
             @RequestParam(value = "group", required = false) List<String> groups) {
         return userTaskService.getAttachment(taskId, attachmentId, identityProviderFactory.getOrImpersonateIdentity(user, groups))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment " + attachmentId + " not found"));
+    }
+
+    @PostMapping("/{taskId}/adminUsers")
+    public UserTaskView addAdminUsers(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> adminUsers) {
+        return userTaskService.addAdminUsers(taskId, adminUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @PutMapping("/{taskId}/adminUsers")
+    public UserTaskView setAdminUsers(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> adminUsers) {
+        return userTaskService.setAdminUsers(taskId, adminUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/{taskId}/adminUsers")
+    public UserTaskView removeAdminUsers(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> adminUsersToRemove) {
+        return userTaskService.removeAdminUsers(taskId, adminUsersToRemove, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @PostMapping("/{taskId}/potentialUsers")
+    public UserTaskView addPotentialUsers(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> potentialUsers) {
+        return userTaskService.addPotentialUsers(taskId, potentialUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @PutMapping("/{taskId}/potentialUsers")
+    public UserTaskView setPotentialUsers(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> potentialUsers) {
+        return userTaskService.setPotentialUsers(taskId, potentialUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/{taskId}/potentialUsers")
+    public UserTaskView removePotentialUsers(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> potentialUsersToRemove) {
+        return userTaskService.removePotentialUsers(taskId, potentialUsersToRemove, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @PostMapping("/{taskId}/excludedUsers")
+    public UserTaskView addExcludedUsers(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> excludedUsers) {
+        return userTaskService.addExcludedUsers(taskId, excludedUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @PutMapping("/{taskId}/excludedUsers")
+    public UserTaskView setExcludedUsers(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> excludedUsers) {
+        return userTaskService.setExcludedUsers(taskId, excludedUsers, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/{taskId}/excludedUsers")
+    public UserTaskView removeExcludedUsers(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> excludedUsersToRemove) {
+        return userTaskService.removeExcludedUsers(taskId, excludedUsersToRemove, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @PostMapping("/{taskId}/adminGroups")
+    public UserTaskView addAdminGroups(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> adminGroups) {
+        return userTaskService.addAdminGroups(taskId, adminGroups, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @PutMapping("/{taskId}/adminGroups")
+    public UserTaskView setAdminGroups(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> adminGroups) {
+        return userTaskService.setAdminGroups(taskId, adminGroups, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/{taskId}/adminGroups")
+    public UserTaskView removeAdminGroups(
+            @PathVariable("taskId") String taskId,
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestBody Set<String> adminGroupsToRemove) {
+        return userTaskService.removeAdminGroups(taskId, adminGroupsToRemove, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
 }
