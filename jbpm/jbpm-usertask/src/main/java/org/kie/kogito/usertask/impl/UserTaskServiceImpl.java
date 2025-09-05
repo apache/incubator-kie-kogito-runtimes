@@ -18,11 +18,7 @@
  */
 package org.kie.kogito.usertask.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.IdentityProvider;
@@ -263,4 +259,159 @@ public class UserTaskServiceImpl implements UserTaskService {
         });
     }
 
+    @Override
+    public Optional<UserTaskView> addAdminUsers(String taskId, Set<String> adminUsers, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.addAdminUsers(adminUsers);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> setAdminUsers(String taskId, Set<String> adminUsers, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.setAdminUsers(adminUsers);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> removeAdminUsers(String taskId, Set<String> adminUsersToRemove, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.removeAdminUsers(adminUsersToRemove);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> addPotentialUsers(String taskId, Set<String> potentialUsers, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.addPotentialUsers(potentialUsers);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> setPotentialUsers(String taskId, Set<String> potentialUsers, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.setPotentialUsers(potentialUsers);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> removePotentialUsers(String taskId, Set<String> potentialUsersToRemove, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.removePotentialUsers(potentialUsersToRemove);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> addExcludedUsers(String taskId, Set<String> excludedUsers, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.addExcludedUsers(excludedUsers);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> setExcludedUsers(String taskId, Set<String> excludedUsers, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.setExcludedUsers(excludedUsers);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> removeExcludedUsers(String taskId, Set<String> excludedUsersToRemove, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.removeExcludedUsers(excludedUsersToRemove);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> addAdminGroups(String taskId, Set<String> adminGroups, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.addAdminGroups(adminGroups);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> setAdminGroups(String taskId, Set<String> adminGroups, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.setAdminGroups(adminGroups);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
+
+    @Override
+    public Optional<UserTaskView> removeAdminGroups(String taskId, Set<String> adminGroupsToRemove, IdentityProvider identity) {
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
+            Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
+            if (userTaskInstance.isEmpty()) {
+                return Optional.empty();
+            }
+            UserTaskInstance ut = userTaskInstance.get();
+            ut.removeAdminGroups(adminGroupsToRemove);
+            return Optional.of(toUserTaskView(ut));
+        });
+    }
 }
