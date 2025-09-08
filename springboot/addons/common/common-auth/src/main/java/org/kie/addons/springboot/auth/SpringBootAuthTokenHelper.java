@@ -37,8 +37,6 @@ public class SpringBootAuthTokenHelper {
     private final List<PrincipalAuthTokenReader> authTokenReaders;
 
     public SpringBootAuthTokenHelper(@Autowired List<PrincipalAuthTokenReader> authTokenReaders) {
-        // ensure the security context is inherited to child threads
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
         this.authTokenReaders = authTokenReaders;
     }
 
