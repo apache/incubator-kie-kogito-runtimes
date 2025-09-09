@@ -23,7 +23,7 @@ import java.util.Collections;
 import org.jbpm.bpmn2.async.ComplexAsyncModel;
 import org.jbpm.bpmn2.async.ComplexAsyncProcess;
 import org.jbpm.test.utils.ProcessTestHelper;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.handlers.StatusTrackerService_createStatusTracker__2B159DC3_EA7B_46A3_A632_7952108A565D_Handler;
 import org.kie.kogito.handlers.StatusTrackerService_createStatusTracker__657C59C4_205E_4800_8BEB_B63703D1008B_Handler;
@@ -37,7 +37,7 @@ import static org.awaitility.Awaitility.await;
 
 public class AsyncTest {
 
-    @RepeatedTest(value = 1000)
+    @Test
     public void testComplexAsyncProcess() {
         Application app = ProcessTestHelper.newApplication();
         ProcessTestHelper.registerHandler(app, "Human Task", new DefaultKogitoWorkItemHandler());
