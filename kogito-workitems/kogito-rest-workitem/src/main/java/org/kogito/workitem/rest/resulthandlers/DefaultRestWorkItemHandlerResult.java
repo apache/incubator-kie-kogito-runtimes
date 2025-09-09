@@ -20,6 +20,9 @@ package org.kogito.workitem.rest.resulthandlers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
@@ -88,6 +91,23 @@ public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResu
             return node.booleanValue();
         if (node.isNull())
             return null;
+        if (node.isArray()) {
+            // Wrap the Iterator in a Spliterator and create a Stream
+            return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(node.elements(), 0),
+                false
+            )
+            .map(DefaultRestWorkItemHandlerResult::extractJsonNodeValue)
+            .collect(Collectors.toList());
+        }
+        if (node.isObject()) {
+            // Handle objects by recursively processing each field
+            Map<String, Object> result = new HashMap<>();
+            node.fields().forEachRemaining(entry ->
+                result.put(entry.getKey(), extractJsonNodeValue(entry.getValue()))
+            );
+            return result;
+        }
         return node.toString();
     }
 }
