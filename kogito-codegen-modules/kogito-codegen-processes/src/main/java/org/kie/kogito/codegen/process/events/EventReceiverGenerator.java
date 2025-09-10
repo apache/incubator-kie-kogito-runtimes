@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package $Package$;
+package org.kie.kogito.codegen.process.events;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
+import org.kie.kogito.event.EventUnmarshaller;
 
-import jakarta.inject.Qualifier;
+public class EventReceiverGenerator extends EventGenerator {
 
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.TYPE})
-public @interface Channel {
+    public EventReceiverGenerator(KogitoBuildContext context, ChannelInfo channelInfo, boolean isTxEnabled) {
+        super(context, channelInfo, (isTxEnabled ? "Tx" : "") + "EventReceiver");
+        generateMarshallerField("ceUnmarshaller", CloudEventUnmarshallerFactory.class);
+        generateMarshallerField("eventDataUnmarshaller", EventUnmarshaller.class);
+    }
 
 }

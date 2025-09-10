@@ -20,6 +20,10 @@ package org.kie.kogito.addon.cloudevents.spring;
 
 import org.kie.kogito.event.CloudEventMarshaller;
 import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.event.impl.ByteArrayCloudEventMarshaller;
+import org.kie.kogito.event.impl.ByteArrayEventMarshaller;
+import org.kie.kogito.event.impl.NoOpCloudEventMarshaller;
+import org.kie.kogito.event.impl.NoOpEventMarshaller;
 import org.kie.kogito.event.impl.StringCloudEventMarshaller;
 import org.kie.kogito.event.impl.StringEventMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +44,27 @@ public class EventMarshallerProducer {
     }
 
     @Bean
+    public EventMarshaller<byte[]> byteArrayEventMarshaller() {
+        return new ByteArrayEventMarshaller(mapper);
+    }
+
+    @Bean
+    public EventMarshaller<Object> defaultEventMarshaller() {
+        return new NoOpEventMarshaller();
+    }
+
+    @Bean
     public CloudEventMarshaller<String> stringCloudEventMarshaller() {
         return new StringCloudEventMarshaller(mapper);
+    }
+
+    @Bean
+    public CloudEventMarshaller<byte[]> byteArrayCloudEventMarshaller() {
+        return new ByteArrayCloudEventMarshaller(mapper);
+    }
+
+    @Bean
+    public CloudEventMarshaller<Object> defaultCloudEventMarshaller() {
+        return new NoOpCloudEventMarshaller(mapper);
     }
 }
