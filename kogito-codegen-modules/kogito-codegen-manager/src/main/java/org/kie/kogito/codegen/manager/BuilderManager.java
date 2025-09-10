@@ -22,12 +22,10 @@ package org.kie.kogito.codegen.manager;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.drools.codegen.common.GeneratedFile;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.manager.util.CodeGenManagerUtil;
@@ -46,17 +44,6 @@ public class BuilderManager {
         boolean enablePersistence();
 
         Set<URI> projectFilesUris();
-    }
-
-    public record ScaffoldInfo(Set<URI> projectFilesUris,
-            Path projectBaseAbsolutePath, //MUST BE ABSOLUTE
-            String projectGroupId,
-            String projectArtifactId,
-            String projectVersion,
-            boolean generatePartial,
-            boolean enablePersistence,
-            CodeGenManagerUtil.Framework framework,
-            Map<String, String> properties) implements KogitoBuildContextInfo {
     }
 
     public record BuildInfo(Set<URI> projectFilesUris,
@@ -87,17 +74,6 @@ public class BuilderManager {
                 kogitoBuildContext, buildInfo);
         GenerateModelHelper.generateModel(generateModelInfo);
         LOGGER.info("Project build done");
-    }
-
-    public static void scaffold(ScaffoldInfo scaffoldInfo) throws MalformedURLException {
-        LOGGER.info("Building project: {}:{}:{}", scaffoldInfo.projectGroupId(), scaffoldInfo.projectArtifactId(), scaffoldInfo.projectVersion());
-        CodeGenManagerUtil.setSystemProperties(scaffoldInfo.properties());
-        ClassLoader projectClassLoader = CodeGenManagerUtil.projectClassLoader(scaffoldInfo.projectFilesUris());
-        KogitoGAV kogitoGAV = new KogitoGAV(scaffoldInfo.projectGroupId(), scaffoldInfo.projectArtifactId(), scaffoldInfo.projectVersion());
-        KogitoBuildContext kogitoBuildContext = getKogitoBuildContext(projectClassLoader, kogitoGAV, scaffoldInfo);
-        GenerateModelHelper.GenerateModelFilesInfo generateModelFilesInfo = new GenerateModelHelper.GenerateModelFilesInfo(kogitoBuildContext, scaffoldInfo);
-        Map<String, Collection<GeneratedFile>> generatedFiles = GenerateModelHelper.generateModelFiles(generateModelFilesInfo);
-        LOGGER.info("Scaffold creation done");
     }
 
     static KogitoBuildContext getKogitoBuildContext(ClassLoader projectClassLoader, KogitoGAV kogitoGAV, KogitoBuildContextInfo kogitoBuildContextInfo) {

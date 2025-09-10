@@ -74,11 +74,6 @@ public class GenerateModelHelper {
     public record GenerateModelFilesInfo(KogitoBuildContext kogitoBuildContext,
             boolean generatePartial) {
 
-        public GenerateModelFilesInfo(KogitoBuildContext kogitoBuildContext, BuilderManager.ScaffoldInfo scaffoldInfo) {
-            this(kogitoBuildContext,
-                    scaffoldInfo.generatePartial());
-        }
-
         public GenerateModelFilesInfo(GenerateModelInfo generateModelInfo) {
             this(generateModelInfo.kogitoBuildContext,
                     generateModelInfo.generatePartial);
