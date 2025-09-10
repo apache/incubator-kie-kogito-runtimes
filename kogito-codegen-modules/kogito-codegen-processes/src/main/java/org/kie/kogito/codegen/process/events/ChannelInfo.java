@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.cloudevents.quarkus.deployment;
+package org.kie.kogito.codegen.process.events;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -33,9 +33,13 @@ public class ChannelInfo {
     private final Optional<CloudEventMode> cloudEventMode;
 
     private final Optional<String> marshaller;
-    private final Optional<OnOverflowInfo> onOverflow;
 
-    protected ChannelInfo(String channelName, Collection<String> triggers, String className, boolean isInput, boolean isDefault, Optional<String> marshaller, Optional<OnOverflowInfo> onOverflow,
+    protected ChannelInfo(String channelName,
+            Collection<String> triggers,
+            String className,
+            boolean isInput,
+            boolean isDefault,
+            Optional<String> marshaller,
             Optional<CloudEventMode> cloudEventMode) {
         this.className = className;
         this.channelName = channelName;
@@ -43,7 +47,6 @@ public class ChannelInfo {
         this.isDefault = isDefault;
         this.triggers = triggers;
         this.marshaller = marshaller;
-        this.onOverflow = onOverflow;
         this.cloudEventMode = cloudEventMode;
     }
 
@@ -93,10 +96,6 @@ public class ChannelInfo {
         return marshaller;
     }
 
-    public Optional<OnOverflowInfo> getOnOverflow() {
-        return onOverflow;
-    }
-
     public Optional<CloudEventMode> getCloudEventMode() {
         return cloudEventMode;
     }
@@ -105,6 +104,6 @@ public class ChannelInfo {
     public String toString() {
         return "ChannelInfo [channelName=" + channelName + ", className=" + className + ", triggers=" + triggers
                 + ", isInput=" + isInput + ", isDefault=" + isDefault + ", cloudEventMode=" + cloudEventMode
-                + ", marshaller=" + marshaller + ", onOverflow=" + onOverflow + "]";
+                + ", marshaller=" + marshaller + "]";
     }
 }

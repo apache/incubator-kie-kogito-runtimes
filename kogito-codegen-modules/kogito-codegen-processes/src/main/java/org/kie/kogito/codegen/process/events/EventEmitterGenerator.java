@@ -16,33 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.cloudevents.quarkus.deployment;
+package org.kie.kogito.codegen.process.events;
 
-import java.util.Optional;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.event.CloudEventMarshaller;
+import org.kie.kogito.event.EventMarshaller;
 
-import org.eclipse.microprofile.reactive.messaging.OnOverflow.Strategy;
+public class EventEmitterGenerator extends EventGenerator {
 
-public class OnOverflowInfo {
-
-    private final Strategy strategy;
-
-    private final Optional<Long> bufferSize;
-
-    protected OnOverflowInfo(Strategy strategy, Optional<Long> bufferSize) {
-        this.strategy = strategy;
-        this.bufferSize = bufferSize;
-    }
-
-    public Strategy getStrategy() {
-        return strategy;
-    }
-
-    public Optional<Long> getBufferSize() {
-        return bufferSize;
-    }
-
-    @Override
-    public String toString() {
-        return "OnOverflowInfo [strategy=" + strategy + ", bufferSize=" + bufferSize + "]";
+    public EventEmitterGenerator(KogitoBuildContext context, ChannelInfo channelInfo) {
+        super(context, channelInfo, "EventEmitter");
+        if (channelInfo.getCloudEventMode().filter(mode -> mode == CloudEventMode.STRUCTURED).isPresent()) {
+            generateMarshallerField("marshaller", "setCloudEventMarshaller", CloudEventMarshaller.class);
+        } else {
+            generateMarshallerField("marshaller", "setEventDataMarshaller", EventMarshaller.class);
+        }
     }
 }
