@@ -19,36 +19,50 @@
 package org.kie.kogito.maven.plugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.manager.BuilderManager;
+import org.kie.kogito.maven.plugin.util.MojoUtil;
 
 @Mojo(name = "scaffold",
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
         requiresProject = true,
         threadSafe = true)
-public class ScaffoldMojo extends GenerateModelMojo {
-
-    @Parameter(property = "kogito.codegen.ondemand", defaultValue = "true")
-    private boolean onDemand;
+public class ScaffoldMojo extends AbstractKieMojo {
 
     @Parameter(property = "kogito.codegen.sources.directory", defaultValue = "${project.build.sourceDirectory}")
     private File customizableSources;
 
     @Override
     public void execute() throws MojoExecutionException {
-        addCompileSourceRoots();
-        ClassLoader projectClassLoader = projectClassLoader();
-        KogitoBuildContext kogitoBuildContext = getKogitoBuildContext(projectClassLoader);
-        generateModel(kogitoBuildContext);
+        getLog().info("execute");
+        scaffoldProject();
     }
 
-    @Override
-    public boolean isOnDemand() {
-        return onDemand;
+    private void scaffoldProject() throws MojoExecutionException {
+        getLog().info("scaffoldProject");
+        executionLog();
+        try {
+            Set<URI> projectFilesUris = MojoUtil.getScaffoldFiles(mavenProject, null);
+            BuilderManager.ScaffoldInfo scaffoldInfo = new BuilderManager.ScaffoldInfo(projectFilesUris,
+                    projectBaseDir.toPath(),
+                    mavenProject.getGroupId(),
+                    mavenProject.getArtifactId(),
+                    mavenProject.getVersion(),
+                    generatePartial,
+                    persistence,
+                    discoverFramework(),
+                    properties);
+            BuilderManager.scaffold(scaffoldInfo);
+        } catch (IOException e) {
+            throw new MojoExecutionException("Error building project", e);
+        }
     }
 
 }

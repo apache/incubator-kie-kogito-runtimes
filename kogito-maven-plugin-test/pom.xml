@@ -36,6 +36,7 @@
 
   <properties>
     <java.module.name>org.kie.kogito.maven.plugin.testing</java.module.name>
+    <maven.compiler.source>17</maven.compiler.source>
   </properties>
 
   <dependencyManagement>
@@ -148,6 +149,17 @@
         <version>${project.version}</version>
         <executions>
           <execution>
+            <id>scaffolding</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <customizableSources>${basedir}/src/main/generated-sources</customizableSources>
+            </configuration>
+            <goals>
+              <goal>scaffold</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>generation</id>
             <phase>compile</phase>
             <goals>
               <goal>generateModel</goal>
