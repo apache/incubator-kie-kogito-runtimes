@@ -18,16 +18,19 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
+import java.io.UncheckedIOException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.kie.kogito.config.ConfigBean;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
+import org.kie.kogito.event.Converter;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.EventUnmarshaller;
@@ -40,58 +43,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.kie.kogito.addon.cloudevents.spring.KogitoMessaging;
 
 import jakarta.annotation.PostConstruct;
 
-@Component
-public class SpringKafkaCloudEventReceiver implements EventReceiver {
+@Component("Receiver-$ChannelName$")
+@Transactional
+public class $ClassName$ implements EventReceiver {
 
-    private static final Logger log = LoggerFactory.getLogger(SpringKafkaCloudEventReceiver.class);
-    private Collection<Subscription<Object, String>> consumers;
-
-    @Autowired
-    EventUnmarshaller<Object> eventDataUnmarshaller;
-
-    @Autowired
-    CloudEventUnmarshallerFactory<Object> cloudEventUnmarshaller;
-
-    @Autowired
-    ConfigBean configBean;
+    private static final Logger log = LoggerFactory.getLogger($ClassName$.class);
+    private Collection<Subscription<DataEvent<?>, String>> consumers;
 
     @PostConstruct
-    private void init() {
+    private void initialize() {
         consumers = new CopyOnWriteArrayList<>();
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> clazz) {
-        consumers.add(
-                new Subscription(consumer, configBean.useCloudEvents() ? new CloudEventConverter<>(clazz, cloudEventUnmarshaller)
-                        : new DataEventConverter<>(clazz, eventDataUnmarshaller)));
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <T> void subscribe(Consumer<DataEvent<T>> consumer, Class<T> clazz) {
+        Subscription subscription = new Subscription<>(consumer, toTopicType(clazz));
+        consumers.add(subscription);
     }
 
-    @KafkaListener(topics = { "#{springTopics.getIncomingTopics}" })
+    private <T> Converter<String, DataEvent<T>> toTopicTypeCloud(Class<T> clazz) {
+        return new CloudEventConverter<>(clazz, ceUnmarshaller);
+    }
+
+    private <T> Converter<String, DataEvent<T>> toTopicTypeEvent(Class<T> clazz) {
+        return new DataEventConverter<>(clazz, eventDataUnmarshaller);
+    }
+
+    @KafkaListener(topics = { "$Topic$" })
     public void receive(ConsumerRecord<String, String> message, Acknowledgment ack) throws InterruptedException {
         log.debug("Receive message with key {} for topic {}", message.key(), message.topic());
-        CompletionStage<?> future = CompletableFuture.completedFuture(null);
-        for (Subscription<Object, String> subscription : consumers) {
+        for (Subscription<DataEvent<?>, String> subscription : consumers) {
             try {
-                Object object = subscription.getConverter().convert(message.value());
-                future = future.thenCompose(f -> subscription.getConsumer().apply(object));
+                DataEvent<?> object = subscription.getConverter().convert(message.value());
+                subscription.getConsumer().accept(object);
             } catch (IOException e) {
-                log.debug("Error converting event. Exception message is {}", e.getMessage());
+                throw new UncheckedIOException(e);
             }
+
         }
-        future.whenComplete((v, e) -> acknowledge(e, ack));
     }
 
-    private void acknowledge(Throwable ex, Acknowledgment ack) {
-        if (ex != null) {
-            log.error("Event publishing failed", ex);
-        } else {
-            log.debug("Acknoledge message");
-            ack.acknowledge();
-        }
-    }
 }
