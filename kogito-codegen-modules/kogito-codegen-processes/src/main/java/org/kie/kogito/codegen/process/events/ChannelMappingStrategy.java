@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
-import org.kie.kogito.Config;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.event.KogitoEventStreams;
 
