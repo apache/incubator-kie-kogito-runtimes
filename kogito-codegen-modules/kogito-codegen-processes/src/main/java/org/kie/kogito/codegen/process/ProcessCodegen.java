@@ -628,10 +628,10 @@ public class ProcessCodegen extends AbstractGenerator {
 
             if (channelInfo.isInput()) {
                 type = MESSAGE_CONSUMER_TYPE;
-                classGenerator = new EventEmitterGenerator(context, channelInfo);
+                classGenerator = new EventReceiverGenerator(context, channelInfo);
             } else {
                 type = MESSAGE_PRODUCER_TYPE;
-                classGenerator = new EventReceiverGenerator(context, channelInfo);
+                classGenerator = new EventEmitterGenerator(context, channelInfo);
             }
 
             generatedFiles.add(new GeneratedFile(type, classGenerator.getPath(), classGenerator.getCode()));
