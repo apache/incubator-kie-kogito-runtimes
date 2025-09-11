@@ -52,7 +52,6 @@ public class ChannelMappingStrategy {
 
     private static final String MARSHALLER_PREFIX = KOGITO_MESSAGING_PREFIX + "marshaller.";
     private static final String UNMARSHALLLER_PREFIX = KOGITO_MESSAGING_PREFIX + "unmarshaller.";
-    private static final String KOGITO_EMITTER_PREFIX = KOGITO_MESSAGING_PREFIX + "emitter.";
 
     public static Collection<ChannelInfo> getChannelMapping(KogitoBuildContext context) {
         Map<String, Collection<String>> inTriggers = new HashMap<>();
@@ -70,22 +69,23 @@ public class ChannelMappingStrategy {
         final String defaultIncomingChannel = context.getApplicationProperty(INCOMING_DEFAULT_CHANNEL, String.class).orElse(KogitoEventStreams.INCOMING);
         final String defaultOutgoingChannel = context.getApplicationProperty(OUTGOING_DEFAULT_CHANNEL, String.class).orElse(KogitoEventStreams.OUTGOING);
         for (String property : context.getApplicationProperties()) {
-
-            if (property.startsWith(INCOMING_PREFIX) && property.endsWith(".connector")) {
-                String name = property.substring(INCOMING_PREFIX.length(), property.lastIndexOf('.'));
-                if (standardChannels.contains(name)) {
-                    continue;
-                }
-                result.add(getChannelInfo(context, property, INCOMING_PREFIX, true, defaultIncomingChannel, inTriggers));
-            } else if (property.startsWith(OUTGOING_PREFIX) && property.endsWith(".connector")) {
-                String name = property.substring(OUTGOING_PREFIX.length(), property.lastIndexOf('.'));
-                if (standardChannels.contains(name)) {
-                    continue;
-                }
-                result.add(getChannelInfo(context, property, OUTGOING_PREFIX, false, defaultOutgoingChannel, outTriggers));
-            }
+            buildChannelInfo(context, true, property, INCOMING_PREFIX, defaultIncomingChannel, inTriggers).ifPresent(result::add);
+            buildChannelInfo(context, true, property, KOGITO_INCOMING_PREFIX, defaultIncomingChannel, inTriggers).ifPresent(result::add);
+            buildChannelInfo(context, false, property, OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers).ifPresent(result::add);
+            buildChannelInfo(context, false, property, KOGITO_OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers).ifPresent(result::add);
         }
         return result;
+    }
+
+    private static Optional<ChannelInfo> buildChannelInfo(KogitoBuildContext context, boolean input, String property, String prefix, String defaultChannel, Map<String, Collection<String>> triggers) {
+        if (property.startsWith(prefix) && property.endsWith(".connector")) {
+            String channelName = property.substring(prefix.length(), property.lastIndexOf('.'));
+            if (standardChannels.contains(channelName)) {
+                return Optional.empty();
+            }
+            return Optional.of(getChannelInfo(context, property, prefix, input, defaultChannel, triggers));
+        }
+        return Optional.empty();
     }
 
     private static void addTrigger(KogitoBuildContext context, String prefix, String property, Map<String, Collection<String>> triggers) {
@@ -101,14 +101,14 @@ public class ChannelMappingStrategy {
     }
 
     private static ChannelInfo getChannelInfo(KogitoBuildContext context, String property, String prefix, boolean isInput, String defaultChannelName, Map<String, Collection<String>> triggers) {
-        String name = property.substring(prefix.length(), property.lastIndexOf('.'));
-        return new ChannelInfo(name,
-                triggers.getOrDefault(name, Collections.singleton(name)),
-                getClassName(context.getApplicationProperty(getPropertyName(prefix, name, "value." + (isInput ? "deserializer" : "serializer")), String.class)),
+        String channelName = property.substring(prefix.length(), property.lastIndexOf('.'));
+        return new ChannelInfo(channelName,
+                triggers.getOrDefault(channelName, Collections.singleton(channelName)),
+                getClassName(context.getApplicationProperty(getPropertyName(prefix, channelName, "value." + (isInput ? "deserializer" : "serializer")), String.class)),
                 isInput,
-                name.equals(defaultChannelName),
-                context.getApplicationProperty((isInput ? UNMARSHALLLER_PREFIX : MARSHALLER_PREFIX) + name, String.class),
-                cloudEventMode(context, name, property));
+                channelName.equals(defaultChannelName),
+                context.getApplicationProperty((isInput ? UNMARSHALLLER_PREFIX : MARSHALLER_PREFIX) + channelName, String.class),
+                cloudEventMode(context, channelName, property));
     }
 
     private static Optional<CloudEventMode> cloudEventMode(KogitoBuildContext context, String name, String property) {
