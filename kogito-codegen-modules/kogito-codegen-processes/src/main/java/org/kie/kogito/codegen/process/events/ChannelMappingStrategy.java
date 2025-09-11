@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,6 +31,8 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.event.KogitoEventStreams;
 
 public class ChannelMappingStrategy {
+
+    private static List<String> standardChannels = List.of("kogito-processdefinitions-events", "kogito-processinstances-events", "kogito-usertaskinstances-events", "kogito-variables-events");
 
     private ChannelMappingStrategy() {
     }
@@ -67,9 +70,18 @@ public class ChannelMappingStrategy {
         final String defaultIncomingChannel = context.getApplicationProperty(INCOMING_DEFAULT_CHANNEL, String.class).orElse(KogitoEventStreams.INCOMING);
         final String defaultOutgoingChannel = context.getApplicationProperty(OUTGOING_DEFAULT_CHANNEL, String.class).orElse(KogitoEventStreams.OUTGOING);
         for (String property : context.getApplicationProperties()) {
+
             if (property.startsWith(INCOMING_PREFIX) && property.endsWith(".connector")) {
+                String name = property.substring(INCOMING_PREFIX.length(), property.lastIndexOf('.'));
+                if (standardChannels.contains(name)) {
+                    continue;
+                }
                 result.add(getChannelInfo(context, property, INCOMING_PREFIX, true, defaultIncomingChannel, inTriggers));
             } else if (property.startsWith(OUTGOING_PREFIX) && property.endsWith(".connector")) {
+                String name = property.substring(OUTGOING_PREFIX.length(), property.lastIndexOf('.'));
+                if (standardChannels.contains(name)) {
+                    continue;
+                }
                 result.add(getChannelInfo(context, property, OUTGOING_PREFIX, false, defaultOutgoingChannel, outTriggers));
             }
         }

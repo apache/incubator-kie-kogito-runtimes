@@ -18,7 +18,6 @@
  */
 package $Package$;
 
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -29,7 +28,6 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.addon.quarkus.messaging.common.QuarkusMessageConsumer;
 import org.kie.kogito.event.EventReceiver;
 
-
 @io.quarkus.runtime.Startup
 public class $Type$MessageConsumer extends QuarkusMessageConsumer<$Type$, $DataType$> {
 
@@ -38,8 +36,9 @@ public class $Type$MessageConsumer extends QuarkusMessageConsumer<$Type$, $DataT
     Process<$Type$> process;
     
     @Inject
+    @Named("Receiver-$Trigger$")
     EventReceiver eventReceiver;
-    
+
     private Set<String> correlation;
 
     @jakarta.annotation.PostConstruct
