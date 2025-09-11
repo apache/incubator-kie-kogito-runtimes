@@ -60,6 +60,7 @@ public abstract class EventGenerator implements ClassGenerator {
         this.packageName = context.getPackageName();
         this.channelInfo = channelInfo;
         template = TemplatedGenerator.builder()
+                .withTemplateBasePath(TemplatedGenerator.DEFAULT_TEMPLATE_BASE_PATH + "/events")
                 .withTargetTypeName(className)
                 .build(context, templateName);
         generator = template.compilationUnitOrThrow("Cannot generate " + templateName);
