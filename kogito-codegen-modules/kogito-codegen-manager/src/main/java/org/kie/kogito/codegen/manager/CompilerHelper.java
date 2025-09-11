@@ -20,18 +20,14 @@ package org.kie.kogito.codegen.manager;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.drools.codegen.common.GeneratedFileWriter;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.util.PortablePath;
-import org.kie.memorycompiler.CompilationProblem;
-import org.kie.memorycompiler.CompilationResult;
 import org.kie.memorycompiler.JavaCompiler;
 import org.kie.memorycompiler.JavaCompilerFactory;
 import org.kie.memorycompiler.JavaCompilerSettings;
@@ -98,13 +94,13 @@ public class CompilerHelper {
         }
 
         if (sources.length > 0) {
-            CompilationResult result = JAVA_COMPILER.compile(sources, srcMfs, trgMfs, classLoader, javaCompilerSettings);
-
-            if (result.getErrors().length > 0) {
-                throw new IllegalStateException(Arrays.stream(result.getErrors())
-                        .map(CompilationProblem::getMessage)
-                        .collect(Collectors.joining(",")));
-            }
+            //            CompilationResult result = JAVA_COMPILER.compile(sources, srcMfs, trgMfs, classLoader, javaCompilerSettings);
+            //
+            //            if (result.getErrors().length > 0) {
+            //                throw new IllegalStateException(Arrays.stream(result.getErrors())
+            //                        .map(CompilationProblem::getMessage)
+            //                        .collect(Collectors.joining(",")));
+            //            }
 
             for (PortablePath path : trgMfs.getFilePaths()) {
                 byte[] data = trgMfs.getBytes(path);

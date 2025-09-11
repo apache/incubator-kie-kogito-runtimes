@@ -26,11 +26,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.event.KogitoEventStreams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ChannelMappingStrategy {
+
+    private static Logger LOG = LoggerFactory.getLogger(ChannelMappingStrategy.class);
 
     private static List<String> standardChannels = List.of("kogito-processdefinitions-events", "kogito-processinstances-events", "kogito-usertaskinstances-events", "kogito-variables-events");
 
@@ -41,8 +46,11 @@ public class ChannelMappingStrategy {
     private static final String INCOMING_PREFIX = "mp.messaging.incoming.";
 
     private static final String KOGITO_MESSAGING_PREFIX = "kogito.addon.messaging.";
-    private static final String KOGITO_INCOMING_PREFIX = "kogito.addon.messaging.incoming.";
-    private static final String KOGITO_OUTGOING_PREFIX = "kogito.addon.messaging.outgoing.";
+
+    private static final String KAFKA_PREFIX = "kogito.addon.cloudevents.kafka.";
+    private static final String KOGITO_INCOMING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.INCOMING;
+    private static final String KOGITO_OUTGOING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.OUTGOING;
+
     private static final String INCOMING_TRIGGER = KOGITO_INCOMING_PREFIX + "trigger.";
     private static final String OUTGOING_TRIGGER = KOGITO_OUTGOING_PREFIX + "trigger.";
     private static final String INCOMING_DEFAULT_CHANNEL = KOGITO_INCOMING_PREFIX + "defaultName";
@@ -69,17 +77,25 @@ public class ChannelMappingStrategy {
         final String defaultIncomingChannel = context.getApplicationProperty(INCOMING_DEFAULT_CHANNEL, String.class).orElse(KogitoEventStreams.INCOMING);
         final String defaultOutgoingChannel = context.getApplicationProperty(OUTGOING_DEFAULT_CHANNEL, String.class).orElse(KogitoEventStreams.OUTGOING);
         for (String property : context.getApplicationProperties()) {
-            buildChannelInfo(context, true, property, INCOMING_PREFIX, defaultIncomingChannel, inTriggers).ifPresent(result::add);
-            buildChannelInfo(context, true, property, KOGITO_INCOMING_PREFIX, defaultIncomingChannel, inTriggers).ifPresent(result::add);
-            buildChannelInfo(context, false, property, OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers).ifPresent(result::add);
-            buildChannelInfo(context, false, property, KOGITO_OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers).ifPresent(result::add);
+            buildChannelInfo(context, true, property, INCOMING_PREFIX, defaultIncomingChannel, inTriggers, p -> p.endsWith(".connector")).ifPresent(result::add);
+            buildChannelInfo(context, true, property, KOGITO_INCOMING_PREFIX, defaultIncomingChannel, inTriggers, p -> true).ifPresent(result::add);
+            buildChannelInfo(context, false, property, OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, p -> p.endsWith(".connector")).ifPresent(result::add);
+            buildChannelInfo(context, false, property, KOGITO_OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, p -> true).ifPresent(result::add);
         }
         return result;
     }
 
-    private static Optional<ChannelInfo> buildChannelInfo(KogitoBuildContext context, boolean input, String property, String prefix, String defaultChannel, Map<String, Collection<String>> triggers) {
-        if (property.startsWith(prefix) && property.endsWith(".connector")) {
-            String channelName = property.substring(prefix.length(), property.lastIndexOf('.'));
+    private static Optional<ChannelInfo> buildChannelInfo(KogitoBuildContext context,
+            boolean input,
+            String property,
+            String prefix,
+            String defaultChannel,
+            Map<String, Collection<String>> triggers,
+            Predicate<String> shouldProcessTest) {
+        if (property.startsWith(prefix) && shouldProcessTest.test(property)) {
+            int idx = property.lastIndexOf('.');
+            LOG.debug("processing property {} with prefix {} and idx {} and prefix length {}", property, prefix, idx, property.length());
+            String channelName = property.substring(prefix.length() + 1, idx > property.length() ? idx : property.length());
             if (standardChannels.contains(channelName)) {
                 return Optional.empty();
             }
@@ -155,5 +171,12 @@ public class ChannelMappingStrategy {
 
     private static final String getPropertyName(String prefix, String name, String suffix) {
         return prefix + name + "." + suffix;
+    }
+
+    public static void main(String[] args) {
+        String property = "kogito.addon.cloudevents.kafka.kogito_incoming_stream.travellers";
+        int idx = property.lastIndexOf('.');
+        String channelName = property.substring(KOGITO_INCOMING_PREFIX.length() + 1, idx > property.length() ? idx : property.length());
+        System.out.println(channelName);
     }
 }
