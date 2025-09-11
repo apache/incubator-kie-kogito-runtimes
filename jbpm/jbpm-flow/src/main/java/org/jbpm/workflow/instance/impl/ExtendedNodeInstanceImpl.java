@@ -40,6 +40,7 @@ public abstract class ExtendedNodeInstanceImpl extends NodeInstanceImpl {
     }
 
     public void internalTrigger(KogitoNodeInstance from, String type) {
+        System.out.println("========> internalTrigger: " + this);
         triggerTime = new Date();
         triggerEvent(EVENT_NODE_ENTER);
     }

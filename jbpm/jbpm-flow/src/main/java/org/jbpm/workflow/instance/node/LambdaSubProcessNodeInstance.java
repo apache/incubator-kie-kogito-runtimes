@@ -49,6 +49,8 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Runtime counterpart of a SubFlow node.
@@ -57,6 +59,8 @@ import org.kie.kogito.process.impl.AbstractProcessInstance;
 public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance implements KogitoEventListener, ContextInstanceContainer {
 
     private static final long serialVersionUID = 510l;
+
+    private static final Logger logger = LoggerFactory.getLogger(LambdaSubProcessNodeInstance.class);
 
     private Map<String, List<ContextInstance>> subContextInstances = new HashMap<>();
 
@@ -94,6 +98,8 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
                 .setRootProcessInstanceId(StringUtils.isEmpty(getProcessInstance().getRootProcessInstanceId()) ? getProcessInstance().getStringId() : getProcessInstance().getRootProcessInstanceId());
         ((ProcessInstanceImpl) pi).setRootProcessId(StringUtils.isEmpty(getProcessInstance().getRootProcessId()) ? getProcessInstance().getProcessId() : getProcessInstance().getRootProcessId());
         ((ProcessInstanceImpl) pi).setSignalCompletion(getSubProcessNode().isWaitForCompletion());
+        ((ProcessInstanceImpl) pi).setHeaders(getProcessInstance().getHeaders());
+        logger.info("====> LambdaSubProcessNodeInstance headers for {}: {}", pi.getId(), ((ProcessInstanceImpl) pi).getHeaders());
 
         processInstance.start();
         this.processInstanceId = processInstance.id();

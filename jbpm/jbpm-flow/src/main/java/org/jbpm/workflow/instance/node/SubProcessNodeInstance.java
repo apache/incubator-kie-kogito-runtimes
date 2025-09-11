@@ -146,6 +146,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
             processInstance.setRootProcessId(StringUtils.isEmpty(getProcessInstance().getRootProcessId()) ? getProcessInstance().getProcessId() : getProcessInstance().getRootProcessId());
             processInstance.setSignalCompletion(getSubProcessNode().isWaitForCompletion());
 
+            logger.info("====> headers for {}: {}", processInstance.getId(), processInstance.getHeaders());
             kruntime.startProcessInstance(processInstance.getStringId());
             if (!getSubProcessNode().isWaitForCompletion()) {
                 triggerCompleted();

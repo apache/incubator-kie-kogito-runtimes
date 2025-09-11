@@ -46,6 +46,8 @@ import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.WorkflowElementIdentifier;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
 import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
@@ -57,6 +59,8 @@ import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STAT
  *
  */
 public class CompositeNodeInstance extends StateBasedNodeInstance implements NodeInstanceContainer, EventNodeInstanceInterface, EventBasedNodeInstanceInterface {
+
+    private static final Logger logger = LoggerFactory.getLogger(CompositeNodeInstance.class);
 
     private static final long serialVersionUID = 510l;
 
@@ -108,6 +112,8 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
                         (from == null ||
                                 ((CompositeNode.CompositeNodeStart) connection.getFrom()).getInNode().getId().equals(from.getNodeId()))) {
                     NodeInstance nodeInstance = getNodeInstance(connection.getFrom());
+                    logger.info("+++> CompositeNodeInstance instance headers:{} -  {}", nodeInstance.getKogitoProcessInstance().getId(), nodeInstance.getKogitoProcessInstance().getHeaders());
+
                     nodeInstance.trigger(null, nodeAndType.getType());
                     return;
                 }
@@ -122,6 +128,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
                         NodeInstance nodeInstance = getNodeInstance(startNode);
                         nodeInstance
                                 .trigger(null, null);
+                        logger.info("===> CompositeNodeInstance instance headers:{} -  {}", nodeInstance.getKogitoProcessInstance().getId(), nodeInstance.getKogitoProcessInstance().getHeaders());
                         found = true;
                     }
                 }
