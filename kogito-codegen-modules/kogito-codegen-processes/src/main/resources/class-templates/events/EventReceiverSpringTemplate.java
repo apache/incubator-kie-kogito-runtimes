@@ -33,6 +33,7 @@ import io.quarkus.runtime.Startup;
 
 @Startup
 @ApplicationScoped
+@org.springframework.beans.factory.annotation.Qualifier("Receiver-$Trigger$") 
 public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$Type$> {
     @Incoming("$Trigger$")
     public CompletionStage<?> onEvent(Message<$Type$> message) {

@@ -25,6 +25,7 @@ import org.kie.kogito.event.impl.AbstractMessageProducer;
 public class MessageProducer extends AbstractMessageProducer<$DataType$> {
 
     @org.springframework.beans.factory.annotation.Autowired()
+    @org.springframework.beans.factory.annotation.Qualifier("Emitter-$Trigger$") 
     MessageProducer(EventEmitter emitter) {
         super(emitter,"$Trigger$");
     }

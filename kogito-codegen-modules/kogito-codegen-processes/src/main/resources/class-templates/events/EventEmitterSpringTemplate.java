@@ -33,6 +33,7 @@ import io.quarkus.runtime.Startup;
 
 @Startup
 @ApplicationScoped
+@org.springframework.beans.factory.annotation.Qualifier("Emitter-$Trigger$") 
 public class $Trigger$EventEmitter extends AbstractQuarkusCloudEventEmitter<$Type$> {
     @Inject
     @Channel("$Trigger$")
