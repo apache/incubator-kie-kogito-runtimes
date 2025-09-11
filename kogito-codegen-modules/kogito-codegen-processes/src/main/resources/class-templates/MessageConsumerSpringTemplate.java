@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 
-@org.springframework.stereotype.Component()
+@org.springframework.stereotype.Component
 public class $Type$MessageConsumer extends SpringMessageConsumer<$Type$, $DataType$> {
 
     @Autowired
@@ -39,6 +39,7 @@ public class $Type$MessageConsumer extends SpringMessageConsumer<$Type$, $DataTy
     
     
     @Autowired
+    @Qualifier("Receiver-$ProcessName$") 
     EventReceiver eventReceiver;
 
     
