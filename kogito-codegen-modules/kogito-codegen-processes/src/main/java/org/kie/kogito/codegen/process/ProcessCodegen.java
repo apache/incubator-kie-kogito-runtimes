@@ -21,7 +21,15 @@ package org.kie.kogito.codegen.process;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
@@ -30,7 +38,11 @@ import org.drools.io.InternalResource;
 import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
 import org.jbpm.bpmn2.xml.BPMNExtensionsSemanticModule;
 import org.jbpm.bpmn2.xml.BPMNSemanticModule;
-import org.jbpm.compiler.canonical.*;
+import org.jbpm.compiler.canonical.ModelMetaData;
+import org.jbpm.compiler.canonical.ProcessMetaData;
+import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
+import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.jbpm.compiler.canonical.WorkItemModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.core.SemanticModules;
 import org.jbpm.process.core.impl.ProcessImpl;
@@ -52,6 +64,11 @@ import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
+import org.kie.kogito.codegen.process.events.ChannelInfo;
+import org.kie.kogito.codegen.process.events.ChannelMappingStrategy;
+import org.kie.kogito.codegen.process.events.ClassGenerator;
+import org.kie.kogito.codegen.process.events.EventEmitterGenerator;
+import org.kie.kogito.codegen.process.events.EventReceiverGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMeta;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
 import org.kie.kogito.codegen.process.util.CodegenUtil;
@@ -482,6 +499,8 @@ public class ProcessCodegen extends AbstractGenerator {
 
         generateSourceFileProviderProducer();
 
+        generateEvents();
+
         if (CodegenUtil.isTransactionEnabled(this, context()) && !isServerless) {
             String template = "ExceptionHandlerTransaction";
             TemplatedGenerator generator = TemplatedGenerator.builder()
@@ -598,6 +617,25 @@ public class ProcessCodegen extends AbstractGenerator {
     @Override
     public int priority() {
         return 10;
+    }
+
+    private void generateEvents() {
+        KogitoBuildContext context = context();
+        Collection<ChannelInfo> channelsInfo = ChannelMappingStrategy.getChannelMapping(context);
+        for (ChannelInfo channelInfo : channelsInfo) {
+            GeneratedFileType type = null;
+            ClassGenerator classGenerator = null;
+
+            if (channelInfo.isInput()) {
+                type = MESSAGE_CONSUMER_TYPE;
+                classGenerator = new EventEmitterGenerator(context, channelInfo);
+            } else {
+                type = MESSAGE_PRODUCER_TYPE;
+                classGenerator = new EventReceiverGenerator(context, channelInfo);
+            }
+
+            generatedFiles.add(new GeneratedFile(type, classGenerator.getPath(), classGenerator.getCode()));
+        }
     }
 
     private void generateBusinessCalendarProducer() {
