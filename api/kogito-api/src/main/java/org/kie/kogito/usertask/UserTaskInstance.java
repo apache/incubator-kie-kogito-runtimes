@@ -79,6 +79,12 @@ public interface UserTaskInstance {
      */
     Set<String> getPotentialUsers();
 
+    void setPotentialUsers(Set<String> potentialUsers);
+
+    void addPotentialUsers(Set<String> potentialUsers);
+
+    void removePotentialUsers(Set<String> potentialUsers);
+
     /**
      * Returns potential groups that can work on this task
      * 
@@ -93,12 +99,24 @@ public interface UserTaskInstance {
      */
     Set<String> getAdminUsers();
 
+    void setAdminUsers(Set<String> adminUsers);
+
+    void addAdminUsers(Set<String> adminUsers);
+
+    void removeAdminUsers(Set<String> adminUsers);
+
     /**
      * Returns admin groups that can administer this task
      * 
      * @return admin groups
      */
     Set<String> getAdminGroups();
+
+    void setAdminGroups(Set<String> adminGroups);
+
+    void addAdminGroups(Set<String> adminGroups);
+
+    void removeAdminGroups(Set<String> adminGroups);
 
     /**
      * Returns excluded users that cannot work on this task
@@ -114,6 +132,12 @@ public interface UserTaskInstance {
     Attachment updateAttachment(Attachment newAttachment);
 
     Attachment removeAttachment(Attachment oldAttachment);
+
+    void setExcludedUsers(Set<String> excludedUsers);
+
+    void addExcludedUsers(Set<String> excludedUsers);
+
+    void removeExcludedUsers(Set<String> excludedUsers);
 
     Collection<Attachment> getAttachments();
 
