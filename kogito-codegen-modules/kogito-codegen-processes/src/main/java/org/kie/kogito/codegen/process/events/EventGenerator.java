@@ -30,12 +30,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.SuperExpr;
-import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
@@ -77,11 +72,8 @@ public abstract class EventGenerator implements ClassGenerator {
         clazz.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, channelInfo.getClassName()));
     }
 
-    protected FieldDeclaration generateMarshallerField(String fieldName, String setMethodName, Class<?> fieldClass) {
-        FieldDeclaration field =
-                clazz.addField(parseClassOrInterfaceType(fieldClass.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseType(channelInfo.getClassName()))), fieldName);
-        clazz.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("init")).flatMap(MethodDeclaration::getBody).ifPresent(body -> body.addStatement(new MethodCallExpr(
-                new SuperExpr(), setMethodName).addArgument(new FieldAccessExpr(new ThisExpr(), fieldName))));
+    protected FieldDeclaration generateMarshallerField(String fieldName, Class<?> fieldClass) {
+        FieldDeclaration field = clazz.addField(parseClassOrInterfaceType(fieldClass.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseType(channelInfo.getClassName()))), fieldName);
         channelInfo.getMarshaller().ifPresentOrElse(marshallerName -> setMarshaller(marshallerName, field), () -> context.getDependencyInjectionAnnotator().withInjection(field));
         return field;
     }

@@ -23,10 +23,13 @@ import java.util.concurrent.CompletionStage;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
+import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventReceiver;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
+import org.kie.kogito.event.EventUnmarshaller;
 
 import io.quarkus.runtime.Startup;
 
@@ -35,6 +38,9 @@ import io.quarkus.runtime.Startup;
 @Named("Receiver-$Trigger$")
 public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$Type$> {
 
+    @org.eclipse.microprofile.config.inject.ConfigProperty(name = "kogito.messaging.as-cloudevents", defaultValue = "true")
+    protected Boolean useCloudEvents;
+
     @Incoming("$Trigger$")
     public CompletionStage<?> onEvent(Message<$Type$> message) {
         return produce(message);
@@ -42,6 +48,18 @@ public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$T
 
     @PostConstruct
     void init() {
+    }
+
+    protected EventUnmarshaller<$Type$> getEventUnmarshaller() {
+        return eventDataUnmarshaller;
+    }
+
+    protected CloudEventUnmarshallerFactory<$Type$> getCloudEventUnmarshallerFactory() {
+        return ceUnmarshaller;
+    }
+
+    protected boolean useCloudEvents() {
+        return useCloudEvents;
     }
 
 }

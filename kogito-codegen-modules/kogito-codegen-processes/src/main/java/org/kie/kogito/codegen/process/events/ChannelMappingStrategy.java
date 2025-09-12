@@ -48,8 +48,8 @@ public class ChannelMappingStrategy {
     private static final String KOGITO_MESSAGING_PREFIX = "kogito.addon.messaging.";
 
     private static final String KAFKA_PREFIX = "kogito.addon.cloudevents.kafka.";
-    private static final String KOGITO_INCOMING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.INCOMING;
-    private static final String KOGITO_OUTGOING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.OUTGOING;
+    private static final String KOGITO_INCOMING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.INCOMING + ".";
+    private static final String KOGITO_OUTGOING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.OUTGOING + ".";
 
     private static final String INCOMING_TRIGGER = KOGITO_INCOMING_PREFIX + "trigger.";
     private static final String OUTGOING_TRIGGER = KOGITO_OUTGOING_PREFIX + "trigger.";
@@ -93,9 +93,7 @@ public class ChannelMappingStrategy {
             Map<String, Collection<String>> triggers,
             Predicate<String> shouldProcessTest) {
         if (property.startsWith(prefix) && shouldProcessTest.test(property)) {
-            int idx = property.lastIndexOf('.');
-            LOG.debug("processing property {} with prefix {} and idx {} and prefix length {}", property, prefix, idx, property.length());
-            String channelName = property.substring(prefix.length() + 1, idx > property.length() ? idx : property.length());
+            String channelName = getChannelName(property, prefix);
             if (standardChannels.contains(channelName)) {
                 return Optional.empty();
             }
@@ -117,7 +115,7 @@ public class ChannelMappingStrategy {
     }
 
     private static ChannelInfo getChannelInfo(KogitoBuildContext context, String property, String prefix, boolean isInput, String defaultChannelName, Map<String, Collection<String>> triggers) {
-        String channelName = property.substring(prefix.length(), property.lastIndexOf('.'));
+        String channelName = getChannelName(property, prefix);
         return new ChannelInfo(channelName,
                 triggers.getOrDefault(channelName, Collections.singleton(channelName)),
                 getClassName(context.getApplicationProperty(getPropertyName(prefix, channelName, "value." + (isInput ? "deserializer" : "serializer")), String.class)),
@@ -173,10 +171,16 @@ public class ChannelMappingStrategy {
         return prefix + name + "." + suffix;
     }
 
-    public static void main(String[] args) {
-        String property = "kogito.addon.cloudevents.kafka.kogito_incoming_stream.travellers";
+    public static String getChannelName(String property, String prefix) {
         int idx = property.lastIndexOf('.');
-        String channelName = property.substring(KOGITO_INCOMING_PREFIX.length() + 1, idx > property.length() ? idx : property.length());
-        System.out.println(channelName);
+        LOG.debug("processing property {} with prefix {} and idx {} and prefix length {}", property, prefix, idx, property.length());
+        if (idx < 0) {
+            idx = property.length();
+        }
+        if (idx <= prefix.length()) {
+            idx = property.length();
+        }
+        return property.substring(prefix.length(), idx);
     }
+
 }
