@@ -21,9 +21,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-runtimes</artifactId>
+        <artifactId>jbpm</artifactId>
         <version>999-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>jbpm-xsd-resources</artifactId>
@@ -32,30 +31,10 @@
 
     <properties>
         <java.module.name>org.kie.dmn.xsd.resources</java.module.name>
-        <output.spec.directory>${project.build.directory}/classes/org/omg/spec/BPMN</output.spec.directory>
-        <!-- downloading and bundling of BPM XSD files - helper plugin -->
-        <version.com.societegenerale.commons>4.0.2</version.com.societegenerale.commons>
-        <version.io.github.download-maven-plugin>2.0.0</version.io.github.download-maven-plugin>
+        <output.spec.directory>${project.build.directory}/classes/org/omg/spec/BPMN</output.spec.directory>        
     </properties>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>com.societegenerale.commons</groupId>
-                    <artifactId>arch-unit-maven-plugin</artifactId>
-                    <version>${version.com.societegenerale.commons}</version>
-                    <configuration>
-                      <skip>true</skip>
-                    </configuration>
-                </plugin>
-                <plugin>
-                  <groupId>io.github.download-maven-plugin</groupId>
-                  <artifactId>download-maven-plugin</artifactId>
-                  <version>${version.io.github.download-maven-plugin}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>com.societegenerale.commons</groupId>
