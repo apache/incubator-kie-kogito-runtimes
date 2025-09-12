@@ -32,7 +32,7 @@ import jakarta.enterprise.inject.Specializes;
 @Dependent
 @Alternative
 @Specializes
-@Priority(201)
+@Priority(199)
 public class RuntimeConfigCredentialsProvider extends ConfigCredentialsProvider {
 
     protected String getConfigKey(CredentialsContext context) {
