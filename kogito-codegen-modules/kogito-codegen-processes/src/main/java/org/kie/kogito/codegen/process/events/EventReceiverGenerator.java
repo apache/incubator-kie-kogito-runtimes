@@ -26,11 +26,8 @@ public class EventReceiverGenerator extends EventGenerator {
 
     public EventReceiverGenerator(KogitoBuildContext context, ChannelInfo channelInfo) {
         super(context, channelInfo, "EventReceiver");
-        if (context.getApplicationProperty("kogito.messaging.as-cloudevents", Boolean.class).orElse(true)) {
-            generateMarshallerField("unmarshaller", "setCloudEventUnmarshaller", CloudEventUnmarshallerFactory.class);
-        } else {
-            generateMarshallerField("unmarshaller", "setEventDataUnmarshaller", EventUnmarshaller.class);
-        }
+        generateMarshallerField("ceUnmarshaller", CloudEventUnmarshallerFactory.class);
+        generateMarshallerField("eventDataUnmarshaller", EventUnmarshaller.class);
     }
 
 }

@@ -46,10 +46,6 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
     @Inject
     MessageDecoratorProvider messageDecorator;
 
-    private CloudEventMarshaller<M> cloudEventMarshaller;
-
-    private EventMarshaller<M> eventMarshaller;
-
     @Override
     public CompletionStage<Void> emit(DataEvent<?> dataEvent) {
         logger.debug("publishing event {}", dataEvent);
@@ -66,13 +62,11 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
         }
     }
 
-    protected void setEventDataMarshaller(EventMarshaller<M> marshaller) {
-        this.eventMarshaller = marshaller;
-    }
+    protected abstract boolean useCloudEvents();
 
-    protected void setCloudEventMarshaller(CloudEventMarshaller<M> marshaller) {
-        this.cloudEventMarshaller = marshaller;
-    }
+    protected abstract EventMarshaller<M> getEventMarshaller();
+
+    protected abstract CloudEventMarshaller<M> getCloudEventMarshaller();
 
     private <T> Optional<OutgoingCloudEventMetadata<?>> getMetadata(DataEvent<T> event) {
         if (event.getId() == null || event.getType() == null || event.getSource() == null || event.getSpecVersion() == null) {
@@ -89,14 +83,12 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
     }
 
     private <T> Message<M> getMessage(DataEvent<T> event) throws IOException {
-        if (cloudEventMarshaller != null) {
-            return Message.of(cloudEventMarshaller.marshall(event.asCloudEvent(cloudEventMarshaller.cloudEventDataFactory())));
-        } else if (eventMarshaller != null) {
-            Optional<OutgoingCloudEventMetadata<?>> metadata = getMetadata(event);
-            M payload = eventMarshaller.marshall(event.getData());
-            return metadata.isPresent() ? Message.of(payload, Metadata.of(metadata.orElseThrow())) : Message.of(payload);
+        if (useCloudEvents()) {
+            return Message.of(getCloudEventMarshaller().marshall(event.asCloudEvent(getCloudEventMarshaller().cloudEventDataFactory())));
         } else {
-            throw new IllegalStateException("Not marshaller has been set for emitter " + this);
+            Optional<OutgoingCloudEventMetadata<?>> metadata = getMetadata(event);
+            M payload = getEventMarshaller().marshall(event.getData());
+            return metadata.isPresent() ? Message.of(payload, Metadata.of(metadata.orElseThrow())) : Message.of(payload);
         }
     }
 

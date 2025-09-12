@@ -28,6 +28,9 @@ import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
 import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventEmitter;
+import org.kie.kogito.event.CloudEventMarshaller;
+import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.event.EventUnmarshaller;
 
 import io.quarkus.runtime.Startup;
 
@@ -40,6 +43,9 @@ public class $Trigger$EventEmitter extends AbstractQuarkusCloudEventEmitter<$Typ
     @Channel("$Trigger$")
     Emitter<$Type$> emitter;
 
+    @org.eclipse.microprofile.config.inject.ConfigProperty(name = "kogito.messaging.as-cloudevents", defaultValue = "true")
+    protected Boolean useCloudEvents;
+
     @Override
     protected void emit(Message<$Type$> message) {
         emitter.send(message);
@@ -49,4 +55,15 @@ public class $Trigger$EventEmitter extends AbstractQuarkusCloudEventEmitter<$Typ
     void init() {
     }
 
+    protected EventMarshaller<$Type$> getEventMarshaller() {
+        return eventDataMarshaller;
+    }
+
+    protected CloudEventMarshaller<$Type$> getCloudEventMarshaller() {
+        return ceMarshaller;
+    }
+
+    protected boolean useCloudEvents() {
+        return useCloudEvents;
+    }
 }
