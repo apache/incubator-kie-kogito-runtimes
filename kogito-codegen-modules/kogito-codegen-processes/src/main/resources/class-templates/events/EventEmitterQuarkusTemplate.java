@@ -16,43 +16,54 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.messaging;
+package $Package$;
 
-import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventReceiver;
-import org.kie.kogito.event.CloudEventUnmarshallerFactory;
-import org.kie.kogito.event.EventUnmarshaller;
-
-import io.quarkus.arc.DefaultBean;
-
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
-@DefaultBean
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.eclipse.microprofile.reactive.messaging.Message;
+
+import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventEmitter;
+import org.kie.kogito.event.CloudEventMarshaller;
+import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.event.EventUnmarshaller;
+
+import io.quarkus.runtime.Startup;
+
+@Startup
 @ApplicationScoped
-public class QuarkusDefaultCloudEventReceiver extends AbstractQuarkusCloudEventReceiver<Object> {
+@Named("Emitter-$Trigger$")
+public class $Trigger$EventEmitter extends AbstractQuarkusCloudEventEmitter<$Type$> {
 
     @Inject
-    CloudEventUnmarshallerFactory<Object> cloudEventUnmarshaller;
-
-    @Inject
-    EventUnmarshaller<Object> eventUnmarshaller;
+    @Channel("$Trigger$")
+    Emitter<$Type$> emitter;
 
     @org.eclipse.microprofile.config.inject.ConfigProperty(name = "kogito.messaging.as-cloudevents", defaultValue = "true")
     protected Boolean useCloudEvents;
 
     @Override
-    protected CloudEventUnmarshallerFactory<Object> getCloudEventUnmarshallerFactory() {
-        return cloudEventUnmarshaller;
+    protected void emit(Message<$Type$> message) {
+        emitter.send(message);
     }
 
-    @Override
-    protected EventUnmarshaller<Object> getEventUnmarshaller() {
-        return eventUnmarshaller;
+    @PostConstruct
+    void init() {
     }
 
-    @Override
+    protected EventMarshaller<$Type$> getEventMarshaller() {
+        return eventDataMarshaller;
+    }
+
+    protected CloudEventMarshaller<$Type$> getCloudEventMarshaller() {
+        return ceMarshaller;
+    }
+
     protected boolean useCloudEvents() {
         return useCloudEvents;
     }
-
 }

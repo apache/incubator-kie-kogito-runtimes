@@ -42,17 +42,11 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
 
     private Collection<Subscription<DataEvent<?>, Message<I>>> consumers = new CopyOnWriteArrayList<>();
 
-    private EventUnmarshaller<I> eventDataUnmarshaller;
+    protected abstract boolean useCloudEvents();
 
-    private CloudEventUnmarshallerFactory<I> cloudEventUnmarshaller;
+    protected abstract EventUnmarshaller<I> getEventUnmarshaller();
 
-    protected void setEventDataUnmarshaller(EventUnmarshaller<I> eventDataUnmarshaller) {
-        this.eventDataUnmarshaller = eventDataUnmarshaller;
-    }
-
-    protected void setCloudEventUnmarshaller(CloudEventUnmarshallerFactory<I> cloudEventUnmarshaller) {
-        this.cloudEventUnmarshaller = cloudEventUnmarshaller;
-    }
+    protected abstract CloudEventUnmarshallerFactory<I> getCloudEventUnmarshallerFactory();
 
     protected CompletionStage<?> produce(final Message<I> message) {
         LOGGER.debug("Received message {}", message);
@@ -90,12 +84,10 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
     }
 
     private <T> Converter<Message<I>, DataEvent<T>> getConverter(Class<T> objectClass) {
-        if (cloudEventUnmarshaller != null) {
-            return new QuarkusCloudEventConverter<>(cloudEventUnmarshaller.unmarshaller(objectClass));
-        } else if (eventDataUnmarshaller != null) {
-            return new QuarkusDataEventConverter<>(objectClass, eventDataUnmarshaller);
+        if (useCloudEvents()) {
+            return new QuarkusCloudEventConverter<>(getCloudEventUnmarshallerFactory().unmarshaller(objectClass));
         } else {
-            throw new IllegalStateException("No unmarshaller set for receiver " + this);
+            return new QuarkusDataEventConverter<>(objectClass, getEventUnmarshaller());
         }
     }
 }
