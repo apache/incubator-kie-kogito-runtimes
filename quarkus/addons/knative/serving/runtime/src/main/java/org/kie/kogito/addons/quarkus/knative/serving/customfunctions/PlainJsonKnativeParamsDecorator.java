@@ -21,15 +21,13 @@ package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -60,27 +58,31 @@ public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator
 
         Object inputModelObject = parameters.get(MODEL_WORKFLOW_VAR);
 
-        if (inputModelObject != null && inputModelObject instanceof ObjectNode) {
+        ObjectNode inputModelCopy = null;
+        if (inputModelObject instanceof ObjectNode objectNode) {
             ObjectMapper mapper = new ObjectMapper();
-            ((ObjectNode) inputModelObject).fields().forEachRemaining(entry -> {
+            objectNode.fields().forEachRemaining(entry -> {
                 JsonNode value = entry.getValue();
                 Object rawValue = mapper.convertValue(value, Object.class);
                 inputModel.put(entry.getKey(), rawValue);
             });
+
+            try {
+                inputModelCopy = (ObjectNode) mapper.readTree(objectNode.toString());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Failed to copy MODEL_WORKFLOW_VAR", e);
+            }
         }
 
-        Set<String> keysFilter = Set.of(RestWorkItemHandler.REQUEST_TIMEOUT_IN_MILLIS, MODEL_WORKFLOW_VAR);
-        Map<String, Object> filteredParams = parameters.entrySet().stream()
-                .filter(entry -> !keysFilter.contains(entry.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Set<String> paramsRemove = super.extractHeadersQueries(workItem, inputModel, request);
+        super.decorate(workItem, parameters, request);
 
-        if (filteredParams.isEmpty()) {
-            Set<String> paramsRemove = super.extractHeadersQueries(workItem, inputModel, request);
-            if (inputModelObject != null && inputModelObject instanceof ObjectNode) {
-                ((ObjectNode) inputModelObject).remove(paramsRemove);
-            }
-        } else {
-            super.decorate(workItem, parameters, request);
+        if (inputModelCopy != null) {
+            // mutate the safe copy
+            inputModelCopy.remove(paramsRemove);
+
+            // replace the original entry in parameters with the copy
+            parameters.put(MODEL_WORKFLOW_VAR, inputModelCopy);
         }
     }
 }
