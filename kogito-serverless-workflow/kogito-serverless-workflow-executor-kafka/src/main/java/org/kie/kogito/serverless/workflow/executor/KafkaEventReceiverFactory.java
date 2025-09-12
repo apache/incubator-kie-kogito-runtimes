@@ -116,7 +116,7 @@ public class KafkaEventReceiverFactory implements EventReceiverFactory {
                 if (receiver == null) {
                     logger.info("No subscription for topic {}", topic);
                 } else {
-                    receiver.onEvent(record.value());
+                    //                    receiver.onEvent(record.value());
                 }
             }
             try {

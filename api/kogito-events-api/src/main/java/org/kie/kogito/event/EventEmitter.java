@@ -18,8 +18,6 @@
  */
 package org.kie.kogito.event;
 
-import java.util.concurrent.CompletionStage;
-
 /**
  * It is responsible to interact with the external event service for event publishing.
  * One of its task is to transform the data event into the format expected by the external service.
@@ -28,12 +26,15 @@ import java.util.concurrent.CompletionStage;
  * @see CloudEventMarshaller
  */
 public interface EventEmitter extends AutoCloseable {
+
+    String channelName();
+
     /**
-     * Publish the data event object into an external event service.
+     * Publish event to the channel. it will automatically marshalled from the data
      * 
-     * @param dataEvent The DataEvent
+     * @param event data will be send to the channel
      */
-    CompletionStage<Void> emit(DataEvent<?> dataEvent);
+    void emit(DataEvent<?> dataEvent);
 
     @Override
     default void close() throws Exception {

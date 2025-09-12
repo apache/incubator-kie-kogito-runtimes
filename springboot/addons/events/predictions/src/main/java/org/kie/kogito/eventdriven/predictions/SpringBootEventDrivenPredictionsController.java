@@ -25,8 +25,6 @@ import org.kie.kogito.prediction.PredictionModels;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-
 @Component
 public class SpringBootEventDrivenPredictionsController extends EventDrivenPredictionsController {
 
@@ -35,8 +33,4 @@ public class SpringBootEventDrivenPredictionsController extends EventDrivenPredi
         super(predictionModels, config, eventEmitter, eventReceiver);
     }
 
-    @PostConstruct
-    private void onPostConstruct() {
-        subscribe();
-    }
 }

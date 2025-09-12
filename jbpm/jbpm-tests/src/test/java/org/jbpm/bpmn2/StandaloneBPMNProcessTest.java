@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -100,6 +101,7 @@ import org.jbpm.bpmn2.start.TimerStartProcess;
 import org.jbpm.bpmn2.subprocess.CallActivityModel;
 import org.jbpm.bpmn2.subprocess.CallActivityProcess;
 import org.jbpm.bpmn2.subprocess.CallActivitySubProcessProcess;
+import org.jbpm.bpmn2.support.MockSendTaskWorkItemHandler;
 import org.jbpm.bpmn2.task.ReceiveTaskModel;
 import org.jbpm.bpmn2.task.ReceiveTaskProcess;
 import org.jbpm.bpmn2.task.SendTaskModel;
@@ -123,10 +125,12 @@ import org.kie.api.io.Resource;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.SecurityPolicy;
-import org.kie.kogito.event.impl.MessageProducer;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
+import org.kie.kogito.internal.process.workitem.WorkItemTransition;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
@@ -850,15 +854,17 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
     @Test
     public void testMessageIntermediateThrow() {
         Application app = ProcessTestHelper.newApplication();
-        ProcessTestHelper.registerHandler(app, "Send Task", new SendTaskHandler());
-        IntermediateThrowEventMessageProcess definition = (IntermediateThrowEventMessageProcess) IntermediateThrowEventMessageProcess.newProcess(app);
         StringBuilder builder = new StringBuilder();
-        definition.setProducer__2(new MessageProducer<String>() {
+        ProcessTestHelper.registerHandler(app, "Send Task", new SendTaskHandler());
+        ProcessTestHelper.registerHandler(app, new MockSendTaskWorkItemHandler() {
             @Override
-            public void produce(KogitoProcessInstance pi, String eventData) {
-                builder.append(eventData);
+            public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workitem, WorkItemTransition transition) {
+                builder.append((String) workitem.getResult("Data"));
+                return Optional.empty();
             }
         });
+
+        IntermediateThrowEventMessageProcess definition = (IntermediateThrowEventMessageProcess) IntermediateThrowEventMessageProcess.newProcess(app);
         IntermediateThrowEventMessageModel model = definition.createModel();
         model.setX("MyValue");
 

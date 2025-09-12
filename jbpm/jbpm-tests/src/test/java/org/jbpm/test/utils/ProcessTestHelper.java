@@ -96,7 +96,11 @@ public class ProcessTestHelper {
     }
 
     public static void registerHandler(Application app, KogitoWorkItemHandler handler) {
+<<<<<<< HEAD
         ((DefaultWorkItemHandlerConfig) app.config().get(ProcessConfig.class).workItemHandlers()).register(handler.getName(), handler);
+=======
+        registerHandler(app, handler.getName(), handler);
+>>>>>>> 05de532e12 (fix jbpm tests)
     }
 
     public static void registerHandler(Application app, String handlerName, KogitoWorkItemHandler handler) {

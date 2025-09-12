@@ -30,7 +30,7 @@ import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.instance.impl.actions.HandleEscalationAction;
 import org.jbpm.process.instance.impl.actions.HandleMessageAction;
-import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
+import org.jbpm.process.instance.impl.actions.SignalEventProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.WorkflowElementIdentifierFactory;
@@ -58,6 +58,7 @@ import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;
 import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE_INPUT;
 import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.PRODUCE_MESSAGE;
+import static org.jbpm.ruleflow.core.Metadata.PRODUCE_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.SIGNAL_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
@@ -217,6 +218,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
                 signalName = checkSignalAndConvertToRealSignalNam(parser, signalName);
 
                 actionNode.setMetaData(EVENT_TYPE, "signal");
+                actionNode.setMetaData(Metadata.TRIGGER_TYPE, PRODUCE_SIGNAL);
                 actionNode.setMetaData(Metadata.REF, signalName);
                 actionNode.setMetaData(Metadata.VARIABLE, variable);
 
@@ -232,10 +234,10 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
                 }
 
                 DroolsConsequenceAction action = createJavaAction(
-                        new SignalProcessInstanceAction(signalName,
+                        new SignalEventProcessInstanceAction(signalName,
                                 variable,
                                 inputVariable,
-                                (String) actionNode.getMetaData("customScope")));
+                                (String) actionNode.getMetaData(Metadata.CUSTOM_SCOPE)));
                 actionNode.setAction(action);
             }
             xmlNode = xmlNode.getNextSibling();
@@ -272,6 +274,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
                 actionNode.setMetaData(MESSAGE_TYPE, message.getType());
                 actionNode.setMetaData(TRIGGER_TYPE, PRODUCE_MESSAGE);
                 actionNode.setMetaData(TRIGGER_REF, message.getName());
+                actionNode.setMetaData(Metadata.CUSTOM_SCOPE, Metadata.EXTERNAL_SCOPE);
 
                 DroolsConsequenceAction action = createJavaAction(new HandleMessageAction(message.getType(), variable));
                 actionNode.setAction(action);

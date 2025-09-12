@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.jbpm.compiler.xml.compiler.XmlDumper;
 import org.jbpm.process.core.context.exception.CompensationScope;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
@@ -54,7 +55,7 @@ public class EndNodeHandler extends AbstractNodeHandler {
             xmlDump.append("        <terminateEventDefinition " + (endNode.getScope() == EndNode.PROCESS_SCOPE ? "tns:scope=\"process\"" : "") + "/>" + EOL);
             endNode("endEvent", xmlDump);
         } else {
-            String scope = (String) endNode.getMetaData("customScope");
+            String scope = (String) endNode.getMetaData(Metadata.CUSTOM_SCOPE);
             List<DroolsAction> actions = endNode.getActions(ExtendedNodeImpl.EVENT_NODE_ENTER);
             if (actions != null && !actions.isEmpty()) {
                 if (actions.size() == 1) {

@@ -23,24 +23,22 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.microprofile.config.ConfigProvider;
-import org.kie.kogito.addon.cloudevents.AbstractTopicDiscovery;
 import org.kie.kogito.event.ChannelType;
 import org.kie.kogito.event.Topic;
+import org.kie.kogito.event.TopicDiscovery;
 
-import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-@Priority(0)
-public class QuarkusTopicDiscovery extends AbstractTopicDiscovery {
+public class QuarkusTopicDiscovery implements TopicDiscovery {
 
     private static final String OUTGOING_PREFIX = "mp.messaging.outgoing.";
     private static final String INCOMING_PREFIX = "mp.messaging.incoming.";
     private static final String TOPIC_SUFFIX = ".topic";
 
     @Override
-    protected List<Topic> getTopics() {
-        final List<Topic> topics = new ArrayList<>();
+    public List<Topic> getTopics() {
+        List<Topic> topics = new ArrayList<>();
         getPropertyNames().forEach(n -> {
             if (n.startsWith(OUTGOING_PREFIX)) {
                 final String topicName = this.extractChannelName(n, OUTGOING_PREFIX);

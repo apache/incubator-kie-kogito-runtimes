@@ -45,7 +45,7 @@ public abstract class QuarkusMessageConsumer<M extends Model, D> extends Abstrac
     private ExecutorService executor;
 
     protected void init(Process<M> process, String trigger, Class<D> objectClass, EventReceiver eventReceiver, Set<String> correlation) {
-        executor = factory.getExecutorService(trigger);
+        executor = factory.newExecutorService();
         init(application, process, trigger, eventReceiver, objectClass, processService, executor, correlation);
     }
 

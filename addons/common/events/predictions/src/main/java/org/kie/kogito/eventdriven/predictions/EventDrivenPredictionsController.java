@@ -69,10 +69,6 @@ public class EventDrivenPredictionsController {
 
     }
 
-    protected void subscribe() {
-        eventReceiver.subscribe(this::handleRequest, Map.class);
-    }
-
     private CompletionStage<Void> handleRequest(DataEvent<Map> event) {
         KogitoPredictionsExtension extension = ExtensionProvider.getInstance().parseExtension(KogitoPredictionsExtension.class, event);
         if (CloudEventUtils.isValidRequest(event, REQUEST_EVENT_TYPE, extension)) {

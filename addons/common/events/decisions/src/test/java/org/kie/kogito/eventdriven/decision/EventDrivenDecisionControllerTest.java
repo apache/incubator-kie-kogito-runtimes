@@ -21,9 +21,7 @@ package org.kie.kogito.eventdriven.decision;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,10 +37,8 @@ import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.Subscription;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
-import org.kie.kogito.event.impl.CloudEventConverter;
 import org.kie.kogito.event.impl.ObjectCloudEventUnmarshallerFactory;
 import org.mockito.ArgumentCaptor;
 
@@ -155,7 +151,6 @@ class EventDrivenDecisionControllerTest {
         mockDecisionModel();
 
         controller = new EventDrivenDecisionController(decisionModelsMock, mock(ConfigBean.class), eventEmitterMock, testEventReceiver);
-        controller.subscribe();
     }
 
     @Test
@@ -167,16 +162,13 @@ class EventDrivenDecisionControllerTest {
 
         // option #1: parameters via constructor + parameterless setup
         EventDrivenDecisionController controller1 = new EventDrivenDecisionController(decisionModelsMock, configMock, eventEmitterMock, eventReceiverMock);
-        controller1.subscribe();
-        verify(eventReceiverMock).subscribe(any(), any());
 
         reset(eventReceiverMock);
 
         // option #2: parameterless via constructor + parameters via setup (introduced for Quarkus CDI)
         EventDrivenDecisionController controller2 = new EventDrivenDecisionController();
         controller2.init(decisionModelsMock, configMock, eventEmitterMock, eventReceiverMock);
-        controller2.subscribe();
-        verify(eventReceiverMock).subscribe(any(), any());
+
     }
 
     @Test
@@ -366,16 +358,10 @@ class EventDrivenDecisionControllerTest {
 
     private static class TestEventReceiver implements EventReceiver {
 
-        private Subscription subscription;
         private CloudEventUnmarshallerFactory unmarshaller = new ObjectCloudEventUnmarshallerFactory(objectMapper);
 
         public void accept(String message) throws IOException {
-            subscription.getConsumer().apply(subscription.getConverter().convert(message));
         }
 
-        @Override
-        public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> clazz) {
-            subscription = new Subscription(consumer, new CloudEventConverter<>(clazz, unmarshaller));
-        }
     }
 }

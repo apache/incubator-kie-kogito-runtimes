@@ -22,5 +22,6 @@ import java.util.concurrent.ExecutorService;
 
 public interface EventExecutorServiceFactory {
 
-    public ExecutorService getExecutorService(String channelName);
+    public ExecutorService newExecutorService();
+
 }

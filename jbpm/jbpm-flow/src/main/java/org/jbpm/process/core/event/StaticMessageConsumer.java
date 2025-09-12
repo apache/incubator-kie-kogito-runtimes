@@ -27,7 +27,6 @@ import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.impl.AbstractMessageConsumer;
-import org.kie.kogito.event.impl.EventFactoryUtils;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.process.impl.ProcessServiceImpl;
@@ -73,9 +72,6 @@ public class StaticMessageConsumer<M extends Model, D> extends AbstractMessageCo
 
         public StaticMessageConsumer<M, D> build() {
             StaticMessageConsumer<M, D> consumer = new StaticMessageConsumer<>();
-            if (receiver == null) {
-                receiver = EventFactoryUtils.getEventReceiver(trigger);
-            }
             if (executorService == null) {
                 executorService = Executors.newWorkStealingPool();
             }

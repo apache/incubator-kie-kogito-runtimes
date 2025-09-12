@@ -28,7 +28,7 @@ import org.jbpm.bpmn2.core.Message;
 import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.instance.impl.actions.HandleMessageAction;
-import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
+import org.jbpm.process.instance.impl.actions.SignalEventProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.Node;
@@ -43,11 +43,13 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import static org.jbpm.bpmn2.xml.ProcessHandler.createJavaAction;
+import static org.jbpm.ruleflow.core.Metadata.CUSTOM_SCOPE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_MESSAGE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;
 import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE_INPUT;
 import static org.jbpm.ruleflow.core.Metadata.PRODUCE_MESSAGE;
+import static org.jbpm.ruleflow.core.Metadata.PRODUCE_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.VARIABLE;
 
 public class EndEventHandler extends AbstractNodeHandler {
@@ -159,14 +161,14 @@ public class EndEventHandler extends AbstractNodeHandler {
                 endNode.setMetaData(Metadata.EVENT_TYPE, EVENT_TYPE_SIGNAL);
                 endNode.setMetaData(Metadata.REF, signalName);
                 endNode.setMetaData(Metadata.VARIABLE, variable);
-
+                endNode.setMetaData(Metadata.TRIGGER_TYPE, PRODUCE_SIGNAL);
                 // check if signal should be send async
                 if (endNode.getIoSpecification().containsInputLabel("async")) {
                     signalName = "ASYNC-" + signalName;
                 }
 
                 DroolsConsequenceAction action = createJavaAction(
-                        new SignalProcessInstanceAction(signalName, variable, inputVariable, (String) endNode.getMetaData("customScope")));
+                        new SignalEventProcessInstanceAction(signalName, variable, inputVariable, (String) endNode.getMetaData(CUSTOM_SCOPE)));
 
                 List<DroolsAction> actions = new ArrayList<>();
                 actions.add(action);
@@ -198,6 +200,7 @@ public class EndEventHandler extends AbstractNodeHandler {
                 endNode.setMetaData(Metadata.MESSAGE_TYPE, message.getType());
                 endNode.setMetaData(Metadata.TRIGGER_TYPE, PRODUCE_MESSAGE);
                 endNode.setMetaData(Metadata.TRIGGER_REF, message.getName());
+                endNode.setMetaData(Metadata.CUSTOM_SCOPE, Metadata.EXTERNAL_SCOPE);
                 List<DroolsAction> actions = new ArrayList<>();
 
                 DroolsConsequenceAction action = createJavaAction(new HandleMessageAction(message.getType(), variable));

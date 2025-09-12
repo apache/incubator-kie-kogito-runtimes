@@ -40,7 +40,7 @@ import org.jbpm.process.core.correlation.CorrelationManager;
 import org.jbpm.process.core.correlation.CorrelationProperties;
 import org.jbpm.process.core.correlation.Message;
 import org.jbpm.process.instance.impl.ReturnValueEvaluator;
-import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
+import org.jbpm.process.instance.impl.actions.SignalEventProcessInstanceAction;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.workflow.core.Node;
@@ -304,8 +304,8 @@ public class ProcessVisitor extends AbstractVisitor {
                 String faultCode = e.getKey();
                 ActionExceptionHandler handler = (ActionExceptionHandler) e.getValue();
                 Optional<String> faultVariable = Optional.ofNullable(handler.getFaultVariable());
-                SignalProcessInstanceAction action = (SignalProcessInstanceAction) handler.getAction().getMetaData("Action");
-                String signalName = action.getSignalName();
+                SignalEventProcessInstanceAction action = (SignalEventProcessInstanceAction) handler.getAction().getMetaData("Action");
+                String signalName = action.getEventTypeExpression();
                 body.addStatement(getFactoryMethod(getFieldName(context.getContextContainer()), METHOD_ERROR_EXCEPTION_HANDLER,
                         new StringLiteralExpr(signalName),
                         faultCode != null ? new StringLiteralExpr(faultCode) : new NullLiteralExpr(),

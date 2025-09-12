@@ -21,7 +21,7 @@ package org.kie.kogito.addon.quarkus.messaging.common;
 import java.util.*;
 
 import org.junit.jupiter.api.*;
-import org.kie.kogito.addon.cloudevents.AbstractTopicDiscovery;
+import org.kie.kogito.addon.cloudevents.DefaultTopicDiscovery;
 import org.kie.kogito.event.ChannelType;
 import org.kie.kogito.event.EventKind;
 import org.kie.kogito.event.Topic;
@@ -44,7 +44,7 @@ class QuarkusTopicDiscoveryTest {
                 entry("mp.messaging.incoming.kogito_incoming_stream.connector", "smallrye-kafka"),
                 entry("mp.messaging.incoming.kogito_incoming_stream.topic", "mycooltopic"));
 
-        final List<Topic> topics = discovery.getTopics(Collections.emptyList());
+        final List<Topic> topics = discovery.getTopics();
         assertThat(topics).hasSize(2);
         expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
     }
@@ -61,7 +61,7 @@ class QuarkusTopicDiscoveryTest {
                 entry("mp.messaging.incoming.kogito_incoming_stream.connector", "smallrye-kafka"),
                 entry("mp.messaging.incoming.kogito_incoming_stream.topic", "mycooltopic"));
 
-        final List<Topic> topics = discovery.getTopics(Collections.emptyList());
+        final List<Topic> topics = discovery.getTopics();
         assertThat(topics).hasSize(2);
         expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
     }
@@ -69,8 +69,8 @@ class QuarkusTopicDiscoveryTest {
     @Test
     void verifyTopicsWithNoPropertiesSet() {
         final List<Topic> expectedTopics = new ArrayList<>();
-        expectedTopics.add(AbstractTopicDiscovery.DEFAULT_OUTGOING_CHANNEL);
-        expectedTopics.add(AbstractTopicDiscovery.DEFAULT_INCOMING_CHANNEL);
+        expectedTopics.add(DefaultTopicDiscovery.DEFAULT_OUTGOING_CHANNEL);
+        expectedTopics.add(DefaultTopicDiscovery.DEFAULT_INCOMING_CHANNEL);
         final List<CloudEventMeta> eventsMeta = new ArrayList<>();
         eventsMeta.add(new CloudEventMeta("event1", "", EventKind.CONSUMED));
         eventsMeta.add(new CloudEventMeta("event2", "", EventKind.PRODUCED));
@@ -84,7 +84,7 @@ class QuarkusTopicDiscoveryTest {
                 return Optional.empty();
             }
         };
-        final List<Topic> topics = discovery.getTopics(eventsMeta);
+        final List<Topic> topics = discovery.getTopics();
         assertThat(topics).hasSize(2);
         expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
     }
@@ -100,7 +100,7 @@ class QuarkusTopicDiscoveryTest {
                 return Optional.empty();
             }
         };
-        final List<Topic> topics = discovery.getTopics(Collections.emptyList());
+        final List<Topic> topics = discovery.getTopics();
         assertThat(topics).isEmpty();
     }
 

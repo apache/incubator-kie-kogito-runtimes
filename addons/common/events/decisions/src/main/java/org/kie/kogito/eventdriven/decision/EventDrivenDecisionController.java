@@ -75,10 +75,6 @@ public class EventDrivenDecisionController {
         this.eventReceiver = eventReceiver;
     }
 
-    protected void subscribe() {
-        eventReceiver.subscribe(this::handleRequest, Map.class);
-    }
-
     private CompletionStage<Void> handleRequest(DataEvent<Map> event) {
         KogitoExtension kogitoExtension = ExtensionProvider.getInstance().parseExtension(KogitoExtension.class, event);
         if (CloudEventUtils.isValidRequest(event, REQUEST_EVENT_TYPE, kogitoExtension)) {
