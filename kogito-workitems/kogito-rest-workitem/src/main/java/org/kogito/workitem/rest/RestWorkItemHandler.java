@@ -35,13 +35,13 @@ import java.util.stream.StreamSupport;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.util.ContextFactory;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
-import org.kie.kogito.internal.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.internal.process.workitem.WorkItemTransition;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 import org.kogito.workitem.rest.auth.ApiKeyAuthDecorator;
@@ -60,6 +60,7 @@ import org.kogito.workitem.rest.resulthandlers.RestWorkItemHandlerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpRequest;
@@ -67,9 +68,11 @@ import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
 import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.checkStatusCode;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getClassListParam;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getClassParam;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParamSupply;
 
 public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
 
@@ -91,6 +94,7 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     public static final String RETURN_HEADERS = "return_headers";
     public static final String RETURN_STATUS_CODE = "return_status_code";
     public static final String FAIL_ON_STATUS_ERROR = "fail_on_status_error";
+    public static final String TARGET_TYPE = "TargetType";
 
     public static final String REQUEST_TIMEOUT_IN_MILLIS = "RequestTimeout";
 
@@ -121,12 +125,14 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
 
     @Override
     public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
-        Class<?> targetInfo = getTargetInfo(workItem);
-        logger.debug("Using target {}", targetInfo);
+
         //retrieving parameters
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
         //removing unnecessary parameter
         parameters.remove("TaskName");
+        Class<?> targetInfo = getParamSupply(parameters, TARGET_TYPE, Class.class, () -> getTargetInfo(workItem));
+        logger.debug("Using target {}", targetInfo);
+
         String endPoint = getParam(parameters, URL, String.class, null);
         if (endPoint == null) {
             throw new IllegalArgumentException("Missing required parameter " + URL);
@@ -194,21 +200,40 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         paramsDecorator.decorate(workItem, parameters, request);
         Duration requestTimeout = getRequestTimeout(parameters);
         HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT)
-                ? sendJson(request, bodyBuilder.apply(parameters), requestTimeout)
+                ? sendBody(request, bodyBuilder.apply(parameters), requestTimeout)
                 : send(request, requestTimeout);
-        int statusCode = response.statusCode();
-        if (failOnStatusError && (statusCode < 200 || statusCode >= 300)) {
-            throw new WorkItemExecutionException(Integer.toString(statusCode), "Request for endpoint " + endPoint + " failed with message: " + response.statusMessage());
+
+        if (failOnStatusError) {
+            checkStatusCode(response);
         }
 
-        return Optional.of(this.workItemLifeCycle.newTransition("complete", workItem.getPhaseStatus(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo))));
+        return Optional.of(this.workItemLifeCycle.newTransition("complete", workItem.getPhaseStatus(),
+                Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo, ContextFactory.fromItem(workItem)))));
     }
 
-    private static HttpResponse<Buffer> sendJson(HttpRequest<Buffer> request, Object body, Duration requestTimeout) {
-        if (requestTimeout == null) {
-            return request.sendJsonAndAwait(body);
+    private static HttpResponse<Buffer> sendBody(HttpRequest<Buffer> request, Object body, Duration requestTimeout) {
+        return requestTimeout == null ? sendBody(request, body) : sendBodyTimeout(request, body, requestTimeout);
+    }
+
+    private static HttpResponse<Buffer> sendBodyTimeout(HttpRequest<Buffer> request, Object body, Duration requestTimeout) {
+        Uni<HttpResponse<Buffer>> uni;
+        if (body instanceof String string) {
+            uni = request.sendBuffer(Buffer.buffer(string));
+        } else if (body instanceof byte[] bytes) {
+            uni = request.sendBuffer(Buffer.buffer(bytes));
         } else {
-            return request.sendJson(body).await().atMost(requestTimeout);
+            uni = request.sendJson(body);
+        }
+        return uni.await().atMost(requestTimeout);
+    }
+
+    private static HttpResponse<Buffer> sendBody(HttpRequest<Buffer> request, Object body) {
+        if (body instanceof String string) {
+            return request.sendBufferAndAwait(Buffer.buffer(string));
+        } else if (body instanceof byte[] bytes) {
+            return request.sendBufferAndAwait(Buffer.buffer(bytes));
+        } else {
+            return request.sendJsonAndAwait(body);
         }
     }
 

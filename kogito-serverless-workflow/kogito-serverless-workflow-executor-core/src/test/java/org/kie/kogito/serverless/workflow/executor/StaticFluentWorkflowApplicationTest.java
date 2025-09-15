@@ -28,10 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
-import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessConfig;
-import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.validation.ValidationException;
 import org.kie.kogito.serverless.workflow.actions.SysoutAction;
 import org.kie.kogito.serverless.workflow.actions.WorkflowLogLevel;
@@ -41,10 +38,6 @@ import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 import org.kie.kogito.serverless.workflow.parser.types.SysOutTypeHandler;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
 import org.kie.kogito.serverless.workflow.utils.KogitoProcessContextResolver;
-import org.kie.kogito.services.jobs.impl.InMemoryJobContext;
-import org.kie.kogito.services.jobs.impl.InMemoryJobService;
-import org.kie.kogito.services.jobs.impl.InMemoryProcessJobExecutorFactory;
-import org.kie.kogito.uow.UnitOfWorkManager;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -62,9 +55,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.call;
 import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.log;
 import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.subprocess;
+import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.trigger;
+import static org.kie.kogito.serverless.workflow.fluent.EventDefBuilder.eventDef;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.expr;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.java;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.log;
+import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.callback;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.forEach;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.inject;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.operation;
@@ -142,19 +138,26 @@ public class StaticFluentWorkflowApplicationTest {
     }
 
     @Test
+    void testEventPubSub() throws InterruptedException, TimeoutException {
+        final String eventType = "eventType";
+        Workflow subscriber =
+                workflow("testCallback").start(callback(call(expr("prefix", "{slogan:.slogan+\"er Beti\"}")), eventDef(eventType)).outputFilter("{slogan:.slogan+.name}")).end().build();
+        Workflow publisher = workflow("testPublishEvent").start(operation().action(trigger(eventDef("eventType"), jsonObject().put("name", ".name"), ".id"))).end().build();
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            String id = application.execute(subscriber, jsonObject().put("slogan", "Viva ")).getId();
+            application.execute(publisher, jsonObject().put("name", " manque pierda").put("id", id));
+            assertThat(application.waitForFinish(id, Duration.ofSeconds(3)).orElseThrow().getWorkflowdata())
+                    .isEqualTo(jsonObject().put("slogan", "Viva er Beti manque pierda"));
+        }
+    }
+
+    @Test
     void testSwitchLoop() throws InterruptedException, TimeoutException {
         OperationStateBuilder startTask = operation().action(call(expr("startTask", "{finish:true}")));
         OperationStateBuilder pollTask = operation().action(call(expr("pollTask", "{finish:.finish|not}")));
         OperationStateBuilder sleepState = operation().action(call(expr("inc", ".count=.count+1")).sleepAfter(Duration.ofSeconds(1)));
 
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
-            ProcessConfig processConfig = application.config().get(ProcessConfig.class);
-            JobsService jobService = processConfig.jobsService();
-            Processes processes = application.get(Processes.class);
-            UnitOfWorkManager unitOfWorkManager = processConfig.unitOfWorkManager();
-            if (jobService instanceof InMemoryJobService inMemoryJobService) {
-                inMemoryJobService.registerJobExecutorFactory(new InMemoryProcessJobExecutorFactory(new InMemoryJobContext(null, unitOfWorkManager, processes, null)));
-            }
             Workflow workflow = workflow("Polling").start(startTask)
                     .next(sleepState)
                     .next(pollTask)
@@ -274,7 +277,8 @@ public class StaticFluentWorkflowApplicationTest {
         Workflow workflow = workflow("Testing logs").constant("name", "Javierito")
                 .start(operation()
                         .action(log(WorkflowLogLevel.INFO, "minero"))
-                        .action(log(WorkflowLogLevel.INFO, "0zapatero"))
+                        .action(log(WorkflowLogLevel.INFO, "0zapatero")))
+                .next(operation()
                         .action(log(WorkflowLogLevel.INFO, "keys"))
                         .action(log(WorkflowLogLevel.INFO, "\"keys:\"+({pepe:1}|keys|tostring)"))
                         .action(log(WorkflowLogLevel.INFO, "\"My name is \\($CONST.name)\""))

@@ -46,7 +46,6 @@ public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResu
 
     @Override
     public Object apply(HttpResponse<Buffer> response, Class<?> target) {
-        ;
         Map<String, Object> result = new HashMap<>();
 
         try {

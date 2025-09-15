@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.jbpm.process.instance.KogitoProcessContextImpl;
 import org.jbpm.util.ContextFactory;
@@ -33,6 +32,7 @@ import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.kogito.event.cloudevents.extension.ProcessMeta;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.WorkItemExecutionException;
+import org.kie.kogito.internal.utils.CaseInsensitiveSet;
 import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
@@ -46,14 +46,18 @@ import jakarta.ws.rs.core.MultivaluedMap;
 
 public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler {
 
-    private static final Collection<String> excludedHeaders = Set.of("User-Agent", "Host", "Content-Length", "Accept", "Accept-Encoding", "Connection");
+    private static final Collection<String> excludedHeaders = new CaseInsensitiveSet("User-Agent", "Host", "Content-Length", "Accept", "Accept-Encoding", "Connection");
+
+    static String CONFIG_KEY_SUFFIX_PROP = "openApiConfigKeySuffix";
 
     @Override
     protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
         Class<T> clazz = getRestClass();
-        T ref = RestClientBuilderFactory.build(clazz, calculatedConfigKey(workItem)).register(new ClientRequestFilter() {
+        final Optional<String> configKey = calculatedConfigKey(workItem);
+        T ref = RestClientBuilderFactory.build(clazz, configKey).register(new ClientRequestFilter() {
             @Override
             public void filter(ClientRequestContext requestContext) throws IOException {
+                configKey.ifPresent(c -> requestContext.setProperty(CONFIG_KEY_SUFFIX_PROP, c));
                 MultivaluedMap<String, Object> contextHeaders = requestContext.getHeaders();
                 ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> contextHeaders.put(k, Collections.singletonList(v)));
                 Map<String, List<String>> headers = workItem.getProcessInstance().getHeaders();
@@ -65,7 +69,7 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
                     });
                 }
             }
-        }).build(clazz);
+        }, Integer.MIN_VALUE).build(clazz);
         try {
             return internalExecute(ref, parameters);
         } catch (WebApplicationException ex) {

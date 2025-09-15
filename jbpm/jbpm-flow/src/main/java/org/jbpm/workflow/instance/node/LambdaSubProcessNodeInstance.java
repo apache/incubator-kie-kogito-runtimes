@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.drools.util.StringUtils;
 import org.jbpm.process.core.Context;
@@ -41,11 +42,16 @@ import org.jbpm.util.ContextFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.SubProcessFactory;
 import org.jbpm.workflow.core.node.SubProcessNode;
+import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.process.MutableProcessInstances;
+import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Runtime counterpart of a SubFlow node.
@@ -54,6 +60,7 @@ import org.kie.kogito.process.impl.AbstractProcessInstance;
 public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance implements KogitoEventListener, ContextInstanceContainer {
 
     private static final long serialVersionUID = 510l;
+    private static final Logger logger = LoggerFactory.getLogger(LambdaSubProcessNodeInstance.class);
 
     private Map<String, List<ContextInstance>> subContextInstances = new HashMap<>();
 
@@ -82,17 +89,21 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         Object o = subProcessFactory.bind(context);
         org.kie.kogito.process.ProcessInstance<?> processInstance = subProcessFactory.createInstance(o);
 
-        org.kie.api.runtime.process.ProcessInstance pi = ((AbstractProcessInstance<?>) processInstance).internalGetProcessInstance();
-        ((ProcessInstanceImpl) pi).setMetaData("ParentProcessInstanceId", getProcessInstance().getStringId());
-        ((ProcessInstanceImpl) pi).setMetaData("ParentNodeInstanceId", getUniqueId());
-        ((ProcessInstanceImpl) pi).setMetaData("ParentNodeId", getSubProcessNode().getUniqueId());
-        ((ProcessInstanceImpl) pi).setParentProcessInstanceId(getProcessInstance().getStringId());
-        ((ProcessInstanceImpl) pi)
-                .setRootProcessInstanceId(StringUtils.isEmpty(getProcessInstance().getRootProcessInstanceId()) ? getProcessInstance().getStringId() : getProcessInstance().getRootProcessInstanceId());
-        ((ProcessInstanceImpl) pi).setRootProcessId(StringUtils.isEmpty(getProcessInstance().getRootProcessId()) ? getProcessInstance().getProcessId() : getProcessInstance().getRootProcessId());
-        ((ProcessInstanceImpl) pi).setSignalCompletion(getSubProcessNode().isWaitForCompletion());
-
-        processInstance.start();
+        ProcessInstanceImpl pi = (ProcessInstanceImpl) ((AbstractProcessInstance<?>) processInstance).internalGetProcessInstance();
+        pi.setMetaData("ParentProcessInstanceId", getProcessInstance().getStringId());
+        pi.setMetaData("ParentNodeInstanceId", getUniqueId());
+        pi.setMetaData("ParentNodeId", getSubProcessNode().getUniqueId());
+        pi.setParentProcessInstanceId(getProcessInstance().getStringId());
+        pi.setRootProcessInstanceId(StringUtils.isEmpty(getProcessInstance().getRootProcessInstanceId()) ? getProcessInstance().getStringId() : getProcessInstance().getRootProcessInstanceId());
+        pi.setRootProcessId(StringUtils.isEmpty(getProcessInstance().getRootProcessId()) ? getProcessInstance().getProcessId() : getProcessInstance().getRootProcessId());
+        pi.setSignalCompletion(getSubProcessNode().isWaitForCompletion());
+        Map<String, List<String>> headers = getProcessInstance().getHeaders();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Parent headers are {}", headers != null ? headers.keySet() : Set.of());
+        }
+        pi.setHeaders(headers);
+        // headers parameters set to null so start does not override the ones already set
+        processInstance.start(null);
         this.processInstanceId = processInstance.id();
         this.asyncWaitingNodeInstance = hasAsyncNodeInstance(pi);
 
@@ -101,7 +112,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         if (!getSubProcessNode().isWaitForCompletion()) {
             triggerCompleted();
         } else if (processInstance.status() == KogitoProcessInstance.STATE_COMPLETED || processInstance.status() == KogitoProcessInstance.STATE_ABORTED) {
-            processInstanceCompleted((ProcessInstanceImpl) pi);
+            processInstanceCompleted((ProcessInstance) pi);
         } else {
             addProcessListener();
         }
@@ -118,16 +129,18 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     @Override
     public void cancel(CancelType cancelType) {
         super.cancel(cancelType);
-        if (getSubProcessNode() == null || !getSubProcessNode().isIndependent()) {
-            ProcessInstance processInstance = null;
-            KogitoProcessRuntime kruntime = (KogitoProcessRuntime) ((ProcessInstance) getProcessInstance()).getKnowledgeRuntime();
-
-            processInstance = (ProcessInstance) kruntime.getProcessInstance(processInstanceId);
-
-            if (processInstance != null) {
-                processInstance.setState(KogitoProcessInstance.STATE_ABORTED);
-            }
+        if (getSubProcessNode() != null && getSubProcessNode().isIndependent()) {
+            return;
         }
+        // not subprocess attached (before completion)
+        if (processInstanceId == null) {
+            return;
+        }
+
+        KogitoProcessRuntime kruntime = (KogitoProcessRuntime) ((ProcessInstance) getProcessInstance()).getKnowledgeRuntime();
+        Optional<AbstractProcessInstance> pi =
+                ((MutableProcessInstances) kruntime.getApplication().get(Processes.class).processById(this.getSubProcessNode().getProcessId()).instances()).findById(processInstanceId);
+        pi.ifPresent(e -> e.abort());
     }
 
     public String getProcessInstanceId() {
@@ -161,7 +174,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     @Override
     public void signalEvent(String type, Object event) {
         if (("processInstanceCompleted:" + processInstanceId).equals(type)) {
-            processInstanceCompleted((ProcessInstance) event);
+            this.processInstanceCompleted((ProcessInstance) event);
         } else {
             super.signalEvent(type, event);
         }
@@ -175,12 +188,12 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     public void processInstanceCompleted(ProcessInstance processInstance) {
         removeEventListeners();
         handleOutMappings(processInstance);
+        processInstanceId = null;
         if (processInstance.getState() == KogitoProcessInstance.STATE_ABORTED) {
             String faultName = processInstance.getOutcome() == null ? "" : processInstance.getOutcome();
             // handle exception as sub process failed with error code
             ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, faultName);
             if (exceptionScopeInstance != null) {
-
                 KogitoProcessContextImpl context = new KogitoProcessContextImpl(this.getProcessInstance().getKnowledgeRuntime());
                 context.setProcessInstance(this.getProcessInstance());
                 context.setNodeInstance(this);
@@ -209,9 +222,11 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     private void handleOutMappings(ProcessInstance processInstance) {
 
         SubProcessFactory subProcessFactory = getSubProcessNode().getSubProcessFactory();
-        org.kie.kogito.process.ProcessInstance<?> pi = ((org.kie.kogito.process.ProcessInstance<?>) processInstance.getMetaData().get("KogitoProcessInstance"));
+        org.kie.kogito.process.ProcessInstance<?> pi = ((org.kie.kogito.process.ProcessInstance<?>) processInstance.unwrap());
         if (pi != null) {
-            subProcessFactory.unbind(ContextFactory.fromNode(this), pi.variables());
+            Model model = (Model) pi.process().createModel();
+            model.fromMap(processInstance.getVariables());
+            subProcessFactory.unbind(ContextFactory.fromNode(this), model);
         }
     }
 

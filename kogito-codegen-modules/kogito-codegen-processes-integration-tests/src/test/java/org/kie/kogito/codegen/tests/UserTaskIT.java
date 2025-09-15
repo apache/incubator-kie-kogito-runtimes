@@ -66,6 +66,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycle.CLAIM;
 import static org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycle.COMPLETE;
@@ -147,7 +148,7 @@ public class UserTaskIT extends AbstractCodegenIT {
         userTaskInstance_1 = userTaskList.get(0);
         userTaskInstance_2.transition(COMPLETE, emptyMap(), IdentityProviders.of("john"));
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
 
         assertThat(workItemTransitionEvents).hasSize(8);
     }
@@ -233,7 +234,8 @@ public class UserTaskIT extends AbstractCodegenIT {
         UserTaskInstance ut_2 = userTaskInstances.get(0);
         ut_2.transition(COMPLETE, emptyMap(), IdentityProviders.of("john"));
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
+
     }
 
     @Test
@@ -513,10 +515,15 @@ public class UserTaskIT extends AbstractCodegenIT {
         userTaskInstances = userTasks.instances().findByIdentity(IdentityProviders.of("admin", singletonList("managers")));
         assertThat(userTaskInstances).isNotNull().hasSize(1);
         UserTaskInstance ut_2 = userTaskInstances.get(0);
+        // attempt to claim task with excluded user (manager)
+        assertThrows(UserTaskInstanceNotAuthorizedException.class, () -> {
+            ut_2.transition(CLAIM, emptyMap(), IdentityProviders.of("manager", singletonList("managers")));
+        });
+        // claim and complete task with different user (admin)
         ut_2.transition(CLAIM, emptyMap(), IdentityProviders.of("admin", singletonList("managers")));
         ut_2.transition(COMPLETE, emptyMap(), IdentityProviders.of("admin", singletonList("managers")));
 
-        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test
@@ -562,7 +569,7 @@ public class UserTaskIT extends AbstractCodegenIT {
         ut_1.transition(CLAIM, emptyMap(), identity);
         ut_1.transition(COMPLETE, emptyMap(), identity);
 
-        assertThat(processInstance.status()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test
@@ -616,7 +623,7 @@ public class UserTaskIT extends AbstractCodegenIT {
         UserTaskInstance ut_2 = userTaskInstances.get(0);
         ut_2.transition(COMPLETE, emptyMap(), IdentityProviders.of("john"));
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test
@@ -677,7 +684,7 @@ public class UserTaskIT extends AbstractCodegenIT {
         UserTaskInstance ut_2 = userTaskInstances.get(0);
         ut_2.transition(COMPLETE, emptyMap(), IdentityProviders.of("john"));
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test
@@ -932,7 +939,7 @@ public class UserTaskIT extends AbstractCodegenIT {
         UserTaskInstance ut_2 = userTaskInstances.get(0);
         ut_2.transition(COMPLETE, emptyMap(), IdentityProviders.of("john"));
 
-        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(p.instances().stream().count()).isEqualTo(0);
     }
 
     @Test

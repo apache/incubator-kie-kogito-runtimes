@@ -36,6 +36,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>common</module>
     <module>events</module>
     <module>messaging</module>
     <module>monitoring</module>
@@ -52,6 +53,7 @@
     <module>flyway</module>
     <module>persistence</module>
     <module>jbpm-usertask-storage-jpa</module>
+    <module>source-files</module>
   </modules>
 
   <dependencyManagement>

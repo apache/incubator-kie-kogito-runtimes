@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.process.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -38,8 +37,6 @@ import org.jbpm.process.instance.LightProcessRuntime;
 import org.jbpm.process.instance.LightProcessRuntimeServiceProvider;
 import org.jbpm.process.instance.ProcessRuntimeServiceProvider;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
-import org.jbpm.workflow.core.node.StartNode;
 import org.kie.api.runtime.process.EventListener;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.Application;
@@ -57,16 +54,19 @@ import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
-import org.kie.kogito.jobs.descriptors.ProcessJobDescription;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.ProcessVersionResolver;
 import org.kie.kogito.process.Signal;
+import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.process.WorkItem;
+import org.kie.kogito.signal.ProcessInstanceResolver;
+import org.kie.kogito.signal.SignalManagerHub;
 
 import static org.kie.kogito.internal.process.workitem.KogitoWorkItemHandlerFactory.findAllKogitoWorkItemHandlersRegistered;
 
@@ -81,13 +81,14 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
     protected Application app;
 
     protected boolean activated;
-    protected List<String> startTimerInstances = new ArrayList<>();
     protected KogitoProcessRuntime processRuntime;
+    protected InternalProcessRuntime internalProcessRuntime;
 
     private org.kie.api.definition.process.Process process;
     private Lock processInitLock = new ReentrantLock();
     private CorrelationService correlations;
     private ProcessVersionResolver versionResolver;
+    private ProcessInstanceResolver<T> processInstanceResolver;
 
     protected AbstractProcess() {
         this(null, new LightProcessRuntimeServiceProvider());
@@ -114,7 +115,6 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
             ProcessVersionResolver versionResolver) {
         this.app = app;
         this.services = services;
-        this.instances = new MapProcessInstances<>();
         this.processInstancesFactory = factory;
         this.correlations = Optional.ofNullable(correlations).orElseGet(() -> new DefaultCorrelationService());
         this.versionResolver = Optional.ofNullable(versionResolver).orElse(p -> get().getVersion());
@@ -203,6 +203,8 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         registerListeners();
         if (isProcessFactorySet()) {
             this.instances = (MutableProcessInstances<T>) processInstancesFactory.createProcessInstances(this);
+        } else {
+            this.instances = new MapProcessInstances<>(this);
         }
         return this;
     }
@@ -220,26 +222,49 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         if (this.activated) {
             return;
         }
+        this.internalProcessRuntime = LightProcessRuntime.of(app, Collections.singletonList(get()), services);
         this.processRuntime = createProcessRuntime().getKogitoProcessRuntime();
-        WorkflowProcessImpl p = (WorkflowProcessImpl) get();
         configure();
-        List<StartNode> startNodes = p.getTimerStart();
-        if (startNodes != null && !startNodes.isEmpty()) {
-            for (StartNode startNode : startNodes) {
-                if (startNode != null && startNode.getTimer() != null) {
-                    String timerId = processRuntime.getJobsService().scheduleJob(ProcessJobDescription.of(configureTimerInstance(startNode.getTimer()), this));
-                    startTimerInstances.add(timerId);
+        // this belongs to only for the work item handler so we keep within the context of the current process instance loaded in memory
+        if (this.services.getSignalManager() instanceof SignalManagerHub signalManagerHub) {
+            processInstanceResolver = new ProcessInstanceResolver<T>() {
+
+                @Override
+                public List<ProcessInstance<T>> waitingForEvents(String eventType) {
+                    List<ProcessInstance<T>> list = instances.waitingForEventType(eventType, ProcessInstanceReadMode.MUTABLE)
+                            .map(e -> (AbstractProcessInstance<T>) e)
+                            .map(pi -> {
+                                KogitoProcessRuntime runtime = getProcessRuntime();
+                                KogitoProcessInstance instance = runtime.getProcessInstance(pi.id());
+                                if (instance != null) {
+                                    return (AbstractProcessInstance<T>) instance.unwrap();
+                                }
+                                return pi;
+                            })
+                            .map(e -> (ProcessInstance<T>) e)
+                            .toList();
+                    return list;
                 }
-            }
+
+                @Override
+                public ProcessInstance<T> findById(String processInstanceId) {
+                    Optional<ProcessInstance<T>> instance = instances.findById(processInstanceId);
+                    return instance.orElse(null);
+                }
+            };
+            signalManagerHub.addProcessInstanceResolver(processInstanceResolver);
         }
+
         this.activated = true;
     }
 
     @Override
     public void deactivate() {
-        for (String startTimerId : startTimerInstances) {
-            this.processRuntime.getJobsService().cancelJob(startTimerId);
+        if (this.services.getSignalManager() instanceof SignalManagerHub signalManagerHub) {
+            signalManagerHub.removeProcessInstanceResolver(processInstanceResolver);
         }
+        this.internalProcessRuntime.dispose();
+        this.internalProcessRuntime = null;
         this.activated = false;
     }
 
@@ -289,7 +314,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
     protected abstract org.kie.api.definition.process.Process process();
 
     protected InternalProcessRuntime createProcessRuntime() {
-        return LightProcessRuntime.of(app, Collections.singletonList(get()), services);
+        return internalProcessRuntime;
     }
 
     protected boolean isProcessFactorySet() {
@@ -322,7 +347,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
                         parentKogitoProcessInstance.signalEvent(type, event);
                     } else {
                         //if not present ProcessInstanceManager try to signal instance from repository
-                        instances().findById(pi.getParentProcessInstanceId()).ifPresent(p -> p.send(Sig.of(type, event)));
+                        instances().findById(pi.getParentProcessInstanceId()).ifPresent(p -> p.send(SignalFactory.of(type, event)));
                     }
                 }
             }

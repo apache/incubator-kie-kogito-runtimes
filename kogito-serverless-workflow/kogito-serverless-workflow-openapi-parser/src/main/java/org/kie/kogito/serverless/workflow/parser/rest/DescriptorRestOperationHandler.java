@@ -28,6 +28,7 @@ import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationId;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
+import org.kie.kogito.serverless.workflow.parser.handlers.openapi.MediaTypeUtils;
 import org.kie.kogito.serverless.workflow.parser.handlers.openapi.OpenAPIDescriptor;
 import org.kie.kogito.serverless.workflow.parser.handlers.openapi.OpenAPIDescriptorFactory;
 import org.kie.kogito.serverless.workflow.parser.types.OpenAPITypeHandler;
@@ -37,6 +38,7 @@ import org.kie.kogito.serverless.workflow.suppliers.BearerTokenAuthDecoratorSupp
 import org.kie.kogito.serverless.workflow.suppliers.ClientOAuth2AuthDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.CollectionParamsDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ConfigSuppliedWorkItemSupplier;
+import org.kie.kogito.serverless.workflow.suppliers.JsonNodeResultHandlerSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.PasswordOAuth2AuthDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.utils.OpenAPIFactory;
 import org.kogito.workitem.rest.RestWorkItemHandler;
@@ -91,6 +93,7 @@ public class DescriptorRestOperationHandler extends OpenAPITypeHandler {
         OpenAPI openAPI = OpenAPIFactory.getOpenAPI(uri, workflow, function, Optional.of(parserContext));
         OpenAPIDescriptor openAPIDescriptor = OpenAPIDescriptorFactory.of(openAPI, operationId.getOperation());
         addSecurity(node, openAPIDescriptor, serviceName, parserContext);
+        openAPIDescriptor.getResultType().flatMap(MediaTypeUtils::fromMedia).ifPresent(s -> node.workParameter(RestWorkItemHandler.TARGET_TYPE, s));
         return node.workParameter(RestWorkItemHandler.URL,
                 runtimeOpenApi(serviceName, URL, String.class, OpenAPIDescriptorFactory.getDefaultURL(openAPI, "http://localhost:8080"),
                         (key, clazz, defaultValue) -> new ConfigSuppliedWorkItemSupplier<>(key, clazz, defaultValue, calculatedKey -> concatPaths(calculatedKey, openAPIDescriptor.getPath()),
@@ -98,7 +101,8 @@ public class DescriptorRestOperationHandler extends OpenAPITypeHandler {
                                         new MethodCallExpr(ConversionUtils.class.getCanonicalName() + ".concatPaths")
                                                 .addArgument(new NameExpr("calculatedKey")).addArgument(new StringLiteralExpr(openAPIDescriptor.getPath()))))))
                 .workParameter(RestWorkItemHandler.METHOD, openAPIDescriptor.getMethod())
-                .workParameter(RestWorkItemHandler.PARAMS_DECORATOR, new CollectionParamsDecoratorSupplier(openAPIDescriptor.getHeaderParams(), openAPIDescriptor.getQueryParams()));
+                .workParameter(RestWorkItemHandler.PARAMS_DECORATOR, new CollectionParamsDecoratorSupplier(openAPIDescriptor.getHeaderParams(), openAPIDescriptor.getQueryParams()))
+                .workParameter(RestWorkItemHandler.RESULT_HANDLER, new JsonNodeResultHandlerSupplier());
 
     }
 

@@ -24,8 +24,8 @@ public class CollectorAction extends BaseExpressionAction {
 
     private String outputVar;
 
-    public CollectorAction(String lang, String expr, String inputVar, String outputVar) {
-        super(lang, expr, inputVar);
+    public CollectorAction(String lang, String expr, String modelVar, String outputVar) {
+        super(lang, expr, modelVar);
         this.outputVar = outputVar;
     }
 

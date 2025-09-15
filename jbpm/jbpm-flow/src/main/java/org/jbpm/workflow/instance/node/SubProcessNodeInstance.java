@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.drools.util.StringUtils;
 import org.jbpm.process.core.Context;
@@ -36,6 +37,7 @@ import org.jbpm.process.instance.StartProcessHelper;
 import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
+import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.SubProcessNode;
@@ -49,6 +51,8 @@ import org.kie.internal.process.CorrelationKeyFactory;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.process.MutableProcessInstances;
+import org.kie.kogito.process.Processes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +120,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                 parameters.remove(getSubProcessNode().getMetaData("MICollectionInput"));
             }
 
-            ProcessInstance processInstance = null;
+            ProcessInstanceImpl processInstance = null;
             if (getProcessInstance().getCorrelationKey() != null) {
                 // in case there is correlation key on parent instance pass it along to child so it can be easily correlated 
                 // since correlation key must be unique for active instances it appends processId and timestamp
@@ -126,15 +130,16 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                 businessKeys.add(String.valueOf(System.currentTimeMillis()));
                 CorrelationKeyFactory correlationKeyFactory = KieInternalServices.Factory.get().newCorrelationKeyFactory();
                 CorrelationKey subProcessCorrelationKey = correlationKeyFactory.newCorrelationKey(businessKeys);
-                processInstance = (ProcessInstance) ((CorrelationAwareProcessRuntime) kruntime).createProcessInstance(processId, subProcessCorrelationKey, parameters);
+                processInstance = (ProcessInstanceImpl) ((CorrelationAwareProcessRuntime) kruntime).createProcessInstance(processId, subProcessCorrelationKey, parameters);
             } else {
 
-                processInstance = (ProcessInstance) kruntime.createProcessInstance(processId, parameters);
+                processInstance = (ProcessInstanceImpl) kruntime.createProcessInstance(processId, parameters);
             }
             this.processInstanceId = processInstance.getStringId();
             processInstance.setMetaData("ParentProcessInstanceId", getProcessInstance().getStringId());
             processInstance.setMetaData("ParentNodeInstanceId", getUniqueId());
             processInstance.setMetaData("ParentNodeId", getSubProcessNode().getUniqueId());
+            processInstance.setHeaders(getProcessInstance().getHeaders());
             processInstance.setParentProcessInstanceId(getProcessInstance().getStringId());
             processInstance.setRootProcessInstanceId(
                     StringUtils.isEmpty(getProcessInstance().getRootProcessInstanceId()) ? getProcessInstance().getStringId() : getProcessInstance().getRootProcessInstanceId());
@@ -156,15 +161,13 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
     @Override
     public void cancel(CancelType cancelType) {
         super.cancel(cancelType);
-        if (getSubProcessNode() == null || !getSubProcessNode().isIndependent()) {
-            KogitoProcessRuntime kruntime = InternalProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime());
-
-            ProcessInstance processInstance = (ProcessInstance) kruntime.getProcessInstance(processInstanceId);
-
-            if (processInstance != null) {
-                processInstance.setState(KogitoProcessInstance.STATE_ABORTED);
-            }
+        if (getSubProcessNode() != null && getSubProcessNode().isIndependent()) {
+            return;
         }
+        KogitoProcessRuntime kruntime = (KogitoProcessRuntime) ((ProcessInstance) getProcessInstance()).getKnowledgeRuntime();
+        Optional<org.kie.kogito.process.ProcessInstance<?>> pi =
+                ((MutableProcessInstances) kruntime.getApplication().get(Processes.class).processById(this.getSubProcessNode().getProcessId()).instances()).findById(processInstanceId);
+        pi.ifPresent(e -> e.abort());
     }
 
     public String getProcessInstanceId() {

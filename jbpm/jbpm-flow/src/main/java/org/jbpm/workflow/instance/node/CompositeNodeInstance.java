@@ -37,7 +37,6 @@ import org.jbpm.workflow.core.node.EventSubProcessNode;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
-import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactory;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactoryRegistry;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
@@ -83,28 +82,6 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 
         iterationLevels.put(uniqueID, value);
         return value;
-    }
-
-    @Override
-    public void setProcessInstance(WorkflowProcessInstance processInstance) {
-        super.setProcessInstance(processInstance);
-        registerExternalEventNodeListeners();
-    }
-
-    private void registerExternalEventNodeListeners() {
-        for (org.kie.api.definition.process.Node node : getCompositeNode().getNodes()) {
-            if (node instanceof EventNode) {
-                if ("external".equals(((EventNode) node).getScope())) {
-                    getProcessInstance().addEventListener(
-                            ((EventNode) node).getType(), EMPTY_EVENT_LISTENER, true);
-                }
-            } else if (node instanceof EventSubProcessNode) {
-                List<String> events = ((EventSubProcessNode) node).getEvents();
-                for (String type : events) {
-                    getProcessInstance().addEventListener(type, EMPTY_EVENT_LISTENER, true);
-                }
-            }
-        }
     }
 
     protected CompositeNode getCompositeNode() {
@@ -170,13 +147,11 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
     public void triggerCompleted(String outType) {
         boolean cancelRemainingInstances = getCompositeNode().isCancelRemainingInstances();
         ((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer()).setCurrentLevel(getLevel());
-        triggerCompleted(outType, cancelRemainingInstances);
         if (cancelRemainingInstances) {
-            while (!nodeInstances.isEmpty()) {
-                NodeInstance nodeInstance = nodeInstances.get(0);
-                nodeInstance.cancel(CancelType.OBSOLETE);
-            }
+            List<NodeInstance> currentNodeInstances = new ArrayList<>(nodeInstances);
+            currentNodeInstances.forEach(ni -> ni.cancel(CancelType.OBSOLETE));
         }
+        triggerCompleted(outType, cancelRemainingInstances);
     }
 
     @Override
@@ -412,6 +387,23 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
         for (NodeInstance nodeInstance : nodeInstances) {
             if (nodeInstance instanceof EventBasedNodeInstanceInterface) {
                 ((EventBasedNodeInstanceInterface) nodeInstance).addEventListeners();
+            }
+        }
+        registerExternalEventNodeListeners();
+    }
+
+    private void registerExternalEventNodeListeners() {
+        for (org.kie.api.definition.process.Node node : getCompositeNode().getNodes()) {
+            if (node instanceof EventNode) {
+                if ("external".equals(((EventNode) node).getScope())) {
+                    getProcessInstance().addEventListener(
+                            ((EventNode) node).getType(), EMPTY_EVENT_LISTENER, true);
+                }
+            } else if (node instanceof EventSubProcessNode) {
+                List<String> events = ((EventSubProcessNode) node).getEvents();
+                for (String type : events) {
+                    getProcessInstance().addEventListener(type, EMPTY_EVENT_LISTENER, true);
+                }
             }
         }
     }

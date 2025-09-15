@@ -57,8 +57,6 @@
     <container.image.postgres>postgres:${version.org.postgres}</container.image.postgres>
 
     <maven.compiler.release>17</maven.compiler.release>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
     <jacoco.agent.argLine/>
     <!--
       JaCoCo coverage data file location. Using a single file for appending in the project's root directory makes it
@@ -71,7 +69,7 @@
     <formatter.skip>false</formatter.skip>
     <formatter.goal>format</formatter.goal>
     <impsort.goal>sort</impsort.goal>
-    <version.jdk>17</version.jdk>
+    <version.jdk>${maven.compiler.release}</version.jdk>
     <!-- Properties also affecting test execution. -->
     <invoker.skip>false</invoker.skip>
     <archetype.test.skip>false</archetype.test.skip>
@@ -79,7 +77,7 @@
     <!-- plugin versions -->
     <version.antapacheregexp>1.8.2</version.antapacheregexp>
     <version.antrun.plugin>1.8</version.antrun.plugin>
-    <version.archetype.plugin>3.2.1</version.archetype.plugin>
+    <version.archetype.plugin>3.4.0</version.archetype.plugin>
     <version.asciidoctor.plugin>1.5.2.1</version.asciidoctor.plugin>
     <version.build.helper.plugin>3.0.0</version.build.helper.plugin>
     <version.clean.plugin>3.1.0</version.clean.plugin>
@@ -641,6 +639,9 @@
               </goals>
             </execution>
           </executions>
+          <configuration>
+            <targetBytecode>${maven.compiler.release}</targetBytecode>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

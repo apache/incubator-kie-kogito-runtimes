@@ -25,12 +25,15 @@ import org.kogito.workitem.rest.resulthandlers.RestWorkItemHandlerResult;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.checkStatusCode;
+
 public class WorkItemHandlerResultHolder implements RestWorkItemHandlerResult {
 
     private Map<String, Object> result;
 
     @Override
     public Object apply(HttpResponse<Buffer> buffer, Class<?> clazz) {
+        checkStatusCode(buffer);
         result = buffer.bodyAsJson(Map.class);
         return result;
     }
