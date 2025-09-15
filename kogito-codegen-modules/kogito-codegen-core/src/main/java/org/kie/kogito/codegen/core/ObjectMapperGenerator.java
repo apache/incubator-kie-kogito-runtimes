@@ -33,7 +33,7 @@ public class ObjectMapperGenerator {
                 .withTemplateBasePath("class-templates/config")
                 .build(context, "GlobalObjectMapper");
 
-        return new GeneratedFile(Generator.REST_TYPE,
+        return new GeneratedFile(org.drools.codegen.common.GeneratedFileType.REST,
                 generator.generatedFilePath(),
                 generator.compilationUnitOrThrow().toString());
     }

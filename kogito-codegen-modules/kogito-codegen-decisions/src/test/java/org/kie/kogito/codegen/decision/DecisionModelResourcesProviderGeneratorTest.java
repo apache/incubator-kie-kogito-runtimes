@@ -82,7 +82,7 @@ public class DecisionModelResourcesProviderGeneratorTest {
         // Align this FAI-215 test (#621) with unknown order of generated files (ie.: additional generated files might be present)
         //A Rest endpoint is always generated per model.
         List<GeneratedFile> generatedRESTFiles = generatedFiles.stream()
-                .filter(gf -> gf.type().equals(AbstractGenerator.REST_TYPE))
+                .filter(gf -> gf.type().equals(GeneratedFileType.REST))
                 .collect(toList());
         assertFalse(generatedRESTFiles.isEmpty());
         assertEquals(numberOfModels, generatedRESTFiles.size());
