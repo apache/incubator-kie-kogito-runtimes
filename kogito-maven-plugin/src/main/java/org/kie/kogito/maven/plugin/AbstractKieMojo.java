@@ -60,7 +60,7 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     @Parameter
     protected Map<String, String> properties;
 
-    @Parameter(defaultValue = "17", property = "maven.compiler.source")
+    @Parameter(defaultValue = "17", property = "maven.compiler.release")
     protected String mavenCompilerJavaVersion;
 
     @Parameter(property = "kogito.codegen.persistence")
