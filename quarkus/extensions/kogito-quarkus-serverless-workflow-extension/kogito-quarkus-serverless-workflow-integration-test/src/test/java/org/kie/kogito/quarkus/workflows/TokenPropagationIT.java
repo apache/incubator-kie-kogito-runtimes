@@ -24,8 +24,6 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -37,7 +35,6 @@ import io.restassured.path.json.JsonPath;
 
 import jakarta.ws.rs.core.HttpHeaders;
 
-import static io.restassured.RestAssured.given;
 import static org.kie.kogito.quarkus.workflows.ExternalServiceMock.SUCCESSFUL_QUERY;
 import static org.kie.kogito.quarkus.workflows.TokenPropagationExternalServicesMock.AUTHORIZATION_TOKEN;
 import static org.kie.kogito.quarkus.workflows.TokenPropagationExternalServicesMock.SERVICE3_AUTHORIZATION_TOKEN;
@@ -50,7 +47,6 @@ import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcess
 @QuarkusTestResource(KeycloakServiceMock.class)
 @QuarkusIntegrationTest
 class TokenPropagationIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TokenPropagationIT.class);
 
     @Test
     void tokenPropagations() throws InterruptedException {
@@ -68,52 +64,12 @@ class TokenPropagationIT {
         JsonPath jsonPath = newProcessInstance("/token_propagation", processInput, headers);
         String processInstanceId = jsonPath.getString("id");
         Assertions.assertThat(processInstanceId).isNotBlank();
-        //Thread.sleep(20000);
-        waitForProcessCompletion(processInstanceId, Duration.ofSeconds(25));
+        ProcessAwaitUtils.waitForProcessCompletion("token_propagation", processInstanceId, Duration.ofSeconds(25));
         validateExternalServiceInvocations();
     }
 
     protected static String buildProcessInput(String query) {
         return "{\"workflowdata\": {\"query\": \"" + query + "\"} }";
-    }
-
-    private void waitForProcessCompletion(String processInstanceId, Duration timeout) {
-        long startTime = System.currentTimeMillis();
-        long timeoutMs = timeout.toMillis();
-
-        while (System.currentTimeMillis() - startTime < timeoutMs) {
-            try {
-                // Check if process still exists - 404 means it completed and was cleaned up
-                int statusCode = given()
-                        .contentType("application/json")
-                        .accept("application/json")
-                        .when()
-                        .get("/token_propagation/" + processInstanceId)
-                        .then()
-                        .extract()
-                        .statusCode();
-
-                if (statusCode == 404) {
-                    LOGGER.info("Process instance {} completed successfully (404 - cleaned up)", processInstanceId);
-                    return;
-                }
-
-                Thread.sleep(1000); // Wait 1 second before checking again
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Interrupted while waiting for process completion", e);
-            } catch (Exception e) {
-                LOGGER.debug("Error checking process state (will retry): {}", e.getMessage());
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException("Interrupted while waiting for process completion", ie);
-                }
-            }
-        }
-
-        throw new RuntimeException("Process instance " + processInstanceId + " did not complete within " + timeout);
     }
 
     private void validateExternalServiceInvocations() {
