@@ -33,7 +33,6 @@ import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
-import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 import com.github.javaparser.ast.CompilationUnit;

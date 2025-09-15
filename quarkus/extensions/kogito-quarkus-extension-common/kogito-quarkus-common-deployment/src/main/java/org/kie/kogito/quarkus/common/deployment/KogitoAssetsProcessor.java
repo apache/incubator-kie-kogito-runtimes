@@ -44,7 +44,6 @@ import org.jboss.jandex.Indexer;
 import org.jboss.logging.Logger;
 import org.kie.efesto.quarkus.deployment.EfestoGeneratedClassBuildItem;
 import org.kie.kogito.KogitoGAV;
-import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
 import org.kie.kogito.quarkus.KogitoRecorder;
