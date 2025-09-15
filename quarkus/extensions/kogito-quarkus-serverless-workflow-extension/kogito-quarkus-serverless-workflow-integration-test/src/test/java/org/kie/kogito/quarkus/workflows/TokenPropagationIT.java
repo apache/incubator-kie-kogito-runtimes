@@ -20,6 +20,7 @@ package org.kie.kogito.quarkus.workflows;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.api.Assertions;
@@ -75,15 +76,14 @@ class TokenPropagationIT {
     private void validateExternalServiceInvocations() {
         WireMockServer wm = TokenPropagationExternalServicesMock.getInstance();
 
-List<TokenExpectation> expectations = List.of(
-    new TokenExpectation("/service1", "Bearer " + AUTHORIZATION_TOKEN),
-    new TokenExpectation("/service2", "Bearer " + AUTHORIZATION_TOKEN),
-    new TokenExpectation("/service3", "Bearer " + SERVICE3_AUTHORIZATION_TOKEN),
-    new TokenExpectation("/service4", "Bearer " + SERVICE4_AUTHORIZATION_TOKEN),
-    new TokenExpectation("/service5", "Bearer " + KeycloakServiceMock.KEYCLOAK_ACCESS_TOKEN)
-);
+        List<TokenExpectation> expectations = List.of(
+                new TokenExpectation("/token-propagation-external-service1/executeQuery1", "Bearer " + AUTHORIZATION_TOKEN, 2),
+                new TokenExpectation("/token-propagation-external-service2/executeQuery2", "Bearer " + AUTHORIZATION_TOKEN, 2),
+                new TokenExpectation("/token-propagation-external-service3/executeQuery3", "Bearer " + SERVICE3_AUTHORIZATION_TOKEN, 2),
+                new TokenExpectation("/token-propagation-external-service4/executeQuery4", "Bearer " + SERVICE4_AUTHORIZATION_TOKEN, 2),
+                new TokenExpectation("/token-propagation-external-service5/executeQuery5", "Bearer " + KeycloakServiceMock.KEYCLOAK_ACCESS_TOKEN, 2));
 
-expectations.forEach(e -> assertCalledExactlyWithAuth(wm, e.url(), e.token(), 2));
+        expectations.forEach(e -> assertCalledExactlyWithAuth(wm, e.url(), e.token(), e.expectedCalls()));
     }
 
     private void assertCalledExactlyWithAuth(WireMockServer wm, String url, String expectedAuthHeader, int expectedCalls) {
@@ -94,8 +94,8 @@ expectations.forEach(e -> assertCalledExactlyWithAuth(wm, e.url(), e.token(), 2)
                 .hasSize(expectedCalls);
         for (LoggedRequest req : requests) {
             Assertions.assertThat(req.getHeader(HttpHeaders.AUTHORIZATION))
-                      .as("Expected Authorization header should match for %s but got '%s'", 
-                       url, req.getHeader(HttpHeaders.AUTHORIZATION))
+                    .as("Expected Authorization header should match for %s but got '%s'",
+                            url, req.getHeader(HttpHeaders.AUTHORIZATION))
                     .isEqualTo(expectedAuthHeader);
         }
     }
