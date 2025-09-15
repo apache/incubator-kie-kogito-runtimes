@@ -18,6 +18,8 @@
  */
 package org.kogito.workitem.rest.resulthandlers;
 
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.checkStatusCode;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Spliterators;
@@ -38,14 +40,20 @@ public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResu
 
     private boolean returnHeaders = false;
     private boolean returnStatusCode = false;
+    private boolean failOnStatusError = true;
 
-    public DefaultRestWorkItemHandlerResult(boolean returnHeaders, boolean returnStatusCode) {
+    public DefaultRestWorkItemHandlerResult(boolean returnHeaders, boolean returnStatusCode, boolean failOnStatusError) {
         this.returnHeaders = returnHeaders;
         this.returnStatusCode = returnStatusCode;
+        this.failOnStatusError = failOnStatusError;
     }
 
     @Override
     public Object apply(HttpResponse<Buffer> response, Class<?> target) {
+        if (this.failOnStatusError) {
+            checkStatusCode(response);
+        }
+
         Map<String, Object> result = new HashMap<>();
 
         try {

@@ -142,7 +142,7 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
 
         boolean returnHeaders = getParam(parameters, RETURN_HEADERS, Boolean.class, false);
         boolean returnStatusCode = getParam(parameters, RETURN_STATUS_CODE, Boolean.class, false);
-        DEFAULT_RESULT_HANDLER = new DefaultRestWorkItemHandlerResult(returnHeaders, returnStatusCode);
+        DEFAULT_RESULT_HANDLER = new DefaultRestWorkItemHandlerResult(returnHeaders, returnStatusCode, failOnStatusError);
 
         HttpMethod method = getParam(parameters, METHOD, HttpMethod.class, HttpMethod.GET);
         RestWorkItemHandlerResult resultHandler = getClassParam(parameters, RESULT_HANDLER, RestWorkItemHandlerResult.class, DEFAULT_RESULT_HANDLER, resultHandlers);
@@ -202,10 +202,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT)
                 ? sendBody(request, bodyBuilder.apply(parameters), requestTimeout)
                 : send(request, requestTimeout);
-
-        if (failOnStatusError) {
-            checkStatusCode(response);
-        }
 
         return Optional.of(this.workItemLifeCycle.newTransition("complete", workItem.getPhaseStatus(),
                 Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo, ContextFactory.fromItem(workItem)))));
