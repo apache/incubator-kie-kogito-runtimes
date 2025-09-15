@@ -119,11 +119,15 @@ class TokenPropagationIT {
     private void validateExternalServiceInvocations() {
         WireMockServer wm = TokenPropagationExternalServicesMock.getInstance();
 
-        assertCalledExactlyWithAuth(wm, "/token-propagation-external-service1/executeQuery1", "Bearer " + AUTHORIZATION_TOKEN, 2);
-        assertCalledExactlyWithAuth(wm, "/token-propagation-external-service2/executeQuery2", "Bearer " + AUTHORIZATION_TOKEN, 2);
-        assertCalledExactlyWithAuth(wm, "/token-propagation-external-service3/executeQuery3", "Bearer " + SERVICE3_AUTHORIZATION_TOKEN, 2);
-        assertCalledExactlyWithAuth(wm, "/token-propagation-external-service4/executeQuery4", "Bearer " + SERVICE4_AUTHORIZATION_TOKEN, 2);
-        assertCalledExactlyWithAuth(wm, "/token-propagation-external-service5/executeQuery5", "Bearer " + KeycloakServiceMock.KEYCLOAK_ACCESS_TOKEN, 2);
+List<TokenExpectation> expectations = List.of(
+    new TokenExpectation("/service1", "Bearer " + AUTHORIZATION_TOKEN),
+    new TokenExpectation("/service2", "Bearer " + AUTHORIZATION_TOKEN),
+    new TokenExpectation("/service3", "Bearer " + SERVICE3_AUTHORIZATION_TOKEN),
+    new TokenExpectation("/service4", "Bearer " + SERVICE4_AUTHORIZATION_TOKEN),
+    new TokenExpectation("/service5", "Bearer " + KeycloakServiceMock.KEYCLOAK_ACCESS_TOKEN)
+);
+
+expectations.forEach(e -> assertCalledExactlyWithAuth(wm, e.url(), e.token(), 2));
     }
 
     private void assertCalledExactlyWithAuth(WireMockServer wm, String url, String expectedAuthHeader, int expectedCalls) {
@@ -134,7 +138,8 @@ class TokenPropagationIT {
                 .hasSize(expectedCalls);
         for (LoggedRequest req : requests) {
             Assertions.assertThat(req.getHeader(HttpHeaders.AUTHORIZATION))
-                    .as("Authorization header should match for %s", url)
+                      .as("Expected Authorization header should match for %s but got '%s'", 
+                       url, req.getHeader(HttpHeaders.AUTHORIZATION))
                     .isEqualTo(expectedAuthHeader);
         }
     }
