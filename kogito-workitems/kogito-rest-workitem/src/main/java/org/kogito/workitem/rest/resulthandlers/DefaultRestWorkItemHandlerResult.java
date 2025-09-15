@@ -18,8 +18,6 @@
  */
 package org.kogito.workitem.rest.resulthandlers;
 
-import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.checkStatusCode;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Spliterators;
@@ -33,6 +31,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.vertx.core.json.DecodeException;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
+
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.checkStatusCode;
 
 public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResult {
 

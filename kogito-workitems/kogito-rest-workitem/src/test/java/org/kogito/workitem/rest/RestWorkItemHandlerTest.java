@@ -158,7 +158,7 @@ public class RestWorkItemHandlerTest {
     public void testEmptyInputModel() {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode objectNode = objectMapper.createObjectNode().put("id", 26).put("name", "pepe");
-        RestWorkItemHandlerResult resultHandler = new DefaultRestWorkItemHandlerResult(false, false);
+        RestWorkItemHandlerResult resultHandler = new DefaultRestWorkItemHandlerResult(false, false, true);
         HttpResponse<Buffer> response = mock(HttpResponse.class);
         when(response.statusCode()).thenReturn(200);
         when(response.bodyAsJson(ObjectNode.class)).thenReturn(objectNode);

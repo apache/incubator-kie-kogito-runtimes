@@ -68,7 +68,6 @@ import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
 import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
-import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.checkStatusCode;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getClassListParam;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getClassParam;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
