@@ -116,7 +116,9 @@ public class ChannelMappingStrategy {
 
     private static ChannelInfo getChannelInfo(KogitoBuildContext context, String property, String prefix, boolean isInput, String defaultChannelName, Map<String, Collection<String>> triggers) {
         String channelName = getChannelName(property, prefix);
-        return new ChannelInfo(channelName,
+        return new ChannelInfo(
+                channelName,
+                context.getApplicationProperty(property).orElse(channelName),
                 triggers.getOrDefault(channelName, Collections.singleton(channelName)),
                 getClassName(context.getApplicationProperty(getPropertyName(prefix, channelName, "value." + (isInput ? "deserializer" : "serializer")), String.class)),
                 isInput,

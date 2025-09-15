@@ -24,6 +24,7 @@ import java.util.Optional;
 public class ChannelInfo {
 
     private final String channelName;
+    private final String topic;
     private final String className;
     private final Collection<String> triggers;
 
@@ -34,20 +35,28 @@ public class ChannelInfo {
 
     private final Optional<String> marshaller;
 
-    protected ChannelInfo(String channelName,
+    protected ChannelInfo(
+            String channelName,
+            String topic,
             Collection<String> triggers,
             String className,
             boolean isInput,
             boolean isDefault,
             Optional<String> marshaller,
             Optional<CloudEventMode> cloudEventMode) {
-        this.className = className;
         this.channelName = channelName;
+        this.topic = topic;
+        this.className = className;
+
         this.isInput = isInput;
         this.isDefault = isDefault;
         this.triggers = triggers;
         this.marshaller = marshaller;
         this.cloudEventMode = cloudEventMode;
+    }
+
+    public String getTopic() {
+        return topic;
     }
 
     public Collection<String> getTriggers() {
@@ -106,4 +115,5 @@ public class ChannelInfo {
                 + ", isInput=" + isInput + ", isDefault=" + isDefault + ", cloudEventMode=" + cloudEventMode
                 + ", marshaller=" + marshaller + "]";
     }
+
 }

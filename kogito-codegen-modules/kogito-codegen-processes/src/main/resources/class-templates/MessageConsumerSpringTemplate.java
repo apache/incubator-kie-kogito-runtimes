@@ -39,7 +39,7 @@ public class $Type$MessageConsumer extends SpringMessageConsumer<$Type$, $DataTy
     
     
     @Autowired
-    @Qualifier("Receiver-$ProcessName$") 
+    @Qualifier("Receiver-$Trigger$") 
     EventReceiver eventReceiver;
 
     

@@ -69,6 +69,8 @@ public abstract class EventGenerator implements ClassGenerator {
         this.fullAnnotationName = this.annotationName.map(a -> packageName + '.' + a);
         clazz.findAll(StringLiteralExpr.class)
                 .forEach(str -> str.setString(str.asString().replace("$Trigger$", channelInfo.getChannelName())));
+        clazz.findAll(StringLiteralExpr.class)
+                .forEach(str -> str.setString(str.asString().replace("$topic$", channelInfo.getTopic())));
         clazz.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, channelInfo.getClassName()));
     }
 

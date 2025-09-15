@@ -57,7 +57,7 @@ public class SpringKafkaCloudEventEmitter<$Type$> implements EventEmitter {
     @Override
     public CompletionStage<Void> emit(DataEvent<?> event) {
         try {
-            return emitter.send("$Trigger$", configBean.useCloudEvents() ? ceMarshaller.marshall(event.asCloudEvent(ceMarshaller.cloudEventDataFactory())) : eventDataMarshaller.marshall(event.getData()))
+            return emitter.send("$topic$", configBean.useCloudEvents() ? ceMarshaller.marshall(event.asCloudEvent(ceMarshaller.cloudEventDataFactory())) : eventDataMarshaller.marshall(event.getData()))
                     .thenApply(r -> null);
         } catch (IOException e) {
             throw new UncheckedIOException(e);

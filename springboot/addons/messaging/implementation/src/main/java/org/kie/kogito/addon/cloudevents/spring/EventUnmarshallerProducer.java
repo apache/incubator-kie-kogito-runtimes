@@ -20,8 +20,10 @@ package org.kie.kogito.addon.cloudevents.spring;
 
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.EventUnmarshaller;
+import org.kie.kogito.event.impl.ByteArrayCloudEventUnmarshallerFactory;
 import org.kie.kogito.event.impl.JacksonEventDataUnmarshaller;
 import org.kie.kogito.event.impl.ObjectCloudEventUnmarshallerFactory;
+import org.kie.kogito.event.impl.StringCloudEventUnmarshallerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,12 +37,32 @@ public class EventUnmarshallerProducer {
     ObjectMapper objectMapper;
 
     @Bean
-    public EventUnmarshaller<Object> getEventDataConverter() {
+    public EventUnmarshaller<Object> objectEventDataConverter() {
         return new JacksonEventDataUnmarshaller<>(objectMapper);
     }
 
     @Bean
-    public CloudEventUnmarshallerFactory<Object> getCloudEventConverter() {
+    public EventUnmarshaller<String> stringEventDataConverter() {
+        return new JacksonEventDataUnmarshaller<>(objectMapper);
+    }
+
+    @Bean
+    public EventUnmarshaller<byte[]> bytesEventDataConverter() {
+        return new JacksonEventDataUnmarshaller<>(objectMapper);
+    }
+
+    @Bean
+    public CloudEventUnmarshallerFactory<Object> objectCloudEventConverter() {
         return new ObjectCloudEventUnmarshallerFactory(objectMapper);
+    }
+
+    @Bean
+    public CloudEventUnmarshallerFactory<String> stringCloudEventConverter() {
+        return new StringCloudEventUnmarshallerFactory(objectMapper);
+    }
+
+    @Bean
+    public CloudEventUnmarshallerFactory<byte[]> bytesCloudEventConverter() {
+        return new ByteArrayCloudEventUnmarshallerFactory(objectMapper);
     }
 }
