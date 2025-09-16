@@ -65,7 +65,7 @@ public class SpringKafkaCloudEventReceiver implements EventReceiver {
                         : new DataEventConverter<>(clazz, eventDataUnmarshaller)));
     }
 
-    @KafkaListener(topics = { "$topic$" })
+    @KafkaListener(topics = { "$Topic$" })
     public void receive(ConsumerRecord<String, String> message, Acknowledgment ack) throws InterruptedException {
         log.debug("Receive message with key {} for topic {}", message.key(), message.topic());
         CompletionStage<?> future = CompletableFuture.completedFuture(null);

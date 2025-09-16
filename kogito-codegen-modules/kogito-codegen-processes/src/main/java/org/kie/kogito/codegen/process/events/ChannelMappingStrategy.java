@@ -78,9 +78,9 @@ public class ChannelMappingStrategy {
         final String defaultOutgoingChannel = context.getApplicationProperty(OUTGOING_DEFAULT_CHANNEL, String.class).orElse(KogitoEventStreams.OUTGOING);
         for (String property : context.getApplicationProperties()) {
             buildChannelInfo(context, true, property, INCOMING_PREFIX, defaultIncomingChannel, inTriggers, p -> p.endsWith(".connector")).ifPresent(result::add);
-            buildChannelInfo(context, true, property, KOGITO_INCOMING_PREFIX, defaultIncomingChannel, inTriggers, p -> true).ifPresent(result::add);
+            buildChannelInfo(context, true, property, KOGITO_INCOMING_PREFIX, defaultIncomingChannel, inTriggers, p -> !p.contains(".value.")).ifPresent(result::add);
             buildChannelInfo(context, false, property, OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, p -> p.endsWith(".connector")).ifPresent(result::add);
-            buildChannelInfo(context, false, property, KOGITO_OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, p -> true).ifPresent(result::add);
+            buildChannelInfo(context, false, property, KOGITO_OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, p -> !p.contains(".value.")).ifPresent(result::add);
         }
         return result;
     }
@@ -116,11 +116,16 @@ public class ChannelMappingStrategy {
 
     private static ChannelInfo getChannelInfo(KogitoBuildContext context, String property, String prefix, boolean isInput, String defaultChannelName, Map<String, Collection<String>> triggers) {
         String channelName = getChannelName(property, prefix);
+        LOG.debug("Creating channel name {} with triggers {}", channelName, triggers);
+        String propertySerializerName = getPropertyName(prefix, channelName, "value." + (isInput ? "deserializer" : "serializer"));
+        Optional<String> type = context.getApplicationProperty(propertySerializerName, String.class);
+        String className = getClassName(type);
+        LOG.debug("Property serializer {} with value {} and className {}", propertySerializerName, type, className);
         return new ChannelInfo(
                 channelName,
                 context.getApplicationProperty(property).orElse(channelName),
                 triggers.getOrDefault(channelName, Collections.singleton(channelName)),
-                getClassName(context.getApplicationProperty(getPropertyName(prefix, channelName, "value." + (isInput ? "deserializer" : "serializer")), String.class)),
+                className,
                 isInput,
                 channelName.equals(defaultChannelName),
                 context.getApplicationProperty((isInput ? UNMARSHALLLER_PREFIX : MARSHALLER_PREFIX) + channelName, String.class),

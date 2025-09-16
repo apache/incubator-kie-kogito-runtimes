@@ -70,8 +70,9 @@ public abstract class EventGenerator implements ClassGenerator {
         clazz.findAll(StringLiteralExpr.class)
                 .forEach(str -> str.setString(str.asString().replace("$Trigger$", channelInfo.getChannelName())));
         clazz.findAll(StringLiteralExpr.class)
-                .forEach(str -> str.setString(str.asString().replace("$topic$", channelInfo.getTopic())));
-        clazz.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, channelInfo.getClassName()));
+                .forEach(str -> str.setString(str.asString().replace("$Topic$", channelInfo.getTopic())));
+
+        generator.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, channelInfo.getClassName()));
     }
 
     protected FieldDeclaration generateMarshallerField(String fieldName, Class<?> fieldClass) {

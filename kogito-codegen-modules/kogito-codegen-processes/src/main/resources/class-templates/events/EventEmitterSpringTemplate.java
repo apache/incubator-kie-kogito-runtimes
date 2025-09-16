@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Spring implementation delegating to kafka template
  */
 @Component("Emitter-$Trigger$")
-public class SpringKafkaCloudEventEmitter<$Type$> implements EventEmitter {
+public class SpringKafkaCloudEventEmitter implements EventEmitter {
 
     @Autowired
     org.springframework.kafka.core.KafkaTemplate<String, $Type$> emitter;
@@ -57,8 +57,7 @@ public class SpringKafkaCloudEventEmitter<$Type$> implements EventEmitter {
     @Override
     public CompletionStage<Void> emit(DataEvent<?> event) {
         try {
-            return emitter.send("$topic$", configBean.useCloudEvents() ? ceMarshaller.marshall(event.asCloudEvent(ceMarshaller.cloudEventDataFactory())) : eventDataMarshaller.marshall(event.getData()))
-                    .thenApply(r -> null);
+            return emitter.send("$Topic$", configBean.useCloudEvents() ? ceMarshaller.marshall(event.asCloudEvent(ceMarshaller.cloudEventDataFactory())) : eventDataMarshaller.marshall(event.getData())).thenApply(r -> null);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

@@ -430,7 +430,7 @@ public class ProcessCodegen extends AbstractGenerator {
             if (metaData.getTriggers() != null) {
 
                 for (TriggerMetaData trigger : metaData.getTriggers()) {
-
+                    LOGGER.debug("Processing trigger {}", trigger);
                     // generate message consumers for processes with message start events
                     if (trigger.getType().equals(TriggerMetaData.TriggerType.ConsumeMessage)) {
                         MessageConsumerGenerator messageConsumerGenerator =
