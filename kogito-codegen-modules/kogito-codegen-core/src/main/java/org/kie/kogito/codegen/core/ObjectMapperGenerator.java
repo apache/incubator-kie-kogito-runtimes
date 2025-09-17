@@ -22,6 +22,8 @@ import org.drools.codegen.common.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 
+import static org.drools.codegen.common.GeneratedFileType.REST;
+
 public class ObjectMapperGenerator {
 
     private ObjectMapperGenerator() {
@@ -32,7 +34,7 @@ public class ObjectMapperGenerator {
                 .withTemplateBasePath("class-templates/config")
                 .build(context, "GlobalObjectMapper");
 
-        return new GeneratedFile(org.drools.codegen.common.GeneratedFileType.REST,
+        return new GeneratedFile(REST,
                 generator.generatedFilePath(),
                 generator.compilationUnitOrThrow().toString());
     }
