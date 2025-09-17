@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -73,9 +72,8 @@ public class EventFactoryUtils {
     public static EventEmitter getEventEmitter(String trigger) {
         return getInstance(trigger, emitters, () -> new EventEmitter() {
             @Override
-            public CompletionStage<Void> emit(DataEvent<?> dataEvent) {
+            public void emit(DataEvent<?> dataEvent) {
                 // default emitter does nothing
-                return CompletableFuture.completedStage(null);
             }
         });
     }

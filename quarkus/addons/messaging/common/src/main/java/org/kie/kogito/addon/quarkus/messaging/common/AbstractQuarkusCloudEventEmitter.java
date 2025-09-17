@@ -21,8 +21,7 @@ package org.kie.kogito.addon.quarkus.messaging.common;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.eclipse.microprofile.reactive.messaging.Metadata;
@@ -47,20 +46,20 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
     MessageDecoratorProvider messageDecorator;
 
     @Override
-    public CompletionStage<Void> emit(DataEvent<?> dataEvent) {
+    public void emit(DataEvent<?> dataEvent) {
         logger.debug("publishing event {}", dataEvent);
         try {
-            Message<M> message = messageDecorator.decorate(getMessage(dataEvent))
-                    .withNack(e -> {
-                        logger.error("Error publishing event {}", dataEvent, e);
-                        return CompletableFuture.completedFuture(null);
-                    });
+            Message<M> message = messageDecorator.decorate(getMessage(dataEvent));
             emit(message);
-            return message.getAck().get();
+            message.ack().toCompletableFuture().get();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
+
+    protected abstract void emit(Message<M> message);
 
     protected abstract boolean useCloudEvents();
 
@@ -92,5 +91,4 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
         }
     }
 
-    protected abstract void emit(Message<M> message);
 }
