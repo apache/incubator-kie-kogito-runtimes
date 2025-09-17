@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
@@ -48,32 +47,19 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
 
     protected abstract CloudEventUnmarshallerFactory<I> getCloudEventUnmarshallerFactory();
 
-    protected CompletionStage<?> produce(final Message<I> message) {
+    protected CompletableFuture<Void> produce(Message<I> message) {
         LOGGER.debug("Received message {}", message);
-        return produce(message, (v, e) -> {
-            LOGGER.debug("Acking message {}", message);
-            message.ack();
-            if (e != null) {
-                LOGGER.error("Error processing message {}", message.getPayload(), e);
-            }
-        });
-    }
-
-    private CompletionStage<?> produce(final Message<I> message, BiConsumer<Object, Throwable> callback) {
-        CompletionStage<?> result = CompletableFuture.completedFuture(null);
-        CompletionStage<?> future = result;
         for (Subscription<DataEvent<?>, Message<I>> subscription : consumers) {
             try {
                 DataEvent<?> object = subscription.getConverter().convert(message);
-                future = future.thenCompose(f -> subscription.getConsumer().apply(object));
+                subscription.getConsumer().apply(object);
+                message.ack();
             } catch (IOException e) {
-                LOGGER.info("Error converting event. Exception message is {}", e.getMessage());
+                LOGGER.error("Error processing message {}", message.getPayload(), e);
+                message.nack(e);
             }
         }
-        if (callback != null) {
-            future.whenComplete(callback);
-        }
-        return result;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

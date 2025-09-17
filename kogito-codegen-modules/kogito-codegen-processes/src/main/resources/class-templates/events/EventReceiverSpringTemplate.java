@@ -68,24 +68,15 @@ public class SpringKafkaCloudEventReceiver implements EventReceiver {
     @KafkaListener(topics = { "$Topic$" })
     public void receive(ConsumerRecord<String, String> message, Acknowledgment ack) throws InterruptedException {
         log.debug("Receive message with key {} for topic {}", message.key(), message.topic());
-        CompletionStage<?> future = CompletableFuture.completedFuture(null);
         for (Subscription<Object, String> subscription : consumers) {
             try {
                 Object object = subscription.getConverter().convert(message.value());
-                future = future.thenCompose(f -> subscription.getConsumer().apply(object));
+                subscription.getConsumer().apply(object);
+                ack.acknowledge();
             } catch (IOException e) {
                 log.debug("Error converting event. Exception message is {}", e.getMessage());
             }
         }
-        future.whenComplete((v, e) -> acknowledge(e, ack));
     }
 
-    private void acknowledge(Throwable ex, Acknowledgment ack) {
-        if (ex != null) {
-            log.error("Event publishing failed", ex);
-        } else {
-            log.debug("Acknoledge message");
-            ack.acknowledge();
-        }
-    }
 }
