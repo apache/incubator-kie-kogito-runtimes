@@ -16,33 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.cloudevents.quarkus.deployment;
+package org.kie.kogito.codegen.process.events;
 
-import java.util.Optional;
+public interface ClassGenerator {
 
-import org.eclipse.microprofile.reactive.messaging.OnOverflow.Strategy;
+    String getCode();
 
-public class OnOverflowInfo {
+    String getPath();
 
-    private final Strategy strategy;
-
-    private final Optional<Long> bufferSize;
-
-    protected OnOverflowInfo(Strategy strategy, Optional<Long> bufferSize) {
-        this.strategy = strategy;
-        this.bufferSize = bufferSize;
-    }
-
-    public Strategy getStrategy() {
-        return strategy;
-    }
-
-    public Optional<Long> getBufferSize() {
-        return bufferSize;
-    }
-
-    @Override
-    public String toString() {
-        return "OnOverflowInfo [strategy=" + strategy + ", bufferSize=" + bufferSize + "]";
-    }
 }

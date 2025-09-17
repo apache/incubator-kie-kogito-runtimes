@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
@@ -42,44 +41,25 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
 
     private Collection<Subscription<DataEvent<?>, Message<I>>> consumers = new CopyOnWriteArrayList<>();
 
-    private EventUnmarshaller<I> eventDataUnmarshaller;
+    protected abstract boolean useCloudEvents();
 
-    private CloudEventUnmarshallerFactory<I> cloudEventUnmarshaller;
+    protected abstract EventUnmarshaller<I> getEventUnmarshaller();
 
-    protected void setEventDataUnmarshaller(EventUnmarshaller<I> eventDataUnmarshaller) {
-        this.eventDataUnmarshaller = eventDataUnmarshaller;
-    }
+    protected abstract CloudEventUnmarshallerFactory<I> getCloudEventUnmarshallerFactory();
 
-    protected void setCloudEventUnmarshaller(CloudEventUnmarshallerFactory<I> cloudEventUnmarshaller) {
-        this.cloudEventUnmarshaller = cloudEventUnmarshaller;
-    }
-
-    protected CompletionStage<?> produce(final Message<I> message) {
+    protected CompletableFuture<Void> produce(Message<I> message) {
         LOGGER.debug("Received message {}", message);
-        return produce(message, (v, e) -> {
-            LOGGER.debug("Acking message {}", message);
-            message.ack();
-            if (e != null) {
-                LOGGER.error("Error processing message {}", message.getPayload(), e);
-            }
-        });
-    }
-
-    private CompletionStage<?> produce(final Message<I> message, BiConsumer<Object, Throwable> callback) {
-        CompletionStage<?> result = CompletableFuture.completedFuture(null);
-        CompletionStage<?> future = result;
         for (Subscription<DataEvent<?>, Message<I>> subscription : consumers) {
             try {
                 DataEvent<?> object = subscription.getConverter().convert(message);
-                future = future.thenCompose(f -> subscription.getConsumer().apply(object));
+                subscription.getConsumer().apply(object);
+                message.ack();
             } catch (IOException e) {
-                LOGGER.info("Error converting event. Exception message is {}", e.getMessage());
+                LOGGER.error("Error processing message {}", message.getPayload(), e);
+                message.nack(e);
             }
         }
-        if (callback != null) {
-            future.whenComplete(callback);
-        }
-        return result;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -90,12 +70,10 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
     }
 
     private <T> Converter<Message<I>, DataEvent<T>> getConverter(Class<T> objectClass) {
-        if (cloudEventUnmarshaller != null) {
-            return new QuarkusCloudEventConverter<>(cloudEventUnmarshaller.unmarshaller(objectClass));
-        } else if (eventDataUnmarshaller != null) {
-            return new QuarkusDataEventConverter<>(objectClass, eventDataUnmarshaller);
+        if (useCloudEvents()) {
+            return new QuarkusCloudEventConverter<>(getCloudEventUnmarshallerFactory().unmarshaller(objectClass));
         } else {
-            throw new IllegalStateException("No unmarshaller set for receiver " + this);
+            return new QuarkusDataEventConverter<>(objectClass, getEventUnmarshaller());
         }
     }
 }

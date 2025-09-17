@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.cloudevents.quarkus.deployment;
+package org.kie.kogito.codegen.process.events;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.event.CloudEventMarshaller;
@@ -26,10 +26,7 @@ public class EventEmitterGenerator extends EventGenerator {
 
     public EventEmitterGenerator(KogitoBuildContext context, ChannelInfo channelInfo) {
         super(context, channelInfo, "EventEmitter");
-        if (channelInfo.getCloudEventMode().filter(mode -> mode == CloudEventMode.STRUCTURED).isPresent()) {
-            generateMarshallerField("marshaller", "setCloudEventMarshaller", CloudEventMarshaller.class);
-        } else {
-            generateMarshallerField("marshaller", "setEventDataMarshaller", EventMarshaller.class);
-        }
+        generateMarshallerField("ceMarshaller", CloudEventMarshaller.class);
+        generateMarshallerField("eventDataMarshaller", EventMarshaller.class);
     }
 }

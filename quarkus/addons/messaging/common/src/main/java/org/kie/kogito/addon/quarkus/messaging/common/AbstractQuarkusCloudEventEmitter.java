@@ -21,8 +21,7 @@ package org.kie.kogito.addon.quarkus.messaging.common;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.eclipse.microprofile.reactive.messaging.Metadata;
@@ -46,33 +45,27 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
     @Inject
     MessageDecoratorProvider messageDecorator;
 
-    private CloudEventMarshaller<M> cloudEventMarshaller;
-
-    private EventMarshaller<M> eventMarshaller;
-
     @Override
-    public CompletionStage<Void> emit(DataEvent<?> dataEvent) {
+    public void emit(DataEvent<?> dataEvent) {
         logger.debug("publishing event {}", dataEvent);
         try {
-            Message<M> message = messageDecorator.decorate(getMessage(dataEvent))
-                    .withNack(e -> {
-                        logger.error("Error publishing event {}", dataEvent, e);
-                        return CompletableFuture.completedFuture(null);
-                    });
+            Message<M> message = messageDecorator.decorate(getMessage(dataEvent));
             emit(message);
-            return message.getAck().get();
+            message.ack().toCompletableFuture().get();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    protected void setEventDataMarshaller(EventMarshaller<M> marshaller) {
-        this.eventMarshaller = marshaller;
-    }
+    protected abstract void emit(Message<M> message);
 
-    protected void setCloudEventMarshaller(CloudEventMarshaller<M> marshaller) {
-        this.cloudEventMarshaller = marshaller;
-    }
+    protected abstract boolean useCloudEvents();
+
+    protected abstract EventMarshaller<M> getEventMarshaller();
+
+    protected abstract CloudEventMarshaller<M> getCloudEventMarshaller();
 
     private <T> Optional<OutgoingCloudEventMetadata<?>> getMetadata(DataEvent<T> event) {
         if (event.getId() == null || event.getType() == null || event.getSource() == null || event.getSpecVersion() == null) {
@@ -89,16 +82,13 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
     }
 
     private <T> Message<M> getMessage(DataEvent<T> event) throws IOException {
-        if (cloudEventMarshaller != null) {
-            return Message.of(cloudEventMarshaller.marshall(event.asCloudEvent(cloudEventMarshaller.cloudEventDataFactory())));
-        } else if (eventMarshaller != null) {
-            Optional<OutgoingCloudEventMetadata<?>> metadata = getMetadata(event);
-            M payload = eventMarshaller.marshall(event.getData());
-            return metadata.isPresent() ? Message.of(payload, Metadata.of(metadata.orElseThrow())) : Message.of(payload);
+        if (useCloudEvents()) {
+            return Message.of(getCloudEventMarshaller().marshall(event.asCloudEvent(getCloudEventMarshaller().cloudEventDataFactory())));
         } else {
-            throw new IllegalStateException("Not marshaller has been set for emitter " + this);
+            Optional<OutgoingCloudEventMetadata<?>> metadata = getMetadata(event);
+            M payload = getEventMarshaller().marshall(event.getData());
+            return metadata.isPresent() ? Message.of(payload, Metadata.of(metadata.orElseThrow())) : Message.of(payload);
         }
     }
 
-    protected abstract void emit(Message<M> message);
 }
