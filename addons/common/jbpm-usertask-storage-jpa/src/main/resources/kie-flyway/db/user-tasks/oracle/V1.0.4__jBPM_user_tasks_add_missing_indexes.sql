@@ -1,0 +1,6 @@
+create index idx_jbpm_user_tasks_comments_tid on jbpm_user_tasks_comments(task_id);
+create index idx_jbpm_user_tasks_reassignment_tid on jbpm_user_tasks_reassignment(task_id);
+create index idx_jbpm_user_tasks_deadline_timer_tid on jbpm_user_tasks_deadline_timer(task_id);
+create index idx_jbpm_user_tasks_deadline_timer_jid on jbpm_user_tasks_deadline_timer(notification_job_id);
+create index idx_jbpm_user_tasks_reassignment_timer_tid on jbpm_user_tasks_reassignment_timer(task_id);
+create index idx_jbpm_user_tasks_reassignment_timer_jid on jbpm_user_tasks_reassignment_timer(reassignment_job_id);
