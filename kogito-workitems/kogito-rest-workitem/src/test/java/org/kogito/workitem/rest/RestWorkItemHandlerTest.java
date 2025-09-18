@@ -26,10 +26,10 @@ import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
-import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.workflow.core.impl.IOSpecification;
 import org.jbpm.workflow.core.node.WorkItemNode;
+import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -126,7 +126,7 @@ public class RestWorkItemHandlerTest {
         parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
 
         Process process = mock(Process.class);
-        ProcessInstance processInstance = mock(ProcessInstance.class);
+        WorkflowProcessInstance processInstance = mock(WorkflowProcessInstance.class);
         workItem.setProcessInstance(processInstance);
 
         workflowData = mapper.createObjectNode().put("id", 26).put("name", "pepe");
@@ -145,6 +145,7 @@ public class RestWorkItemHandlerTest {
         when(node.getIoSpecification()).thenReturn(ioSpecification);
         workItem.setNodeInstance(nodeInstance);
         when(nodeInstance.getNode()).thenReturn(node);
+        when(nodeInstance.getProcessInstance()).thenReturn(processInstance);
         when(node.resolveContext(VariableScope.VARIABLE_SCOPE, DEFAULT_WORKFLOW_VAR)).thenReturn(variableScope);
 
         Map<String, String> outputMapping = Collections.singletonMap(RestWorkItemHandler.RESULT, DEFAULT_WORKFLOW_VAR);
@@ -157,8 +158,9 @@ public class RestWorkItemHandlerTest {
     public void testEmptyInputModel() {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode objectNode = objectMapper.createObjectNode().put("id", 26).put("name", "pepe");
-        RestWorkItemHandlerResult resultHandler = new DefaultRestWorkItemHandlerResult(false, false);
+        RestWorkItemHandlerResult resultHandler = new DefaultRestWorkItemHandlerResult(false, false, true);
         HttpResponse<Buffer> response = mock(HttpResponse.class);
+        when(response.statusCode()).thenReturn(200);
         when(response.bodyAsJson(ObjectNode.class)).thenReturn(objectNode);
         assertThat(resultHandler.apply(response, ObjectNode.class)).isSameAs(objectNode);
     }

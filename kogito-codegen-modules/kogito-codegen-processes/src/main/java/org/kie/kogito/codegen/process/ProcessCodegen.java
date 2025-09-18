@@ -68,6 +68,7 @@ import org.xml.sax.SAXException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
+import static com.github.javaparser.StaticJavaParser.parse;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.jbpm.process.core.constants.CalendarConstants.BUSINESS_CALENDAR_PATH;
@@ -75,6 +76,7 @@ import static org.kie.kogito.codegen.process.util.BusinessCalendarUtil.condition
 import static org.kie.kogito.codegen.process.util.CodegenUtil.generatorProperty;
 import static org.kie.kogito.codegen.process.util.CodegenUtil.isFaultToleranceEnabled;
 import static org.kie.kogito.codegen.process.util.CodegenUtil.isTransactionEnabled;
+import static org.kie.kogito.codegen.process.util.SourceFilesProviderProducerUtil.addSourceFilesToProvider;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.buildDashboardName;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.generateOperationalDashboard;
 import static org.kie.kogito.internal.utils.ConversionUtils.sanitizeClassName;
@@ -100,6 +102,8 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global-operational-dashboard-template.json";
     private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/process-operational-dashboard-template.json";
     public static final String BUSINESS_CALENDAR_PRODUCER_TEMPLATE = "BusinessCalendarProducer";
+    public static final String SOURCE_FILE_PROVIDER_PRODUCER = "SourceFilesProviderProducer";
+
     private static final String IS_BUSINESS_CALENDAR_PRESENT = "isBusinessCalendarPresent";
 
     static {
@@ -115,7 +119,28 @@ public class ProcessCodegen extends AbstractGenerator {
         Map<String, byte[]> processSVGMap = new HashMap<>();
         Map<String, Throwable> processesErrors = new HashMap<>();
         boolean useSvgAddon = context.getAddonsConfig().useProcessSVG();
-        final List<GeneratedInfo<KogitoWorkflowProcess>> processes = resources.stream()
+        final List<GeneratedInfo<KogitoWorkflowProcess>> processes = getGeneratedInfoForProcesses(context, resources,
+                useSvgAddon,
+                processSVGMap,
+                processesErrors);
+        if (processes.isEmpty() && context.getAddonsConfig().useSourceFiles()) { // Temporary hack for incubator-kie-issues#2060 */
+            processes.add(new GeneratedInfo<>(new DummyProcess()));
+        }
+        if (useSvgAddon) {
+            context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGMap);
+        }
+        context.addContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, resources.stream().anyMatch(resource -> resource.resource().getSourcePath().endsWith(BUSINESS_CALENDAR_PATH)));
+
+        handleValidation(context, processesErrors);
+
+        return ofProcesses(context, processes);
+    }
+
+    private static List<GeneratedInfo<KogitoWorkflowProcess>> getGeneratedInfoForProcesses(KogitoBuildContext context, Collection<CollectedResource> resources,
+            boolean useSvgAddon,
+            Map<String, byte[]> processSVGMap,
+            Map<String, Throwable> processesErrors) {
+        return resources.stream()
                 .map(CollectedResource::resource)
                 .flatMap(resource -> {
                     try {
@@ -141,15 +166,6 @@ public class ProcessCodegen extends AbstractGenerator {
                 //Validate parsed processes
                 .map(processInfo -> validate(processInfo, processesErrors))
                 .collect(toList());
-
-        if (useSvgAddon) {
-            context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGMap);
-        }
-        context.addContextAttribute(IS_BUSINESS_CALENDAR_PRESENT, resources.stream().anyMatch(resource -> resource.resource().getSourcePath().endsWith(BUSINESS_CALENDAR_PATH)));
-
-        handleValidation(context, processesErrors);
-
-        return ofProcesses(context, processes);
     }
 
     private static GeneratedInfo<KogitoWorkflowProcess> addResource(GeneratedInfo<KogitoWorkflowProcess> info, Resource r) {
@@ -295,6 +311,9 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // first we generate all the data classes from variable declarations
         for (WorkflowProcess workFlowProcess : processes.values()) {
+            if (workFlowProcess instanceof DummyProcess) {
+                continue; // Temporary hack for incubator-kie-issues#2060
+            }
             // transaction is disabled by default for SW types
             boolean defaultTransactionEnabled = !KogitoWorkflowProcess.SW_TYPE.equals(workFlowProcess.getType());
             if (isTransactionEnabled(this, context(), defaultTransactionEnabled)) {
@@ -315,6 +334,9 @@ public class ProcessCodegen extends AbstractGenerator {
         boolean isServerless = false;
         // then we generate work items task inputs and outputs if any
         for (WorkflowProcess workFlowProcess : processes.values()) {
+            if (workFlowProcess instanceof DummyProcess) {
+                continue; // Temporary hack for incubator-kie-issues#2060
+            }
             isServerless |= KogitoWorkflowProcess.SW_TYPE.equals(workFlowProcess.getType());
             if (KogitoWorkflowProcess.SW_TYPE.equals(workFlowProcess.getType())) {
                 continue;
@@ -330,6 +352,9 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // collect all process descriptors (exec model)
         for (KogitoWorkflowProcess workFlowProcess : processes.values()) {
+            if (workFlowProcess instanceof DummyProcess) {
+                continue; // Temporary hack for incubator-kie-issues#2060
+            }
             ProcessExecutableModelGenerator execModelGen =
                     new ProcessExecutableModelGenerator(workFlowProcess, execModelGenerator);
             String packageName = workFlowProcess.getPackageName();
@@ -454,6 +479,8 @@ public class ProcessCodegen extends AbstractGenerator {
                 .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
 
         generateBusinessCalendarProducer();
+
+        generateSourceFileProviderProducer();
 
         if (CodegenUtil.isTransactionEnabled(this, context()) && !isServerless) {
             String template = "ExceptionHandlerTransaction";
@@ -600,5 +627,21 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         storeFile(PRODUCER_TYPE, generator.generatedFilePath(), compilationUnit.toString());
+    }
+
+    private void generateSourceFileProviderProducer() {
+
+        if (!context().getAddonsConfig().useSourceFiles()) {
+            return;
+        }
+
+        CompilationUnit compilationUnit = parse(this.getClass().getResourceAsStream("/class-templates/producer/" + SOURCE_FILE_PROVIDER_PRODUCER + "Template.java"));
+        compilationUnit.setPackageDeclaration(context().getPackageName());
+
+        addSourceFilesToProvider(compilationUnit, processes, context());
+
+        String generatedPath = context().getPackageName().replace(".", "/") + "/" + SOURCE_FILE_PROVIDER_PRODUCER + ".java";
+
+        storeFile(PRODUCER_TYPE, generatedPath, compilationUnit.toString());
     }
 }

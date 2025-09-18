@@ -133,15 +133,16 @@ public abstract class StateHandler<S extends State> {
 
     protected final <T extends NodeFactory<?, ?> & SupportsAction<?, ?>>
             NodeFactory<?, ?> sendEventNode(T actionNode, ProduceEvent event) {
-        return sendEventNode(actionNode, eventDefinition(event.getEventRef()), event.getData(), DEFAULT_WORKFLOW_VAR);
+        return sendEventNode(actionNode, eventDefinition(event.getEventRef()), event.getData(), event.getContextAttributes(), DEFAULT_WORKFLOW_VAR);
     }
 
     protected final <T extends NodeFactory<?, ?> & SupportsAction<?, ?>> NodeFactory<?, ?> sendEventNode(T actionNode,
             EventDefinition eventDefinition,
             JsonNode data,
+            Map<String, String> contextAttributes,
             String defaultWorkflowVar) {
         return NodeFactoryUtils.sendEventNode(
-                actionNode.action(new ProduceEventActionSupplier(workflow, eventDefinition.getType(), defaultWorkflowVar, data)),
+                actionNode.action(new ProduceEventActionSupplier(workflow, eventDefinition.getType(), defaultWorkflowVar, data, contextAttributes)),
                 eventDefinition,
                 defaultWorkflowVar);
     }
@@ -428,7 +429,7 @@ public abstract class StateHandler<S extends State> {
         return filterAndMergeNode(embeddedSubProcess, eventFilter, getVarName(), nodeSupplier);
     }
 
-    protected final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, EventDataFilter eventFilter, String varName,
+    protected MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, EventDataFilter eventFilter, String varName,
             FilterableNodeSupplier nodeSupplier) {
         String dataExpr = null;
         String toExpr = null;
@@ -461,28 +462,22 @@ public abstract class StateHandler<S extends State> {
         }
         NodeFactory<?, ?> startNode, currentNode;
         if (fromStateExpr != null) {
-            WorkflowElementIdentifier id = parserContext.newId();
-            startNode = embeddedSubProcess.actionNode(id).action(ExpressionActionSupplier.of(workflow, fromStateExpr)
+            startNode = embeddedSubProcess.actionNode(parserContext.newId()).action(ExpressionActionSupplier.of(workflow, fromStateExpr)
                     .withVarNames(DEFAULT_WORKFLOW_VAR, actionVarName).build()).metaData(SWFConstants.STATE_NAME, state.getName());
             currentNode = connect(startNode, nodeSupplier.apply(embeddedSubProcess, actionVarName, actionVarName).metaData(SWFConstants.STATE_NAME, state.getName()));
-
         } else {
             startNode = currentNode = nodeSupplier.apply(embeddedSubProcess, DEFAULT_WORKFLOW_VAR, actionVarName);
         }
-
-        if (useData && resultExpr != null) {
-            currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(ExpressionActionSupplier.of(workflow, resultExpr)
-                    .withVarNames(variableInfo.getInputVar(), actionVarName).build()));
-        }
-
         if (useData) {
+            if (resultExpr != null) {
+                currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(ExpressionActionSupplier.of(workflow, resultExpr)
+                        .withVarNames(variableInfo.getInputVar(), actionVarName).build()));
+            }
             if (toStateExpr != null) {
-                WorkflowElementIdentifier id = parserContext.newId();
-                currentNode = connect(currentNode, embeddedSubProcess.actionNode(id)
+                currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId())
                         .action(new CollectorActionSupplier(workflow.getExpressionLang(), toStateExpr, DEFAULT_WORKFLOW_VAR, actionVarName)));
             } else if (shouldMerge) {
-                WorkflowElementIdentifier id = parserContext.newId();
-                currentNode = connect(currentNode, embeddedSubProcess.actionNode(id)
+                currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId())
                         .action(new MergeActionSupplier(actionVarName, DEFAULT_WORKFLOW_VAR)));
             }
         }

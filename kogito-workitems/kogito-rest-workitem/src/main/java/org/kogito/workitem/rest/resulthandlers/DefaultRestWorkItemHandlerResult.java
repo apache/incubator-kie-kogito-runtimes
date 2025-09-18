@@ -20,6 +20,9 @@ package org.kogito.workitem.rest.resulthandlers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
@@ -29,21 +32,28 @@ import io.vertx.core.json.DecodeException;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.checkStatusCode;
+
 public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResult {
 
     public static final String STATUS_CODE_PARAM = "STATUS_CODE";
 
     private boolean returnHeaders = false;
     private boolean returnStatusCode = false;
+    private boolean failOnStatusError = true;
 
-    public DefaultRestWorkItemHandlerResult(boolean returnHeaders, boolean returnStatusCode) {
+    public DefaultRestWorkItemHandlerResult(boolean returnHeaders, boolean returnStatusCode, boolean failOnStatusError) {
         this.returnHeaders = returnHeaders;
         this.returnStatusCode = returnStatusCode;
+        this.failOnStatusError = failOnStatusError;
     }
 
     @Override
     public Object apply(HttpResponse<Buffer> response, Class<?> target) {
-        ;
+        if (this.failOnStatusError) {
+            checkStatusCode(response);
+        }
+
         Map<String, Object> result = new HashMap<>();
 
         try {
@@ -88,6 +98,20 @@ public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResu
             return node.booleanValue();
         if (node.isNull())
             return null;
+        if (node.isArray()) {
+            // Wrap the Iterator in a Spliterator and create a Stream
+            return StreamSupport.stream(
+                    Spliterators.spliteratorUnknownSize(node.elements(), 0),
+                    false)
+                    .map(DefaultRestWorkItemHandlerResult::extractJsonNodeValue)
+                    .collect(Collectors.toList());
+        }
+        if (node.isObject()) {
+            // Handle objects by recursively processing each field
+            Map<String, Object> result = new HashMap<>();
+            node.fields().forEachRemaining(entry -> result.put(entry.getKey(), extractJsonNodeValue(entry.getValue())));
+            return result;
+        }
         return node.toString();
     }
 }

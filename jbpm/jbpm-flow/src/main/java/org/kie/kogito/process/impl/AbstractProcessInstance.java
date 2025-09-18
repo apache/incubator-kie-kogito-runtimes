@@ -98,7 +98,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     protected String errorMessage;
     protected String nodeInError;
-    protected String nodeInstanceInError;
+    protected String nodeInstanceIdInError;
     protected Throwable errorCause;
     protected ProcessError processError;
 
@@ -172,7 +172,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         startDate = wpi.getStartDate();
         errorMessage = wpi.getErrorMessage();
         nodeInError = wpi.getNodeIdInError();
-        nodeInstanceInError = wpi.getNodeInstanceIdInError();
+        nodeInstanceIdInError = wpi.getNodeInstanceIdInError();
         errorCause = wpi.getErrorCause().orElse(null);
 
         if (this.status == STATE_ERROR) {
@@ -239,19 +239,23 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             processError = buildProcessError();
         }
         if (processInstance.getKnowledgeRuntime() != null) {
-            processInstance.getMetaData().remove(KOGITO_PROCESS_INSTANCE);
             disconnect();
         }
         internalUnloadState();
     }
 
     public void internalUnloadState() {
-        // we left the instance in read only mode once it is completed
-        if (status == STATE_COMPLETED || status == STATE_ABORTED) {
-            this.rt = null;
-        } else if (status != STATE_PENDING) {
-            // already persisted. PENDING means that it has not started yet
-            processInstance = null;
+        switch (status) {
+            case STATE_COMPLETED, STATE_ABORTED:
+                // we left the instance in read only mode once it is completed
+                this.rt = null;
+                break;
+            case STATE_PENDING:
+                break;
+            default:
+                // already persisted. PENDING means that it has not started yet
+                processInstance = null;
+                break;
         }
     }
 
@@ -261,7 +265,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         }
         LOG.debug("disconnect process instance state {}", processInstance.getId());
         processInstance.disconnect();
-        processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, null);
+        processInstance.getMetaData().remove(KOGITO_PROCESS_INSTANCE);
     }
 
     private void setCorrelationKey(String businessKey) {
@@ -575,7 +579,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         return processInstanceLockStrategy.executeOperation(id, () -> {
             WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
             R outcome = execution.apply(workflowProcessInstance);
-            syncWorkflowInstanceState(workflowProcessInstance);
             internalUnloadProcessInstanceState();
             return outcome;
         });
@@ -587,8 +590,21 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             if (isProcessInstanceConnected()) {
                 getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
             }
-            R outcome = execution.apply(workflowProcessInstance);
-            syncWorkflowInstanceState(workflowProcessInstance);
+            R outcome = null;
+            try {
+                outcome = execution.apply(workflowProcessInstance);
+            } catch (Throwable th) {
+                // clean up after non expected error
+                if (isProcessInstanceConnected()) {
+                    getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
+                }
+                if (workflowProcessInstance.getKnowledgeRuntime() != null) {
+                    disconnect();
+                }
+                internalUnloadState();
+                throw th;
+            }
+
             if (isProcessInstanceConnected()) {
                 syncPersistence(workflowProcessInstance);
                 getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
@@ -819,7 +835,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
             @Override
             public String failedNodeInstanceId() {
-                return nodeInstanceInError;
+                return nodeInstanceIdInError;
             }
 
             @Override
@@ -835,13 +851,23 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             @Override
             public void retrigger() {
                 executeInWorkflowProcessInstanceWrite(pi -> {
+                    NodeInstance nodeInstanceInError = pi.getNodeInstance(nodeInstanceIdInError, true);
                     NodeInstanceImpl ni = (NodeInstanceImpl) pi.getByNodeDefinitionId(nodeInError, pi.getNodeContainer());
+
                     clearError(pi);
+
                     getProcessRuntime().getProcessEventSupport().fireProcessRetriggered(pi, pi.getKnowledgeRuntime());
                     org.kie.api.runtime.process.NodeInstanceContainer nodeInstanceContainer = ni.getNodeInstanceContainer();
                     if (nodeInstanceContainer instanceof NodeInstance) {
                         ((NodeInstance) nodeInstanceContainer).internalSetTriggerTime(new Date());
                     }
+
+                    if (nodeInstanceInError != null && nodeInstanceInError.getLeaveTime() == null && nodeInstanceInError.getCancelType() == null) {
+                        // Cancelling the node instance in error before retriggering if it is active to avoid duplicated node instances.
+                        // This is required when dealing with work items (ej: Human Tasks)
+                        nodeInstanceInError.cancel();
+                    }
+
                     ni.internalSetRetrigger(true);
                     ni.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
                     return null;

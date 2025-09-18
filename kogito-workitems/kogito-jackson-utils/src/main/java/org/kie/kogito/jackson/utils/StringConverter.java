@@ -28,7 +28,7 @@ public class StringConverter implements Function<JsonNode, String> {
     @Override
     public String apply(JsonNode t) {
         try {
-            return JsonObjectUtils.toString(t);
+            return t.isNull() ? null : JsonObjectUtils.toString(t);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Invalid value for json node " + t);
         }

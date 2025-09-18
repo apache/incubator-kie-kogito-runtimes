@@ -22,9 +22,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.kie.kogito.internal.process.workitem.WorkItemExecutionException;
+
 import io.vertx.ext.web.client.WebClientOptions;
+import io.vertx.mutiny.core.buffer.Buffer;
+import io.vertx.mutiny.ext.web.client.HttpResponse;
 
 import static org.kie.kogito.internal.utils.ConversionUtils.convert;
 
@@ -41,6 +46,11 @@ public class RestWorkItemHandlerUtils {
         return getParam(parameters, paramName, String.class, null);
     }
 
+    public static <T> T getParamSupply(Map<String, Object> parameters, String paramName, Class<T> type, Supplier<T> defaultValue) {
+        Object value = parameters.remove(paramName);
+        return value == null ? defaultValue.get() : convert(value, type, v -> v.toString().toUpperCase());
+    }
+
     public static <T> T getParam(Map<String, Object> parameters, String paramName, Class<T> type, T defaultValue) {
         Object value = parameters.remove(paramName);
         return value == null ? defaultValue : convert(value, type, v -> v.toString().toUpperCase());
@@ -53,6 +63,13 @@ public class RestWorkItemHandlerUtils {
         } else {
             return param instanceof Collection ? ((Collection<?>) param).stream().filter(Objects::nonNull).map(p -> getClassParam(p, clazz, instances)).collect(Collectors.toList())
                     : Collections.singletonList(getClassParam(param, clazz, instances));
+        }
+    }
+
+    public static void checkStatusCode(HttpResponse<Buffer> response) {
+        int statusCode = response.statusCode();
+        if (statusCode < 200 || statusCode >= 300) {
+            throw new WorkItemExecutionException(Integer.toString(statusCode), "Request failed with message: " + response.statusMessage());
         }
     }
 

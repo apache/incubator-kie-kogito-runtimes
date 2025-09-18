@@ -154,6 +154,8 @@ adult.txt
 drl1.txt
 # quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-integration-test/src/main/resources/long-call.sw.yaml
 long-call.sw.yaml
+# quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-integration-test/src/main/resources/helloworldevent.sw.yaml
+helloworldevent.sw.yaml
 # quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-integration-test/src/test/resources/__snapshots__/ServerlessWorkflowCodestartTest/testContent/src_test_resources_application.yml
 src_test_resources_application.yml
 # quarkus/integration-tests/integration-tests-quarkus-norest/src/main/resources/PMMLRegression.pmml
@@ -164,6 +166,8 @@ PMMLTree.pmml
 PMMLRegression.pmml
 # quarkus/integration-tests/integration-tests-quarkus-rules/src/test/resources/LoanUnit.xls.properties.test
 LoanUnit.xls.properties.test
+# quarkus/integration-tests/integration-tests-quarkus-processes-persistence/integration-tests-processes-persistence-common/src/main/resources/transactional_error.bpmn
+transactional_error.bpmn
 # springboot/addons/events/decisions/src/main/resources/META-INF/kogito.addon
 kogito.addon
 # springboot/addons/events/predictions/src/main/resources/META-INF/kogito.addon
@@ -216,3 +220,5 @@ PMMLRegression.pmml
 .gitignore
 # springboot/integration-tests/integration-tests-springboot-processes-persistence-it/integration-tests-springboot-processes-persistence-common/.gitignore
 .gitignore
+# springboot/integration-tests/integration-tests-springboot-processes-persistence-it/integration-tests-springboot-processes-persistence-common/src/main/resources/transactional_error.bpmn
+transactional_error.bpmn
