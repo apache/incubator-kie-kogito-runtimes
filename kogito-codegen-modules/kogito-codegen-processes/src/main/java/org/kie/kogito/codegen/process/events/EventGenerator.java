@@ -16,33 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.cloudevents.quarkus.deployment;
+package org.kie.kogito.codegen.process.events;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import org.drools.util.StringUtils;
-import org.eclipse.microprofile.reactive.messaging.OnOverflow;
-import org.eclipse.microprofile.reactive.messaging.OnOverflow.Strategy;
-import org.kie.kogito.addon.quarkus.messaging.common.ChannelFormat;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.NormalAnnotationExpr;
-import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.SuperExpr;
-import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
@@ -51,10 +40,9 @@ import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 
 public abstract class EventGenerator implements ClassGenerator {
 
+    private final Logger LOG = LoggerFactory.getLogger(EventGenerator.class);
     private final TemplatedGenerator template;
     private final CompilationUnit generator;
-    private final Optional<String> annotationName;
-    private Optional<String> fullAnnotationName;
     private final ChannelInfo channelInfo;
     private final String packageName;
     private final String className;
@@ -67,43 +55,31 @@ public abstract class EventGenerator implements ClassGenerator {
         this.packageName = context.getPackageName();
         this.channelInfo = channelInfo;
         template = TemplatedGenerator.builder()
+                .withTemplateBasePath(TemplatedGenerator.DEFAULT_TEMPLATE_BASE_PATH + "events")
                 .withTargetTypeName(className)
                 .build(context, templateName);
         generator = template.compilationUnitOrThrow("Cannot generate " + templateName);
         clazz = generator.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new InvalidTemplateException(template, "Cannot find class declaration"));
         clazz.setName(className);
-        String annotationName = null;
-        if (!channelInfo.isDefault()) {
-            annotationName = StringUtils.ucFirst(polishClassName(channelInfo, "Qualifier"));
-        }
-        this.annotationName = Optional.ofNullable(annotationName);
-        this.fullAnnotationName = this.annotationName.map(a -> packageName + '.' + a);
-        clazz.findAll(StringLiteralExpr.class)
-                .forEach(str -> str.setString(str.asString().replace("$Trigger$", channelInfo.getChannelName())));
-        clazz.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, channelInfo.getClassName()));
-        channelInfo.getOnOverflow().ifPresent(this::onOverflowAnnotation);
+        clazz.findAll(ClassOrInterfaceType.class).stream().filter(type -> type.getNameAsString().contains("$Type$")).forEach(type -> type.setName(channelInfo.getClassName()));
+        clazz.findAll(ClassOrInterfaceType.class).stream().filter(type -> type.getNameAsString().contains("$ClassName$")).forEach(type -> type.setName(className));
+        clazz.findAll(StringLiteralExpr.class).forEach(str -> str.setString(str.asString()
+                .replace("$Trigger$", channelInfo.getChannelName())
+                .replace("$ChannelName$", channelInfo.getChannelName())
+                .replace("$Topic$", channelInfo.getTopic())));
+
+        generator.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, channelInfo.getClassName()));
+        LOG.debug("{}", generator);
     }
 
-    private void onOverflowAnnotation(OnOverflowInfo info) {
-        clazz.getFieldByName("emitter").ifPresent(f -> {
-            NormalAnnotationExpr annotation =
-                    f.addAndGetAnnotation(OnOverflow.class).addPair("value", new FieldAccessExpr(new NameExpr(new SimpleName(Strategy.class.getCanonicalName())), info.getStrategy().name()));
-            info.getBufferSize().ifPresent(bufferSize -> annotation.addPair("bufferSize", new LongLiteralExpr(bufferSize)));
-        });
-    }
-
-    protected FieldDeclaration generateMarshallerField(String fieldName, String setMethodName, Class<?> fieldClass) {
-        FieldDeclaration field =
-                clazz.addField(parseClassOrInterfaceType(fieldClass.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseType(channelInfo.getClassName()))), fieldName);
-        clazz.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("init")).flatMap(MethodDeclaration::getBody).ifPresent(body -> body.addStatement(new MethodCallExpr(
-                new SuperExpr(), setMethodName).addArgument(new FieldAccessExpr(new ThisExpr(), fieldName))));
+    protected FieldDeclaration generateMarshallerField(String fieldName, Class<?> fieldClass) {
+        FieldDeclaration field = clazz.addField(parseClassOrInterfaceType(fieldClass.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseType(channelInfo.getClassName()))), fieldName);
         channelInfo.getMarshaller().ifPresentOrElse(marshallerName -> setMarshaller(marshallerName, field), () -> context.getDependencyInjectionAnnotator().withInjection(field));
         return field;
     }
 
     private void setMarshaller(String marshallerName, FieldDeclaration field) {
         context.getDependencyInjectionAnnotator().withNamedInjection(field, marshallerName);
-        field.addAnnotation(ChannelFormat.class);
     }
 
     @Override
@@ -114,14 +90,6 @@ public abstract class EventGenerator implements ClassGenerator {
     @Override
     public String getPath() {
         return template.generatedFilePath();
-    }
-
-    public Optional<String> getFullAnnotationName() {
-        return fullAnnotationName;
-    }
-
-    public Optional<String> getAnnotationName() {
-        return annotationName;
     }
 
     public String getPackageName() {

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -40,58 +41,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.PostConstruct;
 
-@Component
-public class SpringKafkaCloudEventReceiver implements EventReceiver {
+@Component("Receiver-$ChannelName$")
+@Transactional
+public class $ClassName$ implements EventReceiver {
 
-    private static final Logger log = LoggerFactory.getLogger(SpringKafkaCloudEventReceiver.class);
-    private Collection<Subscription<Object, String>> consumers;
-
-    @Autowired
-    EventUnmarshaller<Object> eventDataUnmarshaller;
-
-    @Autowired
-    CloudEventUnmarshallerFactory<Object> cloudEventUnmarshaller;
+    private static final Logger log = LoggerFactory.getLogger($ClassName$.class);
+    private Collection<Subscription<DataEvent<?>, String>> consumers;
 
     @Autowired
     ConfigBean configBean;
 
     @PostConstruct
-    private void init() {
+    private void initialize() {
         consumers = new CopyOnWriteArrayList<>();
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> clazz) {
-        consumers.add(
-                new Subscription(consumer, configBean.useCloudEvents() ? new CloudEventConverter<>(clazz, cloudEventUnmarshaller)
-                        : new DataEventConverter<>(clazz, eventDataUnmarshaller)));
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <T> void subscribe(Consumer<DataEvent<T>> consumer, Class<T> clazz) {
+        Subscription subscription = new Subscription<>(consumer,  configBean.useCloudEvents() ? new CloudEventConverter<>(clazz, ceUnmarshaller) : new DataEventConverter<>(clazz, eventDataUnmarshaller));
+        consumers.add(subscription);
     }
 
-    @KafkaListener(topics = { "#{springTopics.getIncomingTopics}" })
+    @KafkaListener(topics = { "$Topic$" })
     public void receive(ConsumerRecord<String, String> message, Acknowledgment ack) throws InterruptedException {
         log.debug("Receive message with key {} for topic {}", message.key(), message.topic());
-        CompletionStage<?> future = CompletableFuture.completedFuture(null);
-        for (Subscription<Object, String> subscription : consumers) {
+        for (Subscription<DataEvent<?>, String> subscription : consumers) {
             try {
-                Object object = subscription.getConverter().convert(message.value());
-                future = future.thenCompose(f -> subscription.getConsumer().apply(object));
+                DataEvent<?> object = subscription.getConverter().convert(message.value());
+                subscription.getConsumer().accept(object);
             } catch (IOException e) {
                 log.debug("Error converting event. Exception message is {}", e.getMessage());
             }
         }
-        future.whenComplete((v, e) -> acknowledge(e, ack));
     }
 
-    private void acknowledge(Throwable ex, Acknowledgment ack) {
-        if (ex != null) {
-            log.error("Event publishing failed", ex);
-        } else {
-            log.debug("Acknoledge message");
-            ack.acknowledge();
-        }
-    }
 }

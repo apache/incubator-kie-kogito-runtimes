@@ -16,17 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.quarkus.messaging.common;
+package org.kie.kogito.codegen.process.events;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.event.CloudEventMarshaller;
+import org.kie.kogito.event.EventMarshaller;
 
-import jakarta.inject.Qualifier;
+public class EventEmitterGenerator extends EventGenerator {
 
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.TYPE, ElementType.METHOD })
-public @interface ChannelFormat {
+    public EventEmitterGenerator(KogitoBuildContext context, ChannelInfo channelInfo, boolean isTxEnabled) {
+        super(context, channelInfo, (isTxEnabled ? "Tx" : "") + "EventEmitter");
+        generateMarshallerField("ceMarshaller", CloudEventMarshaller.class);
+        generateMarshallerField("eventDataMarshaller", EventMarshaller.class);
+    }
 }

@@ -18,28 +18,48 @@
  */
 package $Package$;
 
-
 import java.util.concurrent.CompletionStage;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventReceiver;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
+import org.kie.kogito.event.EventUnmarshaller;
 
+import io.smallrye.reactive.messaging.annotations.Blocking;
 
 import io.quarkus.runtime.Startup;
 
 @Startup
 @ApplicationScoped
-public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$Type$> {
-    @Incoming("$Trigger$")
-    public CompletionStage<?> onEvent(Message<$Type$> message) {
-        return produce(message);
+@Named("Receiver-$ChannelName$")
+public class $ClassName$ extends AbstractQuarkusCloudEventReceiver<$Type$> {
+
+    @org.eclipse.microprofile.config.inject.ConfigProperty(name = "kogito.messaging.as-cloudevents", defaultValue = "true")
+    protected Boolean useCloudEvents;
+
+    @Incoming("$ChannelName$")
+    @Transactional
+    public void onEvent($Type$ payload) {
+        produce(Message.of(payload));
     }
-      
-    @PostConstruct
-    void init() {
+
+    protected EventUnmarshaller<$Type$> getEventUnmarshaller() {
+        return eventDataUnmarshaller;
     }
+
+    protected CloudEventUnmarshallerFactory<$Type$> getCloudEventUnmarshallerFactory() {
+        return ceUnmarshaller;
+    }
+
+    protected boolean useCloudEvents() {
+        return useCloudEvents;
+    }
+
 }
