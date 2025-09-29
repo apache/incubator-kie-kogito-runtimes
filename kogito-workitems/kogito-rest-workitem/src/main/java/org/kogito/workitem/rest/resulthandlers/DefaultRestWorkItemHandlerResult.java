@@ -20,10 +20,8 @@ package org.kogito.workitem.rest.resulthandlers;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Spliterators;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
+import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,13 +32,18 @@ import io.vertx.mutiny.ext.web.client.HttpResponse;
 
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.checkStatusCode;
 
+
 public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResult {
 
     public static final String STATUS_CODE_PARAM = "STATUS_CODE";
 
-    private boolean returnHeaders = false;
-    private boolean returnStatusCode = false;
-    private boolean failOnStatusError = true;
+    private final boolean returnHeaders;
+    private final boolean returnStatusCode;
+    private final boolean failOnStatusError;
+
+    public DefaultRestWorkItemHandlerResult() {
+        this(false, false, true);
+    }
 
     public DefaultRestWorkItemHandlerResult(boolean returnHeaders, boolean returnStatusCode, boolean failOnStatusError) {
         this.returnHeaders = returnHeaders;
@@ -67,9 +70,9 @@ public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResu
                 ((Map<?, ?>) body).forEach((key, value) -> result.put(String.valueOf(key), value));
             } else if (body instanceof JsonNode && ((JsonNode) body).isObject()) {
                 JsonNode node = (JsonNode) body;
-                node.fields().forEachRemaining(entry -> result.put(entry.getKey(), extractJsonNodeValue(entry.getValue())));
+                node.fields().forEachRemaining(entry -> result.put(entry.getKey(), JsonObjectUtils.toJavaValue(entry.getValue())));
             } else {
-                result.put("body", body);
+                result.put("response", body);
             }
         } catch (DecodeException e) {
             result.put("body", response.bodyAsString());
@@ -83,35 +86,5 @@ public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResu
         }
 
         return result;
-    }
-
-    private static Object extractJsonNodeValue(JsonNode node) {
-        if (node.isTextual())
-            return node.textValue();
-        if (node.isInt())
-            return node.intValue();
-        if (node.isLong())
-            return node.longValue();
-        if (node.isDouble())
-            return node.doubleValue();
-        if (node.isBoolean())
-            return node.booleanValue();
-        if (node.isNull())
-            return null;
-        if (node.isArray()) {
-            // Wrap the Iterator in a Spliterator and create a Stream
-            return StreamSupport.stream(
-                    Spliterators.spliteratorUnknownSize(node.elements(), 0),
-                    false)
-                    .map(DefaultRestWorkItemHandlerResult::extractJsonNodeValue)
-                    .collect(Collectors.toList());
-        }
-        if (node.isObject()) {
-            // Handle objects by recursively processing each field
-            Map<String, Object> result = new HashMap<>();
-            node.fields().forEachRemaining(entry -> result.put(entry.getKey(), extractJsonNodeValue(entry.getValue())));
-            return result;
-        }
-        return node.toString();
     }
 }
