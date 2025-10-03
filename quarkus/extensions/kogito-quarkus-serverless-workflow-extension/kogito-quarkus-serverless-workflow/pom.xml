@@ -34,6 +34,9 @@
 
   <properties>
         <java.module.name>org.kie.kogito.serverless.workflow</java.module.name>
+        <SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_DOCLINK_HREF>https://sonataflow.org/serverlessworkflow/latest/index.html</SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_DOCLINK_HREF>
+        <SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_DOCLINK_TEXT>Sonataflow Docs</SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_DOCLINK_TEXT>
+        <SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_LOGO>favicon.svg</SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_LOGO>
   </properties>
 
 
@@ -140,6 +143,12 @@
   </dependencies>
 
   <build>
+    <resources>
+        <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+        </resource>
+    </resources>
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
