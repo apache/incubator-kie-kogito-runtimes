@@ -16,34 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package $Package$;
 
+package org.kie.kogito.addon.quarkus.messaging.common;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.Message;
+import jakarta.inject.Qualifier;
 
-import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventEmitter;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import io.quarkus.runtime.Startup;
-
-@Startup
-@ApplicationScoped
-public class $Trigger$EventEmitter extends AbstractQuarkusCloudEventEmitter<$Type$> {
-    @Inject
-    @Channel("$Trigger$")
-    Emitter<$Type$> emitter;
-    
-    @Override
-    protected void emit (Message<$Type$> message) {
-        emitter.send(message);
-    }
-    
-    @PostConstruct
-    void init () {
-    }
+@Qualifier
+@Retention(RUNTIME)
+@Target({ METHOD, FIELD, PARAMETER, TYPE })
+public @interface KogitoMessaging {
 }

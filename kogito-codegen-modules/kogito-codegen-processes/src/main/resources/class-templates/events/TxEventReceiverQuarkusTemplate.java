@@ -16,46 +16,54 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.addon.messaging;
+package $Package$;
 
-import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventReceiver;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
+import org.eclipse.microprofile.reactive.messaging.Metadata;
 import org.kie.kogito.addon.quarkus.messaging.common.KogitoMessaging;
+import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventReceiver;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.EventUnmarshaller;
 
-import io.quarkus.arc.DefaultBean;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.reactive.messaging.annotations.Blocking;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
+import io.quarkus.runtime.Startup;
 
-@DefaultBean
+@Startup
 @ApplicationScoped
-@Named("Receiver-default")
-public class QuarkusDefaultCloudEventReceiver extends AbstractQuarkusCloudEventReceiver<Object> {
-
-    @Inject
-    @KogitoMessaging
-    CloudEventUnmarshallerFactory<Object> cloudEventUnmarshaller;
-
-    @Inject
-    @KogitoMessaging
-    EventUnmarshaller<Object> eventUnmarshaller;
+@Named("Receiver-$ChannelName$")
+public class $ClassName$ extends AbstractQuarkusCloudEventReceiver<$Type$> {
 
     @org.eclipse.microprofile.config.inject.ConfigProperty(name = "kogito.messaging.as-cloudevents", defaultValue = "true")
     protected Boolean useCloudEvents;
 
-    @Override
-    protected CloudEventUnmarshallerFactory<Object> getCloudEventUnmarshallerFactory() {
-        return cloudEventUnmarshaller;
+    @Incoming("$ChannelName$")
+    @Transactional
+    @Blocking
+    public CompletionStage<Void> onEvent(Message<$Type$> payload) {
+        produce(payload);
+        return payload.ack();
     }
 
-    @Override
-    protected EventUnmarshaller<Object> getEventUnmarshaller() {
-        return eventUnmarshaller;
+    protected EventUnmarshaller<$Type$> getEventUnmarshaller() {
+        return eventDataUnmarshaller;
     }
 
-    @Override
+    protected CloudEventUnmarshallerFactory<$Type$> getCloudEventUnmarshallerFactory() {
+        return ceUnmarshaller;
+    }
+
     protected boolean useCloudEvents() {
         return useCloudEvents;
     }
