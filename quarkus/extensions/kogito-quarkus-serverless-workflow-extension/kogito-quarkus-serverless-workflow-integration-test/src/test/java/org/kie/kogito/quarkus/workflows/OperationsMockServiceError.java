@@ -24,7 +24,6 @@ import java.util.function.UnaryOperator;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
-import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
@@ -35,32 +34,24 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 
 public class OperationsMockServiceError implements QuarkusTestResourceLifecycleManager {
 
-    private static WireMockServer subtractionService;
-    private static WireMockServer multiplicationService;
+    private WireMockServer errorService;
 
-    public static final String SUBTRACTION_SERVICE_MOCK_URL = "subtraction-service-mock.url";
-    public static final String MULTIPLICATION_SERVICE_MOCK_URL = "multiplication-service-mock.url";
+    public static final String ERROR_SERVICE_MOCK_URL = "error-service-mock.url";
 
     @Override
     public Map<String, String> start() {
-        multiplicationService =
-                startServer("{  \"product\": 37.808 }", p -> p.withHeader("pepe", new EqualToPattern("pepa")));
-        subtractionService =
+        errorService =
                 startServer("{ \"difference\": 68.0 }", p -> p);
 
         Map<String, String> result = new HashMap<>();
-        result.put(MULTIPLICATION_SERVICE_MOCK_URL, multiplicationService.baseUrl());
-        result.put(SUBTRACTION_SERVICE_MOCK_URL, subtractionService.baseUrl());
+        result.put(ERROR_SERVICE_MOCK_URL, errorService.baseUrl());
         return result;
     }
 
     @Override
     public void stop() {
-        if (multiplicationService != null) {
-            multiplicationService.stop();
-        }
-        if (subtractionService != null) {
-            subtractionService.stop();
+        if (errorService != null) {
+            errorService.shutdown();
         }
     }
 
@@ -68,7 +59,6 @@ public class OperationsMockServiceError implements QuarkusTestResourceLifecycleM
         final WireMockServer server = new WireMockServer(options().dynamicPort());
         server.start();
         server.stubFor(function.apply(post(urlEqualTo("/")))
-                .withPort(server.port())
                 .willReturn(aResponse()
                         .withStatus(500)
                         .withHeader("Content-Type", "application/json")

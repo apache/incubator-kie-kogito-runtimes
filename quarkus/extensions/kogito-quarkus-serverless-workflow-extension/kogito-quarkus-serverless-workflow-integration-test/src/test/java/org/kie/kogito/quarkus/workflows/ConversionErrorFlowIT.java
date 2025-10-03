@@ -45,7 +45,7 @@ class ConversionErrorFlowIT {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .body(Map.of("fahrenheit", "100", "clusterName", "cluster1"))
+                .body(Map.of("fahrenheit", "100", "clusterName", "cluster3"))
                 .post("/fahrenheit_to_celsius")
                 .then()
                 .statusCode(500)
