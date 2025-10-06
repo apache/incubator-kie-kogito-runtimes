@@ -18,6 +18,7 @@
  */
 package org.jbpm.workflow.instance.node;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -85,7 +86,7 @@ import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STAT
  * Runtime counterpart of a work item node.
  *
  */
-public class WorkItemNodeInstance extends StateBasedNodeInstance implements EventListener, ContextInstanceContainer, KogitoWorkItemNodeInstance {
+public class WorkItemNodeInstance extends StateBasedNodeInstance implements EventListener, ContextInstanceContainer, KogitoWorkItemNodeInstance, Serializable {
 
     private static final long serialVersionUID = 510l;
     private static final Logger logger = LoggerFactory.getLogger(WorkItemNodeInstance.class);
@@ -95,7 +96,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     private Map<String, List<ContextInstance>> subContextInstances = new HashMap<>();
 
     private String workItemId;
-    private transient InternalKogitoWorkItem workItem;
+    private InternalKogitoWorkItem workItem;
     private String exceptionHandlingProcessInstanceId;
 
     private int triggerCount = 0;
@@ -131,6 +132,13 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     }
 
     public void internalRemoveWorkItem() {
+
+        System.out.println("-------"+((InternalKogitoWorkItemManager) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()));
+        System.out.println("workItem = " + workItem);
+        System.out.println("getworkItem = " + getWorkItem());
+        System.out.println("workItemId = " + workItemId);
+        System.out.println("processInstance = " + getProcessInstance());
+
         ((InternalKogitoWorkItemManager) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).internalRemoveWorkItem(workItem.getStringId());
     }
 
