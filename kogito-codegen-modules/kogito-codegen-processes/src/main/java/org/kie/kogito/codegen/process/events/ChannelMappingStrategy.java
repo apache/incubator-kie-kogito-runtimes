@@ -91,12 +91,12 @@ public class ChannelMappingStrategy {
                     .ifPresent(result::add);
         }
 
-        if (inputDefaultChannel.isPresent()) {
+        if (inputDefaultChannel.isPresent() && result.stream().noneMatch(e -> e.getChannelName().equals(inputDefaultChannel.get()) && e.isInputDefault())) {
             LOG.warn("Not incoming channels found but default is defined {}", inputDefaultChannel);
             buildChannelInfo(context, true, INCOMING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultIncomingChannel, inTriggers, Optional.of("String"), Optional.of(true), p -> true).ifPresent(result::add);
         }
 
-        if (outputDefaultChannel.isPresent()) {
+        if (outputDefaultChannel.isPresent() && result.stream().noneMatch(e -> e.getChannelName().equals(outputDefaultChannel.get()) && e.isOutputDefault())) {
             LOG.warn("Not outgoing channels found but default is defined {}", outputDefaultChannel);
             buildChannelInfo(context, false, OUTGOING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultOutgoingChannel, outTriggers, Optional.of("String"), Optional.of(true), p -> true).ifPresent(result::add);
         }
