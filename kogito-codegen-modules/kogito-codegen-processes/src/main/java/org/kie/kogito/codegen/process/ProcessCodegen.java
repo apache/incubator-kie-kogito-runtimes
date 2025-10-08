@@ -67,9 +67,6 @@ import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.ChannelInfo;
 import org.kie.kogito.codegen.process.events.ChannelMappingStrategy;
-import org.kie.kogito.codegen.process.events.ClassGenerator;
-import org.kie.kogito.codegen.process.events.EventEmitterGenerator;
-import org.kie.kogito.codegen.process.events.EventReceiverGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMeta;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
 import org.kie.kogito.codegen.process.util.CodegenUtil;
@@ -111,8 +108,8 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private static final GeneratedFileType PROCESS_TYPE = GeneratedFileType.of("PROCESS", GeneratedFileType.Category.SOURCE);
     private static final GeneratedFileType PROCESS_INSTANCE_TYPE = GeneratedFileType.of("PROCESS_INSTANCE", GeneratedFileType.Category.SOURCE);
-    private static final GeneratedFileType MESSAGE_PRODUCER_TYPE = GeneratedFileType.of("MESSAGE_PRODUCER", GeneratedFileType.Category.SOURCE);
-    private static final GeneratedFileType MESSAGE_CONSUMER_TYPE = GeneratedFileType.of("MESSAGE_CONSUMER", GeneratedFileType.Category.SOURCE);
+    public static final GeneratedFileType MESSAGE_PRODUCER_TYPE = GeneratedFileType.of("MESSAGE_PRODUCER", GeneratedFileType.Category.SOURCE);
+    public static final GeneratedFileType MESSAGE_CONSUMER_TYPE = GeneratedFileType.of("MESSAGE_CONSUMER", GeneratedFileType.Category.SOURCE);
     private static final GeneratedFileType PRODUCER_TYPE = GeneratedFileType.of("PRODUCER", GeneratedFileType.Category.SOURCE);
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
     public static final String SVG_EXPORT_NAME_EXPRESION = "%s-svg.svg";
@@ -464,8 +461,6 @@ public class ProcessCodegen extends AbstractGenerator {
             pis.add(pi);
         }
 
-        generateEvents(channelsInfo);
-
         // model
         for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
@@ -635,24 +630,6 @@ public class ProcessCodegen extends AbstractGenerator {
     @Override
     public int priority() {
         return 10;
-    }
-
-    private void generateEvents(Collection<ChannelInfo> channelsInfo) {
-        boolean isTxEnabeld = CodegenUtil.isTransactionEnabled(this, context());
-        for (ChannelInfo channelInfo : channelsInfo) {
-            GeneratedFileType type = null;
-            ClassGenerator classGenerator = null;
-            LOGGER.info("generate channel endpoint {}", channelInfo);
-            if (channelInfo.isInput()) {
-                type = MESSAGE_CONSUMER_TYPE;
-                classGenerator = new EventReceiverGenerator(context(), channelInfo, isTxEnabeld);
-            } else {
-                type = MESSAGE_PRODUCER_TYPE;
-                classGenerator = new EventEmitterGenerator(context(), channelInfo, isTxEnabeld);
-            }
-
-            generatedFiles.add(new GeneratedFile(type, classGenerator.getPath(), classGenerator.getCode()));
-        }
     }
 
     private void generateBusinessCalendarProducer() {

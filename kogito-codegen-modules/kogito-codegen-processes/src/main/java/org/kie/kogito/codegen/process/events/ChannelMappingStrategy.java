@@ -83,11 +83,26 @@ public class ChannelMappingStrategy {
         String defaultIncomingChannel = inputDefaultChannel.orElse(KogitoEventStreams.INCOMING);
         String defaultOutgoingChannel = outputDefaultChannel.orElse(KogitoEventStreams.OUTGOING);
         for (String property : context.getApplicationProperties()) {
-            buildChannelInfo(context, true, property, INCOMING_PREFIX, defaultIncomingChannel, inTriggers, p -> p.endsWith(".connector")).ifPresent(result::add);
-            buildChannelInfo(context, true, property, KOGITO_INCOMING_PREFIX, defaultIncomingChannel, inTriggers, p -> !p.contains(".value.")).ifPresent(result::add);
-            buildChannelInfo(context, false, property, OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, p -> p.endsWith(".connector")).ifPresent(result::add);
-            buildChannelInfo(context, false, property, KOGITO_OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, p -> !p.contains(".value.")).ifPresent(result::add);
+            buildChannelInfo(context, true, property, INCOMING_PREFIX, defaultIncomingChannel, inTriggers, Optional.empty(), p -> p.endsWith(".connector")).ifPresent(result::add);
+            buildChannelInfo(context, true, property, KOGITO_INCOMING_PREFIX, defaultIncomingChannel, inTriggers, Optional.empty(), p -> !p.contains(".value.")).ifPresent(result::add);
+            buildChannelInfo(context, false, property, OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, Optional.empty(), p -> p.endsWith(".connector")).ifPresent(result::add);
+            buildChannelInfo(context, false, property, KOGITO_OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, Optional.empty(), p -> !p.contains(".value.")).ifPresent(result::add);
         }
+
+        if (!result.isEmpty()) {
+            return result;
+        }
+
+        if (inputDefaultChannel.isPresent()) {
+            LOG.warn("Not incoming channels found but default is defined {}", inputDefaultChannel);
+            buildChannelInfo(context, true, INCOMING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultIncomingChannel, inTriggers, Optional.of("String"), p -> true).ifPresent(result::add);
+        }
+
+        if (outputDefaultChannel.isPresent()) {
+            LOG.warn("Not outgoing channels found but default is defined {}", outputDefaultChannel);
+            buildChannelInfo(context, false, OUTGOING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultOutgoingChannel, outTriggers, Optional.of("String"), p -> true).ifPresent(result::add);
+        }
+
         return result;
     }
 
@@ -97,13 +112,14 @@ public class ChannelMappingStrategy {
             String prefix,
             String defaultChannel,
             Map<String, Collection<String>> triggers,
+            Optional<String> typeProvided,
             Predicate<String> shouldProcessTest) {
         if (property.startsWith(prefix) && shouldProcessTest.test(property)) {
             String channelName = getChannelName(property, prefix);
             if (standardChannels.contains(channelName)) {
                 return Optional.empty();
             }
-            return Optional.of(getChannelInfo(context, property, prefix, input, defaultChannel, triggers));
+            return Optional.of(getChannelInfo(context, property, prefix, input, defaultChannel, triggers, typeProvided));
         }
         return Optional.empty();
     }
@@ -120,12 +136,20 @@ public class ChannelMappingStrategy {
         return result;
     }
 
-    private static ChannelInfo getChannelInfo(KogitoBuildContext context, String property, String prefix, boolean isInput, String defaultChannelName, Map<String, Collection<String>> triggers) {
+    private static ChannelInfo getChannelInfo(
+            KogitoBuildContext context,
+            String property,
+            String prefix,
+            boolean isInput,
+            String defaultChannelName,
+            Map<String, Collection<String>> triggers,
+            Optional<String> typeProvided) {
+
         String channelName = getChannelName(property, prefix);
         LOG.debug("Creating channel name {} with triggers {} is input {} and defaultChannelName {}", channelName, triggers, isInput, defaultChannelName);
         String propertySerializerName = getPropertyName(prefix, channelName, "value." + (isInput ? "deserializer" : "serializer"));
         Optional<String> type = context.getApplicationProperty(propertySerializerName, String.class);
-        String className = getClassName(type);
+        String className = typeProvided.orElse(getClassName(type));
         LOG.debug("Property serializer {} with value {} and className {}", propertySerializerName, type, className);
         return new ChannelInfo(
                 channelName,

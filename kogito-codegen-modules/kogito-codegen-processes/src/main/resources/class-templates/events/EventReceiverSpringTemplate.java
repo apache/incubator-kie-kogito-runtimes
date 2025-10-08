@@ -51,7 +51,7 @@ import jakarta.annotation.PostConstruct;
 public class $ClassName$ implements EventReceiver {
 
     private static final Logger log = LoggerFactory.getLogger($ClassName$.class);
-    private Collection<Subscription<DataEvent<?>, String>> consumers;
+    private Collection<Subscription<DataEvent<?>, $Type$>> consumers;
 
     @PostConstruct
     private void initialize() {
@@ -64,18 +64,18 @@ public class $ClassName$ implements EventReceiver {
         consumers.add(subscription);
     }
 
-    private <T> Converter<String, DataEvent<T>> toTopicTypeCloud(Class<T> clazz) {
-        return new CloudEventConverter<String, DataEvent<T>>(clazz, ceUnmarshaller);
+    private <T> Converter<$Type$, DataEvent<T>> toTopicTypeCloud(Class<T> clazz) {
+        return new CloudEventConverter<$Type$, DataEvent<T>>(clazz, ceUnmarshaller);
     }
 
-    private <T> Converter<String, DataEvent<T>> toTopicTypeEvent(Class<T> clazz) {
-        return new DataEventConverter<String, DataEvent<T>>(clazz, eventDataUnmarshaller);
+    private <T> Converter<$Type$, DataEvent<T>> toTopicTypeEvent(Class<T> clazz) {
+        return new DataEventConverter<$Type$, DataEvent<T>>(clazz, eventDataUnmarshaller);
     }
 
     @KafkaListener(topics = { "$Topic$" })
-    public void receive(ConsumerRecord<String, String> message, Acknowledgment ack) throws InterruptedException {
+    public void receive(ConsumerRecord<String, $Type$> message, Acknowledgment ack) throws InterruptedException {
         log.debug("Receive message with key {} for topic {}", message.key(), message.topic());
-        for (Subscription<DataEvent<?>, String> subscription : consumers) {
+        for (Subscription<DataEvent<?>, $Type$> subscription : consumers) {
             try {
                 DataEvent<?> object = subscription.getConverter().convert(message.value());
                 subscription.getConsumer().accept(object);
