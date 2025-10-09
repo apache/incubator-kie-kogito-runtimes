@@ -76,6 +76,7 @@ public abstract class AbstractUserTask implements UserTask {
         instance.setAdminUsers(getAdminUsers());
         instance.setAdminGroups(getAdminGroups());
         instance.setExcludedUsers(getExcludedUsers());
+        instance.setSkippable(getSkippable());
         instance.setInstances(this.instances());
         instance.setNotCompletedDeadlines(this.getNotCompletedDeadlines());
         instance.setNotCompletedReassignments(this.getNotCompletedReassignments());

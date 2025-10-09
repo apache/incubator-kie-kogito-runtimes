@@ -41,6 +41,7 @@ public class UserTaskView {
     private Set<String> excludedUsers;
     private String externalReferenceId;
     private String actualOwner;
+    private Boolean skippable;
 
     private Map<String, Object> inputs;
     private Map<String, Object> outputs;
@@ -175,4 +176,11 @@ public class UserTaskView {
         this.metadata = metadata;
     }
 
+    public Boolean getSkippable() {
+        return skippable;
+    }
+
+    public void setSkippable(Boolean skippable) {
+        this.skippable = skippable;
+    }
 }

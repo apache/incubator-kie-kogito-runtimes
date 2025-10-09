@@ -53,6 +53,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
     private static final String NODE_NAME = "NodeName";
     private static final String ACTOR_ID = "ActorId";
     private static final String GROUP_ID = "GroupId";
+    private static final String SKIPPABLE = "Skippable";
     private static final String BUSINESSADMINISTRATOR_ID = "BusinessAdministratorId";
     private static final String BUSINESSADMINISTRATOR_GROUP_ID = "BusinessAdministratorGroupId";
     private static final String EXCLUDED_OWNER_ID = "ExcludedOwnerId";
@@ -104,6 +105,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         instance.fireInitialStateChange();
         workItem.getParameters().entrySet().stream().filter(e -> !HumanTaskNode.TASK_PARAMETERS.contains(e.getKey())).forEach(e -> instance.setInput(e.getKey(), e.getValue()));
 
+        ofNullable(workItem.getParameters().get(SKIPPABLE)).map(s -> Boolean.parseBoolean((String) s)).ifPresent(instance::setSkippable);
         ofNullable(workItem.getParameters().get(ACTOR_ID)).map(String.class::cast).map(this::toSet).ifPresent(instance::setPotentialUsers);
         ofNullable(workItem.getParameters().get(GROUP_ID)).map(String.class::cast).map(this::toSet).ifPresent(instance::setPotentialGroups);
         ofNullable(workItem.getParameters().get(BUSINESSADMINISTRATOR_ID)).map(String.class::cast).map(this::toSet).ifPresent(instance::setAdminUsers);

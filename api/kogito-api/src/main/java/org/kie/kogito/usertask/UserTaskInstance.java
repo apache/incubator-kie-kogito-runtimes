@@ -68,6 +68,10 @@ public interface UserTaskInstance {
 
     Date getSlaDueDate();
 
+    Boolean getSkippable();
+
+    void setSkippable(Boolean skippable);
+
     void setInput(String key, Object value);
 
     void setOutput(String key, Object value);
