@@ -47,6 +47,7 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -285,6 +286,7 @@ public class DecisionRestResourceGenerator {
         clonedDmnMethod.setName(name);
 
         interpolateRequestPath(pathName, placeHolder, clonedDmnMethod);
+        interpolateOperation(clonedDmnMethod);
 
         MethodCallExpr methodCallExpr = clonedDmnMethod.findFirst(MethodCallExpr.class, mce -> mce.getNameAsString().equals("enrichResponseHeaders")).orElseThrow(TEMPLATE_WAS_MODIFIED);
         methodCallExpr.setName("buildDMNResultResponse").setArguments(NodeList.nodeList(new NameExpr("result")));
@@ -300,6 +302,19 @@ public class DecisionRestResourceGenerator {
                     String interpolated = s.replace(placeHolder, pathName);
                     vv.setString(interpolated);
                 });
+    }
+
+    private void interpolateOperation(MethodDeclaration methodDecl) {
+        methodDecl.getAnnotationByName("Operation").ifPresent(annotation -> {
+            if (annotation.isNormalAnnotationExpr()) {
+                NormalAnnotationExpr normalExpr = annotation.asNormalAnnotationExpr();
+                for (MemberValuePair pair : normalExpr.getPairs()) {
+                    if (pair.getNameAsString().equals("operationId")) {
+                        pair.setValue(new StringLiteralExpr("evaluate-dmn-full-results"));
+                    }
+                }
+            }
+        });
     }
 
     private void interpolateInputType(ClassOrInterfaceDeclaration template) {
@@ -379,13 +394,14 @@ public class DecisionRestResourceGenerator {
 
     private void interpolateStrings(StringLiteralExpr vv) {
         String s = vv.getValue();
-        String documentation = "";
-        String interpolated = s.replace("$name$", decisionName)
+        String modelDescription = dmnModel.getDefinitions().getDescription();
+        String interpolated = s
+                .replace("$name$", decisionName)
                 .replace("$nameURL$", nameURL)
                 .replace("$id$", decisionId)
                 .replace("$modelName$", dmnModel.getName())
-                .replace("$modelNamespace$", dmnModel.getNamespace())
-                .replace("$documentation$", documentation);
+                .replace("$modelDescription$", modelDescription != null ? modelDescription : "")
+                .replace("$modelNamespace$", dmnModel.getNamespace());
         vv.setString(interpolated);
     }
 
