@@ -85,6 +85,8 @@ public class DecisionRestResourceGenerator {
     private final TemplatedGenerator generator;
 
     private static final Supplier<RuntimeException> TEMPLATE_WAS_MODIFIED = () -> new RuntimeException("Template was modified!");
+    private static final String DMN_RESULT_ENDPOINT_OPERATION_ID = "evaluateDmnFullResults_";
+    private static final String DECISION_SERVICE_ENDPOINT_OPERATION_ID = "evaluateDmnService_";
 
     public DecisionRestResourceGenerator(KogitoBuildContext context, DMNModel model, String appCanonicalName) {
         this.context = context;
@@ -145,7 +147,13 @@ public class DecisionRestResourceGenerator {
 
         final String dmnMethodUrlPlaceholder = "$dmnMethodUrl$";
 
-        template.addMember(cloneForDMNResult(dmnMethod, "dmn_dmnresult", "dmnresult", dmnMethodUrlPlaceholder));
+        template.addMember(cloneForDMNResult(dmnMethod,
+                "dmn_dmnresult",
+                "dmnresult",
+                dmnMethodUrlPlaceholder,
+                dmnModel.getName(),
+                DMN_RESULT_ENDPOINT_OPERATION_ID));
+
         for (DecisionService ds : dmnModel.getDefinitions().getDecisionService()) {
             if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
                 continue;
@@ -178,7 +186,12 @@ public class DecisionRestResourceGenerator {
             }
 
             template.addMember(clonedMethod);
-            template.addMember(cloneForDMNResult(clonedMethod, name + "_dmnresult", ds.getName() + "/dmnresult", path));
+            template.addMember(cloneForDMNResult(clonedMethod,
+                    name + "_dmnresult",
+                    ds.getName() + "/dmnresult",
+                    path,
+                    dmnModel.getName(),
+                    DECISION_SERVICE_ENDPOINT_OPERATION_ID));
         }
 
         //set the root path for the dmnMethod itself
@@ -278,7 +291,7 @@ public class DecisionRestResourceGenerator {
     }
 
     private MethodDeclaration cloneForDMNResult(MethodDeclaration dmnMethod, String name, String pathName,
-            String placeHolder) {
+            String placeHolder, String modelName, String operationIdPrefix) {
         MethodDeclaration clonedDmnMethod = dmnMethod.clone();
         // a DMNResult-returning method doesn't need the OAS annotations for the $ref of return type.
         removeAnnFromMethod(clonedDmnMethod, "org.eclipse.microprofile.openapi.annotations.responses.APIResponse");
@@ -286,7 +299,7 @@ public class DecisionRestResourceGenerator {
         clonedDmnMethod.setName(name);
 
         interpolateRequestPath(pathName, placeHolder, clonedDmnMethod);
-        interpolateOperation(clonedDmnMethod);
+        interpolateOperation(modelName, operationIdPrefix, clonedDmnMethod);
 
         MethodCallExpr methodCallExpr = clonedDmnMethod.findFirst(MethodCallExpr.class, mce -> mce.getNameAsString().equals("enrichResponseHeaders")).orElseThrow(TEMPLATE_WAS_MODIFIED);
         methodCallExpr.setName("buildDMNResultResponse").setArguments(NodeList.nodeList(new NameExpr("result")));
@@ -304,13 +317,13 @@ public class DecisionRestResourceGenerator {
                 });
     }
 
-    private void interpolateOperation(MethodDeclaration methodDecl) {
+    private void interpolateOperation(String modelName, String operationIdPrefix, MethodDeclaration methodDecl) {
         methodDecl.getAnnotationByName("Operation").ifPresent(annotation -> {
             if (annotation.isNormalAnnotationExpr()) {
                 NormalAnnotationExpr normalExpr = annotation.asNormalAnnotationExpr();
                 for (MemberValuePair pair : normalExpr.getPairs()) {
                     if (pair.getNameAsString().equals("operationId")) {
-                        pair.setValue(new StringLiteralExpr("evaluate-dmn-full-results"));
+                        pair.setValue(new StringLiteralExpr(String.format("%s_%s", operationIdPrefix, modelName)));
                     }
                 }
             }
