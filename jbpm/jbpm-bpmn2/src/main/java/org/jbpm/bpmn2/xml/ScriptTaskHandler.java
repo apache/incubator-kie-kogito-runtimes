@@ -38,6 +38,7 @@ public class ScriptTaskHandler extends AbstractNodeHandler {
         SUPPORTED_SCRIPT_FORMATS.put(XmlBPMNProcessDumper.JAVA_LANGUAGE, JavaDialect.ID);
         SUPPORTED_SCRIPT_FORMATS.put(XmlBPMNProcessDumper.FEEL_LANGUAGE, "FEEL");
         SUPPORTED_SCRIPT_FORMATS.put(XmlBPMNProcessDumper.FEEL_LANGUAGE_SHORT, "FEEL");
+        SUPPORTED_SCRIPT_FORMATS.put(XmlBPMNProcessDumper.MVEL_LANGUAGE, "mvel");
     }
 
     public static void registerSupportedScriptFormat(String language, String dialect) {
