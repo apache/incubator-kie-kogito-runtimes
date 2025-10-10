@@ -414,11 +414,6 @@
         <artifactId>grpc-netty-shaded</artifactId>
         <version>${version.io.grpc}</version>
       </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-netty</artifactId>
-        <version>${version.io.grpc}</version>
-      </dependency>
 
       <!-- code generation -->
       <dependency>
