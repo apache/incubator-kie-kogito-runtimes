@@ -16,18 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package $Package$;
 
-import java.lang.annotation.ElementType;
+package org.kie.kogito.addon.cloudevents.spring;
+
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import jakarta.inject.Qualifier;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.TYPE})
-public @interface Channel {
-
+@Retention(RUNTIME)
+@Target({ METHOD, FIELD, PARAMETER, TYPE })
+public @interface KogitoMessaging {
 }
