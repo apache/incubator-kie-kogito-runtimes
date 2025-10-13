@@ -373,21 +373,21 @@ public class ProcessResourceGeneratorTest {
         String operationId = "";
         String nameWithoutExt = Paths.get(fileName).getFileName().toString().replaceFirst("[.][^.]+$", "");
         if (method.getNameAsString().startsWith("createResource_")) {
-            operationId = String.format("createProcessInstance_%s",  nameWithoutExt);
+            operationId = String.format("createProcessInstance_%s", nameWithoutExt);
         } else if (method.getNameAsString().startsWith("getResources_")) {
-            operationId = String.format("getAllProcessInstances_%s",  nameWithoutExt);
+            operationId = String.format("getAllProcessInstances_%s", nameWithoutExt);
         } else if (method.getNameAsString().startsWith("getResourceSchema_")) {
-            operationId = String.format("getResourceSchema_%s",  nameWithoutExt);
+            operationId = String.format("getResourceSchema_%s", nameWithoutExt);
         } else if (method.getNameAsString().startsWith("getResource_")) {
-            operationId = String.format("getProcessInstance_%s",  nameWithoutExt);
+            operationId = String.format("getProcessInstance_%s", nameWithoutExt);
         } else if (method.getNameAsString().startsWith("deleteResource_")) {
-            operationId = String.format("deleteProcessInstance_%s",  nameWithoutExt);
+            operationId = String.format("deleteProcessInstance_%s", nameWithoutExt);
         } else if (method.getNameAsString().startsWith("updateModel_")) {
-            operationId = String.format("updateProcessInstance_%s",  nameWithoutExt);
+            operationId = String.format("updateProcessInstance_%s", nameWithoutExt);
         } else if (method.getNameAsString().startsWith("updateModelPartial_")) {
-            operationId = String.format("patchProcessInstance_%s",  nameWithoutExt);
+            operationId = String.format("patchProcessInstance_%s", nameWithoutExt);
         } else if (method.getNameAsString().startsWith("getTasks_")) {
-            operationId = String.format("getTasksInstance_%s",  nameWithoutExt);
+            operationId = String.format("getTasksInstance_%s", nameWithoutExt);
         }
 
         Optional<AnnotationExpr> annotation = method.getAnnotationByName("Operation");
