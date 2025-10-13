@@ -42,7 +42,7 @@ public class EventCodegen extends AbstractGenerator {
     public EventCodegen(KogitoBuildContext context) {
         super(context, "messaging");
         channels = ChannelMappingStrategy.getChannelMapping(context);
-        LOGGER.info("Generate channel endpoint {}", channels);
+        channels.forEach(channel -> LOGGER.info("Generate channel endpoint {}", channel));
     }
 
     @Override
