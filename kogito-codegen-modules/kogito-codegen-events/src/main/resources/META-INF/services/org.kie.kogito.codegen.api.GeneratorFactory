@@ -17,5 +17,4 @@
 # under the License.
 #
 
-org.kie.kogito.codegen.process.ProcessCodegenFactory
-org.kie.kogito.codegen.usertask.UserTaskCodegenFactory
+org.kie.kogito.codegen.process.events.EventCodegenFactory

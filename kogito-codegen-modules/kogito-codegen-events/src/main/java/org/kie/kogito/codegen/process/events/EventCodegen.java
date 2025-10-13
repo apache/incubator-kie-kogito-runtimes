@@ -27,12 +27,13 @@ import org.drools.codegen.common.GeneratedFileType;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.AbstractGenerator;
-import org.kie.kogito.codegen.process.ProcessCodegen;
-import org.kie.kogito.codegen.process.util.CodegenUtil;
+import org.kie.kogito.codegen.core.utils.CodegenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EventCodegen extends AbstractGenerator {
+    private static final GeneratedFileType EVENT_PRODUCER_TYPE = GeneratedFileType.of("EVENT_PRODUCER", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType EVENT_CONSUMER_TYPE = GeneratedFileType.of("EVENT_CONSUMER", GeneratedFileType.Category.SOURCE);
 
     private static Logger LOGGER = LoggerFactory.getLogger(EventCodegen.class);
 
@@ -67,10 +68,10 @@ public class EventCodegen extends AbstractGenerator {
             ClassGenerator classGenerator = null;
             LOGGER.debug("Generate channel endpoint {}", channelInfo);
             if (channelInfo.isInput()) {
-                type = ProcessCodegen.MESSAGE_CONSUMER_TYPE;
+                type = EVENT_CONSUMER_TYPE;
                 classGenerator = new EventReceiverGenerator(context(), channelInfo, isTxEnabeld);
             } else {
-                type = ProcessCodegen.MESSAGE_PRODUCER_TYPE;
+                type = EVENT_PRODUCER_TYPE;
                 classGenerator = new EventEmitterGenerator(context(), channelInfo, isTxEnabeld);
             }
 

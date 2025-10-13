@@ -581,6 +581,11 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-codegen-events</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-codegen-processes</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>

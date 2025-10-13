@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.codegen.process.util;
+package org.kie.kogito.codegen.core.utils;
 
 import java.util.function.Function;
 
