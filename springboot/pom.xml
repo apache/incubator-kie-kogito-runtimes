@@ -40,6 +40,7 @@
     <module>starters</module>
     <module>archetype</module>
     <module>test</module>
+      <module>addons/process-migration</module>
   </modules>
 
   <profiles>
