@@ -68,7 +68,7 @@ public class $Type$Resource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
+    @Operation(operationId = "createProcessInstance_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
     public Response createResource_$name$(@Context HttpHeaders httpHeaders,
                                           @Context UriInfo uriInfo,
                                           @QueryParam("businessKey") @DefaultValue("") String businessKey,
@@ -88,7 +88,7 @@ public class $Type$Resource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
+    @Operation(operationId = "getAllProcessInstances_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
     public List<$Type$Output> getResources_$name$() {
         return processService.getProcessInstanceOutput(process);
     }
@@ -96,16 +96,15 @@ public class $Type$Resource {
     @GET
     @Path("schema")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
+    @Operation(operationId = "getResourceSchema_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
     public Map<String, Object> getResourceSchema_$name$() {
         return JsonSchemaUtil.load(this.getClass().getClassLoader(), process.id());
     }
 
-
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
+    @Operation(operationId = "getProcessInstance_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
     public $Type$Output getResource_$name$(@PathParam("id") String id) {
         return processService.findById(process, id).orElseThrow(NotFoundException::new);
     }
@@ -113,7 +112,7 @@ public class $Type$Resource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
+    @Operation(operationId = "deleteProcessInstance_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
     public $Type$Output deleteResource_$name$(@PathParam("id") final String id) {
         return processService.delete(process, id).orElseThrow(NotFoundException::new);
     }
@@ -122,7 +121,7 @@ public class $Type$Resource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
+    @Operation(operationId = "updateProcessInstance_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
     public $Type$Output updateModel_$name$(@PathParam("id") String id, $Type$Input resource) {
         return processService.update(process, id, resource.toModel()).orElseThrow(NotFoundException::new);
     }
@@ -131,7 +130,7 @@ public class $Type$Resource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
+    @Operation(operationId = "patchProcessInstance_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
     public $Type$Output updateModelPartial_$name$(@PathParam("id") String id, $Type$Input resource) {
         return processService.updatePartial(process, id, resource.toModel()).orElseThrow(NotFoundException::new);
     }
@@ -139,7 +138,7 @@ public class $Type$Resource {
     @GET
     @Path("/{id}/tasks")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
+    @Operation(operationId = "getTasksInstance_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
     public List<TaskModel> getTasks_$name$(@PathParam("id") String id,
                                           @QueryParam("user") final String user,
                                           @QueryParam("group") final List<String> groups) {
