@@ -1215,8 +1215,6 @@
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
-
-      <!--process migration- begins-->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-addons-process-migration</artifactId>
@@ -1250,8 +1248,6 @@
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
-
-      <!---process migration-ends -->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-addons-quarkus-process-definitions</artifactId>
