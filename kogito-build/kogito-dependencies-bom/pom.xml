@@ -98,7 +98,7 @@
     <version.io.smallrye.reactive.mutiny-vertx-web-client>3.18.1</version.io.smallrye.reactive.mutiny-vertx-web-client>
 
     <version.io.vertx>4.5.18</version.io.vertx>
-    <version.io.grpc>1.69.1</version.io.grpc>
+    <version.io.grpc>1.76.0</version.io.grpc>
 
     <version.io.quarkus.camel>3.20.2</version.io.quarkus.camel>
 
@@ -407,6 +407,11 @@
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-stub</artifactId>
+        <version>${version.io.grpc}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-netty-shaded</artifactId>
         <version>${version.io.grpc}</version>
       </dependency>
 
