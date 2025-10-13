@@ -21,14 +21,21 @@ package org.kie.kogito.quarkus.token.persistence.workflows;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.test.utils.ProcessInstanceLogAnalyzer;
+import org.kie.kogito.test.utils.ProcessInstanceLoggingTestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +48,6 @@ import io.restassured.path.json.JsonPath;
 
 import jakarta.ws.rs.core.HttpHeaders;
 
-import static io.restassured.RestAssured.given;
 import static org.kie.kogito.addons.quarkus.token.exchange.OpenApiCustomCredentialProvider.LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE;
 import static org.kie.kogito.addons.quarkus.token.exchange.OpenApiCustomCredentialProvider.LOG_PREFIX_FAILED_TOKEN_EXCHANGE;
 import static org.kie.kogito.addons.quarkus.token.exchange.OpenApiCustomCredentialProvider.LOG_PREFIX_STARTING_TOKEN_EXCHANGE;
@@ -57,23 +63,19 @@ import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcess
 @QuarkusTestResource(TokenExchangeExternalServicesMock.class)
 @QuarkusTestResource(KeycloakServiceMock.class)
 @QuarkusIntegrationTest
-class TokenExchangeIT {
+class TokenExchangeIT extends ProcessInstanceLoggingTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenExchangeIT.class);
 
     @Test
     void tokenExchange() throws IOException {
         LOGGER.info("Testing token exchange caching behavior - expecting 3 external service calls but only 2 token exchanges");
 
-        // Get the Quarkus log file path (configured in application.properties)
-        Path logFile = getQuarkusLogFile();
-
-        // Clear the log file to start fresh
-        if (Files.exists(logFile)) {
-            Files.write(logFile, new byte[0]); // Clear the file
-        }
+        // Get the Quarkus log file path and clear it
+        Path logFile = getLogFilePath();
+        clearLogFile(logFile);
 
         // Start a new process instance
-        String processInput = buildProcessInput(SUCCESSFUL_QUERY);
+        String processInput = buildTokenExchangeWorkflowInput(SUCCESSFUL_QUERY);
         Map<String, String> headers = new HashMap<>();
         headers.put(HttpHeaders.AUTHORIZATION, BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN);
 
@@ -84,7 +86,7 @@ class TokenExchangeIT {
         // Wait for the process to complete - it should take approximately 11+ seconds
         // due to the 1s delay + 10s delay in the workflow
         long startTime = System.currentTimeMillis();
-        waitForProcessCompletion(processInstanceId, Duration.ofSeconds(25));
+        waitForWorkflowCompletion("/token_exchange", processInstanceId, Duration.ofSeconds(25));
         long endTime = System.currentTimeMillis();
 
         LOGGER.info("Process completed in {} seconds", (endTime - startTime) / 1000.0);
@@ -95,6 +97,9 @@ class TokenExchangeIT {
         // Verify caching behavior by checking WireMock requests
         validateCachingBehavior();
         validateOAuth2LogsFromFile(logFile);
+
+        // Verify that process instance logging format is working correctly
+        validateProcessInstanceLogs(logFile, processInstanceId);
     }
 
     private void validateCachingBehavior() {
@@ -113,16 +118,6 @@ class TokenExchangeIT {
                     .as("All external service requests should use the exchanged token")
                     .isEqualTo("Bearer KEYCLOAK_EXCHANGED_ACCESS_TOKEN");
         }
-    }
-
-    /**
-     * Get the path to the Quarkus log file
-     */
-    private Path getQuarkusLogFile() {
-        // The log file path is configured in application.properties as quarkus.log.file.path
-        // For integration tests, Quarkus uses target/quarkus.log
-        String logPath = System.getProperty("quarkus.log.file.path", "target/quarkus.log");
-        return Paths.get(logPath);
     }
 
     /**
@@ -163,47 +158,123 @@ class TokenExchangeIT {
         LOGGER.info("  - Token refresh: {} times", refreshTokenExchangeLogLines.size());
     }
 
-    private void waitForProcessCompletion(String processInstanceId, Duration timeout) {
-        long startTime = System.currentTimeMillis();
-        long timeoutMs = timeout.toMillis();
+    @Test
+    void testConcurrentTokenExchangeLoggingSegregation() throws Exception {
+        LOGGER.info("Testing concurrent token exchange with process instance logging segregation");
 
-        while (System.currentTimeMillis() - startTime < timeoutMs) {
-            try {
-                // Check if process still exists - 404 means it completed and was cleaned up
-                int statusCode = given()
-                        .contentType("application/json")
-                        .accept("application/json")
-                        .when()
-                        .get("/token_exchange/" + processInstanceId)
-                        .then()
-                        .extract()
-                        .statusCode();
+        // Get the Quarkus log file path and clear it
+        Path logFile = getLogFilePath();
+        clearLogFile(logFile);
 
-                if (statusCode == 404) {
-                    LOGGER.info("Process instance {} completed successfully (404 - cleaned up)", processInstanceId);
-                    return;
-                }
+        final int numberOfProcesses = 5;
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfProcesses);
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch completionLatch = new CountDownLatch(numberOfProcesses);
+        List<Future<String>> futures = new ArrayList<>();
 
-                Thread.sleep(1000); // Wait 1 second before checking again
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Interrupted while waiting for process completion", e);
-            } catch (Exception e) {
-                LOGGER.debug("Error checking process state (will retry): {}", e.getMessage());
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException("Interrupted while waiting for process completion", ie);
-                }
+        try {
+            // Start all processes simultaneously
+            for (int i = 0; i < numberOfProcesses; i++) {
+                Future<String> future = executor.submit(() -> {
+                    try {
+                        // Wait for the start signal
+                        startLatch.await();
+
+                        // Start a new process instance
+                        String processInput = buildTokenExchangeWorkflowInput(SUCCESSFUL_QUERY);
+                        Map<String, String> headers = new HashMap<>();
+                        headers.put(HttpHeaders.AUTHORIZATION, BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN);
+
+                        JsonPath jsonPath = newProcessInstance("/token_exchange", processInput, headers);
+                        String processInstanceId = jsonPath.getString("id");
+                        LOGGER.info("Started concurrent process instance: {}", processInstanceId);
+
+                        // Wait for the process to complete
+                        waitForWorkflowCompletion("/token_exchange", processInstanceId, Duration.ofSeconds(35));
+
+                        // Verify the process completed successfully
+                        assertProcessInstanceNotExists("/token_exchange/{id}", processInstanceId);
+
+                        completionLatch.countDown();
+                        return processInstanceId;
+                    } catch (Exception e) {
+                        LOGGER.error("Error in concurrent process execution", e);
+                        completionLatch.countDown();
+                        throw new RuntimeException(e);
+                    }
+                });
+                futures.add(future);
+            }
+
+            // Start all processes at the same time
+            startLatch.countDown();
+
+            // Wait for all processes to complete (with timeout)
+            boolean completed = completionLatch.await(3, TimeUnit.MINUTES);
+            Assertions.assertThat(completed)
+                    .as("All concurrent processes should complete within 3 minutes")
+                    .isTrue();
+
+            // Collect all process instance IDs
+            List<String> processInstanceIds = new ArrayList<>();
+            for (Future<String> future : futures) {
+                processInstanceIds.add(future.get());
+            }
+
+            LOGGER.info("All {} concurrent processes completed: {}", numberOfProcesses, processInstanceIds);
+
+            // Parse and analyze the log file
+            List<ProcessInstanceLogAnalyzer.LogEntry> logEntries =
+                    ProcessInstanceLogAnalyzer.parseLogFileWithMultilineSupport(logFile);
+
+            // Validate log format consistency
+            ProcessInstanceLogAnalyzer.validateLogFormat(logEntries);
+
+            // Group entries by process instance
+            Map<String, List<ProcessInstanceLogAnalyzer.LogEntry>> entriesByProcess =
+                    ProcessInstanceLogAnalyzer.groupByProcessInstance(logEntries);
+
+            // Validate process instance segregation
+            ProcessInstanceLogAnalyzer.validateProcessInstanceSegregation(entriesByProcess, processInstanceIds);
+
+            // Calculate and display statistics
+            ProcessInstanceLogAnalyzer.LogStatistics stats = ProcessInstanceLogAnalyzer.calculateStatistics(logEntries);
+            LOGGER.info("Concurrent execution log analysis: {}", stats);
+
+            // Validate consistent log patterns across concurrent executions (70% similarity threshold)
+            ProcessInstanceLogAnalyzer.validateConsistentLogPatterns(entriesByProcess, processInstanceIds, 0.7);
+
+            // Ensure we have logs from all expected process instances
+            for (String processInstanceId : processInstanceIds) {
+                List<ProcessInstanceLogAnalyzer.LogEntry> processLogs = entriesByProcess.get(processInstanceId);
+                Assertions.assertThat(processLogs)
+                        .as("Should have log entries for concurrent process instance " + processInstanceId)
+                        .isNotEmpty();
+
+                // Verify that all logs for this process have the correct process instance ID
+                long correctlyTaggedLogs = processLogs.stream()
+                        .filter(entry -> processInstanceId.equals(entry.processInstanceId))
+                        .count();
+
+                Assertions.assertThat(correctlyTaggedLogs)
+                        .as("All logs for concurrent process " + processInstanceId + " should have correct process instance ID")
+                        .isEqualTo(processLogs.size());
+            }
+
+            // Verify general context logs exist (should be empty process instance ID)
+            List<ProcessInstanceLogAnalyzer.LogEntry> generalContextLogs = entriesByProcess.get("general");
+            Assertions.assertThat(generalContextLogs)
+                    .as("Should have general context logs from concurrent execution")
+                    .isNotEmpty();
+
+            LOGGER.info("Concurrent token exchange logging segregation validation completed successfully");
+
+        } finally {
+            executor.shutdown();
+            if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
             }
         }
-
-        throw new RuntimeException("Process instance " + processInstanceId + " did not complete within " + timeout);
-    }
-
-    protected static String buildProcessInput(String query) {
-        return "{\"workflowdata\": {\"query\": \"" + query + "\"} }";
     }
 
 }
