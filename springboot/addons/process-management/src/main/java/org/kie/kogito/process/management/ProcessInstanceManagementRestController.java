@@ -79,7 +79,7 @@ public class ProcessInstanceManagementRestController extends BaseProcessInstance
 
     @Override
     @PostMapping(value = "{processId}/migrate", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity migrateAllInstances(String processId, ProcessMigrationSpec migrationSpec) {
+    public ResponseEntity migrateAllInstances(@PathVariable("processId") String processId, ProcessMigrationSpec migrationSpec) {
         return doMigrateAllInstances(processId, migrationSpec);
     }
 
