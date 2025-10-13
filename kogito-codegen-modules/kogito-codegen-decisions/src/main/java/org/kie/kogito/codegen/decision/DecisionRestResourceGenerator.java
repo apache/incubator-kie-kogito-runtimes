@@ -87,6 +87,7 @@ public class DecisionRestResourceGenerator {
     private static final Supplier<RuntimeException> TEMPLATE_WAS_MODIFIED = () -> new RuntimeException("Template was modified!");
     private static final String DMN_RESULT_ENDPOINT_OPERATION_ID = "evaluateDmnFullResults_";
     private static final String DECISION_SERVICE_ENDPOINT_OPERATION_ID = "evaluateDmnService_";
+    private static final String DECISION_SERVICE_RESULT_ENDPOINT_OPERATION_ID = "evaluateDmnServiceFullResults_";
 
     public DecisionRestResourceGenerator(KogitoBuildContext context, DMNModel model, String appCanonicalName) {
         this.context = context;
@@ -171,7 +172,9 @@ public class DecisionRestResourceGenerator {
 
             //insert request path
             final String path = ds.getName();
+            final String modelAndServiceName = String.format("%s_%s", dmnModel.getName(), ds.getName());
             interpolateRequestPath(path, dmnMethodUrlPlaceholder, clonedMethod);
+            interpolateOperation(modelAndServiceName, DECISION_SERVICE_ENDPOINT_OPERATION_ID, clonedMethod);
 
             ReturnStmt returnStmt = clonedMethod.findFirst(ReturnStmt.class).orElseThrow(TEMPLATE_WAS_MODIFIED);
             if (ds.getOutputDecision().size() == 1) {
@@ -190,8 +193,8 @@ public class DecisionRestResourceGenerator {
                     name + "_dmnresult",
                     ds.getName() + "/dmnresult",
                     path,
-                    dmnModel.getName(),
-                    DECISION_SERVICE_ENDPOINT_OPERATION_ID));
+                    modelAndServiceName,
+                    DECISION_SERVICE_RESULT_ENDPOINT_OPERATION_ID));
         }
 
         //set the root path for the dmnMethod itself
@@ -323,7 +326,7 @@ public class DecisionRestResourceGenerator {
                 NormalAnnotationExpr normalExpr = annotation.asNormalAnnotationExpr();
                 for (MemberValuePair pair : normalExpr.getPairs()) {
                     if (pair.getNameAsString().equals("operationId")) {
-                        pair.setValue(new StringLiteralExpr(String.format("%s_%s", operationIdPrefix, modelName)));
+                        pair.setValue(new StringLiteralExpr(String.format("%s%s", operationIdPrefix, modelName)));
                     }
                 }
             }
