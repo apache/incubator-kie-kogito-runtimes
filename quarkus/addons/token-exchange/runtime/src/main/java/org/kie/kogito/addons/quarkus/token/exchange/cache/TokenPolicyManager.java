@@ -65,7 +65,7 @@ public class TokenPolicyManager {
         if (processInstanceId != null && !processInstanceId.isEmpty()) {
             ProcessInstanceContext.setProcessInstanceId(processInstanceId);
         } else {
-            ProcessInstanceContext.getProcessInstanceIdOrGeneral();
+            ProcessInstanceContext.getProcessInstanceId();
         }
 
         try {

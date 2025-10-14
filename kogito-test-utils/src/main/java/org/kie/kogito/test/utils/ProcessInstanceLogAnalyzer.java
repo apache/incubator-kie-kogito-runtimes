@@ -370,7 +370,7 @@ public class ProcessInstanceLogAnalyzer {
         }
         String normalizedLevel = level.trim().toUpperCase();
         return normalizedLevel.matches("TRACE|DEBUG|INFO|WARN|WARNING|ERROR|FATAL|OFF|ALL") ||
-               normalizedLevel.matches("FINE|FINER|FINEST|SEVERE|CONFIG"); // Java util.logging levels
+                normalizedLevel.matches("FINE|FINER|FINEST|SEVERE|CONFIG"); // Java util.logging levels
     }
 
     /**

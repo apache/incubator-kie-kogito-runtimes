@@ -70,9 +70,9 @@ public class ProcessInstanceLoggingConcurrencyIT extends ProcessInstanceLoggingT
     void testConcurrentWorkflowLoggingSegregation() throws Exception {
         LOGGER.info("Testing concurrent workflow execution with process instance logging segregation");
 
-        // Get the log file path configured in application.properties
+        // Clear all log files including rotated ones to start with a clean slate
+        clearAllLogFiles();
         Path logFile = getLogFilePath();
-        clearLogFile(logFile);
 
         final int numberOfWorkflows = 7;
         ExecutorService executor = Executors.newFixedThreadPool(numberOfWorkflows);
@@ -229,8 +229,9 @@ public class ProcessInstanceLoggingConcurrencyIT extends ProcessInstanceLoggingT
     void testHighConcurrencyLoggingSegregationWithParallelWorkflow() throws Exception {
         LOGGER.info("Testing high concurrency workflow execution with logging segregation using parallel workflow");
 
+        // Clear all log files including rotated ones to start with a clean slate
+        clearAllLogFiles();
         Path logFile = getLogFilePath();
-        clearLogFile(logFile);
 
         final int numberOfWorkflows = 10;
         ExecutorService executor = Executors.newFixedThreadPool(numberOfWorkflows);
@@ -321,8 +322,9 @@ public class ProcessInstanceLoggingConcurrencyIT extends ProcessInstanceLoggingT
     void testConcurrentLoggingFormatValidationWithHelloWorld() throws Exception {
         LOGGER.info("Testing concurrent logging format validation with helloworld workflow");
 
+        // Clear all log files including rotated ones to start with a clean slate
+        clearAllLogFiles();
         Path logFile = getLogFilePath();
-        clearLogFile(logFile);
 
         // Execute a few workflows concurrently
         final int numberOfWorkflows = 3;

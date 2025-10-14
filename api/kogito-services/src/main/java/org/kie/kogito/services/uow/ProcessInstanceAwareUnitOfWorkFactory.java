@@ -77,19 +77,13 @@ public class ProcessInstanceAwareUnitOfWorkFactory implements UnitOfWorkFactory 
 
     /**
      * Gets the current process instance ID from the context.
-     * This method handles potential classpath issues where ProcessInstanceContext
-     * might not be available in all environments.
      *
      * @return the current process instance ID, or null if not available
      */
     private String getCurrentProcessInstanceId() {
-        try {
-            // Use reflection-like approach to avoid hard dependency
-            // This could be optimized in specific environments
-            return org.kie.kogito.services.context.ProcessInstanceContext.getProcessInstanceId();
-        } catch (Exception e) {
-            // ProcessInstanceContext not available or not set
+        if (!org.kie.kogito.services.context.ProcessInstanceContext.hasContext()) {
             return null;
         }
+        return org.kie.kogito.services.context.ProcessInstanceContext.getProcessInstanceId();
     }
 }

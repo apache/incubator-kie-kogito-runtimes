@@ -52,9 +52,9 @@ class ProcessInstanceLoggingIT extends ProcessInstanceLoggingTestBase {
     void testProcessInstanceIdInLogsUsingGreetWorkflow() throws IOException {
         LOGGER.info("Testing process instance logging format with MDC using greet workflow");
 
-        // Get the Quarkus log file path and clear it
+        // Clear all log files including rotated ones to start with a clean slate
+        clearAllLogFiles();
         Path logFile = getLogFilePath();
-        clearLogFile(logFile);
 
         // Use greet workflow - a switch-based workflow with conditional logic
         String processInput = buildGreetWorkflowInput("TestUser", "English");
@@ -87,9 +87,9 @@ class ProcessInstanceLoggingIT extends ProcessInstanceLoggingTestBase {
     void testProcessInstanceIdInLogsUsingHelloWorldWorkflow() throws IOException {
         LOGGER.info("Testing process instance logging format using simple helloworld workflow");
 
-        // Get the Quarkus log file path and clear it
+        // Clear all log files including rotated ones to start with a clean slate
+        clearAllLogFiles();
         Path logFile = getLogFilePath();
-        clearLogFile(logFile);
 
         // Use helloworld workflow - simple inject state workflow
         String processInput = buildEmptyWorkflowInput();
@@ -115,9 +115,9 @@ class ProcessInstanceLoggingIT extends ProcessInstanceLoggingTestBase {
     void testGeneralContextInNonProcessLogs() throws IOException, InterruptedException {
         LOGGER.info("Testing general context for non-process-specific logs");
 
-        // Get the Quarkus log file path and clear it
+        // Clear all log files including rotated ones to start with a clean slate
+        clearAllLogFiles();
         Path logFile = getLogFilePath();
-        clearLogFile(logFile);
 
         // Make some application-level calls that should use empty context
         given()
