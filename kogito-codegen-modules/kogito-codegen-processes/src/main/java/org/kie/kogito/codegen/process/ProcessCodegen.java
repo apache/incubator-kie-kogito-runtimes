@@ -410,6 +410,8 @@ public class ProcessCodegen extends AbstractGenerator {
                     modelClassGenerator.generate());
 
             ProcessMetaData metaData = processIdToMetadata.get(workFlowProcess.getId());
+            List<TriggerMetaData> currentNormalizedTriggers = normalizeTriggers(metaData.getTriggers(), channelsInfo);
+            normalizedTriggers.addAll(currentNormalizedTriggers);
 
             //Creating and adding the ResourceGenerator for REST generation
             if (context().hasRest()) {
@@ -431,9 +433,7 @@ public class ProcessCodegen extends AbstractGenerator {
             }
 
             // wiring events
-            normalizedTriggers.addAll(normalizeTriggers(metaData.getTriggers(), channelsInfo));
-
-            for (TriggerMetaData trigger : normalizedTriggers) {
+            for (TriggerMetaData trigger : currentNormalizedTriggers) {
                 // generate message consumers for processes with message start events
                 if (trigger.getType().equals(TriggerMetaData.TriggerType.ConsumeMessage)) {
                     LOGGER.debug("Processing consumer trigger {}", trigger);
@@ -525,13 +525,13 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         for (MessageConsumerGenerator messageConsumerGenerator : megs.values()) {
-            storeFile(MESSAGE_CONSUMER_TYPE, messageConsumerGenerator.generatedFilePath(),
-                    messageConsumerGenerator.generate());
+            String code = messageConsumerGenerator.generate();
+            storeFile(MESSAGE_CONSUMER_TYPE, messageConsumerGenerator.generatedFilePath(), code);
         }
 
         for (MessageProducerGenerator messageProducerGenerator : mpgs) {
-            storeFile(MESSAGE_PRODUCER_TYPE, messageProducerGenerator.generatedFilePath(),
-                    messageProducerGenerator.generate());
+            String code = messageProducerGenerator.generate();
+            storeFile(MESSAGE_PRODUCER_TYPE, messageProducerGenerator.generatedFilePath(), code);
         }
 
         for (ProcessGenerator p : ps) {

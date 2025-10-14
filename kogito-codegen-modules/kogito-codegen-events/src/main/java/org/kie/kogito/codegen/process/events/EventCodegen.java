@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
@@ -67,7 +69,7 @@ public class EventCodegen extends AbstractGenerator {
         channelsInfo.forEach(e -> LOGGER.debug("Channel Found: {}", e));
         List<TriggerMetaData> triggersMetadata = context().getContextAttribute(ContextAttributesConstants.PROCESS_TRIGGERS, List.class);
         triggersMetadata = (triggersMetadata != null) ? triggersMetadata : Collections.emptyList();
-        List<String> channelsNames = triggersMetadata.stream().map(TriggerMetaData::getChannelName).toList();
+        Set<String> channelsNames = triggersMetadata.stream().map(TriggerMetaData::getChannelName).collect(Collectors.toSet());
         LOGGER.debug("Channels names are: {}", channelsNames);
 
         Collection<GeneratedFile> generatedFiles = new ArrayList<>();
@@ -107,6 +109,7 @@ public class EventCodegen extends AbstractGenerator {
                 generatedFiles.add(new GeneratedFile(EVENT_CONSUMER_TYPE, classGenerator.getPath(), classGenerator.getCode()));
             });
         }
+
         return generatedFiles;
     }
 }
