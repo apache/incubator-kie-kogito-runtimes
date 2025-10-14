@@ -46,6 +46,7 @@ public class UserTaskInstanceEntityMapper {
         entity.setTerminationType(userTaskInstance.getStatus().getTerminate() == null ? null : userTaskInstance.getStatus().getTerminate().name());
         entity.setExternalReferenceId(userTaskInstance.getExternalReferenceId());
         entity.setUserTaskId(userTaskInstance.getUserTaskId());
+        entity.setSkippable(userTaskInstance.getSkippable());
 
         entity.setActualOwner(userTaskInstance.getActualOwner());
         entity.setPotentialUsers(Set.copyOf(userTaskInstance.getPotentialUsers()));
@@ -69,6 +70,7 @@ public class UserTaskInstanceEntityMapper {
         instance.setTaskName(entity.getTaskName());
         instance.setTaskDescription(entity.getTaskDescription());
         instance.setTaskPriority(entity.getTaskPriority());
+        instance.setSkippable(entity.getSkippable());
 
         UserTaskState.TerminationType terminationType = entity.getTerminationType() == null ? null : UserTaskState.TerminationType.valueOf(entity.getTerminationType());
         instance.setStatus(UserTaskState.of(entity.getStatus(), terminationType));
