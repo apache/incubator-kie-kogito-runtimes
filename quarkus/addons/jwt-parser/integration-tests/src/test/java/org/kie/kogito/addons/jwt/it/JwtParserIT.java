@@ -24,7 +24,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.jwt.JwtTokenParser;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.path.json.JsonPath;
 
 import jakarta.inject.Inject;
@@ -34,9 +34,10 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProcessInstanceHasFinished;
+import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProcessInstanceNotExists;
 import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcessInstance;
 
-@QuarkusTest
+@QuarkusIntegrationTest
 class JwtParserIT {
 
     @Inject
@@ -144,6 +145,9 @@ class JwtParserIT {
         
         Boolean loanApproved = completedProcess.getBoolean("workflowdata.loanApproved");
         assertThat(loanApproved).isTrue();
+        
+        // Verify the process completed successfully and was cleaned up (following TokenExchangeIT pattern)
+        assertProcessInstanceNotExists("/jwt_example/{id}", processInstanceId);
     }
 
     /**
