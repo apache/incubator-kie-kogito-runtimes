@@ -93,7 +93,7 @@ public class UserTaskServiceImpl implements UserTaskService {
     @Override
     public List<UserTaskTransitionView> allowedTransitions(String taskId, IdentityProvider identity) {
         Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
-        if (userTaskInstance.isEmpty() || identity.getName() == null) {
+        if (userTaskInstance.isEmpty()) {
             return Collections.emptyList();
         }
         UserTaskInstance ut = userTaskInstance.get();

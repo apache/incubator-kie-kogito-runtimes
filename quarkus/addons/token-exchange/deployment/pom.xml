@@ -39,9 +39,18 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc-deployment</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-oidc-client-deployment</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.kie.sonataflow</groupId>
-      <artifactId>sonataflow-addons-quarkus-openapi-deployment</artifactId>
+      <artifactId>sonataflow-quarkus-deployment</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkiverse.openapi.generator</groupId>
+      <artifactId>quarkus-openapi-generator-deployment</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>

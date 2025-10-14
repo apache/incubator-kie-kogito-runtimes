@@ -35,11 +35,11 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 
 public class OperationsMockService implements QuarkusTestResourceLifecycleManager {
 
-    private WireMockServer subtractionService;
-    private WireMockServer multiplicationService;
+    private static WireMockServer subtractionService;
+    private static WireMockServer multiplicationService;
 
-    public final String SUBTRACTION_SERVICE_MOCK_URL = "subtraction-service-mock.url";
-    public final String MULTIPLICATION_SERVICE_MOCK_URL = "multiplication-service-mock.url";
+    public static final String SUBTRACTION_SERVICE_MOCK_URL = "subtraction-service-mock.url";
+    public static final String MULTIPLICATION_SERVICE_MOCK_URL = "multiplication-service-mock.url";
 
     @Override
     public Map<String, String> start() {
@@ -57,11 +57,10 @@ public class OperationsMockService implements QuarkusTestResourceLifecycleManage
     @Override
     public void stop() {
         if (multiplicationService != null) {
-            multiplicationService.shutdown();
+            multiplicationService.stop();
         }
         if (subtractionService != null) {
-            subtractionService.shutdown();
-            ;
+            subtractionService.stop();
         }
     }
 
@@ -69,6 +68,7 @@ public class OperationsMockService implements QuarkusTestResourceLifecycleManage
         final WireMockServer server = new WireMockServer(options().dynamicPort());
         server.start();
         server.stubFor(function.apply(post(urlEqualTo("/")))
+                .withPort(server.port())
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody(response)));

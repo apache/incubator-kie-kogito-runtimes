@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.serverless.workflow.parser.schema;
+package org.kie.kogito.quarkus.serverless.workflow.openapi;
 
 import java.util.Map;
 
 import org.eclipse.microprofile.openapi.OASFilter;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
 import org.eclipse.microprofile.openapi.models.media.Schema;
+import org.kie.kogito.serverless.workflow.parser.schema.OpenApiModelSchemaGenerator;
 
 public final class ServerlessWorkflowOASFilter implements OASFilter {
 
