@@ -55,7 +55,7 @@ import org.kie.kogito.auth.IdentityProviderFactory;
 import org.kie.kogito.auth.SecurityPolicy;
 
 @Path("/$name$")
-@org.eclipse.microprofile.openapi.annotations.tags.Tag(name = "Process - $name$", description = "$processInstanceDescription$")
+@org.eclipse.microprofile.openapi.annotations.tags.Tag(name = "Process - $name$", description = "$documentation$")
 public class $Type$Resource {
 
     Process<$Type$> process;
