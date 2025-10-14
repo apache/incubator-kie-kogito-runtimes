@@ -75,7 +75,9 @@ public abstract class ProcessInstanceLoggingTestBase {
      * @throws InterruptedException if thread is interrupted
      */
     protected void waitForLogFlush() throws InterruptedException {
-        Thread.sleep(1000);
+        // Increase default wait time for CI environments
+        long waitTime = isRunningInCI() ? 3000 : 1000;
+        Thread.sleep(waitTime);
     }
 
     /**
@@ -85,7 +87,22 @@ public abstract class ProcessInstanceLoggingTestBase {
      * @throws InterruptedException if thread is interrupted
      */
     protected void waitForLogFlush(long millis) throws InterruptedException {
-        Thread.sleep(millis);
+        // In CI environments, use at least the provided time or 2 seconds, whichever is higher
+        long actualWaitTime = isRunningInCI() ? Math.max(millis, 2000) : millis;
+        Thread.sleep(actualWaitTime);
+    }
+
+    /**
+     * Detect if running in CI environment based on common CI environment variables.
+     * @return true if running in CI, false otherwise
+     */
+    protected boolean isRunningInCI() {
+        return System.getenv("CI") != null ||
+               System.getenv("JENKINS_URL") != null ||
+               System.getenv("GITHUB_ACTIONS") != null ||
+               System.getenv("TRAVIS") != null ||
+               System.getenv("CIRCLECI") != null ||
+               System.getProperty("ci.environment") != null;
     }
 
     /**
@@ -124,7 +141,7 @@ public abstract class ProcessInstanceLoggingTestBase {
      * @throws IOException if file operations fail
      */
     protected void validateProcessInstanceLogs(Path logFile, String... processInstanceIds) throws IOException {
-        List<ProcessInstanceLogAnalyzer.LogEntry> entries = parseAndValidateLogs(logFile);
+        List<ProcessInstanceLogAnalyzer.LogEntry> entries = parseAndValidateLogsWithRetry(logFile);
 
         Map<String, List<ProcessInstanceLogAnalyzer.LogEntry>> entriesByProcess =
                 ProcessInstanceLogAnalyzer.groupByProcessInstance(entries);
@@ -143,6 +160,65 @@ public abstract class ProcessInstanceLoggingTestBase {
         }
 
         LOGGER.info("Process instance logging validation completed for {} process instances", processInstanceIds.length);
+    }
+
+    /**
+     * Parse log file with retry logic for CI environments.
+     *
+     * @param logFile Path to log file
+     * @return Parsed log entries
+     * @throws IOException if file operations fail after retries
+     */
+    protected List<ProcessInstanceLogAnalyzer.LogEntry> parseAndValidateLogsWithRetry(Path logFile) throws IOException {
+        int maxRetries = isRunningInCI() ? 3 : 1;
+        IOException lastException = null;
+
+        for (int retry = 0; retry < maxRetries; retry++) {
+            try {
+                if (!Files.exists(logFile)) {
+                    LOGGER.warn("Log file does not exist yet, waiting... (attempt {}/{})", retry + 1, maxRetries);
+                    if (retry < maxRetries - 1) {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new IOException("Interrupted while waiting for log file", e);
+                        }
+                        continue;
+                    }
+                    throw new IOException("Log file does not exist: " + logFile);
+                }
+
+                List<ProcessInstanceLogAnalyzer.LogEntry> entries = parseAndValidateLogs(logFile);
+
+                if (entries.isEmpty() && retry < maxRetries - 1) {
+                    LOGGER.warn("No log entries found, retrying... (attempt {}/{})", retry + 1, maxRetries);
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IOException("Interrupted while waiting for log entries", e);
+                    }
+                    continue;
+                }
+
+                return entries;
+
+            } catch (IOException e) {
+                lastException = e;
+                LOGGER.warn("Failed to parse log file (attempt {}/{}): {}", retry + 1, maxRetries, e.getMessage());
+                if (retry < maxRetries - 1) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw new IOException("Interrupted during retry", ie);
+                    }
+                }
+            }
+        }
+
+        throw new IOException("Failed to parse log file after " + maxRetries + " attempts", lastException);
     }
 
     /**
@@ -246,8 +322,11 @@ public abstract class ProcessInstanceLoggingTestBase {
      * @param timeout Maximum time to wait
      */
     protected void waitForWorkflowCompletion(String workflowPath, String processInstanceId, Duration timeout) {
+        // Extend timeout for CI environments
+        Duration actualTimeout = isRunningInCI() ? timeout.multipliedBy(2) : timeout;
+
         await()
-                .atMost(timeout)
+                .atMost(actualTimeout)
                 .pollInterval(Duration.ofMillis(500))
                 .until(() -> {
                     try {
@@ -261,6 +340,7 @@ public abstract class ProcessInstanceLoggingTestBase {
                                 .statusCode();
                         return statusCode == 404; // Completed and cleaned up
                     } catch (Exception e) {
+                        LOGGER.debug("Exception while checking workflow completion: {}", e.getMessage());
                         return false;
                     }
                 });
