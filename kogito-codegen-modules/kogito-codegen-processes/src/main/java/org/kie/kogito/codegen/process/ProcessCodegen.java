@@ -43,6 +43,7 @@ import org.jbpm.compiler.canonical.ModelMetaData;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.jbpm.compiler.canonical.TriggerMetaData.TriggerType;
 import org.jbpm.compiler.canonical.WorkItemModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.core.SemanticModules;
@@ -387,6 +388,7 @@ public class ProcessCodegen extends AbstractGenerator {
         // generate Process, ProcessInstance classes and the REST resource
         Collection<ChannelInfo> channelsInfo = ChannelMappingStrategy.getChannelMapping(context());
         LOGGER.debug("channels found {}", channelsInfo);
+        List<TriggerMetaData> normalizedTriggers = new ArrayList<>();
 
         for (ProcessExecutableModelGenerator execModelGen : processExecutableModelGenerators) {
             String classPrefix = sanitizeClassName(execModelGen.extractedProcessId());
@@ -429,42 +431,39 @@ public class ProcessCodegen extends AbstractGenerator {
             }
 
             // wiring events
-            List<TriggerMetaData> triggers = new ArrayList<>();
-            for (TriggerMetaData trigger : metaData.getTriggers()) {
+            normalizedTriggers.addAll(normalizeTriggers(metaData.getTriggers(), channelsInfo));
+
+            for (TriggerMetaData trigger : normalizedTriggers) {
                 // generate message consumers for processes with message start events
                 if (trigger.getType().equals(TriggerMetaData.TriggerType.ConsumeMessage)) {
-                    TriggerMetaData normalizedTrigger = normalizedTrigger(trigger, channelsInfo, ChannelInfo::isInputDefault);
-                    triggers.add(normalizedTrigger);
-                    LOGGER.debug("Processing consumer trigger {}", normalizedTrigger);
+                    LOGGER.debug("Processing consumer trigger {}", trigger);
                     MessageConsumerGenerator messageConsumerGenerator =
-                            megs.computeIfAbsent(new ProcessCloudEventMeta(workFlowProcess.getId(), normalizedTrigger), k -> new MessageConsumerGenerator(
+                            megs.computeIfAbsent(new ProcessCloudEventMeta(workFlowProcess.getId(), trigger), k -> new MessageConsumerGenerator(
                                     context(),
                                     workFlowProcess,
                                     modelClassGenerator.className(),
                                     execModelGen.className(),
                                     applicationCanonicalName(),
-                                    normalizedTrigger));
-                    metaData.addConsumer(normalizedTrigger.getName(), messageConsumerGenerator.compilationUnit());
+                                    trigger));
+                    metaData.addConsumer(trigger.getName(), messageConsumerGenerator.compilationUnit());
                 } else if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
-                    TriggerMetaData normalizedTrigger = normalizedTrigger(trigger, channelsInfo, ChannelInfo::isOutputDefault);
-                    triggers.add(normalizedTrigger);
-                    LOGGER.debug("Processing producer trigger {}", normalizedTrigger);
+                    LOGGER.debug("Processing producer trigger {}", trigger);
                     MessageProducerGenerator messageProducerGenerator = new MessageProducerGenerator(
                             context(),
                             workFlowProcess,
-                            normalizedTrigger);
+                            trigger);
                     mpgs.add(messageProducerGenerator);
-                    metaData.addProducer(normalizedTrigger.getName(), messageProducerGenerator.compilationUnit());
+                    metaData.addProducer(trigger.getName(), messageProducerGenerator.compilationUnit());
                 }
             }
 
-            context().addContextAttribute(ContextAttributesConstants.PROCESS_TRIGGERS, triggers);
             processGenerators.add(p);
 
             ps.add(p);
             pis.add(pi);
         }
 
+        context().addContextAttribute(ContextAttributesConstants.PROCESS_TRIGGERS, normalizedTriggers);
         // model
         for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
@@ -587,16 +586,26 @@ public class ProcessCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private TriggerMetaData normalizedTrigger(TriggerMetaData trigger, Collection<ChannelInfo> channelsInfo, Predicate<ChannelInfo> defaultChannelInfoPredicate) {
-        Optional<ChannelInfo> channelInfo = channelsInfo.stream().filter(e -> e.getChannelName().equals(trigger.getChannelName())).findAny();
-        if (channelInfo.isPresent()) {
-            LOGGER.info("normalizing trigger {}, channel is present", trigger);
-            return trigger;
+    private List<TriggerMetaData> normalizeTriggers(List<TriggerMetaData> triggers, Collection<ChannelInfo> channelsInfo) {
+        List<TriggerMetaData> normalizedTriggers = new ArrayList<>();
+        for (TriggerMetaData triggerMetadata : triggers) {
+            Optional<ChannelInfo> channelInfo = channelsInfo.stream().filter(e -> e.getChannelName().equals(triggerMetadata.getChannelName())).findAny();
+            if (channelInfo.isPresent()) {
+                LOGGER.debug("Normalizing trigger {}, channel is present", triggerMetadata, channelInfo.get().getChannelName());
+                normalizedTriggers.add(triggerMetadata);
+                continue;
+            }
+            Predicate<ChannelInfo> defaultChannelInfoPredicate = triggerMetadata.getType().equals(TriggerType.ConsumeMessage) ? ChannelInfo::isInputDefault : ChannelInfo::isOutputDefault;
+            Optional<ChannelInfo> defaultChannel = channelsInfo.stream().filter(defaultChannelInfoPredicate::test).findAny();
+            if (defaultChannel.isEmpty()) {
+                LOGGER.warn("Skipping trigger {} as there is no default channel or channel defined for it", triggerMetadata);
+                continue;
+            }
+            String defaultChannelName = defaultChannel.map(ChannelInfo::getChannelName).get();
+            LOGGER.debug("Normalizing trigger {}, channel {}", triggerMetadata, defaultChannelName);
+            normalizedTriggers.add(TriggerMetaData.of(triggerMetadata, defaultChannelName));
         }
-        Optional<ChannelInfo> defaultChannel = channelsInfo.stream().filter(defaultChannelInfoPredicate::test).findAny();
-        LOGGER.info("normalizing trigger {}, channel {}", trigger, defaultChannel);
-        String defaultChannelName = defaultChannel.isPresent() ? defaultChannel.get().getChannelName() : "default";
-        return TriggerMetaData.of(trigger, defaultChannelName);
+        return normalizedTriggers;
     }
 
     private void storeFile(GeneratedFileType type, String path, String source) {

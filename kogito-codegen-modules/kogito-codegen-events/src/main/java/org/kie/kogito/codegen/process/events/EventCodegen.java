@@ -65,9 +65,10 @@ public class EventCodegen extends AbstractGenerator {
 
     private Collection<GeneratedFile> generateEvents(Collection<ChannelInfo> channelsInfo) {
         channelsInfo.forEach(e -> LOGGER.debug("Channel Found: {}", e));
-        List<TriggerMetaData> metadata = context().getContextAttribute(ContextAttributesConstants.PROCESS_TRIGGERS, List.class);
-        metadata = (metadata != null) ? metadata : Collections.emptyList();
-        List<String> channelsNames = metadata.stream().map(TriggerMetaData::getChannelName).toList();
+        List<TriggerMetaData> triggersMetadata = context().getContextAttribute(ContextAttributesConstants.PROCESS_TRIGGERS, List.class);
+        triggersMetadata = (triggersMetadata != null) ? triggersMetadata : Collections.emptyList();
+        List<String> channelsNames = triggersMetadata.stream().map(TriggerMetaData::getChannelName).toList();
+        LOGGER.debug("Channels names are: {}", channelsNames);
 
         Collection<GeneratedFile> generatedFiles = new ArrayList<>();
         boolean isTxEnabeld = CodegenUtil.isTransactionEnabled(this, context());
