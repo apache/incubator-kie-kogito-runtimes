@@ -49,7 +49,7 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
     }
 
     protected void produce(Message<I> message) {
-        LOGGER.info("Received message {}", message.getPayload());
+        LOGGER.trace("Received message {}", message.getPayload());
         for (Subscription<DataEvent<?>, Message<I>> subscription : consumers) {
             try {
                 DataEvent<?> object = subscription.getConverter().convert(message);
