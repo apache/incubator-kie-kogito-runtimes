@@ -45,7 +45,6 @@ public class RestTypeHandler extends WorkItemTypeHandler {
     public static final String REST_TYPE = "rest";
     private static final String METHOD_SEPARATOR = ":";
     private static final String PORT = "port";
-    private static final String HOST = "host";
 
     @Override
     protected <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(Workflow workflow,
@@ -67,15 +66,9 @@ public class RestTypeHandler extends WorkItemTypeHandler {
                 .workParameter(RestWorkItemHandler.METHOD, method)
                 .workParameter(RestWorkItemHandler.USER, runtimeRestApi(functionDef, USER_PROP, context.getContext()))
                 .workParameter(RestWorkItemHandler.PASSWORD, runtimeRestApi(functionDef, PASSWORD_PROP, context.getContext()))
-                .workParameter(RestWorkItemHandler.HOST, runtimeRestApi(functionDef, HOST, context.getContext()))
+                .workParameter(RestWorkItemHandler.HOST, runtimeRestApi(functionDef, "host", context.getContext()))
                 .workParameter(RestWorkItemHandler.PORT, runtimeRestApi(functionDef, PORT, context.getContext(), Integer.class,
                         context.getContext().getApplicationProperty(APP_PROPERTIES_FUNCTIONS_BASE + PORT).map(Integer::parseInt).orElse(null)))
-                .workParameter(RestWorkItemHandler.RETURN_HEADERS, runtimeRestApi(functionDef, RestWorkItemHandler.RETURN_HEADERS, context.getContext(), Boolean.class,
-                        context.getContext().getApplicationProperty(APP_PROPERTIES_FUNCTIONS_BASE + RestWorkItemHandler.RETURN_HEADERS).map(Boolean::parseBoolean).orElse(false)))
-                .workParameter(RestWorkItemHandler.RETURN_STATUS_CODE, runtimeRestApi(functionDef, RestWorkItemHandler.RETURN_STATUS_CODE, context.getContext(), Boolean.class,
-                        context.getContext().getApplicationProperty(APP_PROPERTIES_FUNCTIONS_BASE + RestWorkItemHandler.RETURN_STATUS_CODE).map(Boolean::parseBoolean).orElse(false)))
-                .workParameter(RestWorkItemHandler.FAIL_ON_STATUS_ERROR, runtimeRestApi(functionDef, RestWorkItemHandler.FAIL_ON_STATUS_ERROR, context.getContext(), Boolean.class,
-                        context.getContext().getApplicationProperty(APP_PROPERTIES_FUNCTIONS_BASE + RestWorkItemHandler.FAIL_ON_STATUS_ERROR).map(Boolean::parseBoolean).orElse(true)))
                 .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
                 .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeRestApi(functionDef, ACCESS_TOKEN, context.getContext()))
                 .workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeRestApi(functionDef, API_KEY_PREFIX, context.getContext()))

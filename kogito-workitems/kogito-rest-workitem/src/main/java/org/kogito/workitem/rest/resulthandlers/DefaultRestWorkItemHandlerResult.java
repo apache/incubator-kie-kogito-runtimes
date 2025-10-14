@@ -18,73 +18,18 @@
  */
 package org.kogito.workitem.rest.resulthandlers;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.kogito.jackson.utils.JsonObjectUtils;
-import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import io.vertx.core.json.DecodeException;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.checkStatusCode;
 
-
 public class DefaultRestWorkItemHandlerResult implements RestWorkItemHandlerResult {
-
-    public static final String STATUS_CODE_PARAM = "STATUS_CODE";
-
-    private final boolean returnHeaders;
-    private final boolean returnStatusCode;
-    private final boolean failOnStatusError;
-
-    public DefaultRestWorkItemHandlerResult() {
-        this(false, false, true);
-    }
-
-    public DefaultRestWorkItemHandlerResult(boolean returnHeaders, boolean returnStatusCode, boolean failOnStatusError) {
-        this.returnHeaders = returnHeaders;
-        this.returnStatusCode = returnStatusCode;
-        this.failOnStatusError = failOnStatusError;
-    }
 
     @Override
     public Object apply(HttpResponse<Buffer> response, Class<?> target) {
-        if (this.failOnStatusError) {
-            checkStatusCode(response);
-        }
-
-        Map<String, Object> result = new HashMap<>();
-
-        try {
-            Object body = target == null ? response.bodyAsJson(Map.class) : response.bodyAsJson(target);
-
-            if (!this.returnHeaders && !this.returnStatusCode) {
-                return body;
-            }
-
-            if (body instanceof Map) {
-                ((Map<?, ?>) body).forEach((key, value) -> result.put(String.valueOf(key), value));
-            } else if (body instanceof JsonNode && ((JsonNode) body).isObject()) {
-                JsonNode node = (JsonNode) body;
-                node.fields().forEachRemaining(entry -> result.put(entry.getKey(), JsonObjectUtils.toJavaValue(entry.getValue())));
-            } else {
-                result.put("response", body);
-            }
-        } catch (DecodeException e) {
-            result.put("body", response.bodyAsString());
-        }
-
-        if (this.returnHeaders) {
-            response.headers().forEach(entry -> result.put(PrefixParamsDecorator.HEADER_PREFIX + entry.getKey(), entry.getValue()));
-        }
-        if (this.returnStatusCode) {
-            result.put(STATUS_CODE_PARAM, response.statusCode());
-        }
-
-        return result;
+        checkStatusCode(response);
+        return target == null ? response.bodyAsJson(Map.class) : response.bodyAsJson(target);
     }
 }
