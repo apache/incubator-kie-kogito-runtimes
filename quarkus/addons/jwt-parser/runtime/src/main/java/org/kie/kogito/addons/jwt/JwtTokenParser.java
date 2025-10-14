@@ -18,11 +18,11 @@
  */
 package org.kie.kogito.addons.jwt;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -33,8 +33,6 @@ import jakarta.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class JwtTokenParser {
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /**
      * Parses a JWT token and returns the payload as a JsonNode
@@ -66,13 +64,8 @@ public class JwtTokenParser {
                 payload += "=";
             }
 
-            byte[] decodedBytes = Base64.getUrlDecoder().decode(payload);
-            String decodedPayload = new String(decodedBytes, StandardCharsets.UTF_8);
-
-            // Parse the JSON payload
-            JsonNode payloadJson = OBJECT_MAPPER.readTree(decodedPayload);
-
-            return payloadJson;
+            // Parse the JSON payload directly from bytes using ObjectMapperFactory singleton
+            return ObjectMapperFactory.get().readTree(Base64.getUrlDecoder().decode(payload));
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse JWT token: " + e.getMessage(), e);
@@ -99,7 +92,7 @@ public class JwtTokenParser {
      */
     public JsonNode extractUser(String token) {
         JsonNode payload = parseToken(token);
-        ObjectNode userInfo = OBJECT_MAPPER.createObjectNode();
+        ObjectNode userInfo = ObjectMapperFactory.get().createObjectNode();
 
         // Standard JWT claims for user identification
         if (payload.has("sub")) {
