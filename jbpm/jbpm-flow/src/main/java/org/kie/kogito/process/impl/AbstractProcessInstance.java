@@ -73,10 +73,10 @@ import org.kie.kogito.process.Signal;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.Milestone;
+import org.kie.kogito.process.impl.lock.ContextAwareProcessInstanceLockStrategy;
 import org.kie.kogito.process.impl.lock.ProcessInstanceAtomicLockStrategy;
 import org.kie.kogito.process.impl.lock.ProcessInstanceLockStrategy;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
-import org.kie.kogito.services.context.ProcessInstanceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +123,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
-        this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
+        this.processInstanceLockStrategy = new ContextAwareProcessInstanceLockStrategy(ProcessInstanceAtomicLockStrategy.instance());
         setCorrelationKey(businessKey);
         Map<String, Object> map = bind(variables);
 
@@ -161,7 +161,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
-        this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
+        this.processInstanceLockStrategy = new ContextAwareProcessInstanceLockStrategy(ProcessInstanceAtomicLockStrategy.instance());
 
         syncWorkflowInstanceState((WorkflowProcessInstance) wpi);
     }
@@ -339,24 +339,19 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     public void abort() {
         checkWriteOnly();
         processInstanceLockStrategy.executeOperation(id, () -> {
-            ProcessInstanceContext.setProcessInstanceId(this.id);
-            try {
-                WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
-                if (isProcessInstanceConnected()) {
-                    getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
-                }
-                ((MutableProcessInstances<T>) process.instances()).remove(this.id());
-                String pid = workflowProcessInstance.getStringId();
-                getProcessRuntime().getKogitoProcessRuntime().abortProcessInstance(pid);
-
-                if (isProcessInstanceConnected()) {
-                    getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
-                }
-                internalUnloadProcessInstanceState();
-                return null;
-            } finally {
-                ProcessInstanceContext.clear();
+            WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
+            if (isProcessInstanceConnected()) {
+                getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
             }
+            ((MutableProcessInstances<T>) process.instances()).remove(this.id());
+            String pid = workflowProcessInstance.getStringId();
+            getProcessRuntime().getKogitoProcessRuntime().abortProcessInstance(pid);
+
+            if (isProcessInstanceConnected()) {
+                getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
+            }
+            internalUnloadProcessInstanceState();
+            return null;
         });
     }
 
@@ -583,50 +578,40 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
      */
     public <R> R executeInWorkflowProcessInstanceRead(Function<WorkflowProcessInstanceImpl, R> execution) {
         return processInstanceLockStrategy.executeOperation(id, () -> {
-            ProcessInstanceContext.setProcessInstanceId(this.id);
-            try {
-                WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
-                R outcome = execution.apply(workflowProcessInstance);
-                internalUnloadProcessInstanceState();
-                return outcome;
-            } finally {
-                ProcessInstanceContext.clear();
-            }
+            WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
+            R outcome = execution.apply(workflowProcessInstance);
+            internalUnloadProcessInstanceState();
+            return outcome;
         });
     }
 
     private <R> R executeInWorkflowProcessInstance(Function<WorkflowProcessInstanceImpl, R> execution) {
         return processInstanceLockStrategy.executeOperation(id, () -> {
-            ProcessInstanceContext.setProcessInstanceId(this.id);
+            WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
+            if (isProcessInstanceConnected()) {
+                getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
+            }
+            R outcome = null;
             try {
-                WorkflowProcessInstanceImpl workflowProcessInstance = internalLoadProcessInstanceState();
+                outcome = execution.apply(workflowProcessInstance);
+            } catch (Throwable th) {
+                // clean up after non expected error
                 if (isProcessInstanceConnected()) {
-                    getProcessRuntime().getProcessInstanceManager().addProcessInstance(workflowProcessInstance);
-                }
-                R outcome = null;
-                try {
-                    outcome = execution.apply(workflowProcessInstance);
-                } catch (Throwable th) {
-                    // clean up after non expected error
-                    if (isProcessInstanceConnected()) {
-                        getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
-                    }
-                    if (workflowProcessInstance.getKnowledgeRuntime() != null) {
-                        disconnect();
-                    }
-                    internalUnloadState();
-                    throw th;
-                }
-
-                if (isProcessInstanceConnected()) {
-                    syncPersistence(workflowProcessInstance);
                     getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
                 }
-                internalUnloadProcessInstanceState();
-                return outcome;
-            } finally {
-                ProcessInstanceContext.clear();
+                if (workflowProcessInstance.getKnowledgeRuntime() != null) {
+                    disconnect();
+                }
+                internalUnloadState();
+                throw th;
             }
+
+            if (isProcessInstanceConnected()) {
+                syncPersistence(workflowProcessInstance);
+                getProcessRuntime().getProcessInstanceManager().removeProcessInstance(workflowProcessInstance);
+            }
+            internalUnloadProcessInstanceState();
+            return outcome;
         });
     }
 

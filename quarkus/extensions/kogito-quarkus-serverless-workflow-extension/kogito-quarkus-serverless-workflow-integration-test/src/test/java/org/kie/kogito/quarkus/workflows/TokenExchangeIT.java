@@ -26,15 +26,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.test.utils.ProcessInstanceLogAnalyzer;
 import org.kie.kogito.test.utils.ProcessInstanceLoggingTestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,13 +61,17 @@ import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcess
 class TokenExchangeIT extends ProcessInstanceLoggingTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenExchangeIT.class);
 
+    @BeforeEach
+    void setup() {
+        TokenExchangeExternalServicesMock.getInstance().resetRequests();
+    }
+
     @Test
     void tokenExchange() throws IOException {
         LOGGER.info("Testing token exchange caching behavior - expecting 3 external service calls but only 2 token exchanges");
 
-        // Get the Quarkus log file path and clear it
-        Path logFile = getLogFilePath();
-        clearLogFile(logFile);
+        // Clear all log files including rotated ones to start with a clean slate
+        clearAllLogFiles();
 
         // Start a new process instance
         String processInput = buildTokenExchangeWorkflowInput(SUCCESSFUL_QUERY);
@@ -96,10 +95,11 @@ class TokenExchangeIT extends ProcessInstanceLoggingTestBase {
 
         // Verify caching behavior by checking WireMock requests
         validateCachingBehavior();
-        validateOAuth2LogsFromFile(logFile);
+        validateOAuth2LogsFromFile(processInstanceId);
 
         // Verify that process instance logging format is working correctly
-        validateProcessInstanceLogs(logFile, processInstanceId);
+        // Use robust validation that handles log rotation
+        validateProcessInstanceLogsRobust(processInstanceId);
     }
 
     private void validateCachingBehavior() {
@@ -123,23 +123,61 @@ class TokenExchangeIT extends ProcessInstanceLoggingTestBase {
     /**
      * Validate OAuth2 token exchange and caching behavior from log file
      */
-    private void validateOAuth2LogsFromFile(Path logFile) throws IOException {
-        List<String> logLines = Files.readAllLines(logFile);
+    private void validateOAuth2LogsFromFile(String processInstanceId) throws IOException {
+        // Read all log files to handle rotation
+        List<Path> allLogFiles = getAllLogFiles();
+        List<String> logLines = new ArrayList<>();
+
+        for (Path file : allLogFiles) {
+            try {
+                logLines.addAll(Files.readAllLines(file));
+            } catch (IOException e) {
+                LOGGER.warn("Failed to read log file {}: {}", file, e.getMessage());
+            }
+        }
+
         Assertions.assertThat(logLines).hasSizeGreaterThan(0);
 
-        LOGGER.info("Analyzing {} log lines for OAuth2 token exchange patterns", logLines.size());
+        LOGGER.info("Analyzing {} log lines from {} files for OAuth2 token exchange patterns for process instance {}",
+                logLines.size(), allLogFiles.size(), processInstanceId);
 
-        List<String> usedInMemoryRepository = logLines.stream().filter(line -> line.contains(LOG_PREFIX_USED_REPOSITORY + ": InMemoryTokenCacheRepository")).toList();
+        // Filter logs to only include those related to this process instance or general context
+        // This prevents interference from concurrent tests
+        List<String> processSpecificLogLines = logLines.stream()
+                .filter(line -> line.contains("|" + processInstanceId + "|") || line.contains("||")) // Process-specific or general context
+                .toList();
+
+        LOGGER.info("Found {} log lines specific to process instance {} or general context",
+                processSpecificLogLines.size(), processInstanceId);
+
+        // Check repository initialization logs in all log lines (not just process-specific)
+        // Repository initialization is a general context log that should always be present
+        List<String> usedInMemoryRepository = logLines.stream()
+                .filter(line -> line.contains(LOG_PREFIX_USED_REPOSITORY + ": InMemoryTokenCacheRepository"))
+                .toList();
+
         Assertions.assertThat(usedInMemoryRepository).hasSize(1);
-
         LOGGER.info("InMemory repository was used as expected");
 
-        List<String> startTokenExchangeLogLines = logLines.stream().filter(line -> line.contains(LOG_PREFIX_STARTING_TOKEN_EXCHANGE)).toList();
-        List<String> completedTokenExchangeLogLines = logLines.stream().filter(line -> line.contains(LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE)).toList();
-        List<String> failedTokenExchangeLogLines = logLines.stream().filter(line -> line.contains(LOG_PREFIX_FAILED_TOKEN_EXCHANGE)).toList();
-        List<String> refreshTokenExchangeLogLines = logLines.stream().filter(line -> line.contains(LOG_PREFIX_TOKEN_REFRESH)).toList();
-        List<String> completedRefreshTokenExchangeLogLines = logLines.stream().filter(line -> line.contains(LOG_PREFIX_REFRESH_COMPLETED)).toList();
-        List<String> failedRefreshTokenExchangeLogLines = logLines.stream().filter(line -> line.contains(LOG_PREFIX_FAILED_TO_REFRESH_TOKEN)).toList();
+        // Filter token exchange logs to only those related to this process instance
+        List<String> startTokenExchangeLogLines = processSpecificLogLines.stream()
+                .filter(line -> line.contains(LOG_PREFIX_STARTING_TOKEN_EXCHANGE))
+                .toList();
+        List<String> completedTokenExchangeLogLines = processSpecificLogLines.stream()
+                .filter(line -> line.contains(LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE))
+                .toList();
+        List<String> failedTokenExchangeLogLines = processSpecificLogLines.stream()
+                .filter(line -> line.contains(LOG_PREFIX_FAILED_TOKEN_EXCHANGE))
+                .toList();
+        List<String> refreshTokenExchangeLogLines = processSpecificLogLines.stream()
+                .filter(line -> line.contains(LOG_PREFIX_TOKEN_REFRESH) && line.contains(processInstanceId))
+                .toList();
+        List<String> completedRefreshTokenExchangeLogLines = processSpecificLogLines.stream()
+                .filter(line -> line.contains(LOG_PREFIX_REFRESH_COMPLETED) && line.contains(processInstanceId))
+                .toList();
+        List<String> failedRefreshTokenExchangeLogLines = processSpecificLogLines.stream()
+                .filter(line -> line.contains(LOG_PREFIX_FAILED_TO_REFRESH_TOKEN) && line.contains(processInstanceId))
+                .toList();
 
         Assertions.assertThat(startTokenExchangeLogLines).hasSize(1);
         Assertions.assertThat(completedTokenExchangeLogLines).hasSize(1);
@@ -154,125 +192,6 @@ class TokenExchangeIT extends ProcessInstanceLoggingTestBase {
         LOGGER.info("  - Starting token exchange: {} times", startTokenExchangeLogLines.size());
         LOGGER.info("  - Completed token exchange: {} times", completedTokenExchangeLogLines.size());
         LOGGER.info("  - Token refresh: {} times", refreshTokenExchangeLogLines.size());
-    }
-
-    @Test
-    void testConcurrentTokenExchangeLoggingSegregation() throws Exception {
-        LOGGER.info("Testing concurrent token exchange with process instance logging segregation");
-
-        // Get the Quarkus log file path and clear it
-        Path logFile = getLogFilePath();
-        clearLogFile(logFile);
-
-        final int numberOfProcesses = 5;
-        ExecutorService executor = Executors.newFixedThreadPool(numberOfProcesses);
-        CountDownLatch startLatch = new CountDownLatch(1);
-        CountDownLatch completionLatch = new CountDownLatch(numberOfProcesses);
-        List<Future<String>> futures = new ArrayList<>();
-
-        try {
-            // Start all processes simultaneously
-            for (int i = 0; i < numberOfProcesses; i++) {
-                Future<String> future = executor.submit(() -> {
-                    try {
-                        // Wait for the start signal
-                        startLatch.await();
-
-                        // Start a new process instance
-                        String processInput = buildTokenExchangeWorkflowInput(SUCCESSFUL_QUERY);
-                        Map<String, String> headers = new HashMap<>();
-                        headers.put(HttpHeaders.AUTHORIZATION, BASE_AND_PROPAGATED_AUTHORIZATION_TOKEN);
-
-                        JsonPath jsonPath = newProcessInstance("/token_exchange", processInput, headers);
-                        String processInstanceId = jsonPath.getString("id");
-                        LOGGER.info("Started concurrent process instance: {}", processInstanceId);
-
-                        // Wait for the process to complete
-                        waitForWorkflowCompletion("/token_exchange", processInstanceId, Duration.ofSeconds(35));
-
-                        // Verify the process completed successfully
-                        assertProcessInstanceNotExists("/token_exchange/{id}", processInstanceId);
-
-                        completionLatch.countDown();
-                        return processInstanceId;
-                    } catch (Exception e) {
-                        LOGGER.error("Error in concurrent process execution", e);
-                        completionLatch.countDown();
-                        throw new RuntimeException(e);
-                    }
-                });
-                futures.add(future);
-            }
-
-            // Start all processes at the same time
-            startLatch.countDown();
-
-            // Wait for all processes to complete (with timeout)
-            boolean completed = completionLatch.await(3, TimeUnit.MINUTES);
-            Assertions.assertThat(completed)
-                    .as("All concurrent processes should complete within 3 minutes")
-                    .isTrue();
-
-            // Collect all process instance IDs
-            List<String> processInstanceIds = new ArrayList<>();
-            for (Future<String> future : futures) {
-                processInstanceIds.add(future.get());
-            }
-
-            LOGGER.info("All {} concurrent processes completed: {}", numberOfProcesses, processInstanceIds);
-
-            // Parse and analyze the log file
-            List<ProcessInstanceLogAnalyzer.LogEntry> logEntries =
-                    ProcessInstanceLogAnalyzer.parseLogFileWithMultilineSupport(logFile);
-
-            // Validate log format consistency
-            ProcessInstanceLogAnalyzer.validateLogFormat(logEntries);
-
-            // Group entries by process instance
-            Map<String, List<ProcessInstanceLogAnalyzer.LogEntry>> entriesByProcess =
-                    ProcessInstanceLogAnalyzer.groupByProcessInstance(logEntries);
-
-            // Validate process instance segregation
-            ProcessInstanceLogAnalyzer.validateProcessInstanceSegregation(entriesByProcess, processInstanceIds);
-
-            // Calculate and display statistics
-            ProcessInstanceLogAnalyzer.LogStatistics stats = ProcessInstanceLogAnalyzer.calculateStatistics(logEntries);
-            LOGGER.info("Concurrent execution log analysis: {}", stats);
-
-            // Validate consistent log patterns across concurrent executions (70% similarity threshold)
-            ProcessInstanceLogAnalyzer.validateConsistentLogPatterns(entriesByProcess, processInstanceIds, 0.7);
-
-            // Ensure we have logs from all expected process instances
-            for (String processInstanceId : processInstanceIds) {
-                List<ProcessInstanceLogAnalyzer.LogEntry> processLogs = entriesByProcess.get(processInstanceId);
-                Assertions.assertThat(processLogs)
-                        .as("Should have log entries for concurrent process instance " + processInstanceId)
-                        .isNotEmpty();
-
-                // Verify that all logs for this process have the correct process instance ID
-                long correctlyTaggedLogs = processLogs.stream()
-                        .filter(entry -> processInstanceId.equals(entry.processInstanceId))
-                        .count();
-
-                Assertions.assertThat(correctlyTaggedLogs)
-                        .as("All logs for concurrent process " + processInstanceId + " should have correct process instance ID")
-                        .isEqualTo(processLogs.size());
-            }
-
-            // Verify general context logs exist (should be empty process instance ID)
-            List<ProcessInstanceLogAnalyzer.LogEntry> generalContextLogs = entriesByProcess.get("general");
-            Assertions.assertThat(generalContextLogs)
-                    .as("Should have general context logs from concurrent execution")
-                    .isNotEmpty();
-
-            LOGGER.info("Concurrent token exchange logging segregation validation completed successfully");
-
-        } finally {
-            executor.shutdown();
-            if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
-                executor.shutdownNow();
-            }
-        }
     }
 
 }

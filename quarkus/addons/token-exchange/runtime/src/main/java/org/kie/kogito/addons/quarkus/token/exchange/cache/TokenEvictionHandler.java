@@ -69,7 +69,7 @@ public class TokenEvictionHandler {
             if (processInstanceId != null && !processInstanceId.isEmpty()) {
                 ProcessInstanceContext.setProcessInstanceId(processInstanceId);
             } else {
-                ProcessInstanceContext.getProcessInstanceIdOrGeneral();
+                ProcessInstanceContext.getProcessInstanceId();
             }
 
             try {
@@ -127,7 +127,7 @@ public class TokenEvictionHandler {
                 if (processInstanceId != null && !processInstanceId.isEmpty()) {
                     ProcessInstanceContext.setProcessInstanceId(processInstanceId);
                 } else {
-                    ProcessInstanceContext.getProcessInstanceIdOrGeneral();
+                    ProcessInstanceContext.getProcessInstanceId();
                 }
 
                 LOGGER.info("{} - cache key '{}'", LOG_PREFIX_TOKEN_REFRESH, cacheKey);

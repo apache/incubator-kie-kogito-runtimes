@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.services.context;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -28,14 +29,17 @@ import org.slf4j.MDC;
 /**
  * Utility class for managing process instance context in logging operations.
  * This class uses SLF4J's Mapped Diagnostic Context (MDC) to ensure process instance IDs
- * are automatically included in log messages with the format:
- * [date]|[log level]|[process instance id]|[logger]|[log message]
+ * are automatically included in log messages.
  *
  * When no process instance is available, an empty string is used as the default value
  * to provide cleaner formatting and easier searching in log aggregation systems.
  *
  * Thread Safety: This class is thread-safe and properly manages context isolation
- * between different threads and nested process executions.
+ * between different threads using MDC's inherent ThreadLocal-based storage.
+ *
+ * Distributed Tracing: This class integrates with OpenTelemetry when available,
+ * automatically setting process instance ID as a span attribute and adding trace/span
+ * IDs to MDC for correlation between logs and traces.
  */
 public final class ProcessInstanceContext {
 
@@ -48,37 +52,31 @@ public final class ProcessInstanceContext {
     public static final String MDC_PROCESS_INSTANCE_KEY = "processInstanceId";
 
     /**
+     * MDC key for trace ID (for distributed tracing correlation).
+     */
+    public static final String MDC_TRACE_ID_KEY = "traceId";
+
+    /**
+     * MDC key for span ID (for distributed tracing correlation).
+     */
+    public static final String MDC_SPAN_ID_KEY = "spanId";
+
+    /**
+     * Span attribute key for process instance ID (OpenTelemetry).
+     */
+    public static final String SPAN_ATTRIBUTE_PROCESS_INSTANCE_ID = "kogito.process.instance.id";
+
+    /**
      * Default value used when no process instance ID is available.
      * Empty string for cleaner log formatting and easier searching.
      */
     public static final String GENERAL_CONTEXT = "";
 
     /**
-     * ThreadLocal storage for process instance ID as backup to MDC.
-     * This provides faster access and helps detect nested contexts.
+     * Flag to track if OpenTelemetry is available at runtime.
+     * Checked once on first use to avoid repeated reflection.
      */
-    private static final ThreadLocal<String> PROCESS_INSTANCE_ID = new ThreadLocal<>();
-
-    /**
-     * ThreadLocal storage for nested context depth to handle nested process calls.
-     */
-    private static final ThreadLocal<Integer> CONTEXT_DEPTH = new ThreadLocal<>();
-
-    // Static initializer to set default MDC value
-    static {
-        // Ensure MDC always has a default value for the current thread
-        ensureGeneralContext();
-    }
-
-    /**
-     * Ensures that the MDC has a default "general" value if no process instance ID is set.
-     * This method is thread-safe and can be called from any thread.
-     */
-    private static void ensureGeneralContext() {
-        if (MDC.get(MDC_PROCESS_INSTANCE_KEY) == null) {
-            MDC.put(MDC_PROCESS_INSTANCE_KEY, GENERAL_CONTEXT);
-        }
-    }
+    private static volatile Boolean openTelemetryAvailable = null;
 
     // Private constructor to prevent instantiation
     private ProcessInstanceContext() {
@@ -86,135 +84,124 @@ public final class ProcessInstanceContext {
     }
 
     /**
+     * Checks if OpenTelemetry is available on the classpath.
+     * This is cached after the first check.
+     *
+     * @return true if OpenTelemetry is available, false otherwise
+     */
+    private static boolean isOpenTelemetryAvailable() {
+        if (openTelemetryAvailable == null) {
+            synchronized (ProcessInstanceContext.class) {
+                if (openTelemetryAvailable == null) {
+                    try {
+                        Class.forName("io.opentelemetry.api.trace.Span");
+                        openTelemetryAvailable = true;
+                        LOGGER.debug("OpenTelemetry detected - distributed tracing integration enabled");
+                    } catch (ClassNotFoundException e) {
+                        openTelemetryAvailable = false;
+                        LOGGER.debug("OpenTelemetry not available - distributed tracing integration disabled");
+                    }
+                }
+            }
+        }
+        return openTelemetryAvailable;
+    }
+
+    /**
      * Sets the process instance ID for the current thread context.
-     * This method automatically updates both ThreadLocal storage and SLF4J MDC.
+     * This method updates SLF4J MDC and only performs the update if the value changes.
+     * If OpenTelemetry is available, also sets the process instance ID as a span attribute
+     * and adds trace/span IDs to MDC for correlation.
      *
      * @param processInstanceId the process instance ID to set, or null to use general context
      */
     public static void setProcessInstanceId(String processInstanceId) {
-        try {
-            String effectiveId = processInstanceId != null ? processInstanceId : GENERAL_CONTEXT;
+        String effectiveId = processInstanceId != null ? processInstanceId : GENERAL_CONTEXT;
 
-            // Check if we're setting the same ID (optimization for nested calls)
-            String currentId = PROCESS_INSTANCE_ID.get();
-            if (effectiveId.equals(currentId)) {
-                // Increment depth for nested calls with same ID
-                Integer depth = CONTEXT_DEPTH.get();
-                CONTEXT_DEPTH.set(depth != null ? depth + 1 : 1);
-                return;
+        // Only update MDC if the value is changing (optimization)
+        String currentId = MDC.get(MDC_PROCESS_INSTANCE_KEY);
+        if (!effectiveId.equals(currentId)) {
+            MDC.put(MDC_PROCESS_INSTANCE_KEY, effectiveId);
+
+            // Integrate with distributed tracing if available
+            if (isOpenTelemetryAvailable()) {
+                setSpanAttributes(effectiveId);
             }
-
-            // Set new context - always set ThreadLocal, even for general context
-            if (GENERAL_CONTEXT.equals(effectiveId)) {
-                // For general context, don't set ThreadLocal (leave it null) but set MDC
-                PROCESS_INSTANCE_ID.remove();
-            } else {
-                // For actual process instance IDs, set ThreadLocal
-                PROCESS_INSTANCE_ID.set(effectiveId);
-            }
-
-            // Defensive check: ensure MDC operations are atomic for this thread
-            try {
-                MDC.put(MDC_PROCESS_INSTANCE_KEY, effectiveId);
-            } catch (Exception e) {
-                // In case of MDC issues, log but don't fail the operation
-                LOGGER.warn("Failed to set MDC context for process instance {}: {}", effectiveId, e.getMessage());
-            }
-
-            CONTEXT_DEPTH.set(1);
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Set process instance context to: {}", effectiveId);
-            }
-        } catch (Exception e) {
-            // Defensive catch for any unexpected issues in context management
-            LOGGER.error("Unexpected error setting process instance context: {}", e.getMessage(), e);
-            // Ensure we at least have general context in MDC
-            ensureGeneralContext();
         }
     }
 
     /**
-     * Gets the current process instance ID from ThreadLocal storage.
+     * Sets span attributes and adds trace context to MDC using reflection.
+     * This avoids a hard dependency on OpenTelemetry.
+     *
+     * @param processInstanceId the process instance ID to set in the span
+     */
+    private static void setSpanAttributes(String processInstanceId) {
+        try {
+            // Get current span using reflection: Span.current()
+            Class<?> spanClass = Class.forName("io.opentelemetry.api.trace.Span");
+            Method currentMethod = spanClass.getMethod("current");
+            Object currentSpan = currentMethod.invoke(null);
+
+            if (currentSpan != null) {
+                // Set process instance ID as span attribute: span.setAttribute(key, value)
+                Method setAttributeMethod = spanClass.getMethod("setAttribute", String.class, String.class);
+                setAttributeMethod.invoke(currentSpan, SPAN_ATTRIBUTE_PROCESS_INSTANCE_ID, processInstanceId);
+
+                // Get span context: span.getSpanContext()
+                Method getSpanContextMethod = spanClass.getMethod("getSpanContext");
+                Object spanContext = getSpanContextMethod.invoke(currentSpan);
+
+                if (spanContext != null) {
+                    Class<?> spanContextClass = Class.forName("io.opentelemetry.api.trace.SpanContext");
+
+                    // Get trace ID: spanContext.getTraceId()
+                    Method getTraceIdMethod = spanContextClass.getMethod("getTraceId");
+                    String traceId = (String) getTraceIdMethod.invoke(spanContext);
+                    if (traceId != null && !traceId.isEmpty()) {
+                        MDC.put(MDC_TRACE_ID_KEY, traceId);
+                    }
+
+                    // Get span ID: spanContext.getSpanId()
+                    Method getSpanIdMethod = spanContextClass.getMethod("getSpanId");
+                    String spanId = (String) getSpanIdMethod.invoke(spanContext);
+                    if (spanId != null && !spanId.isEmpty()) {
+                        MDC.put(MDC_SPAN_ID_KEY, spanId);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Log at debug level - this is not a critical failure
+            LOGGER.debug("Failed to set OpenTelemetry span attributes: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Gets the current process instance ID from MDC.
      *
      * @return the current process instance ID, or empty string if no context is set
      */
     public static String getProcessInstanceId() {
-        // Ensure MDC is initialized for this thread
-        ensureGeneralContext();
-        String id = PROCESS_INSTANCE_ID.get();
-        return id != null ? id : GENERAL_CONTEXT;
-    }
-
-    /**
-     * Gets the current process instance ID, returning an empty string if none is set.
-     *
-     * @return the current process instance ID or empty string if no context is set
-     */
-    public static String getProcessInstanceIdOrGeneral() {
-        // Ensure MDC is initialized for this thread
-        ensureGeneralContext();
-        String id = PROCESS_INSTANCE_ID.get();
+        String id = MDC.get(MDC_PROCESS_INSTANCE_KEY);
         return id != null ? id : GENERAL_CONTEXT;
     }
 
     /**
      * Clears the process instance context for the current thread.
-     * This method properly handles nested contexts by only clearing when
-     * the outermost context is being removed. When clearing, it removes
-     * the ThreadLocal context but keeps the general context in MDC for logging.
+     * This resets the MDC to the general context (empty string).
      */
     public static void clear() {
-        try {
-            Integer depth = CONTEXT_DEPTH.get();
+        MDC.put(MDC_PROCESS_INSTANCE_KEY, GENERAL_CONTEXT);
+    }
 
-            if (depth == null || depth <= 1) {
-                // Clear ThreadLocal but keep general context in MDC for logging
-                String clearedId = PROCESS_INSTANCE_ID.get();
-
-                try {
-                    PROCESS_INSTANCE_ID.remove();
-                } catch (Exception e) {
-                    LOGGER.warn("Error removing ThreadLocal process instance ID: {}", e.getMessage());
-                }
-
-                try {
-                    MDC.put(MDC_PROCESS_INSTANCE_KEY, GENERAL_CONTEXT);
-                } catch (Exception e) {
-                    LOGGER.warn("Error resetting MDC to general context: {}", e.getMessage());
-                }
-
-                try {
-                    CONTEXT_DEPTH.remove();
-                } catch (Exception e) {
-                    LOGGER.warn("Error removing ThreadLocal context depth: {}", e.getMessage());
-                }
-
-                if (LOGGER.isDebugEnabled() && clearedId != null && !GENERAL_CONTEXT.equals(clearedId)) {
-                    LOGGER.debug("Cleared process instance context: {}, reset to empty", clearedId);
-                }
-            } else {
-                // Decrement depth for nested calls
-                try {
-                    CONTEXT_DEPTH.set(depth - 1);
-                } catch (Exception e) {
-                    LOGGER.warn("Error decrementing context depth: {}", e.getMessage());
-                    // Fallback: remove the depth completely
-                    CONTEXT_DEPTH.remove();
-                }
-            }
-        } catch (Exception e) {
-            // Defensive catch for any unexpected issues
-            LOGGER.error("Unexpected error clearing process instance context: {}", e.getMessage(), e);
-            try {
-                // Try to at least clean up the ThreadLocals
-                PROCESS_INSTANCE_ID.remove();
-                CONTEXT_DEPTH.remove();
-                ensureGeneralContext();
-            } catch (Exception cleanupException) {
-                LOGGER.error("Failed to cleanup ThreadLocal context: {}", cleanupException.getMessage());
-            }
-        }
+    /**
+     * Checks if a process instance context is currently set.
+     *
+     * @return true if a process instance context is set, false otherwise
+     */
+    public static boolean hasContext() {
+        String id = MDC.get(MDC_PROCESS_INSTANCE_KEY);
+        return id != null && !GENERAL_CONTEXT.equals(id);
     }
 
     /**
@@ -270,51 +257,8 @@ public final class ProcessInstanceContext {
     public static void setContextFromAsync(Map<String, String> contextMap) {
         if (contextMap != null) {
             MDC.setContextMap(contextMap);
-            // Also update ThreadLocal for consistency
-            String processInstanceId = contextMap.get(MDC_PROCESS_INSTANCE_KEY);
-            if (processInstanceId != null && !GENERAL_CONTEXT.equals(processInstanceId)) {
-                PROCESS_INSTANCE_ID.set(processInstanceId);
-                CONTEXT_DEPTH.set(1);
-            } else {
-                PROCESS_INSTANCE_ID.remove();
-                CONTEXT_DEPTH.remove();
-            }
         } else {
-            // Reset to general context instead of clearing completely
-            PROCESS_INSTANCE_ID.remove();
             MDC.put(MDC_PROCESS_INSTANCE_KEY, GENERAL_CONTEXT);
-            CONTEXT_DEPTH.remove();
         }
-    }
-
-    /**
-     * Checks if a process instance context is currently set.
-     *
-     * @return true if a process instance context is set, false otherwise
-     */
-    public static boolean hasContext() {
-        String id = PROCESS_INSTANCE_ID.get();
-        return id != null && !GENERAL_CONTEXT.equals(id);
-    }
-
-    /**
-     * Checks if the current context is the general context (not process-specific).
-     *
-     * @return true if the current context is empty (general), false if it's process-specific or no context is set
-     */
-    public static boolean isGeneralContext() {
-        String id = PROCESS_INSTANCE_ID.get();
-        return GENERAL_CONTEXT.equals(id);
-    }
-
-    /**
-     * Gets the current nesting depth of the process context.
-     * This is useful for debugging nested process calls.
-     *
-     * @return the current nesting depth, or 0 if no context is set
-     */
-    public static int getContextDepth() {
-        Integer depth = CONTEXT_DEPTH.get();
-        return depth != null ? depth : 0;
     }
 }
