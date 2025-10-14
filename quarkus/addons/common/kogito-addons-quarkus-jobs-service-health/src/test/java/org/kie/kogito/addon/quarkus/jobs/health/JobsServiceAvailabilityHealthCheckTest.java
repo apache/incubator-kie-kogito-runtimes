@@ -16,27 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.quarkus.serverless.workflow.openapi;
 
-import java.util.Map;
+package org.kie.kogito.addon.quarkus.jobs.health;
 
-import org.eclipse.microprofile.openapi.OASFilter;
-import org.eclipse.microprofile.openapi.models.OpenAPI;
-import org.eclipse.microprofile.openapi.models.media.Schema;
-import org.kie.kogito.serverless.workflow.parser.schema.OpenApiModelSchemaGenerator;
+import java.util.Optional;
 
-public final class ServerlessWorkflowOASFilter implements OASFilter {
+import org.kie.kogito.addon.quarkus.common.health.AbstractAvailabilityHealthCheck;
+import org.kie.kogito.addon.quarkus.common.health.AbstractAvailabilityHealthCheckTest;
 
-    private final Map<String, Schema> schemasInfo;
-    private final Map<String, Schema> defsSchemas;
+import io.vertx.mutiny.core.Vertx;
+import io.vertx.mutiny.ext.web.client.WebClient;
 
-    public ServerlessWorkflowOASFilter(Map<String, Schema> schemasInfo, Map<String, Schema> defsSchemas) {
-        this.schemasInfo = schemasInfo;
-        this.defsSchemas = defsSchemas;
-    }
-
+class JobsServiceAvailabilityHealthCheckTest extends AbstractAvailabilityHealthCheckTest {
     @Override
-    public void filterOpenAPI(OpenAPI openAPI) {
-        OpenApiModelSchemaGenerator.mergeSchemas(openAPI, schemasInfo, defsSchemas);
+    protected AbstractAvailabilityHealthCheck createHealthCheck(String serviceUrl, Vertx vertxMock, WebClient webClientMock) {
+        return new JobsServiceAvailabilityHealthCheck(Optional.of(serviceUrl), vertxMock) {
+            @Override
+            public WebClient createClient() {
+                return webClientMock;
+            }
+        };
     }
 }
