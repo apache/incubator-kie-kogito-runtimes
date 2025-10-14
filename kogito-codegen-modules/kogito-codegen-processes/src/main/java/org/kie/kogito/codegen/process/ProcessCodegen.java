@@ -429,10 +429,12 @@ public class ProcessCodegen extends AbstractGenerator {
             }
 
             // wiring events
+            List<TriggerMetaData> triggers = new ArrayList<>();
             for (TriggerMetaData trigger : metaData.getTriggers()) {
                 // generate message consumers for processes with message start events
                 if (trigger.getType().equals(TriggerMetaData.TriggerType.ConsumeMessage)) {
                     TriggerMetaData normalizedTrigger = normalizedTrigger(trigger, channelsInfo, ChannelInfo::isInputDefault);
+                    triggers.add(normalizedTrigger);
                     LOGGER.debug("Processing consumer trigger {}", normalizedTrigger);
                     MessageConsumerGenerator messageConsumerGenerator =
                             megs.computeIfAbsent(new ProcessCloudEventMeta(workFlowProcess.getId(), normalizedTrigger), k -> new MessageConsumerGenerator(
@@ -445,6 +447,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     metaData.addConsumer(normalizedTrigger.getName(), messageConsumerGenerator.compilationUnit());
                 } else if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
                     TriggerMetaData normalizedTrigger = normalizedTrigger(trigger, channelsInfo, ChannelInfo::isOutputDefault);
+                    triggers.add(normalizedTrigger);
                     LOGGER.debug("Processing producer trigger {}", normalizedTrigger);
                     MessageProducerGenerator messageProducerGenerator = new MessageProducerGenerator(
                             context(),
@@ -455,6 +458,7 @@ public class ProcessCodegen extends AbstractGenerator {
                 }
             }
 
+            context().addContextAttribute(ContextAttributesConstants.PROCESS_TRIGGERS, triggers);
             processGenerators.add(p);
 
             ps.add(p);

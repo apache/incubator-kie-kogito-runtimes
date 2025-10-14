@@ -20,11 +20,15 @@ package org.kie.kogito.codegen.process.events;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
+import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.api.ApplicationSection;
+import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.core.utils.CodegenUtil;
@@ -42,7 +46,6 @@ public class EventCodegen extends AbstractGenerator {
     public EventCodegen(KogitoBuildContext context) {
         super(context, "messaging");
         channels = ChannelMappingStrategy.getChannelMapping(context);
-        channels.forEach(channel -> LOGGER.info("Generate channel endpoint {}", channel));
     }
 
     @Override
@@ -61,21 +64,47 @@ public class EventCodegen extends AbstractGenerator {
     }
 
     private Collection<GeneratedFile> generateEvents(Collection<ChannelInfo> channelsInfo) {
+        channelsInfo.forEach(e -> LOGGER.debug("Channel Found: {}", e));
+        List<TriggerMetaData> metadata = context().getContextAttribute(ContextAttributesConstants.PROCESS_TRIGGERS, List.class);
+        metadata = (metadata != null) ? metadata : Collections.emptyList();
+        List<String> channelsNames = metadata.stream().map(TriggerMetaData::getChannelName).toList();
+
         Collection<GeneratedFile> generatedFiles = new ArrayList<>();
         boolean isTxEnabeld = CodegenUtil.isTransactionEnabled(this, context());
-        for (ChannelInfo channelInfo : channelsInfo) {
+        boolean generatedInputDefault = false;
+        boolean generatedOutputDefault = false;
+
+        for (ChannelInfo channelInfo : channelsInfo.stream().filter(e -> channelsNames.contains(e.getChannelName())).toList()) {
             GeneratedFileType type = null;
             ClassGenerator classGenerator = null;
-            LOGGER.debug("Generate channel endpoint {}", channelInfo);
+            LOGGER.info("Generate channel endpoint {}", channelInfo);
             if (channelInfo.isInput()) {
                 type = EVENT_CONSUMER_TYPE;
                 classGenerator = new EventReceiverGenerator(context(), channelInfo, isTxEnabeld);
+                generatedInputDefault |= channelInfo.isInputDefault();
             } else {
                 type = EVENT_PRODUCER_TYPE;
                 classGenerator = new EventEmitterGenerator(context(), channelInfo, isTxEnabeld);
+                generatedOutputDefault |= channelInfo.isOutputDefault();
             }
 
             generatedFiles.add(new GeneratedFile(type, classGenerator.getPath(), classGenerator.getCode()));
+        }
+
+        if (!generatedInputDefault) {
+            channels.stream().filter(ChannelInfo::isInputDefault).forEach(channelInfo -> {
+                LOGGER.info("Generate default channel endpoint {}", channelInfo);
+                ClassGenerator classGenerator = new EventReceiverGenerator(context(), channelInfo, isTxEnabeld);
+                generatedFiles.add(new GeneratedFile(EVENT_CONSUMER_TYPE, classGenerator.getPath(), classGenerator.getCode()));
+            });
+        }
+
+        if (!generatedOutputDefault) {
+            channels.stream().filter(ChannelInfo::isOutputDefault).forEach(channelInfo -> {
+                LOGGER.info("Generate default channel endpoint {}", channelInfo);
+                ClassGenerator classGenerator = new EventEmitterGenerator(context(), channelInfo, isTxEnabeld);
+                generatedFiles.add(new GeneratedFile(EVENT_CONSUMER_TYPE, classGenerator.getPath(), classGenerator.getCode()));
+            });
         }
         return generatedFiles;
     }
