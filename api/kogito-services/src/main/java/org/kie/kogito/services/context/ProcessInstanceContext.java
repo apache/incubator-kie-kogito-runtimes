@@ -92,30 +92,45 @@ public final class ProcessInstanceContext {
      * @param processInstanceId the process instance ID to set, or null to use general context
      */
     public static void setProcessInstanceId(String processInstanceId) {
-        String effectiveId = processInstanceId != null ? processInstanceId : GENERAL_CONTEXT;
+        try {
+            String effectiveId = processInstanceId != null ? processInstanceId : GENERAL_CONTEXT;
 
-        // Check if we're setting the same ID (optimization for nested calls)
-        String currentId = PROCESS_INSTANCE_ID.get();
-        if (effectiveId.equals(currentId)) {
-            // Increment depth for nested calls with same ID
-            Integer depth = CONTEXT_DEPTH.get();
-            CONTEXT_DEPTH.set(depth != null ? depth + 1 : 1);
-            return;
-        }
+            // Check if we're setting the same ID (optimization for nested calls)
+            String currentId = PROCESS_INSTANCE_ID.get();
+            if (effectiveId.equals(currentId)) {
+                // Increment depth for nested calls with same ID
+                Integer depth = CONTEXT_DEPTH.get();
+                CONTEXT_DEPTH.set(depth != null ? depth + 1 : 1);
+                return;
+            }
 
-        // Set new context - always set ThreadLocal, even for general context
-        if (GENERAL_CONTEXT.equals(effectiveId)) {
-            // For general context, don't set ThreadLocal (leave it null) but set MDC
-            PROCESS_INSTANCE_ID.remove();
-        } else {
-            // For actual process instance IDs, set ThreadLocal
-            PROCESS_INSTANCE_ID.set(effectiveId);
-        }
-        MDC.put(MDC_PROCESS_INSTANCE_KEY, effectiveId);
-        CONTEXT_DEPTH.set(1);
+            // Set new context - always set ThreadLocal, even for general context
+            if (GENERAL_CONTEXT.equals(effectiveId)) {
+                // For general context, don't set ThreadLocal (leave it null) but set MDC
+                PROCESS_INSTANCE_ID.remove();
+            } else {
+                // For actual process instance IDs, set ThreadLocal
+                PROCESS_INSTANCE_ID.set(effectiveId);
+            }
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Set process instance context to: {}", effectiveId);
+            // Defensive check: ensure MDC operations are atomic for this thread
+            try {
+                MDC.put(MDC_PROCESS_INSTANCE_KEY, effectiveId);
+            } catch (Exception e) {
+                // In case of MDC issues, log but don't fail the operation
+                LOGGER.warn("Failed to set MDC context for process instance {}: {}", effectiveId, e.getMessage());
+            }
+
+            CONTEXT_DEPTH.set(1);
+
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Set process instance context to: {}", effectiveId);
+            }
+        } catch (Exception e) {
+            // Defensive catch for any unexpected issues in context management
+            LOGGER.error("Unexpected error setting process instance context: {}", e.getMessage(), e);
+            // Ensure we at least have general context in MDC
+            ensureGeneralContext();
         }
     }
 
@@ -150,21 +165,55 @@ public final class ProcessInstanceContext {
      * the ThreadLocal context but keeps the general context in MDC for logging.
      */
     public static void clear() {
-        Integer depth = CONTEXT_DEPTH.get();
+        try {
+            Integer depth = CONTEXT_DEPTH.get();
 
-        if (depth == null || depth <= 1) {
-            // Clear ThreadLocal but keep general context in MDC for logging
-            String clearedId = PROCESS_INSTANCE_ID.get();
-            PROCESS_INSTANCE_ID.remove();
-            MDC.put(MDC_PROCESS_INSTANCE_KEY, GENERAL_CONTEXT);
-            CONTEXT_DEPTH.remove();
+            if (depth == null || depth <= 1) {
+                // Clear ThreadLocal but keep general context in MDC for logging
+                String clearedId = PROCESS_INSTANCE_ID.get();
 
-            if (LOGGER.isDebugEnabled() && clearedId != null && !GENERAL_CONTEXT.equals(clearedId)) {
-                LOGGER.debug("Cleared process instance context: {}, reset to empty", clearedId);
+                try {
+                    PROCESS_INSTANCE_ID.remove();
+                } catch (Exception e) {
+                    LOGGER.warn("Error removing ThreadLocal process instance ID: {}", e.getMessage());
+                }
+
+                try {
+                    MDC.put(MDC_PROCESS_INSTANCE_KEY, GENERAL_CONTEXT);
+                } catch (Exception e) {
+                    LOGGER.warn("Error resetting MDC to general context: {}", e.getMessage());
+                }
+
+                try {
+                    CONTEXT_DEPTH.remove();
+                } catch (Exception e) {
+                    LOGGER.warn("Error removing ThreadLocal context depth: {}", e.getMessage());
+                }
+
+                if (LOGGER.isDebugEnabled() && clearedId != null && !GENERAL_CONTEXT.equals(clearedId)) {
+                    LOGGER.debug("Cleared process instance context: {}, reset to empty", clearedId);
+                }
+            } else {
+                // Decrement depth for nested calls
+                try {
+                    CONTEXT_DEPTH.set(depth - 1);
+                } catch (Exception e) {
+                    LOGGER.warn("Error decrementing context depth: {}", e.getMessage());
+                    // Fallback: remove the depth completely
+                    CONTEXT_DEPTH.remove();
+                }
             }
-        } else {
-            // Decrement depth for nested calls
-            CONTEXT_DEPTH.set(depth - 1);
+        } catch (Exception e) {
+            // Defensive catch for any unexpected issues
+            LOGGER.error("Unexpected error clearing process instance context: {}", e.getMessage(), e);
+            try {
+                // Try to at least clean up the ThreadLocals
+                PROCESS_INSTANCE_ID.remove();
+                CONTEXT_DEPTH.remove();
+                ensureGeneralContext();
+            } catch (Exception cleanupException) {
+                LOGGER.error("Failed to cleanup ThreadLocal context: {}", cleanupException.getMessage());
+            }
         }
     }
 
