@@ -19,15 +19,12 @@
 package org.kie.kogito.addons.jwt;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
-import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
-import io.serverlessworkflow.api.functions.FunctionRef;
 
 import static org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory.trimCustomOperation;
 
@@ -38,30 +35,12 @@ import static org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFacto
 public class JwtParserTypeHandler extends WorkItemTypeHandler {
 
     @Override
-    public NodeFactory<?, ?> getActionNode(Workflow workflow, ParserContext context,
-            RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, FunctionDefinition functionDef,
-            FunctionRef functionRef, VariableInfo varInfo) {
-
-        WorkItemNodeFactory<?> node = buildWorkItem(embeddedSubProcess, context, varInfo.getInputVar(), varInfo.getOutputVar())
-                .name(functionDef.getName());
-
-        // Parse the operation from the function definition
-        String operation = trimCustomOperation(functionDef);
-        if (operation != null && !operation.isEmpty()) {
-            node.workParameter(JwtParserWorkItemHandler.OPERATION_PARAM, operation);
-        }
-
-        return addFunctionArgs(workflow,
-                fillWorkItemHandler(workflow, context, node, functionDef),
-                functionRef);
-    }
-
-    @Override
     protected <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(
             Workflow workflow, ParserContext context, WorkItemNodeFactory<T> node, FunctionDefinition functionDef) {
 
-        if (functionDef.getMetadata() != null) {
-            functionDef.getMetadata().forEach(node::metaData);
+        String operation = trimCustomOperation(functionDef);
+        if (operation != null && !operation.isEmpty()) {
+            node.workParameter(JwtParserWorkItemHandler.OPERATION_PARAM, operation);
         }
 
         return node.workName(JwtParserWorkItemHandler.NAME);
