@@ -34,6 +34,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class JwtTokenParser {
 
+    private static final String BEARER = "Bearer ";
+
     /**
      * Parses a JWT token and returns the payload as a JsonNode
      * 
@@ -47,7 +49,7 @@ public class JwtTokenParser {
         }
 
         // Remove "Bearer " prefix if present
-        String cleanToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        String cleanToken = token.startsWith(BEARER) ? token.substring(BEARER.length()) : token;
 
         try {
             // Parse JWT token without signature verification (for claim extraction only)
