@@ -597,10 +597,6 @@ public class ProcessCodegen extends AbstractGenerator {
             }
             Predicate<ChannelInfo> defaultChannelInfoPredicate = triggerMetadata.getType().equals(TriggerType.ConsumeMessage) ? ChannelInfo::isInputDefault : ChannelInfo::isOutputDefault;
             Optional<ChannelInfo> defaultChannel = channelsInfo.stream().filter(defaultChannelInfoPredicate::test).findAny();
-            if (defaultChannel.isEmpty()) {
-                LOGGER.warn("Skipping trigger {} as there is no default channel or channel defined for it", triggerMetadata);
-                continue;
-            }
             String defaultChannelName = defaultChannel.map(ChannelInfo::getChannelName).get();
             LOGGER.debug("Normalizing trigger {}, channel {}", triggerMetadata, defaultChannelName);
             normalizedTriggers.add(TriggerMetaData.of(triggerMetadata, defaultChannelName));
