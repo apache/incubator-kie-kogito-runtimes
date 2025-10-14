@@ -58,14 +58,14 @@ public class JwtTokenParser {
             }
 
             // Decode the payload (second part) using Base64
-            String payload = parts[1];
-            // Add padding if necessary
-            while (payload.length() % 4 != 0) {
-                payload += "=";
+            StringBuilder payloadBuilder = new StringBuilder(parts[1]);
+            // Add padding if necessary using StringBuilder for efficiency
+            while (payloadBuilder.length() % 4 != 0) {
+                payloadBuilder.append('=');
             }
 
             // Parse the JSON payload directly from bytes using ObjectMapperFactory singleton
-            return ObjectMapperFactory.get().readTree(Base64.getUrlDecoder().decode(payload));
+            return ObjectMapperFactory.get().readTree(Base64.getUrlDecoder().decode(payloadBuilder.toString()));
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse JWT token: " + e.getMessage(), e);
