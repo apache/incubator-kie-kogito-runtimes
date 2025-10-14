@@ -55,6 +55,7 @@ import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/$name$")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Process - $name$", description = "$processInstanceDescription$")
 public class $Type$Resource {
 
     Process<$Type$> process;
