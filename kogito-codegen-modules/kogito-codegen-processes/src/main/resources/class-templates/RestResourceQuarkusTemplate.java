@@ -89,13 +89,6 @@ public class $Type$Resource {
                 .build();
     }
 
-    // @GET
-    // @Produces(MediaType.APPLICATION_JSON)
-    // @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    // public List<$Type$Output> getResources_$name$() {
-    //     return processService.getProcessInstanceOutput(process);
-    // }
-
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML})
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
@@ -103,19 +96,18 @@ public class $Type$Resource {
         List<$Type$Output> out = processService.getProcessInstanceOutput(process);
         boolean wantsHtml = headers.getAcceptableMediaTypes()
             .stream()
-            .anyMatch(mt -> mt.isCompatible(MediaType.TEXT_HTML_TYPE));
-
+            .anyMatch(mt -> mt.isCompatible(MediaType.TEXT_HTML_TYPE)
+                    && !mt.isWildcardType() && !mt.isWildcardSubtype());
         if (wantsHtml) {
-        InputStream htmlStream = getClass().getResourceAsStream("/META-INF/resources/index.html");
-        if (htmlStream == null) {
-            return Response.status(Response.Status.NOT_FOUND)
+            InputStream htmlStream = getClass().getResourceAsStream("/META-INF/resources/index.html");
+            if (htmlStream == null) {
+                return Response.status(Response.Status.NOT_FOUND)
                     .entity("HTML resource not found").build();
         }
         return Response.ok(htmlStream, MediaType.TEXT_HTML).build();
+        }
+        return Response.ok(out, MediaType.APPLICATION_JSON).build();
     }
-    return Response.ok(out, MediaType.APPLICATION_JSON).build();
-    }
-
 
     @GET
     @Path("schema")
