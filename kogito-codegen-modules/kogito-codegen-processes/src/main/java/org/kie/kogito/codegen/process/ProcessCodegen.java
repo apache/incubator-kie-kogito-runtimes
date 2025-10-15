@@ -599,7 +599,6 @@ public class ProcessCodegen extends AbstractGenerator {
             Optional<ChannelInfo> defaultChannel = channelsInfo.stream().filter(defaultChannelInfoPredicate::test).findAny();
             if (defaultChannel.isEmpty()) {
                 LOGGER.warn("Skipping trigger {} as there is no default channel or channel defined for it", triggerMetadata);
-                normalizedTriggers.add(triggerMetadata);
                 continue;
             }
             String defaultChannelName = defaultChannel.map(ChannelInfo::getChannelName).get();
