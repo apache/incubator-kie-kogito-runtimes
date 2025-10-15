@@ -54,8 +54,7 @@ public class ProcessInstanceMigrationResourceTest {
 
     public static final String MESSAGE = "message";
     public static final String PROCESS_ID = "test";
-    public static final String PROCESS_INSTANCE_ID = "xxxxx";
-    public static final String NODE_ID = "abc-def";
+    public static final String PROCESS_INSTANCE_ID = "testInstance";
     private static RuntimeDelegate runtimeDelegate;
     private ResponseBuilder responseBuilder;
 
@@ -65,6 +64,9 @@ public class ProcessInstanceMigrationResourceTest {
     private ProcessError error;
     private Application application;
     private ProcessInstanceMigrationResource resource;
+
+    @Mock
+    ProcessInstances mockInstances;
 
     @BeforeAll
     public static void configureEnvironment() {
@@ -87,19 +89,18 @@ public class ProcessInstanceMigrationResourceTest {
         application = mock(Application.class);
         processes = mock(Processes.class);
         AbstractProcess process = mock(AbstractProcess.class);
-        ProcessInstances instances = mock(ProcessInstances.class);
         processInstance = mock(ProcessInstance.class);
         error = mock(ProcessError.class);
 
         Instance<Processes> processesInstance = mock(Instance.class);
         lenient().when(processes.processById(anyString())).thenReturn(process);
         lenient().when(processesInstance.get()).thenReturn(processes);
-        lenient().when(process.instances()).thenReturn(instances);
-        lenient().when(instances.findById(anyString())).thenReturn(Optional.of(processInstance));
+        lenient().when(process.instances()).thenReturn(mockInstances);
+        lenient().when(mockInstances.findById(anyString())).thenReturn(Optional.of(processInstance));
         lenient().when(processInstance.error()).thenReturn(Optional.of(error));
         lenient().when(processInstance.id()).thenReturn("abc-def");
         lenient().when(processInstance.status()).thenReturn(KogitoProcessInstance.STATE_ACTIVE);
-        lenient().when(error.failedNodeId()).thenReturn("xxxxx");
+        lenient().when(error.failedNodeId()).thenReturn("test");
         lenient().when(error.errorMessage()).thenReturn("Test error message");
         lenient().when(process.get()).thenReturn(mock(KogitoWorkflowProcess.class));
 
@@ -110,23 +111,30 @@ public class ProcessInstanceMigrationResourceTest {
     @Test
     public void testMigrateInstance() {
         ProcessMigrationSpec processMigrationSpec = new ProcessMigrationSpec();
+        processMigrationSpec.setTargetProcessId("test2");
+        processMigrationSpec.setTargetProcessVersion("1.0");
 
         Response response = resource.migrateInstance(PROCESS_ID, PROCESS_INSTANCE_ID, processMigrationSpec);
         assertThat(response).isNotNull();
         verify(responseBuilder, times(1)).status((StatusType) Response.Status.OK);
         verify(responseBuilder, times(1)).entity(any());
         verify(resource).migrateInstance(PROCESS_ID, PROCESS_INSTANCE_ID, processMigrationSpec);
+        verify(mockInstances).migrateProcessInstances("test2", "1.0","testInstance");
     }
 
     @Test
     public void testMigrateAllInstance() {
         ProcessMigrationSpec processMigrationSpec = new ProcessMigrationSpec();
+        processMigrationSpec.setTargetProcessId("test2");
+        processMigrationSpec.setTargetProcessVersion("1.0");
 
         Response response = resource.migrateAllInstances(PROCESS_ID, processMigrationSpec);
         assertThat(response).isNotNull();
         verify(responseBuilder, times(1)).status((StatusType) Response.Status.OK);
         verify(responseBuilder, times(1)).entity(any());
         verify(resource).migrateAllInstances(PROCESS_ID, processMigrationSpec);
+        verify(mockInstances).migrateAll("test2", "1.0");
+
     }
 
     @Test
