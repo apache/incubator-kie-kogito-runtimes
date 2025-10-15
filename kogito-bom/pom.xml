@@ -382,6 +382,18 @@
             <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      
+      <dependency>
+        <groupId>org.apache.kie.sonataflow</groupId>
+        <artifactId>sonataflow-addons-quarkus-common-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.kie.sonataflow</groupId>
+        <artifactId>sonataflow-addons-quarkus-common-deployment</artifactId>
+         <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
 
       <dependency>
         <groupId>org.kie</groupId>
@@ -1305,6 +1317,30 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!--  Token Exchange addon    -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-quarkus-token-exchange</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-quarkus-token-exchange</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-quarkus-token-exchange-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-quarkus-token-exchange-deployment</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-addons-springboot-process-management</artifactId>
@@ -1474,6 +1510,17 @@
       <!-- Process SVG addon     -->
       <dependency>
         <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-common-auth</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-common-auth</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
         <artifactId>kie-addons-process-svg</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1636,7 +1683,7 @@
         <artifactId>kogito-addons-quarkus-jobs-knative-eventing-deployment</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
-      </dependency>
+      </dependency>   
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kogito-addons-quarkus-common-health</artifactId>
@@ -1817,7 +1864,39 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- Flyway Add-on-->
+	  <!-- Jobs -->
+	  <dependency>
+		<groupId>org.kie</groupId>
+		<artifactId>jobs-common-embedded</artifactId>
+		<version>${project.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.kie</groupId>
+		<artifactId>kogito-addons-common-embedded-jobs-jpa</artifactId>
+		<version>${project.version}</version>
+  	  </dependency>
+	  <dependency>
+		<groupId>org.kie</groupId>
+		<artifactId>kogito-addons-quarkus-embedded-jobs-jpa</artifactId>
+		<version>${project.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.kie</groupId>
+		<artifactId>kogito-addons-springboot-embedded-jobs-jpa</artifactId>
+		<version>${project.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.kie</groupId>
+		<artifactId>kogito-addons-quarkus-embedded-jobs</artifactId>
+		<version>${project.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.kie</groupId>
+		<artifactId>kogito-addons-springboot-embedded-jobs</artifactId>
+		<version>${project.version}</version>
+	  </dependency>
+
+	  <!-- Flyway Add-on-->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-addons-flyway</artifactId>
@@ -1863,14 +1942,14 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- drools -->
+			<!-- drools -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-drools</artifactId>
         <version>${project.version}</version>
       </dependency>
 
-      <!-- DMN -->
+			<!-- DMN -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-dmn</artifactId>
@@ -1890,7 +1969,7 @@
         <scope>test</scope>
       </dependency>
 
-      <!-- PMML -->
+			<!-- PMML -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-pmml-api-dependencies</artifactId>
@@ -1933,7 +2012,7 @@
         <type>pom</type>
       </dependency>
 
-      <!-- Scenario Simulation Runner -->
+			<!-- Scenario Simulation Runner -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-scenario-simulation</artifactId>
@@ -1953,7 +2032,7 @@
         <scope>test</scope>
       </dependency>
 
-      <!-- jbpm -->
+			<!-- jbpm -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>jbpm-deps-group-bpmn2-compiler</artifactId>
@@ -2316,6 +2395,28 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
+        <groupId>org.apache.kie.sonataflow</groupId>
+        <artifactId>sonataflow-addons-quarkus-openapi</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.kie.sonataflow</groupId>
+        <artifactId>sonataflow-addons-quarkus-openapi</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+       <dependency>
+        <groupId>org.apache.kie.sonataflow</groupId>
+        <artifactId>sonataflow-addons-quarkus-openapi-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.kie.sonataflow</groupId>
+        <artifactId>sonataflow-addons-quarkus-openapi-deployment</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-serverless-workflow-executor-grpc</artifactId>
         <version>${project.version}</version>
@@ -2394,7 +2495,7 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- spring boot starter -->
+			<!-- spring boot starter -->
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-with-drools-spring-boot-starter</artifactId>
@@ -2427,7 +2528,7 @@
         <version>${project.version}</version>
       </dependency>
 
-      <!-- Quarkus extension -->
+			<!-- Quarkus extension -->
       <dependency>
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-with-drools-quarkus</artifactId>
@@ -2460,7 +2561,7 @@
         <artifactId>drools-quarkus-decisions-deployment</artifactId>
         <version>${project.version}</version>
         <exclusions>
-          <!--
+					<!--
             Required for Gradle + Quarkus compat. See:
             https://github.com/quarkusio/quarkus/pull/19307
             https://quarkusio.zulipchat.com/#narrow/stream/187038-dev/topic/Gradle.20Kogito.20debugging
@@ -2592,7 +2693,7 @@
         <version>${project.version}</version>
       </dependency>
 
-      <!-- Data Index extension -->
+			<!-- Data Index extension -->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kogito-addons-quarkus-data-index-persistence-common-runtime</artifactId>
@@ -2792,7 +2893,7 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- Tracing -->
+			<!-- Tracing -->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-addons-tracing-api</artifactId>
@@ -2838,7 +2939,7 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- Explainability -->
+			<!-- Explainability -->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-addons-explainability</artifactId>
@@ -2886,7 +2987,7 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- event-driven decisions -->
+			<!-- event-driven decisions -->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-addons-events-decisions</artifactId>
@@ -2932,7 +3033,7 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- event-driven predictions -->
+			<!-- event-driven predictions -->
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-addons-events-predictions</artifactId>
@@ -2978,7 +3079,7 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- event-driven rules -->
+			<!-- event-driven rules -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-addons-events-rules</artifactId>
