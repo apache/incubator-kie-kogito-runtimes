@@ -52,6 +52,7 @@ public class ChannelMappingStrategy {
     private static final String KOGITO_MESSAGING_PREFIX = "kogito.addon.messaging.";
 
     private static final String KAFKA_PREFIX = "kogito.addon.cloudevents.kafka.";
+
     private static final String KOGITO_INCOMING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.INCOMING + ".";
     private static final String KOGITO_OUTGOING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.OUTGOING + ".";
 
@@ -60,7 +61,7 @@ public class ChannelMappingStrategy {
     private static final String INCOMING_DEFAULT_CHANNEL = KAFKA_PREFIX + KogitoEventStreams.INCOMING;
     private static final String OUTGOING_DEFAULT_CHANNEL = KAFKA_PREFIX + KogitoEventStreams.OUTGOING;
 
-    private static final String CLOUD_EVENT_MODE = KOGITO_OUTGOING_PREFIX + "cloudEventMode";
+    private static final String CLOUD_EVENT_MODE = "kogito.addon.messaging.outgoing.cloudEventMode";
 
     private static final String MARSHALLER_PREFIX = KOGITO_MESSAGING_PREFIX + "marshaller.";
     private static final String UNMARSHALLLER_PREFIX = KOGITO_MESSAGING_PREFIX + "unmarshaller.";
@@ -92,12 +93,12 @@ public class ChannelMappingStrategy {
         }
 
         if (inputDefaultChannel.isPresent() && result.stream().noneMatch(e -> e.getChannelName().equals(inputDefaultChannel.get()) && e.isInputDefault())) {
-            LOG.warn("Not incoming channels found but default is defined {}", inputDefaultChannel);
+            LOG.warn("No incoming channels found but default is defined {}", inputDefaultChannel);
             buildChannelInfo(context, true, INCOMING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultIncomingChannel, inTriggers, Optional.of("String"), Optional.of(true), p -> true).ifPresent(result::add);
         }
 
         if (outputDefaultChannel.isPresent() && result.stream().noneMatch(e -> e.getChannelName().equals(outputDefaultChannel.get()) && e.isOutputDefault())) {
-            LOG.warn("Not outgoing channels found but default is defined {}", outputDefaultChannel);
+            LOG.warn("No outgoing channels found but default is defined {}", outputDefaultChannel);
             buildChannelInfo(context, false, OUTGOING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultOutgoingChannel, outTriggers, Optional.of("String"), Optional.of(true), p -> true).ifPresent(result::add);
         }
 
