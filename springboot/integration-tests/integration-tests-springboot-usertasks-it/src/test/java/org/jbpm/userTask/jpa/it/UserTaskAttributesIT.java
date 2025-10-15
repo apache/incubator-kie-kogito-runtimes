@@ -19,6 +19,7 @@
 
 package org.jbpm.userTask.jpa.it;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.acme.travels.Address;
@@ -70,7 +71,7 @@ public class UserTaskAttributesIT extends BaseUserTaskIT {
     @ParameterizedTest
     @ValueSource(strings = { ADMIN_USERS_RESOURCE, ADMIN_GROUPS_RESOURCE, POTENTIAL_USERS_RESOURCE, EXCLUDED_USERS_RESOURCE })
     public void testUserTaskUsersAndGroupAttributes(String input) {
-
+        /* Set up */
         String taskId = given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "manager")
@@ -82,13 +83,20 @@ public class UserTaskAttributesIT extends BaseUserTaskIT {
                 .extract()
                 .path("[0].id");
 
+        /* test PUT */
+        setAndVerify(input, taskId, Set.of("Replacement" + input + "1", "Replacement" + input + "2"));
+        setAndVerify(input, taskId, Set.of("Replacement" + input + "2", input + "3"));
+
+        /* reset */
+        setAndVerify(input, taskId, Collections.emptySet());
+
+        /* test POST */
         addAndVerify(input, taskId, Set.of(input.toLowerCase() + "1", input.toLowerCase() + "2"));
         ValidatableResponse response = addAndVerify(input, taskId, Set.of(input.toLowerCase() + "2", input + "4"));
         verifyResponseResourceContainsExactly(response, input, Set.of(input.toLowerCase() + "1", input.toLowerCase() + "2", input + "4"));
 
-        setAndVerify(input, taskId, Set.of("Replacement" + input + "1", "Replacement" + input + "2"));
+        /* test DELETE */
         setAndVerify(input, taskId, Set.of("Replacement" + input + "2", input + "3"));
-
         addAndVerify(input, taskId, Set.of(input.toLowerCase() + "1", input.toLowerCase() + "2"));
 
         response = removeAndVerify(input, taskId, Set.of(input.toUpperCase() + "1"));
@@ -131,8 +139,8 @@ public class UserTaskAttributesIT extends BaseUserTaskIT {
     private ValidatableResponse removeAndVerify(String resource, String taskId, Set<String> adminUsersToRemove) {
         ValidatableResponse response = given().contentType(ContentType.JSON)
                 .when()
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
+                .queryParam("user", "john")
+                .queryParam("group", "managers")
                 .body(adminUsersToRemove)
                 .delete(USER_TASKS_INSTANCE_ENDPOINT + "/" + resource, taskId)
                 .then();
@@ -143,7 +151,8 @@ public class UserTaskAttributesIT extends BaseUserTaskIT {
     }
 
     private void verifyResponseResourceContainsExactly(ValidatableResponse response, String resource, Set<String> shouldContain) {
-        response.body(resource, containsInAnyOrder(shouldContain.toArray()));
+        response.body(resource, hasSize(shouldContain.size()))
+                .body(resource, containsInAnyOrder(shouldContain.toArray()));
     }
 
 }
