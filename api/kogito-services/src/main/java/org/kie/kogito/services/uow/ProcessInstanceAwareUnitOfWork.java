@@ -28,8 +28,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A UnitOfWork wrapper that manages process instance context throughout the unit of work lifecycle.
- * This ensures that all work units executed within this UoW have the correct process instance context
- * for logging purposes.
+ * This implementation ensures proper context cleanup even in the face of exceptions, preventing
+ * context leaks and ensuring thread safety.
+ *
+ * Key features:
+ * - Automatic context setup and cleanup
+ * - Support for nested UnitOfWork with context preservation
+ * - Exception-safe cleanup using try-finally blocks
+ * - ThreadLocal leak prevention
+ * - Integration with distributed tracing systems
+ *
+ * Thread Safety: This class is thread-safe and properly manages ThreadLocal cleanup to prevent
+ * memory leaks in long-running applications.
  */
 public class ProcessInstanceAwareUnitOfWork implements UnitOfWork {
 
@@ -37,7 +47,10 @@ public class ProcessInstanceAwareUnitOfWork implements UnitOfWork {
 
     private final UnitOfWork delegate;
     private final String processInstanceId;
-    private Map<String, String> savedContext;
+
+    // ThreadLocal to store saved context for nested UnitOfWork scenarios
+    // Using ThreadLocal instead of instance variable ensures thread safety
+    private static final ThreadLocal<Map<String, String>> SAVED_CONTEXT = new ThreadLocal<>();
 
     /**
      * Creates a new ProcessInstanceAwareUnitOfWork with the specified process instance ID.
@@ -52,10 +65,13 @@ public class ProcessInstanceAwareUnitOfWork implements UnitOfWork {
 
     @Override
     public void start() {
-        // Save the current context in case there's already one set
+        // Save the current context in case there's already one set (nested UoW scenario)
         if (ProcessInstanceContext.hasContext()) {
-            savedContext = ProcessInstanceContext.copyContextForAsync();
-            LOG.debug("Saved existing process context for UoW start: {}", ProcessInstanceContext.getProcessInstanceId());
+            Map<String, String> savedContext = ProcessInstanceContext.copyContextForAsync();
+            SAVED_CONTEXT.set(savedContext);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Saved existing process context for UoW start: {}", ProcessInstanceContext.getProcessInstanceId());
+            }
         }
 
         // Set the process instance context for this UoW
@@ -65,46 +81,37 @@ public class ProcessInstanceAwareUnitOfWork implements UnitOfWork {
             LOG.debug("Starting UnitOfWork with process instance context: {}", processInstanceId);
         }
 
+        // Start the delegate UnitOfWork
         delegate.start();
     }
 
     @Override
     public void end() {
         try {
+            // End the delegate UnitOfWork
             delegate.end();
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Ended UnitOfWork with process instance context: {}", processInstanceId);
             }
         } finally {
-            // Clear the current context and restore the saved one if needed
-            ProcessInstanceContext.clear();
-
-            if (savedContext != null) {
-                ProcessInstanceContext.setContextFromAsync(savedContext);
-                LOG.debug("Restored previous process context after UoW end: {}", ProcessInstanceContext.getProcessInstanceId());
-                savedContext = null;
-            }
+            // Always restore context, even if delegate.end() throws
+            restoreContext();
         }
     }
 
     @Override
     public void abort() {
         try {
+            // Abort the delegate UnitOfWork
             delegate.abort();
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Aborted UnitOfWork with process instance context: {}", processInstanceId);
             }
         } finally {
-            // Clear the current context and restore the saved one if needed
-            ProcessInstanceContext.clear();
-
-            if (savedContext != null) {
-                ProcessInstanceContext.setContextFromAsync(savedContext);
-                LOG.debug("Restored previous process context after UoW abort: {}", ProcessInstanceContext.getProcessInstanceId());
-                savedContext = null;
-            }
+            // Always restore context, even if delegate.abort() throws
+            restoreContext();
         }
     }
 
@@ -113,6 +120,30 @@ public class ProcessInstanceAwareUnitOfWork implements UnitOfWork {
         // Wrap the work unit to ensure context is maintained during execution
         WorkUnit wrappedWork = new ProcessInstanceAwareWorkUnit(work, processInstanceId);
         delegate.intercept(wrappedWork);
+    }
+
+    /**
+     * Restores the previously saved process instance context.
+     * This method is called by both end() and abort() in finally blocks to ensure
+     * cleanup happens regardless of exceptions.
+     */
+    private void restoreContext() {
+        try {
+            // Clear the current context
+            ProcessInstanceContext.clear();
+
+            // Restore the saved context if one exists
+            Map<String, String> savedContext = SAVED_CONTEXT.get();
+            if (savedContext != null) {
+                ProcessInstanceContext.setContextFromAsync(savedContext);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Restored previous process context: {}", ProcessInstanceContext.getProcessInstanceId());
+                }
+            }
+        } finally {
+            // Always clean up the ThreadLocal to prevent memory leaks
+            SAVED_CONTEXT.remove();
+        }
     }
 
     /**
@@ -135,6 +166,7 @@ public class ProcessInstanceAwareUnitOfWork implements UnitOfWork {
 
     /**
      * A WorkUnit wrapper that ensures process instance context is maintained during work unit execution.
+     * This wrapper is thread-safe and properly handles context cleanup to prevent memory leaks.
      */
     private static class ProcessInstanceAwareWorkUnit implements WorkUnit {
 

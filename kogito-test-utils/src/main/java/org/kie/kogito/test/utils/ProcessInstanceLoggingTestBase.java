@@ -27,14 +27,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -405,99 +402,6 @@ public abstract class ProcessInstanceLoggingTestBase {
         }
 
         throw new IOException("Failed to parse log files after " + maxRetries + " attempts", lastException);
-    }
-
-    /**
-     * Validate that general context logs (without process instance ID) exist.
-     *
-     * @param logFile Path to log file
-     * @throws IOException if file operations fail
-     */
-    protected void validateGeneralContextLogs(Path logFile) throws IOException {
-        // Parse log file using ProcessInstanceLogAnalyzer
-        List<ProcessInstanceLogAnalyzer.LogEntry> entries =
-                ProcessInstanceLogAnalyzer.parseLogFileWithMultilineSupport(logFile);
-
-        LOGGER.info("ProcessInstanceLogAnalyzer parsed {} entries from log file", entries.size());
-
-        if (entries.isEmpty()) {
-            // If no structured entries found, fall back to raw log line analysis
-            LOGGER.info("No structured log entries found, checking raw log lines");
-            List<String> logLines = Files.readAllLines(logFile);
-            LOGGER.info("Analyzing {} raw log lines for general context patterns", logLines.size());
-
-            // Debug: Test the regex pattern against the first log line
-            if (!logLines.isEmpty()) {
-                String firstLine = logLines.get(0);
-                LOGGER.info("First log line: '{}'", firstLine);
-
-                // Test if the line matches the expected pattern
-                Pattern pattern = Pattern.compile(
-                        "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\|" + // Group 1: timestamp
-                                "(\\w+)\\|" + // Group 2: level
-                                "([^\\|]*)\\|" + // Group 3: processInstanceId (empty for general)
-                                "([^\\|]+)\\|" + // Group 4: logger
-                                "(.*)" // Group 5: message (may include newlines)
-                );
-                Matcher matcher = pattern.matcher(firstLine);
-                LOGGER.info("Regex pattern matches: {}", matcher.matches());
-                if (matcher.matches()) {
-                    LOGGER.info("Groups: timestamp='{}', level='{}', processInstanceId='{}', logger='{}', message='{}'",
-                            matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5));
-                }
-            }
-
-            // Look for logs with empty context (pattern: timestamp|LEVEL||logger|message)
-            // Simplified approach: count lines that contain || indicating empty process instance ID
-            long generalContextLogs = logLines.stream()
-                    .filter(line -> line.contains("||"))
-                    .count();
-            assertThat(generalContextLogs).as("Should have general context logs").isGreaterThan(0);
-        } else {
-            // Validate log format if we have structured entries
-            ProcessInstanceLogAnalyzer.validateLogFormat(entries);
-
-            long generalContextLogs = entries.stream()
-                    .filter(ProcessInstanceLogAnalyzer.LogEntry::isGeneralContext)
-                    .count();
-
-            LOGGER.info("Found {} general context logs", generalContextLogs);
-
-            // Debug: Log the first few entries to understand what's being parsed
-            LOGGER.info("First 3 entries parsed:");
-            entries.stream().limit(3).forEach(entry -> LOGGER.info("Entry: processInstanceId='{}', level='{}', logger='{}'",
-                    entry.processInstanceId, entry.level, entry.logger));
-
-            assertThat(generalContextLogs).as("Should have general context logs").isGreaterThan(0);
-        }
-    }
-
-    /**
-     * Execute a workflow and wait for its completion.
-     *
-     * @param workflowPath REST path for the workflow (e.g., "/greet")
-     * @param workflowInput JSON input as String
-     * @param timeout Maximum time to wait for completion
-     * @return Process instance ID
-     */
-    protected String executeWorkflowAndWaitForCompletion(String workflowPath, String workflowInput, Duration timeout) {
-        JsonPath jsonPath = given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body(workflowInput)
-                .when()
-                .post(workflowPath)
-                .then()
-                .statusCode(201)
-                .extract()
-                .jsonPath();
-
-        String processInstanceId = jsonPath.getString("id");
-        assertThat(processInstanceId).isNotBlank();
-
-        waitForWorkflowCompletion(workflowPath, processInstanceId, timeout);
-
-        return processInstanceId;
     }
 
     /**

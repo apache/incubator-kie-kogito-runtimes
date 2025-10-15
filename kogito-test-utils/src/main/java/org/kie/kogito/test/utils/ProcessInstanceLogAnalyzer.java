@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -137,61 +138,11 @@ public class ProcessInstanceLogAnalyzer {
         List<LogEntry> entries = new ArrayList<>();
         LogEntry currentEntry = null;
         int lineNumber = 0;
-        int malformedLineCount = 0;
+        AtomicInteger malformedLineCount = new AtomicInteger(0);
 
         for (String line : lines) {
             lineNumber++;
-            try {
-                Matcher matcher = LOG_LINE_PATTERN.matcher(line);
-                if (matcher.matches()) {
-                    // New log entry - save previous if exists
-                    if (currentEntry != null) {
-                        entries.add(currentEntry);
-                    }
-
-                    // Parse new entry with defensive error handling
-                    LocalDateTime timestamp;
-                    try {
-                        timestamp = LocalDateTime.parse(matcher.group(1), TIMESTAMP_FORMATTER);
-                    } catch (Exception e) {
-                        // If timestamp parsing fails, use current time as fallback
-                        timestamp = LocalDateTime.now();
-                        malformedLineCount++;
-                    }
-
-                    String level = sanitizeString(matcher.group(2));
-                    String processInstanceId = sanitizeString(matcher.group(3));
-                    String logger = sanitizeString(matcher.group(4));
-                    String message = sanitizeString(matcher.group(5));
-
-                    // Validate required fields
-                    if (level.isEmpty()) {
-                        level = "INFO"; // Default level
-                        malformedLineCount++;
-                    }
-                    if (logger.isEmpty()) {
-                        logger = "unknown.logger"; // Default logger
-                        malformedLineCount++;
-                    }
-
-                    currentEntry = new LogEntry(timestamp, level, processInstanceId, logger, message);
-                } else if (currentEntry != null) {
-                    // Continuation line (stack trace, multiline message, etc.)
-                    currentEntry.appendMessage(line);
-                } else {
-                    // Malformed line without current entry - try alternative patterns
-                    LogEntry fallbackEntry = tryAlternativePatterns(line, lineNumber);
-                    if (fallbackEntry != null) {
-                        entries.add(fallbackEntry);
-                        malformedLineCount++;
-                    }
-                    // Otherwise skip the line
-                }
-            } catch (Exception e) {
-                // Defensive catch for any line parsing issues
-                malformedLineCount++;
-                // Continue processing other lines
-            }
+            currentEntry = parseLogLine(line, currentEntry, entries, malformedLineCount, lineNumber);
         }
 
         // Add the last entry
@@ -200,12 +151,78 @@ public class ProcessInstanceLogAnalyzer {
         }
 
         // Log statistics about parsing
-        if (malformedLineCount > 0) {
+        if (malformedLineCount.get() > 0) {
             System.err.printf("Warning: Encountered %d malformed/problematic lines out of %d total lines while parsing %s%n",
-                    malformedLineCount, lineNumber, logFile.getFileName());
+                    malformedLineCount.get(), lineNumber, logFile.getFileName());
         }
 
         return entries;
+    }
+
+    private static LogEntry parseLogLine(String line, LogEntry currentEntry, List<LogEntry> entries, AtomicInteger malformedLineCount, int lineNumber) {
+        try {
+            Matcher matcher = LOG_LINE_PATTERN.matcher(line);
+            if (matcher.matches()) {
+                // New log entry - save previous if exists
+                if (currentEntry != null) {
+                    entries.add(currentEntry);
+                }
+
+                currentEntry = parseEntry(matcher, malformedLineCount);
+            } else if (currentEntry != null) {
+                // Continuation line (stack trace, multiline message, etc.)
+                currentEntry.appendMessage(line);
+            } else {
+                // Malformed line without current entry - try alternative patterns
+                LogEntry fallbackEntry = tryAlternativePatterns(line, lineNumber);
+                if (fallbackEntry != null) {
+                    entries.add(fallbackEntry);
+                    malformedLineCount.set(malformedLineCount.get() + 1);
+                    ;
+                }
+                // Otherwise skip the line
+            }
+        } catch (Exception e) {
+            // Defensive catch for any line parsing issues
+            malformedLineCount.set(malformedLineCount.get() + 1);
+            ;
+            // Continue processing other lines
+        }
+        return currentEntry;
+    }
+
+    private static LogEntry parseEntry(Matcher matcher, AtomicInteger malformedLineCount) {
+        LocalDateTime timestamp = parseTimestamp(matcher, malformedLineCount);
+        String level = sanitizeString(matcher.group(2));
+        String processInstanceId = sanitizeString(matcher.group(3));
+        String logger = sanitizeString(matcher.group(4));
+        String message = sanitizeString(matcher.group(5));
+
+        if (level.isEmpty()) {
+            level = "INFO"; // Default level
+            malformedLineCount.set(malformedLineCount.get() + 1);
+            ;
+        }
+        if (logger.isEmpty()) {
+            logger = "unknown.logger"; // Default logger
+            malformedLineCount.set(malformedLineCount.get() + 1);
+            ;
+        }
+
+        return new LogEntry(timestamp, level, processInstanceId, logger, message);
+    }
+
+    private static LocalDateTime parseTimestamp(Matcher matcher, AtomicInteger malformedLineCount) {
+        LocalDateTime timestamp;
+        try {
+            timestamp = LocalDateTime.parse(matcher.group(1), TIMESTAMP_FORMATTER);
+        } catch (Exception e) {
+            // If timestamp parsing fails, use current time as fallback
+            timestamp = LocalDateTime.now();
+            malformedLineCount.set(malformedLineCount.get() + 1);
+            ;
+        }
+        return timestamp;
     }
 
     /**
@@ -251,7 +268,7 @@ public class ProcessInstanceLogAnalyzer {
         }
 
         // Pattern 3: Very simple format - just treat as message
-        if (line.trim().length() > 0) {
+        if (!line.trim().isEmpty()) {
             return new LogEntry(LocalDateTime.now(), "INFO", "", "unknown.logger", line);
         }
 
@@ -266,24 +283,6 @@ public class ProcessInstanceLogAnalyzer {
         return entries.stream()
                 .collect(Collectors.groupingBy(
                         entry -> entry.processInstanceId.isEmpty() ? "" : entry.processInstanceId));
-    }
-
-    /**
-     * Filter entries by logger pattern.
-     */
-    public static List<LogEntry> filterByLogger(List<LogEntry> entries, Pattern loggerPattern) {
-        return entries.stream()
-                .filter(entry -> loggerPattern.matcher(entry.logger).matches())
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Filter entries by log level.
-     */
-    public static List<LogEntry> filterByLevel(List<LogEntry> entries, String level) {
-        return entries.stream()
-                .filter(entry -> level.equals(entry.level))
-                .collect(Collectors.toList());
     }
 
     /**
