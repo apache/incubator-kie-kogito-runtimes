@@ -45,9 +45,6 @@ import io.quarkus.runtime.Startup;
 @Named("Receiver-$ChannelName$")
 public class $ClassName$ extends AbstractQuarkusCloudEventReceiver<$Type$> {
 
-    @org.eclipse.microprofile.config.inject.ConfigProperty(name = "kogito.messaging.as-cloudevents", defaultValue = "true")
-    protected Boolean useCloudEvents;
-
     @Incoming("$ChannelName$")
     @Transactional
     @Blocking
@@ -62,10 +59,6 @@ public class $ClassName$ extends AbstractQuarkusCloudEventReceiver<$Type$> {
 
     protected CloudEventUnmarshallerFactory<$Type$> getCloudEventUnmarshallerFactory() {
         return ceUnmarshaller;
-    }
-
-    protected boolean useCloudEvents() {
-        return useCloudEvents;
     }
 
 }
