@@ -21,14 +21,11 @@ package org.kie.kogito.addon.quarkus.common.reactive.messaging.http;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.quarkus.common.reactive.messaging.MessageDecorator;
 
-import io.quarkus.arc.DefaultBean;
-
 import jakarta.enterprise.inject.Produces;
 
 public class MessageDecoratorProducer {
 
     @Produces
-    @DefaultBean
     public MessageDecorator newCloudEventHttpOutgoingDecorator() {
         try {
             Class.forName("io.quarkus.reactivemessaging.http.runtime.OutgoingHttpMetadata");
