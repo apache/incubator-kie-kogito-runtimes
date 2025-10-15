@@ -57,7 +57,7 @@ public class EventCodegen extends AbstractGenerator {
 
     @Override
     public boolean isEmpty() {
-        return channels.isEmpty();
+        return !context().hasClassAvailable("org.kie.kogito.addon.cloudevents.AbstractTopicDiscovery") || channels.isEmpty();
     }
 
     @Override
