@@ -55,6 +55,9 @@ public class ProcessInstanceMigrationResourceTest {
     public static final String MESSAGE = "message";
     public static final String PROCESS_ID = "test";
     public static final String PROCESS_INSTANCE_ID = "testInstance";
+    public static final String TARGET_PROCESS_ID ="targetProcess";
+    public static final String TARGET_VERSION="1.0";
+
     private static RuntimeDelegate runtimeDelegate;
     private ResponseBuilder responseBuilder;
 
@@ -111,29 +114,31 @@ public class ProcessInstanceMigrationResourceTest {
     @Test
     public void testMigrateInstance() {
         ProcessMigrationSpec processMigrationSpec = new ProcessMigrationSpec();
-        processMigrationSpec.setTargetProcessId("test2");
-        processMigrationSpec.setTargetProcessVersion("1.0");
+        processMigrationSpec.setTargetProcessId(TARGET_PROCESS_ID);
+        processMigrationSpec.setTargetProcessVersion(TARGET_VERSION);
 
         Response response = resource.migrateInstance(PROCESS_ID, PROCESS_INSTANCE_ID, processMigrationSpec);
         assertThat(response).isNotNull();
         verify(responseBuilder, times(1)).status((StatusType) Response.Status.OK);
         verify(responseBuilder, times(1)).entity(any());
         verify(resource).migrateInstance(PROCESS_ID, PROCESS_INSTANCE_ID, processMigrationSpec);
-        verify(mockInstances).migrateProcessInstances("test2", "1.0","testInstance");
+        verify(mockInstances).migrateProcessInstances(TARGET_PROCESS_ID, TARGET_VERSION,"testInstance");
+        verify(mockInstances, times(1)).migrateProcessInstances(any(),any(),any());
     }
 
     @Test
     public void testMigrateAllInstance() {
         ProcessMigrationSpec processMigrationSpec = new ProcessMigrationSpec();
-        processMigrationSpec.setTargetProcessId("test2");
-        processMigrationSpec.setTargetProcessVersion("1.0");
+        processMigrationSpec.setTargetProcessId(TARGET_PROCESS_ID);
+        processMigrationSpec.setTargetProcessVersion(TARGET_VERSION);
 
         Response response = resource.migrateAllInstances(PROCESS_ID, processMigrationSpec);
         assertThat(response).isNotNull();
         verify(responseBuilder, times(1)).status((StatusType) Response.Status.OK);
         verify(responseBuilder, times(1)).entity(any());
         verify(resource).migrateAllInstances(PROCESS_ID, processMigrationSpec);
-        verify(mockInstances).migrateAll("test2", "1.0");
+        verify(mockInstances).migrateAll(TARGET_PROCESS_ID, TARGET_VERSION);
+        verify(mockInstances, times(1)).migrateAll(any(),any());
 
     }
 
