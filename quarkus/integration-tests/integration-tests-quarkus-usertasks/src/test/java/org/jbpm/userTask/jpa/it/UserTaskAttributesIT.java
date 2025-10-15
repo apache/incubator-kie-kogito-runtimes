@@ -82,7 +82,7 @@ public class UserTaskAttributesIT extends BaseUserTaskIT {
                 .when()
                 .queryParam("user", "john")
                 .queryParam("group", "managers")
-                .queryParam(resource, entries)
+                .body(entries)
                 .post(USER_TASKS_INSTANCE_ENDPOINT + "/" + resource, taskId)
                 .then();
         response.statusCode(200)
@@ -97,7 +97,7 @@ public class UserTaskAttributesIT extends BaseUserTaskIT {
                 .when()
                 .queryParam("user", "john")
                 .queryParam("group", "managers")
-                .queryParam(resource, entries)
+                .body(entries)
                 .put(USER_TASKS_INSTANCE_ENDPOINT + "/" + resource, taskId)
                 .then();
         response.statusCode(200)
@@ -107,17 +107,17 @@ public class UserTaskAttributesIT extends BaseUserTaskIT {
         return response;
     }
 
-    private ValidatableResponse removeAndVerify(String resource, String taskId, Set<String> adminUsersToRemove) {
+    private ValidatableResponse removeAndVerify(String resource, String taskId, Set<String> entries) {
         ValidatableResponse response = given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "manager")
                 .queryParam("group", "department-managers")
-                .queryParam(resource, adminUsersToRemove)
+                .body(entries)
                 .delete(USER_TASKS_INSTANCE_ENDPOINT + "/" + resource, taskId)
                 .then();
         response.statusCode(200)
                 .body("id", not(emptyOrNullString()))
-                .body(resource, not(containsInAnyOrder(adminUsersToRemove.toArray())));
+                .body(resource, not(containsInAnyOrder(entries.toArray())));
         return response;
     }
 
