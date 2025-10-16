@@ -31,6 +31,9 @@ public class TimerNode extends ExtendedNodeImpl {
 
     private Timer timer;
 
+    public TimerNode() {
+    }
+
     public void setTimer(Timer timer) {
         this.timer = timer;
     }

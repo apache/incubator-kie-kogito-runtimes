@@ -18,11 +18,12 @@
  */
 package org.kie.kogito.process;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.kie.api.definition.process.WorkflowElementIdentifier;
 
-public interface WorkItem {
+public interface WorkItem extends Serializable {
 
     String getId();
 

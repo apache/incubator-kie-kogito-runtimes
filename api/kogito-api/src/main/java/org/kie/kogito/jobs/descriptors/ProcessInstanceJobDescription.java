@@ -18,12 +18,14 @@
  */
 package org.kie.kogito.jobs.descriptors;
 
+import java.io.Serializable;
+
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobDescription;
 
 import static java.util.Objects.requireNonNull;
 
-public class ProcessInstanceJobDescription implements JobDescription {
+public class ProcessInstanceJobDescription implements JobDescription, Serializable {
 
     public static final Integer DEFAULT_PRIORITY = 5;
 

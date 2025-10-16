@@ -18,7 +18,7 @@
  */
 package org.jbpm.workflow.instance;
 
-import java.io.Serializable
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 

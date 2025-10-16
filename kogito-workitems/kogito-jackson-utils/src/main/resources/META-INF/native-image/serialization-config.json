@@ -37,5 +37,8 @@
   },
   {
     "name": "java.lang.String"
+  },
+  {
+    "name": "org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription"
   }
 ]
