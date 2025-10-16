@@ -198,12 +198,10 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     public Optional<UserTaskTransitionToken> claim(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        if (userTaskInstance instanceof DefaultUserTaskInstance defaultUserTaskInstance) {
-            if (token.data().containsKey(PARAMETER_USER)) {
-                defaultUserTaskInstance.setActualOwner((String) token.data().get(PARAMETER_USER));
-            } else {
-                defaultUserTaskInstance.setActualOwner(identityProvider.getName());
-            }
+        if (token.data().containsKey(PARAMETER_USER)) {
+            userTaskInstance.setActualOwner((String) token.data().get(PARAMETER_USER));
+        } else {
+            userTaskInstance.setActualOwner(identityProvider.getName());
         }
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
@@ -211,47 +209,39 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     private Optional<UserTaskTransitionToken> delegate(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        if (userTaskInstance instanceof DefaultUserTaskInstance defaultUserTaskInstance) {
-            // Maybe if delegate user is not provided, we need to default to identityprovider user -mandatory
-            // Should we check if delegated user is a potential user
-            if (token.data().containsKey(PARAMETER_DELEGATED_USER)) {
-                defaultUserTaskInstance.setActualOwner((String) token.data().get(PARAMETER_DELEGATED_USER));
-            } else {
-                throw new UserTaskTransitionException("Delegated user not specified");
-            }
+        // Maybe if delegate user is not provided, we need to default to identityprovider user -mandatory
+        // Should we check if delegated user is a potential user
+        if (token.data().containsKey(PARAMETER_DELEGATED_USER)) {
+            userTaskInstance.setActualOwner((String) token.data().get(PARAMETER_DELEGATED_USER));
+        } else {
+            throw new UserTaskTransitionException("Delegated user not specified");
         }
         return Optional.empty();
     }
 
     private Optional<UserTaskTransitionToken> forward(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        if (userTaskInstance instanceof DefaultUserTaskInstance defaultUserTaskInstance) {
-            // Maybe if forwarded user is not provided, we need to default to identityprovider user -mandatory
-            // Should we check if forwarded user is a potential user
-            if (token.data().containsKey(PARAMETER_FORWARDED_USER)) {
-                defaultUserTaskInstance.setActualOwner(null);
-                defaultUserTaskInstance.setPotentialUsers(new HashSet<>(Set.of((String) token.data().get(PARAMETER_FORWARDED_USER))));
-            } else {
-                throw new UserTaskTransitionException("Forwarded user not specified");
-            }
+        // Maybe if forwarded user is not provided, we need to default to identityprovider user -mandatory
+        // Should we check if forwarded user is a potential user
+        if (token.data().containsKey(PARAMETER_FORWARDED_USER)) {
+            userTaskInstance.setActualOwner(null);
+            userTaskInstance.setPotentialUsers(new HashSet<>(Set.of((String) token.data().get(PARAMETER_FORWARDED_USER))));
+        } else {
+            throw new UserTaskTransitionException("Forwarded user not specified");
         }
         return Optional.empty();
     }
 
     private Optional<UserTaskTransitionToken> start(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        if (userTaskInstance instanceof DefaultUserTaskInstance defaultUserTaskInstance) {
-            if (token.data().containsKey(PARAMETER_USER)) {
-                defaultUserTaskInstance.setActualOwner((String) token.data().get(PARAMETER_USER));
-            } else {
-                defaultUserTaskInstance.setActualOwner(identityProvider.getName());
-            }
+        if (token.data().containsKey(PARAMETER_USER)) {
+            userTaskInstance.setActualOwner((String) token.data().get(PARAMETER_USER));
+        } else {
+            userTaskInstance.setActualOwner(identityProvider.getName());
         }
         return Optional.empty();
     }
 
     public Optional<UserTaskTransitionToken> release(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        if (userTaskInstance instanceof DefaultUserTaskInstance defaultUserTaskInstance) {
-            defaultUserTaskInstance.setActualOwner(null);
-        }
+        userTaskInstance.setActualOwner(null);
         return Optional.empty();
     }
 
