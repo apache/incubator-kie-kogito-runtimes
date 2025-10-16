@@ -31,7 +31,6 @@ import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskInstanceNotAuthorizedException;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
-import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycleRegistry;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
 import org.kie.kogito.usertask.lifecycle.UserTaskState.TerminationType;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
@@ -72,10 +71,6 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
     private final UserTaskTransition T_ACTIVE_ACTIVE_R = new DefaultUserTransition(REASSIGN, ACTIVE, ACTIVE, this::reassign);
 
     private List<UserTaskTransition> transitions;
-
-    static {
-        UserTaskLifeCycleRegistry.register("default", DefaultUserTaskLifeCycle.class);
-    }
 
     public DefaultUserTaskLifeCycle() {
         transitions = List.of(

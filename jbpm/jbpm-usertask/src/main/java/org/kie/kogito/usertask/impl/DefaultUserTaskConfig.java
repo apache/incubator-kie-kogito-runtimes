@@ -18,8 +18,8 @@
  */
 package org.kie.kogito.usertask.impl;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.kie.kogito.auth.IdentityProvider;
@@ -35,9 +35,8 @@ import org.kie.kogito.usertask.UserTaskConfig;
 import org.kie.kogito.usertask.UserTaskEventListenerConfig;
 import org.kie.kogito.usertask.UserTaskInstances;
 import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycle;
+import org.kie.kogito.usertask.impl.lifecycle.UserTaskLifeCycleRegistry;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
-import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycleRegistry;
-import org.kie.kogito.usertask.lifecycle.UserTaskLifecycleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,18 +85,7 @@ public class DefaultUserTaskConfig implements UserTaskConfig {
     }
 
     private Supplier<UserTaskLifeCycle> getUserTaskLifeCycleInstance(String lifecycle) {
-        return () -> {
-            var clazz = UserTaskLifeCycleRegistry.get(lifecycle);
-            if (clazz != null) {
-                try {
-                    return clazz.getConstructor().newInstance();
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    throw new UserTaskLifecycleException(e.getMessage());
-                }
-            }
-            //            return new DefaultUserTaskLifeCycle();
-            throw new UserTaskLifecycleException("No ws");
-        };
+        return () -> Objects.requireNonNullElseGet(UserTaskLifeCycleRegistry.get(lifecycle), DefaultUserTaskLifeCycle::new);
     }
 
     private <T> T singleton(Iterable<T> values, Supplier<T> defaultValue) {

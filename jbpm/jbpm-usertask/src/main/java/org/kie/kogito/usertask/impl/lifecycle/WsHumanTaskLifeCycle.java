@@ -31,7 +31,6 @@ import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskInstanceNotAuthorizedException;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
-import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycleRegistry;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
 import org.kie.kogito.usertask.lifecycle.UserTaskState.TerminationType;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
@@ -110,10 +109,6 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     private final UserTaskTransition T_SUSPENDED_INPROGRESS = new DefaultUserTransition(RESUME, SUSPENDED, INPROGRESS, this::resume);
 
     private List<UserTaskTransition> transitions;
-
-    static {
-        UserTaskLifeCycleRegistry.register("wsHumanTask", WsHumanTaskLifeCycle.class);
-    }
 
     public WsHumanTaskLifeCycle() {
         transitions = List.of(
