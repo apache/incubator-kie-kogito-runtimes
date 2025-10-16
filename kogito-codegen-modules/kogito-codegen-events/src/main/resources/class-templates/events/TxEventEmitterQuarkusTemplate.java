@@ -74,6 +74,7 @@ public class $ClassName$ extends AbstractQuarkusCloudEventEmitter<$Type$> {
 
     }
 
+    @io.smallrye.common.annotation.Blocking
     public void observe(@Observes(during = TransactionPhase.AFTER_SUCCESS) EmitEventType emitEventType) {
         logger.debug("publishing event {}", emitEventType.data);
         try {
