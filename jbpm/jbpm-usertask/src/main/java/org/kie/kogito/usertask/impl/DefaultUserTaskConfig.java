@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.usertask.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.function.Supplier;
 
@@ -35,6 +36,8 @@ import org.kie.kogito.usertask.UserTaskEventListenerConfig;
 import org.kie.kogito.usertask.UserTaskInstances;
 import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
+import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycleRegistry;
+import org.kie.kogito.usertask.lifecycle.UserTaskLifecycleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,10 +78,26 @@ public class DefaultUserTaskConfig implements UserTaskConfig {
         this.unitOfWorkManager = singleton(unitOfWorkManager, StaticUnitOfWorkManger::staticUnitOfWorkManager);
         this.jobService = singleton(jobService, StaticJobService::staticJobService);
         this.identityProvider = singleton(identityProvider, NoOpIdentityProvider::new);
-        this.userTaskLifeCycle = singleton(userTaskLifeCycle, DefaultUserTaskLifeCycle::new);
+        // need to fetch kogito.usertasks.lifecycle property
+        this.userTaskLifeCycle = singleton(userTaskLifeCycle, getUserTaskLifeCycleInstance("wsHumanTask"));
         this.userTaskAssignmentStrategyConfig = singleton(userTaskAssignmentStrategyConfig, DefaultUserTaskAssignmentStrategyConfig::new);
         this.userTaskInstances = singleton(userTaskInstances, InMemoryUserTaskInstances::new);
 
+    }
+
+    private Supplier<UserTaskLifeCycle> getUserTaskLifeCycleInstance(String lifecycle) {
+        return () -> {
+            var clazz = UserTaskLifeCycleRegistry.get(lifecycle);
+            if (clazz != null) {
+                try {
+                    return clazz.getConstructor().newInstance();
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    throw new UserTaskLifecycleException(e.getMessage());
+                }
+            }
+            //            return new DefaultUserTaskLifeCycle();
+            throw new UserTaskLifecycleException("No ws");
+        };
     }
 
     private <T> T singleton(Iterable<T> values, Supplier<T> defaultValue) {
