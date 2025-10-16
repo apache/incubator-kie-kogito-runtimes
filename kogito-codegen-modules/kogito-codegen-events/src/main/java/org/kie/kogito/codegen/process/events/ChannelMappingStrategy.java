@@ -53,8 +53,8 @@ public class ChannelMappingStrategy {
 
     private static final String KAFKA_PREFIX = "kogito.addon.cloudevents.kafka.";
 
-    private static final String KAFKA_INCOMING_PREFIX = KAFKA_PREFIX + "incoming.";
-    private static final String KAFKA_OUTGOING_PREFIX = KAFKA_PREFIX + "outgoing.";
+    private static final String KAFKA_INCOMING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.INCOMING + ".";
+    private static final String KAFKA_OUTGOING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.OUTGOING + ".";
     private static final String KAFKA_INCOMING_DEFAULT_CHANNEL = KAFKA_PREFIX + KogitoEventStreams.INCOMING;
     private static final String KAFKA_OUTGOING_DEFAULT_CHANNEL = KAFKA_PREFIX + KogitoEventStreams.OUTGOING;
 
