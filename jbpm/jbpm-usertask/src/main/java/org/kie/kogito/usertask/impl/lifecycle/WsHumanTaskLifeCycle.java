@@ -161,15 +161,6 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     @Override
-    public Optional<UserTaskTransitionToken> newReassignmentTransitionToken(UserTaskInstance userTaskInstance, Map<String, Object> data) {
-        try {
-            return Optional.of(newTransitionToken(REASSIGN, userTaskInstance.getStatus(), null, data));
-        } catch (UserTaskTransitionException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
     public UserTaskTransitionToken newCompleteTransitionToken(UserTaskInstance userTaskInstance, Map<String, Object> data) {
         return newTransitionToken(COMPLETE, userTaskInstance.getStatus(), null, data);
     }
