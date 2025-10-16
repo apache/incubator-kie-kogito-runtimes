@@ -104,7 +104,7 @@ public class ChannelMappingStrategy {
 
         if (outputDefaultChannel.isPresent() && result.stream().noneMatch(e -> e.getChannelName().equals(defaultOutgoingChannel) && e.isOutputDefault())) {
             LOG.warn("No outgoing channels found but default is defined {}", defaultOutgoingChannel);
-            buildChannelInfo(context, false, KAFKA_INCOMING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultOutgoingChannel, outTriggers, Optional.of("String"), Optional.of(true), p -> true)
+            buildChannelInfo(context, false, KAFKA_OUTGOING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultOutgoingChannel, outTriggers, Optional.of("String"), Optional.of(true), p -> true)
                     .ifPresent(result::add);
         }
 
