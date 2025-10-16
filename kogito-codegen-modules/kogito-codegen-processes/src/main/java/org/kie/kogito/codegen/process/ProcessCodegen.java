@@ -589,10 +589,10 @@ public class ProcessCodegen extends AbstractGenerator {
     private List<TriggerMetaData> normalizeTriggers(List<TriggerMetaData> triggers, Collection<ChannelInfo> channelsInfo) {
         List<TriggerMetaData> normalizedTriggers = new ArrayList<>();
         for (TriggerMetaData triggerMetadata : triggers) {
-            Optional<ChannelInfo> channelInfo = channelsInfo.stream().filter(e -> e.getChannelName().equals(triggerMetadata.getChannelName())).findAny();
+            Optional<ChannelInfo> channelInfo = channelsInfo.stream().filter(e -> e.getTriggers().contains(triggerMetadata.getName())).findAny();
             if (channelInfo.isPresent()) {
                 LOGGER.debug("Normalizing trigger {}, channel is present", triggerMetadata, channelInfo.get().getChannelName());
-                normalizedTriggers.add(triggerMetadata);
+                normalizedTriggers.add(TriggerMetaData.of(triggerMetadata, channelInfo.get().getChannelName()));
                 continue;
             }
             Predicate<ChannelInfo> defaultChannelInfoPredicate = triggerMetadata.getType().equals(TriggerType.ConsumeMessage) ? ChannelInfo::isInputDefault : ChannelInfo::isOutputDefault;

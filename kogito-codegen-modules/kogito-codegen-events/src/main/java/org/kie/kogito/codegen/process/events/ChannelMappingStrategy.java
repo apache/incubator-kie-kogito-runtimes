@@ -37,12 +37,6 @@ public class ChannelMappingStrategy {
 
     private static Logger LOG = LoggerFactory.getLogger(ChannelMappingStrategy.class);
 
-    private static List<String> standardChannels = List.of("kogito-processdefinitions-events",
-            "kogito-processinstances-events",
-            "kogito-usertaskinstances-events",
-            "kogito-variables-events",
-            "kogito-job-service-job-request-events");
-
     private ChannelMappingStrategy() {
     }
 
@@ -50,16 +44,19 @@ public class ChannelMappingStrategy {
     private static final String INCOMING_PREFIX = "mp.messaging.incoming.";
 
     private static final String KOGITO_MESSAGING_PREFIX = "kogito.addon.messaging.";
+    private static final String KOGITO_MESSAGING_INCOMING_PREFIX = "kogito.addon.messaging.incoming.";
+    private static final String KOGITO_MESSAGING_OUTGOING_PREFIX = "kogito.addon.messaging.outgoing.";
+    private static final String KOGITO_MESSAGING_INCOMING_DEFAULT_CHANNEL = KOGITO_MESSAGING_INCOMING_PREFIX + "defaultName";
+    private static final String KOGITO_MESSAGING_OUTGOING_DEFAULT_CHANNEL = KOGITO_MESSAGING_OUTGOING_PREFIX + "defaultName";
+    private static final String KOGITO_MESSAGING_INCOMING_TRIGGER = KOGITO_MESSAGING_INCOMING_PREFIX + "trigger.";
+    private static final String KOGITO_MESSAGING_OUTGOING_TRIGGER = KOGITO_MESSAGING_OUTGOING_PREFIX + "trigger.";
 
     private static final String KAFKA_PREFIX = "kogito.addon.cloudevents.kafka.";
 
-    private static final String KOGITO_INCOMING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.INCOMING + ".";
-    private static final String KOGITO_OUTGOING_PREFIX = KAFKA_PREFIX + KogitoEventStreams.OUTGOING + ".";
-
-    private static final String INCOMING_TRIGGER = KOGITO_INCOMING_PREFIX + "trigger.";
-    private static final String OUTGOING_TRIGGER = KOGITO_OUTGOING_PREFIX + "trigger.";
-    private static final String INCOMING_DEFAULT_CHANNEL = KAFKA_PREFIX + KogitoEventStreams.INCOMING;
-    private static final String OUTGOING_DEFAULT_CHANNEL = KAFKA_PREFIX + KogitoEventStreams.OUTGOING;
+    private static final String KAFKA_INCOMING_PREFIX = KAFKA_PREFIX + "incoming.";
+    private static final String KAFKA_OUTGOING_PREFIX = KAFKA_PREFIX + "outgoing.";
+    private static final String KAFKA_INCOMING_DEFAULT_CHANNEL = KAFKA_PREFIX + KogitoEventStreams.INCOMING;
+    private static final String KAFKA_OUTGOING_DEFAULT_CHANNEL = KAFKA_PREFIX + KogitoEventStreams.OUTGOING;
 
     private static final String CLOUD_EVENT_MODE = "kogito.addon.messaging.outgoing.cloudEventMode";
 
@@ -67,39 +64,75 @@ public class ChannelMappingStrategy {
     private static final String UNMARSHALLLER_PREFIX = KOGITO_MESSAGING_PREFIX + "unmarshaller.";
 
     public static Collection<ChannelInfo> getChannelMapping(KogitoBuildContext context) {
+        List<ChannelInfo> channelsInfo = new ArrayList<>();
+        channelsInfo.addAll(processQuarkus(context));
+        channelsInfo.addAll(processSpring(context));
+        return channelsInfo;
+    }
+
+    private static Collection<ChannelInfo> processSpring(KogitoBuildContext context) {
         Map<String, Collection<String>> inTriggers = new HashMap<>();
         Map<String, Collection<String>> outTriggers = new HashMap<>();
 
         for (String property : context.getApplicationProperties()) {
-            if (property.startsWith(INCOMING_TRIGGER)) {
-                addTrigger(context, INCOMING_TRIGGER, property, inTriggers);
-            } else if (property.startsWith(OUTGOING_TRIGGER)) {
-                addTrigger(context, OUTGOING_TRIGGER, property, outTriggers);
+            if (property.startsWith(KOGITO_MESSAGING_INCOMING_TRIGGER)) {
+                addTrigger(context, KOGITO_MESSAGING_INCOMING_TRIGGER, property, inTriggers);
+            } else if (property.startsWith(KOGITO_MESSAGING_OUTGOING_TRIGGER)) {
+                addTrigger(context, KOGITO_MESSAGING_OUTGOING_TRIGGER, property, outTriggers);
             }
         }
-        Collection<ChannelInfo> result = new ArrayList<>();
-        Optional<String> inputDefaultChannel = context.getApplicationProperty(INCOMING_DEFAULT_CHANNEL, String.class);
-        Optional<String> outputDefaultChannel = context.getApplicationProperty(OUTGOING_DEFAULT_CHANNEL, String.class);
+
+        Optional<String> inputDefaultChannel = context.getApplicationProperty(KAFKA_INCOMING_DEFAULT_CHANNEL, String.class);
+        Optional<String> outputDefaultChannel = context.getApplicationProperty(KAFKA_OUTGOING_DEFAULT_CHANNEL, String.class);
 
         String defaultIncomingChannel = inputDefaultChannel.orElse(KogitoEventStreams.INCOMING);
         String defaultOutgoingChannel = outputDefaultChannel.orElse(KogitoEventStreams.OUTGOING);
+
+        Collection<ChannelInfo> result = new ArrayList<>();
+        for (String property : context.getApplicationProperties()) {
+            buildChannelInfo(context, true, property, KAFKA_INCOMING_PREFIX, defaultIncomingChannel, inTriggers, Optional.of("String"), Optional.empty(), p -> !p.contains(".value."))
+                    .ifPresent(result::add);
+            buildChannelInfo(context, false, property, KAFKA_OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, Optional.of("String"), Optional.empty(), p -> !p.contains(".value."))
+                    .ifPresent(result::add);
+        }
+
+        if (inputDefaultChannel.isPresent() && result.stream().noneMatch(e -> e.getChannelName().equals(defaultIncomingChannel) && e.isInputDefault())) {
+            LOG.warn("No incoming channels found but default is defined {}", defaultIncomingChannel);
+            buildChannelInfo(context, true, KAFKA_INCOMING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultIncomingChannel, inTriggers, Optional.of("String"), Optional.of(true), p -> true)
+                    .ifPresent(result::add);
+        }
+
+        if (outputDefaultChannel.isPresent() && result.stream().noneMatch(e -> e.getChannelName().equals(defaultOutgoingChannel) && e.isOutputDefault())) {
+            LOG.warn("No outgoing channels found but default is defined {}", defaultOutgoingChannel);
+            buildChannelInfo(context, false, KAFKA_INCOMING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultOutgoingChannel, outTriggers, Optional.of("String"), Optional.of(true), p -> true)
+                    .ifPresent(result::add);
+        }
+
+        return result;
+    }
+
+    private static Collection<ChannelInfo> processQuarkus(KogitoBuildContext context) {
+        Map<String, Collection<String>> inTriggers = new HashMap<>();
+        Map<String, Collection<String>> outTriggers = new HashMap<>();
+
+        for (String property : context.getApplicationProperties()) {
+            if (property.startsWith(KOGITO_MESSAGING_INCOMING_TRIGGER)) {
+                addTrigger(context, KOGITO_MESSAGING_INCOMING_TRIGGER, property, inTriggers);
+            } else if (property.startsWith(KOGITO_MESSAGING_OUTGOING_TRIGGER)) {
+                addTrigger(context, KOGITO_MESSAGING_OUTGOING_TRIGGER, property, outTriggers);
+            }
+        }
+
+        Optional<String> inputDefaultChannel = context.getApplicationProperty(KOGITO_MESSAGING_INCOMING_DEFAULT_CHANNEL, String.class);
+        Optional<String> outputDefaultChannel = context.getApplicationProperty(KOGITO_MESSAGING_OUTGOING_DEFAULT_CHANNEL, String.class);
+
+        String defaultIncomingChannel = inputDefaultChannel.orElse(KogitoEventStreams.INCOMING);
+        String defaultOutgoingChannel = outputDefaultChannel.orElse(KogitoEventStreams.OUTGOING);
+
+        Collection<ChannelInfo> result = new ArrayList<>();
         for (String property : context.getApplicationProperties()) {
             buildChannelInfo(context, true, property, INCOMING_PREFIX, defaultIncomingChannel, inTriggers, Optional.empty(), Optional.empty(), p -> p.endsWith(".connector")).ifPresent(result::add);
-            buildChannelInfo(context, true, property, KOGITO_INCOMING_PREFIX, defaultIncomingChannel, inTriggers, Optional.of("String"), Optional.empty(), p -> !p.contains(".value."))
-                    .ifPresent(result::add);
             buildChannelInfo(context, false, property, OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, Optional.empty(), Optional.empty(), p -> p.endsWith(".connector")).ifPresent(result::add);
-            buildChannelInfo(context, false, property, KOGITO_OUTGOING_PREFIX, defaultOutgoingChannel, outTriggers, Optional.of("String"), Optional.empty(), p -> !p.contains(".value."))
-                    .ifPresent(result::add);
-        }
-
-        if (inputDefaultChannel.isPresent() && result.stream().noneMatch(e -> e.getChannelName().equals(inputDefaultChannel.get()) && e.isInputDefault())) {
-            LOG.warn("No incoming channels found but default is defined {}", inputDefaultChannel);
-            buildChannelInfo(context, true, INCOMING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultIncomingChannel, inTriggers, Optional.of("String"), Optional.of(true), p -> true).ifPresent(result::add);
-        }
-
-        if (outputDefaultChannel.isPresent() && result.stream().noneMatch(e -> e.getChannelName().equals(outputDefaultChannel.get()) && e.isOutputDefault())) {
-            LOG.warn("No outgoing channels found but default is defined {}", outputDefaultChannel);
-            buildChannelInfo(context, false, OUTGOING_DEFAULT_CHANNEL, KAFKA_PREFIX, defaultOutgoingChannel, outTriggers, Optional.of("String"), Optional.of(true), p -> true).ifPresent(result::add);
         }
 
         return result;
@@ -114,14 +147,11 @@ public class ChannelMappingStrategy {
             Optional<String> typeProvided,
             Optional<Boolean> isDefault,
             Predicate<String> shouldProcessTest) {
-        if (property.startsWith(prefix) && shouldProcessTest.test(property)) {
-            String channelName = getChannelName(property, prefix);
-            if (standardChannels.contains(channelName)) {
-                return Optional.empty();
-            }
-            return Optional.of(getChannelInfo(context, property, prefix, input, defaultChannel, triggers, typeProvided, isDefault));
+        if (!property.startsWith(prefix) || !shouldProcessTest.test(property)) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        return Optional.of(getChannelInfo(context, property, prefix, input, defaultChannel, triggers, typeProvided, isDefault));
+
     }
 
     private static void addTrigger(KogitoBuildContext context, String prefix, String property, Map<String, Collection<String>> triggers) {
