@@ -37,6 +37,8 @@ import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransitionException;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransitionToken;
 
+import static java.util.Optional.ofNullable;
+
 public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     public static final String WORKFLOW_ENGINE_USER = "WORKFLOW_ENGINE_USER";
 
@@ -44,6 +46,8 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     public static final String PARAMETER_NOTIFY = "NOTIFY";
     private static final String PARAMETER_DELEGATED_USER = "DELEGATED_USER";
     private static final String PARAMETER_FORWARDED_USER = "FORWARDED_USER";
+
+    private static final String SKIPPABLE = "Skippable";
 
     // Actions
     public static final String ACTIVATE = "activate";
@@ -281,7 +285,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     public Optional<UserTaskTransitionToken> skip(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        if (userTaskInstance instanceof DefaultUserTaskInstance defaultUserTaskInstance && !defaultUserTaskInstance.getSkippable()) {
+        if (!Boolean.parseBoolean((String) userTaskInstance.getMetadata().get(SKIPPABLE))) {
             throw new UserTaskTransitionException("Usertask cannot be skipped");
         }
         if (token.data().containsKey(PARAMETER_NOTIFY)) {

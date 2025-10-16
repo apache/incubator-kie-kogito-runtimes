@@ -99,13 +99,13 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         metadata.put("RootProcessInstanceId", workItem.getProcessInstance().getRootProcessInstanceId());
         metadata.put("ParentProcessInstanceId", workItem.getProcessInstance().getParentProcessInstanceId());
         metadata.put("NodeInstanceId", workItem.getNodeInstance().getId());
+        metadata.put("Skippable", workItem.getParameters().get(SKIPPABLE));
 
         instance.setMetadata(metadata);
 
         instance.fireInitialStateChange();
         workItem.getParameters().entrySet().stream().filter(e -> !HumanTaskNode.TASK_PARAMETERS.contains(e.getKey())).forEach(e -> instance.setInput(e.getKey(), e.getValue()));
 
-        ofNullable(workItem.getParameters().get(SKIPPABLE)).map(s -> Boolean.parseBoolean((String) s)).ifPresent(instance::setSkippable);
         ofNullable(workItem.getParameters().get(ACTOR_ID)).map(String.class::cast).map(this::toSet).ifPresent(instance::setPotentialUsers);
         ofNullable(workItem.getParameters().get(GROUP_ID)).map(String.class::cast).map(this::toSet).ifPresent(instance::setPotentialGroups);
         ofNullable(workItem.getParameters().get(BUSINESSADMINISTRATOR_ID)).map(String.class::cast).map(this::toSet).ifPresent(instance::setAdminUsers);

@@ -74,7 +74,6 @@ public class UserTaskInstanceEntity {
     @Column(name = "external_reference_id")
     private String externalReferenceId;
 
-    @Column(name = "skippable")
     private Boolean skippable;
 
     @ElementCollection(fetch = FetchType.EAGER)

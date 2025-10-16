@@ -86,7 +86,6 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     private List<Comment> comments;
     private String externalReferenceId;
     private Date slaDueDate;
-    private Boolean skippable;
 
     private Map<String, Object> inputs;
     private Map<String, Object> outputs;
@@ -254,15 +253,6 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     public void setSlaDueDate(Date slaDueDate) {
         this.slaDueDate = slaDueDate;
-    }
-
-    public Boolean getSkippable() {
-        return skippable;
-    }
-
-    public void setSkippable(Boolean skippable) {
-        this.skippable = skippable;
-        updatePersistence();
     }
 
     @Override
