@@ -59,17 +59,18 @@ public class $ClassName$ implements EventReceiver {
     }
 
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> void subscribe(Consumer<DataEvent<T>> consumer, Class<T> clazz) {
         Subscription subscription = new Subscription<>(consumer, toTopicType(clazz));
         consumers.add(subscription);
     }
 
     private <T> Converter<$Type$, DataEvent<T>> toTopicTypeCloud(Class<T> clazz) {
-        return new CloudEventConverter<$Type$, DataEvent<T>>(clazz, ceUnmarshaller);
+        return new CloudEventConverter<>(clazz, ceUnmarshaller);
     }
 
     private <T> Converter<$Type$, DataEvent<T>> toTopicTypeEvent(Class<T> clazz) {
-        return new DataEventConverter<$Type$, DataEvent<T>>(clazz, eventDataUnmarshaller);
+        return new DataEventConverter<>(clazz, eventDataUnmarshaller);
     }
 
     @KafkaListener(topics = { "$Topic$" })
@@ -82,6 +83,7 @@ public class $ClassName$ implements EventReceiver {
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
+
         }
     }
 

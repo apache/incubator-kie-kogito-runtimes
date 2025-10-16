@@ -53,7 +53,7 @@ public class $ClassName$ implements EventEmitter {
 
     @Override
     public void emit(DataEvent<?> event) {
-        emitter.send("$Topic$", toEvent(event));
+        emitter.send("$Topic$", toTopicType(event));
     }
 
     private $Type$ toTopicTypeCloud(DataEvent<?> event) {
