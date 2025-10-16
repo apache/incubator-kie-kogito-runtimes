@@ -1217,45 +1217,45 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-addons-process-migration</artifactId>
+        <artifactId>kie-addons-process-instance-migration</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-addons-process-migration</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-migration</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-migration</artifactId>
+        <artifactId>kie-addons-process-instance-migration</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-migration-deployment</artifactId>
+        <artifactId>kie-addons-quarkus-process-instance-migration</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-migration-deployment</artifactId>
+        <artifactId>kie-addons-quarkus-process-instance-migration</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-addons-springboot-process-migration</artifactId>
+        <artifactId>kie-addons-quarkus-process-instance-migration-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-addons-springboot-process-migration</artifactId>
+        <artifactId>kie-addons-quarkus-process-instance-migration-deployment</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-process-instance-migration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-process-instance-migration</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>

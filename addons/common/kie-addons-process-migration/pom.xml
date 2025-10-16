@@ -28,7 +28,7 @@
         <version>999-SNAPSHOT</version>
     </parent>
 
-    <artifactId>kie-addons-process-migration</artifactId>
+    <artifactId>kie-addons-process-instance-migration</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

@@ -22,39 +22,21 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.kie.kogito</groupId>
-    <artifactId>kogito-build-parent</artifactId>
+    <artifactId>kogito-addons-quarkus-parent</artifactId>
+    <groupId>org.kie</groupId>
     <version>999-SNAPSHOT</version>
-    <relativePath>../kogito-build/kogito-build-parent/pom.xml</relativePath>
   </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>springboot</artifactId>
-  <name>Kogito :: Spring Boot</name>
+  <artifactId>kie-addons-quarkus-process-instance-migration-parent</artifactId>
+  <name>KIE Add-On Process Migration - Parent</name>
   <packaging>pom</packaging>
 
   <modules>
-    <module>bom</module>
-    <module>addons</module>
-    <module>starters</module>
-    <module>archetype</module>
-    <module>test</module>
-      <module>addons/process-instance-migration</module>
+    <module>deployment</module>
+    <module>runtime</module>
+    <module>integration-tests</module>
   </modules>
-
-  <profiles>
-    <profile>
-      <id>allSubmodules</id>
-      <activation>
-        <property>
-          <name>!only.reproducible</name>
-        </property>
-      </activation>
-      <modules>
-        <module>integration-tests</module>
-      </modules>
-    </profile>
-  </profiles>
 
 </project>
