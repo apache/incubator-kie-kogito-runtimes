@@ -186,6 +186,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     public Optional<UserTaskTransitionToken> activate(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
+        userTaskInstance.getMetadata().put("Lifecycle", "ws-human-task");
         userTaskInstance.startNotCompletedDeadlines();
         userTaskInstance.startNotCompletedReassignments();
 

@@ -78,7 +78,7 @@ public class DefaultUserTaskConfig implements UserTaskConfig {
         this.jobService = singleton(jobService, StaticJobService::staticJobService);
         this.identityProvider = singleton(identityProvider, NoOpIdentityProvider::new);
         // need to fetch kogito.usertasks.lifecycle property
-        this.userTaskLifeCycle = singleton(userTaskLifeCycle, getUserTaskLifeCycleInstance("wsHumanTask"));
+        this.userTaskLifeCycle = singleton(userTaskLifeCycle, getUserTaskLifeCycleInstance("ws-human-task"));
         this.userTaskAssignmentStrategyConfig = singleton(userTaskAssignmentStrategyConfig, DefaultUserTaskAssignmentStrategyConfig::new);
         this.userTaskInstances = singleton(userTaskInstances, InMemoryUserTaskInstances::new);
 

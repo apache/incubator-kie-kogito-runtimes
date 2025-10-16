@@ -8,7 +8,7 @@ public class UserTaskLifeCycleRegistry {
 
     private static final Map<String, UserTaskLifeCycle> REGISTRY = Map.of(
             "default", new DefaultUserTaskLifeCycle(),
-            "wsHumanTask", new WsHumanTaskLifeCycle());
+            "ws-human-task", new WsHumanTaskLifeCycle());
 
     private UserTaskLifeCycleRegistry() {
     }
