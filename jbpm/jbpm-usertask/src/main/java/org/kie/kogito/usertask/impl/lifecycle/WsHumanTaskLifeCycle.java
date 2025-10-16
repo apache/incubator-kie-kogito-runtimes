@@ -29,15 +29,12 @@ import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.usertask.UserTaskAssignmentStrategy;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskInstanceNotAuthorizedException;
-import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
 import org.kie.kogito.usertask.lifecycle.UserTaskState.TerminationType;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransitionException;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransitionToken;
-
-import static java.util.Optional.ofNullable;
 
 public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     public static final String WORKFLOW_ENGINE_USER = "WORKFLOW_ENGINE_USER";

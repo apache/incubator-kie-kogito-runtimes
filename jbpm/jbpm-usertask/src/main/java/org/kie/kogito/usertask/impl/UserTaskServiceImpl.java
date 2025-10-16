@@ -74,7 +74,6 @@ public class UserTaskServiceImpl implements UserTaskService {
         view.setOutputs(instance.getOutputs());
         view.setMetadata(instance.getMetadata());
         view.setExternalReferenceId(instance.getExternalReferenceId());
-        view.setSkippable(instance.getSkippable());
         return view;
     }
 

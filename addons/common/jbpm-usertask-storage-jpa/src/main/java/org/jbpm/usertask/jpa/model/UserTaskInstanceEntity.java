@@ -74,8 +74,6 @@ public class UserTaskInstanceEntity {
     @Column(name = "external_reference_id")
     private String externalReferenceId;
 
-    private Boolean skippable;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "jbpm_user_tasks_potential_users", joinColumns = @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "fk_jbpm_user_tasks_potential_users_tid")))
     @Column(name = "user_id", nullable = false)
@@ -387,14 +385,6 @@ public class UserTaskInstanceEntity {
 
     public void setReassignmentTimers(List<TaskReassignmentTimerEntity> reassignmentTimers) {
         this.reassignmentTimers = reassignmentTimers;
-    }
-
-    public Boolean getSkippable() {
-        return skippable;
-    }
-
-    public void setSkippable(Boolean skippable) {
-        this.skippable = skippable;
     }
 
     @Override
