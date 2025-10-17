@@ -18,7 +18,6 @@
  */
 package org.jbpm.workflow.instance;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
@@ -34,7 +33,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
  * executing) or completed (end of execution).
  * 
  */
-public interface NodeInstance extends KogitoNodeInstance, Serializable {
+public interface NodeInstance extends KogitoNodeInstance {
 
     void trigger(KogitoNodeInstance from, String type);
 

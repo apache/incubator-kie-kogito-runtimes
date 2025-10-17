@@ -474,6 +474,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
             ((InternalProcessRuntime) kruntime.getProcessRuntime())
                     .getProcessEventSupport().fireBeforeNodeLeft(this, kruntime);
         }
+        
         // trigger next node
         captureExecutionException(() -> nodeInstance.trigger(this, type));
 

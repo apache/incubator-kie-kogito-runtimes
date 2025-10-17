@@ -18,7 +18,6 @@
  */
 package org.jbpm.workflow.instance.node;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -86,7 +85,7 @@ import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STAT
  * Runtime counterpart of a work item node.
  *
  */
-public class WorkItemNodeInstance extends StateBasedNodeInstance implements EventListener, ContextInstanceContainer, KogitoWorkItemNodeInstance, Serializable {
+public class WorkItemNodeInstance extends StateBasedNodeInstance implements EventListener, ContextInstanceContainer, KogitoWorkItemNodeInstance {
 
     private static final long serialVersionUID = 510l;
     private static final Logger logger = LoggerFactory.getLogger(WorkItemNodeInstance.class);
@@ -96,7 +95,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     private Map<String, List<ContextInstance>> subContextInstances = new HashMap<>();
 
     private String workItemId;
-    private InternalKogitoWorkItem workItem;
+    private transient InternalKogitoWorkItem workItem;
     private String exceptionHandlingProcessInstanceId;
 
     private int triggerCount = 0;

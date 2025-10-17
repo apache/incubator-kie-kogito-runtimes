@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.process.workitems.impl;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toSet;
 
-public class DefaultKogitoWorkItemHandler implements KogitoWorkItemHandler, Serializable {
+public class DefaultKogitoWorkItemHandler implements KogitoWorkItemHandler {
 
     public static final String TRANSITION_COMPLETE = "complete";
     public static final String TRANSITION_ABORT = "abort";

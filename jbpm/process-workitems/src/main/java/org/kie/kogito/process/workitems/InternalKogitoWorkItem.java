@@ -18,13 +18,12 @@
  */
 package org.kie.kogito.process.workitems;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
-public interface InternalKogitoWorkItem extends org.drools.core.process.WorkItem, org.kie.kogito.internal.process.workitem.KogitoWorkItem, Serializable {
+public interface InternalKogitoWorkItem extends org.drools.core.process.WorkItem, org.kie.kogito.internal.process.workitem.KogitoWorkItem {
 
     void setExternalReferenceId(String id);
 
