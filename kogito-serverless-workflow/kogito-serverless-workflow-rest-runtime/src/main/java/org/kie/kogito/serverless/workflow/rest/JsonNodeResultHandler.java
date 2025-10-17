@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.serverless.workflow.rest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
@@ -33,9 +34,6 @@ import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.checkStatusCode;
 
 public class JsonNodeResultHandler implements RestWorkItemHandlerResult {
 
-    public static final String RETURN_HEADERS = "returnHeaders";
-    public static final String RETURN_STATUS_CODE = "returnStatusCode";
-    public static final String RETURN_STATUS_MESSAGE = "returnStatusMessage";
     public static final String FAIL_ON_STATUS_ERROR = "failOnStatusCode";
     public static final String STATUS_CODE = "statusCode";
     public static final String STATUS_MESSAGE = "statusMessage";
@@ -46,20 +44,15 @@ public class JsonNodeResultHandler implements RestWorkItemHandlerResult {
         Map<String, Object> metadata = context.getNodeInstance().getNode().getMetaData();
         if (metadata == null || toBoolean(metadata.getOrDefault(FAIL_ON_STATUS_ERROR, Boolean.TRUE))) {
             checkStatusCode(t);
+        } else {
+            context.setVariable(STATUS_CODE, t.statusCode());
+            context.setVariable(STATUS_MESSAGE, t.statusMessage());
         }
 
         if (metadata != null) {
-            if (toBoolean(metadata.getOrDefault(RETURN_STATUS_CODE, Boolean.TRUE))) {
-                context.setVariable(STATUS_CODE, t.statusCode());
-            }
-
-            if (toBoolean(metadata.getOrDefault(RETURN_STATUS_MESSAGE, Boolean.TRUE))) {
-                context.setVariable(STATUS_MESSAGE, t.statusMessage());
-            }
-
-            if (toBoolean(metadata.getOrDefault(RETURN_HEADERS, Boolean.FALSE))) {
-                context.setVariable(RESPONSE_HEADERS, t.headers());
-            }
+            Map<String, String> headersMap = new HashMap<>();
+            t.headers().forEach(entry -> headersMap.put(entry.getKey(), entry.getValue()));
+            context.setVariable(RESPONSE_HEADERS, headersMap);
         }
 
         return apply(t, u);
