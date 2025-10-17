@@ -108,7 +108,6 @@ public class DefaultUserTaskConfig implements UserTaskConfig {
         this.userTaskLifeCycle = userTaskLifeCycle;
         this.userTaskAssignmentStrategyConfig = userTaskAssignmentStrategyConfig;
         this.userTaskInstances = userTaskInstances;
-
     }
 
     @Override

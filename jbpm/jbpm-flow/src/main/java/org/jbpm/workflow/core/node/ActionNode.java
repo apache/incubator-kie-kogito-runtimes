@@ -39,9 +39,6 @@ public class ActionNode extends ExtendedNodeImpl {
 
     private DroolsAction action;
 
-    public ActionNode() {
-    }
-
     public DroolsAction getAction() {
         return action;
     }

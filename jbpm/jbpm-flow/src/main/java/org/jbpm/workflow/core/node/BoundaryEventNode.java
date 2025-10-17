@@ -28,9 +28,6 @@ public class BoundaryEventNode extends EventNode {
 
     private String attachedToNodeId;
 
-    public BoundaryEventNode() {
-    }
-
     public String getAttachedToNodeId() {
         return attachedToNodeId;
     }

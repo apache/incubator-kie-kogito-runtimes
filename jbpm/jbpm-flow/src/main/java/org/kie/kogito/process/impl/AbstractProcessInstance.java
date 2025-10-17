@@ -239,7 +239,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             processError = buildProcessError();
         }
         if (processInstance.getKnowledgeRuntime() != null) {
-            System.out.println("processInstance.getKnowledgeRuntime()------" + processInstance.getKnowledgeRuntime());
             disconnect();
         }
         internalUnloadState();

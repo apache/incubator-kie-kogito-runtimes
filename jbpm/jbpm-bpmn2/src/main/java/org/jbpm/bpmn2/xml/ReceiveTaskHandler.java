@@ -49,9 +49,6 @@ public class ReceiveTaskHandler extends TaskHandler {
         super.handleNode(node, element, uri, localName, parser);
         WorkItemNode workItemNode = (WorkItemNode) node;
         String messageRef = element.getAttribute("messageRef");
-        System.out.println("----messageRef--" + messageRef);
-        System.out.println("----workItemNode--" + workItemNode);
-        System.out.println("----parser--" + parser);
         Map<String, Message> messages = (Map<String, Message>) ((ProcessBuildData) parser.getData()).getMetaData("Messages");
         if (messages == null) {
             throw new ProcessParsingValidationException("No messages found");

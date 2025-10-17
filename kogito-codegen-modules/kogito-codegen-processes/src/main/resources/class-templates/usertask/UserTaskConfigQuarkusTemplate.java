@@ -54,7 +54,7 @@ public class UserTaskConfig extends DefaultUserTaskConfig {
                 identityProvider,
                 userTaskLifeCycle,
                 userTaskAssignmentStrategyConfigs,
-                userTaskInstances,
+                userTaskInstances
                 );
     }
 
