@@ -1,0 +1,10 @@
+[
+  {
+    "name": "org.kie.kogito.process.workitems.InternalKogitoWorkItem",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allPublicFields": true
+  }
+]

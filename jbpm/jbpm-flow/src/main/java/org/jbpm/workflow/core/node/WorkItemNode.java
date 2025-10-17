@@ -44,6 +44,9 @@ public class WorkItemNode extends StateBasedNode implements ContextContainer {
 
     private boolean waitForCompletion = true;
 
+    public WorkItemNode() {
+    }
+
     public Work getWork() {
         return work;
     }

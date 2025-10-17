@@ -1,0 +1,16 @@
+[
+  {
+    "name": "org.jbpm.workflow.instance.node.WorkItemNodeInstance",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "org.kie.kogito.process.workitems.InternalKogitoWorkItem",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  }
+]

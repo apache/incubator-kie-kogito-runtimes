@@ -1,0 +1,36 @@
+[
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.QuarkusJPAUserTaskInstances",
+    "methods":[{"name":"create","parameterTypes":["org.kie.kogito.usertask.UserTaskInstance"] }, {"name":"exists","parameterTypes":["java.lang.String"] }, {"name":"findById","parameterTypes":["java.lang.String"] }, {"name":"findByIdentity","parameterTypes":["org.kie.kogito.auth.IdentityProvider"] }, {"name":"remove","parameterTypes":["org.kie.kogito.usertask.UserTaskInstance"] }, {"name":"setDisconnectUserTaskInstance","parameterTypes":["java.util.function.Function"] }, {"name":"setReconnectUserTaskInstance","parameterTypes":["java.util.function.Function"] }, {"name":"update","parameterTypes":["org.kie.kogito.usertask.UserTaskInstance"] }]
+  },
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.mapper.QuarkusAttachmentsEntityMapper"
+  },
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.mapper.QuarkusCommentsEntityMapper"
+  },
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.mapper.QuarkusTaskDeadlineEntityMapper"
+  },
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.mapper.QuarkusTaskDeadlineTimerEntityMapper"
+  },
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.mapper.QuarkusTaskInputsEntityMapper"
+  },
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.mapper.QuarkusTaskMetadataEntityMapper"
+  },
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.mapper.QuarkusTaskOutputsEntityMapper"
+  },
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.mapper.QuarkusTaskReassignmentEntityMapper"
+  },
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.mapper.QuarkusTaskReassignmentTimerEntityMapper"
+  },
+  {
+    "name":"org.jbpm.usertask.jpa.quarkus.mapper.QuarkusUserTaskInstanceEntityMapper"
+  }
+]

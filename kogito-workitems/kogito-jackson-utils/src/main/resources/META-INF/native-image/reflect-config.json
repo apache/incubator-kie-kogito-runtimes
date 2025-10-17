@@ -1,0 +1,26 @@
+[
+  {
+    "name": "org.kie.kogito.jackson.utils.ObjectNodeListenerAware",
+    "unsafeAllocated": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "[Lorg.kie.kogito.jackson.utils.ObjectNodeListenerAware;",
+    "unsafeAllocated": true
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.node.NodeSerialization",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "unsafeAllocated": true
+  },
+  {
+    "name": "org.kie.kogito.index.model.ProcessDefinition",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  }
+]
