@@ -50,7 +50,6 @@ import io.quarkus.runtime.Startup;
 @Startup
 @ApplicationScoped
 @Named("Emitter-$ChannelName$")
-@Transactional
 public class $ClassName$ extends AbstractQuarkusCloudEventEmitter<$Type$> {
 
     private static final Logger logger = LoggerFactory.getLogger($ClassName$.class);
@@ -71,10 +70,8 @@ public class $ClassName$ extends AbstractQuarkusCloudEventEmitter<$Type$> {
         public EmitEventType(DataEvent<?> data) {
             this.data = data;
         }
-
     }
 
-    @io.smallrye.common.annotation.Blocking
     public void observe(@Observes(during = TransactionPhase.AFTER_SUCCESS) EmitEventType emitEventType) {
         logger.debug("publishing event {}", emitEventType.data);
         try {
