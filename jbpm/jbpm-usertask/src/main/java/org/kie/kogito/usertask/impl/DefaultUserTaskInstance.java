@@ -42,6 +42,9 @@ import org.kie.kogito.jobs.descriptors.UserTaskInstanceJobDescription;
 import org.kie.kogito.usertask.UserTask;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskInstances;
+import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycle;
+import org.kie.kogito.usertask.impl.lifecycle.UserTaskLifeCycleRegistry;
+import org.kie.kogito.usertask.impl.lifecycle.WsHumanTaskLifeCycle;
 import org.kie.kogito.usertask.impl.model.DeadlineHelper;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
@@ -262,6 +265,11 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     @Override
     public void transition(String transitionId, Map<String, Object> data, IdentityProvider identity) {
+        if (UserTaskLifeCycleRegistry.get(String.valueOf(this.metadata.get("Lifecycle"))) instanceof WsHumanTaskLifeCycle wsHumanTaskLifeCycle
+                && this.userTaskLifeCycle instanceof DefaultUserTaskLifeCycle) {
+            LOG.debug("Usertask Lifecycle with which the task was started is not compatible with the current one. Switching lifecycles");
+            this.userTaskLifeCycle = wsHumanTaskLifeCycle;
+        }
         Optional<UserTaskTransitionToken> next = Optional.of(this.userTaskLifeCycle.newTransitionToken(transitionId, this, data));
         while (next.isPresent()) {
             UserTaskTransitionToken transition = next.get();

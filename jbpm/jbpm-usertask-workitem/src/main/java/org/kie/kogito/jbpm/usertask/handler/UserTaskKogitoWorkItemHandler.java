@@ -53,6 +53,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
     private static final String NODE_NAME = "NodeName";
     private static final String ACTOR_ID = "ActorId";
     private static final String GROUP_ID = "GroupId";
+    private static final String SKIPPABLE = "Skippable";
     private static final String BUSINESSADMINISTRATOR_ID = "BusinessAdministratorId";
     private static final String BUSINESSADMINISTRATOR_GROUP_ID = "BusinessAdministratorGroupId";
     private static final String EXCLUDED_OWNER_ID = "ExcludedOwnerId";
@@ -98,6 +99,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         metadata.put("RootProcessInstanceId", workItem.getProcessInstance().getRootProcessInstanceId());
         metadata.put("ParentProcessInstanceId", workItem.getProcessInstance().getParentProcessInstanceId());
         metadata.put("NodeInstanceId", workItem.getNodeInstance().getId());
+        metadata.put("Skippable", workItem.getParameters().get(SKIPPABLE));
 
         instance.setMetadata(metadata);
 
