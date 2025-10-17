@@ -37,7 +37,7 @@
     <!-- this version property is used in plugins but also in dependencies too -->
     <version.io.quarkus>3.20.3</version.io.quarkus>
     <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>
-    <version.org.springframework>6.2.11</version.org.springframework>
+    <version.org.springframework>6.2.12</version.org.springframework>
     <version.org.springframework.boot>3.4.10</version.org.springframework.boot>
     <version.org.apache.kafka>3.9.1</version.org.apache.kafka>
 
