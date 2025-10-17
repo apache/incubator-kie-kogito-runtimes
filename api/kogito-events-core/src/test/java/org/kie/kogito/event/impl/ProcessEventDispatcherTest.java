@@ -39,6 +39,7 @@ import org.kie.kogito.correlation.SimpleCorrelation;
 import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventDispatcher;
 import org.kie.kogito.event.correlation.DefaultCorrelationService;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstances;
@@ -47,6 +48,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -72,6 +74,7 @@ class ProcessEventDispatcherTest {
         process = mock(Process.class);
         processInstances = mock(ProcessInstances.class);
         processInstance = mock(ProcessInstance.class);
+        when(processInstance.status()).thenReturn(KogitoProcessInstance.STATE_ACTIVE);
         when(processInstance.id()).thenReturn("1");
         when(process.instances()).thenReturn(processInstances);
         correlationService = spy(new DefaultCorrelationService());
@@ -251,5 +254,28 @@ class ProcessEventDispatcherTest {
         assertThat(signal.getValue()).isEqualTo("Message-" + DUMMY_TOPIC);
         assertThat(processInstanceId.getValue()).isEqualTo("1");
         assertThat(processInstance).isEqualTo(instance);
+    }
+
+    @Test
+    void testSigCloudEventWithInactiveProcessInstance() throws Exception {
+        // Setup inactive process instance
+        ProcessInstance<DummyModel> inactiveProcessInstance = mock(ProcessInstance.class);
+        when(inactiveProcessInstance.id()).thenReturn("2");
+        when(inactiveProcessInstance.status()).thenReturn(KogitoProcessInstance.STATE_COMPLETED);
+        when(processInstances.findById("2")).thenReturn(Optional.of(inactiveProcessInstance));
+
+        EventDispatcher<DummyModel, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, Optional.empty(), processService, executor, null, o -> o.getData());
+        TestCloudEvent<TestEvent> event = new TestCloudEvent<>(new TestEvent("pepe"), DUMMY_TOPIC, "source", "2");
+
+        try {
+            dispatcher.dispatch(DUMMY_TOPIC, event).toCompletableFuture().get();
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).contains("Current process instance is not active");
+        } catch (Exception e) {
+            fail("Unexpected exception thrown: " + e.getMessage());
+        }
+
+        verify(processService, never()).signalProcessInstance(any(), any(), any(), any());
+        verify(processService, never()).createProcessInstance(any(), any(), any(), any(), any(), any(), any(), any());
     }
 }
