@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 
 import org.kie.kogito.addons.quarkus.token.exchange.utils.CacheUtils;
 import org.kie.kogito.addons.quarkus.token.exchange.utils.OidcClientUtils;
+import org.kie.kogito.services.context.ProcessInstanceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,8 @@ public class TokenEvictionHandler {
 
     /**
      * Creates a removal listener that can be used with Caffeine cache.
-     * 
+     * This listener sets the proper process instance context from the cache key before logging.
+     *
      * @return A removal listener that handles token eviction events
      */
     public RemovalListener<String, CachedTokens> createRemovalListener() {
@@ -62,14 +64,28 @@ public class TokenEvictionHandler {
             if (value == null)
                 return;
 
-            LOGGER.info("Token cache eviction for cache key '{}' - Cause: {}", key, cause);
-            onTokenExpired(key, value, cause);
+            // Extract process instance ID from cache key and set context for logging
+            String processInstanceId = CacheUtils.extractProcessInstanceIdFromCacheKey(key);
+            if (processInstanceId != null && !processInstanceId.isEmpty()) {
+                ProcessInstanceContext.setProcessInstanceId(processInstanceId);
+            } else {
+                ProcessInstanceContext.getProcessInstanceId();
+            }
+
+            try {
+                LOGGER.info("Token cache eviction for cache key '{}' - Cause: {}", key, cause);
+                onTokenExpired(key, value, cause);
+            } finally {
+                // Reset to general context after logging
+                ProcessInstanceContext.clear();
+            }
         };
     }
 
     /**
      * Callback method called when tokens are evicted from the cache.
-     * 
+     * Context is already set by the removal listener, so no need to set it here.
+     *
      * @param cacheKey The cache key of the evicted tokens
      * @param tokens The evicted token data
      * @param cause The reason for eviction (Caffeine's RemovalCause)
@@ -96,13 +112,24 @@ public class TokenEvictionHandler {
 
     /**
      * Refreshes tokens using a cached refresh token and updates the cache.
-     * 
+     * The process instance context is set based on the cache key.
+     *
      * @param cacheKey The cache key for the tokens being refreshed
      * @param refreshToken The refresh token to use for getting new tokens
      */
     private void refreshWithCachedToken(String cacheKey, String refreshToken) {
+        // Extract process instance ID from cache key for context propagation
+        String processInstanceId = CacheUtils.extractProcessInstanceIdFromCacheKey(cacheKey);
+
         tokenRefreshExecutor.submit(() -> {
             try {
+                // Set the process instance context in the background thread
+                if (processInstanceId != null && !processInstanceId.isEmpty()) {
+                    ProcessInstanceContext.setProcessInstanceId(processInstanceId);
+                } else {
+                    ProcessInstanceContext.getProcessInstanceId();
+                }
+
                 LOGGER.info("{} - cache key '{}'", LOG_PREFIX_TOKEN_REFRESH, cacheKey);
 
                 String authName = CacheUtils.extractAuthNameFromCacheKey(cacheKey);
@@ -118,6 +145,9 @@ public class TokenEvictionHandler {
                 LOGGER.info("{} - cache key '{}'", LOG_PREFIX_REFRESH_COMPLETED, cacheKey);
             } catch (Exception e) {
                 LOGGER.error("{} - cache key '{}': {}", LOG_PREFIX_FAILED_TO_REFRESH_TOKEN, cacheKey, e);
+            } finally {
+                // Clear the context when the background task is complete
+                ProcessInstanceContext.clear();
             }
         });
     }
