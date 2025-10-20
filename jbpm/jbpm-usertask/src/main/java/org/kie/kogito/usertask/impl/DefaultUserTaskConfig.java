@@ -53,6 +53,7 @@ public class DefaultUserTaskConfig implements UserTaskConfig {
     private UserTaskLifeCycle userTaskLifeCycle;
     private UserTaskAssignmentStrategyConfig userTaskAssignmentStrategyConfig;
     private UserTaskInstances userTaskInstances;
+    private String configuredUserTaskLifeCycle;
 
     public DefaultUserTaskConfig() {
         this(new DefaultUserTaskEventListenerConfig(),
@@ -71,21 +72,18 @@ public class DefaultUserTaskConfig implements UserTaskConfig {
             Iterable<IdentityProvider> identityProvider,
             Iterable<UserTaskLifeCycle> userTaskLifeCycle,
             Iterable<UserTaskAssignmentStrategyConfig> userTaskAssignmentStrategyConfig,
-            Iterable<UserTaskInstances> userTaskInstances) {
+            Iterable<UserTaskInstances> userTaskInstances,
+            String configuredUserTaskLifeCycle) {
 
         this.userTaskEventListeners = singleton(userTaskEventListenerConfig, DefaultUserTaskEventListenerConfig::new);
         this.unitOfWorkManager = singleton(unitOfWorkManager, StaticUnitOfWorkManger::staticUnitOfWorkManager);
         this.jobService = singleton(jobService, StaticJobService::staticJobService);
         this.identityProvider = singleton(identityProvider, NoOpIdentityProvider::new);
-        // need to fetch kogito.usertasks.lifecycle property
-        this.userTaskLifeCycle = singleton(userTaskLifeCycle, getUserTaskLifeCycleInstance(getUserTaskLifeCycle()));
+        this.userTaskLifeCycle = singleton(userTaskLifeCycle, getUserTaskLifeCycleInstance(configuredUserTaskLifeCycle));
         this.userTaskAssignmentStrategyConfig = singleton(userTaskAssignmentStrategyConfig, DefaultUserTaskAssignmentStrategyConfig::new);
         this.userTaskInstances = singleton(userTaskInstances, InMemoryUserTaskInstances::new);
+        this.configuredUserTaskLifeCycle = configuredUserTaskLifeCycle;
 
-    }
-
-    private static String getUserTaskLifeCycle() {
-        return new UserTaskUtil().getProperty("kogito.usertasks.lifecycle");
     }
 
     private Supplier<UserTaskLifeCycle> getUserTaskLifeCycleInstance(String lifecycle) {
@@ -154,6 +152,11 @@ public class DefaultUserTaskConfig implements UserTaskConfig {
     @Override
     public UserTaskInstances userTaskInstances() {
         return userTaskInstances;
+    }
+
+    @Override
+    public String getConfiguredUserTaskLifeCycle() {
+        return configuredUserTaskLifeCycle;
     }
 
 }

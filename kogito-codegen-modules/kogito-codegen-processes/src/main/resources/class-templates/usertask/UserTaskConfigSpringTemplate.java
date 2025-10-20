@@ -45,7 +45,8 @@ public class UserTaskConfig extends DefaultUserTaskConfig {
             List<IdentityProvider> identityProvider,
             List<UserTaskLifeCycle> userTaskLifeCycle,
             List<UserTaskAssignmentStrategyConfig> userTaskAssignmentStrategyConfigs,
-            List<UserTaskInstances> userTaskInstances) {
+            List<UserTaskInstances> userTaskInstances,
+            @Value("${kogito.usertasks.lifecycle}") String configuredUserTaskLifeCycle) {
 
         super(workItemHandlerConfig,
                 unitOfWorkManager,
@@ -53,7 +54,8 @@ public class UserTaskConfig extends DefaultUserTaskConfig {
                 identityProvider,
                 userTaskLifeCycle,
                 userTaskAssignmentStrategyConfigs,
-                userTaskInstances);
+                userTaskInstances,
+                configuredUserTaskLifeCycle);
     }
 
 }

@@ -40,4 +40,6 @@ public interface UserTaskConfig extends KogitoConfig {
 
     UserTaskInstances userTaskInstances();
 
+    String getConfiguredUserTaskLifeCycle();
+
 }
