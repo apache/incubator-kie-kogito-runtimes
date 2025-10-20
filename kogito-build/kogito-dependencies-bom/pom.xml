@@ -168,7 +168,7 @@
     <version.com.google.guava>33.0.0-jre</version.com.google.guava>
     <version.apache.commons.commons-compress>1.27.1</version.apache.commons.commons-compress>
 
-    <version.tomcat.embed.core>10.1.46</version.tomcat.embed.core>
+    <version.tomcat.embed.core>10.1.48</version.tomcat.embed.core>
   </properties>
 
   <dependencyManagement>
