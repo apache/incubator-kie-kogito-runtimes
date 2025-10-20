@@ -18,8 +18,8 @@
  */
 package org.kie.kogito.serverless.workflow.rest;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
@@ -49,11 +49,7 @@ public class JsonNodeResultHandler implements RestWorkItemHandlerResult {
             context.setVariable(STATUS_MESSAGE, t.statusMessage());
         }
 
-        if (metadata != null) {
-            Map<String, String> headersMap = new HashMap<>();
-            t.headers().forEach(entry -> headersMap.put(entry.getKey(), entry.getValue()));
-            context.setVariable(RESPONSE_HEADERS, headersMap);
-        }
+        context.setVariable(RESPONSE_HEADERS, t.headers().entries().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
         return apply(t, u);
     }
