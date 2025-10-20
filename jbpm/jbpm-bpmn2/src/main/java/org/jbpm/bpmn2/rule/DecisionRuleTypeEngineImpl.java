@@ -31,9 +31,10 @@ import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNMessage;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.dmn.api.core.DMNRuntime;
+import org.kie.dmn.feel.lang.impl.JavaBackedType;
+import org.kie.dmn.feel.lang.types.BuiltInType;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DmnDecisionModel;
-import org.kie.kogito.dmn.rest.DMNJSONUtils;
 
 public class DecisionRuleTypeEngineImpl implements DecisionRuleTypeEngine {
 
@@ -51,9 +52,9 @@ public class DecisionRuleTypeEngineImpl implements DecisionRuleTypeEngine {
                                 namespace,
                                 model))
                         .get();
-
-        //Input Binding
-        DMNContext context = DMNJSONUtils.ctx(modelInstance, jsonResolver.resolveAll(getInputs(rsni)));
+        // Input binding
+        Map<String, Object> variables = getDMNAnnotatedAdjustedMap(rsni);
+        DMNContext context = modelInstance.newContext(variables);
         DMNResult dmnResult = modelInstance.evaluateAll(context);
         if (dmnResult.hasErrors()) {
             String errors = dmnResult.getMessages(DMNMessage.Severity.ERROR).stream()
@@ -68,4 +69,28 @@ public class DecisionRuleTypeEngineImpl implements DecisionRuleTypeEngine {
 
         rsni.triggerCompleted();
     }
+
+    private Map<String, Object> getDMNAnnotatedAdjustedMap(RuleSetNodeInstance rsni) {
+        // Get inputs
+        Map<String, Object> inputs = getInputs(rsni);
+        // resolve inputs with the JsonResolver' objectMapper
+        Map<String, Object> toReturn = jsonResolver.resolveAll(inputs);
+        // Retrieving DMN-annotated inputs
+        Map<String, Object> dmnAnnotatedBeans = inputs.entrySet()
+                .stream()
+                .filter(entry -> isDMNAnnotatedBean(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        // replacing/adding DMN-annotated beans inside returned Map
+        toReturn.putAll(dmnAnnotatedBeans);
+        return toReturn;
+    }
+
+    private boolean isDMNAnnotatedBean(Object bean) {
+        return bean != null && isDMNAnnotatedBean(bean.getClass());
+    }
+
+    private boolean isDMNAnnotatedBean(Class<?> clazz) {
+        return JavaBackedType.of(clazz).equals(BuiltInType.UNKNOWN);
+    }
+
 }
