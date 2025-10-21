@@ -50,7 +50,7 @@
 
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>junit-jupiter</artifactId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
       <version>${version.org.testcontainers}</version>
       <scope>compile</scope>
     </dependency>
@@ -69,42 +69,42 @@
 
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>kafka</artifactId>
+      <artifactId>testcontainers-kafka</artifactId>
       <version>${version.org.testcontainers}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>mongodb</artifactId>
+      <artifactId>testcontainers-mongodb</artifactId>
       <version>${version.org.testcontainers}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>postgresql</artifactId>
+      <artifactId>testcontainers-postgresql</artifactId>
       <version>${version.org.testcontainers}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>jdbc</artifactId>
+      <artifactId>testcontainers-jdbc</artifactId>
       <version>${version.org.testcontainers}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>oracle-xe</artifactId>
+      <artifactId>testcontainers-oracle-xe</artifactId>
       <version>${version.org.testcontainers}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>database-commons</artifactId>
+      <artifactId>testcontainers-database-commons</artifactId>
       <version>${version.org.testcontainers}</version>
       <scope>compile</scope>
     </dependency>
