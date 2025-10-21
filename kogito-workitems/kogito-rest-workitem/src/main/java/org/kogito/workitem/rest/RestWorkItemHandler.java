@@ -90,9 +90,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     public static final String PARAMS_DECORATOR = "ParamsDecorator";
     public static final String PATH_PARAM_RESOLVER = "PathParamResolver";
     public static final String AUTH_METHOD = "AuthMethod";
-    public static final String RETURN_HEADERS = "return_headers";
-    public static final String RETURN_STATUS_CODE = "return_status_code";
-    public static final String FAIL_ON_STATUS_ERROR = "fail_on_status_error";
     public static final String TARGET_TYPE = "TargetType";
 
     public static final String REQUEST_TIMEOUT_IN_MILLIS = "RequestTimeout";
@@ -101,7 +98,7 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     public static final int DEFAULT_SSL_PORT = 443;
 
     private static final Logger logger = LoggerFactory.getLogger(RestWorkItemHandler.class);
-    private RestWorkItemHandlerResult DEFAULT_RESULT_HANDLER;
+    private static final RestWorkItemHandlerResult DEFAULT_RESULT_HANDLER = new DefaultRestWorkItemHandlerResult();
     private static final RestWorkItemHandlerBodyBuilder DEFAULT_BODY_BUILDER = new DefaultWorkItemHandlerBodyBuilder();
     private static final ParamsDecorator DEFAULT_PARAMS_DECORATOR = new PrefixParamsDecorator();
     private static final PathParamResolver DEFAULT_PATH_PARAM_RESOLVER = new DefaultPathParamResolver();
@@ -136,12 +133,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         if (endPoint == null) {
             throw new IllegalArgumentException("Missing required parameter " + URL);
         }
-
-        boolean failOnStatusError = getParam(parameters, FAIL_ON_STATUS_ERROR, Boolean.class, true);
-
-        boolean returnHeaders = getParam(parameters, RETURN_HEADERS, Boolean.class, false);
-        boolean returnStatusCode = getParam(parameters, RETURN_STATUS_CODE, Boolean.class, false);
-        DEFAULT_RESULT_HANDLER = new DefaultRestWorkItemHandlerResult(returnHeaders, returnStatusCode, failOnStatusError);
 
         HttpMethod method = getParam(parameters, METHOD, HttpMethod.class, HttpMethod.GET);
         RestWorkItemHandlerResult resultHandler = getClassParam(parameters, RESULT_HANDLER, RestWorkItemHandlerResult.class, DEFAULT_RESULT_HANDLER, resultHandlers);
@@ -201,7 +192,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT)
                 ? sendBody(request, bodyBuilder.apply(parameters), requestTimeout)
                 : send(request, requestTimeout);
-
         return Optional.of(this.workItemLifeCycle.newTransition("complete", workItem.getPhaseStatus(),
                 Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo, ContextFactory.fromItem(workItem)))));
     }
