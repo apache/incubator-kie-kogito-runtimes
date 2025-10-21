@@ -106,47 +106,47 @@ public class UserTaskAttributesIT extends BaseUserTaskIT {
         verifyResponseResourceContainsExactly(response, input, Set.of(input.toLowerCase() + "2", input + "3"));
     }
 
-    private ValidatableResponse addAndVerify(String resource, String taskId, Set<String> entries) {
+    private ValidatableResponse addAndVerify(String resource, String taskId, Set<String> entriesToAdd) {
         ValidatableResponse response = given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "john")
                 .queryParam("group", "managers")
-                .body(entries)
+                .body(entriesToAdd)
                 .post(USER_TASKS_INSTANCE_ENDPOINT + "/" + resource, taskId)
                 .then();
         response.statusCode(200)
                 .body("id", not(emptyOrNullString()))
-                .body(resource, hasSize(greaterThanOrEqualTo(entries.size())))
-                .body(resource, hasItems(entries.toArray()));
+                .body(resource, hasSize(greaterThanOrEqualTo(entriesToAdd.size())))
+                .body(resource, hasItems(entriesToAdd.toArray()));
         return response;
     }
 
-    private ValidatableResponse setAndVerify(String resource, String taskId, Set<String> entries) {
+    private ValidatableResponse setAndVerify(String resource, String taskId, Set<String> entriesToSet) {
         ValidatableResponse response = given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "john")
                 .queryParam("group", "managers")
-                .body(entries)
+                .body(entriesToSet)
                 .put(USER_TASKS_INSTANCE_ENDPOINT + "/" + resource, taskId)
                 .then();
         response.statusCode(200)
                 .body("id", not(emptyOrNullString()))
-                .body(resource, containsInAnyOrder(entries.toArray()))
-                .body(resource, hasSize(entries.size()));
+                .body(resource, containsInAnyOrder(entriesToSet.toArray()))
+                .body(resource, hasSize(entriesToSet.size()));
         return response;
     }
 
-    private ValidatableResponse removeAndVerify(String resource, String taskId, Set<String> adminUsersToRemove) {
+    private ValidatableResponse removeAndVerify(String resource, String taskId, Set<String> entriesToRemove) {
         ValidatableResponse response = given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "john")
                 .queryParam("group", "managers")
-                .body(adminUsersToRemove)
+                .body(entriesToRemove)
                 .delete(USER_TASKS_INSTANCE_ENDPOINT + "/" + resource, taskId)
                 .then();
         response.statusCode(200)
                 .body("id", not(emptyOrNullString()))
-                .body(resource, not(containsInAnyOrder(adminUsersToRemove.toArray())));
+                .body(resource, not(containsInAnyOrder(entriesToRemove.toArray())));
         return response;
     }
 
