@@ -78,9 +78,10 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 
 import static java.util.stream.Collectors.toList;
+import static org.drools.codegen.common.GeneratedFileType.REST;
+import static org.kie.kogito.codegen.core.utils.CodegenUtil.isFaultToleranceEnabled;
+import static org.kie.kogito.codegen.core.utils.CodegenUtil.isTransactionEnabled;
 import static org.kie.kogito.codegen.faultTolerance.FaultToleranceUtil.lookFaultToleranceAnnotatorForContext;
-import static org.kie.kogito.codegen.process.util.CodegenUtil.isFaultToleranceEnabled;
-import static org.kie.kogito.codegen.process.util.CodegenUtil.isTransactionEnabled;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.FAIL_ON_ERROR_PROPERTY;
 
 public class UserTaskCodegen extends AbstractGenerator {
@@ -182,7 +183,7 @@ public class UserTaskCodegen extends AbstractGenerator {
 
         Path basePath = UserTaskCodegenHelper.path(packageName);
 
-        return new GeneratedFile(GeneratedFileType.REST, basePath.resolve(className + ".java"), compilationUnit.toString());
+        return new GeneratedFile(REST, basePath.resolve(className + ".java"), compilationUnit.toString());
     }
 
     protected CompilationUnit createRestEndpointCompilationUnit() {
