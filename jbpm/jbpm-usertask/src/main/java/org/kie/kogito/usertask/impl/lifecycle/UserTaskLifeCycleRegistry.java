@@ -16,30 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.usertask;
+package org.kie.kogito.usertask.impl.lifecycle;
 
-import org.kie.kogito.KogitoConfig;
-import org.kie.kogito.auth.IdentityProvider;
-import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.uow.UnitOfWorkManager;
+import java.util.Map;
+
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 
-public interface UserTaskConfig extends KogitoConfig {
+public class UserTaskLifeCycleRegistry {
 
-    UserTaskEventListenerConfig userTaskEventListeners();
+    private static final Map<String, UserTaskLifeCycle> REGISTRY = Map.of(
+            "default", new DefaultUserTaskLifeCycle(),
+            "ws-human-task", new WsHumanTaskLifeCycle());
 
-    UserTaskAssignmentStrategyConfig userTaskAssignmentStrategies();
+    private UserTaskLifeCycleRegistry() {
+    }
 
-    UserTaskLifeCycle userTaskLifeCycle();
-
-    UnitOfWorkManager unitOfWorkManager();
-
-    JobsService jobsService();
-
-    IdentityProvider identityProvider();
-
-    UserTaskInstances userTaskInstances();
-
-    String getConfiguredUserTaskLifeCycle();
-
+    public static UserTaskLifeCycle get(String name) {
+        return REGISTRY.get(name);
+    }
 }

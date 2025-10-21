@@ -31,14 +31,21 @@ import org.kie.kogito.usertask.UserTaskConfig;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskService;
 import org.kie.kogito.usertask.UserTasks;
+import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycle;
+import org.kie.kogito.usertask.impl.lifecycle.UserTaskLifeCycleRegistry;
+import org.kie.kogito.usertask.impl.lifecycle.WsHumanTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
 import org.kie.kogito.usertask.model.Attachment;
 import org.kie.kogito.usertask.model.Comment;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
 import org.kie.kogito.usertask.view.UserTaskView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserTaskServiceImpl implements UserTaskService {
+
+    private static Logger LOG = LoggerFactory.getLogger(UserTaskServiceImpl.class);
 
     private Application application;
 
@@ -98,6 +105,11 @@ public class UserTaskServiceImpl implements UserTaskService {
         }
         UserTaskInstance ut = userTaskInstance.get();
         UserTaskLifeCycle userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycle();
+        if (UserTaskLifeCycleRegistry.get(String.valueOf(ut.getMetadata().get("Lifecycle"))) instanceof WsHumanTaskLifeCycle wsHumanTaskLifeCycle
+                && userTaskLifeCycle instanceof DefaultUserTaskLifeCycle) {
+            LOG.debug("Usertask Lifecycle with which the task was started is not compatible with the current one. Switching lifecycles");
+            userTaskLifeCycle = wsHumanTaskLifeCycle;
+        }
         List<UserTaskTransition> transitions = userTaskLifeCycle.allowedTransitions(ut, identity);
         return toUserTaskTransitionView(transitions);
     }
