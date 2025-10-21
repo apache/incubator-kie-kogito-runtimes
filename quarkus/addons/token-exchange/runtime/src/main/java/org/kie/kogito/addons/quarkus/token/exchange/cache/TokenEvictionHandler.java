@@ -19,6 +19,7 @@
 package org.kie.kogito.addons.quarkus.token.exchange.cache;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -68,8 +69,6 @@ public class TokenEvictionHandler {
             String processInstanceId = CacheUtils.extractProcessInstanceIdFromCacheKey(key);
             if (processInstanceId != null && !processInstanceId.isEmpty()) {
                 ProcessInstanceContext.setProcessInstanceId(processInstanceId);
-            } else {
-                ProcessInstanceContext.getProcessInstanceId();
             }
 
             try {
@@ -92,6 +91,11 @@ public class TokenEvictionHandler {
      */
     private void onTokenExpired(String cacheKey, CachedTokens tokens, RemovalCause cause) {
         LOGGER.warn("OAuth2 tokens for cache key '{}' have expired/been evicted: {}", cacheKey, cause);
+
+        String processInstanceId = CacheUtils.extractProcessInstanceIdFromCacheKey(cacheKey);
+        if (processInstanceId != null && !processInstanceId.isEmpty()) {
+            ProcessInstanceContext.setProcessInstanceId(processInstanceId);
+        }
 
         // Handle proactive token refresh when cache entry expires (which happens before actual token expiration)
         if (cause == RemovalCause.EXPIRED) {
@@ -123,12 +127,7 @@ public class TokenEvictionHandler {
 
         tokenRefreshExecutor.submit(() -> {
             try {
-                // Set the process instance context in the background thread
-                if (processInstanceId != null && !processInstanceId.isEmpty()) {
-                    ProcessInstanceContext.setProcessInstanceId(processInstanceId);
-                } else {
-                    ProcessInstanceContext.getProcessInstanceId();
-                }
+                ProcessInstanceContext.setProcessInstanceId(processInstanceId);
 
                 LOGGER.info("{} - cache key '{}'", LOG_PREFIX_TOKEN_REFRESH, cacheKey);
 
@@ -137,14 +136,18 @@ public class TokenEvictionHandler {
 
                 LOGGER.debug("Refreshing token for cache key '{}' using cached refresh token", cacheKey);
 
+                // Capture MDC context before reactive operation to preserve it across async boundaries
+                Map<String, String> mdcContext = ProcessInstanceContext.copyContextForAsync();
+
                 Tokens refreshedTokens = client.getTokens(Collections.singletonMap("refresh_token", refreshToken))
                         .await().indefinitely();
 
                 tokenCRUD.storeToken(cacheKey, refreshedTokens);
-
+                // Restore MDC context after reactive operation completes
+                ProcessInstanceContext.setContextFromAsync(mdcContext);
                 LOGGER.info("{} - cache key '{}'", LOG_PREFIX_REFRESH_COMPLETED, cacheKey);
             } catch (Exception e) {
-                LOGGER.error("{} - cache key '{}': {}", LOG_PREFIX_FAILED_TO_REFRESH_TOKEN, cacheKey, e);
+                LOGGER.error("{} - cache key '{}'", LOG_PREFIX_FAILED_TO_REFRESH_TOKEN, cacheKey, e);
             } finally {
                 // Clear the context when the background task is complete
                 ProcessInstanceContext.clear();

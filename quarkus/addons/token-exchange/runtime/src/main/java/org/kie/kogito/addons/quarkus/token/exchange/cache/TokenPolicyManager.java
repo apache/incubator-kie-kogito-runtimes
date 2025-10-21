@@ -64,8 +64,6 @@ public class TokenPolicyManager {
         String processInstanceId = CacheUtils.extractProcessInstanceIdFromCacheKey(cacheKey);
         if (processInstanceId != null && !processInstanceId.isEmpty()) {
             ProcessInstanceContext.setProcessInstanceId(processInstanceId);
-        } else {
-            ProcessInstanceContext.getProcessInstanceId();
         }
 
         try {

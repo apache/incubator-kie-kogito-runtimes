@@ -19,10 +19,7 @@
 package org.kie.kogito.quarkus.workflows;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +27,8 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.test.utils.ProcessInstanceLoggingTestBase;
+import org.kie.kogito.test.utils.JsonProcessInstanceLogAnalyzer;
+import org.kie.kogito.test.utils.JsonProcessInstanceLoggingTestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +56,7 @@ import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcess
 @QuarkusTestResource(TokenExchangeExternalServicesMock.class)
 @QuarkusTestResource(KeycloakServiceMock.class)
 @QuarkusIntegrationTest
-class TokenExchangeIT extends ProcessInstanceLoggingTestBase {
+class TokenExchangeIT extends JsonProcessInstanceLoggingTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenExchangeIT.class);
 
     @BeforeEach
@@ -97,9 +95,9 @@ class TokenExchangeIT extends ProcessInstanceLoggingTestBase {
         validateCachingBehavior();
         validateOAuth2LogsFromFile(processInstanceId);
 
-        // Verify that process instance logging format is working correctly
+        // Verify that process instance JSON logging format is working correctly
         // Use robust validation that handles log rotation
-        validateProcessInstanceLogsRobust(processInstanceId);
+        validateProcessInstanceJsonLogsRobust(processInstanceId);
     }
 
     private void validateCachingBehavior() {
@@ -121,62 +119,55 @@ class TokenExchangeIT extends ProcessInstanceLoggingTestBase {
     }
 
     /**
-     * Validate OAuth2 token exchange and caching behavior from log file
+     * Validate OAuth2 token exchange and caching behavior from JSON log files
      */
     private void validateOAuth2LogsFromFile(String processInstanceId) throws IOException {
-        // Read all log files to handle rotation
-        List<Path> allLogFiles = getAllLogFiles();
-        List<String> logLines = new ArrayList<>();
+        // Parse all JSON log files to handle rotation
+        List<JsonProcessInstanceLogAnalyzer.JsonLogEntry> allEntries = parseAllJsonLogFilesWithRetry();
 
-        for (Path file : allLogFiles) {
-            try {
-                logLines.addAll(Files.readAllLines(file));
-            } catch (IOException e) {
-                LOGGER.warn("Failed to read log file {}: {}", file, e.getMessage());
-            }
-        }
+        Assertions.assertThat(allEntries).hasSizeGreaterThan(0);
 
-        Assertions.assertThat(logLines).hasSizeGreaterThan(0);
-
-        LOGGER.info("Analyzing {} log lines from {} files for OAuth2 token exchange patterns for process instance {}",
-                logLines.size(), allLogFiles.size(), processInstanceId);
+        LOGGER.info("Analyzing {} JSON log entries for OAuth2 token exchange patterns for process instance {}",
+                allEntries.size(), processInstanceId);
 
         // Filter logs to only include those related to this process instance or general context
         // This prevents interference from concurrent tests
-        List<String> processSpecificLogLines = logLines.stream()
-                .filter(line -> line.contains("|" + processInstanceId + "|") || line.contains("||")) // Process-specific or general context
+        List<JsonProcessInstanceLogAnalyzer.JsonLogEntry> processSpecificEntries = allEntries.stream()
+                .filter(entry -> processInstanceId.equals(entry.getProcessInstanceId()) ||
+                        entry.getProcessInstanceId() == null ||
+                        entry.getProcessInstanceId().isEmpty())
                 .toList();
 
-        LOGGER.info("Found {} log lines specific to process instance {} or general context",
-                processSpecificLogLines.size(), processInstanceId);
+        LOGGER.info("Found {} JSON log entries specific to process instance {} or general context",
+                processSpecificEntries.size(), processInstanceId);
 
-        // Check repository initialization logs in all log lines (not just process-specific)
+        // Check repository initialization logs in all entries (not just process-specific)
         // Repository initialization is a general context log that should always be present
-        List<String> usedInMemoryRepository = logLines.stream()
-                .filter(line -> line.contains(LOG_PREFIX_USED_REPOSITORY + ": InMemoryTokenCacheRepository"))
+        List<JsonProcessInstanceLogAnalyzer.JsonLogEntry> usedInMemoryRepository = allEntries.stream()
+                .filter(entry -> entry.message.contains(LOG_PREFIX_USED_REPOSITORY + ": InMemoryTokenCacheRepository"))
                 .toList();
 
         Assertions.assertThat(usedInMemoryRepository).hasSize(1);
         LOGGER.info("InMemory repository was used as expected");
 
         // Filter token exchange logs to only those related to this process instance
-        List<String> startTokenExchangeLogLines = processSpecificLogLines.stream()
-                .filter(line -> line.contains(LOG_PREFIX_STARTING_TOKEN_EXCHANGE))
+        List<JsonProcessInstanceLogAnalyzer.JsonLogEntry> startTokenExchangeLogLines = processSpecificEntries.stream()
+                .filter(entry -> entry.message.contains(LOG_PREFIX_STARTING_TOKEN_EXCHANGE))
                 .toList();
-        List<String> completedTokenExchangeLogLines = processSpecificLogLines.stream()
-                .filter(line -> line.contains(LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE))
+        List<JsonProcessInstanceLogAnalyzer.JsonLogEntry> completedTokenExchangeLogLines = processSpecificEntries.stream()
+                .filter(entry -> entry.message.contains(LOG_PREFIX_COMPLETED_TOKEN_EXCHANGE))
                 .toList();
-        List<String> failedTokenExchangeLogLines = processSpecificLogLines.stream()
-                .filter(line -> line.contains(LOG_PREFIX_FAILED_TOKEN_EXCHANGE))
+        List<JsonProcessInstanceLogAnalyzer.JsonLogEntry> failedTokenExchangeLogLines = processSpecificEntries.stream()
+                .filter(entry -> entry.message.contains(LOG_PREFIX_FAILED_TOKEN_EXCHANGE))
                 .toList();
-        List<String> refreshTokenExchangeLogLines = processSpecificLogLines.stream()
-                .filter(line -> line.contains(LOG_PREFIX_TOKEN_REFRESH) && line.contains(processInstanceId))
+        List<JsonProcessInstanceLogAnalyzer.JsonLogEntry> refreshTokenExchangeLogLines = processSpecificEntries.stream()
+                .filter(entry -> entry.message.contains(LOG_PREFIX_TOKEN_REFRESH) && processInstanceId.equals(entry.getProcessInstanceId()))
                 .toList();
-        List<String> completedRefreshTokenExchangeLogLines = processSpecificLogLines.stream()
-                .filter(line -> line.contains(LOG_PREFIX_REFRESH_COMPLETED) && line.contains(processInstanceId))
+        List<JsonProcessInstanceLogAnalyzer.JsonLogEntry> completedRefreshTokenExchangeLogLines = processSpecificEntries.stream()
+                .filter(entry -> entry.message.contains(LOG_PREFIX_REFRESH_COMPLETED) && processInstanceId.equals(entry.getProcessInstanceId()))
                 .toList();
-        List<String> failedRefreshTokenExchangeLogLines = processSpecificLogLines.stream()
-                .filter(line -> line.contains(LOG_PREFIX_FAILED_TO_REFRESH_TOKEN) && line.contains(processInstanceId))
+        List<JsonProcessInstanceLogAnalyzer.JsonLogEntry> failedRefreshTokenExchangeLogLines = processSpecificEntries.stream()
+                .filter(entry -> entry.message.contains(LOG_PREFIX_FAILED_TO_REFRESH_TOKEN) && processInstanceId.equals(entry.getProcessInstanceId()))
                 .toList();
 
         Assertions.assertThat(startTokenExchangeLogLines).hasSize(1);
