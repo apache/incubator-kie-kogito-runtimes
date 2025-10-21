@@ -153,6 +153,7 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     public Optional<UserTaskTransitionToken> activate(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
+        userTaskInstance.getMetadata().put("Lifecycle", "default");
         userTaskInstance.startNotCompletedDeadlines();
         userTaskInstance.startNotCompletedReassignments();
 

@@ -19,6 +19,7 @@
  */
 import java.util.List;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.event.EventPublisher;
@@ -47,14 +48,16 @@ public class UserTaskConfig extends DefaultUserTaskConfig {
             Instance<IdentityProvider> identityProvider,
             Instance<UserTaskLifeCycle> userTaskLifeCycle,
             Instance<UserTaskAssignmentStrategyConfig> userTaskAssignmentStrategyConfigs,
-            Instance<UserTaskInstances> userTaskInstances) {
+            Instance<UserTaskInstances> userTaskInstances,
+            @ConfigProperty(name = "kogito.usertasks.lifecycle") String configuredUserTaskLifeCycle) {
         super(workItemHandlerConfig,
                 unitOfWorkManager,
                 jobsService,
                 identityProvider,
                 userTaskLifeCycle,
                 userTaskAssignmentStrategyConfigs,
-                userTaskInstances);
+                userTaskInstances,
+                configuredUserTaskLifeCycle);
     }
 
 }
