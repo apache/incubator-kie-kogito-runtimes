@@ -44,69 +44,51 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
-      <version>${version.org.testcontainers}</version>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-junit-jupiter</artifactId>
-      <version>${version.org.testcontainers}</version>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-api</artifactId>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-kafka</artifactId>
-      <version>${version.org.testcontainers}</version>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-mongodb</artifactId>
-      <version>${version.org.testcontainers}</version>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-postgresql</artifactId>
-      <version>${version.org.testcontainers}</version>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-jdbc</artifactId>
-      <version>${version.org.testcontainers}</version>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-oracle-xe</artifactId>
-      <version>${version.org.testcontainers}</version>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-database-commons</artifactId>
-      <version>${version.org.testcontainers}</version>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
