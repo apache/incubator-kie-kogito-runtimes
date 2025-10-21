@@ -44,7 +44,7 @@ class DecisionRuleTypeEngineImplTest {
         rsniInputs.put("SOMETHING", "true");
         DMNAnnotated dmnAnnotated = new DMNAnnotated("first", "last");
         rsniInputs.put("dmnAnnotated", dmnAnnotated);
-        NOTDMNAnnotated  notDMNAnnotated = new NOTDMNAnnotated("first", "last");
+        NOTDMNAnnotated notDMNAnnotated = new NOTDMNAnnotated("first", "last");
         rsniInputs.put("notDMNAnnotated", notDMNAnnotated);
         Map<String, Object> jsonResolvedInputs = JSON_RESOLVER.resolveAll(rsniInputs);
         Map<String, Object> retrieved = DECISION_RULE_TYPE_ENGINE.getDMNAnnotatedAdjustedMap(rsniInputs, jsonResolvedInputs);
@@ -58,7 +58,7 @@ class DecisionRuleTypeEngineImplTest {
     void isDMNAnnotatedBean() {
         DMNAnnotated dmnAnnotated = new DMNAnnotated("first", "last");
         assertThat(DECISION_RULE_TYPE_ENGINE.isDMNAnnotatedBean(dmnAnnotated)).isTrue();
-        NOTDMNAnnotated  notDMNAnnotated = new NOTDMNAnnotated("first", "last");
+        NOTDMNAnnotated notDMNAnnotated = new NOTDMNAnnotated("first", "last");
         assertThat(DECISION_RULE_TYPE_ENGINE.isDMNAnnotatedBean(notDMNAnnotated)).isFalse();
     }
 
