@@ -18,6 +18,7 @@
  */
 package org.jbpm.bpmn2.rule;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,27 +71,32 @@ public class DecisionRuleTypeEngineImpl implements DecisionRuleTypeEngine {
         rsni.triggerCompleted();
     }
 
-    private Map<String, Object> getDMNAnnotatedAdjustedMap(RuleSetNodeInstance rsni) {
+    Map<String, Object> getDMNAnnotatedAdjustedMap(RuleSetNodeInstance rsni) {
         // Get inputs
         Map<String, Object> inputs = getInputs(rsni);
         // resolve inputs with the JsonResolver' objectMapper
-        Map<String, Object> toReturn = jsonResolver.resolveAll(inputs);
+        Map<String, Object> jsonResolvedInputs = jsonResolver.resolveAll(inputs);
+        return getDMNAnnotatedAdjustedMap(inputs, jsonResolvedInputs);
+    }
+
+    Map<String, Object> getDMNAnnotatedAdjustedMap(Map<String, Object> rsniInputs, Map<String, Object> jsonResolvedInputs) {
+        Map<String, Object> toReturn = new HashMap<>(jsonResolvedInputs);
         // Retrieving DMN-annotated inputs
-        Map<String, Object> dmnAnnotatedBeans = inputs.entrySet()
+        Map<String, Object> dmnAnnotatedBeans = rsniInputs.entrySet()
                 .stream()
-                .filter(entry -> isDMNAnnotatedBean(entry.getKey()))
+                .filter(entry -> isDMNAnnotatedBean(entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         // replacing/adding DMN-annotated beans inside returned Map
         toReturn.putAll(dmnAnnotatedBeans);
         return toReturn;
     }
 
-    private boolean isDMNAnnotatedBean(Object bean) {
-        return bean != null && isDMNAnnotatedBean(bean.getClass());
+    boolean isDMNAnnotatedBean(Object bean) {
+        return bean != null && isDMNAnnotatedClass(bean.getClass());
     }
 
-    private boolean isDMNAnnotatedBean(Class<?> clazz) {
-        return JavaBackedType.of(clazz).equals(BuiltInType.UNKNOWN);
+    boolean isDMNAnnotatedClass(Class<?> clazz) {
+        return !JavaBackedType.of(clazz).equals(BuiltInType.UNKNOWN);
     }
 
 }
