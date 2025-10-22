@@ -20,6 +20,7 @@ package org.jbpm.bpmn2.rule;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.jbpm.process.core.transformation.JsonResolver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
