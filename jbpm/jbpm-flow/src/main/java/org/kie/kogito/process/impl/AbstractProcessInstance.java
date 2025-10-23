@@ -101,7 +101,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     protected String nodeInstanceIdInError;
     protected Throwable errorCause;
     protected ProcessError processError;
-
+    protected boolean correlated;
+    
     protected Consumer<AbstractProcessInstance<?>> reloadSupplier;
 
     protected long version;
@@ -140,7 +141,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         syncWorkflowInstanceState(workflowProcessInstance);
         workflowProcessInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
         internalSetProcessInstance(workflowProcessInstance);
-        if (Objects.nonNull(correlation)) {
+        this.correlated = Objects.nonNull(correlation);
+        if (this.correlated) {
             this.correlationInstance = Optional.of(process.correlations().create(correlation, id()));
         }
     }
@@ -161,6 +163,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
         this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
+        this.correlated = false;
 
         syncWorkflowInstanceState((WorkflowProcessInstance) wpi);
     }
@@ -216,7 +219,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     protected void reconnect() {
         LOG.debug("reconnect process instance {}", id);
-        if (correlationInstance.isEmpty()) {
+        if (correlated && correlationInstance.isEmpty()) {
             correlationInstance = process().correlations().findByCorrelatedId(id());
         }
 
