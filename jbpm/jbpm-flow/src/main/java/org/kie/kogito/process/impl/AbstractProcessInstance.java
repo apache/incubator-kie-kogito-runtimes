@@ -73,6 +73,7 @@ import org.kie.kogito.process.Signal;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.Milestone;
+import org.kie.kogito.process.impl.lock.ContextAwareProcessInstanceLockStrategy;
 import org.kie.kogito.process.impl.lock.ProcessInstanceAtomicLockStrategy;
 import org.kie.kogito.process.impl.lock.ProcessInstanceLockStrategy;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
@@ -122,7 +123,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
-        this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
+        this.processInstanceLockStrategy = new ContextAwareProcessInstanceLockStrategy(ProcessInstanceAtomicLockStrategy.instance());
         setCorrelationKey(businessKey);
         Map<String, Object> map = bind(variables);
 
@@ -160,7 +161,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
-        this.processInstanceLockStrategy = ProcessInstanceAtomicLockStrategy.instance();
+        this.processInstanceLockStrategy = new ContextAwareProcessInstanceLockStrategy(ProcessInstanceAtomicLockStrategy.instance());
 
         syncWorkflowInstanceState((WorkflowProcessInstance) wpi);
     }
