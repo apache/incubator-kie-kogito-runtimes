@@ -193,8 +193,8 @@ public abstract class StateHandler<S extends State> {
 
     protected void handleState(RuleFlowNodeContainerFactory<?, ?> factory) {
         MakeNodeResult result = makeNode(factory);
-        node = result.getIncomingNode().metaData(SWFConstants.STATE_NAME, state.getName()).metaData(KogitoTags.METRIC_NAME_METADATA, state.getName());
-        outgoingNode = result.getOutgoingNode().metaData(SWFConstants.STATE_NAME, state.getName());
+        node = result.getIncomingNode().name(state.getName()).metaData(SWFConstants.STATE_NAME, state.getName()).metaData(KogitoTags.METRIC_NAME_METADATA, state.getName());
+        outgoingNode = result.getOutgoingNode().name(state.getName()).metaData(SWFConstants.STATE_NAME, state.getName());
         if (state.getCompensatedBy() != null) {
             handleCompensation(factory);
         }
