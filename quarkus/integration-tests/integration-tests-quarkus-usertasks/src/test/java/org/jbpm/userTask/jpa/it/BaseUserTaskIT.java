@@ -27,8 +27,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.emptyOrNullString;
 
 public abstract class BaseUserTaskIT {
@@ -65,5 +64,27 @@ public abstract class BaseUserTaskIT {
                 .body("traveller.nationality", equalTo(traveller.getNationality()));
 
         return pid;
+    }
+
+    public void cancelProcessInstance(String pid) {
+        given()
+                .accept(ContentType.JSON)
+                .when()
+                .get("/{processId}/{id}", PROCESS_ID, pid)
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(pid));
+
+        given().contentType(ContentType.JSON)
+                .when()
+                .delete("/{processId}/{id}", PROCESS_ID, pid)
+                .then();
+
+        given()
+                .accept(ContentType.JSON)
+                .when()
+                .get("/{processId}/{id}", PROCESS_ID, pid)
+                .then()
+                .statusCode(404);
     }
 }
