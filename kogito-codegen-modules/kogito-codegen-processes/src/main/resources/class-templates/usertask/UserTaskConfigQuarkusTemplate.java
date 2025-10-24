@@ -19,7 +19,6 @@
  */
 import java.util.List;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.event.EventPublisher;
@@ -30,7 +29,7 @@ import org.kie.kogito.process.WorkItemHandlerConfig;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.uow.events.UnitOfWorkEventListener;
 import org.kie.kogito.usertask.impl.DefaultUserTaskConfig;
-import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
+import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycles;
 import org.kie.kogito.usertask.UserTaskAssignmentStrategyConfig;
 import org.kie.kogito.usertask.UserTaskEventListenerConfig;
 import org.kie.kogito.usertask.UserTaskInstances;
@@ -46,18 +45,16 @@ public class UserTaskConfig extends DefaultUserTaskConfig {
             Instance<UnitOfWorkManager> unitOfWorkManager,
             Instance<JobsService> jobsService,
             Instance<IdentityProvider> identityProvider,
-            Instance<UserTaskLifeCycle> userTaskLifeCycle,
+            Instance<UserTaskLifeCycles> userTaskLifeCycles,
             Instance<UserTaskAssignmentStrategyConfig> userTaskAssignmentStrategyConfigs,
-            Instance<UserTaskInstances> userTaskInstances,
-            @ConfigProperty(name = "kogito.usertasks.lifecycle") String configuredUserTaskLifeCycle) {
+            Instance<UserTaskInstances> userTaskInstances) {
         super(workItemHandlerConfig,
                 unitOfWorkManager,
                 jobsService,
                 identityProvider,
-                userTaskLifeCycle,
+                userTaskLifeCycles,
                 userTaskAssignmentStrategyConfigs,
-                userTaskInstances,
-                configuredUserTaskLifeCycle);
+                userTaskInstances);
     }
 
 }
