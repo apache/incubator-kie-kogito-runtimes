@@ -153,4 +153,5 @@ public interface UserTaskInstance {
 
     void stopNotCompletedReassignments();
 
+    void setPotentialUsers(Set<String> potentialUsers);
 }

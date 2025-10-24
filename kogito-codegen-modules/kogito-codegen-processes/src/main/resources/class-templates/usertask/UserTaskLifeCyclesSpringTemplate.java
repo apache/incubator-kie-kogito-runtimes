@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,28 +17,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.usertask;
+import java.util.List;
 
-import org.kie.kogito.KogitoConfig;
-import org.kie.kogito.auth.IdentityProvider;
-import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.uow.UnitOfWorkManager;
-import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycles;
+import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycles;
+import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
+import org.springframework.beans.factory.annotation.Value;
 
-public interface UserTaskConfig extends KogitoConfig {
+@org.springframework.stereotype.Component
+public class UserTaskLifeCycles extends DefaultUserTaskLifeCycles {
 
-    UserTaskEventListenerConfig userTaskEventListeners();
+    @org.springframework.beans.factory.annotation.Autowired
+    public UserTaskLifeCycles(
+            @Value("${kogito.usertasks.lifecycle:default}") String configuredUserTaskLifeCycle,
+            List<UserTaskLifeCycle> userTaskLifeCycle) {
 
-    UserTaskAssignmentStrategyConfig userTaskAssignmentStrategies();
-
-    UserTaskLifeCycles userTaskLifeCycles();
-
-    UnitOfWorkManager unitOfWorkManager();
-
-    JobsService jobsService();
-
-    IdentityProvider identityProvider();
-
-    UserTaskInstances userTaskInstances();
+        super(configuredUserTaskLifeCycle, userTaskLifeCycle);
+    }
 
 }
