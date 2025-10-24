@@ -113,6 +113,7 @@ public class UserTaskCodegen extends AbstractGenerator {
     private List<Work> descriptors;
     private TemplatedGenerator producerTemplateGenerator;
     private TemplatedGenerator restTemplateGenerator;
+    private TemplatedGenerator lifeCyclesGenerator;
 
     public UserTaskCodegen(KogitoBuildContext context, List<Work> collectedResources) {
         super(context, "usertasks");
@@ -132,6 +133,11 @@ public class UserTaskCodegen extends AbstractGenerator {
                 .withTemplateBasePath("/class-templates/usertask")
                 .withTargetTypeName(SECTION_CLASS_NAME)
                 .build(context, "RestResourceUserTask");
+
+        lifeCyclesGenerator = TemplatedGenerator.builder()
+                .withTemplateBasePath("/class-templates/usertask")
+                .withTargetTypeName(SECTION_CLASS_NAME)
+                .build(context, "UserTaskLifeCycles");
     }
 
     @Override
@@ -157,6 +163,7 @@ public class UserTaskCodegen extends AbstractGenerator {
 
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         generatedFiles.addAll(generateUserTask());
+        generatedFiles.add(generateLifeCycles());
         if (context().hasDI()) {
             generatedFiles.add(generateProducer());
         }
@@ -166,6 +173,15 @@ public class UserTaskCodegen extends AbstractGenerator {
         }
 
         return generatedFiles;
+    }
+
+    private GeneratedFile generateLifeCycles() {
+        String packageName = context().getPackageName();
+        CompilationUnit compilationUnit = lifeCyclesGenerator.compilationUnitOrThrow("No lifecycle template found for user tasks");
+        compilationUnit.setPackageDeclaration(packageName);
+        String className = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get().getNameAsString();
+        Path basePath = UserTaskCodegenHelper.path(packageName);
+        return new GeneratedFile(GeneratedFileType.SOURCE, basePath.resolve(className + ".java"), compilationUnit.toString());
     }
 
     public GeneratedFile generateRestEndpoint() {

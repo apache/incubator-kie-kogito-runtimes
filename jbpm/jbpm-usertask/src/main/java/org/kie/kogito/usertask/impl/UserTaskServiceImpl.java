@@ -31,9 +31,6 @@ import org.kie.kogito.usertask.UserTaskConfig;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskService;
 import org.kie.kogito.usertask.UserTasks;
-import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycle;
-import org.kie.kogito.usertask.impl.lifecycle.UserTaskLifeCycleRegistry;
-import org.kie.kogito.usertask.impl.lifecycle.WsHumanTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
 import org.kie.kogito.usertask.model.Attachment;
@@ -104,12 +101,7 @@ public class UserTaskServiceImpl implements UserTaskService {
             return Collections.emptyList();
         }
         UserTaskInstance ut = userTaskInstance.get();
-        UserTaskLifeCycle userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycle();
-        if (UserTaskLifeCycleRegistry.get(String.valueOf(ut.getMetadata().get("Lifecycle"))) instanceof WsHumanTaskLifeCycle wsHumanTaskLifeCycle
-                && userTaskLifeCycle instanceof DefaultUserTaskLifeCycle) {
-            LOG.debug("Usertask Lifecycle with which the task was started is not compatible with the current one. Switching lifecycles");
-            userTaskLifeCycle = wsHumanTaskLifeCycle;
-        }
+        UserTaskLifeCycle userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycles().getUserTaskLifeCycleById((String) ut.getMetadata().get("Lifecycle"));
         List<UserTaskTransition> transitions = userTaskLifeCycle.allowedTransitions(ut, identity);
         return toUserTaskTransitionView(transitions);
     }

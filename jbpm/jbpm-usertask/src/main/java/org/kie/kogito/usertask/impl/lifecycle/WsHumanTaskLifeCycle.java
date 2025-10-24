@@ -180,13 +180,12 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
         var transition = transitions.stream()
                 .filter(e -> e.source().equals(state) && e.id().equals(transitionId) && (!transitionId.equals(RESUME) || e.target().getName().equals(previousState)))
                 .findAny()
-                .orElseThrow(() -> new RuntimeException("Invalid transition " + transitionId + " from " + state));
+                .orElseThrow(() -> new UserTaskTransitionException("Invalid transition " + transitionId + " from " + state));
 
         return new DefaultUserTaskTransitionToken(transition.id(), transition.source(), transition.target(), data);
     }
 
     public Optional<UserTaskTransitionToken> activate(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        userTaskInstance.getMetadata().put("Lifecycle", "ws-human-task");
         userTaskInstance.startNotCompletedDeadlines();
         userTaskInstance.startNotCompletedReassignments();
 
@@ -211,9 +210,10 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     private Optional<UserTaskTransitionToken> delegate(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        // Maybe if delegate user is not provided, we need to default to identityprovider user -mandatory
-        // Should we check if delegated user is a potential user
         if (token.data().containsKey(PARAMETER_DELEGATED_USER)) {
+            var potentialUsers = new HashSet<>(userTaskInstance.getPotentialUsers());
+            potentialUsers.add((String) token.data().get(PARAMETER_DELEGATED_USER));
+            userTaskInstance.setPotentialUsers(potentialUsers);
             userTaskInstance.setActualOwner((String) token.data().get(PARAMETER_DELEGATED_USER));
         } else {
             throw new UserTaskTransitionException("Delegated user not specified");
@@ -225,8 +225,15 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
         // Maybe if forwarded user is not provided, we need to default to identityprovider user -mandatory
         // Should we check if forwarded user is a potential user
         if (token.data().containsKey(PARAMETER_FORWARDED_USER)) {
+            var potentialUsers = new HashSet<>(userTaskInstance.getPotentialUsers());
+            if (token.data().containsKey(PARAMETER_USER)) {
+                potentialUsers.remove((String) token.data().get(PARAMETER_USER));
+            } else {
+                potentialUsers.remove(identityProvider.getName());
+            }
+            potentialUsers.add((String) token.data().get(PARAMETER_FORWARDED_USER));
+            userTaskInstance.setPotentialUsers(potentialUsers);
             userTaskInstance.setActualOwner(null);
-            userTaskInstance.setPotentialUsers(new HashSet<>(Set.of((String) token.data().get(PARAMETER_FORWARDED_USER))));
         } else {
             throw new UserTaskTransitionException("Forwarded user not specified");
         }

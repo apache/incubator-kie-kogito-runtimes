@@ -101,7 +101,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         metadata.put("ParentProcessInstanceId", workItem.getProcessInstance().getParentProcessInstanceId());
         metadata.put("NodeInstanceId", workItem.getNodeInstance().getId());
         metadata.put("Skippable", workItem.getParameters().get(SKIPPABLE));
-        metadata.put("Lifecycle", handler.getApplication().config().get(UserTaskConfig.class).getConfiguredUserTaskLifeCycle());
+        metadata.put("Lifecycle", handler.getApplication().config().get(UserTaskConfig.class).userTaskLifeCycles().getDefaultUserTaskLifeCycleId());
 
         instance.setMetadata(metadata);
 
