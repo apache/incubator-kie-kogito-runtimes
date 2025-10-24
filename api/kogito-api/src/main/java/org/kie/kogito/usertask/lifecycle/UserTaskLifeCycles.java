@@ -19,39 +19,10 @@
 
 package org.kie.kogito.usertask.lifecycle;
 
-import java.util.HashMap;
-import java.util.Map;
+public interface UserTaskLifeCycles {
 
-public class UserTaskLifeCycles {
+    String getDefaultUserTaskLifeCycleId();
 
-    private String defaultUserTaskLifeCycleId;
-    private final Map<String, UserTaskLifeCycle> userTaskLifeCycleRegistry = new HashMap<>();
+    UserTaskLifeCycle getUserTaskLifeCycleById(String userTaskLifeCycleId);
 
-    public UserTaskLifeCycles(String defaultUserTaskLifeCycleId, Iterable<UserTaskLifeCycle> userTaskLifeCycle) {
-        this.defaultUserTaskLifeCycleId = defaultUserTaskLifeCycleId;
-        registerCustomUserTaskLifeCycleIfAny(userTaskLifeCycle);
-    }
-
-    private void registerCustomUserTaskLifeCycleIfAny(Iterable<UserTaskLifeCycle> userTaskLifeCycle) {
-        if (userTaskLifeCycle.iterator().hasNext()) {
-            this.defaultUserTaskLifeCycleId = "custom";
-            registerUserTaskLifeCycle("custom", userTaskLifeCycle.iterator().next());
-        }
-    }
-
-    public String getDefaultUserTaskLifeCycleId() {
-        return defaultUserTaskLifeCycleId;
-    }
-
-    public UserTaskLifeCycle getDefaultUserTaskLifeCycle() {
-        return userTaskLifeCycleRegistry.get(defaultUserTaskLifeCycleId);
-    }
-
-    public UserTaskLifeCycle getUserTaskLifeCycleById(String userTaskLifeCycleId) {
-        return userTaskLifeCycleRegistry.getOrDefault(userTaskLifeCycleId, userTaskLifeCycleRegistry.get(defaultUserTaskLifeCycleId));
-    }
-
-    protected void registerUserTaskLifeCycle(String userTaskLifeCycleId, UserTaskLifeCycle userTaskLifeCycle) {
-        this.userTaskLifeCycleRegistry.put(userTaskLifeCycleId, userTaskLifeCycle);
-    }
 }
