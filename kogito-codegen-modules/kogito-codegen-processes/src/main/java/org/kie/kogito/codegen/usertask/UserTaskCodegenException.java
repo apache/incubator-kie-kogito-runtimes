@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,17 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import java.util.List;
+package org.kie.kogito.codegen.usertask;
 
-import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycles;
-import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
+public class UserTaskCodegenException extends RuntimeException {
 
-@org.springframework.stereotype.Component
-public class UserTaskLifeCycles extends DefaultUserTaskLifeCycles {
-
-    @org.springframework.beans.factory.annotation.Autowired
-    public UserTaskLifeCycles(List<UserTaskLifeCycle> userTaskLifeCycleInstance) {
-        super("$userTaskLifeCycleId$", userTaskLifeCycleInstance);
+    public UserTaskCodegenException(String message) {
+        super(message);
     }
 
 }

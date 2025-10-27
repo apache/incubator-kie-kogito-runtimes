@@ -17,7 +17,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycles;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 
@@ -27,10 +26,8 @@ import jakarta.enterprise.inject.Instance;
 public class UserTaskLifeCycles extends DefaultUserTaskLifeCycles {
 
     @jakarta.inject.Inject
-    public UserTaskLifeCycles(
-            @ConfigProperty(name = "kogito.usertasks.lifecycle", defaultValue = "default") String configuredUserTaskLifeCycleId,
-            Instance<UserTaskLifeCycle> userTaskLifeCycle) {
-        super(configuredUserTaskLifeCycleId, userTaskLifeCycle);
+    public UserTaskLifeCycles(Instance<UserTaskLifeCycle> userTaskLifeCycleInstance) {
+        super("$userTaskLifeCycleId$", userTaskLifeCycleInstance);
     }
 
 }

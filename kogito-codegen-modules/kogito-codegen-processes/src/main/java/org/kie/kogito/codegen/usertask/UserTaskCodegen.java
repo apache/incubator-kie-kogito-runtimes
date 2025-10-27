@@ -98,6 +98,8 @@ public class UserTaskCodegen extends AbstractGenerator {
     private static final String BUSINESSADMINISTRATOR_GROUP_ID = "BusinessAdministratorGroupId";
     private static final String EXCLUDED_OWNER_ID = "ExcludedOwnerId";
 
+    private static final Set<String> USERTASK_LIFECYCLES = Set.of("default", "ws-human-task");
+
     private static final SemanticModules BPMN_SEMANTIC_MODULES;
 
     static {
@@ -177,9 +179,26 @@ public class UserTaskCodegen extends AbstractGenerator {
 
     private GeneratedFile generateLifeCycles() {
         String packageName = context().getPackageName();
+
         CompilationUnit compilationUnit = lifeCyclesGenerator.compilationUnitOrThrow("No lifecycle template found for user tasks");
         compilationUnit.setPackageDeclaration(packageName);
-        String className = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get().getNameAsString();
+
+        var template = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseThrow(() -> new ProcessCodegenException("UserTaskLifeCyclesTemplate doesn't contain a class or interface declaration!"));
+        String userTaskLifeCycleId = context().getApplicationProperty("kogito.usertasks.lifecycle")
+                .map(value -> {
+                    if (USERTASK_LIFECYCLES.contains(value))
+                        return value;
+                    else
+                        throw new UserTaskCodegenException("Illegal usertask lifecycle");
+                })
+                .orElse("default");
+        template.findAll(StringLiteralExpr.class)
+                .stream()
+                .filter(stringExpression -> stringExpression.getValue().contains("$userTaskLifeCycleId$"))
+                .forEach(stringExpression -> stringExpression.setString(stringExpression.getValue().replace("$userTaskLifeCycleId$", userTaskLifeCycleId)));
+
+        var className = template.getNameAsString();
         Path basePath = UserTaskCodegenHelper.path(packageName);
         return new GeneratedFile(GeneratedFileType.SOURCE, basePath.resolve(className + ".java"), compilationUnit.toString());
     }
