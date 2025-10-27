@@ -23,9 +23,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
+import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycleException;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultUserTaskLifeCycles implements UserTaskLifeCycles {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultUserTaskLifeCycles.class);
 
     private final Map<String, UserTaskLifeCycle> userTaskLifeCycleRegistry = new HashMap<>();
     private String defaultUserTaskLifeCycleId;
@@ -40,6 +45,7 @@ public class DefaultUserTaskLifeCycles implements UserTaskLifeCycles {
         this.defaultUserTaskLifeCycleId = defaultUserTaskLifeCycleId;
         registerCustomUserTaskLifeCycleIfAny(userTaskLifeCycle);
         registerUserTaskLifeCycles();
+        LOG.info("Registered UserTaskLifeCycles {} with default {}", userTaskLifeCycleRegistry, this.defaultUserTaskLifeCycleId);
     }
 
     private void registerUserTaskLifeCycles() {
@@ -48,9 +54,16 @@ public class DefaultUserTaskLifeCycles implements UserTaskLifeCycles {
     }
 
     private void registerCustomUserTaskLifeCycleIfAny(Iterable<UserTaskLifeCycle> userTaskLifeCycle) {
-        if (userTaskLifeCycle.iterator().hasNext()) {
+        var iterator = userTaskLifeCycle.iterator();
+        if (iterator.hasNext()) {
             defaultUserTaskLifeCycleId = "custom";
-            registerUserTaskLifeCycle("custom", userTaskLifeCycle.iterator().next());
+            registerUserTaskLifeCycle("custom", iterator.next());
+
+            if (iterator.hasNext()) {
+                var message = "Multiple custom usertask lifecycle implementations found";
+                LOG.error(message);
+                throw new UserTaskLifeCycleException(message);
+            }
         }
     }
 
