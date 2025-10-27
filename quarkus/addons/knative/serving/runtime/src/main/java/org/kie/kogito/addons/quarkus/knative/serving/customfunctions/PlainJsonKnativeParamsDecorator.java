@@ -18,17 +18,25 @@
  */
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.ID;
+import static org.kie.kogito.serverless.workflow.SWFConstants.MODEL_WORKFLOW_VAR;
 
 public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator {
 
@@ -37,12 +45,44 @@ public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator
         if (isCloudEvent(KnativeFunctionPayloadSupplier.getPayload(parameters))) {
             throw new IllegalArgumentException(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
         }
-
-        super.decorate(workItem, parameters, request);
+        buildFromParams(workItem, parameters, request);
     }
 
     private static boolean isCloudEvent(Map<String, Object> payload) {
         List<String> cloudEventMissingAttributes = CloudEventUtils.getMissingAttributes(payload);
         return !payload.isEmpty() && (cloudEventMissingAttributes.isEmpty() || (cloudEventMissingAttributes.size() == 1 && cloudEventMissingAttributes.contains(ID)));
+    }
+
+    private void buildFromParams(KogitoWorkItem workItem, Map<String, Object> parameters, HttpRequest<?> request) {
+        Map<String, Object> inputModel = new HashMap<>();
+
+        Object inputModelObject = parameters.get(MODEL_WORKFLOW_VAR);
+
+        ObjectNode inputModelCopy = null;
+        if (inputModelObject instanceof ObjectNode objectNode) {
+            ObjectMapper mapper = new ObjectMapper();
+            objectNode.fields().forEachRemaining(entry -> {
+                JsonNode value = entry.getValue();
+                Object rawValue = mapper.convertValue(value, Object.class);
+                inputModel.put(entry.getKey(), rawValue);
+            });
+
+            try {
+                inputModelCopy = (ObjectNode) mapper.readTree(objectNode.toString());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Failed to copy MODEL_WORKFLOW_VAR", e);
+            }
+        }
+
+        Set<String> paramsRemove = super.extractHeadersQueries(workItem, inputModel, request);
+        super.decorate(workItem, parameters, request);
+
+        if (inputModelCopy != null) {
+            // mutate the safe copy
+            inputModelCopy.remove(paramsRemove);
+
+            // replace the original entry in parameters with the copy
+            parameters.put(MODEL_WORKFLOW_VAR, inputModelCopy);
+        }
     }
 }
