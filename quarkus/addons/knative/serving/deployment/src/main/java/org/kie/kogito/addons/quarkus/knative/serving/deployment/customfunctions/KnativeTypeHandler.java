@@ -34,6 +34,7 @@ import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.PlainJsonKn
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
+import org.kie.kogito.serverless.workflow.suppliers.JsonNodeResultHandlerSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 
@@ -80,10 +81,7 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
 
         node.workParameter(KnativeWorkItemHandler.SERVICE_PROPERTY_NAME, operation.getService())
                 .workParameter(KnativeWorkItemHandler.PATH_PROPERTY_NAME, operation.getPath())
-                .workParameter(RestWorkItemHandler.METHOD, operation.getHttpMethod())
-                .workParameter(RestWorkItemHandler.RETURN_HEADERS, operation.returnHeaders())
-                .workParameter(RestWorkItemHandler.RETURN_STATUS_CODE, operation.returnStatusCode())
-                .workParameter(RestWorkItemHandler.FAIL_ON_STATUS_ERROR, operation.failOnStatusError());
+                .workParameter(RestWorkItemHandler.METHOD, operation.getHttpMethod());
 
         return addFunctionArgs(workflow,
                 fillWorkItemHandler(workflow, context, node, functionDef),
@@ -110,6 +108,7 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
                 context.getContext(), String.class, DEFAULT_REQUEST_TIMEOUT_VALUE);
 
         return node.workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
+                .workParameter(RestWorkItemHandler.RESULT_HANDLER, new JsonNodeResultHandlerSupplier())
                 .workParameter(RestWorkItemHandler.REQUEST_TIMEOUT_IN_MILLIS, requestTimeout)
                 .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, RestWorkItemHandler.REST_TASK_TYPE)
                 .workName(KnativeWorkItemHandler.NAME);
