@@ -148,7 +148,10 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     @Override
     public List<UserTaskTransition> allowedTransitions(UserTaskInstance userTaskInstance, IdentityProvider identity) {
         checkPermission(userTaskInstance, identity);
-        return transitions.stream().filter(t -> t.source().equals(userTaskInstance.getStatus())).toList();
+        return transitions.stream()
+                .filter(t -> t.source().equals(userTaskInstance.getStatus())
+                        && (!t.id().equals(SKIP) || "true".equals(userTaskInstance.getMetadata().get("Skippable"))))
+                .toList();
     }
 
     @Override
