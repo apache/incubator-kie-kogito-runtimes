@@ -19,6 +19,7 @@
 package org.kie.kogito.addons.jwt.deployment;
 
 import org.kie.kogito.addons.jwt.JwtParserWorkItemHandler;
+import org.kie.kogito.addons.jwt.JwtParserWorkItemHandlerFactory;
 import org.kie.kogito.addons.jwt.JwtTokenParser;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -42,5 +43,6 @@ public class JwtParserProcessor {
     public void registerAdditionalBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(JwtParserWorkItemHandler.class));
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(JwtTokenParser.class));
+        additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(JwtParserWorkItemHandlerFactory.class));
     }
 }
