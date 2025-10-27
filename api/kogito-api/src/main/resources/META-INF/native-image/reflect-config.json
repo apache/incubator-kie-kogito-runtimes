@@ -1,0 +1,24 @@
+[
+  {
+    "name":"org.kie.kogito.uow.UnitOfWorkManager"
+  },
+  {
+    "name":"org.kie.kogito.uow.events.UnitOfWorkEventListener"
+  },
+  {
+    "name":"org.kie.kogito.jobs.DurationExpirationTime",
+    "allDeclaredFields":true,
+    "queryAllDeclaredMethods":true
+  },
+  {
+    "name":"org.kie.kogito.jobs.ExpirationTime",
+    "queryAllDeclaredMethods":true
+  },
+  {
+    "name":"org.kie.kogito.jobs.JobDescription",
+    "queryAllDeclaredMethods":true
+  },
+  {
+    "name":"org.kie.kogito.jobs.JobsService"
+  }
+]

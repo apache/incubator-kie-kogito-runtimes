@@ -8,9 +8,9 @@
   { "name": "com.fasterxml.jackson.databind.node.ValueNode" },
   { "name": "com.fasterxml.jackson.databind.JsonNode" },
   { "name": "com.fasterxml.jackson.databind.node.TextNode" },
+  { "name": "com.fasterxml.jackson.databind.node.NodeSerialization" },
   { "name": "java.util.Map" },
   { "name": "java.util.LinkedHashMap" },
   { "name": "java.util.HashMap" },
-  { "name": "java.lang.String" },
-  { "name": "org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription" }
+  { "name": "java.lang.String" }
 ]

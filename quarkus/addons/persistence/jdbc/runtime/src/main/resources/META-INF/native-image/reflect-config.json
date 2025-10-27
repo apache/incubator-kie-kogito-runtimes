@@ -1,0 +1,9 @@
+[
+  {
+    "name":"org.kie.kogito.persistence.quarkus.JDBCProcessInstancesFactory",
+    "methods":[{"name":"<init>","parameterTypes":["javax.sql.DataSource","java.lang.Boolean","boolean","java.util.Optional"] }]
+  },
+  {
+    "name":"org.kie.kogito.persistence.quarkus.JDBCorrelationServiceProducer"
+  }
+]

@@ -1,0 +1,13 @@
+[
+  {
+    "name":"org.kie.kogito.timer.Trigger",
+    "queryAllDeclaredMethods":true
+  },
+  {
+    "name":"org.kie.kogito.timer.impl.SimpleTimerTrigger",
+    "allDeclaredFields":true,
+    "queryAllDeclaredMethods":true,
+    "queryAllDeclaredConstructors":true,
+    "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getCurrentRepeatCount","parameterTypes":[] }, {"name":"getEndTime","parameterTypes":[] }, {"name":"getNextFireTime","parameterTypes":[] }, {"name":"getPeriod","parameterTypes":[] }, {"name":"getPeriodUnit","parameterTypes":[] }, {"name":"getRepeatCount","parameterTypes":[] }, {"name":"getStartTime","parameterTypes":[] }, {"name":"getZoneId","parameterTypes":[] }, {"name":"isEndTimeReached","parameterTypes":[] }, {"name":"isIndefinitely","parameterTypes":[] }, {"name":"setCurrentRepeatCount","parameterTypes":["int"] }, {"name":"setEndTimeReached","parameterTypes":["boolean"] }, {"name":"setNextFireTime","parameterTypes":["java.util.Date"] }, {"name":"setPeriod","parameterTypes":["long"] }, {"name":"setPeriodUnit","parameterTypes":["java.time.temporal.ChronoUnit"] }, {"name":"setRepeatCount","parameterTypes":["int"] }, {"name":"setStartTime","parameterTypes":["java.util.Date"] }, {"name":"setZoneId","parameterTypes":["java.lang.String"] }]
+  }
+]

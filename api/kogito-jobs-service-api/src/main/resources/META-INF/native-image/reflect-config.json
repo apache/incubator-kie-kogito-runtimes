@@ -1,0 +1,20 @@
+[
+  {
+    "name":"org.kie.kogito.jobs.service.api.HasData",
+    "queryAllDeclaredMethods":true
+  },
+  {
+    "name":"org.kie.kogito.jobs.service.api.HasPayload",
+    "queryAllDeclaredMethods":true
+  },
+  {
+    "name":"org.kie.kogito.jobs.service.api.PayloadData",
+    "allDeclaredFields":true,
+    "queryAllDeclaredMethods":true
+  },
+  {
+    "name":"org.kie.kogito.jobs.service.api.Recipient",
+    "allDeclaredFields":true,
+    "queryAllDeclaredMethods":true
+  }
+]
