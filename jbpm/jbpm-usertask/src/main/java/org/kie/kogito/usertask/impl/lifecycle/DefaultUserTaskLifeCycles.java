@@ -38,14 +38,14 @@ public class DefaultUserTaskLifeCycles implements UserTaskLifeCycles {
     public DefaultUserTaskLifeCycles() {
         this.defaultUserTaskLifeCycleId = "default";
         registerUserTaskLifeCycles();
-
+        LOG.info("Registered UserTaskLifeCycles {} with default lifecycle: {}", userTaskLifeCycleRegistry, this.defaultUserTaskLifeCycleId);
     }
 
     public DefaultUserTaskLifeCycles(String defaultUserTaskLifeCycleId, Iterable<UserTaskLifeCycle> userTaskLifeCycle) {
         this.defaultUserTaskLifeCycleId = defaultUserTaskLifeCycleId;
         registerCustomUserTaskLifeCycleIfAny(userTaskLifeCycle);
         registerUserTaskLifeCycles();
-        LOG.info("Registered UserTaskLifeCycles {} with default {}", userTaskLifeCycleRegistry, this.defaultUserTaskLifeCycleId);
+        LOG.info("Registered UserTaskLifeCycles {} with default lifecycle: {}", userTaskLifeCycleRegistry, this.defaultUserTaskLifeCycleId);
     }
 
     private void registerUserTaskLifeCycles() {

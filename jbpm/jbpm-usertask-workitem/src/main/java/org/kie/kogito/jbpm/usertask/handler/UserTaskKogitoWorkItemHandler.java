@@ -160,7 +160,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             if (ut instanceof DefaultUserTaskInstance defaultUserTaskInstance && defaultUserTaskInstance.getUserTaskLifeCycle() instanceof WsHumanTaskLifeCycle) {
                 ut.transition(WsHumanTaskLifeCycle.EXIT, Collections.singletonMap(PARAMETER_NOTIFY, Boolean.FALSE), IdentityProviders.of(WORKFLOW_ENGINE_USER));
             } else {
-                ut.transition(DefaultUserTaskLifeCycle.FAIL, Collections.singletonMap(PARAMETER_NOTIFY, Boolean.FALSE), IdentityProviders.of(WORKFLOW_ENGINE_USER));
+                ut.transition(DefaultUserTaskLifeCycle.SKIP, Collections.singletonMap(PARAMETER_NOTIFY, Boolean.FALSE), IdentityProviders.of(WORKFLOW_ENGINE_USER));
             }
 
         });
