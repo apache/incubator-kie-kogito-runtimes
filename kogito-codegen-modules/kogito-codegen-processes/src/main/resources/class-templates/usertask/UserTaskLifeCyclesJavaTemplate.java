@@ -18,7 +18,6 @@
  */
 import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycles;
 
-
 public class UserTaskLifeCycles extends DefaultUserTaskLifeCycles {
 
     public UserTaskLifeCycles() {
