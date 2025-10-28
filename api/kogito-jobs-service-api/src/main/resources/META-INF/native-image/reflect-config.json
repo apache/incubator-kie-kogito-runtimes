@@ -1,20 +1,38 @@
 [
   {
     "name":"org.kie.kogito.jobs.service.api.HasData",
-    "queryAllDeclaredMethods":true
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true,
+    "allDeclaredFields" : true,
+    "allPublicFields" : true
   },
   {
     "name":"org.kie.kogito.jobs.service.api.HasPayload",
-    "queryAllDeclaredMethods":true
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true,
+    "allDeclaredFields" : true,
+    "allPublicFields" : true
   },
   {
     "name":"org.kie.kogito.jobs.service.api.PayloadData",
-    "allDeclaredFields":true,
-    "queryAllDeclaredMethods":true
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true,
+    "allDeclaredFields" : true,
+    "allPublicFields" : true
   },
   {
     "name":"org.kie.kogito.jobs.service.api.Recipient",
-    "allDeclaredFields":true,
-    "queryAllDeclaredMethods":true
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true,
+    "allDeclaredFields" : true,
+    "allPublicFields" : true
   }
 ]
