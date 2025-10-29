@@ -92,7 +92,11 @@ public class DefaultUserTasks implements UserTasks {
         impl.addEventListener(new UnitOfWorkUserTaskEventListener(application.unitOfWorkManager()));
         instance.setUserTask(application.get(UserTasks.class).userTaskById(instance.getUserTaskId()));
         instance.setUserTaskEventSupport(impl);
-        instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycles().getUserTaskLifeCycleById((String) instance.getMetadata().get("LifeCycle")));
+        if (instance.getMetadata().get("LifeCycle") == null) {
+            instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycles().getUserTaskLifeCycleById("kogito"));
+        } else {
+            instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycles().getUserTaskLifeCycleById((String) instance.getMetadata().get("LifeCycle")));
+        }
         instance.setInstances(userTaskInstances);
         instance.setJobsService(userTaskConfig.jobsService());
         return instance;
