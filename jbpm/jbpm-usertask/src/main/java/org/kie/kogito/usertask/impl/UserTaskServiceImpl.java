@@ -101,7 +101,12 @@ public class UserTaskServiceImpl implements UserTaskService {
             return Collections.emptyList();
         }
         UserTaskInstance ut = userTaskInstance.get();
-        UserTaskLifeCycle userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycles().getUserTaskLifeCycleById((String) ut.getMetadata().get("Lifecycle"));
+        UserTaskLifeCycle userTaskLifeCycle;
+        if (ut.getMetadata().get("LifeCycle") == null) {
+            userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycles().getUserTaskLifeCycleById("kogito");
+        } else {
+            userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycles().getUserTaskLifeCycleById((String) ut.getMetadata().get("Lifecycle"));
+        }
         List<UserTaskTransition> transitions = userTaskLifeCycle.allowedTransitions(ut, identity);
         return toUserTaskTransitionView(transitions);
     }

@@ -36,7 +36,7 @@ public class DefaultUserTaskLifeCycles implements UserTaskLifeCycles {
     private String defaultUserTaskLifeCycleId;
 
     public DefaultUserTaskLifeCycles() {
-        this.defaultUserTaskLifeCycleId = "default";
+        this.defaultUserTaskLifeCycleId = "kogito";
         registerUserTaskLifeCycles();
         LOG.info("Registered UserTaskLifeCycles {} with default lifecycle: {}", userTaskLifeCycleRegistry, this.defaultUserTaskLifeCycleId);
     }
@@ -49,7 +49,7 @@ public class DefaultUserTaskLifeCycles implements UserTaskLifeCycles {
     }
 
     private void registerUserTaskLifeCycles() {
-        registerUserTaskLifeCycle("default", new DefaultUserTaskLifeCycle());
+        registerUserTaskLifeCycle("kogito", new DefaultUserTaskLifeCycle());
         registerUserTaskLifeCycle("ws-human-task", new WsHumanTaskLifeCycle());
     }
 

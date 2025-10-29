@@ -98,7 +98,7 @@ public class UserTaskCodegen extends AbstractGenerator {
     private static final String BUSINESSADMINISTRATOR_GROUP_ID = "BusinessAdministratorGroupId";
     private static final String EXCLUDED_OWNER_ID = "ExcludedOwnerId";
 
-    private static final Set<String> USERTASK_LIFECYCLES = Set.of("default", "ws-human-task");
+    private static final Set<String> USERTASK_LIFECYCLES = Set.of("kogito", "ws-human-task");
 
     private static final SemanticModules BPMN_SEMANTIC_MODULES;
 
@@ -192,7 +192,7 @@ public class UserTaskCodegen extends AbstractGenerator {
                     else
                         throw new UserTaskCodegenException("Illegal usertask lifecycle");
                 })
-                .orElse("default");
+                .orElse("kogito");
         template.findAll(StringLiteralExpr.class)
                 .stream()
                 .filter(stringExpression -> stringExpression.getValue().contains("$userTaskLifeCycleId$"))
