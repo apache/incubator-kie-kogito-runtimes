@@ -103,10 +103,10 @@ public class UserTasks implements org.kie.kogito.usertask.UserTasks {
         impl.addEventListener(new UnitOfWorkUserTaskEventListener(application.unitOfWorkManager()));
         instance.setUserTask(application.get(org.kie.kogito.usertask.UserTasks.class).userTaskById(instance.getUserTaskId()));
         instance.setUserTaskEventSupport(impl);
-        if (instance.getMetadata().get("LifeCycle") == null) {
+        if (instance.getMetadata().get("Lifecycle") == null) {
             instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycles().getUserTaskLifeCycleById("kogito"));
         } else {
-            instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycles().getUserTaskLifeCycleById((String) instance.getMetadata().get("LifeCycle")));
+            instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycles().getUserTaskLifeCycleById((String) instance.getMetadata().get("Lifecycle")));
         }
         instance.setInstances(application.config().get(UserTaskConfig.class).userTaskInstances());
         instance.setJobsService(userTaskConfig.jobsService());
