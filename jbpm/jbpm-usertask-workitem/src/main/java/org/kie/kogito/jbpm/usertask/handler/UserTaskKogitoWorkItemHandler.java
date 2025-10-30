@@ -83,6 +83,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         DefaultUserTaskInstance instance = (DefaultUserTaskInstance) userTask.createInstance();
 
         instance.setExternalReferenceId(workItem.getStringId());
+        instance.setMetadataWithoutPersistence(Map.of("Lifecycle", handler.getApplication().config().get(UserTaskConfig.class).userTaskLifeCycles().getDefaultUserTaskLifeCycleId()));
 
         userTask.instances().create(instance);
 
