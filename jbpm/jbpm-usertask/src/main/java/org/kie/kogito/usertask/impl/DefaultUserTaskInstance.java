@@ -262,7 +262,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     @Override
     public void transition(String transitionId, Map<String, Object> data, IdentityProvider identity) {
-        Optional<UserTaskTransitionToken> next = Optional.of(this.userTaskLifeCycle.newTransitionToken(transitionId, this, data));
+        Optional<UserTaskTransitionToken> next = Optional.ofNullable(this.userTaskLifeCycle.newTransitionToken(transitionId, this, data));
         while (next.isPresent()) {
             UserTaskTransitionToken transition = next.get();
             next = this.userTaskLifeCycle.transition(this, transition, identity);
@@ -611,6 +611,10 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
         updatePersistence();
+    }
+
+    public void setMetadataWithoutPersistence(Map<String, Object> metadata) {
+        this.metadata = metadata;
     }
 
     @Override

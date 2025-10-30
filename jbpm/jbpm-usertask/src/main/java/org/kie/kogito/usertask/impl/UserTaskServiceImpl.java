@@ -102,7 +102,7 @@ public class UserTaskServiceImpl implements UserTaskService {
         }
         UserTaskInstance ut = userTaskInstance.get();
         UserTaskLifeCycle userTaskLifeCycle;
-        if (ut.getMetadata().get("LifeCycle") == null) {
+        if (ut.getMetadata().get("Lifecycle") == null) {
             userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycles().getUserTaskLifeCycleById("kogito");
         } else {
             userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycles().getUserTaskLifeCycleById((String) ut.getMetadata().get("Lifecycle"));

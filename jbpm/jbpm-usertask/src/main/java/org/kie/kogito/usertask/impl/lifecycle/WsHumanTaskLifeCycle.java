@@ -43,11 +43,13 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     public static final String PARAMETER_NOTIFY = "NOTIFY";
     private static final String PARAMETER_DELEGATED_USER = "DELEGATED_USER";
     private static final String PARAMETER_FORWARDED_USER = "FORWARDED_USER";
+    private static final String PARAMETER_POTENTIAL_USERS = "POTENTIAL_USERS";
 
     private static final String SKIPPABLE = "Skippable";
 
     // Actions
     public static final String ACTIVATE = "activate";
+    public static final String NOMINATE = "nominate";
     public static final String CLAIM = "claim";
     public static final String DELEGATE = "delegate";
     public static final String RELEASE = "release";
@@ -73,9 +75,9 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     public static final UserTaskState OBSOLETE = UserTaskState.of("Obsolete", TerminationType.OBSOLETE);
     public static final UserTaskState SUSPENDED = UserTaskState.of("Suspended");
 
-    private final UserTaskTransition T_CREATED_READY = new DefaultUserTransition(ACTIVATE, CREATED, READY, this::activate);
-    // Created -> Error, Exited, Obsolete. Is it possible
-    // Created -> Reserved also possible
+    private final UserTaskTransition T_CREATED_READY_ACTIVATE = new DefaultUserTransition(ACTIVATE, CREATED, READY, this::activate);
+    private final UserTaskTransition T_CREATED_READY_NOMINATE = new DefaultUserTransition(NOMINATE, CREATED, READY, this::nominate);
+
     private final UserTaskTransition T_READY_READY_FORWARD = new DefaultUserTransition(FORWARD, READY, READY, this::forward);
     private final UserTaskTransition T_READY_RESERVED_CLAIM = new DefaultUserTransition(CLAIM, READY, RESERVED, this::claim);
     private final UserTaskTransition T_READY_RESERVED_DELEGATE = new DefaultUserTransition(DELEGATE, READY, RESERVED, this::delegate);
@@ -113,7 +115,8 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
 
     public WsHumanTaskLifeCycle() {
         transitions = List.of(
-                T_CREATED_READY,
+                T_CREATED_READY_ACTIVATE,
+                T_CREATED_READY_NOMINATE,
                 T_READY_READY_FORWARD,
                 T_READY_RESERVED_CLAIM,
                 T_READY_RESERVED_DELEGATE,
@@ -158,7 +161,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     public Optional<UserTaskTransitionToken> transition(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
         checkPermission(userTaskInstance, identityProvider);
         UserTaskTransition transition = transitions.stream()
-                .filter(t -> t.source().equals(userTaskInstance.getStatus()) && t.id().equals(token.transitionId()))
+                .filter(t -> t.source().equals(userTaskInstance.getStatus()) && t.id().equals(token.transitionId()) && t.target().equals(token.target()))
                 .findFirst()
                 .orElseThrow(() -> new UserTaskTransitionException("Invalid transition from " + userTaskInstance.getStatus()));
         return transition.executor().execute(userTaskInstance, token, identityProvider);
@@ -176,6 +179,9 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
 
     @Override
     public UserTaskTransitionToken newTransitionToken(String transitionId, UserTaskInstance userTaskInstance, Map<String, Object> data) {
+        if (transitionId.equals(ACTIVATE) && userTaskInstance.getPotentialUsers().isEmpty()) {
+            return null;
+        }
         return newTransitionToken(transitionId, userTaskInstance.getStatus(), (String) userTaskInstance.getMetadata().get("PreviousStatus"), data);
     }
 
@@ -199,6 +205,24 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
         userTaskInstance.startNotStartedDeadlines();
         userTaskInstance.startNotStartedReassignments();
         return Optional.empty();
+    }
+
+    public Optional<UserTaskTransitionToken> nominate(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
+        if (userTaskInstance.getAdminUsers().isEmpty()) {
+            throw new UserTaskTransitionException("UserTaskInstance " + userTaskInstance.getId() + " has no admin users");
+        }
+
+        if (token.data().containsKey(PARAMETER_POTENTIAL_USERS)) {
+            try {
+                userTaskInstance.setPotentialUsers(new HashSet<>((List<String>) token.data().get(PARAMETER_POTENTIAL_USERS)));
+            } catch (ClassCastException e) {
+                throw new UserTaskTransitionException("Illegal format for potential users");
+            }
+        } else {
+            throw new UserTaskTransitionException("No potential users specified");
+        }
+
+        return activate(userTaskInstance, token, identityProvider);
     }
 
     public Optional<UserTaskTransitionToken> claim(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
