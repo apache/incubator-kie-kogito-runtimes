@@ -34,11 +34,16 @@
   <description>Third-party dependencies used by Kogito</description>
 
   <properties>
+    <!-- These versions are overrides for transitive dependencies, to fix security vulnerabilities.
+       They need to be checked with Quarkus and Spring Boot upgrades and eventually removed, if they are not needed anymore. -->
+    <version.angus.mail>2.0.5</version.angus.mail>
+    <!-- End of various transitive overrides. -->
+
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>3.20.2.2</version.io.quarkus>
+    <version.io.quarkus>3.20.3</version.io.quarkus>
     <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>
-    <version.org.springframework>6.2.11</version.org.springframework>
-    <version.org.springframework.boot>3.4.10</version.org.springframework.boot>
+    <version.org.springframework>6.2.12</version.org.springframework>
+    <version.org.springframework.boot>3.4.11</version.org.springframework.boot>
     <version.org.apache.kafka>3.9.1</version.org.apache.kafka>
 
     <version.org.bouncycastle.bc.jdk18on>1.81</version.org.bouncycastle.bc.jdk18on>
@@ -69,12 +74,12 @@
     <version.com.sun.activation>2.0.1</version.com.sun.activation>
     <version.javax.inject>2.0.1</version.javax.inject>
     <version.org.eclipse.microprofile.openapi>4.0.2</version.org.eclipse.microprofile.openapi>
-    <version.ch.qos.logback>1.5.18</version.ch.qos.logback>
+    <version.ch.qos.logback>1.5.20</version.ch.qos.logback>
     <version.jakarta.annotation-api>2.1.1</version.jakarta.annotation-api>
     <version.jakarta.validation-api>3.0.2</version.jakarta.validation-api>
-    <version.jakarta.xml.bind-api>4.0.1</version.jakarta.xml.bind-api>
+    <version.jakarta.xml.bind-api>4.0.4</version.jakarta.xml.bind-api>
 
-    <version.io.netty>4.1.127.Final</version.io.netty>
+    <version.io.netty>4.1.128.Final</version.io.netty>
 
     <version.io.cloudevents>3.0.0</version.io.cloudevents>
     <!--
@@ -84,12 +89,12 @@
     -->
     <version.io.fabric8.kubernetes-client>7.1.0</version.io.fabric8.kubernetes-client>
     <version.io.fabric8.openshift-mock>6.13.5</version.io.fabric8.openshift-mock>
-    <version.io.micrometer>1.14.11</version.io.micrometer>
-    <version.org.flywaydb>11.8.0</version.org.flywaydb>
-    <version.org.postgresql>42.7.7</version.org.postgresql>
+    <version.io.micrometer>1.14.12</version.io.micrometer>
+    <version.org.flywaydb>11.14.1</version.org.flywaydb>
+    <version.org.postgresql>42.7.8</version.org.postgresql>
     <version.com.h2>2.3.232</version.com.h2> <!-- Overriding version 2.3.230 to fix https://github.com/h2database/h2database/issues/4079 -->
     <version.io.serverlessworkflow>4.1.0.Final</version.io.serverlessworkflow>
-    <version.io.smallrye-open-api>4.0.11</version.io.smallrye-open-api>
+    <version.io.smallrye-open-api>4.0.12</version.io.smallrye-open-api>
     <version.io.smallrye-config>3.11.4</version.io.smallrye-config>
     <version.org.awaitility>4.2.2</version.org.awaitility>
 
@@ -97,13 +102,13 @@
 
     <version.io.smallrye.reactive.mutiny-vertx-web-client>3.18.1</version.io.smallrye.reactive.mutiny-vertx-web-client>
 
-    <version.io.vertx>4.5.18</version.io.vertx>
-    <version.io.grpc>1.69.1</version.io.grpc>
+    <version.io.vertx>4.5.22</version.io.vertx>
+    <version.io.grpc>1.76.0</version.io.grpc>
 
     <version.io.quarkus.camel>3.20.2</version.io.quarkus.camel>
 
-    <version.io.swagger.parser.v3>2.1.20</version.io.swagger.parser.v3>
-    <version.io.swagger.core.v3>2.2.19</version.io.swagger.core.v3>
+    <version.io.swagger.parser.v3>2.1.34</version.io.swagger.parser.v3>
+    <version.io.swagger.core.v3>2.2.38</version.io.swagger.core.v3>
 
     <version.org.apache.commons>3.18.0</version.org.apache.commons>
     <version.commons.io>2.19.0</version.commons.io>
@@ -130,14 +135,14 @@
     <!-- we align to version used by quarkus -->
     <version.org.apache.avro>1.12.0</version.org.apache.avro>
     <version.org.assertj>3.27.3</version.org.assertj>
-    <version.org.glassfish.jaxb>4.0.5</version.org.glassfish.jaxb>
+    <version.org.glassfish.jaxb>4.0.6</version.org.glassfish.jaxb>
     <version.org.json-unit-assertj>2.9.0</version.org.json-unit-assertj>
     <version.org.hamcrest>2.2</version.org.hamcrest> <!-- else old version coming from Mockito wins and breaks tests -->
     <version.org.junit>4.13.2</version.org.junit>
     <version.org.junit.jupiter>5.12.2</version.org.junit.jupiter>
     <version.org.junit.platform>1.12.2</version.org.junit.platform><!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.mockito>5.17.0</version.org.mockito>
-    <version.org.testcontainers>1.20.6</version.org.testcontainers>
+    <version.org.testcontainers>2.0.1</version.org.testcontainers>
     <version.org.xmlunit-core>2.10.4</version.org.xmlunit-core>
     <version.io.rest-assured>5.5.6</version.io.rest-assured>
 
@@ -163,11 +168,20 @@
     <version.com.google.guava>33.0.0-jre</version.com.google.guava>
     <version.apache.commons.commons-compress>1.27.1</version.apache.commons.commons-compress>
 
-    <version.tomcat.embed.core>10.1.46</version.tomcat.embed.core>
+    <version.tomcat.embed.core>10.1.48</version.tomcat.embed.core>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+
+      <!-- These versions are overrides for transitive dependencies, to fix security vulnerabilities.
+     They need to be checked with Quarkus and Spring Boot upgrades and eventually removed, if they are not needed anymore. -->
+      <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-mail</artifactId>
+        <version>${version.angus.mail}</version>
+      </dependency>
+      <!-- End of various transitive overrides. -->
 
       <!-- Not directly used, but used to override transitive versions of Spring dependencies dependencies to fix vulnerabilities -->
       <dependency>
@@ -407,6 +421,41 @@
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-stub</artifactId>
+        <version>${version.io.grpc}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-netty-shaded</artifactId>
+        <version>${version.io.grpc}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-netty</artifactId>
+        <version>${version.io.grpc}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-core</artifactId>
+        <version>${version.io.grpc}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-util</artifactId>
+        <version>${version.io.grpc}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-context</artifactId>
+        <version>${version.io.grpc}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-api</artifactId>
+        <version>${version.io.grpc}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-protobuf-lite</artifactId>
         <version>${version.io.grpc}</version>
       </dependency>
 
@@ -1114,10 +1163,15 @@
         <version>${version.org.rocksdb}</version>
       </dependency>
 
-      <!-- PostgreSQL -->
+      <!-- Vertx libraries, including PostgreSQL client -->
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>vertx-pg-client</artifactId>
+        <version>${version.io.vertx}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-web</artifactId>
         <version>${version.io.vertx}</version>
       </dependency>
 
@@ -1241,6 +1295,63 @@
         <artifactId>jep</artifactId>
         <version>${version.black.ninia}</version>
       </dependency>
+
+      <!-- testcontainers dependencies -->
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers</artifactId>
+        <version>${version.org.testcontainers}</version>
+        <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-junit-jupiter</artifactId>
+        <version>${version.org.testcontainers}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-kafka</artifactId>
+        <version>${version.org.testcontainers}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-mongodb</artifactId>
+        <version>${version.org.testcontainers}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-postgresql</artifactId>
+        <version>${version.org.testcontainers}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-jdbc</artifactId>
+        <version>${version.org.testcontainers}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-oracle-xe</artifactId>
+        <version>${version.org.testcontainers}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-database-commons</artifactId>
+        <version>${version.org.testcontainers}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-toxiproxy</artifactId>
+        <version>${version.org.testcontainers}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
