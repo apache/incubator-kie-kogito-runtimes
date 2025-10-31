@@ -26,6 +26,7 @@ import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
 
 @QuarkusIntegrationTest
 class GreetRestIT {
@@ -65,6 +66,43 @@ class GreetRestIT {
                 .then()
                 .statusCode(200)
                 .body("version", is("1.0"));
+    }
+
+    @Test
+    void testHtmlResponse() {
+        given()
+                .accept("text/html")
+                .when()
+                .get("/greet")
+                .then()
+                .statusCode(is(200))
+                .contentType(startsWith("text/html"))
+                .body(containsString("SONATAFLOW WORKFLOW ENDPOINT"));
+    }
+
+    @Test
+    void testJsonResponseWithHeader() {
+        given()
+                .accept(ContentType.JSON)
+                .when()
+                .get("/greetdetails")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("version", is("1.0"))
+                .body("type", is("SW"));
+    }
+
+    @Test
+    void testJsonResponseWithoutHeader() {
+        given()
+                .when()
+                .get("/greetdetails")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("version", is("1.0"))
+                .body("type", is("SW"));
     }
 
     private void assertIt(String flowName, String unknownMessage) {
