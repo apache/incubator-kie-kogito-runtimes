@@ -42,8 +42,8 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     public static final String PARAMETER_USER = "USER";
     public static final String PARAMETER_NOTIFY = "NOTIFY";
     private static final String PARAMETER_DELEGATED_USER = "DELEGATED_USER";
-    private static final String PARAMETER_FORWARDED_USER = "FORWARDED_USER";
-    private static final String PARAMETER_POTENTIAL_USERS = "POTENTIAL_USERS";
+    private static final String PARAMETER_FORWARDED_USERS = "FORWARDED_USERS";
+    private static final String PARAMETER_NOMINATED_USERS = "NOMINATED_USERS";
 
     private static final String SKIPPABLE = "Skippable";
 
@@ -212,11 +212,11 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
             throw new UserTaskTransitionException("UserTaskInstance " + userTaskInstance.getId() + " has no admin users");
         }
 
-        if (token.data().containsKey(PARAMETER_POTENTIAL_USERS)) {
+        if (token.data().containsKey(PARAMETER_NOMINATED_USERS)) {
             try {
-                userTaskInstance.setPotentialUsers(new HashSet<>((List<String>) token.data().get(PARAMETER_POTENTIAL_USERS)));
+                userTaskInstance.setPotentialUsers(new HashSet<>((List<String>) token.data().get(PARAMETER_NOMINATED_USERS)));
             } catch (ClassCastException e) {
-                throw new UserTaskTransitionException("Illegal format for potential users");
+                throw new UserTaskTransitionException("Illegal format for nominated users");
             }
         } else {
             throw new UserTaskTransitionException("No potential users specified");
@@ -249,20 +249,20 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     private Optional<UserTaskTransitionToken> forward(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        // Maybe if forwarded user is not provided, we need to default to identityprovider user -mandatory
-        // Should we check if forwarded user is a potential user
-        if (token.data().containsKey(PARAMETER_FORWARDED_USER)) {
-            var potentialUsers = new HashSet<>(userTaskInstance.getPotentialUsers());
-            if (token.data().containsKey(PARAMETER_USER)) {
-                potentialUsers.remove((String) token.data().get(PARAMETER_USER));
-            } else {
-                potentialUsers.remove(identityProvider.getName());
+        if (token.data().containsKey(PARAMETER_FORWARDED_USERS)) {
+            Set<String> newPotentialUsers;
+            try {
+                newPotentialUsers = new HashSet<>((List<String>) token.data().get(PARAMETER_FORWARDED_USERS));
+            } catch (ClassCastException e) {
+                throw new UserTaskTransitionException("Illegal format for forwarded users");
             }
-            potentialUsers.add((String) token.data().get(PARAMETER_FORWARDED_USER));
-            userTaskInstance.setPotentialUsers(potentialUsers);
+            var existingPotentialUsers = new HashSet<>(userTaskInstance.getPotentialUsers());
+            existingPotentialUsers.remove(identityProvider.getName());
+            existingPotentialUsers.addAll(newPotentialUsers);
+            userTaskInstance.setPotentialUsers(existingPotentialUsers);
             userTaskInstance.setActualOwner(null);
         } else {
-            throw new UserTaskTransitionException("Forwarded user not specified");
+            throw new UserTaskTransitionException("Forwarded user(s) not specified");
         }
         return Optional.empty();
     }
@@ -334,6 +334,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
         if (token.data().containsKey(PARAMETER_NOTIFY)) {
             userTaskInstance.getMetadata().put(PARAMETER_NOTIFY, token.data().get(PARAMETER_NOTIFY));
         }
+        token.data().forEach(userTaskInstance::setOutput);
         userTaskInstance.stopNotStartedDeadlines();
         userTaskInstance.stopNotStartedReassignments();
         userTaskInstance.stopNotCompletedDeadlines();
