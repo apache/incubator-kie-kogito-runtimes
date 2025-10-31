@@ -71,38 +71,36 @@ class GreetRestIT {
     @Test
     void testHtmlResponse() {
         given()
-                .accept("text/html")
+                .accept(ContentType.HTML)
                 .when()
                 .get("/greet")
                 .then()
-                .statusCode(is(200))
-                .contentType(startsWith("text/html"))
+                .statusCode(200)
+                .contentType(ContentType.HTML)
                 .body(containsString("SONATAFLOW WORKFLOW ENDPOINT"));
     }
 
     @Test
-    void testJsonResponseWithHeader() {
+    void testJsonResponseWithAcceptHeader() {
         given()
                 .accept(ContentType.JSON)
                 .when()
-                .get("/greetdetails")
+                .get("/greet")
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("version", is("1.0"))
-                .body("type", is("SW"));
+                .body(is("[]"));
     }
 
     @Test
-    void testJsonResponseWithoutHeader() {
+    void testJsonResponseWithoutAcceptHeader() {
         given()
                 .when()
-                .get("/greetdetails")
+                .get("/greet")
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("version", is("1.0"))
-                .body("type", is("SW"));
+                .body(is("[]"));
     }
 
     private void assertIt(String flowName, String unknownMessage) {
