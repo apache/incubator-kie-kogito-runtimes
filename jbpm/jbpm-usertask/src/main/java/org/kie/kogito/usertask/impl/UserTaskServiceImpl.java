@@ -37,8 +37,12 @@ import org.kie.kogito.usertask.model.Attachment;
 import org.kie.kogito.usertask.model.Comment;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
 import org.kie.kogito.usertask.view.UserTaskView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserTaskServiceImpl implements UserTaskService {
+
+    private static Logger LOG = LoggerFactory.getLogger(UserTaskServiceImpl.class);
 
     private Application application;
 
@@ -97,7 +101,12 @@ public class UserTaskServiceImpl implements UserTaskService {
             return Collections.emptyList();
         }
         UserTaskInstance ut = userTaskInstance.get();
-        UserTaskLifeCycle userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycle();
+        UserTaskLifeCycle userTaskLifeCycle;
+        if (ut.getMetadata().get("Lifecycle") == null) {
+            userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycles().getUserTaskLifeCycleById("kogito");
+        } else {
+            userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycles().getUserTaskLifeCycleById((String) ut.getMetadata().get("Lifecycle"));
+        }
         List<UserTaskTransition> transitions = userTaskLifeCycle.allowedTransitions(ut, identity);
         return toUserTaskTransitionView(transitions);
     }
