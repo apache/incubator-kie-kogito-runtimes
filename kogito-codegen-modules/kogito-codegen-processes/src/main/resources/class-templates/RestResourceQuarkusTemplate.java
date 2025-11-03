@@ -92,7 +92,7 @@ public class $Type$Resource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML})
-    @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
+    @Operation(operationId = "getAllProcessInstances_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
     public Response getResources_$name$(@Context HttpHeaders headers) {
         List<$Type$Output> out = processService.getProcessInstanceOutput(process);
         boolean wantsHtml = headers.getAcceptableMediaTypes()
