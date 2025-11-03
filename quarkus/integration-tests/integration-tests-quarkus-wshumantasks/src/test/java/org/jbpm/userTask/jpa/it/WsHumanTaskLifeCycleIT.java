@@ -53,7 +53,6 @@ public class WsHumanTaskLifeCycleIT {
 
     @Test
     public void testUserTaskLifeCycle() {
-        System.setProperty("quarkus.profile", "ws");
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
         var processId = "manager_multiple_users";

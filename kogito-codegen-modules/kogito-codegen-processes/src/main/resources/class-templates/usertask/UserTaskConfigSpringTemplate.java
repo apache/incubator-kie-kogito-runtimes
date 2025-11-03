@@ -33,7 +33,6 @@ import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycles;
 import org.kie.kogito.usertask.UserTaskAssignmentStrategyConfig;
 import org.kie.kogito.usertask.UserTaskEventListenerConfig;
 import org.kie.kogito.usertask.UserTaskInstances;
-import org.springframework.beans.factory.annotation.Value;
 
 @org.springframework.stereotype.Component
 public class UserTaskConfig extends DefaultUserTaskConfig {

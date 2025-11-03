@@ -613,10 +613,6 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         updatePersistence();
     }
 
-    public void setMetadataWithoutPersistence(Map<String, Object> metadata) {
-        this.metadata = metadata;
-    }
-
     @Override
     public Attachment findAttachmentById(String attachmentId) {
         return this.attachments.stream().filter(e -> e.getId().equals(attachmentId)).findAny().orElse(null);
