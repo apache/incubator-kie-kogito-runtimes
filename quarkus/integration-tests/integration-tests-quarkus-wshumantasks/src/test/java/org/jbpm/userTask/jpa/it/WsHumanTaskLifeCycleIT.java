@@ -262,7 +262,7 @@ public class WsHumanTaskLifeCycleIT {
         var processId = "manager_admin";
         var pid = startProcessInstance(processId);
         var taskId = getTaskId("carl");
-        verifyTask(processId, pid, taskId, user, "Created", new String[]{});
+        verifyTask(processId, pid, taskId, user, "Created", new String[] {});
 
         var nominatedUsers = new String[] { "john", "dave" };
         nominate(taskId, user, "Ready", nominatedUsers);
