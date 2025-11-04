@@ -34,7 +34,6 @@ import org.kie.kogito.usertask.UserTaskConfig;
 import org.kie.kogito.usertask.UserTasks;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycle;
-import org.kie.kogito.usertask.impl.lifecycle.WsHumanTaskLifeCycle;
 import org.kie.kogito.usertask.impl.model.DeadlineHelper;
 
 import static java.util.Collections.emptyMap;
@@ -157,12 +156,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             if (workItem instanceof InternalKogitoWorkItem ikw) {
                 ikw.setActualOwner(ut.getActualOwner());
             }
-            if (ut instanceof DefaultUserTaskInstance defaultUserTaskInstance && defaultUserTaskInstance.getUserTaskLifeCycle() instanceof WsHumanTaskLifeCycle) {
-                ut.transition(WsHumanTaskLifeCycle.EXIT, Collections.singletonMap(PARAMETER_NOTIFY, Boolean.FALSE), IdentityProviders.of(WORKFLOW_ENGINE_USER));
-            } else {
-                ut.transition(DefaultUserTaskLifeCycle.SKIP, Collections.singletonMap(PARAMETER_NOTIFY, Boolean.FALSE), IdentityProviders.of(WORKFLOW_ENGINE_USER));
-            }
-
+            ut.transition(ut.getUserTaskLifeCycle().abortTransition(), Collections.singletonMap(PARAMETER_NOTIFY, Boolean.FALSE), IdentityProviders.of(WORKFLOW_ENGINE_USER));
         });
         return Optional.empty();
     }

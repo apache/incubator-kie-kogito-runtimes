@@ -158,6 +158,21 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     @Override
+    public String startTransition() {
+        return ACTIVATE;
+    }
+
+    @Override
+    public String reassignTransition() {
+        return FORWARD;
+    }
+
+    @Override
+    public String abortTransition() {
+        return EXIT;
+    }
+
+    @Override
     public Optional<UserTaskTransitionToken> transition(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
         checkPermission(userTaskInstance, identityProvider);
         UserTaskTransition transition = transitions.stream()
@@ -208,8 +223,8 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     public Optional<UserTaskTransitionToken> nominate(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        if (userTaskInstance.getAdminUsers().isEmpty()) {
-            throw new UserTaskTransitionException("UserTaskInstance " + userTaskInstance.getId() + " has no admin users");
+        if (!userTaskInstance.getAdminUsers().contains(identityProvider.getName())) {
+            throw new UserTaskTransitionException("User is not allowed to nominate");
         }
 
         if (token.data().containsKey(PARAMETER_NOMINATED_USERS)) {
