@@ -25,4 +25,6 @@ public interface UserTaskLifeCycles {
 
     UserTaskLifeCycle getUserTaskLifeCycleById(String userTaskLifeCycleId);
 
+    UserTaskLifeCycle getDefaultUserTaskLifeCycle();
+
 }

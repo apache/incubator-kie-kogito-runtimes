@@ -92,7 +92,11 @@ public class DefaultUserTasks implements UserTasks {
         impl.addEventListener(new UnitOfWorkUserTaskEventListener(application.unitOfWorkManager()));
         instance.setUserTask(application.get(UserTasks.class).userTaskById(instance.getUserTaskId()));
         instance.setUserTaskEventSupport(impl);
-        instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycles().getUserTaskLifeCycleById((String) instance.getMetadata().get("Lifecycle")));
+        if (instance.getStatus().getName().equals("Created")) {
+            instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycles().getDefaultUserTaskLifeCycle());
+        } else {
+            instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycles().getUserTaskLifeCycleById((String) instance.getMetadata().get("Lifecycle")));
+        }
         instance.setInstances(userTaskInstances);
         instance.setJobsService(userTaskConfig.jobsService());
         return instance;

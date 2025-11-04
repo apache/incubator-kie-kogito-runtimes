@@ -81,4 +81,9 @@ public class DefaultUserTaskLifeCycles implements UserTaskLifeCycles {
         return userTaskLifeCycleRegistry.getOrDefault(userTaskLifeCycleId, userTaskLifeCycleRegistry.get("kogito"));
     }
 
+    @Override
+    public UserTaskLifeCycle getDefaultUserTaskLifeCycle() {
+        return userTaskLifeCycleRegistry.get(defaultUserTaskLifeCycleId);
+    }
+
 }
