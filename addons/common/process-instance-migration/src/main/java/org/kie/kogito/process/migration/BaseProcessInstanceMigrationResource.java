@@ -50,7 +50,7 @@ public abstract class BaseProcessInstanceMigrationResource<T> implements Process
             message.put("processInstanceId", processInstanceId);
             return buildOkResponse(message);
         } catch (Exception e) {
-            return badRequestResponse(e.getMessage());
+            return badRequestResponse("An exception occurred during migration of a process instance. Please check the logs for more information.");
         }
     }
 
@@ -63,7 +63,7 @@ public abstract class BaseProcessInstanceMigrationResource<T> implements Process
             message.put("numberOfProcessInstanceMigrated", numberOfProcessInstanceMigrated);
             return buildOkResponse(message);
         } catch (Exception e) {
-            return badRequestResponse(e.getMessage());
+            return badRequestResponse("An exception occurred during process instances migration. Please check the logs for more information.");
         }
     }
 
