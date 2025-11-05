@@ -19,6 +19,7 @@
 package org.kie.kogito.usertask.impl.lifecycle;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -223,7 +224,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     public Optional<UserTaskTransitionToken> nominate(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        if (!userTaskInstance.getAdminUsers().contains(identityProvider.getName())) {
+        if (!userTaskInstance.getAdminUsers().contains(identityProvider.getName()) && Collections.disjoint(userTaskInstance.getAdminGroups(), identityProvider.getRoles())) {
             throw new UserTaskTransitionException("User is not allowed to nominate");
         }
 
