@@ -185,14 +185,12 @@ public class UserTaskCodegen extends AbstractGenerator {
 
         var template = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new ProcessCodegenException("UserTaskLifeCyclesTemplate doesn't contain a class or interface declaration!"));
-        String userTaskLifeCycleId = context().getApplicationProperty("kogito.usertasks.lifecycle")
-                .map(value -> {
-                    if (USERTASK_LIFECYCLES.contains(value))
-                        return value;
-                    else
-                        throw new UserTaskCodegenException("Illegal usertask lifecycle");
-                })
-                .orElse("kogito");
+
+        String userTaskLifeCycleId = context().getApplicationProperty("kogito.usertasks.lifecycle").orElse("kogito");
+        if (!USERTASK_LIFECYCLES.contains(userTaskLifeCycleId)) {
+            throw new ProcessCodegenException("Illegal usertask lifecycle");
+        }
+
         template.findAll(StringLiteralExpr.class)
                 .stream()
                 .filter(stringExpression -> stringExpression.getValue().contains("$userTaskLifeCycleId$"))
