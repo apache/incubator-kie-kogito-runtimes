@@ -17,22 +17,19 @@
  * under the License.
  */
 
-package org.jbpm.userTask.jpa.it;
+package org.jbpm.usertask.jpa.it;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.it.KogitoSpringbootApplication;
-import org.kie.kogito.testcontainers.springboot.PostgreSqlSpringBootTestResource;
+import org.kie.kogito.testcontainers.quarkus.PostgreSqlQuarkusTestResource;
 import org.kie.kogito.usertask.model.TransitionInfo;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ContextConfiguration;
 
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
@@ -43,23 +40,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
-@ContextConfiguration(initializers = PostgreSqlSpringBootTestResource.class)
+@QuarkusIntegrationTest
+@QuarkusTestResource(value = PostgreSqlQuarkusTestResource.class, restrictToAnnotatedClass = true)
 public class WsHumanTaskLifeCycleIT {
     public static final String USER_TASKS_ENDPOINT = "/usertasks/instance";
     public static final String USER_TASKS_INSTANCE_ENDPOINT = USER_TASKS_ENDPOINT + "/{taskId}";
     public static final String USER_TASKS_INSTANCE_TRANSITION_ENDPOINT = USER_TASKS_INSTANCE_ENDPOINT + "/transition";
 
-    @LocalServerPort
-    int httpPort;
-
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
-
-    @BeforeEach
-    void setPort() {
-        RestAssured.port = httpPort;
     }
 
     @Test
