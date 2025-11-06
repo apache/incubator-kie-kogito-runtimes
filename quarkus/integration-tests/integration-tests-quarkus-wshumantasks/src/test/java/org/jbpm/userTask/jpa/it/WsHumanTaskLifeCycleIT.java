@@ -273,6 +273,20 @@ public class WsHumanTaskLifeCycleIT {
         isProcessCompleted(processId);
     }
 
+    @Test
+    public void testSingleUserUserTaskLifeCycle() {
+        var user = "jdoe";
+        var processId = "manager_single_user";
+        var pid = startProcessInstance(processId);
+        var taskId = getTaskId(user);
+        verifyTask(processId, pid, taskId, user, "Reserved", new String[] { user });
+
+        start(taskId, user);
+        complete(taskId, user);
+
+        isProcessCompleted(processId);
+    }
+
     private void nominate(String taskId, String user, String status, String[] nominatedUsers) {
         given()
                 .contentType(ContentType.JSON)
