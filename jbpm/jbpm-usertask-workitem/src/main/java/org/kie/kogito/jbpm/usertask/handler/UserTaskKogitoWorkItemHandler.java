@@ -103,7 +103,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         metadata.put("NodeInstanceId", workItem.getNodeInstance().getId());
         metadata.put("Skippable", workItem.getParameters().get(SKIPPABLE));
 
-        instance.setMetadata(metadata);
+        instance.addMetadata(metadata);
 
         instance.fireInitialStateChange();
         workItem.getParameters().entrySet().stream().filter(e -> !HumanTaskNode.TASK_PARAMETERS.contains(e.getKey())).forEach(e -> instance.setInput(e.getKey(), e.getValue()));

@@ -609,6 +609,11 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     }
 
     public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
+        updatePersistence();
+    }
+
+    public void addMetadata(Map<String, Object> metadata) {
         this.metadata.putAll(metadata);
         updatePersistence();
     }
