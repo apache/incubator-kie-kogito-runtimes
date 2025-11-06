@@ -80,7 +80,11 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
             }
         }, Integer.MIN_VALUE).register((ResponseExceptionMapper) response -> new WebApplicationException(fromResponse(response), response.getStatus())).build(clazz);
         try {
-            return internalExecute(ref, parameters);
+            Object result = internalExecute(ref, parameters);
+            if (result instanceof Response response) {
+                result = response.getEntity();
+            }
+            return result;
         } catch (WebApplicationException ex) {
             throw new WorkItemExecutionException(Integer.toString(ex.getResponse().getStatus()), ex.getMessage());
         }
