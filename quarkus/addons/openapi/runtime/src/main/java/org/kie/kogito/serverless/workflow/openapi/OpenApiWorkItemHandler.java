@@ -82,7 +82,7 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
         try {
             Object result = internalExecute(ref, parameters);
             if (result instanceof Response response) {
-                result = response.getEntity();
+                result = objectFromResponse(response);
             }
             return result;
         } catch (WebApplicationException ex) {
@@ -90,18 +90,23 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
         }
     }
 
-    private String fromResponse(Response response) {
+    private Object objectFromResponse(Response response) {
         Object entity = response.getEntity();
         if (entity instanceof ByteArrayInputStream input) {
             if (MediaType.APPLICATION_JSON_TYPE.equals(response.getMediaType())) {
                 try {
-                    return ObjectMapperFactory.get().readTree(input).toString();
+                    return ObjectMapperFactory.get().readTree(input);
                 } catch (IOException e) {
                     logger.warn("Error parsing json error response {}", e.toString());
                 }
             }
             return new String(input.readAllBytes());
         }
+        return entity != null ? entity.toString() : null;
+    }
+
+    private String fromResponse(Response response) {
+        Object entity = objectFromResponse(response);
         return entity != null ? entity.toString() : response.getStatusInfo().getReasonPhrase();
     }
 
