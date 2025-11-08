@@ -18,14 +18,13 @@
  */
 package org.kie.kogito.auth;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.NotAuthorizedException;
 import org.kie.kogito.internal.process.workitem.Policy;
+import org.kie.kogito.usertask.UserTaskInstance;
+import org.kie.kogito.usertask.UserTaskInstanceNotAuthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +36,7 @@ import org.slf4j.LoggerFactory;
 public class SecurityPolicy implements Policy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityPolicy.class);
+    public static final String WORKFLOW_ENGINE_USER = "WORKFLOW_ENGINE_USER";
 
     private IdentityProvider identity;
 
@@ -98,6 +98,37 @@ public class SecurityPolicy implements Policy {
                 throw new NotAuthorizedException("this work item " + workItem.getStringId() + " is not allows by this owner " + actualOwner);
             }
         }
+    }
+
+    public void enforceAdmin(UserTaskInstance userTaskInstance) {
+        String user = identity.getName();
+
+        if (WORKFLOW_ENGINE_USER.equals(user)) {
+            return;
+        }
+
+        if (user == null) {
+            LOGGER.debug("No user defined to perform update on user task {}", userTaskInstance.getId());
+            throw new UserTaskInstanceNotAuthorizedException("No user defined to perform update on user task " + userTaskInstance.getId());
+        }
+
+        Set<String> adminUsers = userTaskInstance.getAdminUsers();
+        if (adminUsers.contains(user)) {
+            return;
+        }
+
+        Set<String> userAdminGroups = new HashSet<>(userTaskInstance.getAdminGroups());
+        userAdminGroups.retainAll(identity.getRoles());
+        if (!userAdminGroups.isEmpty()) {
+            return;
+        }
+        LOGGER.debug("identity {} with roles {} not authorized for user task {} with adminUsers {} and adminGroups {}",
+                identity.getName(),
+                identity.getRoles(),
+                userTaskInstance.getId(),
+                userTaskInstance.getAdminUsers(),
+                userTaskInstance.getAdminGroups());
+        throw new UserTaskInstanceNotAuthorizedException("User " + user + " with roles " + identity.getRoles() + " not authorized to perform an operation on user task " + userTaskInstance.getId());
     }
 
     @Override
