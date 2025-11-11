@@ -188,7 +188,7 @@ public class UserTaskCodegen extends AbstractGenerator {
 
         String userTaskLifeCycleId = context().getApplicationProperty("kogito.usertasks.lifecycle").orElse("kogito");
         if (!USERTASK_LIFECYCLES.contains(userTaskLifeCycleId)) {
-            throw new ProcessCodegenException("Illegal usertask lifecycle");
+            throw new ProcessCodegenException(String.format("Invalid user task lifecycle '%s'", userTaskLifeCycleId));
         }
 
         template.findAll(StringLiteralExpr.class)
