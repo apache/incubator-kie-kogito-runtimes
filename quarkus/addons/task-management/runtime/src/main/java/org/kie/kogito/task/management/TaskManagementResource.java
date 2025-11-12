@@ -81,6 +81,7 @@ public class TaskManagementResource {
             @QueryParam("user") final String user,
             @QueryParam("group") final List<String> groups,
             TaskInfo taskInfo) {
+        System.out.print('x');
         return taskService.updateTask(taskId, taskInfo, false);
     }
 
