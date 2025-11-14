@@ -18,7 +18,7 @@
  */
 package org.kie.kogito.services.context;
 
-import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -37,9 +37,9 @@ import org.slf4j.MDC;
  * Thread Safety: This class is thread-safe and properly manages context isolation
  * between different threads using MDC's inherent ThreadLocal-based storage.
  *
- * Distributed Tracing: This class integrates with OpenTelemetry when available,
- * automatically setting process instance ID as a span attribute and adding trace/span
- * IDs to MDC for correlation between logs and traces.
+ * Note: This class preserves OpenTelemetry MDC keys (otel.*) during context
+ * restoration to maintain distributed tracing consistency. The actual OpenTelemetry
+ * integration is provided by the kogito-quarkus-serverless-workflow-otel extension.
  */
 public final class ProcessInstanceContext {
 
@@ -72,46 +72,14 @@ public final class ProcessInstanceContext {
      */
     public static final String GENERAL_CONTEXT = "";
 
-    /**
-     * Flag to track if OpenTelemetry is available at runtime.
-     * Checked once on first use to avoid repeated reflection.
-     */
-    private static volatile Boolean openTelemetryAvailable = null;
-
     // Private constructor to prevent instantiation
     private ProcessInstanceContext() {
         // Utility class
     }
 
     /**
-     * Checks if OpenTelemetry is available on the classpath.
-     * This is cached after the first check.
-     *
-     * @return true if OpenTelemetry is available, false otherwise
-     */
-    private static boolean isOpenTelemetryAvailable() {
-        if (openTelemetryAvailable == null) {
-            synchronized (ProcessInstanceContext.class) {
-                if (openTelemetryAvailable == null) {
-                    try {
-                        Class.forName("io.opentelemetry.api.trace.Span");
-                        openTelemetryAvailable = true;
-                        LOGGER.debug("OpenTelemetry detected - distributed tracing integration enabled");
-                    } catch (ClassNotFoundException e) {
-                        openTelemetryAvailable = false;
-                        LOGGER.debug("OpenTelemetry not available - distributed tracing integration disabled");
-                    }
-                }
-            }
-        }
-        return openTelemetryAvailable;
-    }
-
-    /**
      * Sets the process instance ID for the current thread context.
      * This method updates SLF4J MDC and only performs the update if the value changes.
-     * If OpenTelemetry is available, also sets the process instance ID as a span attribute
-     * and adds trace/span IDs to MDC for correlation.
      *
      * @param processInstanceId the process instance ID to set, or null to use general context
      */
@@ -122,57 +90,6 @@ public final class ProcessInstanceContext {
         String currentId = MDC.get(MDC_PROCESS_INSTANCE_KEY);
         if (!effectiveId.equals(currentId)) {
             MDC.put(MDC_PROCESS_INSTANCE_KEY, effectiveId);
-
-            // Integrate with distributed tracing if available
-            if (isOpenTelemetryAvailable()) {
-                setSpanAttributes(effectiveId);
-            }
-        }
-    }
-
-    /**
-     * Sets span attributes and adds trace context to MDC using reflection.
-     * This avoids a hard dependency on OpenTelemetry.
-     *
-     * @param processInstanceId the process instance ID to set in the span
-     */
-    private static void setSpanAttributes(String processInstanceId) {
-        try {
-            // Get current span using reflection: Span.current()
-            Class<?> spanClass = Class.forName("io.opentelemetry.api.trace.Span");
-            Method currentMethod = spanClass.getMethod("current");
-            Object currentSpan = currentMethod.invoke(null);
-
-            if (currentSpan != null) {
-                // Set process instance ID as span attribute: span.setAttribute(key, value)
-                Method setAttributeMethod = spanClass.getMethod("setAttribute", String.class, String.class);
-                setAttributeMethod.invoke(currentSpan, SPAN_ATTRIBUTE_PROCESS_INSTANCE_ID, processInstanceId);
-
-                // Get span context: span.getSpanContext()
-                Method getSpanContextMethod = spanClass.getMethod("getSpanContext");
-                Object spanContext = getSpanContextMethod.invoke(currentSpan);
-
-                if (spanContext != null) {
-                    Class<?> spanContextClass = Class.forName("io.opentelemetry.api.trace.SpanContext");
-
-                    // Get trace ID: spanContext.getTraceId()
-                    Method getTraceIdMethod = spanContextClass.getMethod("getTraceId");
-                    String traceId = (String) getTraceIdMethod.invoke(spanContext);
-                    if (traceId != null && !traceId.isEmpty()) {
-                        MDC.put(MDC_TRACE_ID_KEY, traceId);
-                    }
-
-                    // Get span ID: spanContext.getSpanId()
-                    Method getSpanIdMethod = spanContextClass.getMethod("getSpanId");
-                    String spanId = (String) getSpanIdMethod.invoke(spanContext);
-                    if (spanId != null && !spanId.isEmpty()) {
-                        MDC.put(MDC_SPAN_ID_KEY, spanId);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            // Log at debug level - this is not a critical failure
-            LOGGER.debug("Failed to set OpenTelemetry span attributes: {}", e.getMessage());
         }
     }
 
@@ -252,13 +169,54 @@ public final class ProcessInstanceContext {
      * Sets the MDC context map from a previously copied context.
      * This is useful for async operations that need to restore logging context.
      *
+     * This method preserves OpenTelemetry MDC keys (otel.*) to maintain distributed
+     * tracing consistency across ProcessInstanceAwareUnitOfWork boundaries.
+     *
      * @param contextMap the context map to restore, or null to reset to general context
      */
     public static void setContextFromAsync(Map<String, String> contextMap) {
+        // Preserve OpenTelemetry MDC keys before restoration
+        Map<String, String> otelContext = preserveOtelMdcKeys();
+
         if (contextMap != null) {
             MDC.setContextMap(contextMap);
         } else {
             MDC.put(MDC_PROCESS_INSTANCE_KEY, GENERAL_CONTEXT);
         }
+
+        // Restore OpenTelemetry MDC keys
+        restoreOtelMdcKeys(otelContext);
     }
+
+    /**
+     * Preserves OpenTelemetry MDC keys that start with "otel." prefix.
+     * These keys contain transaction IDs and tracker attributes that need to be
+     * maintained across context switches.
+     *
+     * @return a map containing the preserved OpenTelemetry MDC keys
+     */
+    private static Map<String, String> preserveOtelMdcKeys() {
+        Map<String, String> otelKeys = new HashMap<>();
+        Map<String, String> currentMdc = MDC.getCopyOfContextMap();
+
+        if (currentMdc != null) {
+            currentMdc.entrySet().stream()
+                    .filter(entry -> entry.getKey().startsWith("otel."))
+                    .forEach(entry -> otelKeys.put(entry.getKey(), entry.getValue()));
+        }
+
+        return otelKeys;
+    }
+
+    /**
+     * Restores OpenTelemetry MDC keys that were preserved before context restoration.
+     *
+     * @param otelKeys the OpenTelemetry MDC keys to restore
+     */
+    private static void restoreOtelMdcKeys(Map<String, String> otelKeys) {
+        if (otelKeys != null && !otelKeys.isEmpty()) {
+            otelKeys.forEach(MDC::put);
+        }
+    }
+
 }
