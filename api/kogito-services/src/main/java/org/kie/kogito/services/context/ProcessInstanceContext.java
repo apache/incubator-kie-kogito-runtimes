@@ -18,8 +18,9 @@
  */
 package org.kie.kogito.services.context;
 
-import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
@@ -37,13 +38,14 @@ import org.slf4j.MDC;
  * Thread Safety: This class is thread-safe and properly manages context isolation
  * between different threads using MDC's inherent ThreadLocal-based storage.
  *
- * Distributed Tracing: This class integrates with OpenTelemetry when available,
- * automatically setting process instance ID as a span attribute and adding trace/span
- * IDs to MDC for correlation between logs and traces.
+ * Extension Support: Extensions can register via {@link #registerContextExtension(String, ContextExtension)}
+ * to participate in context preservation during async operations.
  */
 public final class ProcessInstanceContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessInstanceContext.class);
+
+    private static final Map<String, ContextExtension> EXTENSIONS = new ConcurrentHashMap<>();
 
     /**
      * MDC key used to store the process instance ID.
@@ -72,46 +74,14 @@ public final class ProcessInstanceContext {
      */
     public static final String GENERAL_CONTEXT = "";
 
-    /**
-     * Flag to track if OpenTelemetry is available at runtime.
-     * Checked once on first use to avoid repeated reflection.
-     */
-    private static volatile Boolean openTelemetryAvailable = null;
-
     // Private constructor to prevent instantiation
     private ProcessInstanceContext() {
         // Utility class
     }
 
     /**
-     * Checks if OpenTelemetry is available on the classpath.
-     * This is cached after the first check.
-     *
-     * @return true if OpenTelemetry is available, false otherwise
-     */
-    private static boolean isOpenTelemetryAvailable() {
-        if (openTelemetryAvailable == null) {
-            synchronized (ProcessInstanceContext.class) {
-                if (openTelemetryAvailable == null) {
-                    try {
-                        Class.forName("io.opentelemetry.api.trace.Span");
-                        openTelemetryAvailable = true;
-                        LOGGER.debug("OpenTelemetry detected - distributed tracing integration enabled");
-                    } catch (ClassNotFoundException e) {
-                        openTelemetryAvailable = false;
-                        LOGGER.debug("OpenTelemetry not available - distributed tracing integration disabled");
-                    }
-                }
-            }
-        }
-        return openTelemetryAvailable;
-    }
-
-    /**
      * Sets the process instance ID for the current thread context.
      * This method updates SLF4J MDC and only performs the update if the value changes.
-     * If OpenTelemetry is available, also sets the process instance ID as a span attribute
-     * and adds trace/span IDs to MDC for correlation.
      *
      * @param processInstanceId the process instance ID to set, or null to use general context
      */
@@ -122,57 +92,6 @@ public final class ProcessInstanceContext {
         String currentId = MDC.get(MDC_PROCESS_INSTANCE_KEY);
         if (!effectiveId.equals(currentId)) {
             MDC.put(MDC_PROCESS_INSTANCE_KEY, effectiveId);
-
-            // Integrate with distributed tracing if available
-            if (isOpenTelemetryAvailable()) {
-                setSpanAttributes(effectiveId);
-            }
-        }
-    }
-
-    /**
-     * Sets span attributes and adds trace context to MDC using reflection.
-     * This avoids a hard dependency on OpenTelemetry.
-     *
-     * @param processInstanceId the process instance ID to set in the span
-     */
-    private static void setSpanAttributes(String processInstanceId) {
-        try {
-            // Get current span using reflection: Span.current()
-            Class<?> spanClass = Class.forName("io.opentelemetry.api.trace.Span");
-            Method currentMethod = spanClass.getMethod("current");
-            Object currentSpan = currentMethod.invoke(null);
-
-            if (currentSpan != null) {
-                // Set process instance ID as span attribute: span.setAttribute(key, value)
-                Method setAttributeMethod = spanClass.getMethod("setAttribute", String.class, String.class);
-                setAttributeMethod.invoke(currentSpan, SPAN_ATTRIBUTE_PROCESS_INSTANCE_ID, processInstanceId);
-
-                // Get span context: span.getSpanContext()
-                Method getSpanContextMethod = spanClass.getMethod("getSpanContext");
-                Object spanContext = getSpanContextMethod.invoke(currentSpan);
-
-                if (spanContext != null) {
-                    Class<?> spanContextClass = Class.forName("io.opentelemetry.api.trace.SpanContext");
-
-                    // Get trace ID: spanContext.getTraceId()
-                    Method getTraceIdMethod = spanContextClass.getMethod("getTraceId");
-                    String traceId = (String) getTraceIdMethod.invoke(spanContext);
-                    if (traceId != null && !traceId.isEmpty()) {
-                        MDC.put(MDC_TRACE_ID_KEY, traceId);
-                    }
-
-                    // Get span ID: spanContext.getSpanId()
-                    Method getSpanIdMethod = spanContextClass.getMethod("getSpanId");
-                    String spanId = (String) getSpanIdMethod.invoke(spanContext);
-                    if (spanId != null && !spanId.isEmpty()) {
-                        MDC.put(MDC_SPAN_ID_KEY, spanId);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            // Log at debug level - this is not a critical failure
-            LOGGER.debug("Failed to set OpenTelemetry span attributes: {}", e.getMessage());
         }
     }
 
@@ -239,6 +158,57 @@ public final class ProcessInstanceContext {
     }
 
     /**
+     * Registers a context extension that will participate in context preservation.
+     * Extensions with the same ID will replace previously registered extensions.
+     *
+     * @param extensionId the unique identifier for the extension
+     * @param extension the extension to register
+     * @throws IllegalArgumentException if extensionId is null or empty, or if extension is null
+     */
+    public static void registerContextExtension(String extensionId, ContextExtension extension) {
+        if (extensionId == null || extensionId.isEmpty()) {
+            throw new IllegalArgumentException("Extension ID must not be null or empty");
+        }
+        if (extension == null) {
+            throw new IllegalArgumentException("Extension must not be null");
+        }
+        EXTENSIONS.put(extensionId, extension);
+        LOGGER.debug("Registered context extension: {}", extensionId);
+    }
+
+    /**
+     * Registers a context extension using its own extension ID.
+     * Extensions with the same ID will replace previously registered extensions.
+     *
+     * @param extension the extension to register
+     * @throws IllegalArgumentException if extension is null or its ID is null/empty
+     */
+    public static void registerContextExtension(ContextExtension extension) {
+        if (extension == null) {
+            throw new IllegalArgumentException("Extension must not be null");
+        }
+        registerContextExtension(extension.getExtensionId(), extension);
+    }
+
+    /**
+     * Retrieves a registered context extension by its ID.
+     *
+     * @param extensionId the extension ID to retrieve
+     * @return the registered extension, or null if not found
+     */
+    public static ContextExtension getExtension(String extensionId) {
+        return EXTENSIONS.get(extensionId);
+    }
+
+    /**
+     * Clears all registered extensions.
+     * This is primarily for testing purposes to ensure test isolation.
+     */
+    static void clearUserExtensions() {
+        EXTENSIONS.clear();
+    }
+
+    /**
      * Gets a copy of the current MDC context map for propagation to other threads.
      * This is useful for async operations that need to maintain the same logging context.
      *
@@ -252,13 +222,122 @@ public final class ProcessInstanceContext {
      * Sets the MDC context map from a previously copied context.
      * This is useful for async operations that need to restore logging context.
      *
+     * This method implements a 3-phase lifecycle for registered extensions:
+     * 1. beforeContextRestore - extensions inspect the context map (current MDC if null)
+     * 2. Core context restoration - MDC is updated with filtered keys
+     * 3. afterContextRestore - extensions restore their keys
+     *
+     * Only core keys and registered extension keys are restored from the context map.
+     *
      * @param contextMap the context map to restore, or null to reset to general context
      */
     public static void setContextFromAsync(Map<String, String> contextMap) {
+        Map<String, String> currentMdc = MDC.getCopyOfContextMap();
+        Map<String, String> contextForExtensions = (contextMap == null || contextMap.isEmpty()) ? currentMdc : contextMap;
+
+        notifyExtensionsBeforeRestore(contextForExtensions);
+
         if (contextMap != null) {
-            MDC.setContextMap(contextMap);
+            if (hasUserRegisteredExtensions()) {
+                Map<String, String> filteredContext = filterContextMap(contextMap);
+                MDC.setContextMap(filteredContext);
+            } else {
+                MDC.setContextMap(contextMap);
+            }
         } else {
+            MDC.clear();
             MDC.put(MDC_PROCESS_INSTANCE_KEY, GENERAL_CONTEXT);
         }
+
+        notifyExtensionsAfterRestore();
     }
+
+    /**
+     * Filters the context map to include only core keys and registered extension keys.
+     *
+     * @param contextMap the context map to filter
+     * @return filtered context map containing only allowed keys
+     */
+    private static Map<String, String> filterContextMap(Map<String, String> contextMap) {
+        Map<String, String> filtered = new HashMap<>();
+
+        for (Map.Entry<String, String> entry : contextMap.entrySet()) {
+            String key = entry.getKey();
+
+            if (isCoreKey(key) || isExtensionKey(key)) {
+                filtered.put(key, entry.getValue());
+            }
+        }
+
+        return filtered;
+    }
+
+    /**
+     * Checks if a key is a core ProcessInstanceContext key.
+     *
+     * @param key the MDC key to check
+     * @return true if the key is a core key
+     */
+    private static boolean isCoreKey(String key) {
+        return MDC_PROCESS_INSTANCE_KEY.equals(key) ||
+                MDC_TRACE_ID_KEY.equals(key) ||
+                MDC_SPAN_ID_KEY.equals(key);
+    }
+
+    /**
+     * Checks if a key belongs to any registered extension.
+     *
+     * @param key the MDC key to check
+     * @return true if the key belongs to a registered extension
+     */
+    private static boolean isExtensionKey(String key) {
+        for (ContextExtension extension : EXTENSIONS.values()) {
+            if (key.startsWith(extension.getMdcKeyPrefix())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if there are any registered extensions.
+     *
+     * @return true if extensions are registered
+     */
+    private static boolean hasUserRegisteredExtensions() {
+        return !EXTENSIONS.isEmpty();
+    }
+
+    /**
+     * Notifies all registered extensions before context restoration.
+     * Extensions can inspect the incoming context map during this phase.
+     *
+     * @param contextMap the incoming context map that will be restored
+     */
+    private static void notifyExtensionsBeforeRestore(Map<String, String> contextMap) {
+        for (ContextExtension extension : EXTENSIONS.values()) {
+            try {
+                extension.beforeContextRestore(contextMap);
+            } catch (Exception e) {
+                LOGGER.warn("Extension {} failed during beforeContextRestore: {}",
+                        extension.getExtensionId(), e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * Notifies all registered extensions after context restoration.
+     * Extensions can restore their state and update MDC during this phase.
+     */
+    private static void notifyExtensionsAfterRestore() {
+        for (ContextExtension extension : EXTENSIONS.values()) {
+            try {
+                extension.afterContextRestore();
+            } catch (Exception e) {
+                LOGGER.warn("Extension {} failed during afterContextRestore: {}",
+                        extension.getExtensionId(), e.getMessage(), e);
+            }
+        }
+    }
+
 }
