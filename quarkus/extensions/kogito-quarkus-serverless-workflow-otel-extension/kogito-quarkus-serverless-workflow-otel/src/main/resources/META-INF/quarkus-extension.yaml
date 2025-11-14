@@ -1,0 +1,11 @@
+name: "SonataFlow OpenTelemetry"
+description: "OpenTelemetry tracing support for Kogito Serverless Workflow"
+metadata:
+  keywords:
+    - "opentelemetry"
+    - "tracing"
+    - "observability"
+  guide: ""
+  categories:
+    - "observability"
+  status: "experimental"
