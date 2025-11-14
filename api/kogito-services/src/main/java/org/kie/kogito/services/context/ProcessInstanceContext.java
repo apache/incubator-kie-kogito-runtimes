@@ -91,7 +91,7 @@ public final class ProcessInstanceContext {
      * This resets the MDC to the general context (empty string).
      */
     public static void clear() {
-        MDC.put(MDC_PROCESS_INSTANCE_KEY, GENERAL_CONTEXT);
+        MDC.remove(MDC_PROCESS_INSTANCE_KEY);
     }
 
     /**
@@ -115,26 +115,51 @@ public final class ProcessInstanceContext {
     }
 
     /**
-     * Sets the MDC context map from a previously copied context.
+     * Append to the MDC context map the extensions related data from a previously copied context.
      * This is useful for async operations that need to restore logging context.
-     * Only the core keys and the registered extensions keys will be restored in the MDC
+     * Only registered extensions keys will be appended in the MDC
      *
-     * @param contextMap the context map to restore, or null to reset to general context
+     * @param contextMap the context map to append
      */
     public static void setContextFromAsync(Map<String, String> contextMap) {
         if (contextMap != null) {
-            if (EXTENSIONS.isEmpty()) {
-                MDC.setContextMap(contextMap);
-            } else {
-                // Restore core context first
-                Map<String, String> coreContext = filterCoreKeys(contextMap);
-                MDC.setContextMap(coreContext);
+            Map<String, String> finalContextMap;
 
-                // Then restore extension-specific keys
-                restoreExtensionKeys(contextMap);
+            // Preserve existing MDC context by merging with async context
+            Map<String, String> currentMdc = MDC.getCopyOfContextMap();
+            if (currentMdc != null) {
+                // Merge current context with async context, giving precedence to async values
+                finalContextMap = new HashMap<>(currentMdc);
+                finalContextMap.putAll(contextMap); // async values override existing ones
+            } else {
+                finalContextMap = new HashMap<>(contextMap);
             }
-        } else {
-            MDC.clear();
+
+            // Restore all non-extension keys directly to MDC
+            Map<String, String> nonExtensionKeys = new HashMap<>();
+            for (Map.Entry<String, String> entry : finalContextMap.entrySet()) {
+                String key = entry.getKey();
+                boolean isExtensionKey = false;
+
+                // Check if this key belongs to any registered extension
+                for (String prefix : EXTENSIONS.keySet()) {
+                    if (key.startsWith(prefix)) {
+                        isExtensionKey = true;
+                        break;
+                    }
+                }
+
+                // If not an extension key, restore it directly
+                if (!isExtensionKey) {
+                    nonExtensionKeys.put(key, entry.getValue());
+                }
+            }
+
+            // Set non-extension keys directly in MDC
+            nonExtensionKeys.forEach(MDC::put);
+
+            // Restore extension keys through their handlers
+            restoreExtensionKeys(finalContextMap);
         }
     }
 
@@ -207,6 +232,16 @@ public final class ProcessInstanceContext {
                 }
             }
         }
+    }
+
+    /**
+     * Gets the registered extension matching the prefix
+     * 
+     * @param prefix the prefix name of the extension
+     * @return th ContextExtension assigned with the provided prefix, or null if no context is set
+     */
+    public static ContextExtension getExtension(String prefix) {
+        return EXTENSIONS.get(prefix);
     }
 
     /**

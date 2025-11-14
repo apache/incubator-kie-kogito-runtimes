@@ -158,8 +158,8 @@ public class MetricsProcessEventListener extends DefaultKogitoProcessEventListen
      * @param processInstanceId the process instance ID (may be null)
      */
     private void logMetricCorrelation(String metricName, String processId, String processInstanceId) {
-          LOGGER.debug("Metric {} for process {} instance {}",
-                  metricName, processId, processInstanceId);
+        LOGGER.debug("Metric {} for process {} instance {}",
+                metricName, processId, processInstanceId);
     }
 
     @Override

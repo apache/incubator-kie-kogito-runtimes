@@ -54,6 +54,7 @@ class ProcessInstanceContextTest {
         // Clean up after each test
         ProcessInstanceContext.clear();
         ProcessInstanceContext.clearExtensions();
+        MDC.clear(); // Ensure completely clean MDC state between tests
     }
 
     @Test
@@ -89,7 +90,7 @@ class ProcessInstanceContextTest {
         ProcessInstanceContext.clear();
 
         assertEquals(ProcessInstanceContext.GENERAL_CONTEXT, ProcessInstanceContext.getProcessInstanceId());
-        assertEquals(ProcessInstanceContext.GENERAL_CONTEXT, MDC.get(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY));
+        assertNull(MDC.get(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY));
         assertFalse(ProcessInstanceContext.hasContext());
     }
 
@@ -183,10 +184,10 @@ class ProcessInstanceContextTest {
         ProcessInstanceContext.setProcessInstanceId(TEST_PROCESS_ID);
         assertTrue(ProcessInstanceContext.hasContext());
 
-        // Setting null context map should clear context
+        // Setting null context map should not change existing context
         ProcessInstanceContext.setContextFromAsync(null);
-        assertFalse(ProcessInstanceContext.hasContext());
-        assertEquals(ProcessInstanceContext.GENERAL_CONTEXT, ProcessInstanceContext.getProcessInstanceId());
+        assertEquals(TEST_PROCESS_ID, ProcessInstanceContext.getProcessInstanceId());
+        assertTrue(ProcessInstanceContext.hasContext());
     }
 
     @Test
@@ -276,7 +277,7 @@ class ProcessInstanceContextTest {
 
         ProcessInstanceContext.clear();
 
-        assertEquals(ProcessInstanceContext.GENERAL_CONTEXT, MDC.get(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY));
+        assertNull(MDC.get(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY));
     }
 
     @Test
@@ -316,7 +317,7 @@ class ProcessInstanceContextTest {
 
         // Clear should reset to general context
         ProcessInstanceContext.clear();
-        assertEquals(ProcessInstanceContext.GENERAL_CONTEXT, MDC.get(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY));
+        assertNull(MDC.get(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY));
 
         // Setting null should also result in general context
         ProcessInstanceContext.setProcessInstanceId(null);
@@ -324,12 +325,12 @@ class ProcessInstanceContextTest {
     }
 
     @Test
-    void testSetContextFromAsyncClearsExistingMdcKeys() {
+    void testSetContextFromAsyncPreservesExistingMdcKeys() {
         // Setup: Add various existing keys to MDC
         ProcessInstanceContext.clear(); // Ensure clean start
         MDC.put("existing.key1", "value1");
         MDC.put("existing.key2", "value2");
-        MDC.put("unrelated.data", "should-be-removed");
+        MDC.put("unrelated.data", "should-be-preserved");
         MDC.put(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY, "old-process-id");
 
         // Verify setup
@@ -340,22 +341,25 @@ class ProcessInstanceContextTest {
         Map<String, String> newContextMap = new HashMap<>();
         newContextMap.put(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY, TEST_PROCESS_ID);
 
-        // Action: Set context from async (should clear existing keys)
+        // Action: Set context from async (should preserve existing keys while updating process ID)
         ProcessInstanceContext.setContextFromAsync(newContextMap);
 
-        // Verification: Only new context should remain
+        // Verification: New process instance ID should be set
         assertEquals(TEST_PROCESS_ID, ProcessInstanceContext.getProcessInstanceId());
         assertTrue(ProcessInstanceContext.hasContext());
 
-        // Critical verification: Existing unrelated keys should be gone
-        assertNull(MDC.get("existing.key1"));
-        assertNull(MDC.get("existing.key2"));
-        assertNull(MDC.get("unrelated.data"));
+        // Critical verification: Existing unrelated keys should be preserved
+        assertEquals("value1", MDC.get("existing.key1"));
+        assertEquals("value2", MDC.get("existing.key2"));
+        assertEquals("should-be-preserved", MDC.get("unrelated.data"));
 
-        // Only the process instance key should remain
+        // The context should contain both old and new keys
         Map<String, String> remainingContext = MDC.getCopyOfContextMap();
-        assertEquals(1, remainingContext.size());
+        assertEquals(4, remainingContext.size());
         assertEquals(TEST_PROCESS_ID, remainingContext.get(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY));
+        assertEquals("value1", remainingContext.get("existing.key1"));
+        assertEquals("value2", remainingContext.get("existing.key2"));
+        assertEquals("should-be-preserved", remainingContext.get("unrelated.data"));
     }
 
     @Test
@@ -492,6 +496,59 @@ class ProcessInstanceContextTest {
 
         // Core functionality should still work
         assertEquals(TEST_PROCESS_ID, ProcessInstanceContext.getProcessInstanceId());
+    }
+
+    @Test
+    void testContextMergingWithPrecedenceToAsyncValues() {
+        // Setup: Add existing context that will conflict with async context
+        ProcessInstanceContext.clear();
+        MDC.put("common.key", "existing-value");
+        MDC.put("existing.only", "should-remain");
+        ProcessInstanceContext.setProcessInstanceId("existing-process-id");
+
+        // Create async context map with overlapping and new keys
+        Map<String, String> asyncContextMap = new HashMap<>();
+        asyncContextMap.put(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY, TEST_PROCESS_ID);
+        asyncContextMap.put("common.key", "async-value");
+        asyncContextMap.put("async.only", "new-value");
+
+        // Action: Restore async context
+        ProcessInstanceContext.setContextFromAsync(asyncContextMap);
+
+        // Verification: Async values should take precedence for conflicting keys
+        assertEquals(TEST_PROCESS_ID, ProcessInstanceContext.getProcessInstanceId());
+        assertEquals("async-value", MDC.get("common.key")); // async wins
+        assertEquals("should-remain", MDC.get("existing.only")); // preserved
+        assertEquals("new-value", MDC.get("async.only")); // added from async
+
+        // All keys should be present
+        Map<String, String> finalContext = MDC.getCopyOfContextMap();
+        assertEquals(4, finalContext.size());
+    }
+
+    @Test
+    void testContextRestorationWithoutExistingContext() {
+        // Setup: Start with completely clean MDC
+        ProcessInstanceContext.clear();
+        MDC.clear();
+
+        // Create async context map
+        Map<String, String> asyncContextMap = new HashMap<>();
+        asyncContextMap.put(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY, TEST_PROCESS_ID);
+        asyncContextMap.put("async.key", "async-value");
+
+        // Action: Restore async context
+        ProcessInstanceContext.setContextFromAsync(asyncContextMap);
+
+        // Verification: Only async values should be present
+        assertEquals(TEST_PROCESS_ID, ProcessInstanceContext.getProcessInstanceId());
+        assertEquals("async-value", MDC.get("async.key"));
+
+        // Context should match exactly what was provided
+        Map<String, String> finalContext = MDC.getCopyOfContextMap();
+        assertEquals(2, finalContext.size());
+        assertEquals(TEST_PROCESS_ID, finalContext.get(ProcessInstanceContext.MDC_PROCESS_INSTANCE_KEY));
+        assertEquals("async-value", finalContext.get("async.key"));
     }
 
     /**
