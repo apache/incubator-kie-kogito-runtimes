@@ -101,6 +101,14 @@ public class SecurityPolicy implements Policy {
     }
 
     public void enforceAdmin(UserTaskInstance userTaskInstance) {
+        enforceAdminIfSet(userTaskInstance, false, false);
+    }
+
+    public void enforceAdminIfSet(UserTaskInstance userTaskInstance, boolean acceptOwner) {
+        enforceAdminIfSet(userTaskInstance, acceptOwner, false);
+    }
+
+    public void enforceAdminIfSet(UserTaskInstance userTaskInstance, boolean acceptOwner, boolean acceptPotentitalUsersAndGroups) {
         String user = identity.getName();
 
         if (WORKFLOW_ENGINE_USER.equals(user)) {
@@ -122,6 +130,27 @@ public class SecurityPolicy implements Policy {
         if (!userAdminGroups.isEmpty()) {
             return;
         }
+
+        if (acceptOwner) {
+            if (user.equals(userTaskInstance.getActualOwner())) {
+                return;
+            }
+        }
+
+        if (acceptPotentitalUsersAndGroups) {
+            Set<String> potUsers = new HashSet<>(userTaskInstance.getPotentialUsers());
+            potUsers.removeAll(userTaskInstance.getExcludedUsers());
+            if (potUsers.contains(user)) {
+                return;
+            }
+
+            Set<String> potGroups = new HashSet<>(userTaskInstance.getPotentialGroups());
+            potGroups.retainAll(identity.getRoles());
+            if (!potGroups.isEmpty()) {
+                return;
+            }
+        }
+
         LOGGER.debug("identity {} with roles {} not authorized for user task {} with adminUsers {} and adminGroups {}",
                 identity.getName(),
                 identity.getRoles(),

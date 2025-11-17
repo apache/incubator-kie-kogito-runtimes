@@ -52,7 +52,7 @@ public class TaskManagementService implements TaskManagementOperations {
     @Override
     public TaskInfo updateTask(String taskId, TaskInfo taskInfo, boolean shouldReplace, IdentityProvider identity) {
         DefaultUserTaskInstance ut = (DefaultUserTaskInstance) getUserTaskInstance(taskId);
-        SecurityPolicy.of(identity).enforceAdmin(ut);
+        SecurityPolicy.of(identity).enforceAdminIfSet(ut, true);
         UserTaskInstance updatedUserTaskInstance = UnitOfWorkExecutor.executeInUnitOfWork(processesConfig.unitOfWorkManager(), () -> {
             setField(ut::setTaskDescription, taskInfo::getDescription, shouldReplace);
             setField(ut::setTaskPriority, taskInfo::getPriority, shouldReplace);
