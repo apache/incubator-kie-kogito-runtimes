@@ -413,10 +413,11 @@ public class TaskTest extends BaseRestTest {
                 .then()
                 .statusCode(403); //should fail, because there is not an "jsnow" user assigned to User Task
 
-        //"manager" should have rights
+        //"managers" should have rights
         given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "manager")
+                .queryParam("group", "managers")
                 .pathParam("taskId", taskId)
                 .body(upTaskInfo)
                 .put("/management/usertasks/{taskId}")
