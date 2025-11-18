@@ -109,9 +109,12 @@ public class SecurityPolicy implements Policy {
     }
 
     public void enforceAdminIfSet(UserTaskInstance userTaskInstance, boolean acceptOwner, boolean acceptPotentitalUsersAndGroups) {
-        String user = identity.getName();
+        String user = getUser();
+        String taskId = userTaskInstance.getId();
+        Collection<String> roles = getRoles();
 
         if (WORKFLOW_ENGINE_USER.equals(user)) {
+            LOGGER.debug("User {} authorized for user task {} as system user.", user, taskId);
             return;
         }
 
@@ -122,17 +125,20 @@ public class SecurityPolicy implements Policy {
 
         Set<String> adminUsers = userTaskInstance.getAdminUsers();
         if (adminUsers.contains(user)) {
+            LOGGER.debug("User {} authorized for user task {} as admin user.", user, taskId);
             return;
         }
 
         Set<String> userAdminGroups = new HashSet<>(userTaskInstance.getAdminGroups());
-        userAdminGroups.retainAll(identity.getRoles());
+        userAdminGroups.retainAll(roles);
         if (!userAdminGroups.isEmpty()) {
+            LOGGER.debug("User {} with roles {} authorized for user task {} as a member of admin group.", user, roles, taskId);
             return;
         }
 
         if (acceptOwner) {
             if (user.equals(userTaskInstance.getActualOwner())) {
+                LOGGER.debug("User {} authorized for user task {} as owner.", user, taskId);
                 return;
             }
         }
@@ -141,12 +147,14 @@ public class SecurityPolicy implements Policy {
             Set<String> potUsers = new HashSet<>(userTaskInstance.getPotentialUsers());
             potUsers.removeAll(userTaskInstance.getExcludedUsers());
             if (potUsers.contains(user)) {
+                LOGGER.debug("User {} authorized for user task {} as potential user.", user, taskId);
                 return;
             }
 
             Set<String> potGroups = new HashSet<>(userTaskInstance.getPotentialGroups());
-            potGroups.retainAll(identity.getRoles());
+            potGroups.retainAll(roles);
             if (!potGroups.isEmpty()) {
+                LOGGER.debug("User {} with roles {} authorized for user task {} as a member of potential users group.", user, roles, taskId);
                 return;
             }
         }

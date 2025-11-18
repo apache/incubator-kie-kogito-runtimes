@@ -153,7 +153,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .body(new TransitionInfo("claim"))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
-                .statusCode(500);
+                .statusCode(403);
 
         given()
                 .contentType(ContentType.JSON)
