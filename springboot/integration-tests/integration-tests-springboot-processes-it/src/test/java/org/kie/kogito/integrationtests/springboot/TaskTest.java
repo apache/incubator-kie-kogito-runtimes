@@ -63,10 +63,10 @@ public class TaskTest extends BaseRestTest {
         String processId = "";
         do {
             processId = given()
+                    .when()
                     .contentType(ContentType.JSON)
                     .queryParam("user", "admin")
                     .queryParam("group", "managers")
-                    .when()
                     .get("/approvals")
                     .then()
                     .statusCode(200)
@@ -74,13 +74,13 @@ public class TaskTest extends BaseRestTest {
                     .path("[0].id");
             if (processId != null && !processId.isBlank()) {
                 given()
-                        .contentType(ContentType.JSON)
-                        .queryParam("user", "admin")
-                        .queryParam("group", "managers")
-                        .pathParam("processId", processId)
-                        .when()
-                        .delete("/approvals/{processId}")
-                        .then();
+                    .when()
+                    .contentType(ContentType.JSON)
+                    .queryParam("user", "admin")
+                    .queryParam("group", "managers")
+                    .pathParam("processId", processId)
+                    .delete("/approvals/{processId}")
+                    .then();
             }
         } while (processId != null && !processId.isBlank());
     }
