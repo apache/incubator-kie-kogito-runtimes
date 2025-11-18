@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import org.acme.travels.Address;
 import org.acme.travels.Traveller;
 import org.jbpm.util.JsonSchemaUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.task.management.service.TaskInfo;
@@ -56,6 +57,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
 public class TaskTest extends BaseRestTest {
+
+    @AfterEach
+    public void cleanUp() {
+        String processId = "";
+        do {
+            processId = given()
+                    .contentType(ContentType.JSON)
+                    .queryParam("user", "admin")
+                    .queryParam("group", "managers")
+                    .when()
+                    .get("/approvals")
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .path("[0].id");
+            if (processId != null && !processId.isBlank()) {
+                given()
+                        .contentType(ContentType.JSON)
+                        .queryParam("user", "admin")
+                        .queryParam("group", "managers")
+                        .pathParam("processId", processId)
+                        .when()
+                        .delete("/approvals/{processId}")
+                        .then();
+            }
+        } while (processId != null && !processId.isBlank());
+    }
 
     @Test
     void testJsonSchema() {
