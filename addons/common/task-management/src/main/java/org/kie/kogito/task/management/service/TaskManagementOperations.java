@@ -22,7 +22,7 @@ import org.kie.kogito.auth.IdentityProvider;
 
 public interface TaskManagementOperations {
 
-    TaskInfo updateTask(String taskId, TaskInfo taskInfo, boolean replace, IdentityProvider orImpersonateIdentity);
+    TaskInfo updateTask(String taskId, TaskInfo taskInfo, boolean replace, IdentityProvider identity);
 
     TaskInfo getTask(String taskId);
 }
