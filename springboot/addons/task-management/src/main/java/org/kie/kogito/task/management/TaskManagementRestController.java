@@ -60,7 +60,7 @@ public class TaskManagementRestController {
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "group", required = false) List<String> groups,
             @RequestBody TaskInfo taskInfo) {
-        taskService.updateTask(taskId, taskInfo, true, identityProviderFactory.getOrImpersonateIdentity(user, groups));
+        taskService.updateTask(taskId, taskInfo, true, identityProviderFactory.getIdentity(user, groups));
         return ResponseEntity.ok().build();
     }
 
@@ -70,7 +70,7 @@ public class TaskManagementRestController {
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "group", required = false) List<String> groups,
             @RequestBody TaskInfo taskInfo) {
-        return ResponseEntity.ok(taskService.updateTask(taskId, taskInfo, false, identityProviderFactory.getOrImpersonateIdentity(user, groups)));
+        return ResponseEntity.ok(taskService.updateTask(taskId, taskInfo, false, identityProviderFactory.getIdentity(user, groups)));
     }
 
     @GetMapping(value = "{taskId}", produces = APPLICATION_JSON_VALUE)

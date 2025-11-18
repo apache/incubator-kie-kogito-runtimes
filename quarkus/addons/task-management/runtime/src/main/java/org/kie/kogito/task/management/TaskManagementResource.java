@@ -72,7 +72,7 @@ public class TaskManagementResource {
             @QueryParam("user") final String user,
             @QueryParam("group") final List<String> groups,
             TaskInfo taskInfo) {
-        taskService.updateTask(taskId, taskInfo, true, identityProviderFactory.getOrImpersonateIdentity(user, groups));
+        taskService.updateTask(taskId, taskInfo, true, identityProviderFactory.getIdentity(user, groups));
         return Response.ok().build();
     }
 
@@ -85,7 +85,7 @@ public class TaskManagementResource {
             @QueryParam("user") final String user,
             @QueryParam("group") final List<String> groups,
             TaskInfo taskInfo) {
-        return Response.ok(taskService.updateTask(taskId, taskInfo, false, identityProviderFactory.getOrImpersonateIdentity(user, groups))).build();
+        return Response.ok(taskService.updateTask(taskId, taskInfo, false, identityProviderFactory.getIdentity(user, groups))).build();
     }
 
     @GET

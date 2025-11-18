@@ -23,8 +23,6 @@ import java.util.*;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.NotAuthorizedException;
 import org.kie.kogito.internal.process.workitem.Policy;
-import org.kie.kogito.usertask.UserTaskInstance;
-import org.kie.kogito.usertask.UserTaskInstanceNotAuthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +34,6 @@ import org.slf4j.LoggerFactory;
 public class SecurityPolicy implements Policy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityPolicy.class);
-    public static final String WORKFLOW_ENGINE_USER = "WORKFLOW_ENGINE_USER";
 
     private IdentityProvider identity;
 
@@ -98,74 +95,6 @@ public class SecurityPolicy implements Policy {
                 throw new NotAuthorizedException("this work item " + workItem.getStringId() + " is not allows by this owner " + actualOwner);
             }
         }
-    }
-
-    public void enforceAdmin(UserTaskInstance userTaskInstance) {
-        enforceAdminIfSet(userTaskInstance, false, false);
-    }
-
-    public void enforceAdminIfSet(UserTaskInstance userTaskInstance, boolean acceptOwner) {
-        enforceAdminIfSet(userTaskInstance, acceptOwner, false);
-    }
-
-    public void enforceAdminIfSet(UserTaskInstance userTaskInstance, boolean acceptOwner, boolean acceptPotentitalUsersAndGroups) {
-        String user = getUser();
-        String taskId = userTaskInstance.getId();
-        Collection<String> roles = getRoles();
-
-        if (WORKFLOW_ENGINE_USER.equals(user)) {
-            LOGGER.debug("User {} authorized for user task {} as system user.", user, taskId);
-            return;
-        }
-
-        if (user == null) {
-            LOGGER.debug("No user defined to perform update on user task {}", userTaskInstance.getId());
-            throw new UserTaskInstanceNotAuthorizedException("No user defined to perform update on user task " + userTaskInstance.getId());
-        }
-
-        Set<String> adminUsers = userTaskInstance.getAdminUsers();
-        if (adminUsers.contains(user)) {
-            LOGGER.debug("User {} authorized for user task {} as admin user.", user, taskId);
-            return;
-        }
-
-        Set<String> userAdminGroups = new HashSet<>(userTaskInstance.getAdminGroups());
-        userAdminGroups.retainAll(roles);
-        if (!userAdminGroups.isEmpty()) {
-            LOGGER.debug("User {} with roles {} authorized for user task {} as a member of admin group.", user, roles, taskId);
-            return;
-        }
-
-        if (acceptOwner) {
-            if (user.equals(userTaskInstance.getActualOwner())) {
-                LOGGER.debug("User {} authorized for user task {} as owner.", user, taskId);
-                return;
-            }
-        }
-
-        if (acceptPotentitalUsersAndGroups) {
-            Set<String> potUsers = new HashSet<>(userTaskInstance.getPotentialUsers());
-            potUsers.removeAll(userTaskInstance.getExcludedUsers());
-            if (potUsers.contains(user)) {
-                LOGGER.debug("User {} authorized for user task {} as potential user.", user, taskId);
-                return;
-            }
-
-            Set<String> potGroups = new HashSet<>(userTaskInstance.getPotentialGroups());
-            potGroups.retainAll(roles);
-            if (!potGroups.isEmpty()) {
-                LOGGER.debug("User {} with roles {} authorized for user task {} as a member of potential users group.", user, roles, taskId);
-                return;
-            }
-        }
-
-        LOGGER.debug("identity {} with roles {} not authorized for user task {} with adminUsers {} and adminGroups {}",
-                identity.getName(),
-                identity.getRoles(),
-                userTaskInstance.getId(),
-                userTaskInstance.getAdminUsers(),
-                userTaskInstance.getAdminGroups());
-        throw new UserTaskInstanceNotAuthorizedException("User " + user + " with roles " + identity.getRoles() + " not authorized to perform an operation on user task " + userTaskInstance.getId());
     }
 
     @Override
