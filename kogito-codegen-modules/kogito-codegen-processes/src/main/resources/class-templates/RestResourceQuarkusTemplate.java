@@ -57,6 +57,12 @@ import org.kie.kogito.process.workitem.TaskModel;
 import org.kie.kogito.auth.IdentityProviderFactory;
 import org.kie.kogito.auth.SecurityPolicy;
 
+import jakarta.ws.rs.core.StreamingOutput;
+import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+
+
 @Path("/$name$")
 @org.eclipse.microprofile.openapi.annotations.tags.Tag(name = "Process - $name$", description = "$documentation$")
 public class $Type$Resource {
@@ -94,20 +100,27 @@ public class $Type$Resource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML})
     @Operation(operationId = "getAllProcessInstances_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
     public Response getResources_$name$(@Context HttpHeaders headers) {
-        List<$Type$Output> out = processService.getProcessInstanceOutput(process);
-        boolean wantsHtml = headers.getAcceptableMediaTypes()
-            .stream()
-            .anyMatch(mt -> mt.isCompatible(MediaType.TEXT_HTML_TYPE)
-                    && !mt.isWildcardType() && !mt.isWildcardSubtype());
-        if (wantsHtml) {
-            InputStream htmlStream = getClass().getResourceAsStream("/META-INF/resources/index.html");
-            if (htmlStream == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                    .entity("HTML resource not found").build();
+      List < $Type$Output > out = processService.getProcessInstanceOutput(process);
+      boolean wantsHtml = headers.getAcceptableMediaTypes()
+        .stream()
+        .anyMatch(mt -> mt.isCompatible(MediaType.TEXT_HTML_TYPE));
+      if (wantsHtml) {
+        InputStream htmlStream = getClass().getResourceAsStream("/META-INF/resources/index.html");
+        if (htmlStream == null) {
+          return Response.status(Response.Status.NOT_FOUND)
+            .entity("HTML resource not found").build();
         }
-        return Response.ok(htmlStream, MediaType.TEXT_HTML).build();
-        }
-        return Response.ok(out, MediaType.APPLICATION_JSON).build();
+        StreamingOutput stream = new StreamingOutput() {
+          @Override
+          public void write(OutputStream os) throws IOException {
+            try (InputStream is = htmlStream) { 
+              is.transferTo(os);
+            }
+          }
+        };
+        return Response.ok(htmlStream, MediaType.TEXT_HTML_TYPE).build();
+      }
+      return Response.ok(out, MediaType.APPLICATION_JSON).build();
     }
 
     @GET
