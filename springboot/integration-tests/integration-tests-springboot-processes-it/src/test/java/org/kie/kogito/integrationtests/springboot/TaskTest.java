@@ -417,7 +417,7 @@ public class TaskTest extends BaseRestTest {
 
         String taskId = given()
                 .contentType(ContentType.JSON)
-                .queryParam("user", "admin")
+                .queryParam("user", "manager")
                 .queryParam("group", "managers")
                 .when()
                 .get("/usertasks/instance")
