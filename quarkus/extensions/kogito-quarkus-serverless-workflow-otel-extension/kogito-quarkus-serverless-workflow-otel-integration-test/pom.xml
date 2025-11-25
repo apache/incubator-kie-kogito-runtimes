@@ -27,7 +27,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>kogito-quarkus-serverless-workflow-otel-integration-test</artifactId>
+  <artifactId>sonataflow-quarkus-otel-integration-test</artifactId>
   <name>SonataFlow :: Quarkus Serverless Workflow OpenTelemetry Extension :: Integration Test</name>
 
   <properties>
@@ -37,7 +37,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.kie.sonataflow</groupId>
-      <artifactId>kogito-quarkus-serverless-workflow-otel</artifactId>
+      <artifactId>sonataflow-quarkus-otel</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -110,7 +110,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.kie.sonataflow</groupId>
-      <artifactId>kogito-quarkus-serverless-workflow-otel-deployment</artifactId>
+      <artifactId>sonataflow-quarkus-otel-deployment</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>test</scope>

@@ -27,7 +27,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>kogito-quarkus-serverless-workflow-otel</artifactId>
+  <artifactId>sonataflow-quarkus-otel</artifactId>
   <name>SonataFlow :: Quarkus Serverless Workflow OpenTelemetry Extension :: Runtime</name>
 
   <properties>
