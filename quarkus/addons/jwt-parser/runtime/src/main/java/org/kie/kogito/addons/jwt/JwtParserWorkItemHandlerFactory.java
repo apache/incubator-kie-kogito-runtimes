@@ -23,20 +23,14 @@ import java.util.List;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandlerFactory;
 
-import io.quarkus.arc.Arc;
-
-import jakarta.enterprise.context.ApplicationScoped;
-
 /**
  * Factory for creating JWT parser work item handlers
- * This allows the handler to be discovered and registered automatically
+ * This allows the handler to be discovered and registered automatically via ServiceLoader
  */
-@ApplicationScoped
 public class JwtParserWorkItemHandlerFactory implements KogitoWorkItemHandlerFactory {
 
     @Override
     public List<KogitoWorkItemHandler> provide() {
-        JwtParserWorkItemHandler handler = Arc.container().instance(JwtParserWorkItemHandler.class).get();
-        return List.of(handler);
+        return List.of(new JwtParserWorkItemHandler());
     }
 }

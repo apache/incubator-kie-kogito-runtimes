@@ -25,13 +25,10 @@ import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
 /**
  * JWT Token Parser utility for extracting claims from JWT tokens
  * Used by SonataFlow workflows to parse JWT tokens and access claims
  */
-@ApplicationScoped
 public class JwtTokenParser {
 
     private static final String BEARER = "Bearer ";

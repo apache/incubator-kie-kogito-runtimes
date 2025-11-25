@@ -31,13 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
 /**
  * WorkItem handler for JWT token parsing operations in SonataFlow
  */
-@ApplicationScoped
 public class JwtParserWorkItemHandler extends DefaultKogitoWorkItemHandler {
 
     public static final String NAME = "jwt-parser";
@@ -52,8 +48,15 @@ public class JwtParserWorkItemHandler extends DefaultKogitoWorkItemHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtParserWorkItemHandler.class);
 
-    @Inject
-    JwtTokenParser jwtTokenParser;
+    private final JwtTokenParser jwtTokenParser;
+
+    public JwtParserWorkItemHandler() {
+        this.jwtTokenParser = new JwtTokenParser();
+    }
+
+    public JwtParserWorkItemHandler(JwtTokenParser jwtTokenParser) {
+        this.jwtTokenParser = jwtTokenParser;
+    }
 
     @Override
     public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {

@@ -18,17 +18,12 @@
  */
 package org.kie.kogito.addons.jwt.deployment;
 
-import org.kie.kogito.addons.jwt.JwtParserWorkItemHandler;
-import org.kie.kogito.addons.jwt.JwtParserWorkItemHandlerFactory;
-import org.kie.kogito.addons.jwt.JwtTokenParser;
-
-import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
 /**
  * Quarkus deployment processor for JWT parser functionality
+ * The JWT parser work item handlers are discovered via ServiceLoader and don't require CDI bean registration
  */
 public class JwtParserProcessor {
 
@@ -37,12 +32,5 @@ public class JwtParserProcessor {
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
-    }
-
-    @BuildStep
-    public void registerAdditionalBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
-        additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(JwtParserWorkItemHandler.class));
-        additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(JwtTokenParser.class));
-        additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(JwtParserWorkItemHandlerFactory.class));
     }
 }
