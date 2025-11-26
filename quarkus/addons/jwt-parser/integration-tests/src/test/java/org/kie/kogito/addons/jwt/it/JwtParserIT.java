@@ -67,6 +67,12 @@ class JwtParserIT {
         String username = jsonPath.getString("workflowdata.preferred_username");
         assertThat(username).isEqualTo("johndoe"); // The preferred_username from the JWT
 
+        String message = jsonPath.getString("workflowdata.message");
+        assertThat(message).isEqualTo("Congrats johndoe! Your loan has been approved!");
+
+        Boolean loanApproved = jsonPath.getBoolean("workflowdata.loanApproved");
+        assertThat(loanApproved).isTrue();
+
         // Verify the process completed and was removed from storage (following TokenExchangeIT pattern)
         assertProcessInstanceNotExists("/jwt_example/{id}", processInstanceId);
     }
@@ -87,6 +93,9 @@ class JwtParserIT {
         // Verify the JWT was parsed correctly despite the Bearer prefix
         String username = jsonPath.getString("workflowdata.preferred_username");
         assertThat(username).isEqualTo("johndoe");
+
+        String message = jsonPath.getString("workflowdata.message");
+        assertThat(message).contains("johndoe");
 
         // Verify process was cleaned up
         assertProcessInstanceNotExists("/jwt_example/{id}", processInstanceId);
