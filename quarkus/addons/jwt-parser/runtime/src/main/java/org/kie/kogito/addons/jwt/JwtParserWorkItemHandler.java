@@ -25,6 +25,7 @@ import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemManager;
 import org.kie.kogito.internal.process.workitem.WorkItemTransition;
+import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,13 +60,18 @@ public class JwtParserWorkItemHandler extends DefaultKogitoWorkItemHandler {
     }
 
     @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
     public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
         try {
             Map<String, Object> parameters = workItem.getParameters();
             String token = (String) parameters.get(TOKEN_PARAM);
             String operation = (String) parameters.getOrDefault(OPERATION_PARAM, PARSE_OPERATION);
 
-            logger.debug("Executing JWT parser operation: {} for workitem: {}", operation, workItem.getId());
+            logger.debug("Executing JWT parser operation: {}", operation);
 
             JsonNode result;
             switch (operation.toLowerCase()) {
@@ -86,7 +92,9 @@ public class JwtParserWorkItemHandler extends DefaultKogitoWorkItemHandler {
             }
 
             // Complete the work item with the parsed result
-            return Optional.of(handler.completeTransition(workItem.getPhaseStatus(), Map.of("result", result)));
+            // Use JsonObjectUtils.fromValue to ensure proper serialization for workflow data access
+            // Note: "Result" with capital R is the standard constant used by SonataFlow
+            return Optional.of(handler.completeTransition(workItem.getPhaseStatus(), Map.of("Result", JsonObjectUtils.fromValue(result))));
 
         } catch (Exception e) {
             logger.error("Error executing JWT parser work item: {}", e.getMessage(), e);

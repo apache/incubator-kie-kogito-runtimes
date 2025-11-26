@@ -26,20 +26,6 @@
           }
         }
       ],
-      "stateDataFilter": {
-        "output": "${ { user: .result.preferred_username } }"
-      },
-      "transition": "loanApproved"
-    },
-    {
-      "name": "loanApproved",
-      "type": "inject",
-      "data": {
-        "loanApproved": true
-      },
-      "stateDataFilter": {
-        "output": "${ { message: \"Congrats \\(.user)! Your loan has been approved!\", loanApproved } }"
-      },
       "end": true
     }
   ]
