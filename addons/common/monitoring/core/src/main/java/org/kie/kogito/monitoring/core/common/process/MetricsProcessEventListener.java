@@ -56,7 +56,6 @@ public class MetricsProcessEventListener extends DefaultKogitoProcessEventListen
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricsProcessEventListener.class);
     private static final String MDC_PROCESS_INSTANCE_KEY = "processInstanceId";
-    private static final String MDC_TRACE_ID_KEY = "traceId";
     private static Map<String, AtomicInteger> gaugeMap = new ConcurrentHashMap<>();
     private final String identifier;
     private final KogitoGAV gav;
@@ -151,14 +150,6 @@ public class MetricsProcessEventListener extends DefaultKogitoProcessEventListen
         return MDC.get(MDC_PROCESS_INSTANCE_KEY);
     }
 
-    /**
-     * Gets the current trace ID from MDC for correlation with distributed tracing.
-     *
-     * @return the trace ID, or null if not available
-     */
-    private String getTraceIdFromContext() {
-        return MDC.get(MDC_TRACE_ID_KEY);
-    }
 
     /**
      * Logs metric correlation information for debugging and observability.
@@ -169,14 +160,8 @@ public class MetricsProcessEventListener extends DefaultKogitoProcessEventListen
      */
     private void logMetricCorrelation(String metricName, String processId, String processInstanceId) {
         if (LOGGER.isDebugEnabled() && processInstanceId != null) {
-            String traceId = getTraceIdFromContext();
-            if (traceId != null) {
-                LOGGER.debug("Metric {} for process {} instance {} correlated with trace {}",
-                        metricName, processId, processInstanceId, traceId);
-            } else {
-                LOGGER.debug("Metric {} for process {} instance {}",
-                        metricName, processId, processInstanceId);
-            }
+            LOGGER.debug("Metric {} for process {} instance {}",
+                    metricName, processId, processInstanceId);
         }
     }
 

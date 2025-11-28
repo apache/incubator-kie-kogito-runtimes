@@ -109,11 +109,15 @@ class ProcessInstanceContextTest {
     void testWithProcessInstanceContextSupplier() {
         assertFalse(ProcessInstanceContext.hasContext());
 
-        String result = ProcessInstanceContext.withProcessInstanceContext(TEST_PROCESS_ID, () -> {
+        ProcessInstanceContext.setProcessInstanceId(TEST_PROCESS_ID);
+        String result;
+        try {
             assertEquals(TEST_PROCESS_ID, ProcessInstanceContext.getProcessInstanceId());
             assertTrue(ProcessInstanceContext.hasContext());
-            return "test-result";
-        });
+            result = "test-result";
+        } finally {
+            ProcessInstanceContext.clear();
+        }
 
         assertEquals("test-result", result);
         assertFalse(ProcessInstanceContext.hasContext());
@@ -124,9 +128,12 @@ class ProcessInstanceContextTest {
         assertFalse(ProcessInstanceContext.hasContext());
         AtomicReference<String> capturedId = new AtomicReference<>();
 
-        ProcessInstanceContext.withProcessInstanceContext(TEST_PROCESS_ID, () -> {
+        ProcessInstanceContext.setProcessInstanceId(TEST_PROCESS_ID);
+        try {
             capturedId.set(ProcessInstanceContext.getProcessInstanceId());
-        });
+        } finally {
+            ProcessInstanceContext.clear();
+        }
 
         assertEquals(TEST_PROCESS_ID, capturedId.get());
         assertFalse(ProcessInstanceContext.hasContext());
@@ -137,10 +144,13 @@ class ProcessInstanceContextTest {
         assertFalse(ProcessInstanceContext.hasContext());
 
         assertThrows(RuntimeException.class, () -> {
-            ProcessInstanceContext.withProcessInstanceContext(TEST_PROCESS_ID, () -> {
+            ProcessInstanceContext.setProcessInstanceId(TEST_PROCESS_ID);
+            try {
                 assertTrue(ProcessInstanceContext.hasContext());
                 throw new RuntimeException("Test exception");
-            });
+            } finally {
+                ProcessInstanceContext.clear();
+            }
         });
 
         // Context should be cleared even after exception
@@ -359,15 +369,4 @@ class ProcessInstanceContextTest {
         executor.shutdown();
     }
 
-    @Test
-    void testDistributedTracingKeysAvailable() {
-        // Verify that the distributed tracing MDC keys are defined
-        assertNotNull(ProcessInstanceContext.MDC_TRACE_ID_KEY);
-        assertNotNull(ProcessInstanceContext.MDC_SPAN_ID_KEY);
-        assertNotNull(ProcessInstanceContext.SPAN_ATTRIBUTE_PROCESS_INSTANCE_ID);
-
-        assertEquals("traceId", ProcessInstanceContext.MDC_TRACE_ID_KEY);
-        assertEquals("spanId", ProcessInstanceContext.MDC_SPAN_ID_KEY);
-        assertEquals("kogito.process.instance.id", ProcessInstanceContext.SPAN_ATTRIBUTE_PROCESS_INSTANCE_ID);
-    }
 }
