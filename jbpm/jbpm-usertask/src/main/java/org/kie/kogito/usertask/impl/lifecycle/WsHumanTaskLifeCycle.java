@@ -154,7 +154,8 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
         checkPermission(userTaskInstance, identity);
         return transitions.stream()
                 .filter(t -> t.source().equals(userTaskInstance.getStatus())
-                        && (!t.id().equals(SKIP) || "true".equals(userTaskInstance.getMetadata().get("Skippable"))))
+                        && (!t.id().equals(SKIP) || "true".equals(userTaskInstance.getMetadata().get("Skippable")))
+                        && (!t.id().equals(RESUME) || t.target().getName().equals(userTaskInstance.getMetadata().get("PreviousStatus").toString())))
                 .toList();
     }
 
