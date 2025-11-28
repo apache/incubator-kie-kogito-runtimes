@@ -266,7 +266,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     @Override
     public void transition(String transitionId, Map<String, Object> data, IdentityProvider identity) {
         batchUpdate(instance -> {
-            Optional<UserTaskTransitionToken> next = Optional.ofNullable(this.userTaskLifeCycle.newTransitionToken(transitionId, this, data));
+            Optional<UserTaskTransitionToken> next = Optional.ofNullable(this.userTaskLifeCycle.newTransitionToken(transitionId, instance, data));
             while (next.isPresent()) {
                 UserTaskTransitionToken transition = next.get();
                 next = this.userTaskLifeCycle.transition(instance, transition, identity);
