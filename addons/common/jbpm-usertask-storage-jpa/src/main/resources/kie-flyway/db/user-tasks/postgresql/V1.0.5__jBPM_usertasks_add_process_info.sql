@@ -1,0 +1,42 @@
+ALTER TABLE jbpm_user_tasks ADD COLUMN process_instance_id VARCHAR(50);
+ALTER TABLE jbpm_user_tasks ADD COLUMN process_id VARCHAR(255);
+ALTER TABLE jbpm_user_tasks ADD COLUMN process_version VARCHAR(255);
+ALTER TABLE jbpm_user_tasks ADD COLUMN parent_process_instance_id VARCHAR(50);
+ALTER TABLE jbpm_user_tasks ADD COLUMN root_process_instance_id VARCHAR(50);
+ALTER TABLE jbpm_user_tasks ADD COLUMN root_process_id VARCHAR(255);
+
+UPDATE jbpm_user_tasks t
+SET process_instance_id = TRIM(BOTH '"' FROM m.metadata_value)
+FROM jbpm_user_tasks_metadata m
+WHERE t.id = m.task_id AND m.metadata_name = 'ProcessInstanceId'
+    AND m.metadata_value IS NOT NULL;
+
+UPDATE jbpm_user_tasks t
+SET process_id = TRIM(BOTH '"' FROM m.metadata_value)
+FROM jbpm_user_tasks_metadata m
+WHERE t.id = m.task_id AND m.metadata_name = 'ProcessId'
+    AND m.metadata_value IS NOT NULL;
+
+UPDATE jbpm_user_tasks t
+SET process_version = TRIM(BOTH '"' FROM m.metadata_value)
+FROM jbpm_user_tasks_metadata m
+WHERE t.id = m.task_id AND m.metadata_name = 'ProcessVersion'
+  AND m.metadata_value IS NOT NULL;
+
+UPDATE jbpm_user_tasks t
+SET parent_process_instance_id = TRIM(BOTH '"' FROM m.metadata_value)
+FROM jbpm_user_tasks_metadata m
+WHERE t.id = m.task_id AND m.metadata_name = 'ParentProcessInstanceId'
+  AND m.metadata_value IS NOT NULL;
+
+UPDATE jbpm_user_tasks t
+SET root_process_instance_id = TRIM(BOTH '"' FROM m.metadata_value)
+FROM jbpm_user_tasks_metadata m
+WHERE t.id = m.task_id AND m.metadata_name = 'RootProcessInstanceId'
+  AND m.metadata_value IS NOT NULL;
+
+UPDATE jbpm_user_tasks t
+SET root_process_id = TRIM(BOTH '"' FROM m.metadata_value)
+FROM jbpm_user_tasks_metadata m
+WHERE t.id = m.task_id AND m.metadata_name = 'RootProcessId'
+  AND m.metadata_value IS NOT NULL;
