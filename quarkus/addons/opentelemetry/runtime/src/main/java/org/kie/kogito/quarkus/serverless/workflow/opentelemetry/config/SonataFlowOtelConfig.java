@@ -46,4 +46,11 @@ public interface SonataFlowOtelConfig {
         @WithDefault("true")
         boolean enabled();
     }
+
+    TestInfrastructureConfig testInfrastructure();
+
+    interface TestInfrastructureConfig {
+        @WithDefault("false")
+        boolean enabled();
+    }
 }

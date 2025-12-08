@@ -19,43 +19,25 @@
 package org.kie.kogito.quarkus.serverless.workflow.opentelemetry.deployment;
 
 import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
-import org.kie.kogito.quarkus.addons.common.deployment.OneOfCapabilityKogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.RequireCapabilityKogitoAddOnProcessor;
 
-import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 
 /**
  * Deployment processor for SonataFlow OpenTelemetry integration.
  */
-class SonataFlowOtelProcessor extends OneOfCapabilityKogitoAddOnProcessor {
+class SonataflowAddonsQuarkusOpenTelemetryProcessor extends RequireCapabilityKogitoAddOnProcessor {
 
-    private static final String FEATURE = "sonataflow-quarkus-otel";
+    private static final String FEATURE = "sonataflow-addons-quarkus-opentelemetry";
 
-    SonataFlowOtelProcessor() {
+    SonataflowAddonsQuarkusOpenTelemetryProcessor() {
         super(KogitoCapability.SERVERLESS_WORKFLOW);
     }
 
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
-    }
-
-    @BuildStep
-    void registerOpenTelemetryBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans,
-            LaunchModeBuildItem launchMode) {
-        // Only manually register beans that cannot be auto-discovered by CDI
-        // CDI beans with proper annotations (@ApplicationScoped, @Dependent, @Provider) are auto-discovered
-
-        if (launchMode.getLaunchMode().isDevOrTest()) {
-            additionalBeans.produce(AdditionalBeanBuildItem.builder()
-                    .addBeanClass("org.kie.kogito.quarkus.serverless.workflow.opentelemetry.test.TestSpanExporterProducer")
-                    .addBeanClass("org.kie.kogito.quarkus.serverless.workflow.opentelemetry.test.TestSpanResource")
-                    .setUnremovable()
-                    .build());
-        }
     }
 
 }

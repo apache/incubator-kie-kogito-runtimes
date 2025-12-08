@@ -27,7 +27,7 @@ public class SonataFlowOtelExtensionStructureTest {
 
     @Test
     public void shouldLoadProcessorClass() {
-        SonataFlowOtelProcessor processor = new SonataFlowOtelProcessor();
+        SonataflowAddonsQuarkusOpenTelemetryProcessor processor = new SonataflowAddonsQuarkusOpenTelemetryProcessor();
         assertAll(
                 () -> assertNotNull(processor),
                 () -> assertNotNull(processor.feature()));

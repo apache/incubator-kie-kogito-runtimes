@@ -44,21 +44,25 @@ import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlo
  * correlation with process instances, and external library log capture.
  */
 @QuarkusIntegrationTest
-@QuarkusTestResource(OpenTelemetryTestResource.class)
+@QuarkusTestResource(OtlpMockTestResource.class)
 @QuarkusTestResource(TokenPropagationExternalServicesMock.class)
 @QuarkusTestResource(KeycloakServiceMock.class)
 public class OpenTelemetryLoggingIT {
 
     @BeforeEach
     public void cleanup() throws InterruptedException {
-        OpenTelemetryTestResource.clearSpans();
+        if (OtlpMockTestResource.isCollectorRunning()) {
+            OtlpMockTestResource.clearRequests();
+        }
         TokenPropagationExternalServicesMock.getInstance().resetRequests();
 
         for (int i = 0; i < 5; i++) {
             Thread.sleep(200);
-            OpenTelemetryTestResource.clearSpans();
-            if (OpenTelemetryTestResource.getSpanCount() == 0) {
-                break;
+            if (OtlpMockTestResource.isCollectorRunning()) {
+                OtlpMockTestResource.clearRequests();
+                if (OtlpMockTestResource.getSpanCount() == 0) {
+                    break;
+                }
             }
         }
     }
@@ -77,7 +81,7 @@ public class OpenTelemetryLoggingIT {
                 "log-capture-test-txn-123", 201);
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans).isNotEmpty();
@@ -103,7 +107,7 @@ public class OpenTelemetryLoggingIT {
                 "log-level-filter-test-txn-456", 201);
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans).isNotEmpty();
@@ -137,7 +141,7 @@ public class OpenTelemetryLoggingIT {
                 "log-correlation-test-txn-spanish", 201);
 
         await().atMost(Duration.ofSeconds(15)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             List<SpanData> englishSpans = filterSpansByTransactionId(workflowSpans, "log-correlation-test-txn-english");
@@ -173,7 +177,7 @@ public class OpenTelemetryLoggingIT {
                 "log-no-duplicate-test-txn", 201);
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             assertThat(spans).isNotEmpty();
 
             List<EventData> allLogEvents = spans.stream()
@@ -230,7 +234,7 @@ public class OpenTelemetryLoggingIT {
         executeTokenPropagationWorkflow("log-external-library-log-test-txn", 201);
 
         await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans).isNotEmpty();
@@ -284,7 +288,7 @@ public class OpenTelemetryLoggingIT {
         executeTokenPropagationWorkflow("log-capture-test-token-propagation-txn-123", 201);
 
         await().atMost(Duration.ofSeconds(25)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans).isNotEmpty();
