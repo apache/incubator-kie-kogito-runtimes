@@ -41,21 +41,25 @@ import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlo
  * Tests focus on process.instance.start, process.instance.complete, and process.instance.error events.
  */
 @QuarkusIntegrationTest
-@QuarkusTestResource(OpenTelemetryTestResource.class)
+@QuarkusTestResource(OtlpMockTestResource.class)
 @QuarkusTestResource(TokenPropagationExternalServicesMock.class)
 @QuarkusTestResource(KeycloakServiceMock.class)
 public class OpenTelemetryProcessEventsIT {
 
     @BeforeEach
     public void cleanup() throws InterruptedException {
-        OpenTelemetryTestResource.clearSpans();
+        if (OtlpMockTestResource.isCollectorRunning()) {
+            OtlpMockTestResource.clearRequests();
+        }
         TokenPropagationExternalServicesMock.getInstance().resetRequests();
 
         for (int i = 0; i < 5; i++) {
             Thread.sleep(200);
-            OpenTelemetryTestResource.clearSpans();
-            if (OpenTelemetryTestResource.getSpanCount() == 0) {
-                break;
+            if (OtlpMockTestResource.isCollectorRunning()) {
+                OtlpMockTestResource.clearRequests();
+                if (OtlpMockTestResource.getSpanCount() == 0) {
+                    break;
+                }
             }
         }
     }
@@ -74,7 +78,7 @@ public class OpenTelemetryProcessEventsIT {
                 "process-start-test-txn-123", 201);
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans).hasSizeGreaterThanOrEqualTo(3);
@@ -102,7 +106,7 @@ public class OpenTelemetryProcessEventsIT {
                 "process-complete-test-txn-456", 201);
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans).hasSizeGreaterThanOrEqualTo(3);
@@ -123,7 +127,7 @@ public class OpenTelemetryProcessEventsIT {
         executeWorkflowWithTxn("/uncaughterror", "{\"number\": 1}",
                 "process-error-test-txn-789", 500);
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans).isNotEmpty();

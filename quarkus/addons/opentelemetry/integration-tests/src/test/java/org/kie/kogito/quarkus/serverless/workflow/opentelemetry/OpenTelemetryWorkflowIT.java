@@ -43,20 +43,20 @@ import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlo
  * and workflow configuration.
  */
 @QuarkusIntegrationTest
-@QuarkusTestResource(OpenTelemetryTestResource.class)
+@QuarkusTestResource(OtlpMockTestResource.class)
 @QuarkusTestResource(TokenPropagationExternalServicesMock.class)
 @QuarkusTestResource(KeycloakServiceMock.class)
 public class OpenTelemetryWorkflowIT {
 
     @BeforeEach
     public void cleanup() throws InterruptedException {
-        OpenTelemetryTestResource.clearSpans();
+        OtlpMockTestResource.clearRequests();
         TokenPropagationExternalServicesMock.getInstance().resetRequests();
 
         for (int i = 0; i < 5; i++) {
             Thread.sleep(200);
-            OpenTelemetryTestResource.clearSpans();
-            if (OpenTelemetryTestResource.getSpanCount() == 0) {
+            OtlpMockTestResource.clearRequests();
+            if (OtlpMockTestResource.getSpanCount() == 0) {
                 break;
             }
         }
@@ -78,7 +78,7 @@ public class OpenTelemetryWorkflowIT {
                 "workflow-test-transaction-123", "customer-456", "session-789", 201);
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans).hasSizeGreaterThanOrEqualTo(3);
@@ -104,7 +104,7 @@ public class OpenTelemetryWorkflowIT {
         executeWorkflow("/greet", buildGreetBody("Alice", "Spanish"), 201);
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             assertThat(spans).hasSizeGreaterThanOrEqualTo(3);
 
             spans.forEach(span -> {
@@ -126,7 +126,7 @@ public class OpenTelemetryWorkflowIT {
                 "workflow-spanish-workflow-txn", 201);
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             assertThat(spans).hasSizeGreaterThanOrEqualTo(3);
 
             Set<String> nodeIds = extractNodeNames(spans);
@@ -143,7 +143,7 @@ public class OpenTelemetryWorkflowIT {
         executeWorkflow("/greet", buildGreetBody("Test", "English"), 201);
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans).isNotEmpty();
@@ -166,7 +166,7 @@ public class OpenTelemetryWorkflowIT {
         }
 
         await().atMost(Duration.ofSeconds(15)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             assertThat(spans).hasSizeGreaterThanOrEqualTo(9);
 
             Set<String> traceIds = spans.stream()
@@ -201,7 +201,7 @@ public class OpenTelemetryWorkflowIT {
         }
 
         await().atMost(Duration.ofSeconds(15)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans).hasSizeGreaterThanOrEqualTo(9);

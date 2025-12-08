@@ -42,21 +42,25 @@ import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlo
  * proper trace correlation between main workflows and subflows.
  */
 @QuarkusIntegrationTest
-@QuarkusTestResource(OpenTelemetryTestResource.class)
+@QuarkusTestResource(OtlpMockTestResource.class)
 @QuarkusTestResource(TokenPropagationExternalServicesMock.class)
 @QuarkusTestResource(KeycloakServiceMock.class)
 public class OpenTelemetryTokenPropagationIT {
 
     @BeforeEach
     public void cleanup() throws InterruptedException {
-        OpenTelemetryTestResource.clearSpans();
+        if (OtlpMockTestResource.isCollectorRunning()) {
+            OtlpMockTestResource.clearRequests();
+        }
         TokenPropagationExternalServicesMock.getInstance().resetRequests();
 
         for (int i = 0; i < 5; i++) {
             Thread.sleep(200);
-            OpenTelemetryTestResource.clearSpans();
-            if (OpenTelemetryTestResource.getSpanCount() == 0) {
-                break;
+            if (OtlpMockTestResource.isCollectorRunning()) {
+                OtlpMockTestResource.clearRequests();
+                if (OtlpMockTestResource.getSpanCount() == 0) {
+                    break;
+                }
             }
         }
     }
@@ -84,7 +88,7 @@ public class OpenTelemetryTokenPropagationIT {
         executeTokenPropagationWorkflow("token-propagation-subflow-test-txn", 201);
 
         await().atMost(Duration.ofSeconds(25)).untilAsserted(() -> {
-            List<SpanData> spans = OpenTelemetryTestResource.getSpans();
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
             List<SpanData> workflowSpans = filterWorkflowSpans(spans);
 
             assertThat(workflowSpans)
