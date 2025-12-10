@@ -34,6 +34,10 @@
 
   <properties>
         <java.module.name>org.kie.kogito.serverless.workflow</java.module.name>
+        <SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_DOCLINK_HREF>https://docs.redhat.com/es/documentation/red_hat_openshift_serverless/1.36/html/serverless_logic/serverless-logic-configuring-workflow-services</SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_DOCLINK_HREF>
+        <SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_DOCLINK_TEXT>OSL SonataFlow Serverless Endpoint Documentation</SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_DOCLINK_TEXT>
+        <SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_LOGO>favicon.svg</SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_LOGO>
+        <SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_TITLE>OSL SonataFlow Serverless Endpoint</SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_TITLE>
   </properties>
 
 
