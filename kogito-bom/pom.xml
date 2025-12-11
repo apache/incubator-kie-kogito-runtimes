@@ -2729,6 +2729,22 @@
         <artifactId>kogito-quarkus-extension-spi</artifactId>
         <version>${project.version}</version>
       </dependency>
+	        <dependency>
+          <groupId>org.apache.kie.sonataflow</groupId>
+          <artifactId>sonataflow-quarkus-jdbc-token-persistence</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.kie.sonataflow</groupId>
+          <artifactId>sonataflow-quarkus-jdbc-token-persistence</artifactId>
+          <version>${project.version}</version>
+          <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.kie.sonataflow</groupId>
+          <artifactId>sonataflow-quarkus-jdbc-token-persistence-deployment</artifactId>
+          <version>${project.version}</version>
+      </dependency>
 
 			<!-- Data Index extension -->
       <dependency>
