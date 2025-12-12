@@ -26,6 +26,7 @@ import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.NotAuthorizedException;
 import org.kie.kogito.internal.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.internal.process.workitem.WorkItemNotFoundException;
+import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.NodeInstanceNotFoundException;
 import org.kie.kogito.process.NodeNotFoundException;
 import org.kie.kogito.process.ProcessInstanceDuplicatedException;
@@ -158,6 +159,11 @@ public class ExceptionsHandler extends AbstractExceptionsHandler<ResponseEntity<
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> toResponse(IllegalArgumentException exception) {
+        return mapException(exception);
+    }
+
+    @ExceptionHandler(IllegalSignalException.class)
+    public ResponseEntity<Map<String, String>> toResponse(IllegalSignalException exception) {
         return mapException(exception);
     }
 

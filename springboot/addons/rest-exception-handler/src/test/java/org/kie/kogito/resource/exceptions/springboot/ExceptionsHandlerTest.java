@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.internal.process.workitem.InvalidLifeCyclePhaseException;
 import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.NotAuthorizedException;
+import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.NodeInstanceNotFoundException;
 import org.kie.kogito.process.ProcessInstanceDuplicatedException;
 import org.kie.kogito.process.ProcessInstanceExecutionException;
@@ -148,6 +149,12 @@ class ExceptionsHandlerTest {
 
     @Test
     void testVariableViolationException(@Mock VariableViolationException exception) {
+        tested.toResponse(exception);
+        verify(tested).mapException(exception);
+    }
+
+    @Test
+    void testIllegalSignalException(@Mock IllegalSignalException exception) {
         tested.toResponse(exception);
         verify(tested).mapException(exception);
     }
