@@ -32,7 +32,7 @@ public interface KogitoWorkflowBuildTimeConfig {
      * Configuration for DevServices. DevServices allows Quarkus to automatically start Data Index in dev and test mode.
      */
     @WithName("devServices")
-    KogitoDevServicesBuildTimeConfig devservicesConfig();
+    KogitoDevServicesBuildTimeConfig devServicesConfig();
 
     /**
      * Always include the Workflow debug logger. By default, this will only be included in dev and test.

@@ -71,6 +71,6 @@ public class KogitoDevServicesProcessor extends AbstractDevServicesProcessor {
     }
 
     private boolean areDevServicesEnabled(KogitoWorkflowBuildTimeConfig kogitoBuildTimeConfig) {
-        return kogitoBuildTimeConfig.devservicesConfig().enabled();
+        return kogitoBuildTimeConfig.devServicesConfig().enabled();
     }
 }

@@ -103,9 +103,9 @@ public class GroupingMessagingEventPublisherTest {
         when(decoratorProviderInstance.isResolvable()).thenReturn(true);
         when(decoratorProviderInstance.get()).thenReturn(decoratorProvider);
 
-        when(eventsRuntimeConfig.propagateProcessInstancesEvents()).thenReturn(false);
-        when(eventsRuntimeConfig.propagateProcessDefinitionEvents()).thenReturn(false);
-        when(eventsRuntimeConfig.propagateUserTasksEvents()).thenReturn(false);
+        when(eventsRuntimeConfig.processInstancesErrorsPropagate()).thenReturn(false);
+        when(eventsRuntimeConfig.processDefinitionsErrorsPropagate()).thenReturn(false);
+        when(eventsRuntimeConfig.userTasksErrorsPropagate()).thenReturn(false);
 
         when(eventsRuntimeConfig.processInstancesEventsEnabled()).thenReturn(true);
         when(eventsRuntimeConfig.userTasksEventsEnabled()).thenReturn(true);

@@ -209,7 +209,7 @@ public abstract class AbstractDevServicesProcessor {
     }
 
     private DataIndexDevServiceConfig getConfiguration(KogitoWorkflowBuildTimeConfig cfg) {
-        KogitoDevServicesBuildTimeConfig devServicesConfig = cfg.devservicesConfig();
+        KogitoDevServicesBuildTimeConfig devServicesConfig = cfg.devServicesConfig();
         return new DataIndexDevServiceConfig(devServicesConfig);
     }
 

@@ -67,6 +67,6 @@ public class ServerlessWorkflowDevServicesProcessor extends AbstractDevServicesP
     }
 
     private boolean areDevServicesEnabled(KogitoWorkflowBuildTimeConfig kogitoBuildTimeConfig) {
-        return kogitoBuildTimeConfig.devservicesConfig().enabled();
+        return kogitoBuildTimeConfig.devServicesConfig().enabled();
     }
 }

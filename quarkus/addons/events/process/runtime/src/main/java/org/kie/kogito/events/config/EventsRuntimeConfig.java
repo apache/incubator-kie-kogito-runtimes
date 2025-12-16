@@ -40,7 +40,7 @@ public interface EventsRuntimeConfig {
      */
     @WithName("processinstances.errors.propagate")
     @WithDefault("false")
-    boolean propagateProcessInstancesEvents();
+    boolean processInstancesErrorsPropagate();
 
     /**
      * Enable publishing processes definition events
@@ -54,7 +54,7 @@ public interface EventsRuntimeConfig {
      */
     @WithName("processdefinitions.errors.propagate")
     @WithDefault("false")
-    boolean propagateProcessDefinitionEvents();
+    boolean processDefinitionsErrorsPropagate();
 
     /**
      * Enable publishing user task instances events
@@ -68,5 +68,5 @@ public interface EventsRuntimeConfig {
      */
     @WithName("usertasks.errors.propagate")
     @WithDefault("false")
-    boolean propagateUserTasksEvents();
+    boolean userTasksErrorsPropagate();
 }
