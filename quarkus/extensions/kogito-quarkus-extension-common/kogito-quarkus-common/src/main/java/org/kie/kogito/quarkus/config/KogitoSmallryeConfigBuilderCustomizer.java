@@ -27,6 +27,9 @@ public class KogitoSmallryeConfigBuilderCustomizer implements SmallRyeConfigBuil
     public void configBuilder(SmallRyeConfigBuilder builder) {
         // Align with quarkus to avoid the validation issue when we have runtime and build-time configs in the same
         // namespace. https://github.com/quarkusio/quarkus/blob/265a4328f8195d9c2ef4fbf32f41eb23253479b7/core/runtime/src/main/java/io/quarkus/runtime/configuration/QuarkusConfigBuilderCustomizer.java#L113
-        builder.withMappingIgnore("kogito.**");
+        builder.withMappingIgnore("kogito.**")
+                .withMappingIgnore("kie.**")
+                .withMappingIgnore("org.kie.**")
+                .withMappingIgnore("org.jbpm.**");
     }
 }
