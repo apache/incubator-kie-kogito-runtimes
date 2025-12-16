@@ -33,40 +33,40 @@ public interface EventsRuntimeConfig {
      */
     @WithName("processinstances.enabled")
     @WithDefault("true")
-    boolean processInstancesEventsEnabled();
+    boolean isProcessInstancesEventsEnabled();
 
     /**
      * Propagate errors for process instance emitter
      */
     @WithName("processinstances.errors.propagate")
     @WithDefault("false")
-    boolean processInstancesErrorsPropagate();
+    boolean isProcessInstancesPropagateError();
 
     /**
      * Enable publishing processes definition events
      */
     @WithName("processdefinitions.enabled")
     @WithDefault("true")
-    boolean processDefinitionEventsEnabled();
+    boolean isProcessDefinitionEventsEnabled();
 
     /**
      * Propagate errors for process definition emitter
      */
     @WithName("processdefinitions.errors.propagate")
     @WithDefault("false")
-    boolean processDefinitionsErrorsPropagate();
+    boolean isProcessDefinitionsPropagateErrors();
 
     /**
      * Enable publishing user task instances events
      */
     @WithName("usertasks.enabled")
     @WithDefault("true")
-    boolean userTasksEventsEnabled();
+    boolean isUserTasksEventsEnabled();
 
     /**
      * Propagate errors for user task emitter
      */
     @WithName("usertasks.errors.propagate")
     @WithDefault("false")
-    boolean userTasksErrorsPropagate();
+    boolean isUserTasksPropagateError();
 }

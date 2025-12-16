@@ -103,12 +103,12 @@ public class GroupingMessagingEventPublisherTest {
         when(decoratorProviderInstance.isResolvable()).thenReturn(true);
         when(decoratorProviderInstance.get()).thenReturn(decoratorProvider);
 
-        when(eventsRuntimeConfig.processInstancesErrorsPropagate()).thenReturn(false);
-        when(eventsRuntimeConfig.processDefinitionsErrorsPropagate()).thenReturn(false);
-        when(eventsRuntimeConfig.userTasksErrorsPropagate()).thenReturn(false);
+        when(eventsRuntimeConfig.isProcessInstancesPropagateError()).thenReturn(false);
+        when(eventsRuntimeConfig.isProcessDefinitionsPropagateErrors()).thenReturn(false);
+        when(eventsRuntimeConfig.isUserTasksPropagateError()).thenReturn(false);
 
-        when(eventsRuntimeConfig.processInstancesEventsEnabled()).thenReturn(true);
-        when(eventsRuntimeConfig.userTasksEventsEnabled()).thenReturn(true);
+        when(eventsRuntimeConfig.isProcessInstancesEventsEnabled()).thenReturn(true);
+        when(eventsRuntimeConfig.isUserTasksEventsEnabled()).thenReturn(true);
     }
 
     @Test
@@ -302,8 +302,8 @@ public class GroupingMessagingEventPublisherTest {
         when(userTaskEvent.getType()).thenReturn("UserTaskInstanceStateDataEvent");
 
         // Disable process and user task events in the config
-        when(eventsRuntimeConfig.processInstancesEventsEnabled()).thenReturn(false);
-        when(eventsRuntimeConfig.userTasksEventsEnabled()).thenReturn(false);
+        when(eventsRuntimeConfig.isProcessInstancesEventsEnabled()).thenReturn(false);
+        when(eventsRuntimeConfig.isUserTasksEventsEnabled()).thenReturn(false);
 
         Collection<DataEvent<?>> events = Arrays.asList(processInstanceEvent, userTaskEvent);
 
