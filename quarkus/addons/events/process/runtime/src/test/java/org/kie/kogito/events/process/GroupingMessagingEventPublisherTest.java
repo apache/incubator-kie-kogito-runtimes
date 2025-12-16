@@ -32,7 +32,6 @@ import org.kie.kogito.event.process.ProcessInstanceDataEvent;
 import org.kie.kogito.event.usertask.MultipleUserTaskInstanceDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceDataEvent;
 import org.kie.kogito.events.config.EventsRuntimeConfig;
-import org.kie.kogito.events.process.AbstractMessagingEventPublisher.AbstractMessageEmitter;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -104,12 +103,12 @@ public class GroupingMessagingEventPublisherTest {
         when(decoratorProviderInstance.isResolvable()).thenReturn(true);
         when(decoratorProviderInstance.get()).thenReturn(decoratorProvider);
 
-        when(eventsRuntimeConfig.isProcessInstancesPropagateError()).thenReturn(false);
-        when(eventsRuntimeConfig.isProcessDefinitionPropagateError()).thenReturn(false);
-        when(eventsRuntimeConfig.isUserTasksPropagateError()).thenReturn(false);
+        when(eventsRuntimeConfig.propagateProcessInstancesEvents()).thenReturn(false);
+        when(eventsRuntimeConfig.propagateProcessDefinitionEvents()).thenReturn(false);
+        when(eventsRuntimeConfig.propagateUserTasksEvents()).thenReturn(false);
 
-        when(eventsRuntimeConfig.isProcessInstancesEventsEnabled()).thenReturn(true);
-        when(eventsRuntimeConfig.isUserTasksEventsEnabled()).thenReturn(true);
+        when(eventsRuntimeConfig.processInstancesEventsEnabled()).thenReturn(true);
+        when(eventsRuntimeConfig.userTasksEventsEnabled()).thenReturn(true);
     }
 
     @Test
@@ -303,8 +302,8 @@ public class GroupingMessagingEventPublisherTest {
         when(userTaskEvent.getType()).thenReturn("UserTaskInstanceStateDataEvent");
 
         // Disable process and user task events in the config
-        when(eventsRuntimeConfig.isProcessInstancesEventsEnabled()).thenReturn(false);
-        when(eventsRuntimeConfig.isUserTasksEventsEnabled()).thenReturn(false);
+        when(eventsRuntimeConfig.processInstancesEventsEnabled()).thenReturn(false);
+        when(eventsRuntimeConfig.userTasksEventsEnabled()).thenReturn(false);
 
         Collection<DataEvent<?>> events = Arrays.asList(processInstanceEvent, userTaskEvent);
 

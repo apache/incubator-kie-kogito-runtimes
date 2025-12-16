@@ -16,31 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.persistence.quarkus.rocksdb;
+package org.kie.kogito.quarkus.config;
 
-import io.quarkus.runtime.annotations.ConfigPhase;
-import io.quarkus.runtime.annotations.ConfigRoot;
-import io.quarkus.runtime.annotations.StaticInitSafe;
-import io.smallrye.config.ConfigMapping;
-import io.smallrye.config.WithDefault;
-import io.smallrye.config.WithName;
+import io.smallrye.config.SmallRyeConfigBuilder;
+import io.smallrye.config.SmallRyeConfigBuilderCustomizer;
 
-@ConfigRoot(phase = ConfigPhase.RUN_TIME)
-@ConfigMapping(prefix = "kogito.persistence.rocksdb")
-@StaticInitSafe
-public interface RocksDbConfig {
+public class KogitoSmallryeConfigBuilderCustomizer implements SmallRyeConfigBuilderCustomizer {
 
-    /**
-     * Sets DB data dir
-     */
-    @WithName("data.dir")
-    @WithDefault("rockdstemp")
-    String dataDir();
-
-    /**
-     * Clean DB data when shutting down application
-     */
-    @WithName("clean")
-    @WithDefault("false")
-    boolean destroyDB();
+    @Override
+    public void configBuilder(SmallRyeConfigBuilder builder) {
+        // Align with quarkus to avoid the validation issue when we have runtime and build-time configs in the same
+        // namespace. https://github.com/quarkusio/quarkus/blob/265a4328f8195d9c2ef4fbf32f41eb23253479b7/core/runtime/src/main/java/io/quarkus/runtime/configuration/QuarkusConfigBuilderCustomizer.java#L113
+        builder.withMappingIgnore("kogito.**");
+    }
 }

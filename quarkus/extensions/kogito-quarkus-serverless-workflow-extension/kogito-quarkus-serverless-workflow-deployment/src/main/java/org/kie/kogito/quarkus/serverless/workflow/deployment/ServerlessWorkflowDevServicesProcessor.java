@@ -33,7 +33,7 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 import io.quarkus.deployment.builditem.SystemPropertyBuildItem;
-import io.quarkus.deployment.dev.devservices.GlobalDevServicesConfig;
+import io.quarkus.deployment.dev.devservices.DevServicesConfig;
 import io.quarkus.devui.spi.page.CardPageBuildItem;
 import io.quarkus.devui.spi.page.Page;
 
@@ -47,7 +47,7 @@ public class ServerlessWorkflowDevServicesProcessor extends AbstractDevServicesP
         }
     }
 
-    @BuildStep(onlyIf = { GlobalDevServicesConfig.Enabled.class, IsDevelopment.class })
+    @BuildStep(onlyIf = { DevServicesConfig.Enabled.class, IsDevelopment.class })
     CardPageBuildItem createDataIndexDevUILink(Capabilities capabilities,
             KogitoWorkflowBuildTimeConfig kogitoBuildTimeConfig,
             List<SystemPropertyBuildItem> systemPropertyBuildItems) {
@@ -67,6 +67,6 @@ public class ServerlessWorkflowDevServicesProcessor extends AbstractDevServicesP
     }
 
     private boolean areDevServicesEnabled(KogitoWorkflowBuildTimeConfig kogitoBuildTimeConfig) {
-        return kogitoBuildTimeConfig.devservices.enabled.orElse(true);
+        return kogitoBuildTimeConfig.devservicesConfig().enabled();
     }
 }

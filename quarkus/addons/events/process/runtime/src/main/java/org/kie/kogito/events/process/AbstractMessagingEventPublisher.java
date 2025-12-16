@@ -77,11 +77,11 @@ public abstract class AbstractMessagingEventPublisher implements EventPublisher 
     @PostConstruct
     public void init() {
         decoratorProvider = decoratorProviderInstance.isResolvable() ? decoratorProviderInstance.get() : null;
-        processDefinitionConsumer = eventsRuntimeConfig.isProcessInstancesPropagateError() ? new BlockingMessageEmitter(processDefinitionEventsEmitter, PROCESS_DEFINITIONS_TOPIC_NAME)
+        processDefinitionConsumer = eventsRuntimeConfig.propagateProcessDefinitionEvents() ? new BlockingMessageEmitter(processDefinitionEventsEmitter, PROCESS_DEFINITIONS_TOPIC_NAME)
                 : new ReactiveMessageEmitter(processDefinitionEventsEmitter, PROCESS_DEFINITIONS_TOPIC_NAME);
-        processInstanceConsumer = eventsRuntimeConfig.isProcessDefinitionPropagateError() ? new BlockingMessageEmitter(processInstancesEventsEmitter, PROCESS_INSTANCES_TOPIC_NAME)
+        processInstanceConsumer = eventsRuntimeConfig.propagateProcessInstancesEvents() ? new BlockingMessageEmitter(processInstancesEventsEmitter, PROCESS_INSTANCES_TOPIC_NAME)
                 : new ReactiveMessageEmitter(processInstancesEventsEmitter, PROCESS_INSTANCES_TOPIC_NAME);
-        userTaskConsumer = eventsRuntimeConfig.isUserTasksPropagateError() ? new BlockingMessageEmitter(userTasksEventsEmitter, USER_TASK_INSTANCES_TOPIC_NAME)
+        userTaskConsumer = eventsRuntimeConfig.propagateUserTasksEvents() ? new BlockingMessageEmitter(userTasksEventsEmitter, USER_TASK_INSTANCES_TOPIC_NAME)
                 : new ReactiveMessageEmitter(userTasksEventsEmitter, USER_TASK_INSTANCES_TOPIC_NAME);
     }
 
@@ -91,14 +91,14 @@ public abstract class AbstractMessagingEventPublisher implements EventPublisher 
         }
         switch (event.getType()) {
             case "ProcessDefinitionEvent":
-                return eventsRuntimeConfig.isProcessDefinitionEventsEnabled() ? Optional.of(processDefinitionConsumer) : Optional.empty();
+                return eventsRuntimeConfig.processDefinitionEventsEnabled() ? Optional.of(processDefinitionConsumer) : Optional.empty();
 
             case "ProcessInstanceErrorDataEvent":
             case "ProcessInstanceNodeDataEvent":
             case "ProcessInstanceSLADataEvent":
             case "ProcessInstanceStateDataEvent":
             case "ProcessInstanceVariableDataEvent":
-                return eventsRuntimeConfig.isProcessInstancesEventsEnabled() ? Optional.of(processInstanceConsumer) : Optional.empty();
+                return eventsRuntimeConfig.processInstancesEventsEnabled() ? Optional.of(processInstanceConsumer) : Optional.empty();
 
             case "UserTaskInstanceAssignmentDataEvent":
             case "UserTaskInstanceAttachmentDataEvent":
@@ -106,7 +106,7 @@ public abstract class AbstractMessagingEventPublisher implements EventPublisher 
             case "UserTaskInstanceDeadlineDataEvent":
             case "UserTaskInstanceStateDataEvent":
             case "UserTaskInstanceVariableDataEvent":
-                return eventsRuntimeConfig.isUserTasksEventsEnabled() ? Optional.of(userTaskConsumer) : Optional.empty();
+                return eventsRuntimeConfig.userTasksEventsEnabled() ? Optional.of(userTaskConsumer) : Optional.empty();
 
             default:
                 return Optional.empty();
