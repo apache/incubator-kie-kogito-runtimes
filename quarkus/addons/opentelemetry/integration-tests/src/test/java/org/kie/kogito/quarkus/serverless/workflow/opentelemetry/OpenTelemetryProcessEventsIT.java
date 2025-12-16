@@ -65,15 +65,15 @@ public class OpenTelemetryProcessEventsIT {
     }
 
     /**
-     * Test that process.instance.start event is added to the first node span.
+     * Test that process.instance.start event is added to the Start node span.
      * <p>
      * Validates:
-     * - process.instance.start event exists on first node span
+     * - process.instance.start event exists on Start infrastructure node span
      * - Event has required attributes: process.instance.id, trigger, reference.id
      * - Event is properly timestamped
      */
     @Test
-    void shouldAddProcessStartEventToFirstNodeSpan() {
+    void shouldAddProcessStartEventToStartNode() {
         executeWorkflowWithTxn("/greet", buildGreetBody("ProcessStartTest", "English"),
                 "process-start-test-txn-123", 201);
 
@@ -83,25 +83,25 @@ public class OpenTelemetryProcessEventsIT {
 
             assertThat(workflowSpans).hasSizeGreaterThanOrEqualTo(3);
 
-            SpanData firstSpan = findSpanByNodeName(workflowSpans, "ChooseOnLanguage");
-            EventData startEvent = findEventByName(firstSpan, "process.instance.start");
+            SpanData startSpan = findSpanByNodeName(workflowSpans, "Start");
+            EventData startEvent = findEventByName(startSpan, "process.instance.start");
 
-            String processInstanceId = firstSpan.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID);
+            String processInstanceId = startSpan.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID);
             validateProcessStartEvent(startEvent, processInstanceId, "http", "process-start-test-txn-123");
         });
     }
 
     /**
-     * Test that process.instance.complete event is added to the last node span.
+     * Test that process.instance.complete event is added to the End node span.
      * <p>
      * Validates:
-     * - process.instance.complete event exists on last node span
+     * - process.instance.complete event exists on End infrastructure node span
      * - Event has required attributes: process.instance.id, duration.ms, outcome
      * - Event is properly timestamped
      * - Duration is positive
      */
     @Test
-    void shouldAddProcessCompleteEventToLastNodeSpan() {
+    void shouldAddProcessCompleteEventToEndNode() {
         executeWorkflowWithTxn("/greet", buildGreetBody("ProcessCompleteTest", "Spanish"),
                 "process-complete-test-txn-456", 201);
 
@@ -111,10 +111,10 @@ public class OpenTelemetryProcessEventsIT {
 
             assertThat(workflowSpans).hasSizeGreaterThanOrEqualTo(3);
 
-            SpanData lastSpan = findSpanByNodeName(workflowSpans, "GreetPerson");
-            EventData completeEvent = findEventByName(lastSpan, "process.instance.complete");
+            SpanData endSpan = findSpanByNodeName(workflowSpans, "End");
+            EventData completeEvent = findEventByName(endSpan, "process.instance.complete");
 
-            String processInstanceId = lastSpan.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID);
+            String processInstanceId = endSpan.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID);
             validateProcessCompleteEvent(completeEvent, processInstanceId, "COMPLETED");
         });
     }

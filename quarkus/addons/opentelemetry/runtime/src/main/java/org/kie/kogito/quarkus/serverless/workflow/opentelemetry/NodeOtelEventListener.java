@@ -131,14 +131,18 @@ public class NodeOtelEventListener extends DefaultKogitoProcessEventListener {
 
         if (span != null) {
             spanManager.addProcessEvent(span, Events.NODE_STARTED, EventDescriptions.NODE_STARTED_PREFIX + nodeId);
-            processEventHandler.handleProcessStartEvent(span, processInstanceId);
+            if (isStartNode(nodeId)) {
+                processEventHandler.handleProcessStartEvent(span, processInstanceId);
+            }
         }
     }
 
+    private boolean isStartNode(String nodeId) {
+        return NodePatterns.START.equals(nodeId);
+    }
+
     private boolean isInternalNode(String nodeId) {
-        return nodeId != null && (nodeId.equals(NodePatterns.START) || nodeId.equals(NodePatterns.END) ||
-                nodeId.startsWith(NodePatterns.JOIN_PREFIX) || nodeId.startsWith(NodePatterns.EMBEDDED_PREFIX) ||
-                nodeId.equals(NodePatterns.SCRIPT) || nodeId.endsWith(NodePatterns.FUNCTION_SUFFIX));
+        return false;
     }
 
     @Override
@@ -170,7 +174,11 @@ public class NodeOtelEventListener extends DefaultKogitoProcessEventListener {
 
         if (config.events().enabled()) {
 
-            Span targetSpan = spanManager.getLastActiveSpan(processInstanceId);
+            Span targetSpan = spanManager.getActiveNodeSpan(processInstanceId, NodePatterns.END);
+
+            if (targetSpan == null) {
+                targetSpan = spanManager.getLastActiveSpan(processInstanceId);
+            }
 
             if (targetSpan == null) {
                 targetSpan = spanManager.getAnyActiveSpan(processInstanceId);
@@ -213,7 +221,9 @@ public class NodeOtelEventListener extends DefaultKogitoProcessEventListener {
             Span span = spanManager.getActiveNodeSpan(processInstanceId, nodeId);
             if (span != null) {
                 spanManager.addProcessEvent(span, Events.NODE_COMPLETED, EventDescriptions.NODE_COMPLETED_PREFIX + nodeId);
-                spanManager.completeNodeSpan(event);
+                LOGGER.debug("Added node.completed event for node: {}", nodeId);
+            } else {
+                LOGGER.debug("No active span found for node {} in process {} (may have been ended by process completion)", nodeId, processInstanceId);
             }
 
             if (processInstance.getState() == ProcessInstance.STATE_ERROR) {

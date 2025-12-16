@@ -31,11 +31,14 @@ import org.kie.kogito.quarkus.serverless.workflow.opentelemetry.config.SonataFlo
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Span;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,11 +81,7 @@ public class NodeOtelEventListenerTest {
 
     @Test
     public void shouldCreateNodeSpanOnBeforeNodeTriggered() {
-        // Set up config mocking for simplified structure
-        when(config.events()).thenReturn(eventConfig);
-        when(eventConfig.enabled()).thenReturn(true);
-
-        // Mock event data
+        // Mock event data - using regular business node (not "Start")
         when(nodeInstance.getNodeName()).thenReturn("node-1");
         when(processInstance.getId()).thenReturn("process-instance-1");
         when(processInstance.getProcessId()).thenReturn("test-process");
@@ -107,10 +106,11 @@ public class NodeOtelEventListenerTest {
     }
 
     @Test
-    public void shouldCompleteNodeSpanOnAfterNodeLeft() {
+    public void shouldAddNodeCompletedEventOnAfterNodeLeft() {
         // Mock event data
         when(nodeInstance.getNodeName()).thenReturn("node-1");
         when(processInstance.getId()).thenReturn("process-instance-1");
+        when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
 
         // Create mock event
         org.kie.api.event.process.ProcessNodeLeftEvent event =
@@ -124,10 +124,67 @@ public class NodeOtelEventListenerTest {
         // Execute
         eventListener.afterNodeLeft(event);
 
-        // Verify
+        // Verify - afterNodeLeft only adds an event, spans are ended during process completion
         verify(spanManager).getActiveNodeSpan("process-instance-1", "node-1");
         verify(spanManager).addProcessEvent(mockSpan, "node.completed", "Node execution completed: node-1");
-        verify(spanManager).completeNodeSpan(any());
+    }
+
+    @Test
+    public void shouldAddProcessStartEventOnlyForStartNode() {
+        // Set up config mocking
+        when(config.events()).thenReturn(eventConfig);
+        when(eventConfig.enabled()).thenReturn(true);
+
+        // Mock event data - using "Start" node
+        when(nodeInstance.getNodeName()).thenReturn("Start");
+        when(processInstance.getId()).thenReturn("process-instance-1");
+        when(processInstance.getProcessId()).thenReturn("test-process");
+        when(processInstance.getProcessVersion()).thenReturn("1.0.0");
+        when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
+
+        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any()))
+                .thenReturn(mockSpan);
+
+        // Create mock event
+        org.kie.api.event.process.ProcessNodeTriggeredEvent event =
+                org.mockito.Mockito.mock(org.kie.api.event.process.ProcessNodeTriggeredEvent.class);
+        when(event.getNodeInstance()).thenReturn(nodeInstance);
+        when(event.getProcessInstance()).thenReturn(processInstance);
+
+        // Execute
+        eventListener.beforeNodeTriggered(event);
+
+        // Verify - Start node should trigger process.instance.start event
+        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "Start", new HashMap<>());
+        verify(spanManager).addProcessEvent(mockSpan, "node.started", "Node execution started: Start");
+        verify(spanManager).addProcessEvent(eq(mockSpan), eq("process.instance.start"), any(Attributes.class));
+    }
+
+    @Test
+    public void shouldNotAddProcessStartEventForBusinessNodes() {
+        // Mock event data - using regular business node (not "Start")
+        when(nodeInstance.getNodeName()).thenReturn("ChooseOnLanguage");
+        when(processInstance.getId()).thenReturn("process-instance-1");
+        when(processInstance.getProcessId()).thenReturn("test-process");
+        when(processInstance.getProcessVersion()).thenReturn("1.0.0");
+        when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
+
+        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any()))
+                .thenReturn(mockSpan);
+
+        // Create mock event
+        org.kie.api.event.process.ProcessNodeTriggeredEvent event =
+                org.mockito.Mockito.mock(org.kie.api.event.process.ProcessNodeTriggeredEvent.class);
+        when(event.getNodeInstance()).thenReturn(nodeInstance);
+        when(event.getProcessInstance()).thenReturn(processInstance);
+
+        // Execute
+        eventListener.beforeNodeTriggered(event);
+
+        // Verify - Non-Start node should NOT trigger process.instance.start event
+        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "ChooseOnLanguage", new HashMap<>());
+        verify(spanManager).addProcessEvent(mockSpan, "node.started", "Node execution started: ChooseOnLanguage");
+        verify(spanManager, never()).addProcessEvent(eq(mockSpan), eq("process.instance.start"), any(Attributes.class));
     }
 
 }

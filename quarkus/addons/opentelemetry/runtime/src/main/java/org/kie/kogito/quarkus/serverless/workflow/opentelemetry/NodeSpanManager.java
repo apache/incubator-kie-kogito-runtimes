@@ -234,12 +234,17 @@ public class NodeSpanManager {
     }
 
     private void endRemainingSpansWithStatus(String processInstanceId, StatusCode statusCode, String description) {
+        String prefix = processInstanceId + ":";
         activeScopeManagers.entrySet().stream()
                 .filter(forProcessInstance(processInstanceId))
                 .forEach(entry -> {
                     ScopeManager manager = entry.getValue();
+                    String spanKey = manager.spanKey();
+                    String nodeId = spanKey.substring(prefix.length());
+
+                    addProcessEvent(manager.span, SonataFlowOtelAttributes.Events.NODE_COMPLETED, SonataFlowOtelAttributes.EventDescriptions.NODE_COMPLETED_PREFIX + nodeId);
                     manager.endWithStatus(statusCode, description);
-                    LOGGER.debug("Ended span for {} with status {}", manager.spanKey(), statusCode);
+                    LOGGER.debug("Ended span for {} with status {}", spanKey, statusCode);
                 });
 
         activeScopeManagers.entrySet().removeIf(forProcessInstance(processInstanceId));
