@@ -83,7 +83,8 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .body("metadata.ProcessVersion", equalTo("1.0"))
                 .body("metadata.ProcessId", equalTo(PROCESS_ID))
                 .body("metadata.ProcessInstanceId", equalTo(pid))
-                .body("metadata.ProcessInstanceState", equalTo(1));
+                .body("metadata.ProcessInstanceState", equalTo(1))
+                .body("metadata.Lifecycle", equalTo("kogito"));
 
         given()
                 .contentType(ContentType.JSON)
@@ -153,7 +154,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .body(new TransitionInfo("claim"))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
-                .statusCode(500);
+                .statusCode(403);
 
         given()
                 .contentType(ContentType.JSON)
@@ -241,7 +242,7 @@ public class UserTaskLifeCycleIT extends BaseUserTaskIT {
                 .queryParam("group", "it")
                 .get(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
-                .statusCode(500);
+                .statusCode(403);
 
         given()
                 .contentType(ContentType.JSON)

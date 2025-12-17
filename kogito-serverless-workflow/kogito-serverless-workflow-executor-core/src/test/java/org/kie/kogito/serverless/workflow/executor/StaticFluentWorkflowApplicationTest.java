@@ -140,14 +140,19 @@ public class StaticFluentWorkflowApplicationTest {
     @Test
     void testEventPubSub() throws InterruptedException, TimeoutException {
         final String eventType = "eventType";
-        Workflow subscriber =
-                workflow("testCallback").start(callback(call(expr("prefix", "{slogan:.slogan+\"er Beti\"}")), eventDef(eventType)).outputFilter("{slogan:.slogan+.name}")).end().build();
-        Workflow publisher = workflow("testPublishEvent").start(operation().action(trigger(eventDef("eventType"), jsonObject().put("name", ".name"), ".id"))).end().build();
+        Workflow subscriber = workflow("testCallback")
+                .start(callback(call(expr("prefix", "{slogan:.slogan+\"er Beti\"}")), eventDef(eventType)).outputFilter("{slogan:.slogan+.name}"))
+                .end()
+                .build();
+        Workflow publisher = workflow("testPublishEvent")
+                .start(operation().action(trigger(eventDef("eventType"), jsonObject().put("name", ".name"), ".id")))
+                .end()
+                .build();
+
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             String id = application.execute(subscriber, jsonObject().put("slogan", "Viva ")).getId();
             application.execute(publisher, jsonObject().put("name", " manque pierda").put("id", id));
-            assertThat(application.waitForFinish(id, Duration.ofSeconds(3)).orElseThrow().getWorkflowdata())
-                    .isEqualTo(jsonObject().put("slogan", "Viva er Beti manque pierda"));
+            assertThat(application.waitForFinish(id, Duration.ofSeconds(3)).orElseThrow().getWorkflowdata()).isEqualTo(jsonObject().put("slogan", "Viva er Beti manque pierda"));
         }
     }
 
@@ -182,6 +187,25 @@ public class StaticFluentWorkflowApplicationTest {
             JsonNode result = application.execute(process, Collections.singletonMap("input", 4)).getWorkflowdata();
             assertThat(result.get("double").asInt()).isEqualTo(8);
             assertThat(result.get("half").asInt()).isEqualTo(2);
+        }
+    }
+
+    @Test
+    void testParallelIsolation() {
+        final String INC = "inc";
+
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow workflow = workflow("ParallelTest").function(expr(INC, ".input=.input+1"))
+                    .start(parallel()
+                            .atLeast(2)
+                            .newBranch().action(call(INC)).endBranch()
+                            .newBranch().action(call(INC)).endBranch()
+                            .newBranch().action(call(INC)).endBranch())
+                    .end().build();
+
+            Process<JsonNodeModel> process = application.process(workflow);
+            JsonNode result = application.execute(process, Collections.singletonMap("input", 4)).getWorkflowdata();
+            assertThat(result.get("input").asInt()).isEqualTo(5);
         }
     }
 

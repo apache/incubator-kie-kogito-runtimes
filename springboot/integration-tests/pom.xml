@@ -33,6 +33,7 @@
   <properties>
     <sonar.exclusions>**/*</sonar.exclusions>
     <java.module.name>org.kie.kogito.springboot.starter.tests</java.module.name>
+    <maven.compiler.release>17</maven.compiler.release>
   </properties>
 
   <modules>
@@ -42,6 +43,7 @@
     <module>integration-tests-springboot-processes-it</module>
     <module>integration-tests-springboot-processes-persistence-it</module>
     <module>integration-tests-springboot-usertasks-it</module>
+    <module>integration-tests-springboot-wshumantasks-it</module>
   </modules>
 
 

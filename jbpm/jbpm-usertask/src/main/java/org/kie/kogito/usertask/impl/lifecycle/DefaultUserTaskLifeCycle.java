@@ -93,6 +93,21 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     @Override
+    public String startTransition() {
+        return ACTIVATE;
+    }
+
+    @Override
+    public String reassignTransition() {
+        return REASSIGN;
+    }
+
+    @Override
+    public String abortTransition() {
+        return SKIP;
+    }
+
+    @Override
     public Optional<UserTaskTransitionToken> transition(UserTaskInstance userTaskInstance, UserTaskTransitionToken userTaskTransitionToken, IdentityProvider identityProvider) {
         checkPermission(userTaskInstance, identityProvider);
         UserTaskTransition transition = transitions.stream()
@@ -226,6 +241,10 @@ public class DefaultUserTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     private void checkPermission(UserTaskInstance userTaskInstance, String user, Collection<String> roles) {
+
+        if (user == null) {
+            throw new UserTaskInstanceNotAuthorizedException("No user defined to perform an operation on user task " + userTaskInstance.getId());
+        }
 
         if (WORKFLOW_ENGINE_USER.equals(user)) {
             return;

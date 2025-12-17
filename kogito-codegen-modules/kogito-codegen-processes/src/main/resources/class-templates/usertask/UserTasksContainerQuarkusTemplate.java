@@ -60,7 +60,7 @@ public class UserTasks implements org.kie.kogito.usertask.UserTasks {
         userTaskInstances.setReconnectUserTaskInstance(this::connect);
         for (UserTask userTask : userTasks) {
             mappedUserTask.put(userTask.id(), userTask);
-            LOG.info("Registering user task {} with task name {}", userTask.id(), userTask.getTaskName());
+            LOG.debug("Registering user task {} with task name {}", userTask.id(), userTask.getTaskName());
         }
         JobsService jobsService = application.config().get(UserTaskConfig.class).jobsService();
         UnitOfWorkManager unitOfWorkManager = application.config().get(UserTaskConfig.class).unitOfWorkManager();
@@ -102,7 +102,7 @@ public class UserTasks implements org.kie.kogito.usertask.UserTasks {
         impl.addEventListener(new UnitOfWorkUserTaskEventListener(application.unitOfWorkManager()));
         instance.setUserTask(application.get(UserTasks.class).userTaskById(instance.getUserTaskId()));
         instance.setUserTaskEventSupport(impl);
-        instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycle());
+        instance.setUserTaskLifeCycle(userTaskConfig.userTaskLifeCycles().getUserTaskLifeCycleById((String) instance.getMetadata().get("Lifecycle")));
         instance.setInstances(application.config().get(UserTaskConfig.class).userTaskInstances());
         instance.setJobsService(userTaskConfig.jobsService());
         return instance;

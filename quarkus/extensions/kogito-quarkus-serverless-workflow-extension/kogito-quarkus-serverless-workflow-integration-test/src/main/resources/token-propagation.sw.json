@@ -136,12 +136,35 @@
       "actions": [
         {
           "name": "executeQuery5Action",
+          "sleep": {
+            "before": "PT5S"
+          },
           "functionRef": {
             "refName": "executeQuery5",
             "arguments": {
               "processInstanceId": "$WORKFLOW.instanceId",
               "query": ".query"
             }
+          }
+        }
+      ],
+      "transition": "ExecuteSubflow",
+      "onErrors": [
+        {
+          "errorRef": "execution_error",
+          "transition": "EndWithError"
+        }
+      ]
+    },
+    {
+      "name": "ExecuteSubflow",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "executeSubflow",
+          "subFlowRef": "tokenPropagationSubflow",
+          "actionDataFilter": {
+            "useResults": false
           }
         }
       ],

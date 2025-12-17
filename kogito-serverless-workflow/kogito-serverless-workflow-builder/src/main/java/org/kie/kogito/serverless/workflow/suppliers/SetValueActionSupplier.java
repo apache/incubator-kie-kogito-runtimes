@@ -22,7 +22,6 @@ import org.jbpm.compiler.canonical.ExpressionSupplier;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.compiler.canonical.descriptors.ExpressionUtils;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
-import org.kie.kogito.serverless.workflow.actions.MergeAction;
 import org.kie.kogito.serverless.workflow.actions.SetValueAction;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,7 +33,7 @@ public class SetValueActionSupplier extends SetValueAction implements Expression
 
     public SetValueActionSupplier(String varName, JsonNode value) {
         super(varName, value);
-        this.expression = ExpressionUtils.getObjectCreationExpr(MergeAction.class, varName, value);
+        this.expression = ExpressionUtils.getObjectCreationExpr(SetValueAction.class, varName, value);
     }
 
     @Override
