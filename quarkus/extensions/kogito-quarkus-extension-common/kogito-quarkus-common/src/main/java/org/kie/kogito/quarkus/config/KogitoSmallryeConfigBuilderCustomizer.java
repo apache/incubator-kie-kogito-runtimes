@@ -21,15 +21,22 @@ package org.kie.kogito.quarkus.config;
 import io.smallrye.config.SmallRyeConfigBuilder;
 import io.smallrye.config.SmallRyeConfigBuilderCustomizer;
 
+/**
+ * {@link SmallRyeConfigBuilderCustomizer} to ensure that Smallrye config validation passes when there are kogito-related properties not mapped to a config root.
+ */
 public class KogitoSmallryeConfigBuilderCustomizer implements SmallRyeConfigBuilderCustomizer {
 
     @Override
     public void configBuilder(SmallRyeConfigBuilder builder) {
         // Align with quarkus to avoid the validation issue when we have runtime and build-time configs in the same
         // namespace. https://github.com/quarkusio/quarkus/blob/265a4328f8195d9c2ef4fbf32f41eb23253479b7/core/runtime/src/main/java/io/quarkus/runtime/configuration/QuarkusConfigBuilderCustomizer.java#L113
-        builder.withMappingIgnore("kogito.**")
+        configureSmallRyeConfigBuilder(builder);
+    }
+
+    static SmallRyeConfigBuilder configureSmallRyeConfigBuilder(SmallRyeConfigBuilder builder) {
+        return builder.withMappingIgnore("kogito.**")
                 .withMappingIgnore("kie.**")
-                .withMappingIgnore("org.kie.**")
-                .withMappingIgnore("org.jbpm.**");
+                .withMappingIgnore("jbpm.**")
+                .withMappingIgnore("org.kie.**");
     }
 }

@@ -16,8 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.kie.kogito.quarkus.config;
 
-package org.kie.kogito.quarkus.workflows;
+import io.quarkus.runtime.configuration.ConfigBuilder;
+import io.smallrye.config.SmallRyeConfigBuilder;
 
-public record TokenExpectation(String url, String token, int expectedCalls) {
+import static org.kie.kogito.quarkus.config.KogitoSmallryeConfigBuilderCustomizer.configureSmallRyeConfigBuilder;
+
+/**
+ * {@link ConfigBuilder} to ensure that Smallrye config validation passes when there are kogito-related properties not mapped to a config root.
+ */
+public class KogitoSmallryeConfigBuilder implements ConfigBuilder {
+
+    @Override
+    public SmallRyeConfigBuilder configBuilder(SmallRyeConfigBuilder builder) {
+        return configureSmallRyeConfigBuilder(builder);
+    }
 }
