@@ -25,13 +25,13 @@ import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 
 @ConfigRoot(phase = ConfigPhase.BUILD_TIME)
-@ConfigMapping(prefix = "kogito")
+@ConfigMapping(prefix = "quarkus.kogito")
 public interface KogitoWorkflowBuildTimeConfig {
 
     /**
      * Configuration for DevServices. DevServices allows Quarkus to automatically start Data Index in dev and test mode.
      */
-    @WithName("devServices")
+    @WithName("devservices")
     KogitoDevServicesBuildTimeConfig devServicesConfig();
 
     /**

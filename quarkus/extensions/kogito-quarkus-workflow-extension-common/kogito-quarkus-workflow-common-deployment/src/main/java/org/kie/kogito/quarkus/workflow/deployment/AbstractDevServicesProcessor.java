@@ -90,6 +90,11 @@ public abstract class AbstractDevServicesProcessor {
             LoggingSetupBuildItem loggingSetup,
             Capabilities capabilities) {
 
+        if (!buildTimeConfig.devServicesConfig().enabled()) {
+            LOGGER.info("Kogito DevServices are disabled. Skipping Ephemeral DataIndex container initialization.");
+            return;
+        }
+
         DataIndexDevServiceConfig configuration = getConfiguration(buildTimeConfig);
 
         if (capabilities.isMissing(DATA_INDEX_CAPABILITY) && configuration.devServicesEnabled && isDockerWorking.getAsBoolean()) {
