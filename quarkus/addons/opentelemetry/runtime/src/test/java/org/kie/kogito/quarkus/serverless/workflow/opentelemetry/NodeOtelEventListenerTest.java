@@ -19,7 +19,10 @@
 package org.kie.kogito.quarkus.serverless.workflow.opentelemetry;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.instance.NodeInstance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,9 +61,6 @@ public class NodeOtelEventListenerTest {
     private Span mockSpan;
 
     @Mock
-    private KogitoNodeInstance nodeInstance;
-
-    @Mock
     private KogitoProcessInstance processInstance;
 
     private NodeOtelEventListener eventListener;
@@ -68,10 +68,16 @@ public class NodeOtelEventListenerTest {
     @Mock
     private HeaderContextExtractor headerExtractor;
 
+    @Mock
+    private Node node;
+
+    private NodeInstance jbpmNodeInstance;
+
     @BeforeEach
     public void setUp() {
-        // Only set up basic config mocking - specific test behaviors will be set up in individual tests
         eventListener = new NodeOtelEventListener(spanManager, config, headerExtractor);
+        jbpmNodeInstance = org.mockito.Mockito.mock(NodeInstance.class,
+                org.mockito.Mockito.withSettings().extraInterfaces(KogitoNodeInstance.class));
     }
 
     @Test
@@ -80,111 +86,181 @@ public class NodeOtelEventListenerTest {
     }
 
     @Test
-    public void shouldCreateNodeSpanOnBeforeNodeTriggered() {
-        // Mock event data - using regular business node (not "Start")
-        when(nodeInstance.getNodeName()).thenReturn("node-1");
+    public void shouldCreateStateSpanOnBeforeNodeTriggered() {
+        when(((KogitoNodeInstance) jbpmNodeInstance).getNodeName()).thenReturn("node-1");
         when(processInstance.getId()).thenReturn("process-instance-1");
         when(processInstance.getProcessId()).thenReturn("test-process");
         when(processInstance.getProcessVersion()).thenReturn("1.0.0");
         when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
 
-        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
+        when(jbpmNodeInstance.getNode()).thenReturn(node);
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("state", "TestState");
+        when(node.getMetaData()).thenReturn(metadata);
+
+        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
                 .thenReturn(mockSpan);
 
-        // Create mock event
         org.kie.api.event.process.ProcessNodeTriggeredEvent event =
                 org.mockito.Mockito.mock(org.kie.api.event.process.ProcessNodeTriggeredEvent.class);
-        when(event.getNodeInstance()).thenReturn(nodeInstance);
+        when(event.getNodeInstance()).thenReturn((KogitoNodeInstance) jbpmNodeInstance);
         when(event.getProcessInstance()).thenReturn(processInstance);
 
-        // Execute
         eventListener.beforeNodeTriggered(event);
 
-        // Verify
-        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "node-1", new HashMap<>(), false);
-        verify(spanManager).addProcessEvent(mockSpan, "node.started", "Node execution started: node-1");
+        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "TestState", new HashMap<>(), false);
+        verify(spanManager).addProcessEvent(mockSpan, "state.started", "State execution started: TestState");
     }
 
     @Test
-    public void shouldAddNodeCompletedEventOnAfterNodeLeft() {
-        // Mock event data
-        when(nodeInstance.getNodeName()).thenReturn("node-1");
+    public void shouldSkipSpanCreationForSameState() {
+        when(((KogitoNodeInstance) jbpmNodeInstance).getNodeName()).thenReturn("node-1");
         when(processInstance.getId()).thenReturn("process-instance-1");
+        when(processInstance.getProcessId()).thenReturn("test-process");
+        when(processInstance.getProcessVersion()).thenReturn("1.0.0");
         when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
 
-        // Create mock event
-        org.kie.api.event.process.ProcessNodeLeftEvent event =
-                org.mockito.Mockito.mock(org.kie.api.event.process.ProcessNodeLeftEvent.class);
-        when(event.getNodeInstance()).thenReturn(nodeInstance);
+        when(jbpmNodeInstance.getNode()).thenReturn(node);
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("state", "TestState");
+        when(node.getMetaData()).thenReturn(metadata);
+
+        OtelContextHolder.setActiveState("process-instance-1", "TestState");
+
+        org.kie.api.event.process.ProcessNodeTriggeredEvent event =
+                org.mockito.Mockito.mock(org.kie.api.event.process.ProcessNodeTriggeredEvent.class);
+        when(event.getNodeInstance()).thenReturn((KogitoNodeInstance) jbpmNodeInstance);
         when(event.getProcessInstance()).thenReturn(processInstance);
 
-        // Mock active span
-        when(spanManager.getActiveNodeSpan("process-instance-1", "node-1")).thenReturn(mockSpan);
+        eventListener.beforeNodeTriggered(event);
 
-        // Execute
-        eventListener.afterNodeLeft(event);
+        verify(spanManager, never()).createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class));
+        verify(spanManager, never()).addProcessEvent(any(Span.class), eq("state.started"), anyString());
 
-        // Verify - afterNodeLeft only adds an event, spans are ended during process completion
-        verify(spanManager).getActiveNodeSpan("process-instance-1", "node-1");
-        verify(spanManager).addProcessEvent(mockSpan, "node.completed", "Node execution completed: node-1");
+        OtelContextHolder.clearActiveState("process-instance-1");
     }
 
     @Test
-    public void shouldAddProcessStartEventOnlyForStartNode() {
-        // Set up config mocking
+    public void shouldEndPreviousStateSpanOnStateTransition() {
+        when(((KogitoNodeInstance) jbpmNodeInstance).getNodeName()).thenReturn("node-in-state-b");
+        when(processInstance.getId()).thenReturn("process-instance-1");
+        when(processInstance.getProcessId()).thenReturn("test-process");
+        when(processInstance.getProcessVersion()).thenReturn("1.0.0");
+        when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
+
+        when(jbpmNodeInstance.getNode()).thenReturn(node);
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("state", "StateB");
+        when(node.getMetaData()).thenReturn(metadata);
+
+        OtelContextHolder.setActiveState("process-instance-1", "StateA");
+
+        Span stateASpan = org.mockito.Mockito.mock(Span.class);
+        when(spanManager.getActiveStateSpan("process-instance-1", "StateA")).thenReturn(stateASpan);
+
+        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
+                .thenReturn(mockSpan);
+
+        org.kie.api.event.process.ProcessNodeTriggeredEvent event =
+                org.mockito.Mockito.mock(org.kie.api.event.process.ProcessNodeTriggeredEvent.class);
+        when(event.getNodeInstance()).thenReturn((KogitoNodeInstance) jbpmNodeInstance);
+        when(event.getProcessInstance()).thenReturn(processInstance);
+
+        eventListener.beforeNodeTriggered(event);
+
+        verify(spanManager).getActiveStateSpan("process-instance-1", "StateA");
+        verify(spanManager).addProcessEvent(stateASpan, "state.completed", "State execution completed: StateA");
+        verify(spanManager).endStateSpan("process-instance-1", "StateA");
+
+        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "StateB", new HashMap<>(), false);
+        verify(spanManager).addProcessEvent(mockSpan, "state.started", "State execution started: StateB");
+
+        OtelContextHolder.clearActiveState("process-instance-1");
+    }
+
+    @Test
+    public void shouldHandleNullStateMetadataGracefully() {
+        when(((KogitoNodeInstance) jbpmNodeInstance).getNodeName()).thenReturn("node-without-state");
+        when(processInstance.getId()).thenReturn("process-instance-1");
+
+        when(jbpmNodeInstance.getNode()).thenReturn(node);
+        Map<String, Object> metadata = new HashMap<>();
+        when(node.getMetaData()).thenReturn(metadata);
+
+        org.kie.api.event.process.ProcessNodeTriggeredEvent event =
+                org.mockito.Mockito.mock(org.kie.api.event.process.ProcessNodeTriggeredEvent.class);
+        when(event.getNodeInstance()).thenReturn((KogitoNodeInstance) jbpmNodeInstance);
+        when(event.getProcessInstance()).thenReturn(processInstance);
+
+        eventListener.beforeNodeTriggered(event);
+
+        verify(spanManager, never()).createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class));
+        verify(spanManager, never()).addProcessEvent(any(Span.class), anyString(), anyString());
+    }
+
+    @Test
+    public void shouldAddProcessStartEventOnlyForFirstState() {
         when(config.events()).thenReturn(eventConfig);
         when(eventConfig.enabled()).thenReturn(true);
 
-        // Mock event data - using "Start" node
-        when(nodeInstance.getNodeName()).thenReturn("Start");
+        when(((KogitoNodeInstance) jbpmNodeInstance).getNodeName()).thenReturn("Start");
         when(processInstance.getId()).thenReturn("process-instance-1");
         when(processInstance.getProcessId()).thenReturn("test-process");
         when(processInstance.getProcessVersion()).thenReturn("1.0.0");
         when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
 
-        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
+        when(jbpmNodeInstance.getNode()).thenReturn(node);
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("state", "FirstState");
+        when(node.getMetaData()).thenReturn(metadata);
+
+        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
                 .thenReturn(mockSpan);
 
-        // Create mock event
         org.kie.api.event.process.ProcessNodeTriggeredEvent event =
                 org.mockito.Mockito.mock(org.kie.api.event.process.ProcessNodeTriggeredEvent.class);
-        when(event.getNodeInstance()).thenReturn(nodeInstance);
+        when(event.getNodeInstance()).thenReturn((KogitoNodeInstance) jbpmNodeInstance);
         when(event.getProcessInstance()).thenReturn(processInstance);
 
-        // Execute
         eventListener.beforeNodeTriggered(event);
 
-        // Verify - Start node should trigger process.instance.start event
-        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "Start", new HashMap<>(), false);
-        verify(spanManager).addProcessEvent(mockSpan, "node.started", "Node execution started: Start");
+        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "FirstState", new HashMap<>(), false);
+        verify(spanManager).addProcessEvent(mockSpan, "state.started", "State execution started: FirstState");
         verify(spanManager).addProcessEvent(eq(mockSpan), eq("process.instance.start"), any(Attributes.class));
     }
 
     @Test
-    public void shouldNotAddProcessStartEventForBusinessNodes() {
-        // Mock event data - using regular business node (not "Start")
-        when(nodeInstance.getNodeName()).thenReturn("ChooseOnLanguage");
+    public void shouldNotAddProcessStartEventForSubsequentStates() {
+        when(((KogitoNodeInstance) jbpmNodeInstance).getNodeName()).thenReturn("ChooseOnLanguage");
         when(processInstance.getId()).thenReturn("process-instance-1");
         when(processInstance.getProcessId()).thenReturn("test-process");
         when(processInstance.getProcessVersion()).thenReturn("1.0.0");
         when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
 
-        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
+        when(jbpmNodeInstance.getNode()).thenReturn(node);
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("state", "SecondState");
+        when(node.getMetaData()).thenReturn(metadata);
+
+        OtelContextHolder.setActiveState("process-instance-1", "FirstState");
+        Span firstStateSpan = org.mockito.Mockito.mock(Span.class);
+        when(spanManager.getActiveStateSpan("process-instance-1", "FirstState")).thenReturn(firstStateSpan);
+
+        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
                 .thenReturn(mockSpan);
 
-        // Create mock event
         org.kie.api.event.process.ProcessNodeTriggeredEvent event =
                 org.mockito.Mockito.mock(org.kie.api.event.process.ProcessNodeTriggeredEvent.class);
-        when(event.getNodeInstance()).thenReturn(nodeInstance);
+        when(event.getNodeInstance()).thenReturn((KogitoNodeInstance) jbpmNodeInstance);
         when(event.getProcessInstance()).thenReturn(processInstance);
 
-        // Execute
         eventListener.beforeNodeTriggered(event);
 
-        // Verify - Non-Start node should NOT trigger process.instance.start event
-        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "ChooseOnLanguage", new HashMap<>(), false);
-        verify(spanManager).addProcessEvent(mockSpan, "node.started", "Node execution started: ChooseOnLanguage");
+        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "SecondState", new HashMap<>(), false);
+        verify(spanManager).addProcessEvent(mockSpan, "state.started", "State execution started: SecondState");
         verify(spanManager, never()).addProcessEvent(eq(mockSpan), eq("process.instance.start"), any(Attributes.class));
+
+        OtelContextHolder.clearActiveState("process-instance-1");
     }
 
 }

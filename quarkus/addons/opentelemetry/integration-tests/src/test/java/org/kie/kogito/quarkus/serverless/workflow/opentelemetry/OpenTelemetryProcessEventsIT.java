@@ -65,15 +65,15 @@ public class OpenTelemetryProcessEventsIT {
     }
 
     /**
-     * Test that process.instance.start event is added to the Start node span.
+     * Test that process.instance.start event is added to the first state span.
      * <p>
      * Validates:
-     * - process.instance.start event exists on Start infrastructure node span
+     * - process.instance.start event exists on first workflow state span
      * - Event has required attributes: process.instance.id, trigger, reference.id
      * - Event is properly timestamped
      */
     @Test
-    void shouldAddProcessStartEventToStartNode() {
+    void shouldAddProcessStartEventToFirstState() {
         executeWorkflowWithTxn("/greet", buildGreetBody("ProcessStartTest", "English"),
                 "process-start-test-txn-123", 201);
 
@@ -83,25 +83,25 @@ public class OpenTelemetryProcessEventsIT {
 
             assertThat(workflowSpans).hasSizeGreaterThanOrEqualTo(3);
 
-            SpanData startSpan = findSpanByNodeName(workflowSpans, "Start");
-            EventData startEvent = findEventByName(startSpan, "process.instance.start");
+            SpanData firstStateSpan = findSpanByStateName(workflowSpans, "ChooseOnLanguage");
+            EventData startEvent = findEventByName(firstStateSpan, "process.instance.start");
 
-            String processInstanceId = startSpan.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID);
+            String processInstanceId = firstStateSpan.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID);
             validateProcessStartEvent(startEvent, processInstanceId, "http", "process-start-test-txn-123");
         });
     }
 
     /**
-     * Test that process.instance.complete event is added to the End node span.
+     * Test that process.instance.complete event is added to the final state span.
      * <p>
      * Validates:
-     * - process.instance.complete event exists on End infrastructure node span
+     * - process.instance.complete event exists on final workflow state span
      * - Event has required attributes: process.instance.id, duration.ms, outcome
      * - Event is properly timestamped
      * - Duration is positive
      */
     @Test
-    void shouldAddProcessCompleteEventToEndNode() {
+    void shouldAddProcessCompleteEventToFinalState() {
         executeWorkflowWithTxn("/greet", buildGreetBody("ProcessCompleteTest", "Spanish"),
                 "process-complete-test-txn-456", 201);
 
@@ -111,10 +111,10 @@ public class OpenTelemetryProcessEventsIT {
 
             assertThat(workflowSpans).hasSizeGreaterThanOrEqualTo(3);
 
-            SpanData endSpan = findSpanByNodeName(workflowSpans, "End");
-            EventData completeEvent = findEventByName(endSpan, "process.instance.complete");
+            SpanData finalStateSpan = findSpanByStateName(workflowSpans, "GreetPerson");
+            EventData completeEvent = findEventByName(finalStateSpan, "process.instance.complete");
 
-            String processInstanceId = endSpan.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID);
+            String processInstanceId = finalStateSpan.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID);
             validateProcessCompleteEvent(completeEvent, processInstanceId, "COMPLETED");
         });
     }
@@ -162,21 +162,21 @@ public class OpenTelemetryProcessEventsIT {
     // Private helper methods moved from OpenTelemetryTestUtils for ProcessEventsIT-specific validation
 
     /**
-     * Finds a span by node name.
+     * Finds a span by state name.
      *
      * @param spans list of spans to search
-     * @param nodeName the node name to find
-     * @return the span with the specified node name
+     * @param stateName the state name to find
+     * @return the span with the specified state name
      * @throws AssertionError if span is not found
      */
-    private static SpanData findSpanByNodeName(List<SpanData> spans, String nodeName) {
+    private static SpanData findSpanByStateName(List<SpanData> spans, String stateName) {
         return spans.stream()
                 .filter(span -> {
-                    String spanNodeName = span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE);
-                    return nodeName.equals(spanNodeName);
+                    String spanStateName = span.getAttributes().get(SONATAFLOW_WORKFLOW_STATE);
+                    return stateName.equals(spanStateName);
                 })
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("Span with node name '" + nodeName + "' not found"));
+                .orElseThrow(() -> new AssertionError("Span with state name '" + stateName + "' not found"));
     }
 
     /**

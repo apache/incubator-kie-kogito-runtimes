@@ -71,13 +71,13 @@ public class OpenTelemetryWorkflowIT {
      * <p>
      * This test validates:
      * - Real workflow execution through REST endpoint
-     * - Node span creation for each workflow node
+     * - State span creation for each workflow state
      * - Transaction ID propagation from X-TRANSACTION-ID header
      * - Tracker attribute propagation from X-TRACKER-* headers
      * - All mandatory span attributes according to design document
      */
     @Test
-    void shouldCreateNodeSpansWithTransactionIdFromHeader() {
+    void shouldCreateStateSpansWithTransactionIdFromHeader() {
         executeWorkflowWithTrackers("/greet", buildGreetBody("John", "English"),
                 "workflow-test-transaction-123", "customer-456", "session-789", 201);
 
@@ -91,12 +91,12 @@ public class OpenTelemetryWorkflowIT {
             validateSpanNaming(workflowSpans, "sonataflow.process.greet.execute");
 
             workflowSpans.forEach(span -> {
-                validateMandatorySpanAttributes(span, "greet");
+                validateMandatoryStateSpanAttributes(span, "greet");
                 validateTransactionAndTrackerAttributes(span, "workflow-test-transaction-123", "customer-456", "session-789");
             });
 
-            Set<String> nodeIds = extractNodeNames(workflowSpans);
-            assertThat(nodeIds).hasSizeGreaterThanOrEqualTo(3);
+            Set<String> stateNames = extractStateNames(workflowSpans);
+            assertThat(stateNames).hasSizeGreaterThanOrEqualTo(3);
         });
     }
 
@@ -109,32 +109,36 @@ public class OpenTelemetryWorkflowIT {
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
             List<SpanData> spans = OtlpMockTestResource.getSpans();
-            assertThat(spans).hasSizeGreaterThanOrEqualTo(3);
+            List<SpanData> workflowSpans = filterWorkflowSpans(spans);
+            assertThat(workflowSpans).hasSizeGreaterThanOrEqualTo(3);
 
-            spans.forEach(span -> {
+            workflowSpans.forEach(span -> {
                 String processInstanceId = span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID);
                 String transactionId = span.getAttributes().get(SONATAFLOW_TRANSACTION_ID);
+                String stateName = span.getAttributes().get(SONATAFLOW_WORKFLOW_STATE);
 
                 assertThat(transactionId).isEqualTo(processInstanceId);
+                assertThat(stateName).isNotNull();
             });
         });
     }
 
     /**
-     * Test node span creation for different workflow paths.
-     * This validates that different node paths create appropriate spans.
+     * Test state span creation for different workflow paths.
+     * This validates that different workflow state paths create appropriate spans.
      */
     @Test
-    void shouldCreateDifferentNodeSpansForDifferentWorkflowPaths() {
+    void shouldCreateDifferentStateSpansForDifferentWorkflowPaths() {
         executeWorkflowWithTxn("/greet", buildGreetBody("Carlos", "Spanish"),
                 "workflow-spanish-workflow-txn", 201);
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
             List<SpanData> spans = OtlpMockTestResource.getSpans();
-            assertThat(spans).hasSizeGreaterThanOrEqualTo(3);
+            List<SpanData> workflowSpans = filterWorkflowSpans(spans);
+            assertThat(workflowSpans).hasSizeGreaterThanOrEqualTo(3);
 
-            Set<String> nodeIds = extractNodeNames(spans);
-            assertThat(nodeIds).contains("ChooseOnLanguage", "GreetInSpanish", "GreetPerson");
+            Set<String> stateNames = extractStateNames(workflowSpans);
+            assertThat(stateNames).contains("ChooseOnLanguage", "GreetInSpanish", "GreetPerson");
         });
     }
 
@@ -189,11 +193,12 @@ public class OpenTelemetryWorkflowIT {
 
     /**
      * Test to verify that process completion events are handled exactly once without race conditions.
-     * This test specifically targets the issue where multiple finishing nodes trigger duplicate
+     * This test specifically targets the issue where multiple finishing states trigger duplicate
      * completion context warnings: "Process in terminal state but no completion context found".
      *
      * The test ensures:
      * - Process completion events are added exactly once per process
+     * - State started and completed events exist
      * - No duplicate completion context warnings are generated
      * - Multiple concurrent workflows don't interfere with each other's completion handling
      */
@@ -239,6 +244,24 @@ public class OpenTelemetryWorkflowIT {
                 assertThat(completeEvent.getAttributes().get(DURATION_MS))
                         .isNotNull()
                         .isGreaterThan(0L);
+
+                List<EventData> stateStartedEvents = workflowSpansForTxn.stream()
+                        .flatMap(span -> span.getEvents().stream())
+                        .filter(event -> "state.started".equals(event.getName()))
+                        .collect(Collectors.toList());
+
+                assertThat(stateStartedEvents)
+                        .withFailMessage("State started events should exist for transaction %s", txnId)
+                        .isNotEmpty();
+
+                List<EventData> stateCompletedEvents = workflowSpansForTxn.stream()
+                        .flatMap(span -> span.getEvents().stream())
+                        .filter(event -> "state.completed".equals(event.getName()))
+                        .collect(Collectors.toList());
+
+                assertThat(stateCompletedEvents)
+                        .withFailMessage("State completed events should exist for transaction %s", txnId)
+                        .isNotEmpty();
             });
 
             Map<String, List<EventData>> startEventsByTxn = workflowSpans.stream()
@@ -262,17 +285,17 @@ public class OpenTelemetryWorkflowIT {
     }
 
     /**
-     * Test to verify that regular workflow nodes have a flat span hierarchy.
-     * All workflow node spans should be siblings under the HTTP request span,
+     * Test to verify that regular workflow state spans have a flat span hierarchy.
+     * All workflow state spans should be siblings under the HTTP request span,
      * rather than forming a parent-child hierarchy.
      *
      * This validates:
-     * - All workflow node spans share the same parent span ID
-     * - The parent span is the HTTP request span (not another workflow node)
-     * - Span hierarchy is flat for regular (non-subflow) nodes
+     * - All workflow state spans share the same parent span ID
+     * - The parent span is the HTTP request span (not another workflow state)
+     * - Span hierarchy is flat for regular (non-subflow) states
      */
     @Test
-    void shouldCreateFlatSpanHierarchyForRegularNodes() {
+    void shouldCreateFlatSpanHierarchyForStateSpans() {
         executeWorkflowWithTxn("/greet", buildGreetBody("HierarchyTest", "English"),
                 "workflow-flat-hierarchy-test-txn", 201);
 
@@ -298,9 +321,9 @@ public class OpenTelemetryWorkflowIT {
 
             LOGGER.info("--- Individual Span Details ---");
             currentTestSpans.forEach(span -> {
-                String nodeName = span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE);
-                LOGGER.info("Span: {} (node: {}) - parent: {}",
-                        span.getSpanId(), nodeName, span.getParentSpanId());
+                String stateName = span.getAttributes().get(SONATAFLOW_WORKFLOW_STATE);
+                LOGGER.info("Span: {} (state: {}) - parent: {}",
+                        span.getSpanId(), stateName, span.getParentSpanId());
             });
 
             Set<String> parentSpanIds = currentTestSpans.stream()
@@ -324,7 +347,7 @@ public class OpenTelemetryWorkflowIT {
                             parentId,
                             childSpans.size(),
                             childSpans.stream()
-                                    .map(s -> s.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE))
+                                    .map(s -> s.getAttributes().get(SONATAFLOW_WORKFLOW_STATE))
                                     .collect(Collectors.toList()));
 
                     boolean parentIsInTest = currentTestSpans.stream()
@@ -335,15 +358,15 @@ public class OpenTelemetryWorkflowIT {
                                 .findFirst()
                                 .orElse(null);
                         if (parentSpan != null) {
-                            LOGGER.warn("  -> Parent '{}' is a workflow node (this creates hierarchy!)",
-                                    parentSpan.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE));
+                            LOGGER.warn("  -> Parent '{}' is a workflow state (this creates hierarchy!)",
+                                    parentSpan.getAttributes().get(SONATAFLOW_WORKFLOW_STATE));
                         }
                     }
                 });
             }
 
             assertThat(parentSpanIds)
-                    .withFailMessage("All workflow node spans should share the same parent span ID (flat hierarchy). Found: " + parentSpanIds)
+                    .withFailMessage("All workflow state spans should share the same parent span ID (flat hierarchy). Found: " + parentSpanIds)
                     .hasSize(1);
 
             String sharedParentSpanId = parentSpanIds.iterator().next();
@@ -355,7 +378,7 @@ public class OpenTelemetryWorkflowIT {
             LOGGER.info("Parent is workflow span: {}", parentIsWorkflowSpan);
 
             assertThat(parentIsWorkflowSpan)
-                    .withFailMessage("Parent span should not be a workflow node span (should be HTTP request span)")
+                    .withFailMessage("Parent span should not be a workflow state span (should be HTTP request span)")
                     .isFalse();
 
             LOGGER.info("=== Flat Span Hierarchy Test PASSED ===");
@@ -374,5 +397,34 @@ public class OpenTelemetryWorkflowIT {
         spans.forEach(span -> {
             assertThat(span.getName()).startsWith(expectedPrefix);
         });
+    }
+
+    /**
+     * Extracts unique state names from spans.
+     *
+     * @param spans list of spans
+     * @return set of unique state names
+     */
+    private static Set<String> extractStateNames(List<SpanData> spans) {
+        return spans.stream()
+                .map(span -> span.getAttributes().get(SONATAFLOW_WORKFLOW_STATE))
+                .filter(stateName -> stateName != null)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Validates mandatory span attributes for state-based spans.
+     *
+     * @param span the span to validate
+     * @param expectedProcessId the expected process ID
+     */
+    private static void validateMandatoryStateSpanAttributes(SpanData span, String expectedProcessId) {
+        assertThat(span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID)).isNotNull();
+        assertThat(span.getAttributes().get(SONATAFLOW_PROCESS_ID)).isEqualTo(expectedProcessId);
+        assertThat(span.getAttributes().get(SONATAFLOW_PROCESS_VERSION)).isEqualTo("1.0");
+        assertThat(span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_STATE)).isNotNull();
+        assertThat(span.getAttributes().get(SERVICE_NAME)).isNotNull();
+        assertThat(span.getAttributes().get(SERVICE_VERSION)).isNotNull();
+        assertThat(span.getAttributes().get(SONATAFLOW_WORKFLOW_STATE)).isNotNull();
     }
 }

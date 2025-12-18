@@ -221,9 +221,9 @@ public final class OpenTelemetryTestUtils {
         spans.stream().limit(3).forEach(span -> {
             String spanTxnId = span.getAttributes().get(SONATAFLOW_TRANSACTION_ID);
             String spanProcessId = span.getAttributes().get(SONATAFLOW_PROCESS_ID);
-            String spanNodeName = span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE);
-            LOGGER.info("Sample span: {} | Process: {} | Node: {} | TxnId: '{}'",
-                    span.getName(), spanProcessId, spanNodeName, spanTxnId);
+            String spanStateName = span.getAttributes().get(SONATAFLOW_WORKFLOW_STATE);
+            LOGGER.info("Sample span: {} | Process: {} | State: {} | TxnId: '{}'",
+                    span.getName(), spanProcessId, spanStateName, spanTxnId);
         });
 
         List<SpanData> filteredSpans = spans.stream()
@@ -288,31 +288,16 @@ public final class OpenTelemetryTestUtils {
     }
 
     /**
-     * Extracts unique node names from spans.
+     * Extracts unique state names from spans.
      *
      * @param spans list of spans
-     * @return set of unique node names
+     * @return set of unique state names
      */
-    public static Set<String> extractNodeNames(List<SpanData> spans) {
+    public static Set<String> extractStateNames(List<SpanData> spans) {
         return spans.stream()
-                .map(span -> span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE))
+                .map(span -> span.getAttributes().get(SONATAFLOW_WORKFLOW_STATE))
+                .filter(stateName -> stateName != null)
                 .collect(Collectors.toSet());
-    }
-
-    /**
-     * Validates mandatory span attributes according to design document.
-     *
-     * @param span the span to validate
-     * @param expectedProcessId the expected process ID
-     */
-    public static void validateMandatorySpanAttributes(SpanData span, String expectedProcessId) {
-        assertThat(span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_ID)).isNotNull();
-        assertThat(span.getAttributes().get(SONATAFLOW_PROCESS_ID)).isEqualTo(expectedProcessId);
-        assertThat(span.getAttributes().get(SONATAFLOW_PROCESS_VERSION)).isEqualTo("1.0");
-        assertThat(span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_STATE)).isNotNull();
-        assertThat(span.getAttributes().get(SERVICE_NAME)).isNotNull();
-        assertThat(span.getAttributes().get(SERVICE_VERSION)).isNotNull();
-        assertThat(span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE)).isNotNull();
     }
 
     /**

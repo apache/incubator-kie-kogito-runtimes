@@ -51,6 +51,7 @@ public class OtelContextHolder {
     private static final Map<String, TimestampedValue<String>> processStartContexts = new ConcurrentHashMap<>();
     private static final Map<String, TimestampedValue<ProcessCompletionContext>> processCompletionContexts = new ConcurrentHashMap<>();
     private static final Map<String, TimestampedValue<Context>> rootContexts = new ConcurrentHashMap<>();
+    private static final Map<String, TimestampedValue<String>> activeStateContexts = new ConcurrentHashMap<>();
 
     public record ProcessCompletionContext(long durationMs, String outcome) {
     }
@@ -189,6 +190,7 @@ public class OtelContextHolder {
             processStartContexts.remove(processInstanceId);
             processCompletionContexts.remove(processInstanceId);
             rootContexts.remove(processInstanceId);
+            activeStateContexts.remove(processInstanceId);
         }
     }
 
@@ -259,6 +261,22 @@ public class OtelContextHolder {
         rootContexts.remove(processInstanceId);
     }
 
+    public static void setActiveState(String processInstanceId, String stateName) {
+        if (processInstanceId != null && stateName != null) {
+            activeStateContexts.put(processInstanceId, new TimestampedValue<>(stateName, LocalDateTime.now()));
+            enforceMaxSize();
+        }
+    }
+
+    public static String getActiveState(String processInstanceId) {
+        TimestampedValue<String> timestamped = activeStateContexts.get(processInstanceId);
+        return timestamped != null ? timestamped.value() : null;
+    }
+
+    public static void clearActiveState(String processInstanceId) {
+        activeStateContexts.remove(processInstanceId);
+    }
+
     public static void cleanupExpiredProcessContexts() {
         LocalDateTime cutoff = LocalDateTime.now().minus(TTL_MINUTES, ChronoUnit.MINUTES);
 
@@ -276,6 +294,7 @@ public class OtelContextHolder {
         enforceMapMaxSize(processStartContexts, "start");
         enforceMapMaxSize(processCompletionContexts, "completion");
         enforceMapMaxSize(rootContexts, "root");
+        enforceMapMaxSize(activeStateContexts, "activeState");
     }
 
     private static <T> int removeExpiredEntries(Map<String, TimestampedValue<T>> map, LocalDateTime cutoff) {

@@ -84,7 +84,7 @@ public class NodeSpanManagerScopeLeakTest {
      * Test proving scope leak when exception occurs after span.makeCurrent()
      * but before scope is stored in activeNodeScopes map.
      *
-     * Scenario: If an exception is thrown in createNodeSpan() between lines 89-92,
+     * Scenario: If an exception is thrown in createStateSpan() between lines 89-92,
      * the Scope will never be closed, causing a resource leak.
      *
      * Expected behavior: Scope should be closed in finally block or exception handler.
@@ -106,7 +106,7 @@ public class NodeSpanManagerScopeLeakTest {
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
         // Create a span normally
-        Span createdSpan = spanManager.createNodeSpan("test-instance", "test-process", "1.0", "ACTIVE", "node1");
+        Span createdSpan = spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "node1");
 
         // Verify span was created and scope is active
         assertThat(createdSpan).isNotNull();
@@ -145,7 +145,7 @@ public class NodeSpanManagerScopeLeakTest {
         // Verify no active scopes before test
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
-        spanManager.createNodeSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
+        spanManager.createStateSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
 
         // Verify scope was created
         assertThat(spanManager.getActiveScopeCount()).isEqualTo(1);
@@ -191,7 +191,7 @@ public class NodeSpanManagerScopeLeakTest {
         // Verify no active scopes before test
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
-        spanManager.createNodeSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
+        spanManager.createStateSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
 
         // Verify scope was created
         assertThat(spanManager.getActiveScopeCount()).isEqualTo(1);
@@ -241,8 +241,8 @@ public class NodeSpanManagerScopeLeakTest {
         // Verify no active scopes before test
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
-        spanManager.createNodeSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
-        spanManager.createNodeSpan("test-instance-2", "test-process", "1.0", "ACTIVE", "node2");
+        spanManager.createStateSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
+        spanManager.createStateSpan("test-instance-2", "test-process", "1.0", "ACTIVE", "node2");
 
         // Verify both scopes were created
         assertThat(spanManager.getActiveScopeCount()).isEqualTo(2);
@@ -282,7 +282,7 @@ public class NodeSpanManagerScopeLeakTest {
         // Verify no active scopes before test
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
-        spanManager.createNodeSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
+        spanManager.createStateSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
 
         // Verify scope was created
         assertThat(spanManager.getActiveScopeCount()).isEqualTo(1);
@@ -308,7 +308,7 @@ public class NodeSpanManagerScopeLeakTest {
      * concurrently. The second thread's span.makeCurrent() call overwrites the first scope
      * in activeNodeScopes map without closing it, causing the first scope to leak.
      *
-     * Expected behavior: createNodeSpan() should detect existing scope for same key and close
+     * Expected behavior: createStateSpan() should detect existing scope for same key and close
      * it before storing new scope, or prevent duplicate span creation.
      * Current behavior: ConcurrentHashMap.put() silently overwrites the first scope without
      * closing it, causing a permanent scope leak.
@@ -339,7 +339,7 @@ public class NodeSpanManagerScopeLeakTest {
         executor.submit(() -> {
             try {
                 startLatch.await();
-                spanManager.createNodeSpan("race-instance", "test-process", "1.0", "ACTIVE", "same-node");
+                spanManager.createStateSpan("race-instance", "test-process", "1.0", "ACTIVE", "same-node");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } finally {
@@ -350,7 +350,7 @@ public class NodeSpanManagerScopeLeakTest {
         executor.submit(() -> {
             try {
                 startLatch.await();
-                spanManager.createNodeSpan("race-instance", "test-process", "1.0", "ACTIVE", "same-node");
+                spanManager.createStateSpan("race-instance", "test-process", "1.0", "ACTIVE", "same-node");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } finally {

@@ -33,7 +33,6 @@ import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlo
 import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlowOtelAttributes.ERROR_MESSAGE;
 import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlowOtelAttributes.ERROR_TYPE;
 import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlowOtelAttributes.ErrorConstants;
-import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlowOtelAttributes.NodeNames;
 import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlowOtelAttributes.OUTCOME;
 import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlowOtelAttributes.PROCESS_INSTANCE_ID;
 import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlowOtelAttributes.ProcessContextStorage;
@@ -108,13 +107,14 @@ public class ProcessEventHandler {
     }
 
     private Span createErrorSpanForProcess(KogitoProcessInstance processInstance, String processInstanceId, Map<String, String> extractedContext) {
-        return spanManager.createNodeSpanWithContext(
+        return spanManager.createStateSpanWithContext(
                 processInstanceId,
                 processInstance.getProcessId(),
                 processInstance.getProcessVersion(),
                 ProcessStates.ERROR,
-                NodeNames.PROCESS_EXECUTION,
-                extractedContext);
+                "ProcessError",
+                extractedContext,
+                false);
     }
 
     private void addErrorAndCompleteEvents(Span errorSpan, KogitoProcessInstance processInstance, String processInstanceId, long durationMs) {
