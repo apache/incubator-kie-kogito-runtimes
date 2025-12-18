@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import io.opentelemetry.context.Context;
+
 import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlowOtelAttributes.MDCKeys;
 import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlowOtelAttributes.RequestProperties;
 
@@ -48,6 +50,7 @@ public class OtelContextHolder {
 
     private static final Map<String, TimestampedValue<String>> processStartContexts = new ConcurrentHashMap<>();
     private static final Map<String, TimestampedValue<ProcessCompletionContext>> processCompletionContexts = new ConcurrentHashMap<>();
+    private static final Map<String, TimestampedValue<Context>> rootContexts = new ConcurrentHashMap<>();
 
     public record ProcessCompletionContext(long durationMs, String outcome) {
     }
@@ -84,7 +87,7 @@ public class OtelContextHolder {
      * @param value the tracker attribute value
      */
     public static void setTrackerAttribute(String key, String value) {
-        if (key != null && value != null) {
+        if (key != null && value != null && !value.isEmpty()) {
             MDC.put(MDCKeys.TRACKER_PREFIX + key, value);
         }
     }
@@ -185,6 +188,7 @@ public class OtelContextHolder {
         if (processInstanceId != null) {
             processStartContexts.remove(processInstanceId);
             processCompletionContexts.remove(processInstanceId);
+            rootContexts.remove(processInstanceId);
         }
     }
 
@@ -221,21 +225,57 @@ public class OtelContextHolder {
         processCompletionContexts.remove(processInstanceId);
     }
 
+    /**
+     * Set the root OpenTelemetry context for a process instance.
+     * This captures the HTTP request span context that all regular nodes will use as parent.
+     *
+     * @param processInstanceId the process instance ID
+     * @param context the OpenTelemetry context (typically containing the HTTP request span)
+     */
+    public static void setRootContext(String processInstanceId, Context context) {
+        if (processInstanceId != null && context != null) {
+            rootContexts.put(processInstanceId, new TimestampedValue<>(context, LocalDateTime.now()));
+            enforceMaxSize();
+        }
+    }
+
+    /**
+     * Get the stored root OpenTelemetry context for a process instance.
+     *
+     * @param processInstanceId the process instance ID
+     * @return the stored context, or null if not set
+     */
+    public static Context getRootContext(String processInstanceId) {
+        TimestampedValue<Context> timestamped = rootContexts.get(processInstanceId);
+        return timestamped != null ? timestamped.value() : null;
+    }
+
+    /**
+     * Clear the root context for a specific process instance.
+     *
+     * @param processInstanceId the process instance ID
+     */
+    public static void clearRootContext(String processInstanceId) {
+        rootContexts.remove(processInstanceId);
+    }
+
     public static void cleanupExpiredProcessContexts() {
         LocalDateTime cutoff = LocalDateTime.now().minus(TTL_MINUTES, ChronoUnit.MINUTES);
 
         int removedStart = removeExpiredEntries(processStartContexts, cutoff);
         int removedCompletion = removeExpiredEntries(processCompletionContexts, cutoff);
+        int removedRoot = removeExpiredEntries(rootContexts, cutoff);
 
-        if (removedStart > 0 || removedCompletion > 0) {
-            LOGGER.debug("Cleaned up {} expired process start contexts and {} completion contexts",
-                    removedStart, removedCompletion);
+        if (removedStart > 0 || removedCompletion > 0 || removedRoot > 0) {
+            LOGGER.debug("Cleaned up {} expired process start contexts, {} completion contexts, and {} root contexts",
+                    removedStart, removedCompletion, removedRoot);
         }
     }
 
     public static void enforceMaxSize() {
         enforceMapMaxSize(processStartContexts, "start");
         enforceMapMaxSize(processCompletionContexts, "completion");
+        enforceMapMaxSize(rootContexts, "root");
     }
 
     private static <T> int removeExpiredEntries(Map<String, TimestampedValue<T>> map, LocalDateTime cutoff) {
@@ -247,11 +287,13 @@ public class OtelContextHolder {
     private static <T> void enforceMapMaxSize(Map<String, TimestampedValue<T>> map, String mapName) {
         if (map.size() > MAX_CONTEXT_SIZE) {
             int toRemove = map.size() - MAX_CONTEXT_SIZE;
-            map.entrySet().stream()
+            var keysToRemove = map.entrySet().stream()
                     .sorted((e1, e2) -> e1.getValue().timestamp().compareTo(e2.getValue().timestamp()))
                     .limit(toRemove)
                     .map(Map.Entry::getKey)
-                    .forEach(map::remove);
+                    .toList();
+
+            keysToRemove.forEach(map::remove);
 
             LOGGER.warn("Removed {} oldest entries from {} context map due to size limit", toRemove, mapName);
         }

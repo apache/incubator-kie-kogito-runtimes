@@ -88,7 +88,7 @@ public class NodeOtelEventListenerTest {
         when(processInstance.getProcessVersion()).thenReturn("1.0.0");
         when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
 
-        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any()))
+        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
                 .thenReturn(mockSpan);
 
         // Create mock event
@@ -101,7 +101,7 @@ public class NodeOtelEventListenerTest {
         eventListener.beforeNodeTriggered(event);
 
         // Verify
-        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "node-1", new HashMap<>());
+        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "node-1", new HashMap<>(), false);
         verify(spanManager).addProcessEvent(mockSpan, "node.started", "Node execution started: node-1");
     }
 
@@ -142,7 +142,7 @@ public class NodeOtelEventListenerTest {
         when(processInstance.getProcessVersion()).thenReturn("1.0.0");
         when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
 
-        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any()))
+        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
                 .thenReturn(mockSpan);
 
         // Create mock event
@@ -155,7 +155,7 @@ public class NodeOtelEventListenerTest {
         eventListener.beforeNodeTriggered(event);
 
         // Verify - Start node should trigger process.instance.start event
-        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "Start", new HashMap<>());
+        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "Start", new HashMap<>(), false);
         verify(spanManager).addProcessEvent(mockSpan, "node.started", "Node execution started: Start");
         verify(spanManager).addProcessEvent(eq(mockSpan), eq("process.instance.start"), any(Attributes.class));
     }
@@ -169,7 +169,7 @@ public class NodeOtelEventListenerTest {
         when(processInstance.getProcessVersion()).thenReturn("1.0.0");
         when(processInstance.getState()).thenReturn(ProcessInstance.STATE_ACTIVE);
 
-        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any()))
+        when(spanManager.createNodeSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
                 .thenReturn(mockSpan);
 
         // Create mock event
@@ -182,7 +182,7 @@ public class NodeOtelEventListenerTest {
         eventListener.beforeNodeTriggered(event);
 
         // Verify - Non-Start node should NOT trigger process.instance.start event
-        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "ChooseOnLanguage", new HashMap<>());
+        verify(spanManager).createNodeSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "ChooseOnLanguage", new HashMap<>(), false);
         verify(spanManager).addProcessEvent(mockSpan, "node.started", "Node execution started: ChooseOnLanguage");
         verify(spanManager, never()).addProcessEvent(eq(mockSpan), eq("process.instance.start"), any(Attributes.class));
     }

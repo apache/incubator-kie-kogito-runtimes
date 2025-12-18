@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.opentelemetry;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.quarkus.serverless.workflow.opentelemetry.config.SonataFlowOtelConfig;
 
@@ -27,6 +28,12 @@ import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlo
 import static org.mockito.Mockito.*;
 
 public class NodeSpanManagerTest {
+
+    @AfterEach
+    public void cleanup() {
+        // Clear the root context after each test to ensure test isolation
+        OtelContextHolder.clearRootContext("test-instance");
+    }
 
     private SonataFlowOtelConfig createMockConfig(boolean enabled, boolean spanEnabled) {
         SonataFlowOtelConfig mockConfig = mock(SonataFlowOtelConfig.class);
@@ -133,5 +140,89 @@ public class NodeSpanManagerTest {
         // Verify span has correct context attributes based on the actual implementation
         verify(mockSpan).setAttribute(SONATAFLOW_TRANSACTION_ID, "txn-123");
         verify(mockSpan).setAttribute(org.mockito.ArgumentMatchers.eq("sonataflow.tracker.user"), org.mockito.ArgumentMatchers.eq("john.doe"));
+    }
+
+    @Test
+    public void shouldUseRootContextForRegularNodes() throws Exception {
+        io.opentelemetry.api.trace.Tracer mockTracer = mock(io.opentelemetry.api.trace.Tracer.class);
+        io.opentelemetry.api.trace.Span mockSpan = mock(io.opentelemetry.api.trace.Span.class);
+        io.opentelemetry.api.trace.SpanBuilder mockSpanBuilder = setupMockSpanBuilder(mockTracer, mockSpan);
+        SonataFlowOtelConfig mockConfig = createMockConfig(true, true);
+
+        NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
+
+        // Create first node span (should capture root context)
+        spanManager.createNodeSpan("test-instance", "test-process", "1.0", "ACTIVE", "node1", false);
+
+        // Create second regular node span (should use stored root context)
+        spanManager.createNodeSpan("test-instance", "test-process", "1.0", "ACTIVE", "node2", false);
+
+        // Verify root context was retrieved and used for the second node
+        io.opentelemetry.context.Context rootContext = OtelContextHolder.getRootContext("test-instance");
+        assertNotNull(rootContext, "Root context should be stored");
+
+        // Verify SpanBuilder was called with the stored root context for node2
+        verify(mockSpanBuilder, atLeastOnce()).setParent(rootContext);
+    }
+
+    @Test
+    public void shouldUseCurrentContextForSubprocessNodes() throws Exception {
+        io.opentelemetry.api.trace.Tracer mockTracer = mock(io.opentelemetry.api.trace.Tracer.class);
+        io.opentelemetry.api.trace.Span mockSpan = mock(io.opentelemetry.api.trace.Span.class);
+        io.opentelemetry.api.trace.SpanBuilder mockSpanBuilder = setupMockSpanBuilder(mockTracer, mockSpan);
+        SonataFlowOtelConfig mockConfig = createMockConfig(true, true);
+
+        NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
+
+        // Create a subprocess node span (should use Context.current())
+        spanManager.createNodeSpan("test-instance", "test-process", "1.0", "ACTIVE", "subprocess-node", true);
+
+        // Verify SpanBuilder was called with Context.current() instead of root context
+        verify(mockSpanBuilder).setParent(io.opentelemetry.context.Context.current());
+    }
+
+    @Test
+    public void shouldCaptureRootContextOnFirstNode() throws Exception {
+        io.opentelemetry.api.trace.Tracer mockTracer = mock(io.opentelemetry.api.trace.Tracer.class);
+        io.opentelemetry.api.trace.Span mockSpan = mock(io.opentelemetry.api.trace.Span.class);
+        setupMockSpanBuilder(mockTracer, mockSpan);
+        SonataFlowOtelConfig mockConfig = createMockConfig(true, true);
+
+        NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
+
+        // Verify no root context exists initially
+        io.opentelemetry.context.Context initialContext = OtelContextHolder.getRootContext("test-instance");
+        org.junit.jupiter.api.Assertions.assertNull(initialContext, "Root context should not exist before first node");
+
+        // Create first node span
+        spanManager.createNodeSpan("test-instance", "test-process", "1.0", "ACTIVE", "node1", false);
+
+        // Verify root context was captured
+        io.opentelemetry.context.Context capturedContext = OtelContextHolder.getRootContext("test-instance");
+        assertNotNull(capturedContext, "Root context should be captured on first node");
+    }
+
+    @Test
+    public void shouldClearRootContextOnProcessCompletion() throws Exception {
+        io.opentelemetry.api.trace.Tracer mockTracer = mock(io.opentelemetry.api.trace.Tracer.class);
+        io.opentelemetry.api.trace.Span mockSpan = mock(io.opentelemetry.api.trace.Span.class);
+        setupMockSpanBuilder(mockTracer, mockSpan);
+        SonataFlowOtelConfig mockConfig = createMockConfig(true, true);
+
+        NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
+
+        // Create a node span (this should capture root context)
+        spanManager.createNodeSpan("test-instance", "test-process", "1.0", "ACTIVE", "node1", false);
+
+        // Verify root context was stored
+        io.opentelemetry.context.Context storedContext = OtelContextHolder.getRootContext("test-instance");
+        assertNotNull(storedContext, "Root context should be stored");
+
+        // Simulate process completion
+        spanManager.endRemainingSpans("test-instance");
+
+        // Verify root context was cleared
+        io.opentelemetry.context.Context clearedContext = OtelContextHolder.getRootContext("test-instance");
+        org.junit.jupiter.api.Assertions.assertNull(clearedContext, "Root context should be cleared on process completion");
     }
 }

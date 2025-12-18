@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.opentelemetry.sdk.trace.data.EventData;
 import io.opentelemetry.sdk.trace.data.SpanData;
@@ -47,6 +49,8 @@ import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlo
 @QuarkusTestResource(TokenPropagationExternalServicesMock.class)
 @QuarkusTestResource(KeycloakServiceMock.class)
 public class OpenTelemetryWorkflowIT {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenTelemetryWorkflowIT.class);
 
     @BeforeEach
     public void cleanup() throws InterruptedException {
@@ -254,6 +258,107 @@ public class OpenTelemetryWorkflowIT {
                                 "Transaction %s has %d events", txnId, events.size())
                         .hasSize(1);
             });
+        });
+    }
+
+    /**
+     * Test to verify that regular workflow nodes have a flat span hierarchy.
+     * All workflow node spans should be siblings under the HTTP request span,
+     * rather than forming a parent-child hierarchy.
+     *
+     * This validates:
+     * - All workflow node spans share the same parent span ID
+     * - The parent span is the HTTP request span (not another workflow node)
+     * - Span hierarchy is flat for regular (non-subflow) nodes
+     */
+    @Test
+    void shouldCreateFlatSpanHierarchyForRegularNodes() {
+        executeWorkflowWithTxn("/greet", buildGreetBody("HierarchyTest", "English"),
+                "workflow-flat-hierarchy-test-txn", 201);
+
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
+            List<SpanData> workflowSpans = filterWorkflowSpans(spans);
+
+            LOGGER.info("=== Flat Span Hierarchy Debug Info ===");
+            LOGGER.info("Total spans: {}, Workflow spans: {}", spans.size(), workflowSpans.size());
+
+            assertThat(workflowSpans)
+                    .withFailMessage("Workflow spans should be present")
+                    .isNotEmpty();
+
+            List<SpanData> currentTestSpans = filterSpansByTransactionId(workflowSpans,
+                    "workflow-flat-hierarchy-test-txn");
+
+            LOGGER.info("Spans for test transaction: {}", currentTestSpans.size());
+
+            assertThat(currentTestSpans)
+                    .withFailMessage("Should have spans for the test transaction")
+                    .hasSizeGreaterThanOrEqualTo(3);
+
+            LOGGER.info("--- Individual Span Details ---");
+            currentTestSpans.forEach(span -> {
+                String nodeName = span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE);
+                LOGGER.info("Span: {} (node: {}) - parent: {}",
+                        span.getSpanId(), nodeName, span.getParentSpanId());
+            });
+
+            Set<String> parentSpanIds = currentTestSpans.stream()
+                    .map(SpanData::getParentSpanId)
+                    .filter(id -> id != null)
+                    .collect(Collectors.toSet());
+
+            LOGGER.info("--- Parent Span Analysis ---");
+            LOGGER.info("Unique parent span IDs: {} -> {}", parentSpanIds.size(), parentSpanIds);
+
+            if (parentSpanIds.size() > 1) {
+                LOGGER.warn("*** HIERARCHICAL STRUCTURE DETECTED ***");
+                LOGGER.warn("Expected all spans to share same parent (flat), but found {} different parents",
+                        parentSpanIds.size());
+
+                Map<String, List<SpanData>> spansByParent = currentTestSpans.stream()
+                        .collect(Collectors.groupingBy(SpanData::getParentSpanId));
+
+                spansByParent.forEach((parentId, childSpans) -> {
+                    LOGGER.warn("Parent {}: {} children -> {}",
+                            parentId,
+                            childSpans.size(),
+                            childSpans.stream()
+                                    .map(s -> s.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE))
+                                    .collect(Collectors.toList()));
+
+                    boolean parentIsInTest = currentTestSpans.stream()
+                            .anyMatch(s -> s.getSpanId().equals(parentId));
+                    if (parentIsInTest) {
+                        SpanData parentSpan = currentTestSpans.stream()
+                                .filter(s -> s.getSpanId().equals(parentId))
+                                .findFirst()
+                                .orElse(null);
+                        if (parentSpan != null) {
+                            LOGGER.warn("  -> Parent '{}' is a workflow node (this creates hierarchy!)",
+                                    parentSpan.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE));
+                        }
+                    }
+                });
+            }
+
+            assertThat(parentSpanIds)
+                    .withFailMessage("All workflow node spans should share the same parent span ID (flat hierarchy). Found: " + parentSpanIds)
+                    .hasSize(1);
+
+            String sharedParentSpanId = parentSpanIds.iterator().next();
+
+            boolean parentIsWorkflowSpan = currentTestSpans.stream()
+                    .anyMatch(span -> span.getSpanId().equals(sharedParentSpanId));
+
+            LOGGER.info("Shared parent span ID: {}", sharedParentSpanId);
+            LOGGER.info("Parent is workflow span: {}", parentIsWorkflowSpan);
+
+            assertThat(parentIsWorkflowSpan)
+                    .withFailMessage("Parent span should not be a workflow node span (should be HTTP request span)")
+                    .isFalse();
+
+            LOGGER.info("=== Flat Span Hierarchy Test PASSED ===");
         });
     }
 

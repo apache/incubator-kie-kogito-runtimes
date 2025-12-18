@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -46,6 +48,8 @@ import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlo
 @QuarkusTestResource(TokenPropagationExternalServicesMock.class)
 @QuarkusTestResource(KeycloakServiceMock.class)
 public class OpenTelemetryTokenPropagationIT {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenTelemetryTokenPropagationIT.class);
 
     @BeforeEach
     public void cleanup() throws InterruptedException {
@@ -96,6 +100,86 @@ public class OpenTelemetryTokenPropagationIT {
                     .isNotEmpty();
 
             validateMainAndSubflowBehaviour(workflowSpans, "token-propagation-subflow-test-txn");
+        });
+    }
+
+    /**
+     * Test to verify that subflow nodes maintain proper parent-child span hierarchy.
+     * When a workflow invokes a subflow, the subflow's spans should be children of
+     * the subprocess/subflow invocation span, not flat siblings.
+     *
+     * This validates:
+     * - Main workflow spans have flat hierarchy (all siblings)
+     * - Subflow spans are children of the ExecuteSubflow span
+     * - Subflow spans are properly nested under their parent
+     * - The hierarchy is maintained correctly across workflow boundaries
+     */
+    @Test
+    void shouldMaintainHierarchyForSubflowNodes() {
+        executeTokenPropagationWorkflow("workflow-subflow-hierarchy-test-txn", 201);
+
+        await().atMost(Duration.ofSeconds(25)).untilAsserted(() -> {
+            List<SpanData> spans = OtlpMockTestResource.getSpans();
+            List<SpanData> workflowSpans = filterWorkflowSpans(spans);
+
+            assertThat(workflowSpans)
+                    .withFailMessage("Workflow spans should be present")
+                    .isNotEmpty();
+
+            List<SpanData> currentTestSpans = filterSpansByTransactionId(workflowSpans,
+                    "workflow-subflow-hierarchy-test-txn");
+
+            List<SpanData> mainWorkflowSpans = filterMainWorkflowSpans(currentTestSpans, "token_propagation");
+            List<SpanData> subflowSpans = filterSubflowSpans(currentTestSpans, "tokenPropagationSubflow");
+
+            assertThat(mainWorkflowSpans)
+                    .withFailMessage("Main workflow spans should be present")
+                    .isNotEmpty();
+            assertThat(subflowSpans)
+                    .withFailMessage("Subflow spans should be present")
+                    .isNotEmpty();
+
+            List<SpanData> topLevelMainWorkflowSpans = mainWorkflowSpans.stream()
+                    .filter(span -> {
+                        String nodeName = span.getAttributes().get(SONATAFLOW_PROCESS_INSTANCE_NODE);
+                        return !"tokenPropagationSubflow".equals(nodeName);
+                    })
+                    .collect(Collectors.toList());
+
+            Set<String> mainWorkflowParentSpanIds = topLevelMainWorkflowSpans.stream()
+                    .map(SpanData::getParentSpanId)
+                    .filter(id -> id != null)
+                    .collect(Collectors.toSet());
+
+            assertThat(mainWorkflowParentSpanIds)
+                    .withFailMessage("Main workflow top-level spans should have flat hierarchy (all same parent)")
+                    .hasSize(1);
+
+            SpanData subflowInvocationSpan = findSpanByNodeName(mainWorkflowSpans, "tokenPropagationSubflow");
+            String subflowInvocationSpanId = subflowInvocationSpan.getSpanId();
+
+            long subflowSpansWithCorrectParent = subflowSpans.stream()
+                    .filter(span -> subflowInvocationSpanId.equals(span.getParentSpanId()))
+                    .count();
+
+            assertThat(subflowSpansWithCorrectParent)
+                    .withFailMessage("Subflow spans should be children of subflow invocation span (tokenPropagationSubflow)")
+                    .isGreaterThan(0);
+
+            subflowSpans.forEach(span -> {
+                String parentSpanId = span.getParentSpanId();
+                assertThat(parentSpanId)
+                        .withFailMessage("Each subflow span should have a parent span ID. Span: %s", span.getName())
+                        .isNotNull();
+
+                boolean parentIsHttpSpan = !currentTestSpans.stream()
+                        .anyMatch(s -> s.getSpanId().equals(parentSpanId));
+
+                assertThat(parentIsHttpSpan)
+                        .withFailMessage("Subflow span parent should be a workflow span (ExecuteSubflow), not HTTP span. Span: %s",
+                                span.getName())
+                        .isFalse();
+            });
         });
     }
 
