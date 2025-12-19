@@ -18,19 +18,28 @@
  */
 package org.kie.kogito.persistence.quarkus.rocksdb;
 
+import io.quarkus.runtime.annotations.ConfigPhase;
+import io.quarkus.runtime.annotations.ConfigRoot;
 import io.quarkus.runtime.annotations.StaticInitSafe;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 
+@ConfigRoot(phase = ConfigPhase.RUN_TIME)
 @ConfigMapping(prefix = "kogito.persistence.rocksdb")
 @StaticInitSafe
 public interface RocksDbConfig {
 
+    /**
+     * Sets DB data dir
+     */
     @WithName("data.dir")
     @WithDefault("rockdstemp")
     String dataDir();
 
+    /**
+     * Clean DB data when shutting down application
+     */
     @WithName("clean")
     @WithDefault("false")
     boolean destroyDB();
