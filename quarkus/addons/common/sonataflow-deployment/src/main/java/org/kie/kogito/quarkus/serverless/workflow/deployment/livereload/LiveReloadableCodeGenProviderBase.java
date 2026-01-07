@@ -24,17 +24,33 @@ import org.eclipse.microprofile.config.Config;
 
 import io.quarkus.bootstrap.prebuild.CodeGenException;
 import io.quarkus.deployment.CodeGenContext;
+import io.quarkus.deployment.CodeGenProvider;
 
-/**
- * Service Provider Interface for {@link io.quarkus.deployment.CodeGenProvider} objects that need to be invoked on live reloads.
- */
-interface LiveReloadableCodeGenProvider {
+public abstract class LiveReloadableCodeGenProviderBase<T extends CodeGenProvider> implements LiveReloadableCodeGenProvider {
 
-    boolean trigger(CodeGenContext context) throws CodeGenException;
+    private final T delegate;
 
-    String providerId();
+    public LiveReloadableCodeGenProviderBase(T delegate) {
+        this.delegate = delegate;
+    }
 
-    String inputDirectory();
+    @Override
+    public final boolean trigger(CodeGenContext context) throws CodeGenException {
+        return delegate.trigger(context);
+    }
 
-    boolean shouldRun(Path sourceDir, Config config);
+    @Override
+    public String inputDirectory() {
+        return delegate.inputDirectory();
+    }
+
+    @Override
+    public String providerId() {
+        return delegate.providerId();
+    }
+
+    @Override
+    public boolean shouldRun(Path sourceDir, Config config) {
+        return delegate.shouldRun(sourceDir, config);
+    }
 }

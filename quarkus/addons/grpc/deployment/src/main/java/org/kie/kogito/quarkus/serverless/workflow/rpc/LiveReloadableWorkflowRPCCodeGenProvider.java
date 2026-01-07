@@ -16,9 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.quarkus.serverless.workflow.deployment.livereload;
+package org.kie.kogito.quarkus.serverless.workflow.rpc;
 
-import org.kie.kogito.quarkus.serverless.workflow.rpc.WorkflowRPCCodeGenProvider;
+import org.kie.kogito.quarkus.serverless.workflow.deployment.livereload.LiveReloadableCodeGenProvider;
+import org.kie.kogito.quarkus.serverless.workflow.deployment.livereload.LiveReloadableCodeGenProviderBase;
 
 /**
  * Wrapper for {@link WorkflowRPCCodeGenProvider} that implements the {@link LiveReloadableCodeGenProvider} Service Provider Interface.
