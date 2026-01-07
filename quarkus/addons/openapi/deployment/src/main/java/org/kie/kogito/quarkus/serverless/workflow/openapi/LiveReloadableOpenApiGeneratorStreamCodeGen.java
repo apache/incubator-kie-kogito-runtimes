@@ -18,9 +18,10 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.openapi;
 
-import io.quarkiverse.openapi.generator.deployment.codegen.OpenApiGeneratorStreamCodeGen;
 import org.kie.kogito.quarkus.serverless.workflow.deployment.livereload.LiveReloadableCodeGenProvider;
 import org.kie.kogito.quarkus.serverless.workflow.deployment.livereload.LiveReloadableCodeGenProviderBase;
+
+import io.quarkiverse.openapi.generator.deployment.codegen.OpenApiGeneratorStreamCodeGen;
 
 /**
  * Wrapper for {@link OpenApiGeneratorStreamCodeGen} that implements the {@link LiveReloadableCodeGenProvider} Service Provider Interface.

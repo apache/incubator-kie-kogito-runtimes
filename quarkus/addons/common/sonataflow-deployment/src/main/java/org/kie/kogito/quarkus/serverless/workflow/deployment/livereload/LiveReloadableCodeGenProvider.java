@@ -18,11 +18,12 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.deployment.livereload;
 
-import io.quarkus.bootstrap.prebuild.CodeGenException;
-import io.quarkus.deployment.CodeGenContext;
+import java.nio.file.Path;
+
 import org.eclipse.microprofile.config.Config;
 
-import java.nio.file.Path;
+import io.quarkus.bootstrap.prebuild.CodeGenException;
+import io.quarkus.deployment.CodeGenContext;
 
 /**
  * Service Provider Interface for {@link io.quarkus.deployment.CodeGenProvider} objects that need to be invoked on live reloads.
