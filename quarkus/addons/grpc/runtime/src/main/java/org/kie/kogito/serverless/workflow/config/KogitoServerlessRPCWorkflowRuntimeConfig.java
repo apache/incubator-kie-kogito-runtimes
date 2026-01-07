@@ -18,7 +18,6 @@
  */
 package org.kie.kogito.serverless.workflow.config;
 
-import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
