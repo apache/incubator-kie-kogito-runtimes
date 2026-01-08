@@ -98,7 +98,7 @@ public class NodeOtelEventListenerTest {
         metadata.put("state", "TestState");
         when(node.getMetaData()).thenReturn(metadata);
 
-        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
+        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any()))
                 .thenReturn(mockSpan);
 
         org.kie.api.event.process.ProcessNodeTriggeredEvent event =
@@ -108,7 +108,7 @@ public class NodeOtelEventListenerTest {
 
         eventListener.beforeNodeTriggered(event);
 
-        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "TestState", new HashMap<>(), false);
+        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "TestState", new HashMap<>(), null);
         verify(spanManager).addProcessEvent(mockSpan, "state.started", "State execution started: TestState");
     }
 
@@ -134,7 +134,7 @@ public class NodeOtelEventListenerTest {
 
         eventListener.beforeNodeTriggered(event);
 
-        verify(spanManager, never()).createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class));
+        verify(spanManager, never()).createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any());
         verify(spanManager, never()).addProcessEvent(any(Span.class), eq("state.started"), anyString());
 
         OtelContextHolder.clearActiveState("process-instance-1");
@@ -158,7 +158,7 @@ public class NodeOtelEventListenerTest {
         Span stateASpan = org.mockito.Mockito.mock(Span.class);
         when(spanManager.getActiveStateSpan("process-instance-1", "StateA")).thenReturn(stateASpan);
 
-        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
+        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any()))
                 .thenReturn(mockSpan);
 
         org.kie.api.event.process.ProcessNodeTriggeredEvent event =
@@ -172,7 +172,7 @@ public class NodeOtelEventListenerTest {
         verify(spanManager).addProcessEvent(stateASpan, "state.completed", "State execution completed: StateA");
         verify(spanManager).endStateSpan("process-instance-1", "StateA");
 
-        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "StateB", new HashMap<>(), false);
+        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "StateB", new HashMap<>(), null);
         verify(spanManager).addProcessEvent(mockSpan, "state.started", "State execution started: StateB");
 
         OtelContextHolder.clearActiveState("process-instance-1");
@@ -194,7 +194,7 @@ public class NodeOtelEventListenerTest {
 
         eventListener.beforeNodeTriggered(event);
 
-        verify(spanManager, never()).createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class));
+        verify(spanManager, never()).createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any());
         verify(spanManager, never()).addProcessEvent(any(Span.class), anyString(), anyString());
     }
 
@@ -214,7 +214,7 @@ public class NodeOtelEventListenerTest {
         metadata.put("state", "FirstState");
         when(node.getMetaData()).thenReturn(metadata);
 
-        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
+        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any()))
                 .thenReturn(mockSpan);
 
         org.kie.api.event.process.ProcessNodeTriggeredEvent event =
@@ -224,7 +224,7 @@ public class NodeOtelEventListenerTest {
 
         eventListener.beforeNodeTriggered(event);
 
-        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "FirstState", new HashMap<>(), false);
+        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "FirstState", new HashMap<>(), null);
         verify(spanManager).addProcessEvent(mockSpan, "state.started", "State execution started: FirstState");
         verify(spanManager).addProcessEvent(eq(mockSpan), eq("process.instance.start"), any(Attributes.class));
     }
@@ -246,7 +246,7 @@ public class NodeOtelEventListenerTest {
         Span firstStateSpan = org.mockito.Mockito.mock(Span.class);
         when(spanManager.getActiveStateSpan("process-instance-1", "FirstState")).thenReturn(firstStateSpan);
 
-        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any(Boolean.class)))
+        when(spanManager.createStateSpanWithContext(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any()))
                 .thenReturn(mockSpan);
 
         org.kie.api.event.process.ProcessNodeTriggeredEvent event =
@@ -256,7 +256,7 @@ public class NodeOtelEventListenerTest {
 
         eventListener.beforeNodeTriggered(event);
 
-        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "SecondState", new HashMap<>(), false);
+        verify(spanManager).createStateSpanWithContext("process-instance-1", "test-process", "1.0.0", "ACTIVE", "SecondState", new HashMap<>(), null);
         verify(spanManager).addProcessEvent(mockSpan, "state.started", "State execution started: SecondState");
         verify(spanManager, never()).addProcessEvent(eq(mockSpan), eq("process.instance.start"), any(Attributes.class));
 

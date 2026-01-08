@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Context;
 
 import static org.kie.kogito.quarkus.serverless.workflow.opentelemetry.SonataFlowOtelAttributes.MDCKeys;
@@ -52,6 +54,9 @@ public class OtelContextHolder {
     private static final Map<String, TimestampedValue<ProcessCompletionContext>> processCompletionContexts = new ConcurrentHashMap<>();
     private static final Map<String, TimestampedValue<Context>> rootContexts = new ConcurrentHashMap<>();
     private static final Map<String, TimestampedValue<String>> activeStateContexts = new ConcurrentHashMap<>();
+    private static final Map<String, TimestampedValue<SpanContext>> rootSpanContexts = new ConcurrentHashMap<>();
+    private static final ThreadLocal<SpanContext> httpRequestSpanContext = new ThreadLocal<>();
+    private static final ThreadLocal<Span> currentWorkflowSpan = new ThreadLocal<>();
 
     public record ProcessCompletionContext(long durationMs, String outcome) {
     }
@@ -191,6 +196,7 @@ public class OtelContextHolder {
             processCompletionContexts.remove(processInstanceId);
             rootContexts.remove(processInstanceId);
             activeStateContexts.remove(processInstanceId);
+            rootSpanContexts.remove(processInstanceId);
         }
     }
 
@@ -277,16 +283,65 @@ public class OtelContextHolder {
         activeStateContexts.remove(processInstanceId);
     }
 
+    public static void setRootSpanContext(String processInstanceId, SpanContext spanContext) {
+        if (processInstanceId != null && spanContext != null) {
+            rootSpanContexts.put(processInstanceId, new TimestampedValue<>(spanContext, LocalDateTime.now()));
+            enforceMaxSize();
+        }
+    }
+
+    public static SpanContext getRootSpanContext(String processInstanceId) {
+        if (processInstanceId == null) {
+            return null;
+        }
+        TimestampedValue<SpanContext> timestamped = rootSpanContexts.get(processInstanceId);
+        return timestamped != null ? timestamped.value() : null;
+    }
+
+    public static void clearRootSpanContext(String processInstanceId) {
+        rootSpanContexts.remove(processInstanceId);
+    }
+
+    public static void setHttpRequestContext(Context context) {
+        if (context != null) {
+            Span span = Span.fromContext(context);
+            if (span != null && span.getSpanContext().isValid()) {
+                httpRequestSpanContext.set(span.getSpanContext());
+            }
+        }
+    }
+
+    public static SpanContext getHttpRequestSpanContext() {
+        return httpRequestSpanContext.get();
+    }
+
+    public static void clearHttpRequestContext() {
+        httpRequestSpanContext.remove();
+    }
+
+    public static void setCurrentWorkflowSpan(Span span) {
+        currentWorkflowSpan.set(span);
+    }
+
+    public static Span getCurrentWorkflowSpan() {
+        return currentWorkflowSpan.get();
+    }
+
+    public static void clearCurrentWorkflowSpan() {
+        currentWorkflowSpan.remove();
+    }
+
     public static void cleanupExpiredProcessContexts() {
         LocalDateTime cutoff = LocalDateTime.now().minus(TTL_MINUTES, ChronoUnit.MINUTES);
 
         int removedStart = removeExpiredEntries(processStartContexts, cutoff);
         int removedCompletion = removeExpiredEntries(processCompletionContexts, cutoff);
         int removedRoot = removeExpiredEntries(rootContexts, cutoff);
+        int removedRootSpan = removeExpiredEntries(rootSpanContexts, cutoff);
 
-        if (removedStart > 0 || removedCompletion > 0 || removedRoot > 0) {
-            LOGGER.debug("Cleaned up {} expired process start contexts, {} completion contexts, and {} root contexts",
-                    removedStart, removedCompletion, removedRoot);
+        if (removedStart > 0 || removedCompletion > 0 || removedRoot > 0 || removedRootSpan > 0) {
+            LOGGER.debug("Cleaned up {} expired process start contexts, {} completion contexts, {} root contexts, and {} root span contexts",
+                    removedStart, removedCompletion, removedRoot, removedRootSpan);
         }
     }
 
@@ -295,6 +350,7 @@ public class OtelContextHolder {
         enforceMapMaxSize(processCompletionContexts, "completion");
         enforceMapMaxSize(rootContexts, "root");
         enforceMapMaxSize(activeStateContexts, "activeState");
+        enforceMapMaxSize(rootSpanContexts, "rootSpan");
     }
 
     private static <T> int removeExpiredEntries(Map<String, TimestampedValue<T>> map, LocalDateTime cutoff) {

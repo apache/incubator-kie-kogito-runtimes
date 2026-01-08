@@ -33,7 +33,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.Tracer;
-import io.opentelemetry.context.Scope;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -93,29 +92,27 @@ public class NodeSpanManagerScopeLeakTest {
      * This test verifies that our exception handling properly cleans up scopes.
      */
     @Test
-    public void shouldCleanupScopeWhenExceptionOccursAfterMakeCurrent() {
+    public void shouldCleanupSpansAfterCreation() {
         Span mockSpan = mock(Span.class);
-        Scope mockScope = mock(Scope.class);
         SpanBuilder mockSpanBuilder = mock(SpanBuilder.class, org.mockito.Mockito.RETURNS_SELF);
 
         when(mockTracer.spanBuilder(anyString())).thenReturn(mockSpanBuilder);
         when(mockSpanBuilder.startSpan()).thenReturn(mockSpan);
-        when(mockSpan.makeCurrent()).thenReturn(mockScope);
 
-        // Verify no active scopes before test
+        // Verify no active spans before test
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
         // Create a span normally
         Span createdSpan = spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "node1");
 
-        // Verify span was created and scope is active
+        // Verify span was created and is active
         assertThat(createdSpan).isNotNull();
         assertThat(spanManager.getActiveScopeCount()).isEqualTo(1);
 
         // Clean up manually to test cleanup works properly
         spanManager.cleanup();
 
-        // Verify all scopes are cleaned up after cleanup
+        // Verify all spans are cleaned up after cleanup
         assertThat(spanManager.getActiveScopeCount()).isZero();
         assertThat(spanManager.getActiveSpanCount()).isZero();
     }
@@ -133,21 +130,19 @@ public class NodeSpanManagerScopeLeakTest {
      * This test will FAIL because there's no mechanism to cleanup orphaned scopes.
      */
     @Test
-    public void shouldCleanupOrphanedScopesWhenNodeLeftEventMissing() {
+    public void shouldCleanupOrphanedSpansWhenNodeLeftEventMissing() {
         Span mockSpan = mock(Span.class);
-        Scope mockScope = mock(Scope.class);
         SpanBuilder mockSpanBuilder = mock(SpanBuilder.class, org.mockito.Mockito.RETURNS_SELF);
 
         when(mockTracer.spanBuilder(anyString())).thenReturn(mockSpanBuilder);
         when(mockSpanBuilder.startSpan()).thenReturn(mockSpan);
-        when(mockSpan.makeCurrent()).thenReturn(mockScope);
 
-        // Verify no active scopes before test
+        // Verify no active spans before test
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
         spanManager.createStateSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
 
-        // Verify scope was created
+        // Verify span was created
         assertThat(spanManager.getActiveScopeCount()).isEqualTo(1);
 
         try {
@@ -156,10 +151,10 @@ public class NodeSpanManagerScopeLeakTest {
             Thread.currentThread().interrupt();
         }
 
-        // Cleanup orphaned scopes - this should close all remaining scopes
+        // Cleanup orphaned spans - this should close all remaining spans
         spanManager.cleanup();
 
-        // Verify all scopes are cleaned up after cleanup
+        // Verify all spans are cleaned up after cleanup
         assertThat(spanManager.getActiveScopeCount()).isZero();
         assertThat(spanManager.getActiveSpanCount()).isZero();
     }
@@ -179,21 +174,19 @@ public class NodeSpanManagerScopeLeakTest {
      * for failed span creation operations.
      */
     @Test
-    public void shouldCleanupScopeWhenBeforeNodeTriggeredFails() {
+    public void shouldCleanupSpansWhenBeforeNodeTriggeredFails() {
         Span mockSpan = mock(Span.class);
-        Scope mockScope = mock(Scope.class);
         SpanBuilder mockSpanBuilder = mock(SpanBuilder.class, org.mockito.Mockito.RETURNS_SELF);
 
         when(mockTracer.spanBuilder(anyString())).thenReturn(mockSpanBuilder);
         when(mockSpanBuilder.startSpan()).thenReturn(mockSpan);
-        when(mockSpan.makeCurrent()).thenReturn(mockScope);
 
-        // Verify no active scopes before test
+        // Verify no active spans before test
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
         spanManager.createStateSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
 
-        // Verify scope was created
+        // Verify span was created
         assertThat(spanManager.getActiveScopeCount()).isEqualTo(1);
 
         when(mockSpan.addEvent(anyString(), any(io.opentelemetry.api.common.Attributes.class)))
@@ -208,7 +201,7 @@ public class NodeSpanManagerScopeLeakTest {
         // Even after event processing failure, cleanup should work
         spanManager.cleanup();
 
-        // Verify all scopes are cleaned up after cleanup
+        // Verify all spans are cleaned up after cleanup
         assertThat(spanManager.getActiveScopeCount()).isZero();
         assertThat(spanManager.getActiveSpanCount()).isZero();
     }
@@ -226,32 +219,28 @@ public class NodeSpanManagerScopeLeakTest {
      * This test will FAIL because NodeSpanManager has no lifecycle management for cleanup.
      */
     @Test
-    public void shouldCleanupAllScopesOnApplicationShutdown() {
+    public void shouldCleanupAllSpansOnApplicationShutdown() {
         Span mockSpan1 = mock(Span.class);
         Span mockSpan2 = mock(Span.class);
-        Scope mockScope1 = mock(Scope.class);
-        Scope mockScope2 = mock(Scope.class);
         SpanBuilder mockSpanBuilder = mock(SpanBuilder.class, org.mockito.Mockito.RETURNS_SELF);
 
         when(mockTracer.spanBuilder(anyString())).thenReturn(mockSpanBuilder);
         when(mockSpanBuilder.startSpan()).thenReturn(mockSpan1, mockSpan2);
-        when(mockSpan1.makeCurrent()).thenReturn(mockScope1);
-        when(mockSpan2.makeCurrent()).thenReturn(mockScope2);
 
-        // Verify no active scopes before test
+        // Verify no active spans before test
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
         spanManager.createStateSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
         spanManager.createStateSpan("test-instance-2", "test-process", "1.0", "ACTIVE", "node2");
 
-        // Verify both scopes were created
+        // Verify both spans were created
         assertThat(spanManager.getActiveScopeCount()).isEqualTo(2);
         assertThat(spanManager.getActiveSpanCount()).isEqualTo(2);
 
-        // Simulate application shutdown - cleanup should close all active scopes
+        // Simulate application shutdown - cleanup should close all active spans
         spanManager.cleanup();
 
-        // Verify all scopes are cleaned up during shutdown
+        // Verify all spans are cleaned up during shutdown
         assertThat(spanManager.getActiveScopeCount()).isZero();
         assertThat(spanManager.getActiveSpanCount()).isZero();
     }
@@ -270,21 +259,19 @@ public class NodeSpanManagerScopeLeakTest {
      * This test will FAIL because there's no automatic scope cleanup for crashed processes.
      */
     @Test
-    public void shouldCleanupScopesOnProcessErrorWithoutNodeLeftEvent() {
+    public void shouldCleanupSpansOnProcessErrorWithoutNodeLeftEvent() {
         Span mockSpan = mock(Span.class);
-        Scope mockScope = mock(Scope.class);
         SpanBuilder mockSpanBuilder = mock(SpanBuilder.class, org.mockito.Mockito.RETURNS_SELF);
 
         when(mockTracer.spanBuilder(anyString())).thenReturn(mockSpanBuilder);
         when(mockSpanBuilder.startSpan()).thenReturn(mockSpan);
-        when(mockSpan.makeCurrent()).thenReturn(mockScope);
 
-        // Verify no active scopes before test
+        // Verify no active spans before test
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
         spanManager.createStateSpan("test-instance-1", "test-process", "1.0", "ACTIVE", "node1");
 
-        // Verify scope was created
+        // Verify span was created
         assertThat(spanManager.getActiveScopeCount()).isEqualTo(1);
 
         try {
@@ -296,7 +283,7 @@ public class NodeSpanManagerScopeLeakTest {
         // Simulate process error without proper cleanup - cleanup should still work
         spanManager.cleanup();
 
-        // Verify all scopes are cleaned up after cleanup
+        // Verify all spans are cleaned up after cleanup
         assertThat(spanManager.getActiveScopeCount()).isZero();
         assertThat(spanManager.getActiveSpanCount()).isZero();
     }
@@ -322,16 +309,12 @@ public class NodeSpanManagerScopeLeakTest {
 
         Span mockSpan1 = mock(Span.class);
         Span mockSpan2 = mock(Span.class);
-        Scope mockScope1 = mock(Scope.class);
-        Scope mockScope2 = mock(Scope.class);
 
         SpanBuilder mockSpanBuilder = mock(SpanBuilder.class, org.mockito.Mockito.RETURNS_SELF);
         when(mockTracer.spanBuilder(anyString())).thenReturn(mockSpanBuilder);
         when(mockSpanBuilder.startSpan()).thenReturn(mockSpan1, mockSpan2);
-        when(mockSpan1.makeCurrent()).thenReturn(mockScope1);
-        when(mockSpan2.makeCurrent()).thenReturn(mockScope2);
 
-        // Verify no active scopes before test
+        // Verify no active spans before test
         assertThat(spanManager.getActiveScopeCount()).isZero();
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
@@ -363,13 +346,13 @@ public class NodeSpanManagerScopeLeakTest {
         executor.shutdown();
         executor.awaitTermination(5, TimeUnit.SECONDS);
 
-        // Verify only one scope remains (concurrent access should handle previous scope cleanup)
+        // Verify only one span remains (concurrent access should handle previous span cleanup)
         assertThat(spanManager.getActiveScopeCount()).isEqualTo(1);
 
-        // Final cleanup should handle remaining scope
+        // Final cleanup should handle remaining span
         spanManager.cleanup();
 
-        // Verify all scopes are cleaned up after cleanup
+        // Verify all spans are cleaned up after cleanup
         assertThat(spanManager.getActiveScopeCount()).isZero();
         assertThat(spanManager.getActiveSpanCount()).isZero();
     }

@@ -22,6 +22,8 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import org.kie.kogito.quarkus.serverless.workflow.opentelemetry.OtelContextHolder;
+
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Span;
 
@@ -37,8 +39,8 @@ public class OtelLogHandler extends Handler {
             return;
         }
 
-        Span currentSpan = Span.current();
-        if (currentSpan == null || !currentSpan.getSpanContext().isValid()) {
+        Span workflowSpan = OtelContextHolder.getCurrentWorkflowSpan();
+        if (workflowSpan == null || !workflowSpan.getSpanContext().isValid()) {
             return;
         }
 
@@ -47,7 +49,7 @@ public class OtelLogHandler extends Handler {
             formattedMessage = String.format(formattedMessage, record.getParameters());
         }
 
-        currentSpan.addEvent(Events.LOG_MESSAGE, Attributes.of(
+        workflowSpan.addEvent(Events.LOG_MESSAGE, Attributes.of(
                 LOG_LEVEL, record.getLevel().getName(),
                 LOG_LOGGER, record.getLoggerName(),
                 LOG_MESSAGE, formattedMessage,

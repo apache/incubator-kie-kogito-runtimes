@@ -32,6 +32,7 @@ public class NodeSpanManagerTest {
     @AfterEach
     public void cleanup() {
         OtelContextHolder.clearRootContext("test-instance");
+        OtelContextHolder.clearRootSpanContext("test-instance");
     }
 
     private SonataFlowOtelConfig createMockConfig(boolean enabled, boolean spanEnabled) {
@@ -129,81 +130,109 @@ public class NodeSpanManagerTest {
                 "tracker.user", "john.doe");
 
         io.opentelemetry.api.trace.Span span = spanManager.createStateSpanWithContext(
-                "test-instance", "test-process", "1.0", "ACTIVE", "TestState", headerContext, false);
+                "test-instance", "test-process", "1.0", "ACTIVE", "TestState", headerContext, null);
 
         verify(mockSpan).setAttribute(SONATAFLOW_TRANSACTION_ID, "txn-123");
         verify(mockSpan).setAttribute(org.mockito.ArgumentMatchers.eq("sonataflow.tracker.user"), org.mockito.ArgumentMatchers.eq("john.doe"));
     }
 
     @Test
-    public void shouldUseRootContextForRegularNodes() throws Exception {
+    public void shouldUseRootSpanContextForRegularNodes() throws Exception {
         io.opentelemetry.api.trace.Tracer mockTracer = mock(io.opentelemetry.api.trace.Tracer.class);
         io.opentelemetry.api.trace.Span mockSpan = mock(io.opentelemetry.api.trace.Span.class);
+        io.opentelemetry.api.trace.SpanContext mockSpanContext = mock(io.opentelemetry.api.trace.SpanContext.class);
+        when(mockSpanContext.isValid()).thenReturn(true);
+        when(mockSpan.getSpanContext()).thenReturn(mockSpanContext);
         io.opentelemetry.api.trace.SpanBuilder mockSpanBuilder = setupMockSpanBuilder(mockTracer, mockSpan);
         SonataFlowOtelConfig mockConfig = createMockConfig(true, true);
 
+        OtelContextHolder.setRootSpanContext("test-instance", mockSpanContext);
+
         NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
 
-        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "State1", false);
+        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "State1", null);
 
-        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "State2", false);
+        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "State2", null);
 
-        io.opentelemetry.context.Context rootContext = OtelContextHolder.getRootContext("test-instance");
-        assertNotNull(rootContext, "Root context should be stored");
+        io.opentelemetry.api.trace.SpanContext rootSpanContext = OtelContextHolder.getRootSpanContext("test-instance");
+        assertNotNull(rootSpanContext, "Root span context should be stored");
 
-        verify(mockSpanBuilder, atLeastOnce()).setParent(rootContext);
+        verify(mockSpanBuilder, atLeastOnce()).setParent(org.mockito.ArgumentMatchers.any(io.opentelemetry.context.Context.class));
     }
 
     @Test
-    public void shouldUseCurrentContextForSubprocessNodes() throws Exception {
+    public void shouldInheritParentRootSpanContextForSubflows() throws Exception {
         io.opentelemetry.api.trace.Tracer mockTracer = mock(io.opentelemetry.api.trace.Tracer.class);
         io.opentelemetry.api.trace.Span mockSpan = mock(io.opentelemetry.api.trace.Span.class);
         io.opentelemetry.api.trace.SpanBuilder mockSpanBuilder = setupMockSpanBuilder(mockTracer, mockSpan);
+        io.opentelemetry.api.trace.SpanContext mockSpanContext = mock(io.opentelemetry.api.trace.SpanContext.class);
+        when(mockSpanContext.isValid()).thenReturn(true);
+        when(mockSpan.getSpanContext()).thenReturn(mockSpanContext);
         SonataFlowOtelConfig mockConfig = createMockConfig(true, true);
 
         NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
 
-        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "SubprocessState", true);
+        OtelContextHolder.setRootSpanContext("parent-instance", mockSpanContext);
 
-        verify(mockSpanBuilder).setParent(io.opentelemetry.context.Context.current());
+        spanManager.createStateSpan("child-instance", "child-process", "1.0", "ACTIVE", "SubprocessState", "parent-instance");
+
+        io.opentelemetry.api.trace.SpanContext inheritedContext = OtelContextHolder.getRootSpanContext("child-instance");
+        assertNotNull(inheritedContext, "Child should inherit root span context from parent");
+
+        OtelContextHolder.clearRootSpanContext("parent-instance");
+        OtelContextHolder.clearRootSpanContext("child-instance");
     }
 
     @Test
-    public void shouldCaptureRootContextOnFirstNode() throws Exception {
+    public void shouldCaptureRootSpanContextOnFirstNode() throws Exception {
         io.opentelemetry.api.trace.Tracer mockTracer = mock(io.opentelemetry.api.trace.Tracer.class);
         io.opentelemetry.api.trace.Span mockSpan = mock(io.opentelemetry.api.trace.Span.class);
+        io.opentelemetry.api.trace.SpanContext mockSpanContext = mock(io.opentelemetry.api.trace.SpanContext.class);
+        when(mockSpanContext.isValid()).thenReturn(true);
+        when(mockSpan.getSpanContext()).thenReturn(mockSpanContext);
         setupMockSpanBuilder(mockTracer, mockSpan);
         SonataFlowOtelConfig mockConfig = createMockConfig(true, true);
 
+        io.opentelemetry.api.trace.Span wrapSpan = io.opentelemetry.api.trace.Span.wrap(mockSpanContext);
+        io.opentelemetry.context.Context context = io.opentelemetry.context.Context.current().with(wrapSpan);
+        OtelContextHolder.setHttpRequestContext(context);
+
         NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
 
-        io.opentelemetry.context.Context initialContext = OtelContextHolder.getRootContext("test-instance");
-        org.junit.jupiter.api.Assertions.assertNull(initialContext, "Root context should not exist before first node");
+        io.opentelemetry.api.trace.SpanContext initialContext = OtelContextHolder.getRootSpanContext("test-instance");
+        org.junit.jupiter.api.Assertions.assertNull(initialContext, "Root span context should not exist before first node");
 
-        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "State1", false);
+        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "State1", null);
 
-        io.opentelemetry.context.Context capturedContext = OtelContextHolder.getRootContext("test-instance");
-        assertNotNull(capturedContext, "Root context should be captured on first node");
+        io.opentelemetry.api.trace.SpanContext capturedContext = OtelContextHolder.getRootSpanContext("test-instance");
+        assertNotNull(capturedContext, "Root span context should be captured on first node");
+
+        OtelContextHolder.clearHttpRequestContext();
     }
 
     @Test
-    public void shouldClearRootContextOnProcessCompletion() throws Exception {
+    public void shouldClearRootSpanContextOnProcessCompletion() throws Exception {
         io.opentelemetry.api.trace.Tracer mockTracer = mock(io.opentelemetry.api.trace.Tracer.class);
         io.opentelemetry.api.trace.Span mockSpan = mock(io.opentelemetry.api.trace.Span.class);
+        io.opentelemetry.api.trace.SpanContext mockSpanContext = mock(io.opentelemetry.api.trace.SpanContext.class);
+        when(mockSpanContext.isValid()).thenReturn(true);
+        when(mockSpan.getSpanContext()).thenReturn(mockSpanContext);
         setupMockSpanBuilder(mockTracer, mockSpan);
         SonataFlowOtelConfig mockConfig = createMockConfig(true, true);
 
+        OtelContextHolder.setRootSpanContext("test-instance", mockSpanContext);
+
         NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
 
-        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "State1", false);
+        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "State1", null);
 
-        io.opentelemetry.context.Context storedContext = OtelContextHolder.getRootContext("test-instance");
-        assertNotNull(storedContext, "Root context should be stored");
+        io.opentelemetry.api.trace.SpanContext storedContext = OtelContextHolder.getRootSpanContext("test-instance");
+        assertNotNull(storedContext, "Root span context should be stored");
 
         spanManager.endRemainingSpans("test-instance");
 
-        io.opentelemetry.context.Context clearedContext = OtelContextHolder.getRootContext("test-instance");
-        org.junit.jupiter.api.Assertions.assertNull(clearedContext, "Root context should be cleared on process completion");
+        io.opentelemetry.api.trace.SpanContext clearedContext = OtelContextHolder.getRootSpanContext("test-instance");
+        org.junit.jupiter.api.Assertions.assertNull(clearedContext, "Root span context should be cleared on process completion");
     }
 
     @Test
@@ -216,7 +245,7 @@ public class NodeSpanManagerTest {
 
         NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
 
-        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "TestState", false);
+        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "TestState", null);
 
         verify(mockSpanBuilder).setAttribute(SONATAFLOW_WORKFLOW_STATE, "TestState");
     }
@@ -231,7 +260,7 @@ public class NodeSpanManagerTest {
 
         NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
 
-        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "TestState", false);
+        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "TestState", null);
 
         io.opentelemetry.api.trace.Span retrievedSpan = spanManager.getActiveStateSpan("test-instance", "TestState");
 
@@ -249,7 +278,7 @@ public class NodeSpanManagerTest {
 
         NodeSpanManager spanManager = new NodeSpanManager(mockTracer, mockConfig);
 
-        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "TestState", false);
+        spanManager.createStateSpan("test-instance", "test-process", "1.0", "ACTIVE", "TestState", null);
 
         spanManager.endStateSpan("test-instance", "TestState");
 

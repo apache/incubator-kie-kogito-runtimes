@@ -114,7 +114,7 @@ public class ProcessEventHandler {
                 ProcessStates.ERROR,
                 "ProcessError",
                 extractedContext,
-                false);
+                null);
     }
 
     private void addErrorAndCompleteEvents(Span errorSpan, KogitoProcessInstance processInstance, String processInstanceId, long durationMs) {

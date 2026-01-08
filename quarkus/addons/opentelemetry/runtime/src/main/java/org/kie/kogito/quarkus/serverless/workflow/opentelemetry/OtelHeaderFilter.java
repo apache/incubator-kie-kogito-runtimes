@@ -50,6 +50,8 @@ public class OtelHeaderFilter implements ContainerRequestFilter, ContainerRespon
             return;
         }
 
+        OtelContextHolder.setHttpRequestContext(io.opentelemetry.context.Context.current());
+
         Map<String, String> extractedContext = headerExtractor.extractHeaders(requestContext.getHeaders());
 
         if (!extractedContext.isEmpty()) {
@@ -72,6 +74,7 @@ public class OtelHeaderFilter implements ContainerRequestFilter, ContainerRespon
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+        OtelContextHolder.clearHttpRequestContext();
         OtelContextHolder.clear();
     }
 }
