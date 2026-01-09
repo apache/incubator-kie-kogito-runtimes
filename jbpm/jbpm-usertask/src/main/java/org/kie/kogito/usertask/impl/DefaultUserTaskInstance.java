@@ -691,6 +691,10 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         this.notCompletedReassignments = notCompletedReassignments;
     }
 
+    public JobsService getJobsService() {
+        return this.jobsService;
+    }
+
     public void setJobsService(JobsService jobsService) {
         this.jobsService = jobsService;
     }
@@ -771,11 +775,21 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     public void trigger(UserTaskInstanceJobDescription jobDescription) {
         LOG.trace("trigger timer in user tasks {} and job {}", this, jobDescription);
+        resumeIfSuspensionExpired(jobDescription);
         checkAndSendNotification(jobDescription, notStartedDeadlinesTimers, this::startNotification);
         checkAndSendNotification(jobDescription, notCompletedDeadlinesTimers, this::endNotification);
         checkAndReassign(jobDescription, notStartedReassignmentsTimers);
         checkAndReassign(jobDescription, notCompletedReassignmentsTimers);
         this.updatePersistence();
+    }
+
+    private void resumeIfSuspensionExpired(UserTaskInstanceJobDescription jobDescription) {
+        var jobId = (String) getMetadata().get("SuspendedTaskJobId");
+        if (getStatus().getName().equals("Suspended") && jobDescription.id().equals(jobId)) {
+            LOG.info("Auto resuming suspended task with id:{} after expiration", getId());
+            transition("resume", emptyMap(), IdentityProviders.of(WORKFLOW_ENGINE_USER));
+            getMetadata().remove("SuspendedTaskJobId");
+        }
     }
 
     private void checkAndSendNotification(UserTaskInstanceJobDescription timerInstance, Map<String, Notification> timers, Consumer<Notification> publisher) {

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.descriptors.UserTaskInstanceJobDescription;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
@@ -155,4 +156,6 @@ public interface UserTaskInstance {
     void setPotentialUsers(Set<String> potentialUsers);
 
     UserTaskLifeCycle getUserTaskLifeCycle();
+
+    JobsService getJobsService();
 }
