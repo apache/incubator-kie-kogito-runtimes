@@ -21,6 +21,7 @@ package org.kie.kogito.internal.process.workitem;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.kie.api.definition.process.Node;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public class WorkItemRecordParameters {
@@ -71,7 +72,21 @@ public class WorkItemRecordParameters {
     }
 
     private static boolean shouldRecordParameters(KogitoNodeInstance nodeInstance) {
-        return nodeInstance != null && nodeInstance.getNode() != null && (Boolean) nodeInstance.getNode().getMetaData().getOrDefault(RECORD_ARGS, false);
+        return nodeInstance != null && shouldRecordParameters(nodeInstance.getNode());
+    }
+
+    private static boolean shouldRecordParameters(Node node) {
+        return node != null && shouldRecordParameters(node.getMetaData().getOrDefault(RECORD_ARGS, false));
+    }
+
+    private static boolean shouldRecordParameters(Object value) {
+        if (value instanceof Boolean bool) {
+            return bool;
+        } else if (value instanceof String str) {
+            return Boolean.parseBoolean(str);
+        } else {
+            return false;
+        }
     }
 
     private WorkItemRecordParameters() {
