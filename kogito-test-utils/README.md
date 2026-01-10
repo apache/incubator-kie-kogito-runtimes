@@ -48,67 +48,6 @@ Add the needed utils dependency in the _pom.xml_ file:
 </dependency>
 ```
 
-## Infinispan Test Containers Support
-
-### Usage in a Quarkus test:
-
-Example:
-
-```java
-@QuarkusTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.class)
-public class MyTest {
-   // ...
-}
-```
-
-The property _quarkus.infinispan-client.hosts_ will be automatically populated with a random port.
-
-In case we want to run the container only if some requirements are met, we need to use it this way:
-
-```java
-@QuarkusTestResource(value = InfinispanQuarkusTestResource.Conditional.class)
-```
-
-### Usage in Spring Boot test:
-
-
-```java
-
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
-@ContextConfiguration(initializers = InfinispanSpringBootTestResource.class)
-public class MyTest {    
-    // ...
-}
-```
-
-And add the Infinispan properties in the _application.properties_:
-
-```
-# Infinispan
-infinispan.remote.sasl-mechanism=PLAIN
-infinispan.remote.auth-server-name=infinispan
-infinispan.remote.use-auth=true
-infinispan.remote.auth-realm=default
-infinispan.remote.auth-username=admin
-infinispan.remote.auth-password=admin
-```
-
-The property _infinispan.remote.server-list_ will be automatically populated with a random port.
-
-In case we want to run the container only if some requirements are met, we need to use it this way:
-
-```java
-
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
-@ContextConfiguration(initializers = InfinispanSpringBootTestResource.Conditional.class)
-public class MyTest {    
-    // ...
-}
-```
-
 ## Keycloak Test Containers Support
 
 ### Usage in a Quarkus test:

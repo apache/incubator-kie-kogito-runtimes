@@ -72,7 +72,7 @@ mvn archetype:generate \
     -DarchetypeVersion=2.0.0-SNAPSHOT \
     -DgroupId=com.company \
     -DartifactId=sample-kogito \
-    -Daddons=monitoring-prometheus,persistence-infinispan
+    -Daddons=monitoring-prometheus,persistence-postgresql
 ```
 
 For a list of valid add-ons, see these listings:
@@ -82,7 +82,7 @@ For a list of valid add-ons, see these listings:
 
 Please note that you don't need to add the suffix `kogito-addons-springboot` to the name of the addon. For example, to
 include `kie-addons-springboot-monitoring-prometheus` just use `monitoring-prometheus`. For runtime independent
-add-ons, just suppress the `kogito-addons` suffix. So for `kie-addons-persistence-infinispan`
-use `persistence-infinispan`.
+add-ons, just suppress the `kogito-addons` suffix. So for `kie-addons-persistence-postgresql`
+use `persistence-postgresql`.
 
 > You can use `starters` and `addons` together to create a Kogito project that meets your requirements.

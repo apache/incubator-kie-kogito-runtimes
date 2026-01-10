@@ -14,8 +14,6 @@ pojo.avsc
 kogito.addon
 # addons/common/persistence/filesystem/src/main/resources/META-INF/kogito.addon
 kogito.addon
-# addons/common/persistence/infinispan/src/main/resources/META-INF/kogito.addon
-kogito.addon
 # addons/common/persistence/jdbc/src/main/resources/META-INF/kogito.addon
 kogito.addon
 # addons/common/persistence/mongodb/src/main/resources/META-INF/kogito.addon
