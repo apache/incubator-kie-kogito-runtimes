@@ -91,21 +91,40 @@ public class GeneratedFileManager {
      * @param extension the file extension to match (e.g., "drl", "dmn", "java")
      */
     public static void deleteFilesByExtension(Path directory, String extension) {
+        Objects.requireNonNull(directory, "directory must not be null");
+        Objects.requireNonNull(extension, "extension must not be null");
+
+        if (extension.isBlank()) {
+            throw new IllegalArgumentException("extension must not be blank");
+        }
+
+        if (!Files.exists(directory)) {
+            throw new IllegalArgumentException("directory does not exist: " + directory);
+        }
+
+        if (!Files.isDirectory(directory)) {
+            throw new IllegalArgumentException("path is not a directory: " + directory);
+        }
+
         final String normalizedExtension = extension.startsWith(".") ? extension : "." + extension;
+
+        LOGGER.debug("Deleting files with extension '{}' in directory: {}", normalizedExtension, directory);
 
         try (final Stream<Path> files = Files.find(directory,
                 Integer.MAX_VALUE,
-                (p, f) -> p.toString().toLowerCase().endsWith(normalizedExtension.toLowerCase()))) {
-            files.forEach(p -> {
+                (path, attributes) -> attributes.isRegularFile() &&
+                        path.getFileName().toString().toLowerCase().endsWith(normalizedExtension.toLowerCase()))) {
+            files.forEach(path -> {
                 try {
-                    Files.delete(p);
+                    Files.delete(path);
+                    LOGGER.debug("Deleted file: {}", path);
                 } catch (IOException e) {
-                    throw new UncheckedIOException(e);
+                    throw new UncheckedIOException("Failed to delete: " + path, e);
                 }
             });
         } catch (IOException e) {
             throw new UncheckedIOException(
-                    "Error during " + normalizedExtension + " files deletion", e);
+                    "Error during " + normalizedExtension + " files deletion in: " + directory, e);
         }
     }
 
