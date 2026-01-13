@@ -36,12 +36,8 @@ import org.kie.memorycompiler.JavaCompiler;
 import org.kie.memorycompiler.JavaCompilerFactory;
 import org.kie.memorycompiler.JavaCompilerSettings;
 import org.kie.memorycompiler.JavaConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CompilerHelper {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompilerHelper.class);
 
     private static final JavaCompiler JAVA_COMPILER = JavaCompilerFactory.loadCompiler(JavaConfiguration.CompilerType.NATIVE, "17");
     public static final String SOURCES = "SOURCES";

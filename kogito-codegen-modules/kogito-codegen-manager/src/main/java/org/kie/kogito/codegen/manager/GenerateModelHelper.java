@@ -29,8 +29,6 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
 import org.kie.kogito.codegen.manager.processes.PersistenceGenerationHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
 import static org.kie.efesto.common.api.constants.Constants.INDEXFILE_DIRECTORY_PROPERTY;
@@ -38,8 +36,6 @@ import static org.kie.kogito.codegen.manager.CompilerHelper.RESOURCES;
 import static org.kie.kogito.codegen.manager.CompilerHelper.SOURCES;
 
 public class GenerateModelHelper {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenerateModelHelper.class);
 
     private GenerateModelHelper() {
     }

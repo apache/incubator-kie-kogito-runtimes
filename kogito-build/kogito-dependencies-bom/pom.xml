@@ -157,7 +157,7 @@
     <version.maven.project>2.2.1</version.maven.project>
     <version.maven.plugin>3.7.1</version.maven.plugin>
     <version.maven.invoker>3.2.0</version.maven.invoker>
-    <version.maven.plugin.testing.harness>4.0.0-alpha-2</version.maven.plugin.testing.harness>
+    <version.maven.plugin.testing.harness>4.0.0-beta-4</version.maven.plugin.testing.harness>
     <version.plexus>2.1.0</version.plexus>
     <version.plexus.classworld>2.6.0</version.plexus.classworld>
 

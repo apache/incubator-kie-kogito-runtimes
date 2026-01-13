@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  * Utility class responsible for managing and writing generated files to specific locations.
  * This class provides methods to handle the dumping of generated files while
  * leveraging an internally configured {@code GeneratedFileWriter} instance.
- *
  * The {@code GeneratedFileManager} is designed to be used as a static utility and
  * therefore cannot be instantiated.
  */
