@@ -85,16 +85,16 @@ public class GenerateModelHelper {
         /* 1. Execute Code Generation based on KIE models */
         Map<String, Collection<GeneratedFile>> generatedModelFiles = generateModelFiles(new GenerateModelFilesInfo(generateModelInfo));
 
-        CompilerHelper.CompileInfo generatedModelsCompileInfo =
+        CompilerHelper.CompileInfo compileInfo =
                 new CompilerHelper.CompileInfo(generatedModelFiles.get(SOURCES),
                         generatedModelFiles.get(RESOURCES), generateModelInfo);
 
         /* 2. Persist the models' code-generated source and resources files in target (maven) or gradle (build) */
-        GeneratedFileManager.dumpGeneratedFiles(generatedModelsCompileInfo.generatedSources(), generatedModelsCompileInfo.baseDir().toPath());
-        GeneratedFileManager.dumpGeneratedFiles(generatedModelsCompileInfo.resources(), generatedModelsCompileInfo.baseDir().toPath());
+        GeneratedFileManager.dumpGeneratedFiles(compileInfo.generatedSources(), compileInfo.baseDir().toPath());
+        GeneratedFileManager.dumpGeneratedFiles(compileInfo.resources(), compileInfo.baseDir().toPath());
 
         /* 3. Compile and persist compiled files in target (maven) or gradle (build) */
-        CompilerHelper.compileAndDump(generatedModelsCompileInfo);
+        CompilerHelper.compileAndDump(compileInfo);
 
         /*
          * 4. Execute Code Generation based on process extensions modules.
@@ -104,16 +104,16 @@ public class GenerateModelHelper {
         Map<String, Collection<GeneratedFile>> generatedPersistenceFiles =
                 PersistenceGenerationHelper.generatePersistenceFiles(generateModelInfo.kogitoBuildContext, generateModelInfo.projectClassLoader, generateModelInfo.schemaVersion);
 
-        CompilerHelper.CompileInfo generatedPersistenceCompileInfo =
+        compileInfo =
                 new CompilerHelper.CompileInfo(generatedPersistenceFiles.get(SOURCES),
                         generatedPersistenceFiles.get(RESOURCES), generateModelInfo);
 
         /* 5. Persist the process extension code-generated source and resources files in target (maven) or gradle (build) */
-        GeneratedFileManager.dumpGeneratedFiles(generatedPersistenceFiles.get(SOURCES), generatedPersistenceCompileInfo.baseDir().toPath());
-        GeneratedFileManager.dumpGeneratedFiles(generatedPersistenceFiles.get(RESOURCES), generatedPersistenceCompileInfo.baseDir().toPath());
+        GeneratedFileManager.dumpGeneratedFiles(generatedPersistenceFiles.get(SOURCES), compileInfo.baseDir().toPath());
+        GeneratedFileManager.dumpGeneratedFiles(generatedPersistenceFiles.get(RESOURCES), compileInfo.baseDir().toPath());
 
         /* 6. Compile and persist compiled files in target (maven) or gradle (build) */
-        CompilerHelper.compileAndDump(generatedPersistenceCompileInfo);
+        CompilerHelper.compileAndDump(compileInfo);
 
         if (!generateModelInfo.keepSources()) {
             GeneratedFileManager.deleteFilesByExtension(generateModelInfo.outputDirectory().toPath(), "drl");
