@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Suppress most logs during tests - only show ERROR level -->
+    <root level="ERROR">
+        <appender-ref ref="STDOUT" />
+    </root>
+    
+    <!-- Keep Kogito package at WARN to see important warnings -->
+    <logger name="org.kie.kogito" level="WARN" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+</configuration>
