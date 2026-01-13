@@ -77,7 +77,7 @@ public class GeneratedFileManager {
      * @param generatedFile the {@code GeneratedFile} to be written; must not be null
      * @param writer the {@code GeneratedFileWriter} responsible for handling the file write operation; must not be null
      */
-     static void writeGeneratedFile(GeneratedFile generatedFile, GeneratedFileWriter writer) {
+    static void writeGeneratedFile(GeneratedFile generatedFile, GeneratedFileWriter writer) {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Writing file: {}", generatedFile.path());
         }

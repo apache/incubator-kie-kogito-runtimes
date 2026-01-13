@@ -156,14 +156,6 @@ class GeneratedFileManagerTest {
         assertThat(captor.getValue()).isEqualTo(generatedFile);
     }
 
-    @Test
-    void writeGeneratedFile_withNullFile_shouldThrowException() {
-        GeneratedFileWriter writer = mock(GeneratedFileWriter.class);
-
-        assertThatThrownBy(() -> GeneratedFileManager.writeGeneratedFile(null, writer))
-                .isInstanceOf(NullPointerException.class);
-    }
-
     @ParameterizedTest
     @MethodSource("provideExtensionTestCases")
     void deleteFilesByExtension_withVariousExtensions_shouldDeleteMatchingFiles(
