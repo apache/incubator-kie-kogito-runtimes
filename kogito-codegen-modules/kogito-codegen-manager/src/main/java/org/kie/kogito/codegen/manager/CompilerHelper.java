@@ -23,13 +23,11 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
-import org.drools.util.PortablePath;
 import org.kie.memorycompiler.CompilationProblem;
 import org.kie.memorycompiler.CompilationResult;
 import org.kie.memorycompiler.JavaCompiler;
@@ -98,10 +96,14 @@ public class CompilerHelper {
                         .collect(Collectors.joining(",")));
             }
 
-            for (PortablePath path : trgMfs.getFilePaths()) {
-                byte[] data = trgMfs.getBytes(path);
-                GeneratedFileManager.dumpGeneratedFiles(Set.of(new GeneratedFile(GeneratedFileType.COMPILED_CLASS, path.asString(), data)), baseDir);
-            }
+            Collection<GeneratedFile> compiledClasses = trgMfs.getFilePaths().stream()
+                    .map(path -> new GeneratedFile(
+                            GeneratedFileType.COMPILED_CLASS,
+                            path.asString(),
+                            trgMfs.getBytes(path)))
+                    .toList();
+
+            GeneratedFileManager.dumpGeneratedFiles(compiledClasses, baseDir);
         }
     }
 
