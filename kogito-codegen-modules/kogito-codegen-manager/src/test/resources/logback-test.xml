@@ -20,19 +20,21 @@
 
 -->
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <!-- %l lowers performance -->
+            <!--<pattern>%d [%t] %-5p %l%n  %m%n</pattern>-->
+            <pattern>%d [%t] %-5p %m%n</pattern>
         </encoder>
     </appender>
 
     <!-- Suppress most logs during tests - only show ERROR level -->
     <root level="ERROR">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="consoleAppender" />
     </root>
     
     <!-- Keep Kogito package at WARN to see important warnings -->
     <logger name="org.kie.kogito" level="WARN" additivity="false">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="consoleAppender" />
     </logger>
 </configuration>
