@@ -33,7 +33,7 @@ class KogitoGradlePluginTest {
     private Project project;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         // Create an in-memory project and apply the plugin
         project = ProjectBuilder.builder().build();
         project.getPlugins().apply("java");
@@ -42,7 +42,7 @@ class KogitoGradlePluginTest {
     }
 
     @Test
-    void pluginRegistersGreetTask() {
+    void pluginRegistersGenerateModelTask() {
         // Verify the task is registered
         assertThat(project.getTasks().findByName(GENERATE_MODEL_TASK_NAME)).isNotNull();
     }
