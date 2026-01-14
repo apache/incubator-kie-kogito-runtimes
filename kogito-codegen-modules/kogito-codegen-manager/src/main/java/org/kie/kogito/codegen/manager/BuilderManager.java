@@ -87,7 +87,7 @@ public class BuilderManager {
         LOGGER.info("  JSON Schema Version : {}", buildInfo.jsonSchemaVersion() != null ? buildInfo.jsonSchemaVersion() : "nd");
         LOGGER.info("  Persistence Enabled : {}", buildInfo.enablePersistence());
         LOGGER.info("  Keep Sources        : {}", buildInfo.keepSources());
-        LOGGER.info("  Framework            : {}", buildInfo.framework());
+        LOGGER.info("  Framework           : {}", buildInfo.framework());
         LOGGER.info("========================================");
     }
 

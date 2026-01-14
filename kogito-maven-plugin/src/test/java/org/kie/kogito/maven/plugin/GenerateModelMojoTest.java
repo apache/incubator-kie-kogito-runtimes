@@ -41,14 +41,7 @@ class GenerateModelMojoTest {
 
     @Test
     @InjectMojo(goal = "generateModel", pom = "src/test/resources/unit/generate-model/pom.xml")
-    void generateModelWithOnDemand(GenerateModelMojo mojo) {
-        commonSetup(mojo);
-        commonGenerateModel(mojo);
-    }
-
-    @Test
-    @InjectMojo(goal = "generateModel", pom = "src/test/resources/unit/generate-model/pom.xml")
-    void generateModelWithoutOnDemand(GenerateModelMojo mojo) {
+    void generateModel(GenerateModelMojo mojo) {
         commonSetup(mojo);
         commonGenerateModel(mojo);
     }
