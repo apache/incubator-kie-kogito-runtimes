@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.quarkus.serverless.workflow.deployment.livereload;
+package org.kie.kogito.workflows.services;
 
-import io.quarkiverse.asyncapi.generator.input.AsyncApiGeneratorStreamCodeGen;
+import jakarta.enterprise.context.ApplicationScoped;
 
-/**
- * Wrapper for {@link AsyncApiGeneratorStreamCodeGen} that implements the {@link LiveReloadableCodeGenProvider} Service Provider Interface.
- */
-public class LiveReloadableAsyncApiGeneratorStreamCodeGen extends LiveReloadableCodeGenProviderBase<AsyncApiGeneratorStreamCodeGen> {
+@ApplicationScoped
+public class EvenService {
 
-    public LiveReloadableAsyncApiGeneratorStreamCodeGen() {
-        super(new AsyncApiGeneratorStreamCodeGen());
+    public void isEven(int number) {
+        if (number % 2 != 0) {
+            throw new IllegalArgumentException("Odd situation");
+        }
     }
 }

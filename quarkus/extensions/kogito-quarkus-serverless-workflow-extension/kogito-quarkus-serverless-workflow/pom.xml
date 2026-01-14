@@ -109,9 +109,14 @@
       <artifactId>sonataflow-addons-quarkus-grpc</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkiverse.asyncapi</groupId>
-      <artifactId>quarkus-asyncapi</artifactId>
+      <groupId>org.apache.kie.sonataflow</groupId>
+      <artifactId>sonataflow-addons-quarkus-asyncapi</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-services</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>

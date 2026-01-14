@@ -65,7 +65,9 @@
     <module>token-exchange</module>
     <module>process-instance-migration</module>
     <module>openapi</module>
+    <module>opentelemetry</module>
     <module>grpc</module>
+    <module>asyncapi</module>
   </modules>
 
   <profiles>
