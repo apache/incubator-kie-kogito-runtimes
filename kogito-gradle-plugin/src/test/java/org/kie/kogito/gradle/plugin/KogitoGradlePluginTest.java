@@ -21,6 +21,7 @@ package org.kie.kogito.gradle.plugin;
 import java.io.File;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,26 +30,33 @@ import static org.kie.kogito.gradle.plugin.KogitoGradlePlugin.PLUGIN_ID;
 
 class KogitoGradlePluginTest {
 
-    @Test
-    void pluginRegistersGreetTask() {
+    private Project project;
+
+    @BeforeEach
+    public void setup() {
         // Create an in-memory project and apply the plugin
-        Project project = ProjectBuilder.builder().build();
+        project = ProjectBuilder.builder().build();
+        project.getPlugins().apply("java");
         project.getPlugins().apply(PLUGIN_ID);
 
+    }
+
+    @Test
+    void pluginRegistersGreetTask() {
         // Verify the task is registered
         assertThat(project.getTasks().findByName(GENERATE_MODEL_TASK_NAME)).isNotNull();
     }
 
     @Test
     void extensionHasSensibleDefaults() {
-        // Create an in-memory project and apply the plugin
-        Project project = ProjectBuilder.builder().build();
-        project.getPlugins().apply(PLUGIN_ID);
-
         KogitoGradleExtension ext = project.getExtensions().getByType(KogitoGradleExtension.class);
 
         // Default generated sources directory file is build/generated/sources/kogito
         File defaultGeneratedSourcesDir = ext.getGeneratedSourcesDir().get();
-        assertThat(defaultGeneratedSourcesDir).isEqualTo(project.getLayout().getBuildDirectory().getAsFile().get().toPath().resolve("generated").resolve("sources").resolve("kogito") .toFile());
+        assertThat(defaultGeneratedSourcesDir).isEqualTo(project.getLayout().getBuildDirectory().getAsFile().get().toPath()
+                .resolve("generated")
+                .resolve("sources")
+                .resolve("kogito")
+                .toFile());
     }
 }   

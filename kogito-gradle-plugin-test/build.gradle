@@ -22,6 +22,8 @@ plugins {
   id 'java'
   id("org.kie.kogito.gradle") version "999-SNAPSHOT"
   id 'org.springframework.boot' version '3.4.11'
+  // inspecting/debugging purpose
+  id "com.dorongold.task-tree" version "4.0.1"
 }
 
 repositories {
