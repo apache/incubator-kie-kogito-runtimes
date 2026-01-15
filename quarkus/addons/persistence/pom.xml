@@ -36,7 +36,6 @@
 
   <modules>
     <module>jdbc</module>
-    <module>infinispan</module>
     <module>kafka</module>
     <module>filesystem</module>
     <module>mongodb</module>
