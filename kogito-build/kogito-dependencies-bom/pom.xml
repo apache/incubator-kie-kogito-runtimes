@@ -129,7 +129,7 @@
     <version.wurstmeister.kafka>2.12-2.2.1</version.wurstmeister.kafka>
     <version.org.mongo>5.3.1</version.org.mongo>
     <version.org.mongo-image>5.0.31</version.org.mongo-image>
-    <version.org.mozilla.rhino>1.7.13</version.org.mozilla.rhino>
+    <version.org.mozilla.rhino>1.7.14.1</version.org.mozilla.rhino>
     <version.org.redis>2.0.4</version.org.redis>
     <version.org.postgres>15.9-alpine3.20</version.org.postgres>
     <!-- we align to version used by quarkus -->
@@ -153,7 +153,7 @@
     <version.org.reflections>0.10.2</version.org.reflections>
     <version.org.slf4j>2.0.6</version.org.slf4j>
 
-    <version.maven>3.9.6</version.maven>
+    <version.maven>3.9.11</version.maven>
     <version.maven.project>2.2.1</version.maven.project>
     <version.maven.plugin>3.7.1</version.maven.plugin>
     <version.maven.invoker>3.2.0</version.maven.invoker>
