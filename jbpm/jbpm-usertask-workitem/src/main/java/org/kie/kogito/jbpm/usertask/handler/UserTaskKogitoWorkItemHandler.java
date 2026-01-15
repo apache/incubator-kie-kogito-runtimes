@@ -109,6 +109,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             metadata.put("ProcessInstanceState", workItem.getProcessInstance().getState());
             metadata.put("NodeInstanceId", workItem.getNodeInstance().getId());
             metadata.put("Skippable", workItem.getParameters().get(SKIPPABLE));
+            metadata.put("SuspendUntil", workItem.getNodeInstance().getNode().getMetaData().get("suspendUntil"));
 
             task.addMetadata(metadata);
 

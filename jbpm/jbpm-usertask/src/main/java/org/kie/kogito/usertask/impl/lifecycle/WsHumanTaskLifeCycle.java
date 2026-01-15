@@ -54,6 +54,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     private static final String PARAMETER_SUSPEND_UNTIL = "SUSPEND_UNTIL";
 
     private static final String SKIPPABLE = "Skippable";
+    private static final String SUSPEND_UNTIL = "SuspendUntil";
     private static final String SUSPENDED_TASK_JOB_ID = "SuspendedTaskJobId";
 
     // Actions
@@ -369,25 +370,24 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
 
     private Optional<UserTaskTransitionToken> suspend(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
         if (userTaskInstance.getStatus() != null) {
-            if (token.data().containsKey(PARAMETER_SUSPEND_UNTIL)) {
-                var durationOrTimestamp = String.valueOf(token.data().get(PARAMETER_SUSPEND_UNTIL));
-                parseDuration(durationOrTimestamp).or(() -> parseTimestamp(durationOrTimestamp))
-                        .ifPresent(expirationTime -> {
-                            UserTaskInstanceJobDescription jobDescription =
-                                    UserTaskInstanceJobDescription.newUserTaskInstanceJobDescriptionBuilder()
-                                            .id(UUID.randomUUID().toString())
-                                            .expirationTime(ExactExpirationTime.of(expirationTime))
-                                            .userTaskInstanceId(userTaskInstance.getId())
-                                            .processId(userTaskInstance.getProcessInfo().getProcessId())
-                                            .processInstanceId(userTaskInstance.getProcessInfo().getProcessInstanceId())
-                                            .rootProcessInstanceId(userTaskInstance.getProcessInfo().getRootProcessInstanceId())
-                                            .rootProcessId(userTaskInstance.getProcessInfo().getRootProcessId())
-                                            .metadata(userTaskInstance.getMetadata())
-                                            .build();
+            var suspendUntil = token.data().get(PARAMETER_SUSPEND_UNTIL) != null ? (String) token.data().get(PARAMETER_SUSPEND_UNTIL) : (String) userTaskInstance.getMetadata().get(SUSPEND_UNTIL);
 
-                            String jobId = userTaskInstance.getJobsService().scheduleJob(jobDescription);
-                            userTaskInstance.getMetadata().put(SUSPENDED_TASK_JOB_ID, jobId);
-                        });
+            if (suspendUntil != null) {
+                toZonedDateTime(suspendUntil).ifPresent(expirationTime -> {
+                    UserTaskInstanceJobDescription jobDescription = UserTaskInstanceJobDescription.newUserTaskInstanceJobDescriptionBuilder()
+                            .id(UUID.randomUUID().toString())
+                            .expirationTime(ExactExpirationTime.of(expirationTime))
+                            .userTaskInstanceId(userTaskInstance.getId())
+                            .processId(userTaskInstance.getProcessInfo().getProcessId())
+                            .processInstanceId(userTaskInstance.getProcessInfo().getProcessInstanceId())
+                            .rootProcessInstanceId(userTaskInstance.getProcessInfo().getRootProcessInstanceId())
+                            .rootProcessId(userTaskInstance.getProcessInfo().getRootProcessId())
+                            .metadata(userTaskInstance.getMetadata())
+                            .build();
+
+                    String jobId = userTaskInstance.getJobsService().scheduleJob(jobDescription);
+                    userTaskInstance.getMetadata().put(SUSPENDED_TASK_JOB_ID, jobId);
+                });
             }
 
             userTaskInstance.getMetadata().put("PreviousStatus", userTaskInstance.getStatus().getName());
@@ -395,20 +395,20 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
         return Optional.empty();
     }
 
+    public static Optional<ZonedDateTime> toZonedDateTime(String input) {
+        try {
+            var timestamp = ZonedDateTime.parse(input);
+            var now = ZonedDateTime.now();
+            return timestamp.isAfter(now) ? Optional.of(timestamp) : Optional.empty();
+        } catch (DateTimeParseException e) {
+            return parseDuration(input);
+        }
+    }
+
     public static Optional<ZonedDateTime> parseDuration(String durationString) {
         try {
             var duration = Duration.parse(durationString);
             return duration.isNegative() ? Optional.empty() : Optional.of(ZonedDateTime.now().plus(duration));
-        } catch (DateTimeParseException e) {
-            return Optional.empty();
-        }
-    }
-
-    public static Optional<ZonedDateTime> parseTimestamp(String timestampString) {
-        try {
-            var timestamp = ZonedDateTime.parse(timestampString);
-            var now = ZonedDateTime.now();
-            return timestamp.isAfter(now) ? Optional.of(timestamp) : Optional.empty();
         } catch (DateTimeParseException e) {
             return Optional.empty();
         }
