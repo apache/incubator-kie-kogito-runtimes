@@ -110,6 +110,17 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             metadata.put("NodeInstanceId", workItem.getNodeInstance().getId());
             metadata.put("Skippable", workItem.getParameters().get(SKIPPABLE));
 
+            var suspendUntil = (String) workItem.getNodeInstance().getNode().getMetaData().get("suspendUntil");
+            if (suspendUntil != null) {
+                if (suspendUntil.startsWith("#{") && suspendUntil.endsWith("}")) {
+                    var suspendUntilVariable = suspendUntil.substring(2, suspendUntil.length() - 1);
+                    var suspendUntilValue = workItem.getProcessInstance().getVariables().get(suspendUntilVariable);
+                    metadata.put("SuspendUntil", suspendUntilValue);
+                } else {
+                    metadata.put("SuspendUntil", suspendUntil);
+                }
+            }
+
             task.addMetadata(metadata);
 
             task.fireInitialStateChange();

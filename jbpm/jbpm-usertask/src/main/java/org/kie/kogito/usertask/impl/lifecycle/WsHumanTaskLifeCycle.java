@@ -18,6 +18,9 @@
  */
 package org.kie.kogito.usertask.impl.lifecycle;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,8 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.jobs.ExactExpirationTime;
+import org.kie.kogito.jobs.descriptors.UserTaskInstanceJobDescription;
 import org.kie.kogito.usertask.UserTaskAssignmentStrategy;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskInstanceNotAuthorizedException;
@@ -45,8 +51,11 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     private static final String PARAMETER_DELEGATED_USER = "DELEGATED_USER";
     private static final String PARAMETER_FORWARDED_USERS = "FORWARDED_USERS";
     private static final String PARAMETER_NOMINATED_USERS = "NOMINATED_USERS";
+    private static final String PARAMETER_SUSPEND_UNTIL = "SUSPEND_UNTIL";
 
     private static final String SKIPPABLE = "Skippable";
+    private static final String SUSPEND_UNTIL = "SuspendUntil";
+    private static final String SUSPENDED_TASK_JOB_ID = "SuspendedTaskJobId";
 
     // Actions
     public static final String ACTIVATE = "activate";
@@ -361,9 +370,57 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
 
     private Optional<UserTaskTransitionToken> suspend(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
         if (userTaskInstance.getStatus() != null) {
+            var suspendUntil = token.data().get(PARAMETER_SUSPEND_UNTIL) != null ? (String) token.data().get(PARAMETER_SUSPEND_UNTIL) : (String) userTaskInstance.getMetadata().get(SUSPEND_UNTIL);
+
+            if (suspendUntil != null) {
+                ZonedDateTime expirationTime = parseTemporalValue(suspendUntil);
+
+                UserTaskInstanceJobDescription jobDescription = UserTaskInstanceJobDescription.newUserTaskInstanceJobDescriptionBuilder()
+                        .id(UUID.randomUUID().toString())
+                        .expirationTime(ExactExpirationTime.of(expirationTime))
+                        .userTaskInstanceId(userTaskInstance.getId())
+                        .processId(userTaskInstance.getProcessInfo().getProcessId())
+                        .processInstanceId(userTaskInstance.getProcessInfo().getProcessInstanceId())
+                        .rootProcessInstanceId(userTaskInstance.getProcessInfo().getRootProcessInstanceId())
+                        .rootProcessId(userTaskInstance.getProcessInfo().getRootProcessId())
+                        .metadata(userTaskInstance.getMetadata())
+                        .build();
+
+                String jobId = userTaskInstance.getJobsService().scheduleJob(jobDescription);
+                userTaskInstance.getMetadata().put(SUSPENDED_TASK_JOB_ID, jobId);
+            }
+
             userTaskInstance.getMetadata().put("PreviousStatus", userTaskInstance.getStatus().getName());
         }
         return Optional.empty();
+    }
+
+    private static ZonedDateTime parseTemporalValue(String input) {
+        if (input == null || input.isBlank()) {
+            throw new IllegalArgumentException("SuspendUntil cannot be null or empty");
+        }
+        try {
+            var timestamp = ZonedDateTime.parse(input);
+            var now = ZonedDateTime.now();
+            if (timestamp.isAfter(now)) {
+                return timestamp;
+            }
+            return parseDuration(input);
+        } catch (DateTimeParseException e) {
+            return parseDuration(input);
+        }
+    }
+
+    private static ZonedDateTime parseDuration(String input) {
+        try {
+            var duration = Duration.parse(input);
+            if (duration.isNegative() || duration.isZero()) {
+                throw new IllegalArgumentException("Invalid suspendUntil duration: " + input);
+            }
+            return ZonedDateTime.now().plus(duration);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid suspendUntil duration or timestamp: " + input);
+        }
     }
 
     private Optional<UserTaskTransitionToken> resume(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
