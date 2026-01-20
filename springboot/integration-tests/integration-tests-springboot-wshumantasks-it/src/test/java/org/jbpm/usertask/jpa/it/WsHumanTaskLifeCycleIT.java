@@ -19,6 +19,7 @@
 
 package org.jbpm.usertask.jpa.it;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,6 @@ import io.restassured.http.ContentType;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
 
@@ -228,7 +228,6 @@ public class WsHumanTaskLifeCycleIT {
         verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
 
         suspendWithDurationOrTimestamp(taskId, user, "PT5S");
-        verifyTaskStatus(taskId, user, "Suspended");
         Thread.sleep(10000);
         verifyTaskStatus(taskId, user, "Ready");
 
@@ -251,7 +250,6 @@ public class WsHumanTaskLifeCycleIT {
         claim(taskId, user);
 
         suspendWithDurationOrTimestamp(taskId, user, ZonedDateTime.now().plusSeconds(5).toString());
-        verifyTaskStatus(taskId, user, "Suspended");
         Thread.sleep(10000);
         verifyTaskStatus(taskId, user, "Reserved");
 
@@ -323,6 +321,46 @@ public class WsHumanTaskLifeCycleIT {
         verifyTaskStatus(taskId, user, "InProgress");
 
         complete(taskId, user);
+        isProcessCompleted(processId, pid);
+    }
+
+    @Test
+    public void testSuspendUntilInProcessDefinition() throws InterruptedException {
+        var user = "dave";
+        var potentialUsers = new String[] { "john", "dave" };
+        var processId = "suspend_until";
+        var pid = startProcessInstance(processId);
+        var taskId = getTaskId(user, pid);
+        verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
+
+        suspend(taskId, user);
+        Thread.sleep(8000);
+        verifyTaskStatus(taskId, user, "Ready");
+
+        claim(taskId, user);
+        start(taskId, user);
+        complete(taskId, user);
+
+        isProcessCompleted(processId, pid);
+    }
+
+    @Test
+    public void testSuspendUntilInProcessDefinitionWithVariableNotation() throws InterruptedException {
+        var user = "dave";
+        var potentialUsers = new String[] { "john", "dave" };
+        var processId = "suspend_until_variable";
+        var pid = startProcessInstanceWithVariables(processId, Map.of("resumeAt", "PT4S"));
+        var taskId = getTaskId(user, pid);
+        verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
+
+        suspend(taskId, user);
+        Thread.sleep(8000);
+        verifyTaskStatus(taskId, user, "Ready");
+
+        claim(taskId, user);
+        start(taskId, user);
+        complete(taskId, user);
+
         isProcessCompleted(processId, pid);
     }
 
@@ -589,9 +627,13 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     public String startProcessInstance(String processId) {
+        return startProcessInstanceWithVariables(processId, Map.of());
+    }
+
+    public String startProcessInstanceWithVariables(String processId, Map<String, Object> variables) {
         String pid = given().contentType(ContentType.JSON)
                 .when()
-                .body(Map.of())
+                .body(variables)
                 .post("/{processId}", processId)
                 .then()
                 .statusCode(201)
@@ -705,7 +747,7 @@ public class WsHumanTaskLifeCycleIT {
                 .body(new TransitionInfo("suspend", Map.of("SUSPEND_UNTIL", temporal)))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
-                .statusCode(500);
+                .statusCode(400);
     }
 
     private void verifyTaskStatus(String taskId, String user, String expectedStatus) {

@@ -425,6 +425,12 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
 
     private Optional<UserTaskTransitionToken> resume(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
         userTaskInstance.getMetadata().remove("PreviousStatus");
+
+        var suspendedTaskJobId = (String) userTaskInstance.getMetadata().get("SuspendedTaskJobId");
+        if (suspendedTaskJobId != null) {
+            userTaskInstance.getJobsService().cancelJob(suspendedTaskJobId);
+            userTaskInstance.getMetadata().remove("SuspendedTaskJobId");
+        }
         return Optional.empty();
     }
 
