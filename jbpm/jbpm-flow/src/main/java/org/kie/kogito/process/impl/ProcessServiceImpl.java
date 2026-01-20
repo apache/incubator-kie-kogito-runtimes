@@ -161,15 +161,15 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Override
     public <T extends MappableToModel<R>, R> Optional<R> signalProcessInstance(Process<T> process, String id, Object data, String signalName) {
-        if (process.instances().waitingForEventType(signalName).filter(pi -> id.equals(pi.id())).findAny().isEmpty()) {
-            throw new IllegalSignalException(id, signalName);
-        }
-        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(),
-                () -> process.instances().findById(id)
-                        .map(pi -> {
-                            pi.send(SignalFactory.of(signalName, data));
-                            return pi.checkError().variables().toModel();
-                        }));
+        return Optional.ofNullable(UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(),
+                () -> process.instances().acceptingEventType(signalName, id)
+                                .findFirst()
+                                .map(pi -> {
+                                    pi.send(SignalFactory.of(signalName, data));
+                                    return pi.checkError().variables().toModel();
+                                })
+                                .orElseThrow(() -> new IllegalSignalException(id, signalName))
+        ));
     }
 
     @Override
