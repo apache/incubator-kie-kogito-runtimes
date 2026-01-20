@@ -44,6 +44,7 @@ public class IdentityProviderFactoryImpl implements IdentityProviderFactory {
         }
 
         if (!Collections.disjoint(config.getRolesThatAllowImpersonation(), identityProvider.getRoles())
+                && user !=null && !user.isBlank()
                 && !identityProvider.getName().equals(user)) {
             return IdentityProviders.of(user, roles);
         }
