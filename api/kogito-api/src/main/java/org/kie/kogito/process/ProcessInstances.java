@@ -66,7 +66,7 @@ public interface ProcessInstances<T> {
 
                     boolean isAdHocNode = pi.adHocFragments().stream()
                             .anyMatch(fragment -> fragment.getName().equals(signalName));
-                    
+
                     return isWaitingForSignal || isAdHocNode;
                 })
                 .stream();
