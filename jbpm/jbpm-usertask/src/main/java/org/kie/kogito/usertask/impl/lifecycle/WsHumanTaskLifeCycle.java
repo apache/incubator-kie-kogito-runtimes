@@ -120,6 +120,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     private final UserTaskTransition T_SUSPENDED_READY = new DefaultUserTransition(RESUME, SUSPENDED, READY, this::resume);
     private final UserTaskTransition T_SUSPENDED_RESERVED = new DefaultUserTransition(RESUME, SUSPENDED, RESERVED, this::resume);
     private final UserTaskTransition T_SUSPENDED_INPROGRESS = new DefaultUserTransition(RESUME, SUSPENDED, INPROGRESS, this::resume);
+    private final UserTaskTransition T_SUSPENDED_EXITED = new DefaultUserTransition(EXIT, SUSPENDED, EXITED, this::resumeAndExit);
 
     private List<UserTaskTransition> transitions;
 
@@ -155,7 +156,8 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
                 T_INPROGRESS_SUSPENDED,
                 T_SUSPENDED_READY,
                 T_SUSPENDED_RESERVED,
-                T_SUSPENDED_INPROGRESS);
+                T_SUSPENDED_INPROGRESS,
+                T_SUSPENDED_EXITED);
     }
 
     @Override
@@ -164,7 +166,8 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
         return transitions.stream()
                 .filter(t -> t.source().equals(userTaskInstance.getStatus())
                         && (!t.id().equals(SKIP) || "true".equals(userTaskInstance.getMetadata().get("Skippable")))
-                        && (!t.id().equals(RESUME) || t.target().getName().equals(userTaskInstance.getMetadata().get("PreviousStatus").toString())))
+                        && (!t.id().equals(RESUME) || t.target().getName().equals(userTaskInstance.getMetadata().get("PreviousStatus").toString()))
+                        && t != T_SUSPENDED_EXITED)
                 .toList();
     }
 
@@ -431,7 +434,17 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
             userTaskInstance.getJobsService().cancelJob(suspendedTaskJobId);
             userTaskInstance.getMetadata().remove("SuspendedTaskJobId");
         }
+
         return Optional.empty();
+    }
+
+    private Optional<UserTaskTransitionToken> resumeAndExit(UserTaskInstance userTaskInstance, UserTaskTransitionToken userTaskTransitionToken, IdentityProvider identityProvider) {
+        if (!identityProvider.getName().equals(WORKFLOW_ENGINE_USER)) {
+            throw new UserTaskInstanceNotAuthorizedException("user " + identityProvider.getName() + " not authorized to perform this operation on user task " + userTaskInstance.getId());
+        }
+
+        resume(userTaskInstance, userTaskTransitionToken, identityProvider);
+        return exit(userTaskInstance, userTaskTransitionToken, identityProvider);
     }
 
     private String assignStrategy(UserTaskInstance userTaskInstance, IdentityProvider identityProvider) {

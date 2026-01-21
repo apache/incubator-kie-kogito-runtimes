@@ -787,8 +787,8 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         var jobId = (String) getMetadata().get("SuspendedTaskJobId");
         if (getStatus().getName().equals("Suspended") && jobDescription.id().equals(jobId)) {
             LOG.info("Auto resuming suspended task with id:{} after expiration", getId());
-            transition("resume", emptyMap(), IdentityProviders.of(WORKFLOW_ENGINE_USER));
             getMetadata().remove("SuspendedTaskJobId");
+            transition("resume", emptyMap(), IdentityProviders.of(WORKFLOW_ENGINE_USER));
         }
     }
 
