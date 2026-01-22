@@ -356,6 +356,105 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
+    public void testSuspendUntilWithZeroDuration() {
+        var user = "dave";
+        var potentialUsers = new String[] { "john", "dave" };
+        var processId = "manager_multiple_users";
+        var pid = startProcessInstance(processId);
+        var taskId = getTaskId(user, pid);
+        verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
+
+        suspendWithInvalidDurationOrTimestamp(taskId, user, "PT0S");
+        verifyTaskStatus(taskId, user, "Ready");
+
+        claim(taskId, user);
+        start(taskId, user);
+        complete(taskId, user);
+
+        isProcessCompleted(processId, pid);
+    }
+
+    @Test
+    public void testSuspendUntilWithEmptyValue() {
+        var user = "dave";
+        var potentialUsers = new String[] { "john", "dave" };
+        var processId = "manager_multiple_users";
+        var pid = startProcessInstance(processId);
+        var taskId = getTaskId(user, pid);
+        verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
+
+        suspendWithInvalidDurationOrTimestamp(taskId, user, "  ");
+        verifyTaskStatus(taskId, user, "Ready");
+
+        claim(taskId, user);
+        start(taskId, user);
+        complete(taskId, user);
+
+        isProcessCompleted(processId, pid);
+    }
+
+    @Test
+    public void testSuspendUntilWithPastTimestamp() {
+        var user = "dave";
+        var potentialUsers = new String[] { "john", "dave" };
+        var processId = "manager_multiple_users";
+        var pid = startProcessInstance(processId);
+        var taskId = getTaskId(user, pid);
+        verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
+
+        suspendWithInvalidDurationOrTimestamp(taskId, user, ZonedDateTime.now().minusHours(1).toString());
+        verifyTaskStatus(taskId, user, "Ready");
+
+        claim(taskId, user);
+        start(taskId, user);
+        complete(taskId, user);
+
+        isProcessCompleted(processId, pid);
+    }
+
+    @Test
+    public void testSuspendUntilManualResumeBeforeAutoResume() throws InterruptedException {
+        var user = "dave";
+        var potentialUsers = new String[] { "john", "dave" };
+        var processId = "manager_multiple_users";
+        var pid = startProcessInstance(processId);
+        var taskId = getTaskId(user, pid);
+        verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
+
+        suspendWithDurationOrTimestamp(taskId, user, "PT5S");
+        resume(taskId, user, "Ready");
+
+        Thread.sleep(10000);
+        verifyTaskStatus(taskId, user, "Ready");
+
+        claim(taskId, user);
+        start(taskId, user);
+        complete(taskId, user);
+
+        isProcessCompleted(processId, pid);
+    }
+
+    @Test
+    public void testSuspendUntilOverridingProcessDefinitionValue() throws InterruptedException {
+        var user = "dave";
+        var potentialUsers = new String[] { "john", "dave" };
+        var processId = "suspend_until";
+        var pid = startProcessInstance(processId);
+        var taskId = getTaskId(user, pid);
+        verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
+
+        suspendWithDurationOrTimestamp(taskId, user, "PT2S");
+        Thread.sleep(4000);
+        verifyTaskStatus(taskId, user, "Ready");
+
+        claim(taskId, user);
+        start(taskId, user);
+        complete(taskId, user);
+
+        isProcessCompleted(processId, pid);
+    }
+
+    @Test
     public void testSkipTransition() {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
@@ -503,7 +602,8 @@ public class WsHumanTaskLifeCycleIT {
                 .statusCode(200)
                 .body("id", equalTo(taskId))
                 .body("status.name", equalTo(previousState))
-                .body("status.terminate", equalTo(null));
+                .body("status.terminate", equalTo(null))
+                .body("metadata.SuspendedJobId", equalTo(null));
     }
 
     private void suspend(String taskId, String user) {
@@ -719,14 +819,13 @@ public class WsHumanTaskLifeCycleIT {
                 .contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", user)
-                .body(new TransitionInfo("suspend", Map.of("SUSPEND_UNTIL", temporal)))
+                .body(new TransitionInfo("suspend", Map.of("suspendUntil", temporal)))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
                 .statusCode(200)
                 .body("id", equalTo(taskId))
                 .body("status.name", equalTo("Suspended"))
                 .body("status.terminate", equalTo(null))
-                //                .body("metadata.SuspendUntil", equalTo(temporal))
                 .body("metadata.SuspendedTaskJobId", not(emptyOrNullString()));
     }
 
@@ -735,7 +834,7 @@ public class WsHumanTaskLifeCycleIT {
                 .contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", user)
-                .body(new TransitionInfo("suspend", Map.of("SUSPEND_UNTIL", temporal)))
+                .body(new TransitionInfo("suspend", Map.of("suspendUntil", temporal)))
                 .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
                 .then()
                 .statusCode(400);

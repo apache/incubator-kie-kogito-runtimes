@@ -51,7 +51,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     private static final String PARAMETER_DELEGATED_USER = "DELEGATED_USER";
     private static final String PARAMETER_FORWARDED_USERS = "FORWARDED_USERS";
     private static final String PARAMETER_NOMINATED_USERS = "NOMINATED_USERS";
-    private static final String PARAMETER_SUSPEND_UNTIL = "SUSPEND_UNTIL";
+    private static final String PARAMETER_SUSPEND_UNTIL = "suspendUntil";
 
     private static final String SKIPPABLE = "Skippable";
     private static final String SUSPEND_UNTIL = "SuspendUntil";
