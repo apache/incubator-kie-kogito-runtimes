@@ -170,8 +170,7 @@ public class ProcessServiceImpl implements ProcessService {
                             pi.send(SignalFactory.of(signalName, data));
                             return pi.checkError().variables().toModel();
                         })
-                        .orElseThrow(() -> new IllegalSignalException(id, signalName))
-        ));
+                        .orElseThrow(() -> new IllegalSignalException(id, signalName))));
     }
 
     @Override
