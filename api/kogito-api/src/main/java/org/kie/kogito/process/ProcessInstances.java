@@ -61,8 +61,9 @@ public interface ProcessInstances<T> {
         return findById(id, ProcessInstanceReadMode.MUTABLE)
                 .filter(pi -> {
                     // Check if waiting for event (traditional signal event)
-                    boolean isWaitingForSignal = waitingForEventType(signalName, ProcessInstanceReadMode.READ_ONLY)
-                            .anyMatch(p -> p.id().equals(id));
+                    boolean isWaitingForSignal = Stream.concat(
+                            waitingForEventType(signalName, ProcessInstanceReadMode.READ_ONLY),
+                            waitingForEventType("Message-" + signalName, ProcessInstanceReadMode.READ_ONLY)).anyMatch(p -> p.id().equals(id));
 
                     boolean isAdHocNode = pi.adHocFragments().stream()
                             .anyMatch(fragment -> fragment.getName().equals(signalName));
