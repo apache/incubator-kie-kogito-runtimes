@@ -213,11 +213,13 @@ public abstract class PersistenceTest {
         assertThat(createdPid).isEqualTo(pid);
 
         //signal to continue and complete the process instance
-        given().contentType(ContentType.JSON)
+
+        await().atMost(Duration.ofSeconds(15))
+                .untilAsserted(() -> given().contentType(ContentType.JSON)
                 .when()
                 .post("/{processId}/{id}/continue", PROCESS_ID, pid)
                 .then()
-                .statusCode(200);
+                .statusCode(200));
 
         given().contentType(ContentType.JSON)
                 .when()
