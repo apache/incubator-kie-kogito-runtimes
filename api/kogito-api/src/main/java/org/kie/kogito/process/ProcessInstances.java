@@ -58,7 +58,7 @@ public interface ProcessInstances<T> {
     Stream<ProcessInstance<T>> waitingForEventType(String eventType, ProcessInstanceReadMode mode);
 
     default Stream<ProcessInstance<T>> acceptingEventType(String signalName, String id) {
-        return findById(id, ProcessInstanceReadMode.MUTABLE)
+        return findById(id, ProcessInstanceReadMode.READ_ONLY)
                 .filter(pi -> {
                     // Check if waiting for event (traditional signal event)
                     boolean isWaitingForSignal = Stream.concat(
