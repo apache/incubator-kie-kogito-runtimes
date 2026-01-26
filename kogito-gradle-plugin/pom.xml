@@ -32,6 +32,9 @@
   <version>999-SNAPSHOT</version>
   <packaging>jar</packaging>
 
+  <name>Kogito :: Gradle :: Plugin</name>
+  <description>Plugin to build applications using Gradle</description>
+
   <!-- DO NOT ADD PARENT DECLARATION TO HAVE THAT PLUGIN DISCOVERABLE BY GRADLE -->
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
