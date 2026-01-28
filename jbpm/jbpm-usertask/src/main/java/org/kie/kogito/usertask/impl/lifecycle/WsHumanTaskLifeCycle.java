@@ -43,6 +43,8 @@ import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransitionException;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransitionToken;
 
+import static org.drools.base.time.TimeUtils.parseTimeString;
+
 public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     public static final String WORKFLOW_ENGINE_USER = "WORKFLOW_ENGINE_USER";
 
@@ -57,7 +59,6 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     private static final String SUSPEND_UNTIL = "SuspendUntil";
     private static final String SUSPENDED_TASK_JOB_ID = "SuspendedTaskJobId";
 
-    // Actions
     public static final String ACTIVATE = "activate";
     public static final String NOMINATE = "nominate";
     public static final String CLAIM = "claim";
@@ -422,7 +423,11 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
             }
             return ZonedDateTime.now().plus(duration);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid suspendUntil duration or timestamp: " + input);
+            var millis = parseTimeString(input);
+            if (millis <= 0) {
+                throw new IllegalArgumentException("Invalid suspendUntil duration: " + input);
+            }
+            return ZonedDateTime.now().plus(Duration.ofMillis(millis));
         }
     }
 
