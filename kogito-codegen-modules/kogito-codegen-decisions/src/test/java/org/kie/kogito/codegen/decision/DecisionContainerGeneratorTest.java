@@ -19,6 +19,13 @@
  */
 package org.kie.kogito.codegen.decision;
 
+import java.io.StringReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -28,10 +35,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.kie.api.io.Resource;
 import org.kie.dmn.core.compiler.DMNProfile;
+import org.kie.kogito.codegen.api.AddonsConfig;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.dmn.DmnExecutionIdSupplier;
 
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -43,15 +57,24 @@ import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
 import static org.kie.kogito.codegen.decision.DecisionCodegen.getCustomDMNProfiles;
 import static org.kie.kogito.codegen.decision.DecisionCodegenTest.CUSTOM_PROFILES_PACKAGE;
 import static org.kie.kogito.codegen.decision.DecisionContainerGenerator.MONITORED_DECISIONMODEL_TRANSFORMER;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DecisionContainerGeneratorTest {
 
     private MethodCallExpr initMethod;
+    private KogitoBuildContext context;
 
     @BeforeEach
     void setUp() {
         initMethod = new MethodCallExpr();
         initMethod.setName("init");
+
+        context = mock(KogitoBuildContext.class);
+        AddonsConfig addonsConfig = AddonsConfig.builder().build();
+        when(context.getAddonsConfig()).thenReturn(addonsConfig);
+        when(context.getPackageName()).thenReturn("org.kie.kogito.test");
+        when(context.name()).thenReturn("Java");
     }
 
     @Test
@@ -128,6 +151,68 @@ class DecisionContainerGeneratorTest {
 
     static Stream<Boolean> booleans() {
         return Stream.of(true, false);
+    }
+
+    @Test
+    void testChunkingWithFewResources() throws Exception {
+        Collection<CollectedResource> resources = createMockResources(5);
+
+        DecisionContainerGenerator generator = new DecisionContainerGenerator(
+                context, "org.kie.kogito.Application", resources, Collections.emptyList(), Collections.emptySet(), false);
+
+        CompilationUnit cu = generator.compilationUnit();
+        ClassOrInterfaceDeclaration clazz = cu.getClassByName("DecisionModels").orElseThrow();
+
+        List<MethodDeclaration> loadMethods0 = clazz.getMethodsByName("loadDmnResources_0");
+        assertThat(loadMethods0).hasSize(1);
+
+        assertThat(loadMethods0.get(0).getBody().get().getStatements()).hasSize(7);
+
+        assertThat(clazz.getMethodsByName("loadDmnResources_1")).isEmpty();
+    }
+
+    @Test
+    void testChunkingWithManyResources() throws Exception {
+        Collection<CollectedResource> resources = createMockResources(2005);
+
+        DecisionContainerGenerator generator = new DecisionContainerGenerator(
+                context, "org.kie.kogito.Application", resources, Collections.emptyList(), Collections.emptySet(), false);
+
+        CompilationUnit cu = generator.compilationUnit();
+        ClassOrInterfaceDeclaration clazz = cu.getClassByName("DecisionModels").orElseThrow();
+
+        List<MethodDeclaration> loadMethods0 = clazz.getMethodsByName("loadDmnResources_0");
+        assertThat(loadMethods0).hasSize(1);
+        assertThat(loadMethods0.get(0).getBody().get().getStatements()).hasSize(1002);
+
+        List<MethodDeclaration> loadMethods1 = clazz.getMethodsByName("loadDmnResources_1");
+        assertThat(loadMethods1).hasSize(1);
+        assertThat(loadMethods1.get(0).getBody().get().getStatements()).hasSize(1002);
+
+        List<MethodDeclaration> loadMethods2 = clazz.getMethodsByName("loadDmnResources_2");
+        assertThat(loadMethods2).hasSize(1);
+        assertThat(loadMethods2.get(0).getBody().get().getStatements()).hasSize(7);
+
+        assertThat(clazz.getMethodsByName("loadDmnResources_3")).isEmpty();
+    }
+
+    private Collection<CollectedResource> createMockResources(int count) throws Exception {
+        List<CollectedResource> resources = new ArrayList<>();
+        // using a .jar base path bypasses the ReadResourceUtil file system checks
+        Path basePath = Paths.get("dummy.jar");
+
+        for (int i = 0; i < count; i++) {
+            Resource resource = mock(Resource.class);
+            when(resource.getSourcePath()).thenReturn("dmn_" + i + ".dmn");
+            when(resource.getReader()).thenReturn(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<definitions/>"));
+
+            CollectedResource collected = mock(CollectedResource.class);
+            when(collected.basePath()).thenReturn(basePath);
+            when(collected.resource()).thenReturn(resource);
+
+            resources.add(collected);
+        }
+        return resources;
     }
 
 }
