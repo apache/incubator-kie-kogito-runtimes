@@ -401,14 +401,16 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
 
     private static ZonedDateTime parseTemporalValue(String input) {
         if (input == null || input.isBlank()) {
-            throw new IllegalArgumentException("SuspendUntil cannot be null or empty");
+            throw new IllegalArgumentException("suspendUntil cannot be null or empty");
         }
+
         try {
             var timestamp = ZonedDateTime.parse(input);
             var now = ZonedDateTime.now();
             if (timestamp.isAfter(now)) {
                 return timestamp;
             }
+
             return parseDuration(input);
         } catch (DateTimeParseException e) {
             return parseDuration(input);
@@ -421,13 +423,23 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
             if (duration.isNegative() || duration.isZero()) {
                 throw new IllegalArgumentException("Invalid suspendUntil duration: " + input);
             }
+
             return ZonedDateTime.now().plus(duration);
         } catch (DateTimeParseException e) {
+            return parseSimpleDuration(input);
+        }
+    }
+
+    private static ZonedDateTime parseSimpleDuration(String input) {
+        try {
             var millis = parseTimeString(input);
             if (millis <= 0) {
                 throw new IllegalArgumentException("Invalid suspendUntil duration: " + input);
             }
+
             return ZonedDateTime.now().plus(Duration.ofMillis(millis));
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("Invalid suspendUntil duration: " + input);
         }
     }
 
