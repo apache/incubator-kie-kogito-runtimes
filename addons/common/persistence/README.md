@@ -27,8 +27,6 @@ to find out more.
 
 Please check the following examples to explore more about this capability:
 
-- [process-infinispan-persistence-quarkus](https://github.com/kiegroup/kogito-examples/tree/stable/kogito-quarkus-examples/process-infinispan-persistence-quarkus)
-- [process-infinispan-persistence-springboot](https://github.com/kiegroup/kogito-examples/tree/stable/kogito-springboot-examples/process-infinispan-persistence-springboot)
 - [process-kafka-persistence-quarkus](https://github.com/kiegroup/kogito-examples/tree/stable/kogito-quarkus-examples/process-kafka-persistence-quarkus)
 - [process-mongodb-persistence-quarkus](https://github.com/kiegroup/kogito-examples/tree/stable/kogito-quarkus-examples/process-mongodb-persistence-quarkus)
 - [process-mongodb-persistence-springboot](https://github.com/kiegroup/kogito-examples/tree/stable/kogito-springboot-examples/process-mongodb-persistence-springboot)
