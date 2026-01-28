@@ -31,6 +31,7 @@ import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.NotAuthorizedException;
 import org.kie.kogito.internal.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.internal.process.workitem.WorkItemNotFoundException;
+import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.NodeInstanceNotFoundException;
 import org.kie.kogito.process.NodeNotFoundException;
 import org.kie.kogito.process.ProcessInstanceDuplicatedException;
@@ -43,6 +44,7 @@ import org.kie.kogito.usertask.lifecycle.UserTaskTransitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.illegalSignalMessageException;
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.nodeInstanceNotFoundMessageException;
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.nodeNotFoundMessageException;
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.processInstanceDuplicatedMessageException;
@@ -84,6 +86,7 @@ public abstract class AbstractExceptionsHandler<T> {
                 newExceptionHandler(VariableViolationException.class, variableViolationMessageException(), this::badRequest),
                 newExceptionHandler(WorkItemExecutionException.class, workItemExecutionMessageException(), this::fromErrorCode),
                 newExceptionHandler(IllegalArgumentException.class, this::badRequest),
+                newExceptionHandler(IllegalSignalException.class, illegalSignalMessageException(), this::badRequest),
                 newExceptionHandler(MessageException.class, this::badRequest));
 
         this.mapper = new HashMap<>();
@@ -96,18 +99,13 @@ public abstract class AbstractExceptionsHandler<T> {
     }
 
     private T fromErrorCode(ExceptionBodyMessage message) {
-        switch (message.getErrorCode()) {
-            case "400":
-                return badRequest(message);
-            case "403":
-                return forbidden(message);
-            case "404":
-                return notFound(message);
-            case "409":
-                return conflict(message);
-            default:
-                return internalError(message);
-        }
+        return switch (message.getErrorCode()) {
+            case "400" -> badRequest(message);
+            case "403" -> forbidden(message);
+            case "404" -> notFound(message);
+            case "409" -> conflict(message);
+            default -> internalError(message);
+        };
     }
 
     protected abstract T badRequest(ExceptionBodyMessage body);
