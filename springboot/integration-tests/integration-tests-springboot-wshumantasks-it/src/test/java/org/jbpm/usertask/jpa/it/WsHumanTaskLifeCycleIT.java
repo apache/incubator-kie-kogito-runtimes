@@ -422,6 +422,45 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
+    public void testSuspendUntilWithSimpleDurationFormat() throws InterruptedException {
+        var user = "dave";
+        var potentialUsers = new String[] { "john", "dave" };
+        var processId = "manager_multiple_users";
+        var pid = startProcessInstance(processId);
+        var taskId = getTaskId(user, pid);
+        verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
+
+        suspendWithDurationOrTimestamp(taskId, user, "5s");
+        Thread.sleep(10000);
+        verifyTaskStatus(taskId, user, "Ready");
+
+        claim(taskId, user);
+        start(taskId, user);
+        complete(taskId, user);
+
+        isProcessCompleted(processId, pid);
+    }
+
+    @Test
+    public void testSuspendUntilWithInvalidRepeatTimerFormat() {
+        var user = "dave";
+        var potentialUsers = new String[] { "john", "dave" };
+        var processId = "manager_multiple_users";
+        var pid = startProcessInstance(processId);
+        var taskId = getTaskId(user, pid);
+        verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
+
+        suspendWithInvalidDurationOrTimestamp(taskId, user, "R3/PT5S");
+        verifyTaskStatus(taskId, user, "Ready");
+
+        claim(taskId, user);
+        start(taskId, user);
+        complete(taskId, user);
+
+        isProcessCompleted(processId, pid);
+    }
+
+    @Test
     public void testSuspendUntilManualResumeBeforeAutoResume() throws InterruptedException {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
