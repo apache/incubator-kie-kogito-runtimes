@@ -130,10 +130,23 @@ public class DeadlineHelper {
 
     private static Collection<ScheduleInfo> getReassignmentSchedule(String timeStr) {
         ScheduleInfo info = new ScheduleInfo();
-        if (!timeStr.startsWith("PT")) {
-            timeStr = "PT" + timeStr;
+        // Check if it's a shorthand duration (e.g., "1m", "2h")
+        Duration shorthandDuration = parseShorthandDuration(timeStr);
+        if (shorthandDuration != null) {
+            info.setDuration(shorthandDuration);
+        } else if (!timeStr.startsWith("PT") && !timeStr.startsWith("P")) {
+            // If not already prefixed with P or PT, determine which prefix to use
+            // Check if it contains time components (H, M, S) or date components (Y, W, D)
+            // Note: M is ambiguous (could be months or minutes), so we check for T presence
+            if (timeStr.contains("T") || timeStr.matches(".*[0-9]+[HMS].*")) {
+                timeStr = "PT" + timeStr;
+            } else {
+                timeStr = "P" + timeStr;
+            }
+            info.setDuration(parseDuration(timeStr));
+        } else {
+            info.setDuration(parseDuration(timeStr));
         }
-        info.setDuration(Duration.parse(timeStr));
         return Collections.singletonList(info);
     }
 
