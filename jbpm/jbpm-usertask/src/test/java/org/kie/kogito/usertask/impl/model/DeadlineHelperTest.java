@@ -249,6 +249,17 @@ public class DeadlineHelperTest {
         assertThat(reassignment.getScheduleInfo().iterator().next().getDuration()).isEqualTo(Duration.ofMinutes(1));
     }
 
+    @Test
+    public void testReassignmentWithDateBasedDuration() {
+        Collection<DeadlineInfo<Reassignment>> reassignments = DeadlineHelper.parseReassignments(
+                "[users:John,Jane|groups:Admins]@[365D]");
+        assertThat(reassignments).hasSize(1);
+        DeadlineInfo<Reassignment> reassignment = reassignments.iterator().next();
+        assertThat(reassignment.getNotification().getPotentialUsers()).containsExactlyInAnyOrder("John", "Jane");
+        assertThat(reassignment.getNotification().getPotentialGroups()).containsExactlyInAnyOrder("Admins");
+        assertThat(reassignment.getScheduleInfo().iterator().next().getDuration()).isEqualTo(Duration.ofDays(365));
+    }
+
     private void assertEqualsDate(ZonedDateTime expectedDate, ZonedDateTime calculatedDate) {
         assertThat(calculatedDate.toInstant().getEpochSecond()).isEqualTo(expectedDate.toInstant().getEpochSecond());
     }
