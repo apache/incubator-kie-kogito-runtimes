@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.codegen.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,5 +143,13 @@ public class CodegenUtils {
 
     public static boolean isObjectMapperField(FieldDeclaration fd) {
         return fd.getElementType().isClassOrInterfaceType() && fd.getElementType().asClassOrInterfaceType().getNameAsString().equals("ObjectMapper");
+    }
+
+    public static <T> List<List<T>> partitionList(List<T> list, int chunkSize) {
+        List<List<T>> partitions = new ArrayList<>();
+        for (int i = 0; i < list.size(); i += chunkSize) {
+            partitions.add(list.subList(i, Math.min(i + chunkSize, list.size())));
+        }
+        return partitions;
     }
 }
