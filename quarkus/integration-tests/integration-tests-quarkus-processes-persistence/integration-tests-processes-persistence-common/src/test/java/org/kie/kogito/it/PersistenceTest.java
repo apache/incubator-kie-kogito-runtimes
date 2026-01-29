@@ -216,10 +216,10 @@ public abstract class PersistenceTest {
 
         await().atMost(Duration.ofSeconds(15))
                 .untilAsserted(() -> given().contentType(ContentType.JSON)
-                .when()
-                .post("/{processId}/{id}/continue", PROCESS_ID, pid)
-                .then()
-                .statusCode(200));
+                        .when()
+                        .post("/{processId}/{id}/continue", PROCESS_ID, pid)
+                        .then()
+                        .statusCode(200));
 
         given().contentType(ContentType.JSON)
                 .when()
