@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -267,7 +268,11 @@ public class DeadlineHelper {
         Matcher matcher = shorthandDurationPattern.matcher(timeStr);
         if (matcher.matches()) {
             long value = Long.parseLong(matcher.group(1));
-            String unitInput = matcher.group(2).toLowerCase();
+            String unitInput = matcher.group(2);
+            // Only convert to lowercase if it's not 'm' or 'M' (to distinguish minutes from months)
+            if (!Objects.equals(unitInput, "m") && !Objects.equals(unitInput, "M")) {
+                unitInput = unitInput.toLowerCase();
+            }
             DurationUnit unit = DurationUnit.fromString(unitInput);
             if (unit == null) {
                 throw new IllegalArgumentException("Unknown shorthand duration unit: " + unitInput);
@@ -306,6 +311,13 @@ public class DeadlineHelper {
             @Override
             Duration toDuration(long value) {
                 return Duration.ofDays(value * 7);
+            }
+        },
+        MONTHS("M") {
+            @Override
+            Duration toDuration(long value) {
+                // Convert months to Duration using Period
+                return getDuration(Period.ofMonths((int) value), Duration.ZERO);
             }
         },
         YEARS("y") {
