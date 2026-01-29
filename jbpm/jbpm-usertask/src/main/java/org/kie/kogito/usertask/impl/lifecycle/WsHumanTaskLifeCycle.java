@@ -42,14 +42,18 @@ import org.kie.kogito.usertask.lifecycle.UserTaskState.TerminationType;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransitionException;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransitionToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.drools.base.time.TimeUtils.parseTimeString;
 
 public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
-    public static final String WORKFLOW_ENGINE_USER = "WORKFLOW_ENGINE_USER";
 
-    public static final String PARAMETER_USER = "USER";
-    public static final String PARAMETER_NOTIFY = "NOTIFY";
+    private static final Logger LOG = LoggerFactory.getLogger(WsHumanTaskLifeCycle.class);
+
+    private static final String WORKFLOW_ENGINE_USER = "WORKFLOW_ENGINE_USER";
+    private static final String PARAMETER_USER = "USER";
+    private static final String PARAMETER_NOTIFY = "NOTIFY";
     private static final String PARAMETER_DELEGATED_USER = "DELEGATED_USER";
     private static final String PARAMETER_FORWARDED_USERS = "FORWARDED_USERS";
     private static final String PARAMETER_NOMINATED_USERS = "NOMINATED_USERS";
@@ -168,7 +172,8 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
                 .filter(t -> t.source().equals(userTaskInstance.getStatus())
                         && (!t.id().equals(SKIP) || "true".equals(userTaskInstance.getMetadata().get("Skippable")))
                         && (!t.id().equals(RESUME) || t.target().getName().equals(userTaskInstance.getMetadata().get("PreviousStatus").toString()))
-                        && t != T_SUSPENDED_EXITED)
+                        && t != T_SUSPENDED_EXITED
+                        && t != T_CREATED_READY_ACTIVATE)
                 .toList();
     }
 
@@ -389,6 +394,8 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
                         .rootProcessId(userTaskInstance.getProcessInfo().getRootProcessId())
                         .metadata(userTaskInstance.getMetadata())
                         .build();
+
+                LOG.debug("Suspending usertask with id {} until {}", userTaskInstance.getId(), expirationTime);
 
                 String jobId = userTaskInstance.getJobsService().scheduleJob(jobDescription);
                 userTaskInstance.getMetadata().put(SUSPENDED_TASK_JOB_ID, jobId);

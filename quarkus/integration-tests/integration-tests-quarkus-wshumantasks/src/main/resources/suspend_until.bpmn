@@ -45,7 +45,7 @@
           <drools:metaValue><![CDATA[Manager Approval]]></drools:metaValue>
         </drools:metaData>
         <drools:metaData name="suspendUntil">
-          <drools:metaValue><![CDATA[PT4S]]></drools:metaValue>
+          <drools:metaValue><![CDATA[PT1S]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:incoming>_811931F2-2E40-4D08-8C67-9DC6A28F9B20</bpmn2:incoming>

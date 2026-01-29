@@ -19,6 +19,7 @@
 
 package org.jbpm.usertask.jpa.it;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +37,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
@@ -210,7 +212,7 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
-    public void testSuspendUntilWithDuration() throws InterruptedException {
+    public void testSuspendUntilWithDuration() {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
         var processId = "manager_multiple_users";
@@ -218,8 +220,7 @@ public class WsHumanTaskLifeCycleIT {
         var taskId = getTaskId(user, pid);
         verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
 
-        suspendWithDurationOrTimestamp(taskId, user, "PT5S");
-        Thread.sleep(10000);
+        suspendWithDurationOrTimestamp(taskId, user, "PT1S");
         verifyTaskStatus(taskId, user, "Ready");
 
         claim(taskId, user);
@@ -230,7 +231,7 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
-    public void testSuspendUntilWithTimestamp() throws InterruptedException {
+    public void testSuspendUntilWithTimestamp() {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
         var processId = "manager_multiple_users";
@@ -240,8 +241,7 @@ public class WsHumanTaskLifeCycleIT {
 
         claim(taskId, user);
 
-        suspendWithDurationOrTimestamp(taskId, user, ZonedDateTime.now().plusSeconds(5).toString());
-        Thread.sleep(10000);
+        suspendWithDurationOrTimestamp(taskId, user, ZonedDateTime.now().plusSeconds(2).toString());
         verifyTaskStatus(taskId, user, "Reserved");
 
         start(taskId, user);
@@ -289,7 +289,7 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
-    public void testSuspendUntilMultipleStatesWithDuration() throws InterruptedException {
+    public void testSuspendUntilMultipleStatesWithDuration() {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
         var processId = "manager_multiple_users";
@@ -297,18 +297,15 @@ public class WsHumanTaskLifeCycleIT {
         var taskId = getTaskId(user, pid);
         verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
 
-        suspendWithDurationOrTimestamp(taskId, user, "PT5S");
-        Thread.sleep(10000);
+        suspendWithDurationOrTimestamp(taskId, user, "PT1S");
         verifyTaskStatus(taskId, user, "Ready");
 
         claim(taskId, user);
-        suspendWithDurationOrTimestamp(taskId, user, "PT5S");
-        Thread.sleep(10000);
+        suspendWithDurationOrTimestamp(taskId, user, "PT1S");
         verifyTaskStatus(taskId, user, "Reserved");
 
         start(taskId, user);
-        suspendWithDurationOrTimestamp(taskId, user, "PT5S");
-        Thread.sleep(10000);
+        suspendWithDurationOrTimestamp(taskId, user, "PT1S");
         verifyTaskStatus(taskId, user, "InProgress");
 
         complete(taskId, user);
@@ -316,7 +313,7 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
-    public void testSuspendUntilInProcessDefinition() throws InterruptedException {
+    public void testSuspendUntilInProcessDefinition() {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
         var processId = "suspend_until";
@@ -325,7 +322,6 @@ public class WsHumanTaskLifeCycleIT {
         verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
 
         suspend(taskId, user);
-        Thread.sleep(8000);
         verifyTaskStatus(taskId, user, "Ready");
 
         claim(taskId, user);
@@ -336,16 +332,15 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
-    public void testSuspendUntilInProcessDefinitionWithVariableNotation() throws InterruptedException {
+    public void testSuspendUntilInProcessDefinitionWithVariableNotation() {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
         var processId = "suspend_until_variable";
-        var pid = startProcessInstanceWithVariables(processId, Map.of("resumeAt", "PT4S"));
+        var pid = startProcessInstanceWithVariables(processId, Map.of("resumeAt", "PT1S"));
         var taskId = getTaskId(user, pid);
         verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
 
         suspend(taskId, user);
-        Thread.sleep(8000);
         verifyTaskStatus(taskId, user, "Ready");
 
         claim(taskId, user);
@@ -413,7 +408,7 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
-    public void testSuspendUntilWithSimpleDurationFormat() throws InterruptedException {
+    public void testSuspendUntilWithSimpleDurationFormat() {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
         var processId = "manager_multiple_users";
@@ -421,8 +416,7 @@ public class WsHumanTaskLifeCycleIT {
         var taskId = getTaskId(user, pid);
         verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
 
-        suspendWithDurationOrTimestamp(taskId, user, "5s");
-        Thread.sleep(10000);
+        suspendWithDurationOrTimestamp(taskId, user, "1s");
         verifyTaskStatus(taskId, user, "Ready");
 
         claim(taskId, user);
@@ -452,7 +446,7 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
-    public void testSuspendUntilManualResumeBeforeAutoResume() throws InterruptedException {
+    public void testSuspendUntilManualResumeBeforeAutoResume() {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
         var processId = "manager_multiple_users";
@@ -463,9 +457,6 @@ public class WsHumanTaskLifeCycleIT {
         suspendWithDurationOrTimestamp(taskId, user, "PT5S");
         resume(taskId, user, "Ready");
 
-        Thread.sleep(10000);
-        verifyTaskStatus(taskId, user, "Ready");
-
         claim(taskId, user);
         start(taskId, user);
         complete(taskId, user);
@@ -474,7 +465,7 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
-    public void testSuspendUntilOverridingProcessDefinitionValue() throws InterruptedException {
+    public void testSuspendUntilOverridingProcessDefinitionValue() {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
         var processId = "suspend_until";
@@ -482,9 +473,9 @@ public class WsHumanTaskLifeCycleIT {
         var taskId = getTaskId(user, pid);
         verifyTask(processId, pid, taskId, user, "Ready", potentialUsers);
 
-        suspendWithDurationOrTimestamp(taskId, user, "PT2S");
-        Thread.sleep(4000);
-        verifyTaskStatus(taskId, user, "Ready");
+        suspendWithDurationOrTimestamp(taskId, user, "PT4S");
+        verifyTaskStatus(taskId, user, "Suspended", 3);
+        verifyTaskStatus(taskId, user, "Ready", 6);
 
         claim(taskId, user);
         start(taskId, user);
@@ -880,14 +871,20 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     private void verifyTaskStatus(String taskId, String user, String expectedStatus) {
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .queryParam("user", user)
-                .get(USER_TASKS_INSTANCE_ENDPOINT, taskId)
-                .then()
-                .statusCode(200)
-                .body("id", equalTo(taskId))
-                .body("status.name", equalTo(expectedStatus));
+        verifyTaskStatus(taskId, user, expectedStatus, 5);
+    }
+
+    private void verifyTaskStatus(String taskId, String user, String expectedStatus, long timeout) {
+        await()
+                .atMost(Duration.ofSeconds(timeout))
+                .untilAsserted(() -> given()
+                        .contentType(ContentType.JSON)
+                        .when()
+                        .queryParam("user", user)
+                        .get(USER_TASKS_INSTANCE_ENDPOINT, taskId)
+                        .then()
+                        .statusCode(200)
+                        .body("id", equalTo(taskId))
+                        .body("status.name", equalTo(expectedStatus)));
     }
 }
