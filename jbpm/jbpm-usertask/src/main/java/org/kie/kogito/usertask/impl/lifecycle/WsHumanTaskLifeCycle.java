@@ -480,14 +480,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
         if (userTaskInstance.getStatus().getName().equals("Suspended") && jobDescription.id().equals(userTaskInstance.getMetadata().get(SUSPENDED_TASK_JOB_ID))) {
             LOG.debug("Auto resuming suspended usertask with id:{} after expiration", userTaskInstance.getId());
             userTaskInstance.getMetadata().remove(SUSPENDED_TASK_JOB_ID);
-
-            var token = new DefaultUserTaskTransitionToken(RESUME, SUSPENDED, UserTaskState.of((String) userTaskInstance.getMetadata().get(PREVIOUS_STATUS)), emptyMap());
-            resume(userTaskInstance, token, IdentityProviders.of(WORKFLOW_ENGINE_USER));
-
-            ((DefaultUserTaskInstance) userTaskInstance).batchUpdate(instance -> {
-                instance.setStatus(token.target());
-                instance.getUserTaskEventSupport().fireOneUserTaskStateChange(instance, token.source(), token.target());
-            });
+            userTaskInstance.transition(RESUME, emptyMap(), IdentityProviders.of(WORKFLOW_ENGINE_USER));
         }
     }
 
