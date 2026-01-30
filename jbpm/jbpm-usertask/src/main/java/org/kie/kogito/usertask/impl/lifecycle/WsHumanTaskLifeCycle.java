@@ -31,11 +31,13 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.descriptors.UserTaskInstanceJobDescription;
 import org.kie.kogito.usertask.UserTaskAssignmentStrategy;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskInstanceNotAuthorizedException;
+import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
 import org.kie.kogito.usertask.lifecycle.UserTaskState.TerminationType;
@@ -45,6 +47,7 @@ import org.kie.kogito.usertask.lifecycle.UserTaskTransitionToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Collections.emptyMap;
 import static org.drools.base.time.TimeUtils.parseTimeString;
 
 public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
@@ -62,6 +65,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     private static final String SKIPPABLE = "Skippable";
     private static final String SUSPEND_UNTIL = "SuspendUntil";
     private static final String SUSPENDED_TASK_JOB_ID = "SuspendedTaskJobId";
+    private static final String PREVIOUS_STATUS = "PreviousStatus";
 
     public static final String ACTIVATE = "activate";
     public static final String NOMINATE = "nominate";
@@ -170,8 +174,8 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
         checkPermission(userTaskInstance, identity);
         return transitions.stream()
                 .filter(t -> t.source().equals(userTaskInstance.getStatus())
-                        && (!t.id().equals(SKIP) || "true".equals(userTaskInstance.getMetadata().get("Skippable")))
-                        && (!t.id().equals(RESUME) || t.target().getName().equals(userTaskInstance.getMetadata().get("PreviousStatus").toString()))
+                        && (!t.id().equals(SKIP) || "true".equals(userTaskInstance.getMetadata().get(SKIPPABLE)))
+                        && (!t.id().equals(RESUME) || t.target().getName().equals(userTaskInstance.getMetadata().get(PREVIOUS_STATUS).toString()))
                         && t != T_SUSPENDED_EXITED
                         && t != T_CREATED_READY_ACTIVATE)
                 .toList();
@@ -217,7 +221,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
         if (transitionId.equals(ACTIVATE) && userTaskInstance.getPotentialUsers().isEmpty()) {
             return null;
         }
-        return newTransitionToken(transitionId, userTaskInstance.getStatus(), (String) userTaskInstance.getMetadata().get("PreviousStatus"), data);
+        return newTransitionToken(transitionId, userTaskInstance.getStatus(), (String) userTaskInstance.getMetadata().get(PREVIOUS_STATUS), data);
     }
 
     public UserTaskTransitionToken newTransitionToken(String transitionId, UserTaskState state, String previousState, Map<String, Object> data) {
@@ -397,11 +401,11 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
 
                 LOG.debug("Suspending usertask with id {} until {}", userTaskInstance.getId(), expirationTime);
 
-                String jobId = userTaskInstance.getJobsService().scheduleJob(jobDescription);
+                String jobId = ((DefaultUserTaskInstance) userTaskInstance).getJobsService().scheduleJob(jobDescription);
                 userTaskInstance.getMetadata().put(SUSPENDED_TASK_JOB_ID, jobId);
             }
 
-            userTaskInstance.getMetadata().put("PreviousStatus", userTaskInstance.getStatus().getName());
+            userTaskInstance.getMetadata().put(PREVIOUS_STATUS, userTaskInstance.getStatus().getName());
         }
         return Optional.empty();
     }
@@ -451,12 +455,12 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
     }
 
     private Optional<UserTaskTransitionToken> resume(UserTaskInstance userTaskInstance, UserTaskTransitionToken token, IdentityProvider identityProvider) {
-        userTaskInstance.getMetadata().remove("PreviousStatus");
+        userTaskInstance.getMetadata().remove(PREVIOUS_STATUS);
 
-        var suspendedTaskJobId = (String) userTaskInstance.getMetadata().get("SuspendedTaskJobId");
+        var suspendedTaskJobId = (String) userTaskInstance.getMetadata().get(SUSPENDED_TASK_JOB_ID);
         if (suspendedTaskJobId != null) {
-            userTaskInstance.getJobsService().cancelJob(suspendedTaskJobId);
-            userTaskInstance.getMetadata().remove("SuspendedTaskJobId");
+            ((DefaultUserTaskInstance) userTaskInstance).getJobsService().cancelJob(suspendedTaskJobId);
+            userTaskInstance.getMetadata().remove(SUSPENDED_TASK_JOB_ID);
         }
 
         return Optional.empty();
@@ -469,6 +473,22 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
 
         resume(userTaskInstance, userTaskTransitionToken, identityProvider);
         return exit(userTaskInstance, userTaskTransitionToken, identityProvider);
+    }
+
+    @Override
+    public void handleTimer(UserTaskInstanceJobDescription jobDescription, UserTaskInstance userTaskInstance) {
+        if (userTaskInstance.getStatus().getName().equals("Suspended") && jobDescription.id().equals(userTaskInstance.getMetadata().get(SUSPENDED_TASK_JOB_ID))) {
+            LOG.debug("Auto resuming suspended usertask with id:{} after expiration", userTaskInstance.getId());
+            userTaskInstance.getMetadata().remove(SUSPENDED_TASK_JOB_ID);
+
+            var token = new DefaultUserTaskTransitionToken(RESUME, SUSPENDED, UserTaskState.of((String) userTaskInstance.getMetadata().get(PREVIOUS_STATUS)), emptyMap());
+            resume(userTaskInstance, token, IdentityProviders.of(WORKFLOW_ENGINE_USER));
+
+            ((DefaultUserTaskInstance) userTaskInstance).batchUpdate(instance -> {
+                instance.setStatus(token.target());
+                instance.getUserTaskEventSupport().fireOneUserTaskStateChange(instance, token.source(), token.target());
+            });
+        }
     }
 
     private String assignStrategy(UserTaskInstance userTaskInstance, IdentityProvider identityProvider) {

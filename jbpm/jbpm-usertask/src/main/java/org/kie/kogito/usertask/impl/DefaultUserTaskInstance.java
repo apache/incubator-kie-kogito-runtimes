@@ -175,6 +175,10 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         this.notStartedReassignmentsTimers = notStartedReassignmentsTimers;
     }
 
+    public KogitoUserTaskEventSupport getUserTaskEventSupport() {
+        return userTaskEventSupport;
+    }
+
     public void setUserTaskEventSupport(KogitoUserTaskEventSupport userTaskEventSupport) {
         this.userTaskEventSupport = userTaskEventSupport;
     }
@@ -775,21 +779,12 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     public void trigger(UserTaskInstanceJobDescription jobDescription) {
         LOG.trace("trigger timer in user tasks {} and job {}", this, jobDescription);
-        resumeIfSuspensionExpired(jobDescription);
+        userTaskLifeCycle.handleTimer(jobDescription, this);
         checkAndSendNotification(jobDescription, notStartedDeadlinesTimers, this::startNotification);
         checkAndSendNotification(jobDescription, notCompletedDeadlinesTimers, this::endNotification);
         checkAndReassign(jobDescription, notStartedReassignmentsTimers);
         checkAndReassign(jobDescription, notCompletedReassignmentsTimers);
         this.updatePersistence();
-    }
-
-    private void resumeIfSuspensionExpired(UserTaskInstanceJobDescription jobDescription) {
-        var jobId = (String) getMetadata().get("SuspendedTaskJobId");
-        if (getStatus().getName().equals("Suspended") && jobDescription.id().equals(jobId)) {
-            LOG.debug("Auto resuming suspended usertask with id:{} after expiration", getId());
-            getMetadata().remove("SuspendedTaskJobId");
-            transition("resume", emptyMap(), IdentityProviders.of(WORKFLOW_ENGINE_USER));
-        }
     }
 
     private void checkAndSendNotification(UserTaskInstanceJobDescription timerInstance, Map<String, Notification> timers, Consumer<Notification> publisher) {
