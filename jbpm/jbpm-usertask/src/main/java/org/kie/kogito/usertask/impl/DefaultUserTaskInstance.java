@@ -175,10 +175,6 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         this.notStartedReassignmentsTimers = notStartedReassignmentsTimers;
     }
 
-    public KogitoUserTaskEventSupport getUserTaskEventSupport() {
-        return userTaskEventSupport;
-    }
-
     public void setUserTaskEventSupport(KogitoUserTaskEventSupport userTaskEventSupport) {
         this.userTaskEventSupport = userTaskEventSupport;
     }

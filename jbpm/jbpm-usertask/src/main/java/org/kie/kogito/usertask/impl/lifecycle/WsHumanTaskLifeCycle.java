@@ -477,7 +477,7 @@ public class WsHumanTaskLifeCycle implements UserTaskLifeCycle {
 
     @Override
     public void handleTimer(UserTaskInstanceJobDescription jobDescription, UserTaskInstance userTaskInstance) {
-        if (userTaskInstance.getStatus().getName().equals("Suspended") && jobDescription.id().equals(userTaskInstance.getMetadata().get(SUSPENDED_TASK_JOB_ID))) {
+        if (SUSPENDED.equals(userTaskInstance.getStatus()) && jobDescription.id().equals(userTaskInstance.getMetadata().get(SUSPENDED_TASK_JOB_ID))) {
             LOG.debug("Auto resuming suspended usertask with id:{} after expiration", userTaskInstance.getId());
             userTaskInstance.getMetadata().remove(SUSPENDED_TASK_JOB_ID);
             userTaskInstance.transition(RESUME, emptyMap(), IdentityProviders.of(WORKFLOW_ENGINE_USER));
