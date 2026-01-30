@@ -20,30 +20,31 @@ package org.kie.kogito.addons.quarkus.kubernetes;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.addons.quarkus.k8s.test.utils.KubernetesMockServerTestResource;
 
-import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.quarkus.test.kubernetes.client.KubernetesTestServer;
-import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.kie.kogito.addons.quarkus.k8s.test.utils.KubeTestUtils.createKnativeServiceIfNotExists;
 
 @QuarkusIntegrationTest
-@WithKubernetesTestServer
+// Quarkus 3.27.2 upgrade: Fabric8 7.x - replaced @WithKubernetesTestServer with @QuarkusTestResource
+@QuarkusTestResource(KubernetesMockServerTestResource.class)
 class ConfigValueExpanderIT {
 
     private static final String NAMESPACE = "default";
 
     private static final String SERVICENAME = "serverless-workflow-greeting-quarkus";
 
-    @KubernetesTestServer
-    KubernetesServer mockServer;
+    @jakarta.inject.Inject
+    KubernetesClient kubernetesClient;
 
     @BeforeEach
     void beforeEach() {
-        createKnativeServiceIfNotExists(mockServer.getClient(), "knative/quarkus-greeting.yaml", NAMESPACE, SERVICENAME);
+        createKnativeServiceIfNotExists(kubernetesClient, "knative/quarkus-greeting.yaml", NAMESPACE, SERVICENAME);
     }
 
     @Test
