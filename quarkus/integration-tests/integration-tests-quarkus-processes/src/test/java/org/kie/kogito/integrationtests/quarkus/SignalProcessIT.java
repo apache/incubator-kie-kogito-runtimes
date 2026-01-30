@@ -103,4 +103,112 @@ class SignalProcessIT {
                 .then()
                 .statusCode(404);
     }
+
+    @Test
+    void testProcessSequentialSignals() {
+        String pid = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body("{ \"name\": \"Martin\" }")
+                .post("/sequentialsignals")
+                .then()
+                .statusCode(201)
+                .body("hello", is("Hello Martin!"))
+                .body("bye", nullValue())
+                .extract()
+                .path("id");
+
+        // wrong signal invocation should return 400 response
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/sequentialsignals/{pid}/complete", pid)
+                .then()
+                .statusCode(400);
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/sequentialsignals/{pid}/bye", pid)
+                .then()
+                .statusCode(200)
+                .body("id", not(emptyOrNullString()));
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/sequentialsignals/{pid}", pid)
+                .then()
+                .statusCode(200)
+                .body("hello", is("Hello Martin!"))
+                .body("goodbye", is("Bye Martin!"));
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/sequentialsignals/{pid}/complete", pid)
+                .then()
+                .statusCode(200);
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/sequentialsignals/{pid}", pid)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void testProcessSequentialSignalsSameVarName() {
+        String pid = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body("{ \"name\": \"Martin\" }")
+                .post("/sequentialsignalssamevarname")
+                .then()
+                .statusCode(201)
+                .body("hello", is("Hello Martin!"))
+                .body("bye", nullValue())
+                .extract()
+                .path("id");
+
+        // wrong signal invocation should return 400 response
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/sequentialsignals/{pid}/complete", pid)
+                .then()
+                .statusCode(400);
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/sequentialsignalssamevarname/{pid}/bye", pid)
+                .then()
+                .statusCode(200)
+                .body("id", not(emptyOrNullString()));
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/sequentialsignalssamevarname/{pid}", pid)
+                .then()
+                .statusCode(200)
+                .body("hello", is("Hello Martin!"))
+                .body("bye", is("Bye Martin!"));
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/sequentialsignalssamevarname/{pid}/complete", pid)
+                .then()
+                .statusCode(200);
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/sequentialsignalssamevarname/{pid}", pid)
+                .then()
+                .statusCode(404);
+    }
 }
