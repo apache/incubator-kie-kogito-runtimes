@@ -20,31 +20,51 @@ package org.kie.kogito.addons.quarkus.k8s.test.utils;
 
 import java.util.Map;
 
-import io.fabric8.openshift.client.server.mock.OpenShiftServer;
+import io.fabric8.openshift.client.OpenShiftClient;
+import io.fabric8.openshift.client.server.mock.OpenShiftMockServer;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
+/**
+ * Quarkus 3.27.2 upgrade: Updated for Fabric8 Kubernetes Client 7.x API changes:
+ * - OpenShiftServer replaced with OpenShiftMockServer
+ * - before()/after() replaced with init()/destroy()
+ * - Client creation via createOpenShiftClient() and exposed via getClient() for test injection
+ * - Tests now use @QuarkusTestResource instead of @WithKubernetesTestServer/@KubernetesTestServer
+ */
 public class OpenShiftMockServerTestResource implements QuarkusTestResourceLifecycleManager {
 
-    private OpenShiftServer server;
+    private OpenShiftMockServer server;
+    private OpenShiftClient client;
 
     @Override
     public Map<String, String> start() {
-        server = new OpenShiftServer(true, true);
-        server.before(); // Start mock server
+        // Create and start the OpenShift mock server (no-arg constructor for Fabric8 7.x)
+        server = new OpenShiftMockServer();
+        server.init();
+
+        // Create client from the mock server
+        client = server.createOpenShiftClient();
 
         return Map.of(
-                "quarkus.kubernetes-client.master-url", server.getOpenshiftClient().getMasterUrl().toString(),
+                "quarkus.kubernetes-client.master-url", client.getMasterUrl().toString(),
                 "quarkus.kubernetes-client.trust-certs", "true");
     }
 
     @Override
     public void stop() {
+        if (client != null) {
+            client.close();
+        }
         if (server != null) {
-            server.after(); // Stop mock server
+            server.destroy();
         }
     }
 
-    public OpenShiftServer getServer() {
+    public OpenShiftMockServer getServer() {
         return server;
+    }
+
+    public OpenShiftClient getClient() {
+        return client;
     }
 }

@@ -58,6 +58,11 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-grpc-deployment</artifactId>
         </dependency>
+        <!-- Quarkus 3.27.2 upgrade: Explicit dependency now required  -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-devtools-utilities</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.kie.kogito</groupId>
