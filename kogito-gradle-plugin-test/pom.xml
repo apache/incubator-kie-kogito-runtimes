@@ -25,7 +25,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie.kogito</groupId>
-    <artifactId>kogito-runtimes</artifactId>
+    <artifactId>kogito-build-parent</artifactId>
     <version>999-SNAPSHOT</version>
     <relativePath>../kogito-build/kogito-build-parent/pom.xml</relativePath>
   </parent>
@@ -37,6 +37,7 @@
     <java.module.name>org.kie.kogito.gradle.plugin.testing</java.module.name>
     <maven.compiler.release>17</maven.compiler.release>
     <gradle.executable>./gradlew</gradle.executable>
+    <exec.plugin.version>3.6.3</exec.plugin.version>
   </properties>
 
   <dependencies>
@@ -48,6 +49,15 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>${exec.plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <!-- exclude maven compilation -->
       <plugin>
