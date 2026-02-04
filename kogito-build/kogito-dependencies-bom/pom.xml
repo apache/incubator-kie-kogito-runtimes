@@ -53,7 +53,9 @@
     <version.com.fasterxml.jackson>2.19.2</version.com.fasterxml.jackson>
     <version.com.fasterxml.jackson.databind>2.19.2</version.com.fasterxml.jackson.databind>
     <version.com.jayway.jsonpath>2.9.0</version.com.jayway.jsonpath>
-    <version.com.ongres.scram>2.1</version.com.ongres.scram>
+    <!-- Quarkus 3.27.2 upgrade: Vert.x 4.5.23 requires scram-client 3.2 (not client 2.1).
+         The artifact was renamed from com.ongres.scram:client (2.x) to com.ongres.scram:scram-client (3.x). -->
+    <version.com.ongres.scram>3.2</version.com.ongres.scram>
     <version.net.minidev.jsonsmart>2.4.10</version.net.minidev.jsonsmart>
     <version.net.thisptr.jackson-jq>1.0.0-preview.20240207</version.net.thisptr.jackson-jq>
     <version.io.quarkiverse.jackson-jq>2.4.0</version.io.quarkiverse.jackson-jq>
@@ -88,7 +90,10 @@
     Kubernetes addons since they use a different version.
     -->
     <version.io.fabric8.kubernetes-client>7.3.1</version.io.fabric8.kubernetes-client>
-    <version.io.fabric8.openshift-mock>6.13.5</version.io.fabric8.openshift-mock>
+    <!-- Quarkus 3.27.2 upgrade: version.io.fabric8.openshift-mock property removed.
+         The openshift-server-mock artifact was removed in Fabric8 7.x (see MIGRATION-v7.md).
+         Use io.fabric8:kubernetes-server-mock instead, which is already declared below
+         at version ${version.io.fabric8.kubernetes-client}. -->
     <version.io.micrometer>1.14.12</version.io.micrometer>
     <version.org.flywaydb>11.14.1</version.org.flywaydb>
     <version.org.postgresql>42.7.8</version.org.postgresql>
@@ -131,7 +136,8 @@
     <version.org.mongo-image>5.0.31</version.org.mongo-image>
     <version.org.mozilla.rhino>1.8.1</version.org.mozilla.rhino>
     <version.org.redis>2.0.4</version.org.redis>
-    <version.org.postgres>15.9-alpine3.20</version.org.postgres>
+    <!-- Upgraded from 15.9-alpine3.20 to 16.8-alpine3.21 for Quarkus 3.20+ compatibility - PostgreSQL 16.8+ required for SASL authentication protocol -->
+    <version.org.postgres>16.8-alpine3.21</version.org.postgres>
     <!-- we align to version used by quarkus -->
     <version.org.apache.avro>1.12.0</version.org.apache.avro>
     <version.org.assertj>3.27.7</version.org.assertj>
@@ -827,12 +833,9 @@
         <version>${version.io.fabric8.kubernetes-client}</version>
       </dependency>
 
-      <!-- fabric8 - openshift mock server -->
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>openshift-server-mock</artifactId>
-        <version>${version.io.fabric8.openshift-mock}</version>
-      </dependency>
+      <!-- Quarkus 3.27.2 upgrade: Removed io.fabric8:openshift-server-mock dependency.
+           The artifact was removed in Fabric8 7.x. Use io.fabric8:kubernetes-server-mock (above)
+           with KubernetesMockServer + client.adapt(OpenShiftClient.class) instead of OpenShiftMockServer. -->
 
       <dependency>
         <groupId>org.junit.jupiter</groupId>
@@ -978,11 +981,13 @@
         <version>${version.org.wiremock}</version>
         <scope>test</scope>
       </dependency>
+      <!-- Quarkus 3.27.2 / Vert.x 4.5.23 upgrade: SCRAM authentication for PostgreSQL 16+.
+           Artifact renamed from com.ongres.scram:client (2.x) to com.ongres.scram:scram-client (3.x).
+           Vert.x 4.5.23 was compiled against scram-client 3.2 API (ScramClient$MechanismsBuildStage). -->
       <dependency>
         <groupId>com.ongres.scram</groupId>
-        <artifactId>client</artifactId>
+        <artifactId>scram-client</artifactId>
         <version>${version.com.ongres.scram}</version>
-        <scope>test</scope>
       </dependency>
 
       <dependency>

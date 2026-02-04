@@ -167,7 +167,7 @@ public class LiveReloadProcessorTest {
     }
 
     @Test
-    void testAsyncApi() throws IOException {
+    void testAsyncApi() throws IOException, InterruptedException {
         given()
                 .contentType(ContentType.JSON)
                 .when()
@@ -180,6 +180,9 @@ public class LiveReloadProcessorTest {
             test.addResourceFile("asyncPublisher.sw.json", new String(Objects.requireNonNull(inputStream).readAllBytes()));
         }
 
+        // Add a small delay to allow Quarkus to complete the hot reload
+        Thread.sleep(500);
+
         String id = given()
                 .contentType(ContentType.JSON)
                 .when()
@@ -190,5 +193,8 @@ public class LiveReloadProcessorTest {
                 .extract().path("id");
 
         assertThat(id).isNotBlank();
+
+        // Add a small delay before test cleanup to avoid ConcurrentModificationException
+        Thread.sleep(100);
     }
 }
