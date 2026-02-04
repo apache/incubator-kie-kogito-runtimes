@@ -52,6 +52,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Execution(SAME_THREAD)
 public class LiveReloadProcessorTest {
 
     private static final int PORT = SocketUtils.findAvailablePort();
