@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.Disabled;
 import org.kie.kogito.test.utils.SocketUtils;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
