@@ -1,0 +1,9 @@
+{
+  "resources": {
+    "includes": [
+      {
+        "pattern": "META-INF/services/org.kogito.workitem.rest.decorators.RequestDecorator"
+      }
+    ]
+  }
+}

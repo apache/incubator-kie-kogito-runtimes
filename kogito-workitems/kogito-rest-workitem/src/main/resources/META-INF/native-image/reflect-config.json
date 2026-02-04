@@ -1,0 +1,93 @@
+[
+  {
+    "name": "org.kogito.workitem.rest.RestWorkItemHandler",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.ApiKeyAuthDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.BasicAuthDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.BearerTokenAuthDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.ClientOAuth2AuthDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.PasswordOAuth2AuthDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.OAuth2AuthDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.bodybuilders.DefaultWorkItemHandlerBodyBuilder",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.bodybuilders.RestWorkItemHandlerBodyBuilder",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.decorators.CollectionParamsDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.decorators.HeaderMetadataDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.decorators.PrefixParamsDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.decorators.ParamsDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.decorators.AbstractParamsDecorator",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.pathresolvers.DefaultPathParamResolver",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.pathresolvers.PathParamResolver",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.resulthandlers.DefaultRestWorkItemHandlerResult",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.resulthandlers.RestWorkItemHandlerResult",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  }
+]
