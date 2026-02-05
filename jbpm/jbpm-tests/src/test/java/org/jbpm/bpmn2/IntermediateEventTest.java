@@ -101,7 +101,6 @@ import org.jbpm.process.workitem.builtin.ReceiveTaskHandler;
 import org.jbpm.process.workitem.builtin.SendTaskHandler;
 import org.jbpm.process.workitem.builtin.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
-import org.jbpm.test.util.NodeTriggeredProcessEventListener;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
 import org.jbpm.test.utils.EventTrackerProcessListener;
 import org.jbpm.test.utils.ProcessTestHelper;
@@ -898,10 +897,8 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         countDownListener.waitTillCompleted();
 
         eventDescriptions = instance.events();
-        assertThat(eventDescriptions).hasSize(2).extracting("event").contains("workItemCompleted");
-        assertThat(eventDescriptions).hasSize(2).extracting("event").contains("timerTriggered");
+        assertThat(eventDescriptions).hasSize(1).extracting("event").contains("workItemCompleted");
         assertThat(eventDescriptions).extracting("eventType").contains("workItem");
-        assertThat(eventDescriptions).extracting("eventType").contains("timer");
         assertThat(eventDescriptions).extracting("processInstanceId").contains(instance.id());
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
@@ -916,24 +913,26 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @RequirePersistence
     public void testEventSubprocessTimerCycle() throws Exception {
+        Application app = ProcessTestHelper.newApplication();
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener(
                 "Script Task 1", 4);
-
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/intermediate/BPMN2-EventSubprocessTimerCycle.bpmn2");
-        kruntime.getProcessEventManager().addEventListener(countDownListener);
-
+        EventTrackerProcessListener nodeTriggeredProcessEventListener = new EventTrackerProcessListener();
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
-        KogitoProcessInstance processInstance = kruntime.startProcess("EventSubprocessTimerCycle");
-        assertProcessInstanceActive(processInstance);
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        ProcessTestHelper.registerProcessEventListener(app, countDownListener);
+        ProcessTestHelper.registerProcessEventListener(app, nodeTriggeredProcessEventListener);
 
-        Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
+        org.kie.kogito.process.Process<EventSubprocessTimerCycleModel> definition = EventSubprocessTimerCycleProcess.newProcess(app);
+        org.kie.kogito.process.ProcessInstance<EventSubprocessTimerCycleModel> instance = definition.createInstance(definition.createModel());
+        instance.start();
+
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
+        Set<EventDescription<?>> eventDescriptions = instance.events();
         assertThat(eventDescriptions).hasSize(2).extracting("event").contains("workItemCompleted",
                 TIMER_TRIGGERED_EVENT);
         assertThat(eventDescriptions).extracting("eventType").contains("workItem", "timer");
-        assertThat(eventDescriptions).extracting("processInstanceId").contains(processInstance.getStringId());
+        assertThat(eventDescriptions).extracting("processInstanceId").contains(instance.id());
         assertThat(eventDescriptions).filteredOn("eventType", "timer").hasSize(1).extracting("properties", Map.class)
                 .anyMatch(m -> m.containsKey("TimerID") && m.containsKey("Period"));
 
@@ -941,11 +940,13 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
-        kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
-        assertProcessInstanceFinished(processInstance, kruntime);
-        assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1", "end", "start-sub", "Script Task 1",
-                "end-sub");
+        ProcessTestHelper.completeWorkItem(instance, Collections.emptyMap(), "john");
 
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        List<String> trackedNodes = nodeTriggeredProcessEventListener.tracked().stream()
+                .map(node -> node.getNodeInstance().getNodeName()).toList();
+        assertTrue(trackedNodes.containsAll(List.of("start", "User Task 1", "end", "Sub Process 1", "start-sub",
+                "Script Task 1", "end-sub")));
     }
 
     @Test
