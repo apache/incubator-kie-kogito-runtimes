@@ -38,7 +38,14 @@
             src="${SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_LOGO}"
             alt="KIE Logo"
           />
-          <h1>${SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_TITLE}</h1>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <h1 style="margin: 0">
+              ${SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_TITLE}
+            </h1>
+            <h6 style="margin: 0; font-weight: normal" class="versionInfo">
+              ${SONATAFLOW_WORKFLOW_ENDPOINT_WEBAPP_VERSION}
+            </h6>
+          </div>
         </div>
         <div>
           <h4>SonataFlow Workflow Endpoint service is up and working!</h4>

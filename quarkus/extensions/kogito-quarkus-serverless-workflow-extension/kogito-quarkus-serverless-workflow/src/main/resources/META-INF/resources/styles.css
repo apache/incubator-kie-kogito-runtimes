@@ -76,6 +76,10 @@ p {
   background-color: #c73828;
 }
 
+.versionInfo {
+  color: #1f1e1e;
+}
+
 @media (prefers-color-scheme: dark) {
   .maindiv,
   .container {
@@ -85,5 +89,9 @@ p {
   h4,
   p {
     color: #fefefe;
+  }
+
+  .versionInfo {
+    color: #fff;
   }
 }
