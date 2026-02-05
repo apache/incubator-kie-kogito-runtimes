@@ -70,41 +70,49 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
             }
             return null;
         }
-
-        // now see if we have a particular one to check
-        Optional<ProcessInstance<M>> processInstance = null;
         // obtain data from the event
         Object data = dataResolver.apply(event);
-        // check correlation key
-        String processInstanceId = resolveCorrelationId(event).orElse(null);
-        processInstance = signalTargetProcessInstance(processInstanceId, trigger, data, this::findById);
-        if (processInstance.isPresent()) {
-            LOGGER.debug("sending event to process {} with correlation key {} with trigger {} and payload {}", process.id(), processInstanceId, trigger, data);
-            return processInstance.get();
+        // check correlation key, if an instance associated to that correlation key exist, notify the instance, if it does not exist, ignore the vent
+        Optional<String> correlationId = resolveCorrelationId(event);
+        if (correlationId.isPresent()) {
+            return signalTargetProcessInstance(correlationId.orElseThrow(), trigger, data, this::findById, "correlation");
         }
-
-        // check processInstanceId
-        processInstanceId = event.getKogitoReferenceId();
-        processInstance = signalTargetProcessInstance(processInstanceId, trigger, data, this::findById);
-        if (processInstance.isPresent()) {
-            LOGGER.debug("sending event to process {} with reference key {} with trigger {} and payload {}", process.id(), processInstanceId, trigger, data);
-            return processInstance.get();
+        // check process reference id, if the id exist, notify the instance, if it does not exist, ignore the event
+        String processInstanceId = event.getKogitoReferenceId();
+        if (processInstanceId != null) {
+            return signalTargetProcessInstance(processInstanceId, trigger, data, this::findById, "reference");
         }
-
         // check businessKey
         processInstanceId = event.getKogitoBusinessKey();
-        processInstance = signalTargetProcessInstance(processInstanceId, trigger, data, this::findByBusinessKey);
-        if (processInstance.isPresent()) {
-            LOGGER.debug("sending event to process {} with business key {} with trigger {} and payload {}", process.id(), processInstanceId, trigger, data);
-            return processInstance.get();
+        if (processInstanceId != null) {
+            Optional<ProcessInstance<M>> processInstance = signalTargetProcessInstance(processInstanceId, trigger, data, this::findByBusinessKey);
+            // business key is special case, since it might be used to notify a process instance identified by that business key or create a new one 
+            // using that business key
+            if (processInstance.isPresent()) {
+                return processInstance.orElseThrow();
+            }
         }
-
+        // try to start a new instance if possible (this covers start events)
+        ProcessInstance<M> processInstance = startNewInstance(trigger, event);
+        if (processInstance != null) {
+            return processInstance;
+        }
         // we signal all the processes waiting for trigger (this covers intermediate catch events)
         LOGGER.debug("sending event to process {} with trigger {} and payload {}", process.id(), trigger, data);
         process.send(SignalFactory.of("Message-" + trigger, data));
+        return null;
+    }
 
-        // try to start a new instance if possible (this covers start events)
-        return startNewInstance(trigger, event);
+    private ProcessInstance<M> signalTargetProcessInstance(String processInstanceId, String trigger, Object data, Function<String, Optional<ProcessInstance<M>>> findProcessInstance,
+            String messagePart) {
+        Optional<ProcessInstance<M>> processInstance = signalTargetProcessInstance(processInstanceId, trigger, data, findProcessInstance);
+        if (processInstance.isPresent()) {
+            LOGGER.debug("sending event to process {} with {} key {} with trigger {} and payload {}", process.id(), messagePart, processInstanceId, trigger, data);
+            return processInstance.get();
+        } else {
+            LOGGER.warn(" process {} with {} key {} with trigger {} and payload {} does not exist, ignoring event", process.id(), messagePart, processInstanceId, trigger, data);
+            return null;
+        }
 
     }
 
