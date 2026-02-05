@@ -39,7 +39,6 @@ import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.workitem.Policy;
 import org.kie.kogito.internal.process.workitem.WorkItemNotFoundException;
-import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceNotFoundException;
@@ -161,7 +160,7 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Override
     public <T extends MappableToModel<R>, R> Optional<R> signalProcessInstance(Process<T> process, String id, Object data, String signalName) {
-        return Optional.ofNullable(UnitOfWorkExecutor.executeInUnitOfWork(
+        return UnitOfWorkExecutor.executeInUnitOfWork(
                 application.unitOfWorkManager(),
                 () -> process
                         .instances().acceptingEventType(signalName, id)
@@ -169,8 +168,7 @@ public class ProcessServiceImpl implements ProcessService {
                         .map(pi -> {
                             pi.send(SignalFactory.of(signalName, data));
                             return pi.checkError().variables().toModel();
-                        })
-                        .orElseThrow(() -> new IllegalSignalException(id, signalName))));
+                        }));
     }
 
     @Override

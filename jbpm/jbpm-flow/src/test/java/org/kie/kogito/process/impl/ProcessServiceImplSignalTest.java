@@ -28,7 +28,6 @@ import org.kie.kogito.Application;
 import org.kie.kogito.MappableToModel;
 import org.kie.kogito.Model;
 import org.kie.kogito.config.ConfigBean;
-import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
@@ -37,7 +36,6 @@ import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.uow.WorkUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -134,7 +132,7 @@ class ProcessServiceImplSignalTest {
     }
 
     @Test
-    void testSignalProcessInstance_InvalidSignal_ThrowsException() {
+    void testSignalProcessInstance_InvalidSignal_ReturnsEmpty() {
         // Given: Process instance not accepting the signal
         String processInstanceId = "test-signal-instance3";
         String invalidSignal = "InvalidSignal";
@@ -145,15 +143,15 @@ class ProcessServiceImplSignalTest {
         when(processInstances.acceptingEventType(invalidSignal, processInstanceId))
                 .thenReturn(Stream.empty());
 
-        // When/Then: Invalid signal should throw IllegalSignalException
-        assertThatThrownBy(() -> processService.signalProcessInstance(process, processInstanceId, signalData, invalidSignal))
-                .isInstanceOf(IllegalSignalException.class)
-                .hasMessageContaining(processInstanceId)
-                .hasMessageContaining(invalidSignal);
+        // When: Invalid signal is sent
+        Optional<TestModel> result = processService.signalProcessInstance(process, processInstanceId, signalData, invalidSignal);
+
+        // Then: Should return empty Optional
+        assertThat(result).isEmpty();
     }
 
     @Test
-    void testSignalProcessInstance_NonExistentInstance_ThrowsException() {
+    void testSignalProcessInstance_NonExistentInstance_ReturnsEmpty() {
         // Given: Non-existent process instance
         String processInstanceId = "non-existent";
         String signalName = "HelloMartin";
@@ -164,9 +162,11 @@ class ProcessServiceImplSignalTest {
         when(processInstances.acceptingEventType(signalName, processInstanceId))
                 .thenReturn(Stream.empty());
 
-        // When/Then: Should throw IllegalSignalException
-        assertThatThrownBy(() -> processService.signalProcessInstance(process, processInstanceId, signalData, signalName))
-                .isInstanceOf(IllegalSignalException.class);
+        // When: Signal is sent to non-existent instance
+        Optional<TestModel> result = processService.signalProcessInstance(process, processInstanceId, signalData, signalName);
+
+        // Then: Should return empty Optional
+        assertThat(result).isEmpty();
     }
 
     @Test

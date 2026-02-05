@@ -26,6 +26,7 @@ import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.NotAuthorizedException;
 import org.kie.kogito.internal.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.internal.process.workitem.WorkItemNotFoundException;
+import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.NodeInstanceNotFoundException;
 import org.kie.kogito.process.ProcessInstanceDuplicatedException;
 import org.kie.kogito.process.ProcessInstanceExecutionException;
@@ -57,6 +58,9 @@ class BaseExceptionHandlerTest {
     @Mock
     private Object forbiddenResponse;
 
+    @Mock
+    private Object preconditionFailedResponse;
+
     @BeforeEach
     void setUp() {
         tested = spy(new AbstractExceptionsHandler<Object>() {
@@ -83,6 +87,11 @@ class BaseExceptionHandlerTest {
             @Override
             protected Object forbidden(ExceptionBodyMessage body) {
                 return forbiddenResponse;
+            }
+
+            @Override
+            protected Object preconditionFailed(ExceptionBodyMessage body) {
+                return preconditionFailedResponse;
             }
         });
     }
@@ -150,5 +159,11 @@ class BaseExceptionHandlerTest {
         assertThat(tested.mapException(new WorkItemExecutionException("409", "message"))).isEqualTo(conflictResponse);
         assertThat(tested.mapException(new WorkItemExecutionException("500", "message"))).isEqualTo(internalErrorResponse);
         assertThat(tested.mapException(new WorkItemExecutionException("One error code"))).isEqualTo(internalErrorResponse);
+    }
+
+    @Test
+    void testMapIllegalSignalException() {
+        Object response = tested.mapException(new IllegalSignalException("processInstanceId", "signalName"));
+        assertThat(response).isEqualTo(preconditionFailedResponse);
     }
 }

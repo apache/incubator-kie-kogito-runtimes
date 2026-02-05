@@ -20,6 +20,7 @@ package com.myspace.demo;
 
 import java.util.List;
 
+import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.SignalFactory;
@@ -55,6 +56,6 @@ public class $Type$Resource {
     @PostMapping(value = "/{id}/$signalPath$", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public $Type$Output signalInstance(@PathVariable("id") final String id, final @RequestBody(required = false) $signalType$ data) {
         return processService.signalProcessInstance(process, id, data, "$signalName$")
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new IllegalSignalException(id, "$signalName$"));
     }
 }

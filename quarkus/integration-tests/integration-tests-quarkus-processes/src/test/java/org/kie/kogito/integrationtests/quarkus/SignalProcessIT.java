@@ -118,13 +118,13 @@ class SignalProcessIT {
                 .extract()
                 .path("id");
 
-        // wrong signal invocation should return 400 response
+        // wrong signal invocation should return 412 response
         given()
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/sequentialsignals/{pid}/complete", pid)
                 .then()
-                .statusCode(400);
+                .statusCode(412);
 
         given()
                 .contentType(ContentType.JSON)
@@ -172,13 +172,13 @@ class SignalProcessIT {
                 .extract()
                 .path("id");
 
-        // wrong signal invocation should return 400 response
+        // wrong signal invocation should return 412 response
         given()
                 .contentType(ContentType.JSON)
                 .when()
                 .post("/sequentialsignals/{pid}/complete", pid)
                 .then()
-                .statusCode(400);
+                .statusCode(412);
 
         given()
                 .contentType(ContentType.JSON)

@@ -18,6 +18,7 @@
  */
 package com.myspace.demo;
 
+import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 
@@ -52,6 +53,6 @@ public class $Type$Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public $Type$Output signalInstance(@PathParam("id") final String id, final $signalType$ data) {
         return processService.signalProcessInstance(process, id, data, "$signalName$")
-                .orElseThrow(() -> new NotFoundException());
+                .orElseThrow(() -> new IllegalSignalException(id, "$signalName$"));
     }
 }

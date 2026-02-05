@@ -86,7 +86,7 @@ public abstract class AbstractExceptionsHandler<T> {
                 newExceptionHandler(VariableViolationException.class, variableViolationMessageException(), this::badRequest),
                 newExceptionHandler(WorkItemExecutionException.class, workItemExecutionMessageException(), this::fromErrorCode),
                 newExceptionHandler(IllegalArgumentException.class, this::badRequest),
-                newExceptionHandler(IllegalSignalException.class, illegalSignalMessageException(), this::badRequest),
+                newExceptionHandler(IllegalSignalException.class, illegalSignalMessageException(), this::preconditionFailed),
                 newExceptionHandler(MessageException.class, this::badRequest));
 
         this.mapper = new HashMap<>();
@@ -104,6 +104,7 @@ public abstract class AbstractExceptionsHandler<T> {
             case "403" -> forbidden(message);
             case "404" -> notFound(message);
             case "409" -> conflict(message);
+            case "412" -> preconditionFailed(message);
             default -> internalError(message);
         };
     }
@@ -117,6 +118,8 @@ public abstract class AbstractExceptionsHandler<T> {
     protected abstract T notFound(ExceptionBodyMessage body);
 
     protected abstract T forbidden(ExceptionBodyMessage body);
+
+    protected abstract T preconditionFailed(ExceptionBodyMessage body);
 
     public T mapException(Exception exceptionThrown) {
 
