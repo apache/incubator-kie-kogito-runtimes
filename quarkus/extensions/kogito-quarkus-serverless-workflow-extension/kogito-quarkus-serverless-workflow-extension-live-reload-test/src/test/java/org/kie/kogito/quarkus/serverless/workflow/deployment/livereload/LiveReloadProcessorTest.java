@@ -18,15 +18,6 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.deployment.livereload;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -38,6 +29,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.parallel.Execution;
+import org.kie.kogito.test.utils.SocketUtils;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
@@ -47,18 +46,17 @@ import io.quarkus.test.QuarkusDevModeTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-import org.jboss.shrinkwrap.api.asset.StringAsset;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.parallel.Execution;
-import org.kie.kogito.test.utils.SocketUtils;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Execution(SAME_THREAD)
-@Disabled("Temporarily disabled")
 public class LiveReloadProcessorTest {
 
     private static final int PORT = SocketUtils.findAvailablePort();
