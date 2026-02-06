@@ -88,26 +88,21 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
             Optional<ProcessInstance<M>> processInstance = signalTargetProcessInstance(processInstanceId, trigger, data, this::findByBusinessKey);
             // business key is special case, since it might be used to notify a process instance identified by that business key or create a new one 
             // using that business key
-            if (processInstance.isPresent()) {
-                return processInstance.orElseThrow();
-            }
+            return processInstance.isPresent() ? processInstance.orElseThrow() : startNewInstance(trigger, event);
         }
-        // try to start a new instance if possible (this covers start events)
+        // if we reach this point try to start a new instance if possible (this covers start events)
         ProcessInstance<M> processInstance = startNewInstance(trigger, event);
-        if (processInstance != null) {
-            return processInstance;
-        }
         // we signal all the processes waiting for trigger (this covers intermediate catch events)
         LOGGER.debug("sending event to process {} with trigger {} and payload {}", process.id(), trigger, data);
         process.send(SignalFactory.of("Message-" + trigger, data));
-        return null;
+        return processInstance;
     }
 
     private ProcessInstance<M> signalTargetProcessInstance(String processInstanceId, String trigger, Object data, Function<String, Optional<ProcessInstance<M>>> findProcessInstance,
             String messagePart) {
         Optional<ProcessInstance<M>> processInstance = signalTargetProcessInstance(processInstanceId, trigger, data, findProcessInstance);
         if (processInstance.isPresent()) {
-            LOGGER.debug("sending event to process {} with {} key {} with trigger {} and payload {}", process.id(), messagePart, processInstanceId, trigger, data);
+            LOGGER.debug("Event sent to process {} with {} key {} with trigger {} and payload {}", process.id(), messagePart, processInstanceId, trigger, data);
             return processInstance.get();
         } else {
             LOGGER.warn(" process {} with {} key {} with trigger {} and payload {} does not exist, ignoring event", process.id(), messagePart, processInstanceId, trigger, data);
