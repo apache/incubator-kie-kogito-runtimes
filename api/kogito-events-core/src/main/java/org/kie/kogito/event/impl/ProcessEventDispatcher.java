@@ -105,7 +105,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
             LOGGER.debug("Event sent to process {} with {} key {} with trigger {} and payload {}", process.id(), messagePart, processInstanceId, trigger, data);
             return processInstance.get();
         } else {
-            LOGGER.warn(" process {} with {} key {} with trigger {} and payload {} does not exist, ignoring event", process.id(), messagePart, processInstanceId, trigger, data);
+            LOGGER.warn("Process {} with {} key {} with trigger {} and payload {} does not exist, ignoring event", process.id(), messagePart, processInstanceId, trigger, data);
             return null;
         }
 
