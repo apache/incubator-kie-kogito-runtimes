@@ -25,7 +25,6 @@ import java.util.function.Function;
 
 import org.kie.kogito.internal.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.internal.process.workitem.WorkItemNotFoundException;
-import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.NodeInstanceNotFoundException;
 import org.kie.kogito.process.NodeNotFoundException;
 import org.kie.kogito.process.ProcessInstanceDuplicatedException;
@@ -45,7 +44,6 @@ public class ExceptionBodyMessageFunctions {
     public static final String NODE_ID = "nodeId";
     public static final String FAILED_NODE_ID = "failedNodeId";
     public static final String ID = "id";
-    public static final String SIGNAL = "signal";
 
     public static <T extends Exception> Function<T, ExceptionBodyMessage> defaultMessageException() {
         return ex -> new ExceptionBodyMessage(Collections.singletonMap(MESSAGE, ex.getMessage()));
@@ -120,16 +118,6 @@ public class ExceptionBodyMessageFunctions {
             response.put(MESSAGE, exception.getMessage() + " : " + exception.getErrorMessage());
             response.put(PROCESS_INSTANCE_ID, exception.getProcessInstanceId());
             response.put(VARIABLE, exception.getVariableName());
-            return new ExceptionBodyMessage(response);
-        };
-    }
-
-    public static Function<IllegalSignalException, ExceptionBodyMessage> illegalSignalMessageException() {
-        return exception -> {
-            Map<String, String> response = new HashMap<>();
-            response.put(MESSAGE, exception.getMessage());
-            response.put(PROCESS_INSTANCE_ID, exception.getProcessInstanceId());
-            response.put(SIGNAL, exception.getSignal());
             return new ExceptionBodyMessage(response);
         };
     }

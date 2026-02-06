@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jbpm.util.JsonSchemaUtil;
-import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;

@@ -51,7 +51,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import org.jbpm.util.JsonSchemaUtil;
-import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;

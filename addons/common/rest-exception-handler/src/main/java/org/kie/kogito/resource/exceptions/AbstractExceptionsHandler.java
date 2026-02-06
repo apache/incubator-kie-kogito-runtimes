@@ -31,7 +31,6 @@ import org.kie.kogito.internal.process.workitem.InvalidTransitionException;
 import org.kie.kogito.internal.process.workitem.NotAuthorizedException;
 import org.kie.kogito.internal.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.internal.process.workitem.WorkItemNotFoundException;
-import org.kie.kogito.process.IllegalSignalException;
 import org.kie.kogito.process.NodeInstanceNotFoundException;
 import org.kie.kogito.process.NodeNotFoundException;
 import org.kie.kogito.process.ProcessInstanceDuplicatedException;
@@ -44,7 +43,6 @@ import org.kie.kogito.usertask.lifecycle.UserTaskTransitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.illegalSignalMessageException;
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.nodeInstanceNotFoundMessageException;
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.nodeNotFoundMessageException;
 import static org.kie.kogito.resource.exceptions.ExceptionBodyMessageFunctions.processInstanceDuplicatedMessageException;
@@ -86,7 +84,6 @@ public abstract class AbstractExceptionsHandler<T> {
                 newExceptionHandler(VariableViolationException.class, variableViolationMessageException(), this::badRequest),
                 newExceptionHandler(WorkItemExecutionException.class, workItemExecutionMessageException(), this::fromErrorCode),
                 newExceptionHandler(IllegalArgumentException.class, this::badRequest),
-                newExceptionHandler(IllegalSignalException.class, illegalSignalMessageException(), this::preconditionFailed),
                 newExceptionHandler(MessageException.class, this::badRequest));
 
         this.mapper = new HashMap<>();
