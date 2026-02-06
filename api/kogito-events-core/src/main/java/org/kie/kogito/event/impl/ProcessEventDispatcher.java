@@ -72,7 +72,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
         }
         // obtain data from the event
         Object data = dataResolver.apply(event);
-        // check correlation key, if an instance associated to that correlation key exist, notify the instance, if it does not exist, ignore the vent
+        // check correlation key, if an instance associated to that correlation key exist, notify the instance, if it does not exist, ignore the event
         Optional<String> correlationId = resolveCorrelationId(event);
         if (correlationId.isPresent()) {
             return signalTargetProcessInstance(correlationId.orElseThrow(), trigger, data, this::findById, "correlation");
@@ -102,7 +102,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
             String messagePart) {
         Optional<ProcessInstance<M>> processInstance = signalTargetProcessInstance(processInstanceId, trigger, data, findProcessInstance);
         if (processInstance.isPresent()) {
-            LOGGER.debug("Event sent to process {} with {} key {} with trigger {} and payload {}", process.id(), messagePart, processInstanceId, trigger, data);
+            LOGGER.debug("Event was sent to process {} with {} key {} with trigger {} and payload {}", process.id(), messagePart, processInstanceId, trigger, data);
             return processInstance.get();
         } else {
             LOGGER.warn("Process {} with {} key {} with trigger {} and payload {} does not exist, ignoring event", process.id(), messagePart, processInstanceId, trigger, data);
@@ -127,26 +127,26 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
 
     private void signalProcess(ProcessInstance<M> pi, String trigger, Object data) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Sending signal {} to process instance id '{}' with data {}", trigger, pi.id(), data);
+            LOGGER.debug("Sending signal {} to process {} with instance id '{}' with data {}", trigger, process.id(), pi.id(), data);
         }
         signalProcessInstance(trigger, pi.id(), data);
     }
 
     private Optional<ProcessInstance<M>> findById(String id) {
-        LOGGER.debug("Received message with process instance id '{}'", id);
+        LOGGER.debug("Received message with process {} with instance id '{}'", process.id(), id);
         Optional<ProcessInstance<M>> result = process.instances().findById(id);
         if (LOGGER.isDebugEnabled() && result.isEmpty()) {
-            LOGGER.debug("No instance found for process instance id '{}'", id);
+            LOGGER.debug("No instance found for process {} with instance id '{}'", process.id(), id);
         }
         return result;
 
     }
 
     private Optional<ProcessInstance<M>> findByBusinessKey(String key) {
-        LOGGER.debug("Received message with business key '{}'", key);
+        LOGGER.debug("Received message with process {} with business key '{}'", process.id(), key);
         Optional<ProcessInstance<M>> result = process.instances().findByBusinessKey(key);
         if (LOGGER.isDebugEnabled() && result.isEmpty()) {
-            LOGGER.debug("No instance found for business key '{}'", key);
+            LOGGER.debug("No instance found for process {} with business key '{}'", process.id(), key);
         }
         return result;
     }
@@ -182,7 +182,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
         if (modelConverter.isEmpty()) {
             return null;
         }
-        LOGGER.info("Starting new process instance with signal '{}' for event {}", trigger, event);
+        LOGGER.info("Starting new process of type {} with signal '{}' for event {}", process.id(), trigger, event);
         return processService.createProcessInstance(
                 process,
                 event.getKogitoBusinessKey(),
