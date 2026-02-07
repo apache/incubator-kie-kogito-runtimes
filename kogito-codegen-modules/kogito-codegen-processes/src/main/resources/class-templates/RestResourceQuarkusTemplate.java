@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.io.InputStream;
+import java.util.Scanner;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -43,6 +45,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.HeaderParam;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -57,6 +60,9 @@ import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.process.workitem.TaskModel;
 import org.kie.kogito.auth.IdentityProviderFactory;
 import org.kie.kogito.auth.SecurityPolicy;
+
+import jakarta.ws.rs.core.StreamingOutput;
+
 
 @Path("/$name$")
 @Tag(name = "Process - $name$", description = "$documentation$")
@@ -94,10 +100,32 @@ public class $Type$Resource {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML})
     @Operation(operationId = "getAllProcessInstances_$name$", summary = "$documentation$", description = "$processInstanceDescription$")
-    public List<$Type$Output> getResources_$name$() {
-        return processService.getProcessInstanceOutput(process);
+    public Response getResources_$name$(@Context HttpHeaders headers) {
+        List<$Type$Output> out = processService.getProcessInstanceOutput(process);
+        boolean wantsHtml = headers.getAcceptableMediaTypes()
+            .stream()
+            .anyMatch(mt -> mt.isCompatible(MediaType.TEXT_HTML_TYPE) && !mt.isWildcardType());
+
+        if (wantsHtml) {
+            InputStream htmlStream = getClass().getResourceAsStream("/META-INF/resources/index.html");
+            if (htmlStream == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                    .entity("HTML resource not found")
+                    .build();
+            }
+
+            StreamingOutput stream = os -> {
+                try (InputStream inputStream = htmlStream) {
+                    inputStream.transferTo(os);
+                }             
+            };
+
+            return Response.ok(stream, MediaType.TEXT_HTML_TYPE).build();
+        }
+
+        return Response.ok(out, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
     @GET
