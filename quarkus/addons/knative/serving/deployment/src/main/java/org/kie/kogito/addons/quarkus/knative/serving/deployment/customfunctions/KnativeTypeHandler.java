@@ -34,6 +34,7 @@ import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.PlainJsonKn
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
+import org.kie.kogito.serverless.workflow.suppliers.JsonNodeResultHandlerSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 
@@ -107,6 +108,7 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
                 context.getContext(), String.class, DEFAULT_REQUEST_TIMEOUT_VALUE);
 
         return node.workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
+                .workParameter(RestWorkItemHandler.RESULT_HANDLER, new JsonNodeResultHandlerSupplier())
                 .workParameter(RestWorkItemHandler.REQUEST_TIMEOUT_IN_MILLIS, requestTimeout)
                 .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, RestWorkItemHandler.REST_TASK_TYPE)
                 .workName(KnativeWorkItemHandler.NAME);
