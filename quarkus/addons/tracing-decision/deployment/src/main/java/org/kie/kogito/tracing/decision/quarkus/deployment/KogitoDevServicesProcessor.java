@@ -277,7 +277,7 @@ public class KogitoDevServicesProcessor {
     }
 
     private TrustyServiceDevServiceConfig getConfiguration(final KogitoBuildTimeConfig cfg) {
-        KogitoDevServicesBuildTimeConfig devServicesConfig = cfg.devServicesTrusty;
+        KogitoDevServicesBuildTimeConfig devServicesConfig = cfg.devServicesTrusty();
         return new TrustyServiceDevServiceConfig(devServicesConfig);
     }
 
@@ -319,12 +319,12 @@ public class KogitoDevServicesProcessor {
         private final int portUsedByTest;
 
         public TrustyServiceDevServiceConfig(final KogitoDevServicesBuildTimeConfig config) {
-            this.devServicesEnabled = config.enabled.orElse(true);
-            this.imageName = config.imageName;
-            this.fixedExposedPort = config.port.orElse(0);
-            this.shared = config.shared;
-            this.serviceName = config.serviceName;
-            this.portUsedByTest = config.portUsedByTest;
+            this.devServicesEnabled = config.enabled().orElse(true);
+            this.imageName = config.imageName().orElse(null);
+            this.fixedExposedPort = config.port().orElse(0);
+            this.shared = config.shared();
+            this.serviceName = config.serviceName();
+            this.portUsedByTest = config.portUsedByTest();
         }
 
         @Override

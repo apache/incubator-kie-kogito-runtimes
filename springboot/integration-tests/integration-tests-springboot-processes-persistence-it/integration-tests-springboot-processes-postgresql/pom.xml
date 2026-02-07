@@ -102,9 +102,10 @@
        <artifactId>vertx-pg-client</artifactId>
        <scope>test</scope>
     </dependency>
+    <!-- Quarkus 3.27.2 / Vert.x 4.5.23 upgrade: Artifact renamed from client (2.x) to scram-client (3.x) -->
     <dependency>
        <groupId>com.ongres.scram</groupId>
-       <artifactId>client</artifactId>
+       <artifactId>scram-client</artifactId>
        <scope>test</scope>
     </dependency>
   </dependencies>

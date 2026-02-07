@@ -20,10 +20,13 @@ package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 
 import java.util.Optional;
 
-import io.quarkus.runtime.annotations.ConfigGroup;
 import io.smallrye.config.WithDefault;
 
-@ConfigGroup
+/**
+ * Nested configuration group for Knative Sink settings.
+ * Note: @ConfigGroup is not used here because this interface is nested within a @ConfigMapping interface.
+ * In Quarkus 3.x, @ConfigGroup is only for legacy @ConfigRoot + @ConfigItem style configurations.
+ */
 public interface SinkConfiguration {
 
     String DEFAULT_SINK_API_VERSION = "eventing.knative.dev/v1";

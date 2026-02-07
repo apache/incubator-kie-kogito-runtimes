@@ -53,6 +53,14 @@
       <groupId>io.vertx</groupId>
       <artifactId>vertx-pg-client</artifactId>
     </dependency>
+    <!-- Quarkus 3.27.2 / Vert.x 4.5.23 upgrade: SCRAM authentication for PostgreSQL 16+.
+         Artifact renamed from com.ongres.scram:client (2.x) to com.ongres.scram:scram-client (3.x).
+         Required at runtime for SASL authentication; Vert.x declares it as optional. -->
+    <dependency>
+      <groupId>com.ongres.scram</groupId>
+      <artifactId>scram-client</artifactId>
+      <scope>runtime</scope>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
@@ -100,11 +108,6 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-       <groupId>com.ongres.scram</groupId>
-       <artifactId>client</artifactId>
-       <scope>test</scope>
     </dependency>
   </dependencies>
 
