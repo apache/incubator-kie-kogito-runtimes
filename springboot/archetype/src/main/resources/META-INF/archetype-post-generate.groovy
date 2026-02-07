@@ -71,7 +71,6 @@ def addonsToArtifactsIds(String addons) {
     // see: https://issues.redhat.com/browse/KOGITO-5619
     def validAddons = [
             [id: "persistence-filesystem", addon: "kie-addons-springboot-persistence-filesystem"],
-            [id: "persistence-infinispan", addon: "kie-addons-springboot-persistence-infinispan"],
             [id: "persistence-jdbc", addon: "kie-addons-springboot-persistence-jdbc"],
             [id: "persistence-mongodb", addon: "kie-addons-springboot-persistence-mongodb"],
             [id: "persistence-postgresql", addon: "kie-addons-springboot-persistence-postgresql"],

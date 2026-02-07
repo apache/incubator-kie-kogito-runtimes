@@ -40,8 +40,6 @@ them in your project.
 | Monitoring Core         | monitoring-core-quarkus-addon               | kie-addons-quarkus-monitoring-core               | 1.8.0  | 
 | Monitoring Elastic      | monitoring-elastic-quarkus-addon            | kie-addons-quarkus-monitoring-elastic            | 1.8.0  | 
 | Monitoring Prometheus   | monitoring-prometheus-quarkus-addon         | kie-addons-quarkus-monitoring-prometheus         | 1.8.0  | 
-| Persistence ISPN Health | infinispan-quarkus-health-addon             | kie-addons-quarkus-persistence-infinispan-health | 1.8.0  |
-| Persistence Infinispan  | kogito-addons-persistence-infinispan        | kie-addons-quarkus-persistence-infinispan        | 1.12.0 |
 | Persistence Kafka       | kafka-persistence-addon                     | kie-addons-quarkus-persistence-kafka             | 1.8.0  |
 | Persistence FileSystem  | kogito-addons-persistence-filesystem        | kie-addons-quarkus-persistence-filesystem        | 1.12.0 |
 | Persistence JDBC        | kogito-addons-persistence-jdbc              | kie-addons-quarkus-persistence-jdbc              | 1.12.0 |
@@ -70,7 +68,6 @@ them in your project.
 | Process Management      | process-management-springboot-addon            | kie-addons-springboot-process-management       | 1.8.0  | 
 | Process SVG             | process-svg-springboot-addon                   | kie-addons-springboot-process-svg              | 1.8.0  |
 | Persistence File System | kogito-addons-persistence-filesystem           | kie-addons-springboot-persistence-filesystem   | 1.21.0 |
-| Persistence Infinispan  | kogito-addons-persistence-infinispan           | kie-addons-springboot-persistence-infinispan   | 1.21.0 |
 | Persistence JDBC        | kogito-addons-persistence-jdbc                 | kie-addons-springboot-persistence-jdbc         | 1.21.0 |
 | Persistence MongoDB     | kogito-addons-persistence-mongodb              | kie-addons-springboot-persistence-mongodb      | 1.21.0 |
 | Persistence Postgresql  | kogito-addons-persistence-postgresql           | kie-addons-springboot-persistence-postgresql   | 1.21.0 |
@@ -98,7 +95,6 @@ them in your project.
 | Monitoring Elastic [1]      | monitoring-elastic-common            | kie-addons-monitoring-elastic            | 1.8.0 |
 | Monitoring Prometheus [1]   | monitoring-prometheus-common         | kie-addons-monitoring-core               | 1.8.0 |
 | Persistence File System     | filesystem-persistence-addon         | kie-addons-persistence-filesystem        | 1.8.0 | 
-| Persistence Infinispan      | infinispan-persistence-addon         | kie-addons-persistence-infinispan        | 1.8.0 |
 | Persistence JDBC            | jdbc-persistence-addon               | kie-addons-persistence-jdbc              | 1.8.0 |
 | Persistence MongoDB         | mongodb-persistence-addon            | kie-addons-persistence-mongodb           | 1.8.0 | 
 | Persistence PostgreSQL      | postgresql-persistence-addon         | kie-addons-persistence-postgresql        | 1.8.0 |

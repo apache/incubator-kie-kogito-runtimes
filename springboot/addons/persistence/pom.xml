@@ -36,7 +36,6 @@
 
   <modules>
     <module>filesystem</module>
-    <module>infinispan</module>
     <module>jdbc</module>
     <module>mongodb</module>
     <module>postgresql</module>
