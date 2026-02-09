@@ -20,7 +20,10 @@ package org.kie.kogito.integrationtests.quarkus;
 
 import java.time.Duration;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.test.quarkus.QuarkusTestProperty;
+import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 
 import io.quarkus.test.common.QuarkusTestResource;
@@ -36,6 +39,16 @@ import static org.hamcrest.CoreMatchers.equalTo;
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
 public class PingPongMessageIT {
 
+    public KafkaTestClient kafkaClient;
+
+    @QuarkusTestProperty(name = KafkaQuarkusTestResource.KOGITO_KAFKA_PROPERTY)
+    private String kafkaBootstrapServers;
+
+    @BeforeEach
+    public void setup() {
+        kafkaClient = new KafkaTestClient(kafkaBootstrapServers);
+    }
+
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
@@ -50,7 +63,7 @@ public class PingPongMessageIT {
                 .statusCode(201)
                 .extract().body().path("id");
 
-        validateSubProcess();
+        validateSubProcess("pong_message");
 
         await().atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> given()
@@ -76,12 +89,12 @@ public class PingPongMessageIT {
                 .statusCode(404);
     }
 
-    private void validateSubProcess() {
+    private void validateSubProcess(String subProcessName) {
         await().atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> given()
                         .contentType(ContentType.JSON)
                         .when()
-                        .get("/pong_message/")
+                        .get("/" + subProcessName + "/")
                         .then()
                         .statusCode(200)
                         .body("$.size()", equalTo(1)));
@@ -89,24 +102,74 @@ public class PingPongMessageIT {
         String pId = given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/pong_message/")
+                .get("/" + subProcessName + "/")
                 .then()
                 .statusCode(200)
                 .body("$.size()", equalTo(1))
                 .extract().body().path("[0].id");
 
+        await().atMost(Duration.ofSeconds(5))
+                .untilAsserted(() -> given()
+                        .contentType(ContentType.JSON)
+                        .when()
+                        .get("/" + subProcessName + "/{pId}", pId)
+                        .then()
+                        .statusCode(200)
+                        .body("message", equalTo("hello world")));
+
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/pong_message/{pId}/end", pId)
+                .post("/" + subProcessName + "/{pId}/end", pId)
                 .then()
                 .statusCode(200);
 
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/pong_message/{pId}", pId)
+                .get("/" + subProcessName + "/{pId}", pId)
                 .then()
                 .statusCode(404);
     }
+
+    @Test
+    void testPongWithValidMessage() throws InterruptedException {
+        kafkaClient.produce(
+                "{\"specversion\": \"1.0\", \"id\":\"id1\", \"source\": \"junit\", \"type\": \"pong_start\",  \"data\": \"hello\" }",
+                "kogito_it_test");
+
+        validateSubProcess("pong_message");
+    }
+
+    @Test
+    void testPongAfterInvalidMessage() throws InterruptedException {
+        // sending invalid message
+        kafkaClient.produce(
+                "{ \"event\": \"Hello World\" }",
+                "kogito_it_test");
+        // sending valid message
+        kafkaClient.produce(
+                "{\"specversion\": \"1.0\", \"id\":\"id1\", \"source\": \"junit\", \"type\": \"pong_start\",  \"data\": \"hello\" }",
+                "kogito_it_test");
+
+        validateSubProcess("pong_message");
+    }
+
+    @Test
+    void testPongWithValidMessageAfterSignal() throws InterruptedException {
+        String pId = given().body("{ \"message\": \"hello\" }")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/pong_message_signal")
+                .then()
+                .statusCode(201)
+                .extract().body().path("id");
+
+        kafkaClient.produce(
+                "{\"specversion\": \"1.0\", \"id\":\"id1\", \"source\": \"junit\", \"type\": \"pong_signal\",  \"data\": \"hello\" }",
+                "kogito_it_test");
+
+        validateSubProcess("pong_message_signal");
+    }
+
 }

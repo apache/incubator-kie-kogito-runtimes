@@ -30,10 +30,12 @@ import org.kie.kogito.internal.process.workitem.WorkItemTransition;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.process.workitems.impl.DefaultKogitoWorkItemHandler;
 import org.kie.kogito.usertask.UserTask;
+import org.kie.kogito.usertask.UserTaskConfig;
 import org.kie.kogito.usertask.UserTasks;
 import org.kie.kogito.usertask.impl.DefaultUserTaskInstance;
 import org.kie.kogito.usertask.impl.lifecycle.DefaultUserTaskLifeCycle;
 import org.kie.kogito.usertask.impl.model.DeadlineHelper;
+import org.kie.kogito.usertask.model.ProcessInfo;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.ofNullable;
@@ -53,6 +55,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
     private static final String NODE_NAME = "NodeName";
     private static final String ACTOR_ID = "ActorId";
     private static final String GROUP_ID = "GroupId";
+    private static final String SKIPPABLE = "Skippable";
     private static final String BUSINESSADMINISTRATOR_ID = "BusinessAdministratorId";
     private static final String BUSINESSADMINISTRATOR_GROUP_ID = "BusinessAdministratorGroupId";
     private static final String EXCLUDED_OWNER_ID = "ExcludedOwnerId";
@@ -80,6 +83,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
         DefaultUserTaskInstance instance = (DefaultUserTaskInstance) userTask.createInstance();
 
         instance.setExternalReferenceId(workItem.getStringId());
+        instance.getMetadata().put("Lifecycle", handler.getApplication().config().get(UserTaskConfig.class).userTaskLifeCycles().getDefaultUserTaskLifeCycleId());
 
         userTask.instances().create(instance);
 
@@ -89,18 +93,37 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             task.setTaskPriority(priority != null ? priority.toString() : null);
             task.setSlaDueDate(workItem.getNodeInstance().getSlaDueDate());
 
-            Map<String, Object> metadata = new HashMap<>();
-            metadata.put("ProcessId", workItem.getProcessInstance().getProcessId());
-            metadata.put("ProcessType", workItem.getProcessInstance().getProcess().getType());
-            metadata.put("ProcessVersion", workItem.getProcessInstance().getProcessVersion());
-            metadata.put("ProcessInstanceId", workItem.getProcessInstance().getId());
-            metadata.put("ProcessInstanceState", workItem.getProcessInstance().getState());
-            metadata.put("RootProcessId", workItem.getProcessInstance().getRootProcessId());
-            metadata.put("RootProcessInstanceId", workItem.getProcessInstance().getRootProcessInstanceId());
-            metadata.put("ParentProcessInstanceId", workItem.getProcessInstance().getParentProcessInstanceId());
-            metadata.put("NodeInstanceId", workItem.getNodeInstance().getId());
+            ProcessInfo processInfo = ProcessInfo.builder()
+                    .withProcessInstanceId(workItem.getProcessInstance().getId())
+                    .withProcessId(workItem.getProcessInstance().getProcessId())
+                    .withProcessVersion(workItem.getProcessInstance().getProcessVersion())
+                    .withRootProcessInstanceId(workItem.getProcessInstance().getRootProcessInstanceId())
+                    .withRootProcessId(workItem.getProcessInstance().getRootProcessId())
+                    .withParentProcessInstanceId(workItem.getProcessInstance().getParentProcessInstanceId())
+                    .build();
 
-            task.setMetadata(metadata);
+            instance.setProcessInfo(processInfo);
+
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("ProcessType", workItem.getProcessInstance().getProcess().getType());
+            metadata.put("ProcessInstanceState", workItem.getProcessInstance().getState());
+            metadata.put("NodeInstanceId", workItem.getNodeInstance().getId());
+            metadata.put("Skippable", workItem.getParameters().get(SKIPPABLE));
+
+            var suspendUntil = (String) workItem.getNodeInstance().getNode().getMetaData().get("suspendUntil");
+            if (suspendUntil != null && !suspendUntil.isBlank()) {
+                if (suspendUntil.startsWith("#{") && suspendUntil.endsWith("}")) {
+                    var suspendUntilVariable = suspendUntil.substring(2, suspendUntil.length() - 1);
+                    var suspendUntilValue = workItem.getProcessInstance().getVariables().get(suspendUntilVariable);
+                    if (suspendUntilValue != null) {
+                        metadata.put("SuspendUntil", suspendUntilValue);
+                    }
+                } else {
+                    metadata.put("SuspendUntil", suspendUntil);
+                }
+            }
+
+            task.addMetadata(metadata);
 
             task.fireInitialStateChange();
             workItem.getParameters().entrySet().stream().filter(e -> !HumanTaskNode.TASK_PARAMETERS.contains(e.getKey())).forEach(e -> task.setInput(e.getKey(), e.getValue()));
@@ -154,7 +177,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
             if (workItem instanceof InternalKogitoWorkItem ikw) {
                 ikw.setActualOwner(ut.getActualOwner());
             }
-            ut.transition(DefaultUserTaskLifeCycle.FAIL, Collections.singletonMap(PARAMETER_NOTIFY, Boolean.FALSE), IdentityProviders.of(WORKFLOW_ENGINE_USER));
+            ut.transition(ut.getUserTaskLifeCycle().abortTransition(), Collections.singletonMap(PARAMETER_NOTIFY, Boolean.FALSE), IdentityProviders.of(WORKFLOW_ENGINE_USER));
         });
         return Optional.empty();
     }

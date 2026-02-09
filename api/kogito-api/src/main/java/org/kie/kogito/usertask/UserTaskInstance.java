@@ -25,12 +25,9 @@ import java.util.Set;
 
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.jobs.descriptors.UserTaskInstanceJobDescription;
+import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
-import org.kie.kogito.usertask.model.Attachment;
-import org.kie.kogito.usertask.model.Comment;
-import org.kie.kogito.usertask.model.DeadlineInfo;
-import org.kie.kogito.usertask.model.Notification;
-import org.kie.kogito.usertask.model.Reassignment;
+import org.kie.kogito.usertask.model.*;
 
 public interface UserTaskInstance {
 
@@ -39,6 +36,8 @@ public interface UserTaskInstance {
     UserTask getUserTask();
 
     UserTaskState getStatus();
+
+    ProcessInfo getProcessInfo();
 
     String getUserTaskId();
 
@@ -152,5 +151,9 @@ public interface UserTaskInstance {
     void stopNotCompletedDeadlines();
 
     void stopNotCompletedReassignments();
+
+    void setPotentialUsers(Set<String> potentialUsers);
+
+    UserTaskLifeCycle getUserTaskLifeCycle();
 
 }
