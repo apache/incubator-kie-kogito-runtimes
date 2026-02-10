@@ -38,7 +38,7 @@ public class CachingConfig {
         return Caffeine.newBuilder();
     }
 
-    @Primary //marking as primary to not clash with Infinispan Persistence. Could be removed in the future. See: https://issues.redhat.com/browse/KOGITO-6111
+    @Primary //marking as primary. Could be removed in the future. See: https://issues.redhat.com/browse/KOGITO-6111
     @Bean(CACHE_MANAGER)
     public CaffeineCacheManager cacheManager(Caffeine<Object, Object> caffeine) {
         final CaffeineCacheManager cacheManager = new CaffeineCacheManager(CacheNames.CACHE_BY_NAME, CacheNames.CACHE_BY_LABELS);

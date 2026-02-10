@@ -23,6 +23,5 @@ public enum PersistenceType {
     MONGODB,
     FILESYSTEM,
     KAFKA,
-    INFINISPAN,
     POSTGRESQL
 }
