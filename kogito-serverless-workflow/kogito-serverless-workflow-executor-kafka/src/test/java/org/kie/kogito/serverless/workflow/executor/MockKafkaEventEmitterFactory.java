@@ -28,7 +28,7 @@ import io.cloudevents.kafka.CloudEventSerializer;
 
 public class MockKafkaEventEmitterFactory extends KafkaEventEmitterFactory {
 
-    // null key serializer is used because this mock producer doesn't serialize keys, only values (CloudEvents)
+    // null partitioner uses default partitioning; ByteArraySerializer is used for keys and CloudEventSerializer for values
     public static MockProducer<byte[], CloudEvent> producer = new MockProducer<>(true, null, new ByteArraySerializer(), new CloudEventSerializer() {
         @Override
         public byte[] serialize(String topic, CloudEvent data) {
