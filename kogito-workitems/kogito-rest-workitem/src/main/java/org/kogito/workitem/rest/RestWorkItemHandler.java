@@ -124,10 +124,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     protected final WebClient httpClient;
     protected final WebClient httpsClient;
 
-    // Configuration fields for bearer token from application properties
-    private String bearerToken;
-    private String accessToken;
-    private String authorization;
     private Collection<RequestDecorator> requestDecorators;
 
     public RestWorkItemHandler(WebClient httpClient, WebClient httpsClient) {
@@ -146,12 +142,8 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     @Override
     public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
 
-        //retrieving parameters
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
-        //removing unnecessary parameter
         parameters.remove("TaskName");
-
-        enrichParametersWithBearerToken(workItem, parameters, handler);
 
         Class<?> targetInfo = getParamSupply(parameters, TARGET_TYPE, Class.class, () -> getTargetInfo(workItem));
         logger.debug("Using target {}", targetInfo);
@@ -171,7 +163,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         Collection<? extends AuthDecorator> authDecorators = getClassListParam(parameters, AUTH_METHOD, AuthDecorator.class, DEFAULT_AUTH_DECORATORS, authDecoratorsMap);
 
         logger.debug("Filtered parameters are {}", parameters);
-        // create request
         endPoint = pathParamResolver.apply(endPoint, parameters);
 
         String protocol = null;
@@ -337,58 +328,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
                     logger.debug("Added header: {} = {}", key, value);
                 }
             });
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void enrichParametersWithBearerToken(KogitoWorkItem workItem, Map<String, Object> parameters, KogitoWorkItemHandler workItemHandler) {
-
-        String tokenFromContext = extractToken(workItem);
-        if (!isEmpty(tokenFromContext)) {
-            logger.debug("Found bearer token in process context, adding to parameters");
-            parameters.put("accessToken", tokenFromContext);
-            return;
-        }
-    }
-
-    private String extractToken(KogitoWorkItem workItem) {
-        String token = tokenFromAuthTokenProvider();
-        if (token != null) {
-            return token;
-        }
-
-        return null;
-    }
-
-    private String tokenFromAuthTokenProvider() {
-        try {
-            var app = this.getApplication();
-            if (app == null) {
-                logger.debug("workItemHandler-->getApplication() returned null");
-                return null;
-            }
-
-            org.kie.kogito.process.ProcessConfig processConfig =
-                    app.config().get(org.kie.kogito.process.ProcessConfig.class);
-
-            if (processConfig != null && processConfig.authTokenProvider() != null) {
-                // getActualTokenOrDefault() already handles both security context and configuration fallback
-                String token = processConfig.authTokenProvider()
-                        .getActualTokenOrDefault()
-                        .map(this::ensureBearerPrefix)
-                        .orElse(null);
-
-                if (token != null && !token.isEmpty()) {
-                    logger.debug("Found bearer token from AuthTokenProvider (security context or configuration)");
-                    return token;
-                }
-            }
-
-            return null;
-
-        } catch (RuntimeException e) {
-            logger.debug("Could not access AuthTokenProvider from process runtime: {}", e.getMessage());
-            return null;
         }
     }
 

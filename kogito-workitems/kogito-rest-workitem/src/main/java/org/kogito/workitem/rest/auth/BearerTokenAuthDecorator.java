@@ -21,6 +21,8 @@ package org.kogito.workitem.rest.auth;
 import java.util.Map;
 
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
@@ -29,13 +31,18 @@ import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
 
 public class BearerTokenAuthDecorator implements AuthDecorator {
 
+    private static final Logger logger = LoggerFactory.getLogger(BearerTokenAuthDecorator.class);
     public static final String BEARER_TOKEN = "accessToken";
 
     @Override
     public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
         String bearerToken = getParam(parameters, BEARER_TOKEN, String.class, null);
+
         if (!isEmpty(bearerToken)) {
+            logger.debug("Adding bearer token authentication to REST request");
             request.bearerTokenAuthentication(bearerToken);
+        } else {
+            logger.debug("No bearer token provided for REST request - proceeding without authentication");
         }
     }
 }

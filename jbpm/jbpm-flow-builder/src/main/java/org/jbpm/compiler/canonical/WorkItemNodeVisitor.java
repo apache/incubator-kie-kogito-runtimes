@@ -104,7 +104,7 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
             body.addStatement(getFactoryMethod(nodeId, METHOD_WORK_PARAMETER_FACTORY, ExpressionUtils.getLiteralExpr(work.getWorkParametersFactory())));
         }
 
-        addWorkItemParameters(work, body, nodeId);
+        addWorkItemParameters(work, body, nodeId, metadata.getProcessId(), nodeId);
         addNodeMappings(node, body, nodeId);
 
         body.addStatement(getDoneMethod(nodeId));
@@ -114,7 +114,7 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
         metadata.getWorkItems().add(workName);
     }
 
-    protected void addWorkItemParameters(Work work, BlockStmt body, String variableName) {
+    protected void addWorkItemParameters(Work work, BlockStmt body, String variableName, String processId, String taskId) {
         // This is to ensure that each run of the generator produces the same code.
         final List<Entry<String, Object>> sortedParameters = work.getParameters().entrySet().stream().sorted(Entry.comparingByKey()).toList();
         for (Entry<String, Object> entry : sortedParameters) {
@@ -126,6 +126,17 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
                 paramType = work.getParameterDefinition(entry.getKey()).getType().getStringType();
             }
             body.addStatement(getFactoryMethod(variableName, METHOD_WORK_PARAMETER, new StringLiteralExpr(entry.getKey()), getParameterExpr(paramType, entry.getValue())));
+        }
+
+        // Automatically inject BearerTokenResolver for REST work items if accessToken parameter is not already present
+        if ("Rest".equals(work.getName()) && !work.getParameters().containsKey("accessToken")) {
+            // Add: .workParameter("accessToken", new org.kogito.workitem.rest.auth.BearerTokenResolver(processId, taskId))
+            body.addStatement(getFactoryMethod(variableName, METHOD_WORK_PARAMETER,
+                    new StringLiteralExpr("accessToken"),
+                    new com.github.javaparser.ast.expr.ObjectCreationExpr()
+                            .setType("org.kogito.workitem.rest.auth.BearerTokenResolver")
+                            .addArgument(new StringLiteralExpr(processId))
+                            .addArgument(new StringLiteralExpr(taskId))));
         }
     }
 

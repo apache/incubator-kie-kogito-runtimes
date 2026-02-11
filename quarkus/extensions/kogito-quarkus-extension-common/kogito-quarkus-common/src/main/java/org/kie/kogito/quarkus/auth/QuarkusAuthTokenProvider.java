@@ -20,44 +20,79 @@ package org.kie.kogito.quarkus.auth;
 
 import java.util.Optional;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.kie.kogito.auth.AuthTokenProvider;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.ConfigProvider;
+import org.kogito.workitem.rest.auth.AuthTokenProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.quarkus.arc.Arc;
+import io.quarkus.arc.ArcContainer;
+import io.quarkus.arc.InstanceHandle;
 import io.quarkus.security.credential.TokenCredential;
 import io.quarkus.security.identity.SecurityIdentity;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.control.ActivateRequestContext;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
 
 /**
  * Quarkus implementation of AuthTokenProvider.
- * Reads authentication tokens from the Quarkus security context (SecurityIdentity)
- * and provides fallback to configured default token.
+ * Provides bearer tokens with the following priority:
+ * 1. Security Context (authenticated user's JWT token)
+ * 2. Process-specific configuration (kogito.processes.<processId>.<TaskName>.access_token)
+ *
+ * This class is loaded via ServiceLoader and uses Arc.container() to access CDI beans.
  */
 @ApplicationScoped
 public class QuarkusAuthTokenProvider implements AuthTokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(QuarkusAuthTokenProvider.class);
 
-    @Inject
-    Instance<SecurityIdentity> identity;
+    @Override
+    public Optional<String> getToken(String processId, String taskName, String taskId) {
+        logger.debug("Resolving token for process '{}', task '{}', taskId '{}'", processId, taskName, taskId);
 
-    @Inject
-    @ConfigProperty(name = BEARER_TOKEN_CONFIG_PROPERTY)
-    Optional<String> defaultBearerToken;
+        // Priority 1: Security Context (authenticated user's token)
+        Optional<String> securityContextToken = getTokenFromSecurityContext();
+        if (securityContextToken.isPresent()) {
+            logger.debug("Using token from security context for process '{}', task '{}', taskId '{}'",
+                    processId, taskName, taskId);
+            return securityContextToken;
+        }
 
-    private Optional<SecurityIdentity> getIdentity() {
-        return identity.isResolvable() ? Optional.of(identity.get()) : Optional.empty();
+        // Priority 2: Process-specific configuration with taskName (if present in .wid file)
+        if (taskName != null && !taskName.isEmpty()) {
+            String configKey = String.format("kogito.processes.%s.%s.access_token", processId, taskName);
+            Optional<String> configToken = getConfig().getOptionalValue(configKey, String.class);
+            if (configToken.isPresent() && !configToken.get().isEmpty()) {
+                logger.debug("Using token from configuration '{}' for process '{}', task '{}'",
+                        configKey, processId, taskName);
+                return configToken;
+            }
+        }
+
+        // Priority 3: Process-specific configuration with taskId (node ID)
+        if (taskId != null && !taskId.isEmpty()) {
+            String configKey = String.format("kogito.processes.%s.%s.access_token", processId, taskId);
+            Optional<String> configToken = getConfig().getOptionalValue(configKey, String.class);
+            if (configToken.isPresent() && !configToken.get().isEmpty()) {
+                logger.debug("Using token from configuration '{}' for process '{}', taskId '{}'",
+                        configKey, processId, taskId);
+                return configToken;
+            }
+        }
+
+        logger.debug("No token found for process '{}', task '{}', taskId '{}'", processId, taskName, taskId);
+        return Optional.empty();
     }
 
-    @Override
-    public Optional<String> getActualToken() {
+    /**
+     * Retrieves the token from the Quarkus security context.
+     *
+     * @return Optional containing the token if available, empty otherwise
+     */
+    private Optional<String> getTokenFromSecurityContext() {
         try {
-            return getIdentity()
+            return getSecurityIdentity()
                     .filter(securityIdentity -> !securityIdentity.isAnonymous())
                     .flatMap(securityIdentity -> {
                         TokenCredential credential = securityIdentity.getCredential(TokenCredential.class);
@@ -75,21 +110,69 @@ public class QuarkusAuthTokenProvider implements AuthTokenProvider {
         }
     }
 
+    /**
+     * Gets the SecurityIdentity from the CDI container.
+     *
+     * @return Optional containing the SecurityIdentity if available
+     */
+    private Optional<SecurityIdentity> getSecurityIdentity() {
+        try {
+            ArcContainer container = Arc.container();
+            if (container == null) {
+                logger.debug("Arc container is not available");
+                return Optional.empty();
+            }
+
+            InstanceHandle<SecurityIdentity> handle = container.instance(SecurityIdentity.class);
+            if (handle.isAvailable()) {
+                return Optional.of(handle.get());
+            }
+
+            logger.debug("SecurityIdentity is not available in CDI container");
+            return Optional.empty();
+        } catch (Exception e) {
+            logger.debug("Error getting SecurityIdentity from CDI container: {}", e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Gets the Config instance.
+     *
+     * @return the Config instance
+     */
+    private Config getConfig() {
+        try {
+            ArcContainer container = Arc.container();
+            if (container != null) {
+                InstanceHandle<Config> handle = container.instance(Config.class);
+                if (handle.isAvailable()) {
+                    return handle.get();
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("Could not get Config from CDI container, falling back to ConfigProvider: {}", e.getMessage());
+        }
+
+        // Fallback to ConfigProvider if CDI is not available
+        return ConfigProvider.getConfig();
+    }
+
     @Override
-    @ActivateRequestContext
-    public Optional<String> getActualTokenOrDefault() {
-        Optional<String> actualToken = getActualToken();
-        if (actualToken.isPresent()) {
-            logger.debug("Using token from security context");
-            return actualToken;
-        }
+    public boolean isAvailable() {
+        try {
+            // Check if Arc container is available (indicates Quarkus runtime)
+            ArcContainer container = Arc.container();
+            if (container == null) {
+                logger.debug("QuarkusAuthTokenProvider is not available: Arc container is null");
+                return false;
+            }
 
-        if (defaultBearerToken.isPresent()) {
-            logger.debug("Using default bearer token from Quarkus configuration property: {}", BEARER_TOKEN_CONFIG_PROPERTY);
-            return defaultBearerToken;
+            logger.debug("QuarkusAuthTokenProvider is available");
+            return true;
+        } catch (Exception e) {
+            logger.debug("QuarkusAuthTokenProvider is not available: {}", e.getMessage());
+            return false;
         }
-
-        logger.debug("No token available from security context or configuration");
-        return Optional.empty();
     }
 }
