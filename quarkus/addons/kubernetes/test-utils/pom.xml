@@ -37,9 +37,12 @@
     </properties>
 
     <dependencies>
+        <!-- Quarkus 3.27.2 / Fabric8 7.3.1 upgrade: Replaced openshift-server-mock (removed in Fabric8 7.x)
+             with kubernetes-server-mock. OpenShift mock support is now handled via
+             KubernetesMockServer + client.adapt(OpenShiftClient.class). -->
         <dependency>
             <groupId>io.fabric8</groupId>
-            <artifactId>openshift-server-mock</artifactId>
+            <artifactId>kubernetes-server-mock</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -52,6 +55,12 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
+        </dependency>
+        <!-- Quarkus 3.27.2 / Fabric8 7.3.1 upgrade: Added openshift-client for OpenShiftClient class.
+             Previously pulled in transitively by openshift-server-mock, which was removed in Fabric8 7.x. -->
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>openshift-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kie</groupId>

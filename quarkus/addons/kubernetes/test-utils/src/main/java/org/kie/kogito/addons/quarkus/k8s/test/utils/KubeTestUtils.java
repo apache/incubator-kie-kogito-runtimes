@@ -28,6 +28,14 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.Resource;
 
+/**
+ * Quarkus 3.27.2 / Fabric8 7.3.1 upgrade:
+ * - Fabric8 7.x CRUD-mode mock server auto-handles standard CRUD operations, but status
+ * sub-resources require explicit patch calls (patchStatus()).
+ * - createOr() replaces createOrReplace() which was removed in Fabric8 7.x.
+ * - createKnativeServiceIfNotExists() checks existence before creating to avoid 409 Conflict
+ * errors when CRUD-mode mock server persists resources across test methods.
+ */
 public final class KubeTestUtils {
 
     private KubeTestUtils() {
@@ -87,9 +95,10 @@ public final class KubeTestUtils {
     }
 
     public static void createKnativeServiceIfNotExists(KubernetesClient client, String yamlPath, String namespace, String serviceName, String remoteServiceUrl) {
-        if (client.services().inNamespace(namespace).withName(serviceName).get() == null) {
-            KnativeClient knativeClient = client.adapt(KnativeClient.class);
+        KnativeClient knativeClient = client.adapt(KnativeClient.class);
 
+        // Check if Knative service exists (not regular K8s service)
+        if (knativeClient.services().inNamespace(namespace).withName(serviceName).get() == null) {
             Service service = knativeClient.services().inNamespace(namespace).load(getResourceAsStream(yamlPath)).item();
 
             if (remoteServiceUrl != null) {

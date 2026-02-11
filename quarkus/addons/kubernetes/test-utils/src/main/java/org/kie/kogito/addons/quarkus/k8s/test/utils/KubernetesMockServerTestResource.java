@@ -22,28 +22,48 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.server.mock.KubernetesCrudDispatcher;
+import io.fabric8.kubernetes.client.server.mock.KubernetesMockServer;
+import io.fabric8.mockwebserver.MockWebServer;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 /**
  * Quarkus test resource that provides a Fabric8 Kubernetes mock server with CRUD support.
+ *
+ * Quarkus 3.27.2 / Fabric8 7.3.1 upgrade:
+ * - Replaced KubernetesServer (Fabric8 6.x) with KubernetesMockServer (Fabric8 7.x).
+ * - before()/after() lifecycle replaced with init()/destroy().
+ * - Client creation changed from server.getClient() to server.createClient().
+ * - CRUD mode now requires explicit KubernetesCrudDispatcher. The single-boolean
+ * constructor KubernetesMockServer(boolean) sets useHttps, NOT crudMode.
+ * - The responses map must be a mutable HashMap (not Collections.emptyMap()).
+ * - Uses io.fabric8.mockwebserver.Context (fully qualified to avoid clash with
+ * QuarkusTestResourceLifecycleManager.Context).
  */
 public class KubernetesMockServerTestResource implements QuarkusTestResourceLifecycleManager {
 
     private static final String TEST_NAMESPACE = "serverless-workflow-greeting-quarkus";
-    private final KubernetesServer server = new KubernetesServer(false, true); // Use CRUD mode
+    private static KubernetesMockServer server;
+    private KubernetesClient client;
 
     @Override
     public Map<String, String> start() {
-        try {
-            server.before(); // Start the mock Kubernetes server
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to start Kubernetes mock server", e);
-        }
+        // Fabric8 7.3.1: Create mock server with CRUD mode via KubernetesCrudDispatcher.
+        // Context is fully qualified to avoid clash with QuarkusTestResourceLifecycleManager.Context.
+        // useHttps=false to avoid SSL handshake overhead in tests.
+        server = new KubernetesMockServer(
+                new io.fabric8.mockwebserver.Context(),
+                new MockWebServer(),
+                new HashMap<>(),
+                new KubernetesCrudDispatcher(),
+                false);
+        server.init();
 
-        String mockServerUrl = server.getClient().getConfiguration().getMasterUrl();
+        // Fabric8 7.x: createClient() replaces getClient() from Fabric8 6.x
+        client = server.createClient();
+        String mockServerUrl = client.getConfiguration().getMasterUrl();
 
-        // Ensure the Fabric8 client picks up the mock server
         System.setProperty(Config.KUBERNETES_MASTER_SYSTEM_PROPERTY, mockServerUrl);
 
         Map<String, String> config = new HashMap<>();
@@ -55,15 +75,20 @@ public class KubernetesMockServerTestResource implements QuarkusTestResourceLife
 
     @Override
     public void stop() {
+        if (client != null) {
+            client.close();
+        }
         if (server != null) {
-            server.after(); // Stop the mock server
+            server.destroy();
+            server = null;
         }
     }
 
-    /**
-     * Expose the Fabric8 Kubernetes mock server instance for advanced use in tests.
-     */
-    public KubernetesServer getServer() {
+    public static KubernetesMockServer getServer() {
         return server;
+    }
+
+    public KubernetesClient getClient() {
+        return client;
     }
 }

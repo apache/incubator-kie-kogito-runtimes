@@ -34,6 +34,13 @@ import jakarta.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.addons.quarkus.k8s.test.utils.KubeTestUtils.createKnativeServiceIfNotExists;
 
+/**
+ * Quarkus 3.27.2 / Fabric8 7.3.1 upgrade:
+ * - Replaced explicit mock server .expect() calls with createKnativeServiceIfNotExists(),
+ * which works with Fabric8 7.x CRUD-mode mock server (auto-handles CRUD operations).
+ * - Uses createKnativeServiceIfNotExists() in @BeforeEach to avoid 409 Conflict when the
+ * CRUD-mode server persists resources across test methods.
+ */
 @QuarkusTest
 @QuarkusTestResource(KubernetesMockServerTestResource.class)
 class KubeDiscoveryConfigCacheUpdaterTest {
@@ -50,7 +57,9 @@ class KubeDiscoveryConfigCacheUpdaterTest {
 
     @BeforeEach
     void beforeEach() {
-        createKnativeServiceIfNotExists(client, "knative/quarkus-greeting.yaml", "test", "serverless-workflow-greeting-quarkus", remoteServiceUrl);
+        createKnativeServiceIfNotExists(client, "knative/quarkus-greeting.yaml", "test",
+                "serverless-workflow-greeting-quarkus", remoteServiceUrl);
+
         kubeDiscoveryConfigCacheUpdater = new KubeDiscoveryConfigCacheUpdater(kubernetesServiceCatalog);
     }
 
