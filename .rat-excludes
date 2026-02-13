@@ -68,6 +68,7 @@ quarkus/addons/microprofile-config-service-catalog/runtime/src/main/resources/ME
 quarkus/addons/monitoring/core/src/main/resources/META-INF/kogito.addon
 quarkus/addons/monitoring/elastic/runtime/src/main/resources/META-INF/kogito.addon
 quarkus/addons/monitoring/prometheus/runtime/src/main/resources/META-INF/kogito.addon
+quarkus/addons/opentelemetry/runtime/src/main/resources/META-INF/kogito.addon
 quarkus/addons/persistence/kafka/runtime/src/main/resources/META-INF/kogito.addon
 quarkus/addons/process-definitions/runtime/src/main/resources/META-INF/kogito.addon
 quarkus/addons/process-instance-migration/integration-tests/src/main/resources/META-INF/migration-plan/signal.mpf
