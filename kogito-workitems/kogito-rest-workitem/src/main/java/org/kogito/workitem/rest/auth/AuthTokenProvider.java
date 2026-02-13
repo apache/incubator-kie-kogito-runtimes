@@ -16,33 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.process;
+package org.kogito.workitem.rest.auth;
 
-import org.kie.kogito.KogitoConfig;
-import org.kie.kogito.auth.AuthTokenProvider;
-import org.kie.kogito.auth.IdentityProvider;
-import org.kie.kogito.calendar.BusinessCalendar;
-import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.signal.SignalManagerHub;
-import org.kie.kogito.uow.UnitOfWorkManager;
+import java.util.Optional;
 
-public interface ProcessConfig extends KogitoConfig {
+public interface AuthTokenProvider {
 
-    WorkItemHandlerConfig workItemHandlers();
+    Optional<String> getToken(String processId, String taskName, String taskId);
 
-    ProcessEventListenerConfig processEventListeners();
+    @Deprecated
+    default Optional<String> getToken(String processId, String taskName) {
+        return getToken(processId, taskName, null);
+    }
 
-    SignalManagerHub signalManagerHub();
-
-    UnitOfWorkManager unitOfWorkManager();
-
-    JobsService jobsService();
-
-    ProcessVersionResolver versionResolver();
-
-    IdentityProvider identityProvider();
-
-    AuthTokenProvider authTokenProvider();
-
-    BusinessCalendar getBusinessCalendar();
+    default boolean isAvailable() {
+        return true;
+    }
 }

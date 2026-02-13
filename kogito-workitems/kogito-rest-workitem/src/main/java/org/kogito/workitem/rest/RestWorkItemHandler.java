@@ -81,6 +81,8 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     public static final String URL = "Url";
     public static final String METHOD = "Method";
     public static final String CONTENT_DATA = "ContentData";
+    public static final String CONTENT_TYPE = "ContentType";
+    public static final String ACCEPT = "Accept";
     public static final String RESULT = "Result";
     public static final String USER = "Username";
     public static final String PASSWORD = "Password";
@@ -92,10 +94,17 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     public static final String PATH_PARAM_RESOLVER = "PathParamResolver";
     public static final String AUTH_METHOD = "AuthMethod";
     public static final String TARGET_TYPE = "TargetType";
+    public static final String QUERY_PARAMS = "QueryParams";
+    public static final String HEADERS = "Headers";
+
     private static final String HTTP_PROTOCOL = "http";
     private static final String HTTPS_PROTOCOL = "https";
+    private static final String APPLICATION_JSON = "application/json";
 
     public static final String REQUEST_TIMEOUT_IN_MILLIS = "RequestTimeout";
+
+    private static final String AUTH_HEADER_VAR = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     public static final int DEFAULT_PORT = 80;
     public static final int DEFAULT_SSL_PORT = 443;
@@ -114,6 +123,7 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
 
     protected final WebClient httpClient;
     protected final WebClient httpsClient;
+
     private Collection<RequestDecorator> requestDecorators;
 
     public RestWorkItemHandler(WebClient httpClient, WebClient httpsClient) {
@@ -122,13 +132,19 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         this.requestDecorators = StreamSupport.stream(ServiceLoader.load(RequestDecorator.class).spliterator(), false).collect(Collectors.toList());
     }
 
+    /**
+     * Set the configuration for this handler.
+     * This allows framework-specific implementations to inject configuration.
+     *
+     * @param config the RestWorkItemConfig instance
+     */
+
     @Override
     public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
 
-        //retrieving parameters
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
-        //removing unnecessary parameter
         parameters.remove("TaskName");
+
         Class<?> targetInfo = getParamSupply(parameters, TARGET_TYPE, Class.class, () -> getTargetInfo(workItem));
         logger.debug("Using target {}", targetInfo);
 
@@ -138,6 +154,8 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         }
 
         HttpMethod method = getParam(parameters, METHOD, HttpMethod.class, HttpMethod.GET);
+        String contentType = getParam(parameters, CONTENT_TYPE, String.class, null);
+        String accept = getParam(parameters, ACCEPT, String.class, null);
         RestWorkItemHandlerResult resultHandler = getClassParam(parameters, RESULT_HANDLER, RestWorkItemHandlerResult.class, DEFAULT_RESULT_HANDLER, resultHandlers);
         RestWorkItemHandlerBodyBuilder bodyBuilder = getClassParam(parameters, BODY_BUILDER, RestWorkItemHandlerBodyBuilder.class, DEFAULT_BODY_BUILDER, bodyBuilders);
         ParamsDecorator paramsDecorator = getClassParam(parameters, PARAMS_DECORATOR, ParamsDecorator.class, DEFAULT_PARAMS_DECORATOR, paramsDecorators);
@@ -145,7 +163,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         Collection<? extends AuthDecorator> authDecorators = getClassListParam(parameters, AUTH_METHOD, AuthDecorator.class, DEFAULT_AUTH_DECORATORS, authDecoratorsMap);
 
         logger.debug("Filtered parameters are {}", parameters);
-        // create request
         endPoint = pathParamResolver.apply(endPoint, parameters);
 
         String protocol = null;
@@ -185,12 +202,29 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
 
         WebClient client = isHttps(protocol) ? httpsClient : httpClient;
         HttpRequest<Buffer> request = client.request(method, port, host, path);
+
+        applyQueryParameters(request, parameters);
+
+        applyHeaders(request, parameters);
+
+        if (contentType != null) {
+            request.putHeader("Content-Type", contentType);
+        } else if (method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) || method.equals(HttpMethod.PATCH)) {
+            request.putHeader("Content-Type", APPLICATION_JSON);
+        }
+
+        if (accept != null) {
+            request.putHeader("Accept", accept);
+        } else {
+            request.putHeader("Accept", APPLICATION_JSON);
+        }
+
         WorkItemRecordParameters.recordInputParameters(workItem, parameters);
         requestDecorators.forEach(d -> d.decorate(workItem, parameters, request));
         authDecorators.forEach(d -> d.decorate(workItem, parameters, request));
         paramsDecorator.decorate(workItem, parameters, request);
         Duration requestTimeout = getRequestTimeout(parameters);
-        HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT)
+        HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) || method.equals(HttpMethod.PATCH)
                 ? sendBody(request, bodyBuilder.apply(parameters), requestTimeout)
                 : send(request, requestTimeout);
         Object outputParams = resultHandler.apply(response, targetInfo, ContextFactory.fromItem(workItem));
@@ -212,6 +246,8 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
             uni = request.sendBuffer(Buffer.buffer(string));
         } else if (body instanceof byte[] bytes) {
             uni = request.sendBuffer(Buffer.buffer(bytes));
+        } else if (body instanceof Buffer buffer) {
+            uni = request.sendBuffer(buffer);
         } else {
             uni = request.sendJson(body);
         }
@@ -223,6 +259,8 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
             return request.sendBufferAndAwait(Buffer.buffer(string));
         } else if (body instanceof byte[] bytes) {
             return request.sendBufferAndAwait(Buffer.buffer(bytes));
+        } else if (body instanceof Buffer buffer) {
+            return request.sendBufferAndAwait(buffer);
         } else {
             return request.sendJsonAndAwait(body);
         }
@@ -264,4 +302,45 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         logger.info("Cannot find definition for variable {}", varName);
         return null;
     }
+
+    @SuppressWarnings("unchecked")
+    private void applyQueryParameters(HttpRequest<Buffer> request, Map<String, Object> parameters) {
+        Object queryParamsObj = parameters.remove(QUERY_PARAMS);
+        if (queryParamsObj instanceof Map) {
+            Map<String, Object> queryParams = (Map<String, Object>) queryParamsObj;
+            queryParams.forEach((key, value) -> {
+                if (value != null) {
+                    request.addQueryParam(key, value.toString());
+                    logger.debug("Added query parameter: {} = {}", key, value);
+                }
+            });
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void applyHeaders(HttpRequest<Buffer> request, Map<String, Object> parameters) {
+        Object headersObj = parameters.remove(HEADERS);
+        if (headersObj instanceof Map) {
+            Map<String, Object> headers = (Map<String, Object>) headersObj;
+            headers.forEach((key, value) -> {
+                if (value != null) {
+                    request.putHeader(key, value.toString());
+                    logger.debug("Added header: {} = {}", key, value);
+                }
+            });
+        }
+    }
+
+    private String ensureBearerPrefix(String tokenValue) {
+        if (tokenValue == null || tokenValue.isBlank()) {
+            return null;
+        }
+
+        if (tokenValue.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length())) {
+            return tokenValue;
+        }
+
+        return BEARER_PREFIX + tokenValue;
+    }
+
 }

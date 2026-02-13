@@ -1,0 +1,34 @@
+[
+  {
+    "name": "org.kogito.workitem.rest.auth.ClientInfo",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.UserInfo",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.ClientOAuth2AuthToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.PasswordOAuth2AuthToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.OAuth2AuthToken",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.kogito.workitem.rest.auth.TokenRetriever",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  }
+]

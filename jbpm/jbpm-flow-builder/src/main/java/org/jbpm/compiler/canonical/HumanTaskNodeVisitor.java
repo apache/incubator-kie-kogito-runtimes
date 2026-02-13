@@ -43,7 +43,7 @@ public class HumanTaskNodeVisitor extends WorkItemNodeVisitor<HumanTaskNode> {
         body.addStatement(getAssignedFactoryMethod(factoryField, HumanTaskNodeFactory.class, getNodeId(node), getNodeKey(), getWorkflowElementConstructor(node.getId())))
                 .addStatement(getNameMethod(node, "Task"));
 
-        addWorkItemParameters(work, body, getNodeId(node));
+        addWorkItemParameters(work, body, getNodeId(node), metadata.getProcessId(), getNodeId(node));
         addNodeMappings(node, body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));
 
