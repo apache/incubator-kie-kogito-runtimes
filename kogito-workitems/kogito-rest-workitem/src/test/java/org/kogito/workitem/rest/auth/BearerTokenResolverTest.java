@@ -229,4 +229,205 @@ class BearerTokenResolverTest {
         // Then
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void testApplyWithBearerPrefixAndExtraSpaces() {
+        // Given
+        String tokenWithBearerAndSpaces = "Bearer   test-token-123  ";
+        String expectedToken = "test-token-123";
+        when(authTokenProvider.getToken(eq(PROCESS_ID), eq(TASK_NAME), eq(TASK_ID)))
+                .thenReturn(Optional.of(tokenWithBearerAndSpaces));
+
+        // When
+        String result = resolver.apply(workItem);
+
+        // Then
+        assertThat(result).isEqualTo(expectedToken);
+    }
+
+    @Test
+    void testGetConfigPropertyWithNonStringClass() {
+        // Given
+        when(authTokenProvider.getToken(eq(PROCESS_ID), eq(TASK_NAME)))
+                .thenReturn(Optional.of("test-token"));
+
+        // When
+        Optional<Integer> result = resolver.getConfigProperty("access_token", Integer.class);
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void testGetConfigPropertyReturnsEmptyWhenTokenNotPresent() {
+        // Given
+        when(authTokenProvider.getToken(eq(PROCESS_ID), eq(TASK_NAME)))
+                .thenReturn(Optional.empty());
+
+        // When
+        Optional<String> result = resolver.getConfigProperty("access_token", String.class);
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void testConstructorInitializesFieldsCorrectly() {
+        // Given
+        String customProcessId = "customProcess";
+        String customTaskName = "CustomTask";
+
+        // When
+        BearerTokenResolver customResolver = new BearerTokenResolver(customProcessId, customTaskName);
+
+        // Then
+        assertThat(customResolver.getProcessId()).isEqualTo(customProcessId);
+        assertThat(customResolver.getTaskName()).isEqualTo(customTaskName);
+    }
+
+    @Test
+    void testGetPropertyNamesReturnsCorrectFormat() {
+        // When
+        Iterable<String> result = resolver.getPropertyNames();
+
+        // Then
+        assertThat(result).hasSize(1);
+        assertThat(result).allMatch(name -> name.startsWith("kogito.processes."));
+        assertThat(result).allMatch(name -> name.endsWith(".access_token"));
+    }
+
+    @Test
+    void testApplyWithWhitespaceToken() {
+        // Given
+        when(authTokenProvider.getToken(eq(PROCESS_ID), eq(TASK_NAME), eq(TASK_ID)))
+                .thenReturn(Optional.of("   "));
+
+        // When/Then
+        assertThatThrownBy(() -> resolver.apply(workItem))
+                .isInstanceOf(WorkItemExecutionException.class)
+                .hasMessageContaining("Authentication token not found");
+    }
+
+    @Test
+    void testApplyWithMultipleBearerPrefixes() {
+        // Given
+        String tokenWithMultipleBearers = "Bearer Bearer test-token-123";
+        String expectedToken = "Bearer test-token-123";
+        when(authTokenProvider.getToken(eq(PROCESS_ID), eq(TASK_NAME), eq(TASK_ID)))
+                .thenReturn(Optional.of(tokenWithMultipleBearers));
+
+        // When
+        String result = resolver.apply(workItem);
+
+        // Then
+        assertThat(result).isEqualTo(expectedToken);
+    }
+
+    @Test
+    void testApplyWithLowercaseBearerPrefix() {
+        // Given
+        String tokenWithLowercaseBearer = "bearer test-token-123";
+        when(authTokenProvider.getToken(eq(PROCESS_ID), eq(TASK_NAME), eq(TASK_ID)))
+                .thenReturn(Optional.of(tokenWithLowercaseBearer));
+
+        // When
+        String result = resolver.apply(workItem);
+
+        // Then
+        // Should not remove lowercase "bearer" - only "Bearer" with capital B
+        assertThat(result).isEqualTo(tokenWithLowercaseBearer);
+    }
+
+    @Test
+    void testGetConfigPropertyWithDifferentPropertyName() {
+        // Given
+        String expectedToken = "config-token-456";
+        when(authTokenProvider.getToken(eq(PROCESS_ID), eq(TASK_NAME)))
+                .thenReturn(Optional.of(expectedToken));
+
+        // When
+        Optional<String> result = resolver.getConfigProperty("some_other_property", String.class);
+
+        // Then
+        assertThat(result).isPresent();
+        assertThat(result.get()).isEqualTo(expectedToken);
+    }
+
+    @Test
+    void testGetIndexedConfigPropertyWithDifferentTypes() {
+        // When
+        var stringResult = resolver.getIndexedConfigProperty("access_token", String.class);
+        var intResult = resolver.getIndexedConfigProperty("access_token", Integer.class);
+        var boolResult = resolver.getIndexedConfigProperty("access_token", Boolean.class);
+
+        // Then
+        assertThat(stringResult).isEmpty();
+        assertThat(intResult).isEmpty();
+        assertThat(boolResult).isEmpty();
+    }
+
+    @Test
+    void testApplyWithNodeInstanceButNullNodeDefinitionId() {
+        // Given
+        when(workItem.getNodeInstance()).thenReturn(nodeInstance);
+        when(nodeInstance.getNodeDefinitionId()).thenReturn(null);
+        String expectedToken = "test-token-123";
+        when(authTokenProvider.getToken(eq(PROCESS_ID), eq(TASK_NAME), eq(null)))
+                .thenReturn(Optional.of(expectedToken));
+
+        // When
+        String result = resolver.apply(workItem);
+
+        // Then
+        assertThat(result).isEqualTo(expectedToken);
+    }
+
+    @Test
+    void testApplyErrorMessageContainsAllRelevantInformation() {
+        // Given
+        when(authTokenProvider.getToken(eq(PROCESS_ID), eq(TASK_NAME), eq(TASK_ID)))
+                .thenReturn(Optional.empty());
+
+        // When/Then
+        assertThatThrownBy(() -> resolver.apply(workItem))
+                .isInstanceOf(WorkItemExecutionException.class)
+                .hasMessageContaining("Authentication token not found")
+                .hasMessageContaining(PROCESS_ID)
+                .hasMessageContaining(TASK_NAME)
+                .hasMessageContaining(TASK_ID)
+                .hasMessageContaining("Security Context")
+                .hasMessageContaining("Process-specific configuration");
+    }
+
+    @Test
+    void testResolverWithNullProcessId() {
+        // Given
+        BearerTokenResolver nullProcessResolver = new BearerTokenResolver(null, TASK_NAME);
+        String expectedToken = "test-token-123";
+        when(authTokenProvider.getToken(eq(null), eq(TASK_NAME), eq(TASK_ID)))
+                .thenReturn(Optional.of(expectedToken));
+
+        // When
+        String result = nullProcessResolver.apply(workItem);
+
+        // Then
+        assertThat(result).isEqualTo(expectedToken);
+        assertThat(nullProcessResolver.getProcessId()).isNull();
+    }
+
+    @Test
+    void testResolverWithNullTaskName() {
+        // Given
+        BearerTokenResolver nullTaskResolver = new BearerTokenResolver(PROCESS_ID, null);
+        String expectedToken = "test-token-123";
+        when(authTokenProvider.getToken(eq(PROCESS_ID), eq(null), eq(TASK_ID)))
+                .thenReturn(Optional.of(expectedToken));
+
+        // When
+        String result = nullTaskResolver.apply(workItem);
+
+        // Then
+        assertThat(result).isEqualTo(expectedToken);
+        assertThat(nullTaskResolver.getTaskName()).isNull();
+    }
 }
