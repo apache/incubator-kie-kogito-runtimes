@@ -1004,7 +1004,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     private Object resolveEventType(String eventType) {
-        if(isVariableExpression(eventType)){
+        if (isVariableExpression(eventType)) {
             return resolveVariable(eventType);
         }
         return eventType;
