@@ -36,7 +36,6 @@ class AuthTokenProviderTest {
 
     @BeforeEach
     void setUp() {
-        // Create a test implementation of AuthTokenProvider
         provider = new TestAuthTokenProvider();
     }
 
@@ -76,7 +75,6 @@ class AuthTokenProviderTest {
         AuthTokenProvider customProvider = new AuthTokenProvider() {
             @Override
             public Optional<String> getToken(String processId, String taskName, String taskId) {
-                // Verify that deprecated method passes null as taskId
                 assertThat(taskId).isNull();
                 return Optional.of("custom-token");
             }
@@ -212,9 +210,7 @@ class AuthTokenProviderTest {
         assertThat(result1).isEqualTo(result2);
     }
 
-    /**
-     * Test implementation of AuthTokenProvider for testing purposes
-     */
+
     private static class TestAuthTokenProvider implements AuthTokenProvider {
 
         @Override
@@ -229,4 +225,3 @@ class AuthTokenProviderTest {
     }
 }
 
-// Made with Bob

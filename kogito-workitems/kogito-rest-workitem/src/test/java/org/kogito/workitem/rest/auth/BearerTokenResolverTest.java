@@ -299,13 +299,16 @@ class BearerTokenResolverTest {
     @Test
     void testApplyWithWhitespaceToken() {
         // Given
+        String whitespaceToken = "   ";
         when(authTokenProvider.getToken(eq(PROCESS_ID), eq(TASK_NAME), eq(TASK_ID)))
-                .thenReturn(Optional.of("   "));
+                .thenReturn(Optional.of(whitespaceToken));
 
-        // When/Then
-        assertThatThrownBy(() -> resolver.apply(workItem))
-                .isInstanceOf(WorkItemExecutionException.class)
-                .hasMessageContaining("Authentication token not found");
+        // When
+        String result = resolver.apply(workItem);
+
+        // Then
+        // Whitespace is not trimmed by the resolver, it's returned as-is
+        assertThat(result).isEqualTo(whitespaceToken);
     }
 
     @Test

@@ -259,7 +259,6 @@ class AuthTokenProviderHolderTest {
         assertThat(isAvailable).isTrue();
     }
 
-
     private static class TestAuthTokenProvider implements AuthTokenProvider {
 
         private final String token;
@@ -279,4 +278,3 @@ class AuthTokenProviderHolderTest {
         }
     }
 }
-
