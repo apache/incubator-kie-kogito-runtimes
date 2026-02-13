@@ -46,3 +46,5 @@ target/
 !.rat-excludes
 
 quarkus/integration-tests/integration-tests-quarkus-gradle/integration-tests-quarkus-gradle-project/**
+/kogito-gradle-plugin-test/.gradle/
+/kogito-gradle-plugin-test/build/

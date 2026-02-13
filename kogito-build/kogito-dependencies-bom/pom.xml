@@ -74,7 +74,7 @@
     <version.com.sun.activation>2.0.1</version.com.sun.activation>
     <version.javax.inject>2.0.1</version.javax.inject>
     <version.org.eclipse.microprofile.openapi>4.0.2</version.org.eclipse.microprofile.openapi>
-    <version.ch.qos.logback>1.5.20</version.ch.qos.logback>
+    <version.ch.qos.logback>1.5.25</version.ch.qos.logback>
     <version.jakarta.annotation-api>2.1.1</version.jakarta.annotation-api>
     <version.jakarta.validation-api>3.0.2</version.jakarta.validation-api>
     <version.jakarta.xml.bind-api>4.0.4</version.jakarta.xml.bind-api>
@@ -129,12 +129,12 @@
     <version.wurstmeister.kafka>2.12-2.2.1</version.wurstmeister.kafka>
     <version.org.mongo>5.3.1</version.org.mongo>
     <version.org.mongo-image>5.0.31</version.org.mongo-image>
-    <version.org.mozilla.rhino>1.7.13</version.org.mozilla.rhino>
+    <version.org.mozilla.rhino>1.8.1</version.org.mozilla.rhino>
     <version.org.redis>2.0.4</version.org.redis>
     <version.org.postgres>15.9-alpine3.20</version.org.postgres>
     <!-- we align to version used by quarkus -->
     <version.org.apache.avro>1.12.0</version.org.apache.avro>
-    <version.org.assertj>3.27.3</version.org.assertj>
+    <version.org.assertj>3.27.7</version.org.assertj>
     <version.org.glassfish.jaxb>4.0.6</version.org.glassfish.jaxb>
     <version.org.json-unit-assertj>2.9.0</version.org.json-unit-assertj>
     <version.org.hamcrest>2.2</version.org.hamcrest> <!-- else old version coming from Mockito wins and breaks tests -->
@@ -142,7 +142,7 @@
     <version.org.junit.jupiter>5.12.2</version.org.junit.jupiter>
     <version.org.junit.platform>1.12.2</version.org.junit.platform><!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.mockito>5.17.0</version.org.mockito>
-    <version.org.testcontainers>2.0.1</version.org.testcontainers>
+    <version.org.testcontainers>2.0.3</version.org.testcontainers>
     <version.org.xmlunit-core>2.10.4</version.org.xmlunit-core>
     <version.io.rest-assured>5.5.6</version.io.rest-assured>
 
@@ -153,7 +153,7 @@
     <version.org.reflections>0.10.2</version.org.reflections>
     <version.org.slf4j>2.0.6</version.org.slf4j>
 
-    <version.maven>3.9.6</version.maven>
+    <version.maven>3.9.11</version.maven>
     <version.maven.project>2.2.1</version.maven.project>
     <version.maven.plugin>3.7.1</version.maven.plugin>
     <version.maven.invoker>3.2.0</version.maven.invoker>
