@@ -1,3 +1,20 @@
 github:
+  description: Kogito Runtimes is a cloud-native business automation technology for building cloud-ready business applications 
+  homepage: https://kie.apache.org
+  labels:
+    - apache
+    - java
+    - jbpm
+    - workflow
+    - workflow-engine
+    - rule-engine
+    - spring-boot
+    - quarkus
+    - kogito
+    - knative
+    - cloud-native
+    - bpm
+    - dmn
+    - pmml
   features:
     issues: true
