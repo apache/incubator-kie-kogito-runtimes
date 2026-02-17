@@ -54,7 +54,6 @@ public abstract class AbstractKieTask extends DefaultTask {
     @Internal
     protected String gradleCompilerJavaVersion;
 
-
     @Internal
     protected Property<File> projectBuildOutputDirectory;
 
@@ -149,4 +148,4 @@ public abstract class AbstractKieTask extends DefaultTask {
         return CodeGenManagerUtil.Framework.NONE;
     }
 
-}   
+}

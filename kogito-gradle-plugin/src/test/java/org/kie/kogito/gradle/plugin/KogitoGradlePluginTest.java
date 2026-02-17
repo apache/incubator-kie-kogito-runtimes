@@ -59,4 +59,4 @@ class KogitoGradlePluginTest {
                 .resolve("kogito")
                 .toFile());
     }
-}   
+}
