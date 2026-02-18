@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.testcontainers.quarkus.PostgreSqlQuarkusTestResource;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -25,7 +27,7 @@ import static org.hamcrest.Matchers.emptyOrNullString;
  * app.listener.fail-on-complete=true
  */
 @QuarkusIntegrationTest
-//@QuarkusTestResource(value = PostgreSqlQuarkusTestResource.class, restrictToAnnotatedClass = true)
+@QuarkusTestResource(value = PostgreSqlQuarkusTestResource.class, restrictToAnnotatedClass = true)
 public class UserTaskTransactionRollbackIT {
 
     private static final String PROCESS_ID = "hiring";
