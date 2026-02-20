@@ -74,7 +74,9 @@ jobs:
           report_paths: '**/*-reports/TEST-*.xml'
       - name: Upload Dependency Trees
         uses: actions/upload-artifact@v4
+        env:
+          DEPENDENCY_TREE_FILE: 'mvn_dependency_tree_kogito-runtimes_${{ matrix.os }}.txt'
         if: ${{ always() }}
         with:
-          name: dependency-trees-logs
+          name: dependency-trees-logs_kogito-runtimes_${{ matrix.os }}
           path: '**/${{ env.DEPENDENCY_TREE_FILE }}'
