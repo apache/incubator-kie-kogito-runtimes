@@ -85,6 +85,7 @@ jobs:
         env: 
           BUILD_MVN_OPTS: ${{ matrix.env_BUILD_MVN_OPTS }}
           KOGITO_EXAMPLES_SUBFOLDER_POM: ${{ matrix.env_KOGITO_EXAMPLES_SUBFOLDER_POM }}
+          DEPENDENCY_TREE_FILE: 'mvn_dependency_tree_${{ matrix.job_name }}_${{ matrix.os }}.txt'
       - name: Junit Report
         uses: apache/incubator-kie-kogito-pipelines/.ci/actions/action-junit-report@main
         if: ${{ always() }}
@@ -95,4 +96,4 @@ jobs:
         if: ${{ always() }}
         with:
           name: dependency-trees-logs
-          path: '**/mvn_dependency_tree.txt'
+          path: '**/${{ env.DEPENDENCY_TREE_FILE }}'

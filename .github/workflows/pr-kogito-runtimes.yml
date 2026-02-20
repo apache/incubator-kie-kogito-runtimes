@@ -66,6 +66,7 @@ jobs:
           definition-file: https://raw.githubusercontent.com/${GROUP:apache}/incubator-kie-kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
         env:
           BUILD_MVN_OPTS_CURRENT: '-Dvalidate-formatting'
+          DEPENDENCY_TREE_FILE: 'mvn_dependency_tree_kogito-runtimes_${{ matrix.os }}.txt'
       - name: Junit Report
         uses: apache/incubator-kie-kogito-pipelines/.ci/actions/action-junit-report@main
         if: ${{ always() }}
@@ -76,4 +77,4 @@ jobs:
         if: ${{ always() }}
         with:
           name: dependency-trees-logs
-          path: '**/mvn_dependency_tree.txt'
+          path: '**/${{ env.DEPENDENCY_TREE_FILE }}'
