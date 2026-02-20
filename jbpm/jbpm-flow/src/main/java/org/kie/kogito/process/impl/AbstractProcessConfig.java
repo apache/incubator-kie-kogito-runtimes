@@ -27,6 +27,7 @@ import java.util.stream.StreamSupport;
 
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.Addons;
+import org.kie.kogito.auth.AuthTokenProvider;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.event.EventPublisher;
@@ -53,6 +54,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
     private final JobsService jobsService;
     private final ProcessVersionResolver versionResolver;
     private final IdentityProvider identityProvider;
+    private final AuthTokenProvider authTokenProvider;
     private final BusinessCalendar businessCalendar;
 
     protected AbstractProcessConfig(
@@ -66,6 +68,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
             Iterable<UnitOfWorkEventListener> unitOfWorkListeners,
             Iterable<ProcessVersionResolver> versionResolver,
             Iterable<IdentityProvider> identityProvider,
+            Iterable<AuthTokenProvider> authTokenProvider,
             Iterable<BusinessCalendar> businessCalendar) {
 
         this.workItemHandlerConfig = mergeWorkItemHandler(workItemHandlerConfig, DefaultWorkItemHandlerConfig::new);
@@ -74,6 +77,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
         this.jobsService = orDefault(jobsService, StaticJobService::staticJobService);
         this.versionResolver = orDefault(versionResolver, () -> null);
         this.identityProvider = orDefault(identityProvider, NoOpIdentityProvider::new);
+        this.authTokenProvider = orDefault(authTokenProvider, () -> null);
         this.businessCalendar = orDefault(businessCalendar, () -> null);
 
         eventPublishers.forEach(publisher -> unitOfWorkManager().eventManager().addPublisher(publisher));
@@ -82,7 +86,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
     }
 
     private static WorkItemHandlerConfig mergeWorkItemHandler(Iterable<WorkItemHandlerConfig> workItemHandlerConfigs,
-            Supplier<WorkItemHandlerConfig> supplier) {
+                                                              Supplier<WorkItemHandlerConfig> supplier) {
         Iterator<WorkItemHandlerConfig> iterator = workItemHandlerConfigs.iterator();
         if (iterator.hasNext()) {
             WorkItemHandlerConfig config = iterator.next();
@@ -125,6 +129,11 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
     @Override
     public IdentityProvider identityProvider() {
         return identityProvider;
+    }
+
+    @Override
+    public AuthTokenProvider authTokenProvider() {
+        return authTokenProvider;
     }
 
     @Override

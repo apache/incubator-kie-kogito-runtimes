@@ -16,30 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.compiler.canonical.descriptors;
+package org.kie.kogito.process.workitems.impl;
 
-import java.util.Collections;
-import java.util.Map;
+public class ConfigResolverHolder {
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.expr.Expression;
+    private static ConfigResolver configResolver = new SystemPropertiesConfigResolver();
 
-public interface TaskDescriptor {
-
-    String KEY_WORKITEM_TYPE = "Type";
-    String KEY_WORKITEM_INTERFACE = "Interface";
-    String KEY_WORKITEM_OPERATION = "Operation";
-    String KEY_SERVICE_IMPL = "implementation";
-    String DEFAULT_SERVICE_IMPL = "Java";
-
-    String getName();
-
-    String getType();
-
-    CompilationUnit generateHandlerClassForService();
-
-    default Map<String, Expression> getCustomParams() {
-        return Collections.emptyMap();
+    public static void setConfigResolver(ConfigResolver resolver) {
+        ConfigResolverHolder.configResolver = resolver;
     }
 
+    public static ConfigResolver getConfigResolver() {
+        return configResolver;
+    }
+
+    private ConfigResolverHolder() {
+    }
 }

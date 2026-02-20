@@ -54,6 +54,7 @@ import org.kogito.workitem.rest.bodybuilders.RestWorkItemHandlerBodyBuilder;
 import org.kogito.workitem.rest.decorators.ParamsDecorator;
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 import org.kogito.workitem.rest.decorators.RequestDecorator;
+import org.kogito.workitem.rest.decorators.TokenPropagationDecorator;
 import org.kogito.workitem.rest.pathresolvers.DefaultPathParamResolver;
 import org.kogito.workitem.rest.pathresolvers.PathParamResolver;
 import org.kogito.workitem.rest.resulthandlers.DefaultRestWorkItemHandlerResult;
@@ -110,8 +111,11 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     private static final Map<String, ParamsDecorator> paramsDecorators = new ConcurrentHashMap<>();
     private static final Map<String, PathParamResolver> pathParamsResolvers = new ConcurrentHashMap<>();
     private static final Map<String, AuthDecorator> authDecoratorsMap = new ConcurrentHashMap<>();
-    private static final Collection<AuthDecorator> DEFAULT_AUTH_DECORATORS = Arrays.asList(new ApiKeyAuthDecorator(), new BasicAuthDecorator(), new BearerTokenAuthDecorator());
-
+    private static final Collection<AuthDecorator> DEFAULT_AUTH_DECORATORS = Arrays.asList(
+            new ApiKeyAuthDecorator(),
+            new BasicAuthDecorator(),
+            new BearerTokenAuthDecorator(),
+            new TokenPropagationDecorator());
     protected final WebClient httpClient;
     protected final WebClient httpsClient;
     private Collection<RequestDecorator> requestDecorators;

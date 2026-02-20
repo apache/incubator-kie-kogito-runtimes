@@ -16,30 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.compiler.canonical.descriptors;
+package org.kogito.addons.quarkus.common.rest.workitem;
 
-import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.expr.Expression;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithParentName;
 
-public interface TaskDescriptor {
+@ConfigMapping(prefix = "kogito.processes")
+public interface RestWorkItemConfig {
 
-    String KEY_WORKITEM_TYPE = "Type";
-    String KEY_WORKITEM_INTERFACE = "Interface";
-    String KEY_WORKITEM_OPERATION = "Operation";
-    String KEY_SERVICE_IMPL = "implementation";
-    String DEFAULT_SERVICE_IMPL = "Java";
+    @WithParentName
+    Map<String, ProcessConfig> processes();
 
-    String getName();
+    interface ProcessConfig {
 
-    String getType();
-
-    CompilationUnit generateHandlerClassForService();
-
-    default Map<String, Expression> getCustomParams() {
-        return Collections.emptyMap();
+        @WithParentName
+        Map<String, TaskConfig> tasks();
     }
 
+    interface TaskConfig {
+
+        Optional<String> accessToken();
+    }
 }

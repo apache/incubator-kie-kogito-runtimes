@@ -16,30 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.compiler.canonical.descriptors;
+package org.kie.kogito.process.workitems.impl;
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.expr.Expression;
+public interface ConfigResolver {
 
-public interface TaskDescriptor {
+    <T> Optional<T> getConfigProperty(String name, Class<T> clazz);
 
-    String KEY_WORKITEM_TYPE = "Type";
-    String KEY_WORKITEM_INTERFACE = "Interface";
-    String KEY_WORKITEM_OPERATION = "Operation";
-    String KEY_SERVICE_IMPL = "implementation";
-    String DEFAULT_SERVICE_IMPL = "Java";
+    Iterable<String> getPropertyNames();
 
-    String getName();
+    <T> Collection<T> getIndexedConfigProperty(String name, Class<T> clazz);
 
-    String getType();
-
-    CompilationUnit generateHandlerClassForService();
-
-    default Map<String, Expression> getCustomParams() {
-        return Collections.emptyMap();
+    default Map<String, Object> asMap() {
+        Map<String, Object> map = new HashMap<>();
+        for (String name : getPropertyNames()) {
+            map.put(name, getConfigProperty(name, Object.class).orElseThrow());
+        }
+        return map;
     }
-
 }
