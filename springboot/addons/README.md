@@ -37,7 +37,6 @@ In this module you will find all the add-ons supported by the community for Spri
 | Monitoring Elastic      | kie-addons-springboot-monitoring-elastic       | 1.2.0  |
 | Monitoring Prometheus   | kie-addons-springboot-monitoring-prometheus    | 0.1.0  |
 | Persistence File System | kie-addons-springboot-persistence-filesystem   | 1.21.0 |
-| Persistence Infinispan  | kie-addons-springboot-persistence-infinispan   | 1.21.0 |
 | Persistence JDBC        | kie-addons-springboot-persistence-jdbc         | 1.21.0 |
 | Persistence MongoDB     | kie-addons-springboot-persistence-mongodb      | 1.21.0 |
 | Persistence Postgresql  | kie-addons-springboot-persistence-postgresql   | 1.21.0 |
