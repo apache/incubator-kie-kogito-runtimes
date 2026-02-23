@@ -85,13 +85,13 @@ public class RestTaskDescriptor implements TaskDescriptor {
     @Override
     public Map<String, Expression> getCustomParams() {
         Work work = workItemNode.getWork();
-        String strategyParam = extractRestTokenPropagationValues(workItemNode, "ACCESS_TOKEN_ACQUISITION_STRATEGY");
+        String strategyParam = extractRestTokenPropagationValues(workItemNode, ACCESS_TOKEN_ACQUISITION_STRATEGY);
         if (strategyParam == null || "none".equalsIgnoreCase(strategyParam.toString())) {
             return Collections.emptyMap();
         }
 
         String taskId;
-        String taskIdParam = extractRestTokenPropagationValues(workItemNode, "REST_SERVICE_CALL_TASK_ID");
+        String taskIdParam = extractRestTokenPropagationValues(workItemNode, REST_SERVICE_CALL_TASK_ID);
         if (taskIdParam != null) {
             taskId = taskIdParam.toString();
         } else {
@@ -138,8 +138,7 @@ public class RestTaskDescriptor implements TaskDescriptor {
                 continue;
             }
 
-            // 1) Gather literals/expressions defined via assignments (if any)
-            List<?> assigns = da.getAssignments();
+             List<?> assigns = da.getAssignments();
             if (assigns != null && !assigns.isEmpty()) {
                 for (Object a : assigns) {
                     String val = tryGetAssignmentFrom(a);
@@ -168,9 +167,9 @@ public class RestTaskDescriptor implements TaskDescriptor {
                     return s;
             }
         } catch (NoSuchMethodException e) {
-            // Fall through to alternate getter
+            return null;
         } catch (Exception ignore) {
-            // Ignore and continue to fallback
+            return null;
         }
 
         try {
@@ -182,7 +181,7 @@ public class RestTaskDescriptor implements TaskDescriptor {
                     return s;
             }
         } catch (Exception ignore) {
-            // give up
+            return null;
         }
         return null;
     }

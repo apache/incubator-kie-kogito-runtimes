@@ -63,5 +63,4 @@ public class ProcessConfig extends org.kie.kogito.process.impl.AbstractProcessCo
                 authTokenProvider,
                 businessCalendar);
     }
-
 }

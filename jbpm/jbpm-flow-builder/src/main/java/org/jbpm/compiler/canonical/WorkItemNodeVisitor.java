@@ -120,6 +120,7 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
     }
 
     protected void addWorkItemParameters(Work work, BlockStmt body, String variableName) {
+        // This is to ensure that each run of the generator produces the same code.
         addWorkItemParameters(work, body, variableName, Collections.emptyMap());
     }
 
@@ -132,9 +133,8 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
         final List<Entry<String, Object>> sortedParameters = work.getParameters().entrySet().stream().sorted(Entry.comparingByKey()).toList();
         for (Entry<String, Object> entry : sortedParameters) {
             if (entry.getValue() == null) {
-                continue;
+                continue;// interfaceImplementationRef ?
             }
-
             String paramType = null;
             if (work.getParameterDefinition(entry.getKey()) != null) {
                 paramType = work.getParameterDefinition(entry.getKey()).getType().getStringType();
