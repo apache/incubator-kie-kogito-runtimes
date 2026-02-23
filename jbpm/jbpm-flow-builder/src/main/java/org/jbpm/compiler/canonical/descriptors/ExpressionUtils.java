@@ -120,7 +120,7 @@ public class ExpressionUtils {
         } else if (object instanceof Number) {
             return new DoubleLiteralExpr(((Number) object).doubleValue());
         } else if (object instanceof String str) {
-            return toString(str);
+            return toStringExpr(str);
         } else if (object instanceof Enum) {
             return new FieldAccessExpr(new NameExpr(object.getClass().getCanonicalName()), ((Enum<?>) object).name());
         } else if (object instanceof Collection) {
@@ -132,7 +132,7 @@ public class ExpressionUtils {
         }
     }
 
-    private static Expression toString(String str) {
+    private static Expression toStringExpr(String str) {
         int length = str.length();
         if (length > STR_MAX_SIZE) {
             int pointer = 0;
@@ -164,9 +164,9 @@ public class ExpressionUtils {
                     : new CastExpr(StaticJavaParser.parseClassOrInterfaceType(object.getClass().getName()),
                             new MethodCallExpr(new MethodCallExpr(new MethodCallExpr(new TypeExpr(StaticJavaParser.parseClassOrInterfaceType(TypeConverterRegistry.class.getName())), "get"), "forType",
                                     NodeList.nodeList(new StringLiteralExpr(objectClass.getName()))), "apply",
-                                    NodeList.nodeList(toString(str))));
+                                    NodeList.nodeList(toStringExpr(str))));
         } else {
-            return toString(object.toString());
+            return toStringExpr(object.toString());
         }
     }
 
