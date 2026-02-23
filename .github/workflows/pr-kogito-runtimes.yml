@@ -45,6 +45,8 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} / Java-${{ matrix.java-version }} / Maven-${{ matrix.maven-version }}
+    env:
+      DEPENDENCY_TREE_FILE: 'mvn_dependency_tree_kogito-runtimes_${{ matrix.os }}.txt'
     steps:
       - name: Clean Disk Space
         uses: apache/incubator-kie-kogito-pipelines/.ci/actions/ubuntu-disk-space@main
@@ -66,7 +68,6 @@ jobs:
           definition-file: https://raw.githubusercontent.com/${GROUP:apache}/incubator-kie-kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
         env:
           BUILD_MVN_OPTS_CURRENT: '-Dvalidate-formatting'
-          DEPENDENCY_TREE_FILE: 'mvn_dependency_tree_kogito-runtimes_${{ matrix.os }}.txt'
       - name: Junit Report
         uses: apache/incubator-kie-kogito-pipelines/.ci/actions/action-junit-report@main
         if: ${{ always() }}
@@ -74,8 +75,6 @@ jobs:
           report_paths: '**/*-reports/TEST-*.xml'
       - name: Upload Dependency Trees
         uses: actions/upload-artifact@v4
-        env:
-          DEPENDENCY_TREE_FILE: 'mvn_dependency_tree_kogito-runtimes_${{ matrix.os }}.txt'
         if: ${{ always() }}
         with:
           name: dependency-trees-logs_kogito-runtimes_${{ matrix.os }}
