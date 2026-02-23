@@ -18,12 +18,16 @@
  */
 package org.jbpm.compiler.canonical.descriptors;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.process.core.Work;
+import org.jbpm.workflow.core.impl.DataAssociation;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.kogito.internal.utils.ConversionUtils;
 
@@ -81,13 +85,13 @@ public class RestTaskDescriptor implements TaskDescriptor {
     @Override
     public Map<String, Expression> getCustomParams() {
         Work work = workItemNode.getWork();
-        Object strategyParam = work.getParameter(ACCESS_TOKEN_ACQUISITION_STRATEGY);
+        String strategyParam = extractRestTokenPropagationValues(workItemNode, "ACCESS_TOKEN_ACQUISITION_STRATEGY");
         if (strategyParam == null || "none".equalsIgnoreCase(strategyParam.toString())) {
             return Collections.emptyMap();
         }
 
         String taskId;
-        Object taskIdParam = work.getParameter(REST_SERVICE_CALL_TASK_ID);
+        String taskIdParam = extractRestTokenPropagationValues(workItemNode, "REST_SERVICE_CALL_TASK_ID");
         if (taskIdParam != null) {
             taskId = taskIdParam.toString();
         } else {
@@ -108,4 +112,79 @@ public class RestTaskDescriptor implements TaskDescriptor {
         customParams.put("propagateToken", resolverExpr);
         return customParams;
     }
+
+    static String extractRestTokenPropagationValues(WorkItemNode workItemNode, String paramName) {
+        List<String> vals = extractValueFromWorkItemNode(workItemNode, paramName);
+        return vals.isEmpty() ? null : vals.get(0);
+    }
+
+    static List<String> extractValueFromWorkItemNode(WorkItemNode workItemNode, String paramName) {
+        return resolveInputValuesFromInAssociations(workItemNode, paramName);
+    }
+
+    static List<String> resolveInputValuesFromInAssociations(WorkItemNode win, String parameterName) {
+        if (win == null || parameterName == null || parameterName.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<DataAssociation> inAssocs = win.getInAssociations();
+        if (inAssocs == null || inAssocs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> results = new ArrayList<>();
+
+        for (DataAssociation da : inAssocs) {
+            if (!parameterName.equals(da.getTarget())) {
+                continue;
+            }
+
+            // 1) Gather literals/expressions defined via assignments (if any)
+            List<?> assigns = da.getAssignments();
+            if (assigns != null && !assigns.isEmpty()) {
+                for (Object a : assigns) {
+                    String val = tryGetAssignmentFrom(a);
+                    if (val != null && !val.isBlank()) {
+                        results.add(val.trim());
+                    }
+                }
+            }
+
+            break;
+        }
+
+        return results;
+    }
+
+    private static String tryGetAssignmentFrom(Object assignment) {
+        if (assignment == null)
+            return null;
+
+        try {
+            Method m = assignment.getClass().getMethod("getFrom");
+            Object from = m.invoke(assignment);
+            if (from != null) {
+                String s = String.valueOf(from).trim();
+                if (!s.isEmpty())
+                    return s;
+            }
+        } catch (NoSuchMethodException e) {
+            // Fall through to alternate getter
+        } catch (Exception ignore) {
+            // Ignore and continue to fallback
+        }
+
+        try {
+            Method m = assignment.getClass().getMethod("getExpression");
+            Object expr = m.invoke(assignment);
+            if (expr != null) {
+                String s = String.valueOf(expr).trim();
+                if (!s.isEmpty())
+                    return s;
+            }
+        } catch (Exception ignore) {
+            // give up
+        }
+        return null;
+    }
+
 }

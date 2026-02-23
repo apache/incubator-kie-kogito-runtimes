@@ -86,7 +86,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
     }
 
     private static WorkItemHandlerConfig mergeWorkItemHandler(Iterable<WorkItemHandlerConfig> workItemHandlerConfigs,
-                                                              Supplier<WorkItemHandlerConfig> supplier) {
+            Supplier<WorkItemHandlerConfig> supplier) {
         Iterator<WorkItemHandlerConfig> iterator = workItemHandlerConfigs.iterator();
         if (iterator.hasNext()) {
             WorkItemHandlerConfig config = iterator.next();
