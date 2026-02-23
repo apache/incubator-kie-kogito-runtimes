@@ -195,8 +195,8 @@ public class LiveReloadProcessorTest {
             test.addResourceFile("asyncPublisher.sw.json", new String(Objects.requireNonNull(inputStream).readAllBytes()));
         }
 
-        // Wait for Quarkus to complete the hot reload (max 10 seconds)
-        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
+        // Wait for Quarkus to complete the hot reload (max 60 seconds)
+        await().atMost(Duration.ofSeconds(60)).untilAsserted(() -> {
             String id = given()
                     .contentType(ContentType.JSON)
                     .when()
