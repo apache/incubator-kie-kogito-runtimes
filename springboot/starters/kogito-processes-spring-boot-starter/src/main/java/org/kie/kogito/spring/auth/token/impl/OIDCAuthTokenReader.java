@@ -16,28 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kogito.addons.quarkus.common.rest.workitem;
+package org.kie.kogito.spring.auth.token.impl;
 
-import java.util.Map;
-import java.util.Optional;
+import org.kie.kogito.spring.auth.token.AuthTokenReader;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.stereotype.Component;
 
-import io.smallrye.config.ConfigMapping;
-import io.smallrye.config.WithParentName;
+@Component
+@ConditionalOnClass({ OidcUser.class })
+public class OIDCAuthTokenReader implements AuthTokenReader<OidcUser> {
 
-@ConfigMapping(prefix = "kogito.processes")
-public interface RestWorkItemConfig {
-
-    @WithParentName
-    Map<String, ProcessConfig> processes();
-
-    interface ProcessConfig {
-
-        @WithParentName
-        Map<String, TaskConfig> tasks();
+    @Override
+    public Class<OidcUser> getPrincipalType() {
+        return OidcUser.class;
     }
 
-    interface TaskConfig {
-
-        Optional<String> accessToken();
+    @Override
+    public String readToken(OidcUser principal) {
+        return principal.getIdToken().getTokenValue();
     }
 }

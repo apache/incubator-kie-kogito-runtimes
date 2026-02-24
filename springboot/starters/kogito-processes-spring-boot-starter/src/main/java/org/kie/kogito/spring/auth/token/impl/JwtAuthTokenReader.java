@@ -16,19 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.kie.kogito.spring.auth.token.impl;
 
-package org.kie.addons.springboot.auth;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.kie.kogito.spring.auth.token.AuthTokenReader;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SecurityContextInitializer implements InitializingBean {
+@ConditionalOnClass(Jwt.class)
+public class JwtAuthTokenReader implements AuthTokenReader<Jwt> {
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        // ensure the security context is inherited to child threads
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    public Class<Jwt> getPrincipalType() {
+        return Jwt.class;
+    }
+
+    @Override
+    public String readToken(Jwt principal) {
+        return principal.getTokenValue();
     }
 }

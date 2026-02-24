@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kogito.addons.quarkus.common.rest.workitem;
+package org.kie.kogito.quarkus.processes.workitems;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -48,15 +48,5 @@ public class QuarkusConfigResolver implements ConfigResolver {
     @Override
     public <T> Optional<T> getConfigProperty(String name, Class<T> clazz) {
         return config.getOptionalValue(name, clazz);
-    }
-
-    @Override
-    public Iterable<String> getPropertyNames() {
-        return config.getPropertyNames();
-    }
-
-    @Override
-    public <T> Collection<T> getIndexedConfigProperty(String name, Class<T> clazz) {
-        return ConversionUtils.convertToCollection(config.getOptionalValue(name, String.class).orElse(null), clazz);
     }
 }

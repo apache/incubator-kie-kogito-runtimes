@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kogito.addons.springboot.common.rest.workitem;
+package org.kie.kogito.process;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -48,24 +48,4 @@ public class SpringBootConfigResolver implements ConfigResolver, ApplicationList
     public <T> Optional<T> getConfigProperty(String name, Class<T> clazz) {
         return Optional.ofNullable(environment.getProperty(name, clazz));
     }
-
-    @Override
-    public Iterable<String> getPropertyNames() {
-        return () -> StreamSupport.stream(environment.getPropertySources().spliterator(), false)
-                .flatMap(ps -> {
-                    if (ps.getSource() instanceof java.util.Map) {
-                        return ((java.util.Map<?, ?>) ps.getSource()).keySet().stream()
-                                .map(Object::toString);
-                    }
-                    return java.util.stream.Stream.empty();
-                })
-                .iterator();
-    }
-
-    @Override
-    public <T> Collection<T> getIndexedConfigProperty(String name, Class<T> clazz) {
-        return ConversionUtils.convertToCollection(environment.getProperty(name), clazz);
-    }
 }
-
-

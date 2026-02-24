@@ -37,6 +37,5 @@
 
     <modules>
         <module>common-auth</module>
-        <module>kogito-addons-springboot-common-rest-workitem</module>
     </modules>
 </project>

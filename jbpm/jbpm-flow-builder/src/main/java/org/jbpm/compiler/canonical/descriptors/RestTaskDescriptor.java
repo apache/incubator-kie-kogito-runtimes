@@ -18,12 +18,7 @@
  */
 package org.jbpm.compiler.canonical.descriptors;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.jbpm.process.core.Work;
@@ -47,13 +42,14 @@ import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 public class RestTaskDescriptor implements TaskDescriptor {
 
     public static final String TYPE = "Rest";
+
+    public static final String ACCESS_TOKEN_ACQUISITION_STRATEGY = "AccessTokenAcquisitionStrategy";
+    public static final String REST_SERVICE_CALL_TASK_ID = "RestServiceCallTaskId";
+
     private static final String ACCESS_TOKEN_PROPERTY_TEMPLATE = "kogito.processes.%s.%s.access_token";
 
     private final ProcessMetaData processMetadata;
     private final WorkItemNode workItemNode;
-    public static final String ACCESS_TOKEN_ACQUISITION_STRATEGY = "AccessTokenAcquisitionStrategy";
-    public static final String REST_SERVICE_CALL_TASK_ID = "RestServiceCallTaskId";
-
     protected RestTaskDescriptor(final ProcessMetaData processMetadata, final WorkItemNode workItemNode) {
         this.processMetadata = processMetadata;
         this.workItemNode = workItemNode;
@@ -85,16 +81,13 @@ public class RestTaskDescriptor implements TaskDescriptor {
     @Override
     public Map<String, Expression> getCustomParams() {
         Work work = workItemNode.getWork();
-        String strategyParam = extractRestTokenPropagationValues(workItemNode, ACCESS_TOKEN_ACQUISITION_STRATEGY);
-        if (strategyParam == null || "none".equalsIgnoreCase(strategyParam.toString())) {
+        String strategyParam = extractRestTokenPropagationValues(workItemNode, ACCESS_TOKEN_ACQUISITION_STRATEGY, "none");
+        if (strategyParam == null || "none".equalsIgnoreCase(strategyParam)) {
             return Collections.emptyMap();
         }
 
-        String taskId;
-        String taskIdParam = extractRestTokenPropagationValues(workItemNode, REST_SERVICE_CALL_TASK_ID);
-        if (taskIdParam != null) {
-            taskId = taskIdParam.toString();
-        } else {
+        String taskId = extractRestTokenPropagationValues(workItemNode, REST_SERVICE_CALL_TASK_ID, workItemNode.getId().toExternalFormat());
+        if (Objects.isNull(taskId)) {
             taskId = String.valueOf(workItemNode.getId());
         }
 
@@ -113,77 +106,20 @@ public class RestTaskDescriptor implements TaskDescriptor {
         return customParams;
     }
 
-    static String extractRestTokenPropagationValues(WorkItemNode workItemNode, String paramName) {
-        List<String> vals = extractValueFromWorkItemNode(workItemNode, paramName);
-        return vals.isEmpty() ? null : vals.get(0);
-    }
-
-    static List<String> extractValueFromWorkItemNode(WorkItemNode workItemNode, String paramName) {
-        return resolveInputValuesFromInAssociations(workItemNode, paramName);
-    }
-
-    static List<String> resolveInputValuesFromInAssociations(WorkItemNode win, String parameterName) {
-        if (win == null || parameterName == null || parameterName.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<DataAssociation> inAssocs = win.getInAssociations();
-        if (inAssocs == null || inAssocs.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<String> results = new ArrayList<>();
-
-        for (DataAssociation da : inAssocs) {
-            if (!parameterName.equals(da.getTarget())) {
+    static String extractRestTokenPropagationValues(WorkItemNode workItemNode, String paramName, String defaultValue) {
+        for (DataAssociation da : workItemNode.getIoSpecification().getDataInputAssociation()) {
+            if (!paramName.equals(da.getTarget().getLabel())) {
                 continue;
             }
-
-             List<?> assigns = da.getAssignments();
-            if (assigns != null && !assigns.isEmpty()) {
-                for (Object a : assigns) {
-                    String val = tryGetAssignmentFrom(a);
-                    if (val != null && !val.isBlank()) {
-                        results.add(val.trim());
-                    }
-                }
-            }
-
-            break;
+            return da.getAssignments().stream()
+                    .filter(assignment -> assignment.getFrom() != null)
+                    .filter(assignment -> assignment.getFrom().getExpression() != null)
+                    .findFirst()
+                    .map(assignment -> assignment.getFrom().getExpression())
+                    .orElse(defaultValue);
         }
 
-        return results;
-    }
-
-    private static String tryGetAssignmentFrom(Object assignment) {
-        if (assignment == null)
-            return null;
-
-        try {
-            Method m = assignment.getClass().getMethod("getFrom");
-            Object from = m.invoke(assignment);
-            if (from != null) {
-                String s = String.valueOf(from).trim();
-                if (!s.isEmpty())
-                    return s;
-            }
-        } catch (NoSuchMethodException e) {
-            return null;
-        } catch (Exception ignore) {
-            return null;
-        }
-
-        try {
-            Method m = assignment.getClass().getMethod("getExpression");
-            Object expr = m.invoke(assignment);
-            if (expr != null) {
-                String s = String.valueOf(expr).trim();
-                if (!s.isEmpty())
-                    return s;
-            }
-        } catch (Exception ignore) {
-            return null;
-        }
-        return null;
+        return defaultValue;
     }
 
 }

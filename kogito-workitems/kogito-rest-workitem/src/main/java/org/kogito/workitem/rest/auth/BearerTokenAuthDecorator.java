@@ -21,6 +21,7 @@ package org.kogito.workitem.rest.auth;
 import java.util.Map;
 
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
@@ -32,7 +33,7 @@ public class BearerTokenAuthDecorator implements AuthDecorator {
     public static final String BEARER_TOKEN = "accessToken";
 
     @Override
-    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
+    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request, KogitoWorkItemHandler handler) {
         String bearerToken = getParam(parameters, BEARER_TOKEN, String.class, null);
         if (!isEmpty(bearerToken)) {
             request.bearerTokenAuthentication(bearerToken);

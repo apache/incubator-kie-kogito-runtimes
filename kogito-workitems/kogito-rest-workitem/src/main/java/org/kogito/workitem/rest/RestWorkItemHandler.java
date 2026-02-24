@@ -190,9 +190,9 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         WebClient client = isHttps(protocol) ? httpsClient : httpClient;
         HttpRequest<Buffer> request = client.request(method, port, host, path);
         WorkItemRecordParameters.recordInputParameters(workItem, parameters);
-        requestDecorators.forEach(d -> d.decorate(workItem, parameters, request));
-        authDecorators.forEach(d -> d.decorate(workItem, parameters, request));
-        paramsDecorator.decorate(workItem, parameters, request);
+        requestDecorators.forEach(d -> d.decorate(workItem, parameters, request, handler));
+        authDecorators.forEach(d -> d.decorate(workItem, parameters, request, handler));
+        paramsDecorator.decorate(workItem, parameters, request, handler);
         Duration requestTimeout = getRequestTimeout(parameters);
         HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT)
                 ? sendBody(request, bodyBuilder.apply(parameters), requestTimeout)

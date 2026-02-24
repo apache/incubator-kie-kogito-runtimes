@@ -20,6 +20,7 @@ package org.kie.kogito.process.impl;
 
 import org.kie.kogito.auth.AuthTokenProvider;
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.auth.impl.NoOpAuthTokenProvider;
 import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
@@ -173,7 +174,7 @@ public class StaticProcessConfig implements ProcessConfig {
             StaticProcessConfig.this.jobsService = staticJobService();
             StaticProcessConfig.this.versionResolver = process -> process.version();
             StaticProcessConfig.this.identityProvider = new NoOpIdentityProvider();
-            StaticProcessConfig.this.authTokenProvider = null;
+            StaticProcessConfig.this.authTokenProvider = new NoOpAuthTokenProvider();
             StaticProcessConfig.this.businessCalendar = null;
         }
 

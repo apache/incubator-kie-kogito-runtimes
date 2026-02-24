@@ -16,14 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.process.workitems.impl;
+package org.kie.kogito.spring.auth.token;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+public interface AuthTokenReader<T> {
 
-public interface ConfigResolver {
+    Class<T> getPrincipalType();
 
-    <T> Optional<T> getConfigProperty(String name, Class<T> clazz);
+    String readToken(T principal);
+
+    default boolean acceptsPrincipal(Object principal) {
+        return getPrincipalType().isAssignableFrom(principal.getClass());
+    }
 }

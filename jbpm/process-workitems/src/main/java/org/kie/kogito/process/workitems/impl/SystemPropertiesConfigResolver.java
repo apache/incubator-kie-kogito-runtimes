@@ -18,11 +18,7 @@
  */
 package org.kie.kogito.process.workitems.impl;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
-
-import org.kie.kogito.internal.utils.ConversionUtils;
 
 public class SystemPropertiesConfigResolver implements ConfigResolver {
 
@@ -35,20 +31,5 @@ public class SystemPropertiesConfigResolver implements ConfigResolver {
             value = System.getProperty(name);
         }
         return Optional.ofNullable(clazz.cast(value));
-    }
-
-    @Override
-    public Iterable<String> getPropertyNames() {
-        return System.getProperties().stringPropertyNames();
-    }
-
-    @Override
-    public Map<String, Object> asMap() {
-        return (Map) System.getProperties();
-    }
-
-    @Override
-    public <T> Collection<T> getIndexedConfigProperty(String name, Class<T> clazz) {
-        return ConversionUtils.convertToCollection(System.getProperty(name), clazz);
     }
 }

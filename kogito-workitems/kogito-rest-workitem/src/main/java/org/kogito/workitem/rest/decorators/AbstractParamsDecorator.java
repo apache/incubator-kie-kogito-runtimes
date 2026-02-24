@@ -23,13 +23,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
 public abstract class AbstractParamsDecorator implements ParamsDecorator {
 
     @Override
-    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
+    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request, KogitoWorkItemHandler handler) {
         Iterator<Entry<String, Object>> iter = parameters.entrySet().iterator();
         while (iter.hasNext()) {
             Entry<String, Object> entry = iter.next();

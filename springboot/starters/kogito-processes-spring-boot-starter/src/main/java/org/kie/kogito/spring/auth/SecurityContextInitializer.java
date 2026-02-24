@@ -16,14 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.process.workitems.impl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+package org.kie.kogito.spring.auth;
 
-public interface ConfigResolver {
+import org.kie.kogito.spring.auth.token.AuthTokenReader;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
-    <T> Optional<T> getConfigProperty(String name, Class<T> clazz);
+@Component
+@ConditionalOnMissingBean(SecurityContextHolder.class)
+public class SecurityContextInitializer implements InitializingBean {
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // ensure the security context is inherited to child threads
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
 }

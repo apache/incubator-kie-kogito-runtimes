@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.quarkus.auth;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.kie.kogito.auth.AuthTokenProvider;
@@ -35,7 +36,6 @@ import jakarta.inject.Inject;
 public class QuarkusAuthTokenProvider implements AuthTokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(QuarkusAuthTokenProvider.class);
-    private static final String BEARER_PREFIX = "Bearer ";
 
     @Inject
     Instance<SecurityIdentity> identity;
@@ -49,11 +49,10 @@ public class QuarkusAuthTokenProvider implements AuthTokenProvider {
         return getIdentity()
                 .filter(securityIdentity -> !securityIdentity.isAnonymous())
                 .map(securityIdentity -> securityIdentity.getCredential(TokenCredential.class))
-                .filter(tokenCredential -> tokenCredential != null)
+                .filter(Objects::nonNull)
                 .map(tokenCredential -> {
-                    String token = BEARER_PREFIX + tokenCredential.getToken();
                     logger.debug("Token retrieved from Quarkus SecurityIdentity");
-                    return token;
+                    return tokenCredential.getToken();
                 })
                 .or(() -> {
                     logger.debug("No token available from SecurityIdentity");

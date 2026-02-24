@@ -21,5 +21,7 @@ package org.kie.kogito.auth;
 import java.util.Optional;
 
 public interface AuthTokenProvider {
+
     Optional<String> getAuthToken();
+
 }

@@ -29,6 +29,7 @@ import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.Addons;
 import org.kie.kogito.auth.AuthTokenProvider;
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.auth.impl.NoOpAuthTokenProvider;
 import org.kie.kogito.calendar.BusinessCalendar;
 import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.jobs.JobsService;
@@ -77,7 +78,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
         this.jobsService = orDefault(jobsService, StaticJobService::staticJobService);
         this.versionResolver = orDefault(versionResolver, () -> null);
         this.identityProvider = orDefault(identityProvider, NoOpIdentityProvider::new);
-        this.authTokenProvider = orDefault(authTokenProvider, () -> null);
+        this.authTokenProvider = orDefault(authTokenProvider, NoOpAuthTokenProvider::new);
         this.businessCalendar = orDefault(businessCalendar, () -> null);
 
         eventPublishers.forEach(publisher -> unitOfWorkManager().eventManager().addPublisher(publisher));
