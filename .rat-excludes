@@ -94,6 +94,7 @@ quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-s
 quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-integration-test/src/test/resources/__snapshots__/ServerlessWorkflowCodestartTest/testContent/src_test_resources_application.yml
 quarkus/extensions/kogito-quarkus-serverless-workflow-extension/kogito-quarkus-serverless-workflow-integration-test/src/test/resources/application.properties
 quarkus/extensions/kogito-quarkus-serverless-workflow-jdbc-token-persistence-extension/kogito-quarkus-serverless-workflow-jdbc-token-persistence/src/main/resources/META-INF/beans.xml
+quarkus/extensions/kogito-quarkus-serverless-workflow-jdbc-token-persistence-extension/kogito-quarkus-serverless-workflow-jdbc-token-persistence-integration-test/src/test/resources/application.properties
 quarkus/integration-tests/integration-tests-quarkus-norest/src/main/resources/PMMLRegression.pmml
 quarkus/integration-tests/integration-tests-quarkus-predictions/src/main/resources/PMMLRegression.pmml
 quarkus/integration-tests/integration-tests-quarkus-predictions/src/main/resources/PMMLTree.pmml
