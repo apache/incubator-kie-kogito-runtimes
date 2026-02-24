@@ -24,7 +24,7 @@ import org.kie.kogito.uow.UnitOfWorkManager;
 
 public abstract class UnitOfWorkExecutor {
 
-    private static UnitOfWorkExecutor unitOfWorkExecutor;
+    private static volatile UnitOfWorkExecutor unitOfWorkExecutor;
 
     public static void set(UnitOfWorkExecutor executor) {
         unitOfWorkExecutor = executor;
@@ -32,7 +32,11 @@ public abstract class UnitOfWorkExecutor {
 
     private static UnitOfWorkExecutor getExecutor() {
         if (unitOfWorkExecutor == null) {
-            unitOfWorkExecutor = new DefaultUnitOfWorkExecutor();
+            synchronized (UnitOfWorkExecutor.class) {
+                if (unitOfWorkExecutor == null) {
+                    unitOfWorkExecutor = new DefaultUnitOfWorkExecutor();
+                }
+            }
         }
         return unitOfWorkExecutor;
     }
