@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 import jakarta.inject.Inject;
+import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
