@@ -47,6 +47,7 @@ import org.kie.kogito.event.usertask.UserTaskInstanceVariableDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceVariableEventBody;
 import org.kie.kogito.quarkus.workflow.KogitoBeanProducer;
 import org.kie.kogito.quarkus.workflow.deployment.WorkflowProcessor;
++import org.kie.kogito.quarkus.processes.workitems.QuarkusConfigResolver;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -102,7 +103,8 @@ public class ProcessesAssetsProcessor extends WorkflowProcessor {
                         QuarkusStatefulProcessService.class,
                         QuarkusHumanTaskService.class,
                         QuarkusProcessIdFactory.class,
-                        KogitoBeanProducer.class)
+                        KogitoBeanProducer.class,
+                        QuarkusConfigResolver.class)
                 .build();
     }
 
