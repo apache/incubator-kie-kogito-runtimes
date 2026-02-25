@@ -251,7 +251,17 @@ public class KogitoWorkItemImpl implements InternalKogitoWorkItem, Serializable 
             Map.Entry<String, Object> entry = iterator.next();
             b.append(entry.getKey());
             b.append("=");
-            b.append(entry.getValue());
+            Object value = entry.getValue();
+            if ("propagateToken".equals(entry.getKey()) && value != null) {
+                String s = String.valueOf(value);
+                int keep = 10;
+                if (s.length() > keep) {
+                    s = s.substring(0, keep) + "...";
+                }
+                b.append(s);
+            } else {
+                b.append(value);
+            }
             if (iterator.hasNext()) {
                 b.append(", ");
             }

@@ -183,7 +183,7 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         if (isEmpty(protocol)) {
             protocol = port == DEFAULT_SSL_PORT ? HTTPS_PROTOCOL : HTTP_PROTOCOL;
         }
-        
+
         WebClient client = isHttps(protocol) ? httpsClient : httpClient;
         HttpRequest<Buffer> request = client.request(method, port, host, path);
         WorkItemRecordParameters.recordInputParameters(workItem, parameters);

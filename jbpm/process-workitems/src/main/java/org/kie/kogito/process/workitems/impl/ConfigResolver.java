@@ -18,9 +18,6 @@
  */
 package org.kie.kogito.process.workitems.impl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public interface ConfigResolver {

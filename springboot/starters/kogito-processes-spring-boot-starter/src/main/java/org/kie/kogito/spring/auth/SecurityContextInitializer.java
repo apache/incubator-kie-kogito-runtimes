@@ -19,7 +19,6 @@
 
 package org.kie.kogito.spring.auth;
 
-import org.kie.kogito.spring.auth.token.AuthTokenReader;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.security.core.context.SecurityContextHolder;
