@@ -18,11 +18,8 @@
  */
 package org.kie.kogito.process;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
-import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.process.workitems.impl.ConfigResolver;
 import org.kie.kogito.process.workitems.impl.ConfigResolverHolder;
 import org.springframework.boot.context.event.ApplicationStartedEvent;

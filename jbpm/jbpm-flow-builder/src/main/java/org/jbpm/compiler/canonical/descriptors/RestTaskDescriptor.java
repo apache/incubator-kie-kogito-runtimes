@@ -50,6 +50,7 @@ public class RestTaskDescriptor implements TaskDescriptor {
 
     private final ProcessMetaData processMetadata;
     private final WorkItemNode workItemNode;
+
     protected RestTaskDescriptor(final ProcessMetaData processMetadata, final WorkItemNode workItemNode) {
         this.processMetadata = processMetadata;
         this.workItemNode = workItemNode;

@@ -18,12 +18,10 @@
  */
 package org.kie.kogito.quarkus.processes.workitems;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
-import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.process.workitems.impl.ConfigResolver;
 import org.kie.kogito.process.workitems.impl.ConfigResolverHolder;
 

@@ -1,8 +1,8 @@
 package org.kie.kogito.auth.impl;
 
-import org.kie.kogito.auth.AuthTokenProvider;
-
 import java.util.Optional;
+
+import org.kie.kogito.auth.AuthTokenProvider;
 
 public class NoOpAuthTokenProvider implements AuthTokenProvider {
     @Override

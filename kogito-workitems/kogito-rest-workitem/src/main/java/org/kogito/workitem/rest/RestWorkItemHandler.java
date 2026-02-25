@@ -134,7 +134,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         //removing unnecessary parameter
         parameters.remove("TaskName");
         Class<?> targetInfo = getParamSupply(parameters, TARGET_TYPE, Class.class, () -> getTargetInfo(workItem));
-        logger.debug("Using target {}", targetInfo);
 
         String endPoint = getParam(parameters, URL, String.class, null);
         if (endPoint == null) {
@@ -148,7 +147,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         PathParamResolver pathParamResolver = getClassParam(parameters, PATH_PARAM_RESOLVER, PathParamResolver.class, DEFAULT_PATH_PARAM_RESOLVER, pathParamsResolvers);
         Collection<? extends AuthDecorator> authDecorators = getClassListParam(parameters, AUTH_METHOD, AuthDecorator.class, DEFAULT_AUTH_DECORATORS, authDecoratorsMap);
 
-        logger.debug("Filtered parameters are {}", parameters);
         // create request
         endPoint = pathParamResolver.apply(endPoint, parameters);
 
@@ -167,7 +165,7 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
                 path += "?" + query;
             }
         } catch (MalformedURLException ex) {
-            logger.debug("Parameter endpoint {} is not valid uri {}", endPoint, ex.getMessage());
+            logger.info("Parameter endpoint {} is not valid uri {}", endPoint, ex.getMessage());
         }
         if (isEmpty(protocol)) {
             protocol = getParam(parameters, PROTOCOL);
@@ -180,13 +178,12 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         }
         if (isEmpty(path)) {
             path = endPoint;
-            logger.debug("Path is empty, using whole endpoint {}", endPoint);
+            logger.info("Path is empty, using whole endpoint {}", endPoint);
         }
         if (isEmpty(protocol)) {
             protocol = port == DEFAULT_SSL_PORT ? HTTPS_PROTOCOL : HTTP_PROTOCOL;
         }
-        logger.debug("Invoking request with protocol {} host {} port {} and endpoint {}", protocol, host, port, path);
-
+        
         WebClient client = isHttps(protocol) ? httpsClient : httpClient;
         HttpRequest<Buffer> request = client.request(method, port, host, path);
         WorkItemRecordParameters.recordInputParameters(workItem, parameters);

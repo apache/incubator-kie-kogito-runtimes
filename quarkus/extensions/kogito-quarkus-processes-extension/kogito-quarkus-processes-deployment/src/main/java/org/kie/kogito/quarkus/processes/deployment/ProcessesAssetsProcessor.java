@@ -45,9 +45,9 @@ import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceStateEventBody;
 import org.kie.kogito.event.usertask.UserTaskInstanceVariableDataEvent;
 import org.kie.kogito.event.usertask.UserTaskInstanceVariableEventBody;
+import org.kie.kogito.quarkus.processes.workitems.QuarkusConfigResolver;
 import org.kie.kogito.quarkus.workflow.KogitoBeanProducer;
 import org.kie.kogito.quarkus.workflow.deployment.WorkflowProcessor;
-+import org.kie.kogito.quarkus.processes.workitems.QuarkusConfigResolver;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
