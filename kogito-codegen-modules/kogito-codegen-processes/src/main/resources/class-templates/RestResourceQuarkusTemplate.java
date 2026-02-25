@@ -106,23 +106,24 @@ public class $Type$Resource {
         List<$Type$Output> out = processService.getProcessInstanceOutput(process);
         boolean wantsHtml = headers.getAcceptableMediaTypes()
             .stream()
-            .anyMatch(mt -> mt.isCompatible(MediaType.TEXT_HTML_TYPE) && !mt.isWildcardType());
+            .anyMatch(mt -> mt.isCompatible(MediaType.TEXT_HTML_TYPE) && !mt.isWildcardType() && !mt.isWildcardSubtype());
 
         if (wantsHtml) {
-            InputStream htmlStream = getClass().getResourceAsStream("/META-INF/resources/index.html");
-            if (htmlStream == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                    .entity("HTML resource not found")
-                    .build();
-            }
+            String path = "/META-INF/resources/index.html";
 
-            StreamingOutput stream = os -> {
-                try (InputStream inputStream = htmlStream) {
-                    inputStream.transferTo(os);
-                }             
-            };
+        if (getClass().getResource(path) == null) {
+        return Response.status(Response.Status.NOT_FOUND)
+            .entity("HTML resource not found")
+            .build();
+        }
 
-            return Response.ok(stream, MediaType.TEXT_HTML_TYPE).build();
+        StreamingOutput stream = os -> {
+            try (InputStream inputStream = getClass().getResourceAsStream(path)) {
+                inputStream.transferTo(os);
+            }             
+        };
+
+        return Response.ok(stream, MediaType.TEXT_HTML_TYPE).build();
         }
 
         return Response.ok(out, MediaType.APPLICATION_JSON_TYPE).build();
