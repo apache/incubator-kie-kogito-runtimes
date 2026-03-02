@@ -22,10 +22,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.kie.kogito</groupId>
+    <!--<groupId>org.kie.kogito</groupId>
     <artifactId>kogito-build</artifactId>
     <version>999-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>-->
+    <groupId>org.kie</groupId>
+    <artifactId>drools-build-parent</artifactId>
+    <version>999-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -40,11 +43,11 @@
     <version.org.kie>999-SNAPSHOT</version.org.kie>
   </properties>
 
-  <dependencyManagement>
+ <!-- <dependencyManagement>
     <dependencies>
-      <!-- This bom can only import dependencies from the groupIds org.kie and org.drools. -->
+      &lt;!&ndash; This bom can only import dependencies from the groupIds org.kie and org.drools. &ndash;&gt;
 
-      <!-- KIE boms -->
+      &lt;!&ndash; KIE boms &ndash;&gt;
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-core-bom</artifactId>
@@ -77,7 +80,7 @@
         <type>pom</type>
       </dependency>
 
-      <!-- KIE -->
+      &lt;!&ndash; KIE &ndash;&gt;
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-api</artifactId>
@@ -94,14 +97,14 @@
         <version>${version.org.kie}</version>
       </dependency>
 
-      <!-- EFESTO -->
+      &lt;!&ndash; EFESTO &ndash;&gt;
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>efesto-dependencies</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
 
-      <!-- DROOLS -->
+      &lt;!&ndash; DROOLS &ndash;&gt;
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
@@ -215,7 +218,7 @@
         <version>${version.org.kie}</version>
       </dependency>
 
-      <!-- Kie-DRL  -Efesto rules -->
+      &lt;!&ndash; Kie-DRL  -Efesto rules &ndash;&gt;
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-drl-compilation-common</artifactId>
@@ -228,7 +231,7 @@
       </dependency>
 
 
-      <!-- DMN -->
+      &lt;!&ndash; DMN &ndash;&gt;
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-dmn-api</artifactId>
@@ -254,7 +257,7 @@
         <artifactId>kie-dmn-openapi</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
-      <!--  Efesto decisions -->
+      &lt;!&ndash;  Efesto decisions &ndash;&gt;
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-dmn-efesto-compilation</artifactId>
@@ -266,7 +269,7 @@
         <version>${version.org.kie}</version>
       </dependency>
 
-      <!-- PMML -->
+      &lt;!&ndash; PMML &ndash;&gt;
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-pmml-dependencies</artifactId>
@@ -287,9 +290,9 @@
         <artifactId>kie-pmml-commons</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
-      <!-- PMML-DROOLS models -->
-      <!-- Drools models -->
-      <!-- Tree -->
+      &lt;!&ndash; PMML-DROOLS models &ndash;&gt;
+      &lt;!&ndash; Drools models &ndash;&gt;
+      &lt;!&ndash; Tree &ndash;&gt;
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-pmml-models-drools-tree-model</artifactId>
@@ -305,7 +308,7 @@
         <artifactId>kie-pmml-models-drools-tree-evaluator</artifactId>
         <version>${version.org.kie}</version>
       </dependency>
-      <!-- Scorecard -->
+      &lt;!&ndash; Scorecard &ndash;&gt;
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-pmml-models-drools-scorecard-model</artifactId>
@@ -323,7 +326,7 @@
       </dependency>
 
 
-      <!-- Scenario Simulation -->
+      &lt;!&ndash; Scenario Simulation &ndash;&gt;
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-scenario-simulation-api</artifactId>
@@ -335,7 +338,7 @@
         <version>${version.org.kie}</version>
       </dependency>
 
-      <!-- Efesto deployments -->
+      &lt;!&ndash; Efesto deployments &ndash;&gt;
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>efesto-quarkus</artifactId>
@@ -348,5 +351,5 @@
       </dependency>
 
     </dependencies>
-  </dependencyManagement>
+  </dependencyManagement>-->
 </project>

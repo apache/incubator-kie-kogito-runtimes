@@ -18,12 +18,12 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>kogito-build</artifactId>
+<!--    <artifactId>kogito-build</artifactId>
     <groupId>org.kie.kogito</groupId>
+    <version>999-SNAPSHOT</version>-->
+    <groupId>org.kie</groupId>
+    <artifactId>kie-parent</artifactId>
     <version>999-SNAPSHOT</version>
-    <!--    <groupId>org.kie</groupId>
-<artifactId>kie-parent</artifactId>
-<version>999-SNAPSHOT</version>-->
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>kogito-dependencies-bom</artifactId>
@@ -31,18 +31,20 @@
   <packaging>pom</packaging>
   <description>Third-party dependencies used by Kogito</description>
   <properties>
-    <!-- These versions are overrides for transitive dependencies, to fix security vulnerabilities.
-   They need to be checked with Quarkus and Spring Boot upgrades and eventually removed, if they are not needed anymore. -->
+    <!--&lt;!&ndash; These versions are overrides for transitive dependencies, to fix security vulnerabilities.
+   They need to be checked with Quarkus and Spring Boot upgrades and eventually removed, if they are not needed anymore. &ndash;&gt;
     <version.angus.mail>2.0.5</version.angus.mail>
-    <!-- End of various transitive overrides. -->
-    <!-- this version property is used in plugins but also in dependencies too -->
+    &lt;!&ndash; End of various transitive overrides. &ndash;&gt;
+    &lt;!&ndash; this version property is used in plugins but also in dependencies too &ndash;&gt;
     <version.io.quarkus>3.27.2</version.io.quarkus>
     <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>
-    <version.org.springframework>6.2.15</version.org.springframework>
+    <version.org.springframework>6.2.15</version.org.springframework>  -->
+    <!-- Used to define which poms are allowed to have dependencyManagement sections. This is to enforce the convention that only the root pom should have dependencyManagement, and all other poms should inherit from it. -->
+    <allowedPomsList>org.kie:kogito-dependencies-bom</allowedPomsList>
     <version.org.springframework.boot>3.5.10</version.org.springframework.boot>
-    <version.org.apache.kafka>4.0.0</version.org.apache.kafka>
+    <!-- <version.org.apache.kafka>4.0.0</version.org.apache.kafka>
     <version.org.bouncycastle.bc.jdk18on>1.82</version.org.bouncycastle.bc.jdk18on>
-    <!-- dependencies versions -->
+    &lt;!&ndash; dependencies versions &ndash;&gt;
     <version.com.networknt>1.0.86</version.com.networknt>
     <version.com.fasterxml.jackson>2.19.2</version.com.fasterxml.jackson>
     <version.com.fasterxml.jackson.databind>2.19.2</version.com.fasterxml.jackson.databind>
@@ -61,9 +63,9 @@
     <version.com.github.victools>4.37.0</version.com.github.victools>
     <version.org.wiremock>3.13.0</version.org.wiremock>
     <version.com.google.protobuf>3.25.5</version.com.google.protobuf>
-    <!-- We don't use gson directly. This is just to align versions of transitive dependencies -->
+    &lt;!&ndash; We don't use gson directly. This is just to align versions of transitive dependencies &ndash;&gt;
     <version.com.google.gson>2.13.2</version.com.google.gson>
-    <!-- currently required for integration test only -->
+    &lt;!&ndash; currently required for integration test only &ndash;&gt;
     <version.com.sun.xml.bind.core>4.0.5</version.com.sun.xml.bind.core>
     <version.com.sun.activation>2.0.2</version.com.sun.activation>
     <version.javax.inject>2.0.1</version.javax.inject>
@@ -74,17 +76,17 @@
     <version.jakarta.xml.bind-api>4.0.4</version.jakarta.xml.bind-api>
     <version.io.netty>4.1.130.Final</version.io.netty>
     <version.io.cloudevents>3.0.0</version.io.cloudevents>
-    <!--
+    &lt;!&ndash;
 We add Fabric8 here to use as a basis for Addons/Kubernetes
 Don't add as a management dependency because it will break SpringBoot and Quarkus
 Kubernetes addons since they use a different version.
--->
+&ndash;&gt;
     <version.io.fabric8.kubernetes-client>7.3.1</version.io.fabric8.kubernetes-client>
     <version.io.micrometer>1.14.12</version.io.micrometer>
     <version.org.flywaydb>11.14.1</version.org.flywaydb>
     <version.org.postgresql>42.7.8</version.org.postgresql>
     <version.com.h2>2.3.232</version.com.h2>
-    <!-- Overriding version 2.3.230 to fix https://github.com/h2database/h2database/issues/4079 -->
+    &lt;!&ndash; Overriding version 2.3.230 to fix https://github.com/h2database/h2database/issues/4079 &ndash;&gt;
     <version.io.serverlessworkflow>4.1.0.Final</version.io.serverlessworkflow>
     <version.io.smallrye-open-api>4.0.12</version.io.smallrye-open-api>
     <version.io.smallrye-config>3.13.4</version.io.smallrye-config>
@@ -102,30 +104,30 @@ Kubernetes addons since they use a different version.
     <version.org.infinispan>15.0.21.Final</version.org.infinispan>
     <version.org.infinispan.protostream>5.0.13.Final</version.org.infinispan.protostream>
     <version.org.rocksdb>7.10.2</version.org.rocksdb>
-    <!-- consider migrating to 3.x JDK 9: https://jakarta.ee/specifications/restful-ws/ -->
+    &lt;!&ndash; consider migrating to 3.x JDK 9: https://jakarta.ee/specifications/restful-ws/ &ndash;&gt;
     <version.jakarta.ws.rs>3.1.0</version.jakarta.ws.rs>
     <version.jakarta.persistence-api>3.2.0</version.jakarta.persistence-api>
     <version.org.jboss.resteasy>6.2.12.Final</version.org.jboss.resteasy>
     <version.org.keycloak>26.1.0</version.org.keycloak>
-    <!-- It seems that the confluent kafka cannot replace wurstmeister/kafka so easily. See FAI-729 -->
+    &lt;!&ndash; It seems that the confluent kafka cannot replace wurstmeister/kafka so easily. See FAI-729 &ndash;&gt;
     <version.wurstmeister.kafka>2.12-2.2.1</version.wurstmeister.kafka>
     <version.org.mongo>5.3.1</version.org.mongo>
     <version.org.mongo-image>5.0.31</version.org.mongo-image>
     <version.org.mozilla.rhino>1.8.1</version.org.mozilla.rhino>
     <version.org.redis>2.0.4</version.org.redis>
-    <!-- PostgreSQL 16.8+ required for SASL authentication protocol -->
+    &lt;!&ndash; PostgreSQL 16.8+ required for SASL authentication protocol &ndash;&gt;
     <version.org.postgres>16.8-alpine3.21</version.org.postgres>
-    <!-- we align to version used by quarkus -->
+    &lt;!&ndash; we align to version used by quarkus &ndash;&gt;
     <version.org.apache.avro>1.12.1</version.org.apache.avro>
     <version.org.assertj>3.27.7</version.org.assertj>
     <version.org.glassfish.jaxb>4.0.6</version.org.glassfish.jaxb>
     <version.org.json-unit-assertj>2.9.0</version.org.json-unit-assertj>
     <version.org.hamcrest>2.2</version.org.hamcrest>
-    <!-- else old version coming from Mockito wins and breaks tests -->
+    &lt;!&ndash; else old version coming from Mockito wins and breaks tests &ndash;&gt;
     <version.org.junit>4.13.2</version.org.junit>
     <version.org.junit.jupiter>5.13.4</version.org.junit.jupiter>
     <version.org.junit.platform>1.13.4</version.org.junit.platform>
-    <!-- otherwise Quarkus brings its own, silently disabling some tests -->
+    &lt;!&ndash; otherwise Quarkus brings its own, silently disabling some tests &ndash;&gt;
     <version.org.mockito>5.18.0</version.org.mockito>
     <version.org.testcontainers>2.0.3</version.org.testcontainers>
     <version.org.xmlunit-core>2.10.4</version.org.xmlunit-core>
@@ -142,7 +144,7 @@ Kubernetes addons since they use a different version.
     <version.maven.plugin.testing.harness>4.0.0-alpha-2</version.maven.plugin.testing.harness>
     <version.plexus>2.1.0</version.plexus>
     <version.plexus.classworld>2.6.0</version.plexus.classworld>
-    <!-- see: https://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html#parallel-test-execution-and-single-thread-execution -->
+    &lt;!&ndash; see: https://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html#parallel-test-execution-and-single-thread-execution &ndash;&gt;
     <version.com.github.stephenc.jcip>1.0-1</version.com.github.stephenc.jcip>
     <version.black.ninia>4.2.0</version.black.ninia>
     <version.com.google.collections>1.0</version.com.google.collections>
@@ -150,8 +152,8 @@ Kubernetes addons since they use a different version.
     <version.apache.commons.commons-compress>1.28.0</version.apache.commons.commons-compress>
     <version.tomcat.embed.core>10.1.48</version.tomcat.embed.core>
     <version.at.yawk.lz4.java>1.10.1</version.at.yawk.lz4.java>
-    <!-- Upgraded for CVE fix (The library has moved from org.lz4:lz4-java to at.yawk.lz4:lz4-java )-->
-    <version.org.hibernate>7.1.14.Final</version.org.hibernate>
+    &lt;!&ndash; Upgraded for CVE fix (The library has moved from org.lz4:lz4-java to at.yawk.lz4:lz4-java )&ndash;&gt;
+    <version.org.hibernate>7.1.14.Final</version.org.hibernate>-->
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -877,45 +879,45 @@ Kubernetes addons since they use a different version.
           </exclusion>
         </exclusions>
       </dependency>-->
-      <dependency>
+      <!--<dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>${version.org.assertj}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>${version.org.awaitility}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+     <!-- <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-classworlds</artifactId>
         <version>${version.plexus.classworld}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+     <!-- <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-annotations</artifactId>
         <version>${version.plexus}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+     <!-- <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-container-default</artifactId>
         <version>${version.plexus}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+     <!-- <dependency>
         <groupId>org.eclipse.angus</groupId>
         <artifactId>angus-activation</artifactId>
         <version>${version.com.sun.activation}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.eclipse.microprofile.openapi</groupId>
         <artifactId>microprofile-openapi-api</artifactId>
         <version>${version.org.eclipse.microprofile.openapi}</version>
-      </dependency>
+      </dependency>-->
       <!-- Flyway -->
-      <dependency>
+      <!--<dependency>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
         <version>${version.org.flywaydb}</version>
@@ -924,61 +926,61 @@ Kubernetes addons since they use a different version.
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-database-postgresql</artifactId>
         <version>${version.org.flywaydb}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
         <version>${version.org.glassfish.jaxb}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+     <!-- <dependency>
         <groupId>org.graalvm.nativeimage</groupId>
         <artifactId>svm</artifactId>
         <version>${version.org.graalvm.nativeimage}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+     <!-- <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-core</artifactId>
         <version>${version.org.hamcrest}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-library</artifactId>
         <version>${version.org.hamcrest}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+     <!-- <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-client-hotrod</artifactId>
         <version>${version.org.infinispan}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-commons</artifactId>
         <version>${version.org.infinispan}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-query-dsl</artifactId>
         <version>${version.org.infinispan}</version>
       </dependency>
-      <!-- infinispan -->
+      &lt;!&ndash; infinispan &ndash;&gt;
       <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-remote-query-client</artifactId>
         <version>${version.org.infinispan}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.infinispan.protostream</groupId>
         <artifactId>protostream</artifactId>
         <version>${version.org.infinispan.protostream}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.infinispan.protostream</groupId>
         <artifactId>protostream-processor</artifactId>
         <version>${version.org.infinispan.protostream}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-client</artifactId>
         <version>${version.org.jboss.resteasy}</version>
@@ -988,8 +990,8 @@ Kubernetes addons since they use a different version.
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jackson2-provider</artifactId>
         <version>${version.org.jboss.resteasy}</version>
@@ -998,21 +1000,21 @@ Kubernetes addons since they use a different version.
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-multipart-provider</artifactId>
         <version>${version.org.jboss.resteasy}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
         <version>${version.org.junit.jupiter}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
         <version>${version.org.junit.jupiter}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <!-- TODO move this dep into surefire-plugin when all modules are migrated to JUnit 5 -->
+      </dependency>-->
+      <!--<dependency>
+        &lt;!&ndash; TODO move this dep into surefire-plugin when all modules are migrated to JUnit 5 &ndash;&gt;
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-engine</artifactId>
         <version>${version.org.junit.jupiter}</version>
@@ -1023,8 +1025,8 @@ Kubernetes addons since they use a different version.
         <artifactId>junit-jupiter-params</artifactId>
         <version>${version.org.junit.jupiter}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-commons</artifactId>
         <version>${version.org.junit.platform}</version>
@@ -1035,8 +1037,8 @@ Kubernetes addons since they use a different version.
         <artifactId>junit-platform-engine</artifactId>
         <version>${version.org.junit.platform}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+     <!-- <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-launcher</artifactId>
         <version>${version.org.junit.platform}</version>
@@ -1047,40 +1049,40 @@ Kubernetes addons since they use a different version.
         <artifactId>junit-vintage-engine</artifactId>
         <version>${version.org.junit.jupiter}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>${version.org.mockito}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-junit-jupiter</artifactId>
         <version>${version.org.mockito}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>${version.org.postgresql}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.reactivestreams</groupId>
         <artifactId>reactive-streams</artifactId>
         <version>${version.org.reactivestreams}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
         <version>${version.org.reflections}</version>
-      </dependency>
+      </dependency>-->
       <!--rockdb-->
-      <dependency>
+      <!--<dependency>
         <groupId>org.rocksdb</groupId>
         <artifactId>rocksdbjni</artifactId>
         <version>${version.org.rocksdb}</version>
-      </dependency>
+      </dependency>-->
       <!-- &lt;!&ndash; These versions are overrides for transitive dependencies, to fix security vulnerabilities. &ndash;&gt;
 <dependency>
   <groupId>org.eclipse.angus</groupId>
@@ -1094,6 +1096,8 @@ Kubernetes addons since they use a different version.
 </dependency>-->
       <!-- End of various transitive overrides. -->
       <!-- Not directly used, but used to override transitive versions of Spring dependencies dependencies to fix vulnerabilities -->
+
+      <!-- TODO those should be moved to springboot specific bom -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aop</artifactId>
@@ -1210,13 +1214,13 @@ Kubernetes addons since they use a different version.
         <version>${version.org.springframework}</version>
       </dependency>
       <!-- testcontainers dependencies -->
-      <dependency>
+      <!--<dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers</artifactId>
         <version>${version.org.testcontainers}</version>
         <scope>compile</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-database-commons</artifactId>
         <version>${version.org.testcontainers}</version>
@@ -1230,8 +1234,8 @@ Kubernetes addons since they use a different version.
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-junit-jupiter</artifactId>
         <version>${version.org.testcontainers}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-kafka</artifactId>
         <version>${version.org.testcontainers}</version>
@@ -1245,8 +1249,8 @@ Kubernetes addons since they use a different version.
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-oracle-xe</artifactId>
         <version>${version.org.testcontainers}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-postgresql</artifactId>
         <version>${version.org.testcontainers}</version>
@@ -1255,8 +1259,8 @@ Kubernetes addons since they use a different version.
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-toxiproxy</artifactId>
         <version>${version.org.testcontainers}</version>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.wiremock</groupId>
         <artifactId>wiremock</artifactId>
         <version>${version.org.wiremock}</version>
@@ -1267,13 +1271,13 @@ Kubernetes addons since they use a different version.
         <artifactId>wiremock-standalone</artifactId>
         <version>${version.org.wiremock}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
+      </dependency>-->
+      <!--<dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-core</artifactId>
         <version>${version.org.xmlunit-core}</version>
         <scope>test</scope>
-      </dependency>
+      </dependency>-->
     </dependencies>
   </dependencyManagement>
 </project>

@@ -32,7 +32,7 @@
   <artifactId>integration-tests-springboot-processes-infinispan</artifactId>
   <name>Kogito :: Integration Tests :: Spring Boot :: Processes :: Persistence :: Infinispan</name>
 
-  <dependencyManagement>
+  <!--<dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.infinispan</groupId>
@@ -42,7 +42,7 @@
         <scope>import</scope>
       </dependency>
     </dependencies>
-  </dependencyManagement>
+  </dependencyManagement>-->
 
   <dependencies>
     <dependency>
