@@ -25,13 +25,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.kie.kogito</groupId>
+    <groupId>org.kie</groupId>
     <!-- The Kogito Dependencies BOM is inherited here to reuse all the version properties defined there and used across our internal modules. -->
     <artifactId>kogito-dependencies-bom</artifactId>
     <version>999-SNAPSHOT</version>
     <relativePath>../kogito-dependencies-bom/pom.xml</relativePath>
   </parent>
 
+
+  <groupId>org.kie.kogito</groupId>
   <artifactId>kogito-build-no-bom-parent</artifactId>
   <packaging>pom</packaging>
 

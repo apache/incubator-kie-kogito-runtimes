@@ -18,14 +18,15 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-<!--    <artifactId>kogito-build</artifactId>
-    <groupId>org.kie.kogito</groupId>
-    <version>999-SNAPSHOT</version>-->
+    <!--    <artifactId>kogito-build</artifactId>
+        <groupId>org.kie.kogito</groupId>
+        <version>999-SNAPSHOT</version>-->
     <groupId>org.kie</groupId>
     <artifactId>kie-parent</artifactId>
     <version>999-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
+  <groupId>org.kie.kogito</groupId>
   <artifactId>kogito-dependencies-bom</artifactId>
   <name>Kogito :: Dependencies :: BOM</name>
   <packaging>pom</packaging>
@@ -37,11 +38,11 @@
     &lt;!&ndash; End of various transitive overrides. &ndash;&gt;
     &lt;!&ndash; this version property is used in plugins but also in dependencies too &ndash;&gt;
     <version.io.quarkus>3.27.2</version.io.quarkus>
-    <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>
-    <version.org.springframework>6.2.15</version.org.springframework>  -->
+    <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>  -->
     <!-- Used to define which poms are allowed to have dependencyManagement sections. This is to enforce the convention that only the root pom should have dependencyManagement, and all other poms should inherit from it. -->
     <allowedPomsList>org.kie:kogito-dependencies-bom</allowedPomsList>
     <version.org.springframework.boot>3.5.10</version.org.springframework.boot>
+    <version.org.springframework>6.2.15</version.org.springframework>
     <!-- <version.org.apache.kafka>4.0.0</version.org.apache.kafka>
     <version.org.bouncycastle.bc.jdk18on>1.82</version.org.bouncycastle.bc.jdk18on>
     &lt;!&ndash; dependencies versions &ndash;&gt;
@@ -167,38 +168,38 @@ Kubernetes addons since they use a different version.
         <artifactId>jep</artifactId>
         <version>${version.black.ninia}</version>
       </dependency>-->
-<!--      <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-json-org</artifactId>
-        <version>${version.com.fasterxml.jackson.datatype}</version>
-      </dependency>-->
+      <!--      <dependency>
+              <groupId>com.fasterxml.jackson.datatype</groupId>
+              <artifactId>jackson-datatype-json-org</artifactId>
+              <version>${version.com.fasterxml.jackson.datatype}</version>
+            </dependency>-->
       <!-- predictions/machine learning related -->
-<!--      <dependency>
-        <groupId>com.github.haifengl</groupId>
-        <artifactId>smile-core</artifactId>
-        <version>${version.com.github.haifengl.smile}</version>
-      </dependency>-->
+      <!--      <dependency>
+              <groupId>com.github.haifengl</groupId>
+              <artifactId>smile-core</artifactId>
+              <version>${version.com.github.haifengl.smile}</version>
+            </dependency>-->
       <!--  Json Schema -->
-<!--      <dependency>
-        <groupId>com.github.victools</groupId>
-        <artifactId>jsonschema-generator</artifactId>
-        <version>${version.com.github.victools}</version>
-      </dependency>-->
-<!--      <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <version>${version.com.h2}</version>
-      </dependency>-->
-<!--      <dependency>
-        <groupId>com.jayway.jsonpath</groupId>
-        <artifactId>json-path</artifactId>
-        <version>${version.com.jayway.jsonpath}</version>
-      </dependency>-->
-  <!--    <dependency>
-        <groupId>com.jayway.jsonpath</groupId>
-        <artifactId>json-path-assert</artifactId>
-        <version>${version.com.jayway.jsonpath}</version>
-      </dependency>-->
+      <!--      <dependency>
+              <groupId>com.github.victools</groupId>
+              <artifactId>jsonschema-generator</artifactId>
+              <version>${version.com.github.victools}</version>
+            </dependency>-->
+      <!--      <dependency>
+              <groupId>com.h2database</groupId>
+              <artifactId>h2</artifactId>
+              <version>${version.com.h2}</version>
+            </dependency>-->
+      <!--      <dependency>
+              <groupId>com.jayway.jsonpath</groupId>
+              <artifactId>json-path</artifactId>
+              <version>${version.com.jayway.jsonpath}</version>
+            </dependency>-->
+      <!--    <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path-assert</artifactId>
+            <version>${version.com.jayway.jsonpath}</version>
+          </dependency>-->
       <!--<dependency>
         <groupId>com.networknt</groupId>
         <artifactId>json-schema-validator</artifactId>
@@ -211,11 +212,11 @@ Kubernetes addons since they use a different version.
         </exclusions>
       </dependency>-->
       <!-- SCRAM authentication for PostgreSQL 16+; required by Vert.x reactive pg-client -->
-     <!-- <dependency>
-        <groupId>com.ongres.scram</groupId>
-        <artifactId>scram-client</artifactId>
-        <version>${version.com.ongres.scram}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>com.ongres.scram</groupId>
+         <artifactId>scram-client</artifactId>
+         <version>${version.com.ongres.scram}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>com.squareup.okhttp3</groupId>
         <artifactId>okhttp</artifactId>
@@ -237,21 +238,21 @@ Kubernetes addons since they use a different version.
         <artifactId>cloudevents-core</artifactId>
         <version>${version.io.cloudevents}</version>
       </dependency>-->
-    <!--  <dependency>
-        <groupId>io.cloudevents</groupId>
-        <artifactId>cloudevents-http-restful-ws</artifactId>
-        <version>${version.io.cloudevents}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.cloudevents</groupId>
-        <artifactId>cloudevents-http-vertx</artifactId>
-        <version>${version.io.cloudevents}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.cloudevents</groupId>
-        <artifactId>cloudevents-json-jackson</artifactId>
-        <version>${version.io.cloudevents}</version>
-      </dependency>-->
+      <!--  <dependency>
+          <groupId>io.cloudevents</groupId>
+          <artifactId>cloudevents-http-restful-ws</artifactId>
+          <version>${version.io.cloudevents}</version>
+        </dependency>-->
+      <!-- <dependency>
+         <groupId>io.cloudevents</groupId>
+         <artifactId>cloudevents-http-vertx</artifactId>
+         <version>${version.io.cloudevents}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>io.cloudevents</groupId>
+         <artifactId>cloudevents-json-jackson</artifactId>
+         <version>${version.io.cloudevents}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>io.cloudevents</groupId>
         <artifactId>cloudevents-kafka</artifactId>
@@ -262,53 +263,53 @@ Kubernetes addons since they use a different version.
         <artifactId>knative-client</artifactId>
         <version>${version.io.fabric8.kubernetes-client}</version>
       </dependency>-->
-<!--      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>knative-model</artifactId>
-        <version>${version.io.fabric8.kubernetes-client}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>kubernetes-client</artifactId>
-        <version>${version.io.fabric8.kubernetes-client}</version>
-      </dependency>-->
+      <!--      <dependency>
+              <groupId>io.fabric8</groupId>
+              <artifactId>knative-model</artifactId>
+              <version>${version.io.fabric8.kubernetes-client}</version>
+            </dependency>-->
+      <!-- <dependency>
+         <groupId>io.fabric8</groupId>
+         <artifactId>kubernetes-client</artifactId>
+         <version>${version.io.fabric8.kubernetes-client}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>io.fabric8</groupId>
         <artifactId>kubernetes-client-api</artifactId>
         <version>${version.io.fabric8.kubernetes-client}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>kubernetes-server-mock</artifactId>
-        <version>${version.io.fabric8.kubernetes-client}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>io.fabric8</groupId>
+         <artifactId>kubernetes-server-mock</artifactId>
+         <version>${version.io.fabric8.kubernetes-client}</version>
+       </dependency>-->
       <!-- fabric8 dependencies -->
-     <!-- <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>openshift-client-api</artifactId>
-        <version>${version.io.fabric8.kubernetes-client}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>io.fabric8</groupId>
+         <artifactId>openshift-client-api</artifactId>
+         <version>${version.io.fabric8.kubernetes-client}</version>
+       </dependency>-->
       <!-- metrics - monitoring -->
-     <!-- <dependency>
-        <groupId>io.micrometer</groupId>
-        <artifactId>micrometer-core</artifactId>
-        <version>${version.io.micrometer}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.micrometer</groupId>
-        <artifactId>micrometer-registry-elastic</artifactId>
-        <version>${version.io.micrometer}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.micrometer</groupId>
-        <artifactId>micrometer-registry-prometheus</artifactId>
-        <version>${version.io.micrometer}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-all</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>io.micrometer</groupId>
+         <artifactId>micrometer-core</artifactId>
+         <version>${version.io.micrometer}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>io.micrometer</groupId>
+         <artifactId>micrometer-registry-elastic</artifactId>
+         <version>${version.io.micrometer}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>io.micrometer</groupId>
+         <artifactId>micrometer-registry-prometheus</artifactId>
+         <version>${version.io.micrometer}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-all</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>-->
       <!-- Forced version of the majority of general netty dependencies. This is to enforce an aligned netty libraries version in transitive dependencies, due to possible CVEs. -->
       <!--<dependency>
         <groupId>io.netty</groupId>
@@ -320,26 +321,26 @@ Kubernetes addons since they use a different version.
         <artifactId>netty-codec</artifactId>
         <version>${version.io.netty}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-codec-dns</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-codec-haproxy</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-codec-http</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-codec-http2</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-codec-dns</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>
+       <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-codec-haproxy</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-codec-http</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>
+       <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-codec-http2</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec-memcache</artifactId>
@@ -365,21 +366,21 @@ Kubernetes addons since they use a different version.
         <artifactId>netty-codec-socks</artifactId>
         <version>${version.io.netty}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-codec-stomp</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-codec-xml</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-common</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-codec-stomp</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>
+       <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-codec-xml</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>
+       <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-common</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-dev-tools</artifactId>
@@ -415,21 +416,21 @@ Kubernetes addons since they use a different version.
         <artifactId>netty-transport</artifactId>
         <version>${version.io.netty}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-transport-rxtx</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-transport-sctp</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-transport-udt</artifactId>
-        <version>${version.io.netty}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-transport-rxtx</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>
+       <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-transport-sctp</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>
+       <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-transport-udt</artifactId>
+         <version>${version.io.netty}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>io.rest-assured</groupId>
         <artifactId>json-path</artifactId>
@@ -469,31 +470,31 @@ Kubernetes addons since they use a different version.
         <artifactId>serverlessworkflow-validation</artifactId>
         <version>${version.io.serverlessworkflow}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>io.smallrye</groupId>
-        <artifactId>smallrye-open-api-core</artifactId>
-        <version>${version.io.smallrye-open-api}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.smallrye</groupId>
-        <artifactId>smallrye-open-api-jaxrs</artifactId>
-        <version>${version.io.smallrye-open-api}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.smallrye</groupId>
-        <artifactId>smallrye-open-api-spring</artifactId>
-        <version>${version.io.smallrye-open-api}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.smallrye</groupId>
-        <artifactId>smallrye-open-api-ui</artifactId>
-        <version>${version.io.smallrye-open-api}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.smallrye</groupId>
-        <artifactId>smallrye-open-api-vertx</artifactId>
-        <version>${version.io.smallrye-open-api}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>io.smallrye</groupId>
+         <artifactId>smallrye-open-api-core</artifactId>
+         <version>${version.io.smallrye-open-api}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>io.smallrye</groupId>
+         <artifactId>smallrye-open-api-jaxrs</artifactId>
+         <version>${version.io.smallrye-open-api}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>io.smallrye</groupId>
+         <artifactId>smallrye-open-api-spring</artifactId>
+         <version>${version.io.smallrye-open-api}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>io.smallrye</groupId>
+         <artifactId>smallrye-open-api-ui</artifactId>
+         <version>${version.io.smallrye-open-api}</version>
+       </dependency>
+       <dependency>
+         <groupId>io.smallrye</groupId>
+         <artifactId>smallrye-open-api-vertx</artifactId>
+         <version>${version.io.smallrye-open-api}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>io.smallrye.config</groupId>
         <artifactId>smallrye-config</artifactId>
@@ -514,26 +515,26 @@ Kubernetes addons since they use a different version.
         <artifactId>smallrye-mutiny-vertx-auth-oauth2</artifactId>
         <version>${version.io.smallrye.reactive.mutiny-vertx-web-client}</version>
       </dependency>-->
-<!--      <dependency>
-        <groupId>io.smallrye.reactive</groupId>
-        <artifactId>smallrye-mutiny-vertx-web-client</artifactId>
-        <version>${version.io.smallrye.reactive.mutiny-vertx-web-client}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-core</artifactId>
-        <version>${version.io.swagger.core.v3}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-model</artifactId>
-        <version>${version.io.swagger.core.v3}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger.parser.v3</groupId>
-        <artifactId>swagger-parser</artifactId>
-        <version>${version.io.swagger.parser.v3}</version>
-      </dependency>-->
+      <!--      <dependency>
+              <groupId>io.smallrye.reactive</groupId>
+              <artifactId>smallrye-mutiny-vertx-web-client</artifactId>
+              <version>${version.io.smallrye.reactive.mutiny-vertx-web-client}</version>
+            </dependency>-->
+      <!-- <dependency>
+         <groupId>io.swagger.core.v3</groupId>
+         <artifactId>swagger-core</artifactId>
+         <version>${version.io.swagger.core.v3}</version>
+       </dependency>
+       <dependency>
+         <groupId>io.swagger.core.v3</groupId>
+         <artifactId>swagger-model</artifactId>
+         <version>${version.io.swagger.core.v3}</version>
+       </dependency>
+       <dependency>
+         <groupId>io.swagger.parser.v3</groupId>
+         <artifactId>swagger-parser</artifactId>
+         <version>${version.io.swagger.parser.v3}</version>
+       </dependency>-->
       <!-- Vertx libraries, including PostgreSQL client -->
       <!--<dependency>
         <groupId>io.vertx</groupId>
@@ -565,11 +566,11 @@ Kubernetes addons since they use a different version.
         <artifactId>jakarta.validation-api</artifactId>
         <version>${version.jakarta.validation-api}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>jakarta.ws.rs</groupId>
-        <artifactId>jakarta.ws.rs-api</artifactId>
-        <version>${version.jakarta.ws.rs}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>jakarta.ws.rs</groupId>
+         <artifactId>jakarta.ws.rs-api</artifactId>
+         <version>${version.jakarta.ws.rs}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
@@ -580,11 +581,11 @@ Kubernetes addons since they use a different version.
         <artifactId>junit</artifactId>
         <version>${version.org.junit}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>net.bytebuddy</groupId>
-        <artifactId>byte-buddy</artifactId>
-        <version>${version.net.byte-buddy}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>net.bytebuddy</groupId>
+         <artifactId>byte-buddy</artifactId>
+         <version>${version.net.byte-buddy}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>net.javacrumbs.json-unit</groupId>
         <artifactId>json-unit-assertj</artifactId>
@@ -601,11 +602,11 @@ Kubernetes addons since they use a different version.
         <artifactId>jackson-jq</artifactId>
         <version>${version.net.thisptr.jackson-jq}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>net.thisptr</groupId>
-        <artifactId>jackson-jq-extra</artifactId>
-        <version>${version.net.thisptr.jackson-jq}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>net.thisptr</groupId>
+         <artifactId>jackson-jq-extra</artifactId>
+         <version>${version.net.thisptr.jackson-jq}</version>
+       </dependency>-->
       <!--      &lt;!&ndash; Not directly used, but used to override transitive versions from other dependencies to fix vulnerabilities &ndash;&gt;
 <dependency>
   <groupId>org.apache.tomcat.embed</groupId>
@@ -823,11 +824,11 @@ Kubernetes addons since they use a different version.
   <artifactId>jackson-dataformat-avro</artifactId>
   <version>${version.com.fasterxml.jackson}</version>
 </dependency>-->
-     <!-- <dependency>
-        <groupId>org.apache.avro</groupId>
-        <artifactId>avro</artifactId>
-        <version>${version.org.apache.avro}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>org.apache.avro</groupId>
+         <artifactId>avro</artifactId>
+         <version>${version.org.apache.avro}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
@@ -838,11 +839,11 @@ Kubernetes addons since they use a different version.
         <artifactId>maven-artifact</artifactId>
         <version>${version.maven}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-core</artifactId>
-        <version>${version.maven}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>org.apache.maven</groupId>
+         <artifactId>maven-core</artifactId>
+         <version>${version.maven}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
@@ -858,16 +859,16 @@ Kubernetes addons since they use a different version.
         <artifactId>maven-project</artifactId>
         <version>${version.maven.project}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>org.apache.maven.plugin-testing</groupId>
-        <artifactId>maven-plugin-testing-harness</artifactId>
-        <version>${version.maven.plugin.testing.harness}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>org.apache.maven.plugin-tools</groupId>
-        <artifactId>maven-plugin-annotations</artifactId>
-        <version>${version.maven.plugin}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>org.apache.maven.plugin-testing</groupId>
+         <artifactId>maven-plugin-testing-harness</artifactId>
+         <version>${version.maven.plugin.testing.harness}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>org.apache.maven.plugin-tools</groupId>
+         <artifactId>maven-plugin-annotations</artifactId>
+         <version>${version.maven.plugin}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>org.apache.maven.shared</groupId>
         <artifactId>maven-invoker</artifactId>
@@ -891,26 +892,26 @@ Kubernetes addons since they use a different version.
         <version>${version.org.awaitility}</version>
         <scope>test</scope>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-classworlds</artifactId>
-        <version>${version.plexus.classworld}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-component-annotations</artifactId>
-        <version>${version.plexus}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-container-default</artifactId>
-        <version>${version.plexus}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>org.eclipse.angus</groupId>
-        <artifactId>angus-activation</artifactId>
-        <version>${version.com.sun.activation}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>org.codehaus.plexus</groupId>
+         <artifactId>plexus-classworlds</artifactId>
+         <version>${version.plexus.classworld}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>org.codehaus.plexus</groupId>
+         <artifactId>plexus-component-annotations</artifactId>
+         <version>${version.plexus}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>org.codehaus.plexus</groupId>
+         <artifactId>plexus-container-default</artifactId>
+         <version>${version.plexus}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>org.eclipse.angus</groupId>
+         <artifactId>angus-activation</artifactId>
+         <version>${version.com.sun.activation}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>org.eclipse.microprofile.openapi</groupId>
         <artifactId>microprofile-openapi-api</artifactId>
@@ -932,28 +933,28 @@ Kubernetes addons since they use a different version.
         <artifactId>jaxb-runtime</artifactId>
         <version>${version.org.glassfish.jaxb}</version>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>org.graalvm.nativeimage</groupId>
-        <artifactId>svm</artifactId>
-        <version>${version.org.graalvm.nativeimage}</version>
-      </dependency>-->
-     <!-- <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-core</artifactId>
-        <version>${version.org.hamcrest}</version>
-        <scope>test</scope>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>org.graalvm.nativeimage</groupId>
+         <artifactId>svm</artifactId>
+         <version>${version.org.graalvm.nativeimage}</version>
+       </dependency>-->
+      <!-- <dependency>
+         <groupId>org.hamcrest</groupId>
+         <artifactId>hamcrest-core</artifactId>
+         <version>${version.org.hamcrest}</version>
+         <scope>test</scope>
+       </dependency>-->
       <!--<dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-library</artifactId>
         <version>${version.org.hamcrest}</version>
         <scope>test</scope>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>org.infinispan</groupId>
-        <artifactId>infinispan-client-hotrod</artifactId>
-        <version>${version.org.infinispan}</version>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>org.infinispan</groupId>
+         <artifactId>infinispan-client-hotrod</artifactId>
+         <version>${version.org.infinispan}</version>
+       </dependency>-->
       <!--<dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-commons</artifactId>
@@ -1038,18 +1039,18 @@ Kubernetes addons since they use a different version.
         <version>${version.org.junit.platform}</version>
         <scope>test</scope>
       </dependency>-->
-     <!-- <dependency>
-        <groupId>org.junit.platform</groupId>
-        <artifactId>junit-platform-launcher</artifactId>
-        <version>${version.org.junit.platform}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.vintage</groupId>
-        <artifactId>junit-vintage-engine</artifactId>
-        <version>${version.org.junit.jupiter}</version>
-        <scope>test</scope>
-      </dependency>-->
+      <!-- <dependency>
+         <groupId>org.junit.platform</groupId>
+         <artifactId>junit-platform-launcher</artifactId>
+         <version>${version.org.junit.platform}</version>
+         <scope>test</scope>
+       </dependency>
+       <dependency>
+         <groupId>org.junit.vintage</groupId>
+         <artifactId>junit-vintage-engine</artifactId>
+         <version>${version.org.junit.jupiter}</version>
+         <scope>test</scope>
+       </dependency>-->
       <!--<dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
@@ -1175,6 +1176,11 @@ Kubernetes addons since they use a different version.
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
         <artifactId>spring-oxm</artifactId>
         <version>${version.org.springframework}</version>
       </dependency>
@@ -1213,6 +1219,252 @@ Kubernetes addons since they use a different version.
         <artifactId>spring-websocket</artifactId>
         <version>${version.org.springframework}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-decisions-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-with-drools-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-persistence-jdbc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-persistence-postgresql</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-persistence-mongodb</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-persistence-infinispan</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-task-management</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-source-files</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-process-svg</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-monitoring-prometheus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-messaging</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-events-process-kafka</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-predictions-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-test-utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-maven-plugin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-rules-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-process-management</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-rest-exception-handler</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-flyway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-explainability</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-common-auth</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-spring-boot-test-utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- END SPRINGBOOT RELATED -->
+
+      <!--  COMMON -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-rest-workitem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jbpm-deps-group-bpmn2-compiler</artifactId>
+        <type>pom</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-drools</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-dmn</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-pmml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-events-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-events-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-flyway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-kubernetes</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-rest-exception-handler</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-process-instance-migration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-source-files</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-persistence-filesystem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-persistence-jdbc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-persistence-infinispan</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-persistence-mongodb</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-persistence-postgresql</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-process-management</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-process-svg</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-tracing-decision-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-task-management</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-mail</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- testcontainers dependencies -->
       <!--<dependency>
         <groupId>org.testcontainers</groupId>
