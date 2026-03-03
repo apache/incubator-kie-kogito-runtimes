@@ -23,9 +23,10 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>springboot</artifactId>
     <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-build-no-bom-parent</artifactId>
     <version>999-SNAPSHOT</version>
+    <relativePath>../../kogito-build/kogito-build-no-bom-parent/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -47,7 +48,7 @@
     <!-- Aligned with Spring Boot Cloud -->
     <version.io.fabric8>7.3.1</version.io.fabric8>
   </properties>
-  
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -57,13 +58,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>kubernetes-client-bom</artifactId>
-        <version>${version.io.fabric8}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+      <!-- <dependency>
+         <groupId>io.fabric8</groupId>
+         <artifactId>kubernetes-client-bom</artifactId>
+         <version>${version.io.fabric8}</version>
+         <type>pom</type>
+         <scope>import</scope>
+       </dependency>-->
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
@@ -90,8 +91,8 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-actuator</artifactId>
         <version>${version.org.springframework.boot}</version>
-      </dependency>      
-      <dependency>
+      </dependency>
+      <!--<dependency>
         <groupId>org.apache.groovy</groupId>
         <artifactId>groovy</artifactId>
         <version>${version.org.apache.groovy}</version>
@@ -106,7 +107,249 @@
         <artifactId>spock-core</artifactId>
         <version>${version.org.spockframework}</version>
         <scope>test</scope>
+      </dependency>-->
+
+      <!-- TODO those should be moved to springboot specific bom -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>${version.org.springframework}</version>
       </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aspects</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-indexer</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core-test</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-expression</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-instrument</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jcl</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jms</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-messaging</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-oxm</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-r2dbc</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webflux</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-websocket</artifactId>
+        <version>${version.org.springframework}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-decisions-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-with-drools-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-persistence-jdbc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-persistence-postgresql</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-persistence-mongodb</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-persistence-infinispan</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-usertask-storage-jpa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-monitoring-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-addons-springboot-task-management</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-source-files</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-process-svg</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-monitoring-prometheus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-messaging</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-events-process-kafka</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-predictions-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-process-management</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-spring-boot-test-utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-rules-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-rest-exception-handler</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-flyway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-explainability</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-springboot-common-auth</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+
+
     </dependencies>
   </dependencyManagement>
 

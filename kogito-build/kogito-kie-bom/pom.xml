@@ -32,6 +32,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
+  <groupId>org.kie.kogito</groupId>
   <artifactId>kogito-kie-bom</artifactId>
   <packaging>pom</packaging>
   <name>Kogito :: Kie7 BOM</name>

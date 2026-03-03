@@ -22,10 +22,16 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
+  <!--<parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>springboot</artifactId>
     <version>999-SNAPSHOT</version>
+  </parent>-->
+  <parent>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-spring-boot-bom</artifactId>
+    <version>999-SNAPSHOT</version>
+    <relativePath>../bom/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -57,7 +63,7 @@
     <module>source-files</module>
   </modules>
 
-  <dependencyManagement>
+ <!-- <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -67,6 +73,6 @@
         <scope>import</scope>
       </dependency>
     </dependencies>
-  </dependencyManagement>
+  </dependencyManagement>-->
 
 </project>

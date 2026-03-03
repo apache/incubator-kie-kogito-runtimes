@@ -26,9 +26,9 @@
 
   <parent>
     <groupId>org.kie.kogito</groupId>
-    <artifactId>kogito-build-parent</artifactId>
+    <artifactId>kogito-spring-boot-bom</artifactId>
     <version>999-SNAPSHOT</version>
-    <relativePath>../kogito-build/kogito-build-parent/pom.xml</relativePath>
+    <relativePath>../springboot/bom/pom.xml</relativePath>
   </parent>
 
   <artifactId>kogito-maven-plugin-test</artifactId>
@@ -39,7 +39,7 @@
     <maven.compiler.release>17</maven.compiler.release>
   </properties>
 
-  <dependencyManagement>
+  <!--<dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -49,7 +49,7 @@
         <scope>import</scope>
       </dependency>
     </dependencies>
-  </dependencyManagement>
+  </dependencyManagement>-->
 
   <dependencies>
     <dependency>

@@ -1098,7 +1098,7 @@ Kubernetes addons since they use a different version.
       <!-- End of various transitive overrides. -->
       <!-- Not directly used, but used to override transitive versions of Spring dependencies dependencies to fix vulnerabilities -->
 
-      <!-- TODO those should be moved to springboot specific bom -->
+    <!--  &lt;!&ndash; TODO those should be moved to springboot specific bom &ndash;&gt;
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aop</artifactId>
@@ -1294,7 +1294,28 @@ Kubernetes addons since they use a different version.
         <groupId>org.kie</groupId>
         <artifactId>kie-predictions-spring-boot-starter</artifactId>
         <version>${project.version}</version>
+      </dependency>-->
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-core-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-dmn-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+
+
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-test-utils</artifactId>
@@ -1305,42 +1326,6 @@ Kubernetes addons since they use a different version.
         <artifactId>kogito-maven-plugin</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.drools</groupId>
-        <artifactId>drools-rules-spring-boot-starter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-springboot-process-management</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-springboot-rest-exception-handler</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-springboot-flyway</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-springboot-explainability</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-springboot-common-auth</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-spring-boot-test-utils</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- END SPRINGBOOT RELATED -->
 
       <!--  COMMON -->
       <dependency>
@@ -1380,13 +1365,158 @@ Kubernetes addons since they use a different version.
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-flyway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-addons-events-rules</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-events-api</artifactId>
+        <artifactId>kogito-codegen-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-codegen-manager</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-dmn</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-fluent</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-executor-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-executor-kafka</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-executor-rest</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-grpc-parser</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-rest-parser</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-executor-grpc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-grpc-runtime</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-rest-runtime</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-openapi-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-openapi-parser</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-openapi-generated-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-executor-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-jackson-utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-jq-expression</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-jsonpath-expression</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-rest-utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-persistence-rocksdb</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-builder</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-runtime</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-messaging</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-addons-flyway</artifactId>
+        <artifactId>kie-addons-events-decisions</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-events-predictions</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-events-mongodb</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1444,6 +1574,74 @@ Kubernetes addons since they use a different version.
         <artifactId>kie-addons-process-svg</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-process-svg</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-explainability</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-monitoring-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-monitoring-core</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-monitoring-elastic</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-addons-monitoring-prometheus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>jbpm-deps-group-engine</artifactId>
+        <type>pom</type>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-jobs-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kogito-addons-jobs-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kogito-addons-jobs-management-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kogito-addons-jobs-management-common</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+
+
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-addons-tracing-decision-common</artifactId>
