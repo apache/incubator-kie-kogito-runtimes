@@ -47,6 +47,8 @@
     <version.org.springframework.cloud>2025.0.1</version.org.springframework.cloud>
     <!-- Aligned with Spring Boot Cloud -->
     <version.io.fabric8>7.3.1</version.io.fabric8>
+    <version.org.springframework.boot>3.5.10</version.org.springframework.boot>
+    <version.org.springframework>6.2.15</version.org.springframework>
   </properties>
 
   <dependencyManagement>
@@ -92,6 +94,17 @@
         <artifactId>spring-boot-actuator</artifactId>
         <version>${version.org.springframework.boot}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>${version.org.springframework.boot}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+        <version>${version.org.springframework.boot}</version>
+      </dependency>
       <!--<dependency>
         <groupId>org.apache.groovy</groupId>
         <artifactId>groovy</artifactId>
@@ -109,7 +122,6 @@
         <scope>test</scope>
       </dependency>-->
 
-      <!-- TODO those should be moved to springboot specific bom -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aop</artifactId>

@@ -62,8 +62,8 @@
       JaCoCo coverage data file location. Using a single file for appending in the project's root directory makes it
       possible to measure cross-module test coverage -->
     <jacoco.exec.file>${project.root.dir}/target/jacoco.exec</jacoco.exec.file>
-    <!--suppress UnresolvedMavenProperty -->
-    <quarkus.logging.manager>org.jboss.logmanager.LogManager</quarkus.logging.manager>
+<!--    &lt;!&ndash;suppress UnresolvedMavenProperty &ndash;&gt;
+    <quarkus.logging.manager>org.jboss.logmanager.LogManager</quarkus.logging.manager>-->
     <tests.surefire.include>**/*Test.java</tests.surefire.include>
     <tests.failsafe.include>**/*IT.java</tests.failsafe.include>
     <formatter.skip>false</formatter.skip>
@@ -630,7 +630,7 @@
           <artifactId>sonar-maven-plugin</artifactId>
           <version>${version.sonar.plugin}</version>
         </plugin>
-        <plugin>
+        <!--<plugin>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-maven-plugin</artifactId>
           <version>${version.io.quarkus}</version>
@@ -639,7 +639,7 @@
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-extension-maven-plugin</artifactId>
           <version>${version.io.quarkus}</version>
-        </plugin>
+        </plugin>-->
         <plugin>
           <groupId>org.jsonschema2pojo</groupId>
           <artifactId>jsonschema2pojo-maven-plugin</artifactId>

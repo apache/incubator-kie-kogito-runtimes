@@ -45,7 +45,7 @@
     <module>integration-tests</module>
   </modules>
 
-  <build>
+  <!--<build>
     <plugins>
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
@@ -57,5 +57,5 @@
         </configuration>
       </plugin>
     </plugins>
-  </build>
+  </build>-->
 </project>
