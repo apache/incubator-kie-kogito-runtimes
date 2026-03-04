@@ -56,6 +56,10 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-transaction-spi</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-opentelemetry</artifactId>
       <scope>test</scope>

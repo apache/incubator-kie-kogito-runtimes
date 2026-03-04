@@ -61,6 +61,31 @@
     <module>kogito-serverless-workflow-openapi-generated-deployment</module>
   </modules>
 
+  <build>
+    <!-- TEMPORARY -->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.commonjava.maven.plugins</groupId>
+          <artifactId>directory-maven-plugin</artifactId>
+          <version>1.0</version>
+          <executions>
+            <execution>
+              <id>directories</id>
+              <goals>
+                <goal>highest-basedir</goal>
+              </goals>
+              <phase>none</phase>
+              <configuration>
+                <property>project.root.dir</property>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
   <profiles>
     <profile>
       <id>full</id>

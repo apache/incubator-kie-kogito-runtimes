@@ -29,7 +29,7 @@
     <!-- The Kogito Dependencies BOM is inherited here to reuse all the version properties defined there and used across our internal modules. -->
     <artifactId>kogito-dependencies-bom</artifactId>
     <version>999-SNAPSHOT</version>
-    <relativePath>../kogito-dependencies-bom/pom.xml</relativePath>
+    <relativePath>../../kogito-dependencies-bom/pom.xml</relativePath>
   </parent>
 
   <artifactId>kogito-build-no-bom-parent</artifactId>

@@ -65,6 +65,10 @@ under the License.
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-transaction-spi</artifactId>
+    </dependency>
     <!-- hack for CI to work -->
     <dependency>
       <groupId>org.apache.kie.sonataflow</groupId>

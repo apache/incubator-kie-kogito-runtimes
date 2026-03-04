@@ -56,6 +56,23 @@
           <artifactId>exec-maven-plugin</artifactId>
           <version>${exec.plugin.version}</version>
         </plugin>
+        <plugin>
+          <groupId>org.commonjava.maven.plugins</groupId>
+          <artifactId>directory-maven-plugin</artifactId>
+          <version>1.0</version>
+          <executions>
+            <execution>
+              <id>directories</id>
+              <goals>
+                <goal>highest-basedir</goal>
+              </goals>
+              <phase>none</phase>
+              <configuration>
+                <property>project.root.dir</property>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
