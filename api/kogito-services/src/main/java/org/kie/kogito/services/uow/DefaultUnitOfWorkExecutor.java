@@ -41,13 +41,9 @@ public class DefaultUnitOfWorkExecutor extends UnitOfWorkExecutor {
         } catch (ProcessInstanceExecutionException e) {
             uow.end();
             throw e;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             uow.abort();
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(e);
-            }
+            throw e;
         }
     }
 }

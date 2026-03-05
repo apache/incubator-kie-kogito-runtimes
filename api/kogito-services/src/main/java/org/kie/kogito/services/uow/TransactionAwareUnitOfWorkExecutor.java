@@ -38,16 +38,9 @@ public class TransactionAwareUnitOfWorkExecutor extends UnitOfWorkExecutor {
             uow.end();
 
             return result;
-        } catch (ProcessInstanceExecutionException e) {
+        } catch (RuntimeException e) {
             uow.abort();
             throw e;
-        } catch (Exception e) {
-            uow.abort();
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(e);
-            }
         }
     }
 }
