@@ -168,7 +168,7 @@
     <version.com.google.guava>33.4.8-jre</version.com.google.guava>
     <version.apache.commons.commons-compress>1.28.0</version.apache.commons.commons-compress>
 
-    <version.tomcat.embed.core>10.1.48</version.tomcat.embed.core>
+    <version.tomcat.embed.core>10.1.49</version.tomcat.embed.core>
     <version.at.yawk.lz4.java>1.10.1</version.at.yawk.lz4.java> <!-- Upgraded for CVE fix (The library has moved from org.lz4:lz4-java to at.yawk.lz4:lz4-java )-->
     <version.org.hibernate>7.1.14.Final</version.org.hibernate>
     <version.com.graphql-java>24.3</version.com.graphql-java>
