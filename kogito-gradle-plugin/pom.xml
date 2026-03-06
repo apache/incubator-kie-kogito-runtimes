@@ -42,15 +42,15 @@
 
   <!-- DO NOT ADD PARENT DECLARATION TO HAVE THAT PLUGIN DISCOVERABLE BY GRADLE -->
   <properties>
-    <maven.compiler.source>17</maven.compiler.source>
+    <!--<maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
     <java.module.name>org.kie.kogito.gradle.plugin</java.module.name>
-    <gradle.version>8.11.1</gradle.version>
-    <groovy.version>4.0.29</groovy.version>
+    <!--<gradle.version>8.11.1</gradle.version>
+    <groovy.version>4.0.29</groovy.version>-->
   </properties>
 
-  <dependencyManagement>
+ <!-- <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -78,7 +78,7 @@
         <artifactId>gradle-api</artifactId>
         <version>${gradle.version}</version>
       </dependency>
-      <!-- Needed to avoid clashes in downstream projects -->
+      &lt;!&ndash; Needed to avoid clashes in downstream projects &ndash;&gt;
       <dependency>
         <groupId>org.apache.groovy</groupId>
         <artifactId>groovy</artifactId>
@@ -100,7 +100,7 @@
         <version>${gradle.version}</version>
       </dependency>
     </dependencies>
-  </dependencyManagement>
+  </dependencyManagement>-->
 
   <!-- EXCLUSIONS NEEDED TO AVOID CLASHING WITH GRADLE STACK -->
   <dependencies>

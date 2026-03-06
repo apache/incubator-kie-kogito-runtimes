@@ -67,17 +67,14 @@
         <dependency>
           <groupId>org.drools</groupId>
           <artifactId>drools-quarkus-rules-deployment</artifactId>
-          <version>${project.version}</version>
         </dependency>
         <dependency>
           <groupId>org.drools</groupId>
           <artifactId>drools-quarkus-decisions-deployment</artifactId>
-          <version>${project.version}</version>
         </dependency>
         <dependency>
           <groupId>org.kie</groupId>
           <artifactId>kie-quarkus-predictions-deployment</artifactId>
-          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>

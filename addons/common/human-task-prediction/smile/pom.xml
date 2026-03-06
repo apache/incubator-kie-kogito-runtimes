@@ -35,7 +35,7 @@
     <java.module.name>org.kie.kogito.predictions.smile</java.module.name>
   </properties>
 
-  <dependencyManagement>
+  <!--<dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -45,7 +45,7 @@
         <scope>import</scope>
       </dependency>
     </dependencies>
-  </dependencyManagement>
+  </dependencyManagement>-->
 
   <dependencies>
     <dependency>

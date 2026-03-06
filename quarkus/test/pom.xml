@@ -26,8 +26,9 @@
 
   <parent>
     <groupId>org.kie.kogito</groupId>
-    <artifactId>quarkus</artifactId>
+    <artifactId>kogito-quarkus-bom</artifactId>
     <version>999-SNAPSHOT</version>
+    <relativePath>../bom/pom.xml</relativePath>
   </parent>
 
   <artifactId>kogito-quarkus-test-utils</artifactId>
@@ -39,7 +40,7 @@
     <java.module.name>org.kie.kogito.test.quarkus</java.module.name>
   </properties>
 
-  <dependencyManagement>
+  <!--<dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -49,7 +50,7 @@
         <scope>import</scope>
       </dependency>
     </dependencies>
-  </dependencyManagement>
+  </dependencyManagement>-->
 
   <dependencies>
     <dependency>

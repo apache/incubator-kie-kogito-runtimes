@@ -79,16 +79,19 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-core-bom</artifactId>
+      <version>${project.version}</version>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-dmn-bom</artifactId>
+      <version>${project.version}</version>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-bom</artifactId>
+      <version>${project.version}</version>
       <type>pom</type>
     </dependency>
     <dependency>
