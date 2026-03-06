@@ -16,30 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.compiler.canonical.descriptors;
+package org.kie.kogito.auth.impl;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.Optional;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.expr.Expression;
+import org.kie.kogito.auth.AuthTokenProvider;
 
-public interface TaskDescriptor {
-
-    String KEY_WORKITEM_TYPE = "Type";
-    String KEY_WORKITEM_INTERFACE = "Interface";
-    String KEY_WORKITEM_OPERATION = "Operation";
-    String KEY_SERVICE_IMPL = "implementation";
-    String DEFAULT_SERVICE_IMPL = "Java";
-
-    String getName();
-
-    String getType();
-
-    CompilationUnit generateHandlerClassForService();
-
-    default Map<String, Expression> getCustomParams() {
-        return Collections.emptyMap();
+public class NoOpAuthTokenProvider implements AuthTokenProvider {
+    @Override
+    public Optional<String> getAuthToken() {
+        return Optional.empty();
     }
-
 }
