@@ -40,7 +40,6 @@
     <java.module.name>org.kie.kogito.process.workitems</java.module.name>
   </properties>
 
-
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
