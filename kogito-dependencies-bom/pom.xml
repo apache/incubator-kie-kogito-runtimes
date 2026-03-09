@@ -62,6 +62,17 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>openshift-client-api</artifactId>
+                <version>${version.io.fabric8.kubernetes-client}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>openshift-model-config</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.drools</groupId>
                 <artifactId>drools-addons-events-rules</artifactId>
                 <version>${project.version}</version>
@@ -620,6 +631,13 @@
                 <groupId>org.kie.kogito</groupId>
                 <artifactId>kogito-serverless-workflow-utils</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kie.kogito</groupId>
+                <artifactId>kogito-serverless-workflow-utils</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+                <type>test-jar</type>
             </dependency>
             <dependency>
                 <groupId>org.kie.kogito</groupId>
