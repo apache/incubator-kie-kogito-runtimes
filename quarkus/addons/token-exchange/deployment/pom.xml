@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.kie</groupId>
     <artifactId>kie-addons-quarkus-token-exchange-parent</artifactId>
-    <version>999-SNAPSHOT</version>
+    <version>10.2.999-SNAPSHOT</version>
   </parent>
   <artifactId>kie-addons-quarkus-token-exchange-deployment</artifactId>
   <name>KIE Add-On Token Exchange - Deployment</name>
