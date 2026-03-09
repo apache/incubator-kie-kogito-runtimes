@@ -134,11 +134,6 @@
     </extensions>
     <pluginManagement>
       <plugins>
-        <plugin>       
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <version>${version.org.springframework.boot}</version>                      
-        </plugin>
         <plugin>
             <groupId>com.societegenerale.commons</groupId>
             <artifactId>arch-unit-maven-plugin</artifactId>
