@@ -32,8 +32,6 @@
     <properties>
         <!-- Used to define which poms are allowed to have dependencyManagement sections. This is to enforce the convention that only the root pom should have dependencyManagement, and all other poms should inherit from it. -->
         <allowedPomsList>org.kie.kogito:kogito-dependencies-bom</allowedPomsList>
-        <!-- Keep it aligned with https://github.com/quarkusio/quarkus/blob/3.27.2/pom.xml#L72 -->
-        <version.io.fabric8.kubernetes-client>7.3.1</version.io.fabric8.kubernetes-client>
         <!-- It seems that the confluent kafka cannot replace wurstmeister/kafka so easily. See FAI-729 -->
         <version.wurstmeister.kafka>2.12-2.2.1</version.wurstmeister.kafka>
         <version.org.mongo>5.3.1</version.org.mongo>
@@ -46,29 +44,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.github.stephenc.jcip</groupId>
-                <artifactId>jcip-annotations</artifactId>
-                <version>${version.com.github.stephenc.jcip}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.fabric8</groupId>
-                <artifactId>openshift-client</artifactId>
-                <version>${version.io.fabric8.kubernetes-client}</version>
+                <groupId>io.serverlessworkflow</groupId>
+                <artifactId>serverlessworkflow-api</artifactId>
+                <version>${version.io.serverlessworkflow}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>openshift-model-config</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>io.fabric8</groupId>
-                <artifactId>openshift-client-api</artifactId>
-                <version>${version.io.fabric8.kubernetes-client}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>openshift-model-config</artifactId>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -636,7 +618,6 @@
                 <groupId>org.kie.kogito</groupId>
                 <artifactId>kogito-serverless-workflow-utils</artifactId>
                 <version>${project.version}</version>
-                <scope>test</scope>
                 <type>test-jar</type>
             </dependency>
             <dependency>

@@ -2263,6 +2263,12 @@
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-serverless-workflow-builder</artifactId>
         <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-builder</artifactId>
+        <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>

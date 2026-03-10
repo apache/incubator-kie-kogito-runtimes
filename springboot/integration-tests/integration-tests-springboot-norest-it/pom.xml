@@ -80,6 +80,17 @@
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-core</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-models</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>io.swagger.parser.v3</groupId>
       <artifactId>swagger-parser</artifactId>
       <scope>test</scope>

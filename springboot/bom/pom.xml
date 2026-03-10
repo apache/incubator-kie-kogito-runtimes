@@ -179,6 +179,10 @@
                         <groupId>io.swagger.core.v3</groupId>
                         <artifactId>swagger-annotations-jakarta</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>io.swagger.core.v3</groupId>
+                        <artifactId>swagger-core-jakarta</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
