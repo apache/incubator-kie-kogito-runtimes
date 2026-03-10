@@ -16,30 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.compiler.canonical.descriptors;
 
-import java.util.Collections;
-import java.util.Map;
+package org.kie.kogito.spring.auth;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.expr.Expression;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
-public interface TaskDescriptor {
+@Component
+@ConditionalOnMissingBean(SecurityContextHolder.class)
+public class SecurityContextInitializer implements InitializingBean {
 
-    String KEY_WORKITEM_TYPE = "Type";
-    String KEY_WORKITEM_INTERFACE = "Interface";
-    String KEY_WORKITEM_OPERATION = "Operation";
-    String KEY_SERVICE_IMPL = "implementation";
-    String DEFAULT_SERVICE_IMPL = "Java";
-
-    String getName();
-
-    String getType();
-
-    CompilationUnit generateHandlerClassForService();
-
-    default Map<String, Expression> getCustomParams() {
-        return Collections.emptyMap();
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // ensure the security context is inherited to child threads
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
-
 }

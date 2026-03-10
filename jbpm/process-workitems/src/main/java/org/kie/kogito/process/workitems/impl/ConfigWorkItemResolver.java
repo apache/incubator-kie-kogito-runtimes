@@ -16,24 +16,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kogito.workitem.rest.auth;
-
-import java.util.Map;
+package org.kie.kogito.process.workitems.impl;
 
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 
-import io.vertx.mutiny.ext.web.client.HttpRequest;
+public class ConfigWorkItemResolver<T> implements WorkItemParamResolver<T> {
 
-public abstract class OAuth2AuthDecorator implements AuthDecorator {
-    private final TokenRetriever tokenRetriever;
+    private final String key;
+    private final Class<T> clazz;
+    private final T defaultValue;
 
-    protected OAuth2AuthDecorator(TokenRetriever tokenRetriever) {
-        this.tokenRetriever = tokenRetriever;
+    @SuppressWarnings("unchecked")
+    public ConfigWorkItemResolver(String key) {
+        this(key, (Class<T>) String.class, null);
+    }
+
+    public ConfigWorkItemResolver(String key, Class<T> clazz, T defaultValue) {
+        this.key = key;
+        this.clazz = clazz;
+        this.defaultValue = defaultValue;
     }
 
     @Override
-    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request, KogitoWorkItemHandler handler) {
-        request.bearerTokenAuthentication(tokenRetriever.getToken(parameters));
+    public T apply(KogitoWorkItem workitem) {
+        return ConfigResolverHolder.getConfigResolver().getConfigProperty(key, clazz).orElse(defaultValue);
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public Class<T> getClazz() {
+        return clazz;
+    }
+
+    public T getDefaultValue() {
+        return defaultValue;
     }
 }
