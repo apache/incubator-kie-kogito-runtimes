@@ -119,6 +119,7 @@
   </build>
 
   <modules>
+    <module>kogito-dependencies-bom</module>
     <module>kogito-build</module>
     <module>kogito-bom</module>
     <module>api</module>
