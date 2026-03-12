@@ -149,6 +149,10 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
                     String tempDelay = resolveTimerExpression(timer.getDelay());
                     String tempPeriod = resolveTimerExpression(timer.getPeriod());
+                    if (DateTimeUtils.isCronExpression(tempDelay)) {
+                        long[] cronValues = DateTimeUtils.parseCronAsRepeatableInterval(tempDelay);
+                        return DurationExpirationTime.repeat(cronValues[0], cronValues[1], 1);
+                    }
                     if (DateTimeUtils.isRepeatable(tempDelay)) {
                         String[] values = DateTimeUtils.parseISORepeatable(tempDelay);
                         String tempRepeatLimit = values[0];
@@ -207,7 +211,10 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                     }
                 } else {
                     String resolvedDelay = resolveTimerExpression(timer.getDelay());
-
+                    if (DateTimeUtils.isCronExpression(resolvedDelay)) {
+                        long[] cronValues = DateTimeUtils.parseCronAsRepeatableInterval(resolvedDelay);
+                        return DurationExpirationTime.repeat(cronValues[0], cronValues[1], 1);
+                    }
                     // when using ISO date/time period is not set
                     long[] repeatValues = null;
                     try {
