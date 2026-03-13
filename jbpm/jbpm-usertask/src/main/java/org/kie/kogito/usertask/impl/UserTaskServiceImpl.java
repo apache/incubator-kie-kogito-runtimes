@@ -27,11 +27,9 @@ import java.util.Optional;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
-import org.kie.kogito.usertask.UserTaskConfig;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskService;
 import org.kie.kogito.usertask.UserTasks;
-import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
 import org.kie.kogito.usertask.model.Attachment;
 import org.kie.kogito.usertask.model.Comment;
@@ -59,6 +57,7 @@ public class UserTaskServiceImpl implements UserTaskService {
     private UserTaskView toUserTaskView(UserTaskInstance instance) {
         UserTaskView view = new UserTaskView();
         view.setId(instance.getId());
+        view.setProcessInfo(instance.getProcessInfo());
         view.setUserTaskId(instance.getUserTaskId());
         view.setStatus(instance.getStatus());
         view.setTaskName(instance.getTaskName());
@@ -97,8 +96,7 @@ public class UserTaskServiceImpl implements UserTaskService {
             return Collections.emptyList();
         }
         UserTaskInstance ut = userTaskInstance.get();
-        UserTaskLifeCycle userTaskLifeCycle = application.config().get(UserTaskConfig.class).userTaskLifeCycle();
-        List<UserTaskTransition> transitions = userTaskLifeCycle.allowedTransitions(ut, identity);
+        List<UserTaskTransition> transitions = ut.getUserTaskLifeCycle().allowedTransitions(ut, identity);
         return toUserTaskTransitionView(transitions);
     }
 

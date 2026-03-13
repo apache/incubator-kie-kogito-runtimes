@@ -22,7 +22,7 @@ import org.kie.kogito.KogitoConfig;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.uow.UnitOfWorkManager;
-import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
+import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycles;
 
 public interface UserTaskConfig extends KogitoConfig {
 
@@ -30,7 +30,7 @@ public interface UserTaskConfig extends KogitoConfig {
 
     UserTaskAssignmentStrategyConfig userTaskAssignmentStrategies();
 
-    UserTaskLifeCycle userTaskLifeCycle();
+    UserTaskLifeCycles userTaskLifeCycles();
 
     UnitOfWorkManager unitOfWorkManager();
 

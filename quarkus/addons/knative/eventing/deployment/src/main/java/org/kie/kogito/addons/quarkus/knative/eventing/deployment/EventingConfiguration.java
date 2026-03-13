@@ -18,12 +18,15 @@
  */
 package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
-@ConfigRoot(prefix = "org.kie.kogito.addons.knative", name = "eventing", phase = ConfigPhase.BUILD_TIME)
-public class EventingConfiguration {
+@ConfigRoot(phase = ConfigPhase.BUILD_TIME)
+@ConfigMapping(prefix = "org.kie.kogito.addons.knative.eventing")
+public interface EventingConfiguration {
 
     /**
      * Name of the default Knative Broker deployed in the target Knative namespace.
@@ -31,8 +34,8 @@ public class EventingConfiguration {
      * This broker is used as the reference to create the Knative Triggers responsible
      * to delegate the events that this Kogito service will consume.
      */
-    @ConfigItem(defaultValue = "default")
-    String broker;
+    @WithDefault("default")
+    String broker();
 
     /**
      * Whether the extension should generate a default Knative Broker in memory to sink and dispatch the messages.
@@ -41,8 +44,18 @@ public class EventingConfiguration {
      * Note that you can use `org.kie.kogito.addons.knative.eventing.sink.*` to configure your custom Sink.
      * If not defined, this auto generated Broker will work as the Sink.
      */
-    @ConfigItem(defaultValue = "true")
-    Boolean autoGenerateBroker;
+    @WithDefault("true")
+    Boolean autoGenerateBroker();
 
-    SinkConfiguration sink;
+    /**
+     * Configuration for the Knative Sink used by this Kogito service.
+     * <p>
+     * The Sink configuration defines the target Knative resource (Broker, Channel, or Service) where events
+     * will be sent. This is used to configure the "sink" property in the generated Knative SinkBinding.
+     * <p>
+     * Use the nested properties under `org.kie.kogito.addons.knative.eventing.sink.*` to customize
+     * the sink's namespace, API version, name, and kind.
+     */
+    @WithName("sink")
+    SinkConfiguration sinkConfig();
 }

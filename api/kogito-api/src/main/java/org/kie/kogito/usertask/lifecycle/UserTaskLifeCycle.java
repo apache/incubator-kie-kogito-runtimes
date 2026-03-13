@@ -24,20 +24,16 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.jobs.descriptors.UserTaskInstanceJobDescription;
 import org.kie.kogito.usertask.UserTaskInstance;
 
 public interface UserTaskLifeCycle {
 
-    final String ACTIVATE = "activate";
-    final String REASSIGN = "reassign";
+    String startTransition();
 
-    default String startTransition() {
-        return ACTIVATE;
-    }
+    String reassignTransition();
 
-    default String reassignTransition() {
-        return REASSIGN;
-    }
+    String abortTransition();
 
     Optional<UserTaskTransitionToken> transition(UserTaskInstance userTaskInstance, UserTaskTransitionToken transition, IdentityProvider identity);
 
@@ -52,5 +48,9 @@ public interface UserTaskLifeCycle {
     UserTaskTransitionToken newAbortTransitionToken(UserTaskInstance userTaskInstance, Map<String, Object> data);
 
     List<UserTaskTransition> allowedTransitions(UserTaskInstance ut, IdentityProvider identity);
+
+    default void handleTimer(UserTaskInstanceJobDescription jobDescription, UserTaskInstance userTaskInstance) {
+
+    }
 
 }

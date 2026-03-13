@@ -681,7 +681,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     public void signalEvent(String type, Object event) {
         logger.debug("Signal {} received with data {} in process instance {}", type, event, getStringId());
         synchronized (this) {
-            if (getState() != KogitoProcessInstance.STATE_ACTIVE) {
+            if (getState() != KogitoProcessInstance.STATE_ACTIVE && getState() != KogitoProcessInstance.STATE_ERROR) {
                 return;
             }
 
@@ -1000,7 +1000,14 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     @Override
     public String[] getEventTypes() {
-        return externalEventListeners.keySet().stream().map(this::resolveVariable).collect(Collectors.toList()).toArray(new String[externalEventListeners.size()]);
+        return externalEventListeners.keySet().stream().map(this::resolveEventType).collect(Collectors.toList()).toArray(new String[externalEventListeners.size()]);
+    }
+
+    private Object resolveEventType(String eventType) {
+        if (isVariableExpression(eventType)) {
+            return resolveVariable(eventType);
+        }
+        return eventType;
     }
 
     @Override

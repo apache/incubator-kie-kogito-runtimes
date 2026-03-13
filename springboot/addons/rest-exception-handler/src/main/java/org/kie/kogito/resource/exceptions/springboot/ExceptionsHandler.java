@@ -34,6 +34,8 @@ import org.kie.kogito.process.ProcessInstanceNotFoundException;
 import org.kie.kogito.process.VariableViolationException;
 import org.kie.kogito.resource.exceptions.AbstractExceptionsHandler;
 import org.kie.kogito.resource.exceptions.ExceptionBodyMessage;
+import org.kie.kogito.usertask.UserTaskInstanceNotAuthorizedException;
+import org.kie.kogito.usertask.UserTaskInstanceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -89,6 +91,14 @@ public class ExceptionsHandler extends AbstractExceptionsHandler<ResponseEntity<
                 .body(body.getBody());
     }
 
+    @Override
+    protected ResponseEntity<Map<String, String>> preconditionFailed(ExceptionBodyMessage body) {
+        return ResponseEntity
+                .status(HttpStatus.PRECONDITION_FAILED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body.getBody());
+    }
+
     @ExceptionHandler(InvalidLifeCyclePhaseException.class)
     public ResponseEntity<Map<String, String>> toResponse(InvalidLifeCyclePhaseException exception) {
         return mapException(exception);
@@ -114,6 +124,11 @@ public class ExceptionsHandler extends AbstractExceptionsHandler<ResponseEntity<
         return mapException(exception);
     }
 
+    @ExceptionHandler(UserTaskInstanceNotAuthorizedException.class)
+    public ResponseEntity<Map<String, String>> toResponse(UserTaskInstanceNotAuthorizedException exception) {
+        return mapException(exception);
+    }
+
     @ExceptionHandler(ProcessInstanceDuplicatedException.class)
     public ResponseEntity<Map<String, String>> toResponse(ProcessInstanceDuplicatedException exception) {
         return mapException(exception);
@@ -126,6 +141,11 @@ public class ExceptionsHandler extends AbstractExceptionsHandler<ResponseEntity<
 
     @ExceptionHandler(ProcessInstanceNotFoundException.class)
     public ResponseEntity<Map<String, String>> toResponse(ProcessInstanceNotFoundException exception) {
+        return mapException(exception);
+    }
+
+    @ExceptionHandler(UserTaskInstanceNotFoundException.class)
+    public ResponseEntity<Map<String, String>> toResponse(UserTaskInstanceNotFoundException exception) {
         return mapException(exception);
     }
 

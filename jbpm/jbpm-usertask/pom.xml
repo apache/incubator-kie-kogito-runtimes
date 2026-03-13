@@ -50,6 +50,10 @@ under the License.
             <artifactId>kogito-services</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-drools</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
@@ -67,6 +71,11 @@ under the License.
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

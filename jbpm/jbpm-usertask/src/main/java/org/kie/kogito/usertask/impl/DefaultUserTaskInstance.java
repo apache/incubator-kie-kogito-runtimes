@@ -46,12 +46,7 @@ import org.kie.kogito.usertask.impl.model.DeadlineHelper;
 import org.kie.kogito.usertask.lifecycle.UserTaskLifeCycle;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransitionToken;
-import org.kie.kogito.usertask.model.Attachment;
-import org.kie.kogito.usertask.model.Comment;
-import org.kie.kogito.usertask.model.DeadlineInfo;
-import org.kie.kogito.usertask.model.Notification;
-import org.kie.kogito.usertask.model.Reassignment;
-import org.kie.kogito.usertask.model.ScheduleInfo;
+import org.kie.kogito.usertask.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +66,8 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     private String id;
 
     private String userTaskId;
+
+    private ProcessInfo processInfo;
 
     private UserTaskState status;
     private String actualOwner;
@@ -118,6 +115,9 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     private Map<String, Reassignment> notStartedReassignmentsTimers;
 
     private Map<String, Reassignment> notCompletedReassignmentsTimers;
+
+    // preventing unnecessary database updates during batch operations
+    private boolean batchOperation = false;
 
     public DefaultUserTaskInstance() {
         this.inputs = new HashMap<>();
@@ -209,6 +209,16 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         return this.id;
     }
 
+    @Override
+    public ProcessInfo getProcessInfo() {
+        return this.processInfo;
+    }
+
+    public void setProcessInfo(ProcessInfo processInfo) {
+        this.processInfo = processInfo;
+        updatePersistence();
+    }
+
     public void setStatus(UserTaskState status) {
         this.status = status;
     }
@@ -227,7 +237,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     public void setActualOwner(String actualOwner) {
         this.actualOwner = actualOwner;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
+            this.userTaskEventSupport.fireOnUserTaskStateChange(this, this.status, this.status);
         }
         updatePersistence();
     }
@@ -262,23 +272,40 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     @Override
     public void transition(String transitionId, Map<String, Object> data, IdentityProvider identity) {
-        Optional<UserTaskTransitionToken> next = Optional.of(this.userTaskLifeCycle.newTransitionToken(transitionId, this, data));
-        while (next.isPresent()) {
-            UserTaskTransitionToken transition = next.get();
-            next = this.userTaskLifeCycle.transition(this, transition, identity);
-            this.status = transition.target();
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, transition.source(), transition.target());
+        batchUpdate(instance -> {
+            Optional<UserTaskTransitionToken> next = Optional.ofNullable(this.userTaskLifeCycle.newTransitionToken(transitionId, instance, data));
+            while (next.isPresent()) {
+                UserTaskTransitionToken transition = next.get();
+                next = this.userTaskLifeCycle.transition(instance, transition, identity);
+                instance.status = transition.target();
+                instance.userTaskEventSupport.fireOnUserTaskStateChange(instance, transition.source(), transition.target());
+            }
+        });
+    }
+
+    public void batchUpdate(Consumer<DefaultUserTaskInstance> batch) {
+        this.batchOperation = true;
+        try {
+            batch.accept(this);
+        } finally {
+            this.batchOperation = false;
         }
         this.updatePersistenceOrRemove();
     }
 
     private void updatePersistence() {
+        if (this.batchOperation) {
+            return;
+        }
         if (this.instances != null) {
             this.instances.update(this);
         }
     }
 
     private void updatePersistenceOrRemove() {
+        if (this.batchOperation) {
+            return;
+        }
         if (this.status.isTerminate()) {
             this.instances.remove(this);
         } else {
@@ -342,14 +369,14 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     public void setTaskName(String taskName) {
         this.taskName = taskName;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
+            this.userTaskEventSupport.fireOnUserTaskStateChange(this, this.status, this.status);
         }
         updatePersistence();
     }
 
     public void fireInitialStateChange() {
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
+            this.userTaskEventSupport.fireOnUserTaskStateChange(this, this.status, this.status);
         }
     }
 
@@ -366,7 +393,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     public void setTaskDescription(String taskDescription) {
         this.taskDescription = taskDescription;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
+            this.userTaskEventSupport.fireOnUserTaskStateChange(this, this.status, this.status);
         }
         updatePersistence();
     }
@@ -384,7 +411,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     public void setTaskPriority(String taskPriority) {
         this.taskPriority = taskPriority;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
+            this.userTaskEventSupport.fireOnUserTaskStateChange(this, this.status, this.status);
         }
         updatePersistence();
     }
@@ -613,6 +640,11 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         updatePersistence();
     }
 
+    public void addMetadata(Map<String, Object> metadata) {
+        this.metadata.putAll(metadata);
+        updatePersistence();
+    }
+
     @Override
     public Attachment findAttachmentById(String attachmentId) {
         return this.attachments.stream().filter(e -> e.getId().equals(attachmentId)).findAny().orElse(null);
@@ -659,6 +691,10 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         this.notCompletedReassignments = notCompletedReassignments;
     }
 
+    public JobsService getJobsService() {
+        return this.jobsService;
+    }
+
     public void setJobsService(JobsService jobsService) {
         this.jobsService = jobsService;
     }
@@ -687,6 +723,10 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
                     .generateId()
                     .expirationTime(expirationTime)
                     .userTaskInstanceId(this.id)
+                    .processId(this.processInfo.getProcessId())
+                    .processInstanceId(this.processInfo.getProcessInstanceId())
+                    .rootProcessInstanceId(this.processInfo.getRootProcessInstanceId())
+                    .rootProcessId(this.processInfo.getRootProcessId())
                     .metadata(this.metadata)
                     .build());
         }
@@ -735,6 +775,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     public void trigger(UserTaskInstanceJobDescription jobDescription) {
         LOG.trace("trigger timer in user tasks {} and job {}", this, jobDescription);
+        userTaskLifeCycle.handleTimer(jobDescription, this);
         checkAndSendNotification(jobDescription, notStartedDeadlinesTimers, this::startNotification);
         checkAndSendNotification(jobDescription, notCompletedDeadlinesTimers, this::endNotification);
         checkAndReassign(jobDescription, notStartedReassignmentsTimers);
@@ -792,5 +833,4 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         return "DefaultUserTaskInstance [id=" + id + ", status=" + status + ", actualOwner=" + actualOwner + ", taskName=" + taskName + ", taskDescription=" + taskDescription + ", taskPriority="
                 + taskPriority + ", slaDueDate=" + slaDueDate + "]";
     }
-
 }
