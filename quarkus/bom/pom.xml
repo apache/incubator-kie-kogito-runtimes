@@ -113,23 +113,11 @@
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-grpc-codegen</artifactId>
                 <version>${version.io.quarkus}</version>
-                <!--<exclusions>
-                    <exclusion>
-                        <groupId>io.quarkus</groupId>
-                        <artifactId>quarkus-grpc-protoc-plugin</artifactId>
-                    </exclusion>
-                </exclusions>-->
             </dependency>
             <dependency>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-grpc-deployment</artifactId>
                 <version>${version.io.quarkus}</version>
-                <!--<exclusions>
-                    <exclusion>
-                        <groupId>io.quarkus</groupId>
-                        <artifactId>quarkus-grpc-protoc-plugin</artifactId>
-                    </exclusion>
-                </exclusions>-->
             </dependency>
             <dependency>
                 <groupId>io.quarkus</groupId>
