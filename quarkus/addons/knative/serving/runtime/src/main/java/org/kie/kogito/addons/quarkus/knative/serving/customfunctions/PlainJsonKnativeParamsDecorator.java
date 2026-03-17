@@ -27,8 +27,6 @@ import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -54,35 +52,33 @@ public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator
     }
 
     private void buildFromParams(KogitoWorkItem workItem, Map<String, Object> parameters, HttpRequest<?> request) {
-        Map<String, Object> inputModel = new HashMap<>();
+        Object modelVar = parameters.get(MODEL_WORKFLOW_VAR);
 
-        Object inputModelObject = parameters.get(MODEL_WORKFLOW_VAR);
-
-        ObjectNode inputModelCopy = null;
-        if (inputModelObject instanceof ObjectNode objectNode) {
-            ObjectMapper mapper = new ObjectMapper();
-            objectNode.fields().forEachRemaining(entry -> {
-                JsonNode value = entry.getValue();
-                Object rawValue = mapper.convertValue(value, Object.class);
-                inputModel.put(entry.getKey(), rawValue);
-            });
-
-            try {
-                inputModelCopy = (ObjectNode) mapper.readTree(objectNode.toString());
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException("Failed to copy MODEL_WORKFLOW_VAR", e);
-            }
+        if (!(modelVar instanceof ObjectNode objectNode)) {
+            super.decorate(workItem, parameters, request);
+            return;
         }
 
-        Set<String> paramsRemove = super.extractHeadersQueries(workItem, inputModel, request);
-        super.decorate(workItem, parameters, request);
+        // Flatten the ObjectNode into a plain map so extractHeadersQueries
+        // can remove header/query keys from it without touching the original
+        Map<String, Object> flatModel = flattenObjectNode(objectNode);
 
-        if (inputModelCopy != null) {
-            // mutate the safe copy
-            inputModelCopy.remove(paramsRemove);
+        // Extract headers/queries from the flat map (mutates it and the request)
+        Set<String> extractedKeys = super.extractHeadersQueries(workItem, flatModel, request);
 
-            // replace the original entry in parameters with the copy
-            parameters.put(MODEL_WORKFLOW_VAR, inputModelCopy);
-        }
+        // Apply the same removals to a copy of the original ObjectNode,
+        // then put the sanitized copy back so downstream sees a clean model
+        ObjectNode sanitizedModel = objectNode.deepCopy();
+        sanitizedModel.remove(extractedKeys);
+        parameters.put(MODEL_WORKFLOW_VAR, sanitizedModel);
+    }
+
+    private Map<String, Object> flattenObjectNode(ObjectNode objectNode) {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> result = new HashMap<>();
+        objectNode.properties().forEach(entry ->
+            result.put(entry.getKey(), mapper.convertValue(entry.getValue(), Object.class))
+        );
+        return result;
     }
 }
