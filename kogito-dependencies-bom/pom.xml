@@ -17,13 +17,13 @@
   ~ under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.kie</groupId>
         <artifactId>kie-parent</artifactId>
         <version>999-SNAPSHOT</version>
         <relativePath/>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-dependencies-bom</artifactId>
     <name>Kogito :: Dependencies :: BOM</name>
@@ -40,6 +40,8 @@
         <version.org.redis>2.0.4</version.org.redis>
         <!-- PostgreSQL 16.8+ required for SASL authentication protocol -->
         <version.org.postgres>16.8-alpine3.21</version.org.postgres>
+
+        <project.build.outputTimestamp>2026-03-18T00:00:00Z</project.build.outputTimestamp>
     </properties>
     <dependencyManagement>
         <dependencies>
