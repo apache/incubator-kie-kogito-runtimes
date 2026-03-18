@@ -95,7 +95,6 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-quarkus-deployment</artifactId>
-            <version>${project.version}</version>
             <type>pom</type>
             <scope>test</scope>
             <exclusions>
@@ -108,7 +107,6 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-addons-quarkus-usertask-storage-jpa-deployment</artifactId>
-            <version>${project.version}</version>
             <type>pom</type>
             <scope>test</scope>
             <exclusions>

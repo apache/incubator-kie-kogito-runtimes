@@ -96,13 +96,11 @@
       <!-- necessary for Java 9+ -->
       <groupId>org.apache.tomcat</groupId>
       <artifactId>annotations-api</artifactId>
-      <version>${version.org.apache.tomcat}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty-shaded</artifactId>
-      <version>${version.io.grpc}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

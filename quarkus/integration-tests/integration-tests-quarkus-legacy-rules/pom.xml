@@ -82,7 +82,6 @@
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-quarkus-rules-deployment</artifactId>
-      <version>${project.version}</version>
       <type>pom</type>
       <scope>test</scope>
       <exclusions>

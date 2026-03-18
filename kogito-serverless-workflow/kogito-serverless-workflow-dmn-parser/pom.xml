@@ -69,7 +69,6 @@
         <groupId>org.kie</groupId>
         <artifactId>kie-dmn-test-resources</artifactId>
         <classifier>tests</classifier>
-        <version>${project.version}</version>
         <scope>test</scope>
     </dependency>
     <dependency>

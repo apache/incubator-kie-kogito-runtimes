@@ -81,7 +81,6 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-builder</artifactId>
       <scope>test</scope>
-      <version>${project.version}</version>
       <type>test-jar</type>
     </dependency>
     <dependency>

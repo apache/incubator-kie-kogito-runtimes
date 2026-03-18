@@ -36,36 +36,30 @@
     <dependency> <!-- make this IT module to depend on the plugin for Maven reactor build intention -->
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-maven-plugin</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency> <!-- make IT module to depend transitively on all deployments. -->
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-with-drools-quarkus-deployment</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-addons-quarkus-process-management-deployment</artifactId>
-      <version>${project.version}</version>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-bom</artifactId>
-      <version>${project.version}</version>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-bom</artifactId>
-      <version>${project.version}</version>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-kie-bom</artifactId>
-      <version>${project.version}</version>
       <type>pom</type>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>
@@ -78,7 +72,7 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-with-drools-quarkus</artifactId>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-core-bom</artifactId>
       <version>${project.version}</version>
@@ -95,7 +89,7 @@
       <artifactId>drools-bom</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>

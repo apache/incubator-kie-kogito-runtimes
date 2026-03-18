@@ -46,17 +46,14 @@
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-direct</artifactId>
-      <version>${version.io.quarkus.camel}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-yaml-dsl</artifactId>
-      <version>${version.io.quarkus.camel}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.camel.quarkus</groupId>
       <artifactId>camel-quarkus-xml-io-dsl</artifactId>
-      <version>${version.io.quarkus.camel}</version>
     </dependency>
   </dependencies>
   <build>

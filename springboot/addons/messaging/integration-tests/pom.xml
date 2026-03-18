@@ -45,7 +45,7 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-maven-plugin</artifactId>
     </dependency>
-    <dependency>
+   <!-- <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-spring-boot-bom</artifactId>
       <version>${project.version}</version>
@@ -68,8 +68,8 @@
       <artifactId>kie-core-bom</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
-    </dependency>
-    <dependency>
+    </dependency>-->
+    <!--<dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-dmn-bom</artifactId>
       <version>${project.version}</version>
@@ -80,7 +80,7 @@
       <artifactId>drools-bom</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-decisions-spring-boot-starter</artifactId>
