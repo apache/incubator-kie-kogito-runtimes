@@ -56,12 +56,12 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-grpc-deployment</artifactId>
-            <exclusions>
+            <!--<exclusions>
                 <exclusion>
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-grpc-protoc-plugin</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
