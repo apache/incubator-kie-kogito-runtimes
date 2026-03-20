@@ -643,7 +643,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
         Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(expression);
         String temp = expression;
-        if (matcher.find()) {
+        if (matcher.find() && expression.matches("^#\\{[^}]+\\}$")) {
             temp = matcher.group(1);
         }
         return temp.contains(".") ? expression : temp;
