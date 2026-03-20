@@ -30,6 +30,7 @@
         <!-- Used to define which poms are allowed to have dependencyManagement sections. This is to enforce the convention that only the root pom should have dependencyManagement, and all other poms should inherit from it. -->
         <allowedPomsList>org.kie.kogito:kogito-spring-boot-bom</allowedPomsList>
         <version.io.swagger.core.v3>2.2.38</version.io.swagger.core.v3>
+        <version.mongodb-driver-sync>5.5.2</version.mongodb-driver-sync>
         <version.org.springdoc>2.8.13</version.org.springdoc>
         <version.org.springframework.cloud>2025.0.1</version.org.springframework.cloud>
         <version.org.springframework.boot>3.5.10</version.org.springframework.boot>
@@ -171,19 +172,14 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-driver-sync</artifactId>
+                <version>${version.mongodb-driver-sync}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${version.org.springdoc}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.swagger.core.v3</groupId>
-                        <artifactId>swagger-annotations-jakarta</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.swagger.core.v3</groupId>
-                        <artifactId>swagger-core-jakarta</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
