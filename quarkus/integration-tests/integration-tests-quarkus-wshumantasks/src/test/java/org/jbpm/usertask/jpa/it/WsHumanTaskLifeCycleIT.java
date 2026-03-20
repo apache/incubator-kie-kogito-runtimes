@@ -626,7 +626,6 @@ public class WsHumanTaskLifeCycleIT {
     public void testMultipleGroupsWithVariablesUserTaskLifeCycle() {
         // This test verifies the fix for multi-variable expressions in BPMN
         // The GroupId is defined as #{group1},#{group2},#{group3} in the BPMN
-        // and we pass the actual group names as process variables
         var user = "dave";
         var group = "engineering";
         var potentialGroups = new String[] { "hr", "engineering", "management" };
@@ -641,7 +640,6 @@ public class WsHumanTaskLifeCycleIT {
         var taskId = getTaskId(user, group, pid);
 
         // Verify all three groups are present in potentialGroups
-        // This would fail with the old implementation which only extracted the first variable
         given()
                 .contentType(ContentType.JSON)
                 .when()
