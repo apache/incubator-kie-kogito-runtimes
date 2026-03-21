@@ -36,6 +36,7 @@
   <properties>
     <java.module.name>org.kie.kogito.gradle.plugin.testing</java.module.name>
     <maven.compiler.release>17</maven.compiler.release>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
     <gradle.executable>./gradlew</gradle.executable>
     <exec.plugin.version>3.6.3</exec.plugin.version>
   </properties>
