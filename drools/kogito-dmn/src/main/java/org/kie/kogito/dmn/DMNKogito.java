@@ -39,6 +39,8 @@ import org.kie.dmn.feel.util.EvalHelper;
 import org.kie.kogito.Application;
 import org.kie.kogito.dmn.rest.KogitoDMNResult;
 
+import static org.kie.kogito.dmn.AbstractDecisionModels.readResource;
+
 /**
  * Internal Utility class.<br/>
  * Use {@link Application#decisionModels()} of Kogito API to programmatically access DMN assets and evaluate DMN
@@ -58,17 +60,27 @@ public class DMNKogito {
     public static DMNRuntime createGenericDMNRuntime(Set<DMNProfile> customDMNProfiles, boolean enableRuntimeTypeCheckOption, Reader... readers) {
         DMNKogitoCallbacks.beforeCreateGenericDMNRuntime(readers);
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
-        EvalHelper.clearGenericAccessorCache(); // KOGITO-3325 DMN hot reload manage accessor cache when stronglytyped
-        DMNRuntimeBuilder dmnRuntimeBuilder = DMNRuntimeBuilder.fromDefaults();
-        customDMNProfiles.forEach(dmnRuntimeBuilder::addProfile);
-        DMNRuntime dmnRuntime = dmnRuntimeBuilder
-                .buildConfiguration()
-                .fromResources(resources)
-                .getOrElseThrow(e -> new RuntimeException("Error initializing DMNRuntime", e));
-        RuntimeTypeCheckOption runtimeTypeCheckOption = new RuntimeTypeCheckOption(enableRuntimeTypeCheckOption);
-        ((DMNRuntimeImpl) dmnRuntime).setOption(runtimeTypeCheckOption);
-        DMNKogitoCallbacks.afterCreateGenericDMNRuntime(dmnRuntime);
-        return dmnRuntime;
+        return createGenericDMNRuntime(customDMNProfiles, enableRuntimeTypeCheckOption, resources);
+    }
+
+    /**
+     * Internal Utility class.<br/>
+     * Use {@link Application#decisionModels()} of Kogito API to programmatically access DMN assets and evaluate DMN
+     * decisions.
+     *
+     * @param customDMNProfiles
+     * @param enableRuntimeTypeCheckOption
+     * @param modelPaths A Map of model path to model encoding
+     * @return
+     */
+    public static DMNRuntime createGenericDMNRuntime(Set<DMNProfile> customDMNProfiles, boolean enableRuntimeTypeCheckOption,
+            Map<String, String> modelPaths) {
+        DMNKogitoCallbacks.beforeCreateGenericDMNRuntime(modelPaths);
+        List<Resource> resources = modelPaths.entrySet()
+                .stream()
+                .map(modelPathEntry -> readResource(Thread.currentThread().getContextClassLoader().getResourceAsStream(modelPathEntry.getKey()), modelPathEntry.getValue()))
+                .map(ReaderResource::new).collect(Collectors.toList());
+        return createGenericDMNRuntime(customDMNProfiles, enableRuntimeTypeCheckOption, resources);
     }
 
     public static DMNModel modelByName(DMNRuntime dmnRuntime, String modelName) {
@@ -94,6 +106,30 @@ public class DMNKogito {
                 null,
                 null);
         return new KogitoDMNResult(modelNamespace, modelName, evaluationResult.result);
+    }
+
+    /**
+     * Internal Utility class.<br/>
+     * Use {@link Application#decisionModels()} of Kogito API to programmatically access DMN assets and evaluate DMN
+     * decisions.
+     *
+     * @param customDMNProfiles
+     * @param enableRuntimeTypeCheckOption
+     * @param resources
+     * @return
+     */
+    static DMNRuntime createGenericDMNRuntime(Set<DMNProfile> customDMNProfiles, boolean enableRuntimeTypeCheckOption, List<Resource> resources) {
+        EvalHelper.clearGenericAccessorCache(); // KOGITO-3325 DMN hot reload manage accessor cache when stronglytyped
+        DMNRuntimeBuilder dmnRuntimeBuilder = DMNRuntimeBuilder.fromDefaults();
+        customDMNProfiles.forEach(dmnRuntimeBuilder::addProfile);
+        DMNRuntime dmnRuntime = dmnRuntimeBuilder
+                .buildConfiguration()
+                .fromResources(resources)
+                .getOrElseThrow(e -> new RuntimeException("Error initializing DMNRuntime", e));
+        RuntimeTypeCheckOption runtimeTypeCheckOption = new RuntimeTypeCheckOption(enableRuntimeTypeCheckOption);
+        ((DMNRuntimeImpl) dmnRuntime).setOption(runtimeTypeCheckOption);
+        DMNKogitoCallbacks.afterCreateGenericDMNRuntime(dmnRuntime);
+        return dmnRuntime;
     }
 
 }

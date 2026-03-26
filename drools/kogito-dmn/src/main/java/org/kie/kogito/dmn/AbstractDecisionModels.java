@@ -18,11 +18,19 @@
  */
 package org.kie.kogito.dmn;
 
-import java.io.Reader;
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.dmn.core.compiler.DMNProfile;
@@ -38,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractDecisionModels implements DecisionModels {
 
+    public static final String DMN_MMODEL_PATHS_FILE = "modelPaths.txt";
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDecisionModels.class);
     private static final boolean CAN_PLATFORM_CLASSLOAD = org.kie.dmn.feel.util.ClassLoaderUtil.CAN_PLATFORM_CLASSLOAD;
     private static DMNRuntime dmnRuntime = null;
@@ -45,13 +54,20 @@ public abstract class AbstractDecisionModels implements DecisionModels {
     private static BiFunction<DecisionModel, KogitoGAV, DecisionModel> decisionModelTransformer = null;
     private KogitoGAV gav = KogitoGAV.EMPTY_GAV;
 
+    /**
+     *
+     * @param executionIdSupplier
+     * @param decisionModelTransformerInit
+     * @param customDMNProfiles
+     * @param enableRuntimeTypeCheckOption
+     */
     protected static void init(ExecutionIdSupplier executionIdSupplier,
             BiFunction<DecisionModel, KogitoGAV, DecisionModel> decisionModelTransformerInit,
             Set<DMNProfile> customDMNProfiles,
-            boolean enableRuntimeTypeCheckOption,
-            Reader... readers) {
-        DMNKogitoCallbacks.beforeAbstractDecisionModelsInit(executionIdSupplier, decisionModelTransformerInit, readers);
-        dmnRuntime = DMNKogito.createGenericDMNRuntime(customDMNProfiles, enableRuntimeTypeCheckOption, readers);
+            boolean enableRuntimeTypeCheckOption) {
+        DMNKogitoCallbacks.beforeAbstractDecisionModelsInit();
+        Map<String, String> modelPaths = getModelPaths();
+        dmnRuntime = DMNKogito.createGenericDMNRuntime(customDMNProfiles, enableRuntimeTypeCheckOption, modelPaths);
         execIdSupplier = executionIdSupplier;
         decisionModelTransformer = decisionModelTransformerInit;
         DMNKogitoCallbacks.afterAbstractDecisionModelsInit(dmnRuntime);
@@ -87,13 +103,44 @@ public abstract class AbstractDecisionModels implements DecisionModels {
         if (CAN_PLATFORM_CLASSLOAD) {
             return isrWithEncodingOrFallback(stream, encoding);
         }
-
         try {
             byte[] bytes = org.drools.util.IoUtils.readBytesFromInputStream(stream);
             java.io.ByteArrayInputStream byteArrayInputStream = new java.io.ByteArrayInputStream(bytes);
             return isrWithEncodingOrFallback(byteArrayInputStream, encoding);
         } catch (java.io.IOException e) {
             throw new java.io.UncheckedIOException(e);
+        }
+    }
+
+    static Map<String, String> getModelPaths() {
+        Map<String, String> toReturn = new HashMap<>();
+        try {
+            URL url = Thread.currentThread().getContextClassLoader().getResource(DMN_MMODEL_PATHS_FILE);
+            if (url == null || !url.getProtocol().equals("file")) {
+                throw new IllegalStateException("Failed to find " + DMN_MMODEL_PATHS_FILE);
+            }
+            LOG.debug("Found {} at {}", DMN_MMODEL_PATHS_FILE, url);
+            File file = new File(url.getFile());
+            if (file.exists() && file.isFile() && file.canRead()) {
+                LOG.debug("Reading {} from file system at {}", DMN_MMODEL_PATHS_FILE, url);
+                toReturn.putAll(readModelPathsFile(file));
+            } else {
+                throw new IllegalStateException(String.format("Found %s at %s, but it is not a readable file.", DMN_MMODEL_PATHS_FILE, url));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return toReturn;
+    }
+
+    private static Map<String, String> readModelPathsFile(File toRead) {
+        Path path = toRead.toPath();
+        try (Stream<String> lines = Files.lines(path)) {
+            return lines.collect(Collectors.toMap(
+                    line -> line.substring(0, line.indexOf(':')),
+                    line -> line.substring(line.indexOf(':') + 1)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
