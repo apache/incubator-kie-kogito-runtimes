@@ -80,7 +80,7 @@ import static org.kie.kogito.codegen.decision.CodegenUtils.getDefinitionsFileFro
 import static org.kie.kogito.codegen.decision.DecisionCodegen.STRONGLY_TYPED_CONFIGURATION_KEY;
 import static org.kie.kogito.codegen.decision.DecisionRestResourceGenerator.DMN_DEFINITIONS_JSON_REFS;
 import static org.kie.kogito.codegen.decision.ReadResourceUtil.getResourcePath;
-import static org.kie.kogito.dmn.AbstractDecisionModels.DMN_MMODEL_PATHS_FILE;
+import static org.kie.kogito.dmn.AbstractDecisionModels.DMN_MODEL_PATHS_FILE;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class DecisionCodegenUtils {
@@ -279,7 +279,7 @@ public class DecisionCodegenUtils {
             builder.append(String.format("%s:%s%n", path, encoding.orElse(StandardCharsets.UTF_8.name())));
         }
         String content = builder.toString();
-        storeFile(generatedFiles, GeneratedFileType.INTERNAL_RESOURCE, DMN_MMODEL_PATHS_FILE, content);
+        storeFile(generatedFiles, GeneratedFileType.INTERNAL_RESOURCE, DMN_MODEL_PATHS_FILE, content);
     }
 
     static void generateCloudEventsResources(Collection<GeneratedFile> generatedFiles, KogitoBuildContext context, List<DMNModel> dmnModels) {

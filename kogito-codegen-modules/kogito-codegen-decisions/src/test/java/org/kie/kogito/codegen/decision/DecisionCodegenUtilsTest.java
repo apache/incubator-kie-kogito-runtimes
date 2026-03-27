@@ -41,7 +41,7 @@ import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.dmn.AbstractDecisionModels.DMN_MMODEL_PATHS_FILE;
+import static org.kie.kogito.dmn.AbstractDecisionModels.DMN_MODEL_PATHS_FILE;
 
 class DecisionCodegenUtilsTest {
 
@@ -67,7 +67,7 @@ class DecisionCodegenUtilsTest {
         GeneratedFile retrieved = generatedFiles.iterator().next();
         assertThat(retrieved).isNotNull();
         assertThat(retrieved.type()).isEqualTo(GeneratedFileType.INTERNAL_RESOURCE);
-        assertThat(retrieved.path().toString()).isEqualTo(DMN_MMODEL_PATHS_FILE);
+        assertThat(retrieved.path().toString()).isEqualTo(DMN_MODEL_PATHS_FILE);
         List<String> lines = new String(retrieved.contents()).lines().toList();
         assertThat(lines).hasSize(2);
         assertThat(lines)
