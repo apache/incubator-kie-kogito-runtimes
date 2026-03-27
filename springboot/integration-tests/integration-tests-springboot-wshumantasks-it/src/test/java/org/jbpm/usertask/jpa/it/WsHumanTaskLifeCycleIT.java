@@ -640,14 +640,13 @@ public class WsHumanTaskLifeCycleIT {
         var group = "engineering";
         var potentialGroups = new String[] { "hr", "engineering", "management" };
         var processId = "manager_multiple_groups_variables";
-        
+
         // Start process with variables that will be resolved in GroupId expression
         var pid = startProcessInstanceWithVariables(processId, Map.of(
-            "group1", "hr",
-            "group2", "engineering",
-            "group3", "management"
-        ));
-        
+                "group1", "hr",
+                "group2", "engineering",
+                "group3", "management"));
+
         var taskId = getTaskId(user, group, pid);
 
         // Verify all three groups are present in potentialGroups
