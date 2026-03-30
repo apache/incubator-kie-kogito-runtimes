@@ -18,9 +18,12 @@
  */
 package org.kie.kogito.dmn;
 
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,6 +41,8 @@ import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
 import org.kie.dmn.feel.util.EvalHelper;
 import org.kie.kogito.Application;
 import org.kie.kogito.dmn.rest.KogitoDMNResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.kie.kogito.dmn.AbstractDecisionModels.readResource;
 
@@ -47,6 +52,8 @@ import static org.kie.kogito.dmn.AbstractDecisionModels.readResource;
  * decisions.
  */
 public class DMNKogito {
+
+    private static final Logger logger = LoggerFactory.getLogger(DMNKogito.class.getName());
 
     private DMNKogito() {
         // intentionally private.
@@ -78,7 +85,16 @@ public class DMNKogito {
         DMNKogitoCallbacks.beforeCreateGenericDMNRuntime(modelPaths);
         List<Resource> resources = modelPaths.entrySet()
                 .stream()
-                .map(modelPathEntry -> readResource(Thread.currentThread().getContextClassLoader().getResourceAsStream(modelPathEntry.getKey()), modelPathEntry.getValue()))
+                .map(modelPathEntry -> {
+                    Optional<InputStream> modelStream = getDMNModelStream(modelPathEntry.getKey());
+                    if (modelStream.isPresent()) {
+                        return readResource(modelStream.get(), modelPathEntry.getValue());
+                    } else {
+                        logger.warn("DMN model stream not found for path: {}", modelPathEntry.getKey());
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
                 .map(ReaderResource::new).collect(Collectors.toList());
         return createGenericDMNRuntime(customDMNProfiles, enableRuntimeTypeCheckOption, resources);
     }
@@ -106,6 +122,35 @@ public class DMNKogito {
                 null,
                 null);
         return new KogitoDMNResult(modelNamespace, modelName, evaluationResult.result);
+    }
+
+    static Optional<InputStream> getDMNModelStream(String path) {
+        logger.info("getDMNModelStream for {}", path);
+        InputStream toReturn = Application.class.getResourceAsStream(path);
+        if (toReturn != null) {
+            return Optional.of(toReturn);
+        } else {
+            logger.warn("DMN model stream not found in Application.class.getResourceAsStream");
+        }
+        toReturn = Application.class.getClassLoader().getResourceAsStream(path);
+        if (toReturn != null) {
+            return Optional.of(toReturn);
+        } else {
+            logger.warn("DMN model stream not found in Application.class.getClassLoader().getResourceAsStream");
+        }
+        toReturn = org.drools.util.IoUtils.class.getClassLoader().getResourceAsStream(path);
+        if (toReturn != null) {
+            return Optional.of(toReturn);
+        } else {
+            logger.warn("DMN model stream not found in org.drools.util.IoUtils.class.getClassLoader().getResourceAsStream");
+        }
+        toReturn = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+        if (toReturn != null) {
+            return Optional.of(toReturn);
+        } else {
+            logger.warn("DMN model stream not found in Thread.currentThread().getContextClassLoader().getResourceAsStream");
+        }
+        return Optional.empty();
     }
 
     /**

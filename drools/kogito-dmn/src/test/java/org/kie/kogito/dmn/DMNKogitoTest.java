@@ -35,7 +35,7 @@ public class DMNKogitoTest {
 
     @Test
     public void testBasic() {
-        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(Collections.emptySet(), false, Map.of("TrafficViolation.dmn", StandardCharsets.UTF_8.name()));
+        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(Collections.emptySet(), false, Map.of("/TrafficViolation.dmn", StandardCharsets.UTF_8.name()));
         assertThat(dmnRuntime.getModels()).hasSize(1);
 
         final String TRAFFIC_VIOLATION_NS = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
