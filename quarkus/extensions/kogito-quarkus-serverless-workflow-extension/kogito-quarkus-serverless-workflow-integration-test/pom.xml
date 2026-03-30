@@ -235,11 +235,11 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-builder</artifactId>
     </dependency>
-
+<!--
     <dependency>
       <groupId>org.eclipse.jetty.toolchain</groupId>
       <artifactId>jetty-jakarta-servlet-api</artifactId>
-    </dependency>
+    </dependency>-->
   </dependencies>
 
   <build>

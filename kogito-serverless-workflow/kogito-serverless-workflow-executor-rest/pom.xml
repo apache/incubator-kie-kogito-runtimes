@@ -38,10 +38,10 @@
   </properties>
 
   <dependencies>
-    <dependency>
+    <!--<dependency>
       <groupId>org.eclipse.jetty.toolchain</groupId>
       <artifactId>jetty-jakarta-servlet-api</artifactId>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-executor-core</artifactId>

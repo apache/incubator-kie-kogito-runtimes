@@ -47,10 +47,10 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
+       <!-- <dependency>
             <groupId>org.jboss</groupId>
             <artifactId>jboss-transaction-spi</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy</artifactId>

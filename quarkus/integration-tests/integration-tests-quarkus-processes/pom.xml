@@ -37,10 +37,10 @@
   </properties>
 
   <dependencies>
-    <dependency>
+    <!--<dependency>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-transaction-spi</artifactId>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-quarkus</artifactId>
@@ -252,10 +252,10 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>org.eclipse.jetty.toolchain</groupId>
       <artifactId>jetty-jakarta-servlet-api</artifactId>
-    </dependency>
+    </dependency>-->
   </dependencies>
 
   <build>

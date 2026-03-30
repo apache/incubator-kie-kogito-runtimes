@@ -37,10 +37,10 @@
   </properties>
 
   <dependencies>
-    <dependency>
+    <!--<dependency>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-transaction-spi</artifactId>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.apache.kie.sonataflow</groupId>
       <artifactId>sonataflow-quarkus</artifactId>
@@ -136,10 +136,10 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>org.eclipse.jetty.toolchain</groupId>
       <artifactId>jetty-jakarta-servlet-api</artifactId>
-    </dependency>
+    </dependency>-->
     <!--<dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-grpc-protoc-plugin</artifactId>

@@ -41,10 +41,10 @@
 
 
   <dependencies>
-    <dependency>
+    <!--<dependency>
       <groupId>org.eclipse.jetty.toolchain</groupId>
       <artifactId>jetty-jakarta-servlet-api</artifactId>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.apache.kie.sonataflow</groupId>
       <artifactId>sonataflow-quarkus</artifactId>
