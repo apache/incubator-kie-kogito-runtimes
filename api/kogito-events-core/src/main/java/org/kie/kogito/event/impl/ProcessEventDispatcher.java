@@ -70,43 +70,48 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
             }
             return null;
         }
-
-        // now see if we have a particular one to check
-        Optional<ProcessInstance<M>> processInstance = null;
-        // check correlation key
-        String processInstanceId = resolveCorrelationId(event).orElse(null);
-        processInstance = signalTargetProcessInstance(processInstanceId, trigger, event, this::findById);
-        if (processInstance.isPresent()) {
-            LOGGER.debug("sending event to process {} with correlation key {} with trigger {} and payload {}", process.id(), processInstanceId, trigger, event);
-            return processInstance.get();
+        // obtain data from the event
+        Object data = dataResolver.apply(event);
+        // check correlation key, if an instance associated to that correlation key exist, notify the instance, if it does not exist, ignore the event
+        Optional<String> correlationId = resolveCorrelationId(event);
+        if (correlationId.isPresent()) {
+            return signalTargetProcessInstance(correlationId.orElseThrow(), trigger, data, this::findById, "correlation");
         }
-
-        // check processInstanceId
-        processInstanceId = event.getKogitoReferenceId();
-        processInstance = signalTargetProcessInstance(processInstanceId, trigger, event, this::findById);
-        if (processInstance.isPresent()) {
-            LOGGER.debug("sending event to process {} with reference key {} with trigger {} and payload {}", process.id(), processInstanceId, trigger, event);
-            return processInstance.get();
+        // check process reference id, if the id exist, notify the instance, if it does not exist, ignore the event
+        String processInstanceId = event.getKogitoReferenceId();
+        if (processInstanceId != null) {
+            return signalTargetProcessInstance(processInstanceId, trigger, data, this::findById, "reference");
         }
-
         // check businessKey
         processInstanceId = event.getKogitoBusinessKey();
-        processInstance = signalTargetProcessInstance(processInstanceId, trigger, event, this::findByBusinessKey);
-        if (processInstance.isPresent()) {
-            LOGGER.debug("sending event to process {} with business key {} with trigger {} and payload {}", process.id(), processInstanceId, trigger, event);
-            return processInstance.get();
+        if (processInstanceId != null) {
+            Optional<ProcessInstance<M>> processInstance = signalTargetProcessInstance(processInstanceId, trigger, data, this::findByBusinessKey);
+            // business key is special case, since it might be used to notify a process instance identified by that business key or create a new one 
+            // using that business key
+            return processInstance.isPresent() ? processInstance.orElseThrow() : startNewInstance(trigger, event);
         }
-
+        // if we reach this point try to start a new instance if possible (this covers start events)
+        ProcessInstance<M> processInstance = startNewInstance(trigger, event);
         // we signal all the processes waiting for trigger (this covers intermediate catch events)
-        LOGGER.debug("sending event to process {} with trigger {} and payload {}", process.id(), trigger, event);
-        process.send(SignalFactory.of("Message-" + trigger, event));
+        LOGGER.debug("sending event to process {} with trigger {} and payload {}", process.id(), trigger, data);
+        process.send(SignalFactory.of("Message-" + trigger, data));
+        return processInstance;
+    }
 
-        // try to start a new instance if possible (this covers start events)
-        return startNewInstance(trigger, event);
+    private ProcessInstance<M> signalTargetProcessInstance(String processInstanceId, String trigger, Object data, Function<String, Optional<ProcessInstance<M>>> findProcessInstance,
+            String messagePart) {
+        Optional<ProcessInstance<M>> processInstance = signalTargetProcessInstance(processInstanceId, trigger, data, findProcessInstance);
+        if (processInstance.isPresent()) {
+            LOGGER.debug("Event was sent to process {} with {} key {} with trigger {} and payload {}", process.id(), messagePart, processInstanceId, trigger, data);
+            return processInstance.get();
+        } else {
+            LOGGER.warn("Process {} with {} key {} with trigger {} and payload {} does not exist, ignoring event", process.id(), messagePart, processInstanceId, trigger, data);
+            return null;
+        }
 
     }
 
-    private Optional<ProcessInstance<M>> signalTargetProcessInstance(String processInstanceId, String trigger, DataEvent<D> event, Function<String, Optional<ProcessInstance<M>>> findProcessInstance) {
+    private Optional<ProcessInstance<M>> signalTargetProcessInstance(String processInstanceId, String trigger, Object data, Function<String, Optional<ProcessInstance<M>>> findProcessInstance) {
         if (processInstanceId == null) {
             return Optional.empty();
         }
@@ -116,32 +121,32 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
             return Optional.empty();
         }
 
-        signalProcess(processInstance.get(), trigger, event);
+        signalProcess(processInstance.get(), trigger, data);
         return processInstance;
     }
 
-    private void signalProcess(ProcessInstance<M> pi, String trigger, DataEvent<D> event) {
+    private void signalProcess(ProcessInstance<M> pi, String trigger, Object data) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Sending signal {} to process instance id '{}'", trigger, pi.id());
+            LOGGER.debug("Sending signal {} to process {} with instance id '{}' with data {}", trigger, process.id(), pi.id(), data);
         }
-        signalProcessInstance(trigger, pi.id(), event);
+        signalProcessInstance(trigger, pi.id(), data);
     }
 
     private Optional<ProcessInstance<M>> findById(String id) {
-        LOGGER.debug("Received message with process instance id '{}'", id);
+        LOGGER.debug("Received message with process {} with instance id '{}'", process.id(), id);
         Optional<ProcessInstance<M>> result = process.instances().findById(id);
         if (LOGGER.isDebugEnabled() && result.isEmpty()) {
-            LOGGER.debug("No instance found for process instance id '{}'", id);
+            LOGGER.debug("No instance found for process {} with instance id '{}'", process.id(), id);
         }
         return result;
 
     }
 
     private Optional<ProcessInstance<M>> findByBusinessKey(String key) {
-        LOGGER.debug("Received message with business key '{}'", key);
+        LOGGER.debug("Received message with process {} with business key '{}'", process.id(), key);
         Optional<ProcessInstance<M>> result = process.instances().findByBusinessKey(key);
         if (LOGGER.isDebugEnabled() && result.isEmpty()) {
-            LOGGER.debug("No instance found for business key '{}'", key);
+            LOGGER.debug("No instance found for process {} with business key '{}'", process.id(), key);
         }
         return result;
     }
@@ -169,15 +174,15 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
         }
     }
 
-    private Optional<M> signalProcessInstance(String trigger, String id, DataEvent<D> event) {
-        return processService.signalProcessInstance((Process) process, id, dataResolver.apply(event), "Message-" + trigger);
+    private Optional<M> signalProcessInstance(String trigger, String id, Object data) {
+        return processService.signalProcessInstance((Process) process, id, data, "Message-" + trigger);
     }
 
     private ProcessInstance<M> startNewInstance(String trigger, DataEvent<D> event) {
         if (modelConverter.isEmpty()) {
             return null;
         }
-        LOGGER.info("Starting new process instance with signal '{}'", trigger);
+        LOGGER.info("Starting new process of type {} with signal '{}' for event {}", process.id(), trigger, event);
         return processService.createProcessInstance(
                 process,
                 event.getKogitoBusinessKey(),

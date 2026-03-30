@@ -237,7 +237,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     public void setActualOwner(String actualOwner) {
         this.actualOwner = actualOwner;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
+            this.userTaskEventSupport.fireOnUserTaskStateChange(this, this.status, this.status);
         }
         updatePersistence();
     }
@@ -278,7 +278,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
                 UserTaskTransitionToken transition = next.get();
                 next = this.userTaskLifeCycle.transition(instance, transition, identity);
                 instance.status = transition.target();
-                instance.userTaskEventSupport.fireOneUserTaskStateChange(instance, transition.source(), transition.target());
+                instance.userTaskEventSupport.fireOnUserTaskStateChange(instance, transition.source(), transition.target());
             }
         });
     }
@@ -369,14 +369,14 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     public void setTaskName(String taskName) {
         this.taskName = taskName;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
+            this.userTaskEventSupport.fireOnUserTaskStateChange(this, this.status, this.status);
         }
         updatePersistence();
     }
 
     public void fireInitialStateChange() {
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
+            this.userTaskEventSupport.fireOnUserTaskStateChange(this, this.status, this.status);
         }
     }
 
@@ -393,7 +393,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     public void setTaskDescription(String taskDescription) {
         this.taskDescription = taskDescription;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
+            this.userTaskEventSupport.fireOnUserTaskStateChange(this, this.status, this.status);
         }
         updatePersistence();
     }
@@ -411,7 +411,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
     public void setTaskPriority(String taskPriority) {
         this.taskPriority = taskPriority;
         if (this.userTaskEventSupport != null) {
-            this.userTaskEventSupport.fireOneUserTaskStateChange(this, this.status, this.status);
+            this.userTaskEventSupport.fireOnUserTaskStateChange(this, this.status, this.status);
         }
         updatePersistence();
     }
@@ -691,6 +691,10 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
         this.notCompletedReassignments = notCompletedReassignments;
     }
 
+    public JobsService getJobsService() {
+        return this.jobsService;
+    }
+
     public void setJobsService(JobsService jobsService) {
         this.jobsService = jobsService;
     }
@@ -771,6 +775,7 @@ public class DefaultUserTaskInstance implements UserTaskInstance {
 
     public void trigger(UserTaskInstanceJobDescription jobDescription) {
         LOG.trace("trigger timer in user tasks {} and job {}", this, jobDescription);
+        userTaskLifeCycle.handleTimer(jobDescription, this);
         checkAndSendNotification(jobDescription, notStartedDeadlinesTimers, this::startNotification);
         checkAndSendNotification(jobDescription, notCompletedDeadlinesTimers, this::endNotification);
         checkAndReassign(jobDescription, notStartedReassignmentsTimers);
