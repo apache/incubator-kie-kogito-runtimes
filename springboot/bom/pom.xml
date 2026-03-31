@@ -30,6 +30,7 @@
         <!-- Used to define which poms are allowed to have dependencyManagement sections. This is to enforce the convention that only the root pom should have dependencyManagement, and all other poms should inherit from it. -->
         <allowedPomsList>org.kie.kogito:kogito-spring-boot-bom</allowedPomsList>
         <version.io.swagger.core.v3>2.2.38</version.io.swagger.core.v3>
+        <version.jakarta.servlet>6.0.0</version.jakarta.servlet>
         <version.mongodb-driver-sync>5.5.2</version.mongodb-driver-sync>
         <version.org.springdoc>2.8.13</version.org.springdoc>
         <version.org.springframework.cloud>2025.0.1</version.org.springframework.cloud>
@@ -42,6 +43,11 @@
                 <groupId>io.smallrye</groupId>
                 <artifactId>smallrye-open-api-spring</artifactId>
                 <version>${version.io.smallrye-open-api}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${version.jakarta.servlet}</version>
             </dependency>
             <dependency>
                 <groupId>org.drools</groupId>
@@ -343,6 +349,24 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-dependencies-bom</artifactId>
+            <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.jetty.toolchain</groupId>
+                    <artifactId>jetty-jakarta-servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
     <build>
         <pluginManagement>
             <plugins>
