@@ -34,6 +34,21 @@
   <description>Parent Module for the base Addons Commons</description>
   <packaging>pom</packaging>
 
+  <properties>
+    <version.mongodb-driver-sync>5.5.1</version.mongodb-driver-sync>
+    <allowedPomsList>org.kie:kogito-addons-common-parent</allowedPomsList>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver-sync</artifactId>
+        <version>${version.mongodb-driver-sync}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <!-- Please keep in alphabetical order -->
   <modules>
     <module>messaging</module>
