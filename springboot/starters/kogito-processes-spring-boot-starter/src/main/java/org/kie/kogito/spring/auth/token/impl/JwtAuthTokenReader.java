@@ -16,30 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jbpm.compiler.canonical.descriptors;
+package org.kie.kogito.spring.auth.token.impl;
 
-import java.util.Collections;
-import java.util.Map;
+import org.kie.kogito.spring.auth.token.AuthTokenReader;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.stereotype.Component;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.expr.Expression;
+@Component
+@ConditionalOnClass(Jwt.class)
+public class JwtAuthTokenReader implements AuthTokenReader<Jwt> {
 
-public interface TaskDescriptor {
-
-    String KEY_WORKITEM_TYPE = "Type";
-    String KEY_WORKITEM_INTERFACE = "Interface";
-    String KEY_WORKITEM_OPERATION = "Operation";
-    String KEY_SERVICE_IMPL = "implementation";
-    String DEFAULT_SERVICE_IMPL = "Java";
-
-    String getName();
-
-    String getType();
-
-    CompilationUnit generateHandlerClassForService();
-
-    default Map<String, Expression> getCustomParams() {
-        return Collections.emptyMap();
+    @Override
+    public Class<Jwt> getPrincipalType() {
+        return Jwt.class;
     }
 
+    @Override
+    public String readToken(Jwt principal) {
+        return principal.getTokenValue();
+    }
 }

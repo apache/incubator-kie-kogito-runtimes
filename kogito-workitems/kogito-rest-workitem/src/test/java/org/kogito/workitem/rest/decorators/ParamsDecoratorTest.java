@@ -23,14 +23,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 class ParamsDecoratorTest {
+
+    @Mock
+    private KogitoWorkItemHandler handler;
 
     @Test
     void testPrefixParamsDecorator() {
@@ -50,7 +58,7 @@ class ParamsDecoratorTest {
 
     private void testParamDecorator(ParamsDecorator decorator, Map<String, Object> parameters) {
         HttpRequest<?> request = mock(HttpRequest.class);
-        decorator.decorate(mock(KogitoWorkItem.class), parameters, request);
+        decorator.decorate(mock(KogitoWorkItem.class), parameters, request, handler);
         verify(request).addQueryParam("javierito", "real betis balompie");
         verify(request).putHeader("pepe", "pepa");
     }

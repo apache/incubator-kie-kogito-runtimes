@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
@@ -33,12 +34,12 @@ import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Knat
 public final class PlainJsonKnativeParamsDecorator extends PrefixParamsDecorator {
 
     @Override
-    public void decorate(KogitoWorkItem workItem, Map<String, Object> parameters, HttpRequest<?> request) {
+    public void decorate(KogitoWorkItem workItem, Map<String, Object> parameters, HttpRequest<?> request, KogitoWorkItemHandler handler) {
         if (isCloudEvent(KnativeFunctionPayloadSupplier.getPayload(parameters))) {
             throw new IllegalArgumentException(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
         }
 
-        super.decorate(workItem, parameters, request);
+        super.decorate(workItem, parameters, request, handler);
     }
 
     private static boolean isCloudEvent(Map<String, Object> payload) {

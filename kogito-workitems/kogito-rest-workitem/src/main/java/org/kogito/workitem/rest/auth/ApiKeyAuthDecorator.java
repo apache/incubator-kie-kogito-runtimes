@@ -21,6 +21,7 @@ package org.kogito.workitem.rest.auth;
 import java.util.Map;
 
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
@@ -51,7 +52,7 @@ public class ApiKeyAuthDecorator implements AuthDecorator {
     }
 
     @Override
-    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
+    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request, KogitoWorkItemHandler handler) {
         String apiKey = getApiKey(getParam(parameters, KEY_PREFIX, String.class, null), getParam(parameters, KEY, String.class, ""));
         if (!isEmpty(apiKey)) {
             switch (location) {
