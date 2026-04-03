@@ -34,13 +34,18 @@
   <description>Kogito Serverless Workflow OpenAPI parser</description>
 
   <properties>
-      <java.module.name>org.kie.kogito.serverless.workflow.openapi.parser</java.module.name>
+    <java.module.name>org.kie.kogito.serverless.workflow.openapi.parser</java.module.name>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-openapi-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.parser.v3</groupId>
+      <artifactId>swagger-parser</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -76,7 +81,6 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-builder</artifactId>
       <scope>test</scope>
-      <version>${project.version}</version>
       <type>test-jar</type>
     </dependency>
     <dependency>

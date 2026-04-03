@@ -36,19 +36,11 @@
      <java.module.name>org.kie.kogito.addons.quarkus.knative.eventing.test</java.module.name>
   </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.kie.kogito</groupId>
-                <artifactId>kogito-quarkus-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
+        <!--<dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-transaction-spi</artifactId>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.kie.sonataflow</groupId>
             <artifactId>sonataflow-quarkus</artifactId>
@@ -82,7 +74,6 @@
         <dependency>
             <groupId>org.apache.kie.sonataflow</groupId>
             <artifactId>sonataflow-quarkus-deployment</artifactId>
-            <version>${project.version}</version>
             <type>pom</type>
             <scope>test</scope>
             <exclusions>
