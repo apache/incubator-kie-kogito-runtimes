@@ -25,7 +25,6 @@ import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.event.TransactionPhase;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.transaction.Transactional;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -83,8 +82,8 @@ public class $ClassName$ extends AbstractQuarkusCloudEventEmitter<$Type$> {
     }
 
     @Override
-    @Transactional
     public void emit(DataEvent<?> dataEvent) {
+        logger.debug("emit event {}", dataEvent);
         event.fire(new EmitEventType(dataEvent));
     }
 
