@@ -151,7 +151,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                     String tempPeriod = resolveTimerExpression(timer.getPeriod());
                     if (DateTimeUtils.isCronExpression(tempDelay)) {
                         long[] cronValues = DateTimeUtils.parseCronAsRepeatableInterval(tempDelay);
-                        return DurationExpirationTime.repeat(cronValues[0], cronValues[1], 1);
+                        return DurationExpirationTime.repeat(cronValues[0], cronValues[1], getCronRepeatLimit());
                     }
                     if (DateTimeUtils.isRepeatable(tempDelay)) {
                         String[] values = DateTimeUtils.parseISORepeatable(tempDelay);
@@ -213,7 +213,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                     String resolvedDelay = resolveTimerExpression(timer.getDelay());
                     if (DateTimeUtils.isCronExpression(resolvedDelay)) {
                         long[] cronValues = DateTimeUtils.parseCronAsRepeatableInterval(resolvedDelay);
-                        return DurationExpirationTime.repeat(cronValues[0], cronValues[1], 1);
+                        return DurationExpirationTime.repeat(cronValues[0], cronValues[1], getCronRepeatLimit());
                     }
                     // when using ISO date/time period is not set
                     long[] repeatValues = null;
@@ -258,6 +258,10 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                 }
         }
         throw new UnsupportedOperationException("Not supported timer definition");
+    }
+
+    protected int getCronRepeatLimit() {
+        return Integer.MAX_VALUE;
     }
 
     private String resolveTimerExpression(String expression) {

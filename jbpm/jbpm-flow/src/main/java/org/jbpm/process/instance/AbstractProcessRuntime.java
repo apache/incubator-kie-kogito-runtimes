@@ -143,6 +143,10 @@ public abstract class AbstractProcessRuntime implements InternalProcessRuntime {
     private ExpirationTime configureTimerInstance(Timer timer) {
         switch (timer.getTimeType()) {
             case Timer.TIME_CYCLE:
+                if (DateTimeUtils.isCronExpression(timer.getDelay())) {
+                    long[] cronValues = DateTimeUtils.parseCronAsRepeatableInterval(timer.getDelay());
+                    return DurationExpirationTime.repeat(cronValues[0], cronValues[1], Integer.MAX_VALUE);
+                }
                 // when using ISO date/time period is not set
                 long[] repeatValues = DateTimeUtils.parseRepeatableDateTime(timer.getDelay());
                 if (repeatValues.length == 3) {
