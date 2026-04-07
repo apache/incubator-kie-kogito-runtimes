@@ -136,20 +136,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!--<dependency>
-      <groupId>org.eclipse.jetty.toolchain</groupId>
-      <artifactId>jetty-jakarta-servlet-api</artifactId>
-    </dependency>-->
-    <!--<dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-grpc-protoc-plugin</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>com.salesforce.servicelibs</groupId>
-          <artifactId>jprotoc</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>-->
   </dependencies>
 
   <build>

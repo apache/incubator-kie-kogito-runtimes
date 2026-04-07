@@ -39,11 +39,7 @@
 
 
     <dependencies>
-        <!--<dependency>
-            <groupId>org.jboss</groupId>
-            <artifactId>jboss-transaction-spi</artifactId>
-        </dependency>-->
-        <dependency>
+       <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-quarkus</artifactId>
         </dependency>

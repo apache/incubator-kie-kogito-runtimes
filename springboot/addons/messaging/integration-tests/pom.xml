@@ -45,42 +45,6 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-maven-plugin</artifactId>
     </dependency>
-   <!-- <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-spring-boot-bom</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-bom</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-kie-bom</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-core-bom</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>-->
-    <!--<dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-dmn-bom</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-bom</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>-->
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-decisions-spring-boot-starter</artifactId>
