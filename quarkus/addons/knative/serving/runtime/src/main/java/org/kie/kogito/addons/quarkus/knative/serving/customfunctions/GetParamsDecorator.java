@@ -21,7 +21,6 @@ package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 import java.util.Map;
 
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
 import org.kogito.workitem.rest.decorators.PrefixParamsDecorator;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
@@ -31,9 +30,9 @@ public final class GetParamsDecorator extends PrefixParamsDecorator {
     private Map<String, Object> getParams;
 
     @Override
-    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request, KogitoWorkItemHandler handler) {
+    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
         this.getParams = KnativeFunctionPayloadSupplier.getPayload(parameters);
-        super.decorate(item, parameters, request, handler);
+        super.decorate(item, parameters, request);
     }
 
     @Override

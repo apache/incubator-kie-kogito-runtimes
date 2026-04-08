@@ -18,20 +18,18 @@
  */
 package org.kogito.workitem.rest.decorators;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kie.kogito.Application;
-import org.kie.kogito.Config;
-import org.kie.kogito.auth.AuthTokenProvider;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
-import org.kie.kogito.internal.process.workitem.KogitoWorkItemHandler;
-import org.kie.kogito.process.ProcessConfig;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -50,6 +48,8 @@ public class TokenPropagationDecoratorTest {
     private static final String PROPAGATED_TOKEN = "propagated-token-67890";
     private static final String ACCESS_TOKEN_ACQUISITION_STRATEGY = "AccessTokenAcquisitionStrategy";
     private static final String PROPAGATE_TOKEN_PARAM = "propagateToken";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     @Mock
     private KogitoWorkItem workItem;
@@ -61,35 +61,23 @@ public class TokenPropagationDecoratorTest {
     private HttpRequest<?> httpRequest;
 
     @Mock
-    private KogitoWorkItemHandler handler;
-
-    @Mock
-    private Application application;
-
-    @Mock
-    private Config config;
-
-    @Mock
-    private ProcessConfig processConfig;
-
-    @Mock
-    private AuthTokenProvider authTokenProvider;
+    private KogitoProcessInstance processInstance;
 
     private TokenPropagationDecorator decorator;
     private Map<String, Object> parameters;
+    private Map<String, List<String>> headers;
 
     @BeforeEach
     void setUp() {
         decorator = new TokenPropagationDecorator();
         parameters = new HashMap<>();
+        headers = new HashMap<>();
 
         // Setup mock chain with lenient() to avoid unnecessary stubbing warnings
         lenient().when(workItem.getNodeInstance()).thenReturn(nodeInstance);
         lenient().when(nodeInstance.getId()).thenReturn("test-node-123");
-        lenient().when(handler.getApplication()).thenReturn(application);
-        lenient().when(application.config()).thenReturn(config);
-        lenient().when(config.get(ProcessConfig.class)).thenReturn(processConfig);
-        lenient().when(processConfig.authTokenProvider()).thenReturn(authTokenProvider);
+        lenient().when(workItem.getProcessInstance()).thenReturn(processInstance);
+        lenient().when(processInstance.getHeaders()).thenReturn(headers);
     }
 
     @Test
@@ -97,54 +85,97 @@ public class TokenPropagationDecoratorTest {
         parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "configured");
         parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
 
-        Optional<String> result = decorator.getBearerToken(parameters, handler);
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
         assertThat(result).isPresent().contains(CONFIGURED_TOKEN);
-        verify(authTokenProvider, never()).getAuthToken();
     }
 
     @Test
     void testGetBearerToken_ConfiguredStrategy_WithoutToken() {
         parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "configured");
 
-        Optional<String> result = decorator.getBearerToken(parameters, handler);
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
         assertThat(result).isEmpty();
-        verify(authTokenProvider, never()).getAuthToken();
     }
 
     @Test
-    void testGetBearerToken_PropagateStrategy_WithPropagatedToken() {
-        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagate");
-        when(authTokenProvider.getAuthToken()).thenReturn(Optional.of(PROPAGATED_TOKEN));
+    void testGetBearerToken_PropagateStrategy_WithPropagatedTokenFromHeaders() {
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
+        headers.put(AUTHORIZATION_HEADER, List.of(BEARER_PREFIX + PROPAGATED_TOKEN));
 
-        Optional<String> result = decorator.getBearerToken(parameters, handler);
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
         assertThat(result).isPresent().contains(PROPAGATED_TOKEN);
-        verify(authTokenProvider).getAuthToken();
     }
 
     @Test
     void testGetBearerToken_PropagateStrategy_FallbackToConfigured() {
-        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagate");
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
         parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
-        when(authTokenProvider.getAuthToken()).thenReturn(Optional.empty());
+        // No headers set, should fallback to configured token
 
-        Optional<String> result = decorator.getBearerToken(parameters, handler);
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
         assertThat(result).isPresent().contains(CONFIGURED_TOKEN);
-        verify(authTokenProvider).getAuthToken();
     }
 
     @Test
     void testGetBearerToken_PropagateStrategy_NoTokensAvailable() {
-        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagate");
-        when(authTokenProvider.getAuthToken()).thenReturn(Optional.empty());
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
+        // No headers and no configured token
 
-        Optional<String> result = decorator.getBearerToken(parameters, handler);
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
         assertThat(result).isEmpty();
-        verify(authTokenProvider).getAuthToken();
+    }
+
+    @Test
+    void testGetBearerToken_PropagateStrategy_NoProcessInstance() {
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
+        parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
+        when(workItem.getProcessInstance()).thenReturn(null);
+
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
+
+        // Should fallback to configured token when process instance is null
+        assertThat(result).isPresent().contains(CONFIGURED_TOKEN);
+    }
+
+    @Test
+    void testGetBearerToken_PropagateStrategy_EmptyHeaders() {
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
+        parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
+        when(processInstance.getHeaders()).thenReturn(Collections.emptyMap());
+
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
+
+        // Should fallback to configured token when headers are empty
+        assertThat(result).isPresent().contains(CONFIGURED_TOKEN);
+    }
+
+    @Test
+    void testGetBearerToken_PropagateStrategy_NoAuthorizationHeader() {
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
+        parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
+        headers.put("Other-Header", List.of("some-value"));
+
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
+
+        // Should fallback to configured token when Authorization header is missing
+        assertThat(result).isPresent().contains(CONFIGURED_TOKEN);
+    }
+
+    @Test
+    void testGetBearerToken_PropagateStrategy_NonBearerAuthorizationHeader() {
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
+        parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
+        headers.put(AUTHORIZATION_HEADER, List.of("Basic dXNlcjpwYXNz"));
+
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
+
+        // Should fallback to configured token when Authorization header is not Bearer
+        assertThat(result).isPresent().contains(CONFIGURED_TOKEN);
     }
 
     @Test
@@ -152,10 +183,9 @@ public class TokenPropagationDecoratorTest {
         parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "none");
         parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
 
-        Optional<String> result = decorator.getBearerToken(parameters, handler);
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
         assertThat(result).isEmpty();
-        verify(authTokenProvider, never()).getAuthToken();
     }
 
     @Test
@@ -163,10 +193,9 @@ public class TokenPropagationDecoratorTest {
         parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "unknown-strategy");
         parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
 
-        Optional<String> result = decorator.getBearerToken(parameters, handler);
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
         assertThat(result).isEmpty();
-        verify(authTokenProvider, never()).getAuthToken();
     }
 
     @Test
@@ -174,10 +203,9 @@ public class TokenPropagationDecoratorTest {
         // No strategy specified
         parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
 
-        Optional<String> result = decorator.getBearerToken(parameters, handler);
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
         assertThat(result).isEmpty();
-        verify(authTokenProvider, never()).getAuthToken();
     }
 
     @Test
@@ -185,49 +213,46 @@ public class TokenPropagationDecoratorTest {
         parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "configured");
         parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
 
-        decorator.decorate(workItem, parameters, httpRequest, handler);
+        decorator.decorate(workItem, parameters, httpRequest);
 
         verify(httpRequest).bearerTokenAuthentication(CONFIGURED_TOKEN);
     }
 
     @Test
     void testDecorate_WithoutToken_DoesNotAddAuthenticationHeader() {
-
         parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "none");
 
-        decorator.decorate(workItem, parameters, httpRequest, handler);
+        decorator.decorate(workItem, parameters, httpRequest);
 
         verify(httpRequest, never()).bearerTokenAuthentication(org.mockito.ArgumentMatchers.anyString());
     }
 
     @Test
-    void testDecorate_PropagateStrategy_UsesPropagatedToken() {
-        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagate");
-        when(authTokenProvider.getAuthToken()).thenReturn(Optional.of(PROPAGATED_TOKEN));
+    void testDecorate_PropagateStrategy_UsesPropagatedTokenFromHeaders() {
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
+        headers.put(AUTHORIZATION_HEADER, List.of(BEARER_PREFIX + PROPAGATED_TOKEN));
 
-        decorator.decorate(workItem, parameters, httpRequest, handler);
+        decorator.decorate(workItem, parameters, httpRequest);
 
         verify(httpRequest).bearerTokenAuthentication(PROPAGATED_TOKEN);
-        verify(authTokenProvider).getAuthToken();
     }
 
     @Test
     void testDecorate_PropagateStrategy_FallsBackToConfiguredToken() {
-        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagate");
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
         parameters.put(PROPAGATE_TOKEN_PARAM, CONFIGURED_TOKEN);
-        when(authTokenProvider.getAuthToken()).thenReturn(Optional.empty());
+        // No headers set, should fallback to configured token
 
-        decorator.decorate(workItem, parameters, httpRequest, handler);
+        decorator.decorate(workItem, parameters, httpRequest);
 
         verify(httpRequest).bearerTokenAuthentication(CONFIGURED_TOKEN);
-        verify(authTokenProvider).getAuthToken();
     }
 
     @Test
     void testAccessTokenAcquisitionStrategy_FromName() {
         assertThat(AccessTokenAcquisitionStrategy.fromName("none")).isEqualTo(AccessTokenAcquisitionStrategy.NONE);
         assertThat(AccessTokenAcquisitionStrategy.fromName("configured")).isEqualTo(AccessTokenAcquisitionStrategy.CONFIGURED);
-        assertThat(AccessTokenAcquisitionStrategy.fromName("propagate")).isEqualTo(AccessTokenAcquisitionStrategy.PROPAGATE);
+        assertThat(AccessTokenAcquisitionStrategy.fromName("propagated")).isEqualTo(AccessTokenAcquisitionStrategy.PROPAGATE);
         assertThat(AccessTokenAcquisitionStrategy.fromName("invalid")).isEqualTo(AccessTokenAcquisitionStrategy.NONE);
         assertThat(AccessTokenAcquisitionStrategy.fromName(null)).isEqualTo(AccessTokenAcquisitionStrategy.NONE);
     }
