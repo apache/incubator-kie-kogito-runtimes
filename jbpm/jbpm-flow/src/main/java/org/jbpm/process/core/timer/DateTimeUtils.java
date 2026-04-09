@@ -62,8 +62,11 @@ public class DateTimeUtils extends TimeUtils {
             }
             long delay = firstFire.getTime() - now.getTime();
             Date secondFire = cron.getNextValidTimeAfter(firstFire);
-            long interval = secondFire != null ? secondFire.getTime() - firstFire.getTime() : delay;
-            return new long[] { delay, interval };
+            if (secondFire != null) {
+                long interval = secondFire.getTime() - firstFire.getTime();
+                return new long[] { Integer.MAX_VALUE, delay, interval };
+            }
+            return new long[] { 1, delay, delay };
         } catch (ParseException e) {
             throw new IllegalArgumentException("Invalid cron expression: " + cronExpression, e);
         }

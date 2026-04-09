@@ -151,7 +151,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                     String tempPeriod = resolveTimerExpression(timer.getPeriod());
                     if (DateTimeUtils.isCronExpression(tempDelay)) {
                         long[] cronValues = DateTimeUtils.parseCronAsRepeatableInterval(tempDelay);
-                        return DurationExpirationTime.repeat(cronValues[0], cronValues[1], getCronRepeatLimit());
+                        return DurationExpirationTime.repeat(cronValues[1], cronValues[2], (int) cronValues[0]);
                     }
                     if (DateTimeUtils.isRepeatable(tempDelay)) {
                         String[] values = DateTimeUtils.parseISORepeatable(tempDelay);
@@ -211,17 +211,16 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                     }
                 } else {
                     String resolvedDelay = resolveTimerExpression(timer.getDelay());
-                    if (DateTimeUtils.isCronExpression(resolvedDelay)) {
-                        long[] cronValues = DateTimeUtils.parseCronAsRepeatableInterval(resolvedDelay);
-                        return DurationExpirationTime.repeat(cronValues[0], cronValues[1], getCronRepeatLimit());
-                    }
                     // when using ISO date/time period is not set
                     long[] repeatValues = null;
-                    try {
-                        repeatValues = DateTimeUtils.parseRepeatableDateTime(timer.getDelay());
-                    } catch (RuntimeException e) {
-                        // cannot parse delay, trying to interpret it
-                        repeatValues = DateTimeUtils.parseRepeatableDateTime(resolvedDelay);
+                    if (DateTimeUtils.isCronExpression(resolvedDelay)) {
+                        repeatValues = DateTimeUtils.parseCronAsRepeatableInterval(resolvedDelay);
+                    } else {
+                        try {
+                            repeatValues = DateTimeUtils.parseRepeatableDateTime(timer.getDelay());
+                        } catch (RuntimeException e) {
+                            repeatValues = DateTimeUtils.parseRepeatableDateTime(resolvedDelay);
+                        }
                     }
                     if (repeatValues.length == 3) {
                         int parsedReapedCount = (int) repeatValues[0];
@@ -258,10 +257,6 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                 }
         }
         throw new UnsupportedOperationException("Not supported timer definition");
-    }
-
-    protected int getCronRepeatLimit() {
-        return Integer.MAX_VALUE;
     }
 
     private String resolveTimerExpression(String expression) {
