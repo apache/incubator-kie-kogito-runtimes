@@ -51,6 +51,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @QuarkusIntegrationTest
 class TaskIT {
 
+    public static final String TASK_ID_BY_PROCESS_INSTANCE_ID_JSONPATH = "find { it.processInfo.processInstanceId == \"%s\" }.id";
+
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
@@ -116,7 +118,7 @@ class TaskIT {
     public void testInputOutputsViaJsonTypeProperty() throws Exception {
         Traveller traveller = new Traveller("pepe", "rubiales", "pepe.rubiales@gmail.com", "Spanish", null);
 
-        given()
+        String processId = given()
                 .contentType(ContentType.JSON)
                 .when()
                 .body(Collections.singletonMap("traveller", traveller))
@@ -135,7 +137,8 @@ class TaskIT {
                 .then()
                 .statusCode(200)
                 .extract()
-                .path("[0].id");
+                .jsonPath()
+                .getString(TASK_ID_BY_PROCESS_INSTANCE_ID_JSONPATH.formatted(processId));
 
         traveller = new Traveller("pepe2", "rubiales2", "pepe.rubiales@gmail.com", "Spanish2", null);
         ObjectMapper mapper = new ObjectMapper();
@@ -229,7 +232,7 @@ class TaskIT {
     void testCommentAndAttachment() {
         Traveller traveller = new Traveller("pepe", "rubiales", "pepe.rubiales@gmail.com", "Spanish", null);
 
-        given()
+        String processId = given()
                 .contentType(ContentType.JSON)
                 .when()
                 .body(Collections.singletonMap("traveller", traveller))
@@ -247,8 +250,8 @@ class TaskIT {
                 .get("/usertasks/instance")
                 .then()
                 .statusCode(200)
-                .extract()
-                .path("[0].id");
+                .extract().jsonPath()
+                .getString(TASK_ID_BY_PROCESS_INSTANCE_ID_JSONPATH.formatted(processId));
 
         final String commentId = given().contentType(ContentType.JSON)
                 .when()
@@ -374,7 +377,7 @@ class TaskIT {
     void testUpdateTaskInfo() {
         Traveller traveller = new Traveller("pepe", "rubiales", "pepe.rubiales@gmail.com", "Spanish");
 
-        given()
+        String processId = given()
                 .contentType(ContentType.JSON)
                 .when()
                 .body(Collections.singletonMap("traveller", traveller))
@@ -392,8 +395,8 @@ class TaskIT {
                 .get("/usertasks/instance")
                 .then()
                 .statusCode(200)
-                .extract()
-                .path("[0].id");
+                .extract().jsonPath()
+                .getString(TASK_ID_BY_PROCESS_INSTANCE_ID_JSONPATH.formatted(processId));
 
         traveller.setEmail("javierito@gmail.com");
 
