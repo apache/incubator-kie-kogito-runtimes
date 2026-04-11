@@ -18,11 +18,10 @@
  */
 package org.jbpm.compiler.canonical.descriptors;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
 
 import org.jbpm.compiler.canonical.ProcessMetaData;
-import org.jbpm.process.core.Work;
-import org.jbpm.workflow.core.impl.DataAssociation;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.kogito.internal.utils.ConversionUtils;
 
@@ -37,16 +36,10 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import static com.github.javaparser.StaticJavaParser.parse;
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 
 public class RestTaskDescriptor implements TaskDescriptor {
 
     public static final String TYPE = "Rest";
-
-    public static final String ACCESS_TOKEN_ACQUISITION_STRATEGY = "AccessTokenAcquisitionStrategy";
-    public static final String REST_SERVICE_CALL_TASK_ID = "RestServiceCallTaskId";
-
-    private static final String ACCESS_TOKEN_PROPERTY_TEMPLATE = "kogito.processes.%s.%s.access_token";
 
     private final ProcessMetaData processMetadata;
     private final WorkItemNode workItemNode;
@@ -81,46 +74,7 @@ public class RestTaskDescriptor implements TaskDescriptor {
 
     @Override
     public Map<String, Expression> getCustomParams() {
-        Work work = workItemNode.getWork();
-        String strategyParam = extractRestTokenPropagationValues(workItemNode, ACCESS_TOKEN_ACQUISITION_STRATEGY, "none");
-        if (strategyParam == null || "none".equalsIgnoreCase(strategyParam)) {
-            return Collections.emptyMap();
-        }
-
-        String taskId = extractRestTokenPropagationValues(workItemNode, REST_SERVICE_CALL_TASK_ID, workItemNode.getId().toExternalFormat());
-        if (Objects.isNull(taskId)) {
-            taskId = String.valueOf(workItemNode.getId());
-        }
-
-        String processId = processMetadata.getProcessId();
-        String configProperty = String.format(ACCESS_TOKEN_PROPERTY_TEMPLATE, processId, taskId);
-
-        Expression resolverExpr = ExpressionUtils.getObjectCreationExpr(
-                parseClassOrInterfaceType("org.kie.kogito.process.workitems.impl.ConfigWorkItemResolver")
-                        .setTypeArguments(parseClassOrInterfaceType(String.class.getCanonicalName())),
-                configProperty,
-                String.class,
-                null);
-
-        Map<String, Expression> customParams = new HashMap<>();
-        customParams.put("propagateToken", resolverExpr);
-        return customParams;
-    }
-
-    static String extractRestTokenPropagationValues(WorkItemNode workItemNode, String paramName, String defaultValue) {
-        for (DataAssociation da : workItemNode.getIoSpecification().getDataInputAssociation()) {
-            if (!paramName.equals(da.getTarget().getLabel())) {
-                continue;
-            }
-            return da.getAssignments().stream()
-                    .filter(assignment -> assignment.getFrom() != null)
-                    .filter(assignment -> assignment.getFrom().getExpression() != null)
-                    .findFirst()
-                    .map(assignment -> assignment.getFrom().getExpression())
-                    .orElse(defaultValue);
-        }
-
-        return defaultValue;
+          return Collections.emptyMap();
     }
 
 }

@@ -78,22 +78,62 @@ public class TokenPropagationDecorator implements AuthDecorator {
     }
 
     Optional<String> getBearerToken(KogitoWorkItem item, Map<String, Object> parameters) {
-        AccessTokenAcquisitionStrategy strategy = AccessTokenAcquisitionStrategy.fromName(
-                (String) parameters.get(ACCESS_TOKEN_ACQUISITION_STRATEGY));
+        Object strategyParam = parameters.get(ACCESS_TOKEN_ACQUISITION_STRATEGY);
 
+
+        if (strategyParam instanceof java.util.List) {
+            
+            @SuppressWarnings("unchecked")
+            java.util.List<String> strategies = (java.util.List<String>) strategyParam;
+            for (String strategyName : strategies) {
+                Optional<String> token = tryStrategyWithoutFallback(strategyName, item, parameters);
+                if (token.isPresent()) {
+                    logger.debug("Strategy {} succeeded from list, token acquired", strategyName);
+                    return token;
+                }
+                logger.debug("Strategy {} failed from list, trying next", strategyName);
+            }
+            return Optional.empty();
+        } else if (strategyParam instanceof String) {
+          
+            return tryStrategyWithFallback((String) strategyParam, item, parameters);
+        } else {
+            logger.debug("No token acquisition strategy specified, skipping authentication");
+            return Optional.empty();
+        }
+    }
+
+    private Optional<String> tryStrategyWithFallback(String strategyName, KogitoWorkItem item, Map<String, Object> parameters) {
+        AccessTokenAcquisitionStrategy strategy = AccessTokenAcquisitionStrategy.fromName(strategyName);
+
+        
         return switch (strategy) {
             case PROPAGATE -> getPropagatedTokenFromHeaders(item)
                     .or(() -> getConfiguredToken(parameters));
             case CONFIGURED -> getConfiguredToken(parameters);
             default -> {
-                logger.debug("No token acquisition strategy specified or strategy is NONE, skipping authentication");
+                logger.debug("Strategy {} is NONE or unknown, skipping", strategyName);
+                yield Optional.empty();
+            }
+        };
+    }
+
+    private Optional<String> tryStrategyWithoutFallback(String strategyName, KogitoWorkItem item, Map<String, Object> parameters) {
+        AccessTokenAcquisitionStrategy strategy = AccessTokenAcquisitionStrategy.fromName(strategyName);
+
+     
+        return switch (strategy) {
+            case PROPAGATE -> getPropagatedTokenFromHeaders(item);
+            case CONFIGURED -> getConfiguredToken(parameters);
+            default -> {
+                logger.debug("Strategy {} is NONE or unknown, skipping", strategyName);
                 yield Optional.empty();
             }
         };
     }
 
     private Optional<String> getPropagatedTokenFromHeaders(KogitoWorkItem item) {
-        // Get token from process instance headers
+       
         KogitoProcessInstance processInstance = item.getProcessInstance();
         if (processInstance == null) {
             logger.debug("No process instance available, cannot propagate token from headers");
@@ -112,7 +152,7 @@ public class TokenPropagationDecorator implements AuthDecorator {
             return Optional.empty();
         }
 
-        // Get the first Authorization header value
+        
         String authHeader = authHeaders.get(0);
         if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
             String token = authHeader.substring(BEARER_PREFIX.length());
