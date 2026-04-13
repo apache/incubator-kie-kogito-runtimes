@@ -2053,8 +2053,9 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 .createInstance(definition.createModel());
         instance.start();
         latch.await(5, TimeUnit.SECONDS);
-        assertThat(ProcessTestHelper.findRemovedInstance(app, instance.id()))
-                .isPresent().get().extracting(WorkflowProcessInstance::getState).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_COMPLETED);
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ACTIVE);
+        instance.abort();
+        assertThat(instance.status()).isEqualTo(org.kie.kogito.process.ProcessInstance.STATE_ABORTED);
     }
 
     @Test
