@@ -20,6 +20,8 @@
 package org.jbpm.usertask.jpa.springboot.repository;
 
 import org.jbpm.usertask.jpa.repository.UserTaskJPAContext;
+import org.kie.kogito.process.Processes;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +35,16 @@ public class SpringBootUserTaskJPAContext implements UserTaskJPAContext {
     @PersistenceContext
     private EntityManager em;
 
+    @Autowired(required = false)
+    private Processes processes;
+
     @Override
     public EntityManager getEntityManager() {
         return em;
+    }
+
+    @Override
+    public Processes getProcesses() {
+        return processes;
     }
 }
