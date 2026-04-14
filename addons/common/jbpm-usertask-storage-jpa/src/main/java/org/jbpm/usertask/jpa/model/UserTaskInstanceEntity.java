@@ -29,17 +29,6 @@ import java.util.Set;
 import jakarta.persistence.*;
 
 @Entity
-@NamedQuery(name = UserTaskInstanceEntity.GET_INSTANCES_BY_IDENTITY,
-        query = "select userTask from UserTaskInstanceEntity userTask " +
-                "left join userTask.adminGroups adminGroup " +
-                "left join userTask.potentialGroups potentialGroup " +
-                "where :userId member of userTask.adminUsers " +
-                "or adminGroup in (:roles) " +
-                "or userTask.actualOwner = :userId " +
-                "or (userTask.actualOwner is null " + // checking if task is not reserved, we cannot check by status since lifecycle can be customized
-                "and :userId not member of userTask.excludedUsers " +
-                "and (:userId member of userTask.potentialUsers or potentialGroup in (:roles)" +
-                "))")
 @NamedNativeQuery(
         name = UserTaskInstanceEntity.DELETE_BY_ID,
         query = "delete from jbpm_user_tasks where id = :taskId")
