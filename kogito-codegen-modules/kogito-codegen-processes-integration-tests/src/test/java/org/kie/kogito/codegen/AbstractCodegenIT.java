@@ -194,21 +194,33 @@ public abstract class AbstractCodegenIT {
             srcMfs.write("org/drools/project/model/ProjectRuntime.java", DUMMY_PROCESS_RUNTIME.getBytes());
         }
 
-        if (LOGGER.isInfoEnabled()) {
-            Path temp = Files.createTempDirectory("KOGITO_TESTS");
-            LOGGER.info("Dumping generated files in " + temp);
-            for (GeneratedFile entry : generatedFiles) {
+        Path temp = Files.createTempDirectory("KOGITO_TESTS");
+        LOGGER.info("Dumping generated files in " + temp);
+        URL modelPathsUrl = null;
+        String modelPathsFilePath = null;
+        for (GeneratedFile entry : generatedFiles) {
+            String fileName = entry.relativePath();
+            if (fileName.contains("modelPaths.txt")) {
+                Path fpath = temp.resolve(entry.relativePath());
+                fpath.getParent().toFile().mkdirs();
+                Files.write(fpath, entry.contents());
+                modelPathsUrl = fpath.toUri().toURL();
+                modelPathsFilePath = entry.relativePath();
+            } else if (LOGGER.isInfoEnabled()) {
                 Path fpath = temp.resolve(entry.relativePath());
                 fpath.getParent().toFile().mkdirs();
                 Files.write(fpath, entry.contents());
             }
         }
-
         CompilationResult result = JAVA_COMPILER.compile(sources.toArray(new String[sources.size()]), srcMfs, trgMfs, ClassLoaderUtils.getDefaultClassLoader());
         assertThat(result).isNotNull();
         assertThat(result.getErrors()).describedAs(String.join("\n\n", Arrays.toString(result.getErrors()))).isEmpty();
 
         classloader = new TestClassLoader(this.getClass().getClassLoader(), trgMfs.getMap());
+
+        if (modelPathsUrl != null && modelPathsFilePath != null) {
+            classloader.addCustomResource(modelPathsFilePath, modelPathsUrl);
+        }
 
         @SuppressWarnings("unchecked")
         Class<Application> app = (Class<Application>) Class.forName(context.getPackageName() + ".Application", true, classloader);
@@ -264,6 +276,7 @@ public abstract class AbstractCodegenIT {
     private static class TestClassLoader extends URLClassLoader {
 
         private final Map<String, byte[]> extraClassDefs;
+        private Map<String, URL> customAddedResource = new HashMap<>();
 
         public TestClassLoader(ClassLoader parent, Map<PortablePath, byte[]> extraClassDefs) {
             super(new URL[0], parent);
@@ -274,6 +287,10 @@ public abstract class AbstractCodegenIT {
             }
         }
 
+        public void addCustomResource(String name, URL toAdd) {
+            customAddedResource.put(name, toAdd);
+        }
+
         @Override
         protected Class<?> findClass(final String name) throws ClassNotFoundException {
             byte[] classBytes = this.extraClassDefs.remove(name);
@@ -281,6 +298,12 @@ public abstract class AbstractCodegenIT {
                 return defineClass(name, classBytes, 0, classBytes.length);
             }
             return super.findClass(name);
+        }
+
+        @Override
+        public URL findResource(String name) {
+            URL url = customAddedResource.get(name);
+            return url != null ? url : super.findResource(name);
         }
     }
 
