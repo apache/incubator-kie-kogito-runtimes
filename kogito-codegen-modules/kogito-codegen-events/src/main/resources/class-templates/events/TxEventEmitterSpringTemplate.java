@@ -62,7 +62,7 @@ public class $ClassName$ implements EventEmitter {
         }
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
     public void observe(EmitEventType emitEventType) {
         logger.debug("publishing event {}", emitEventType.data);
         emitter.send("$Topic$", toTopicType(emitEventType.data));
