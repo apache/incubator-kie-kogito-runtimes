@@ -38,8 +38,6 @@
     <version.io.quarkiverse.reactivemessaging.http>2.5.0-lts</version.io.quarkiverse.reactivemessaging.http>
     <version.io.quarkiverse.embedded.postgresql>0.8.0</version.io.quarkiverse.embedded.postgresql>
     <version.io.quarkus.camel>3.27.2</version.io.quarkus.camel>
-    <!-- This is needed to override the default version inherited from kie-parent -->
-    <version.mongodb-driver-sync>5.5.1</version.mongodb-driver-sync>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -768,11 +766,6 @@
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-quarkus-workflow-common-deployment</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mongodb</groupId>
-        <artifactId>mongodb-driver-sync</artifactId>
-        <version>${version.mongodb-driver-sync}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
