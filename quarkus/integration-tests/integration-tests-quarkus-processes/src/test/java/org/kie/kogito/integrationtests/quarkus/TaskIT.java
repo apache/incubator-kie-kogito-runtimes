@@ -250,7 +250,8 @@ class TaskIT {
                 .get("/usertasks/instance")
                 .then()
                 .statusCode(200)
-                .extract().jsonPath()
+                .extract()
+                .jsonPath()
                 .getString(TASK_ID_BY_PROCESS_INSTANCE_ID_JSONPATH.formatted(processId));
 
         final String commentId = given().contentType(ContentType.JSON)
@@ -395,7 +396,8 @@ class TaskIT {
                 .get("/usertasks/instance")
                 .then()
                 .statusCode(200)
-                .extract().jsonPath()
+                .extract()
+                .jsonPath()
                 .getString(TASK_ID_BY_PROCESS_INSTANCE_ID_JSONPATH.formatted(processId));
 
         traveller.setEmail("javierito@gmail.com");
@@ -404,7 +406,7 @@ class TaskIT {
                 Collections.singleton("managers"), Collections.singleton("Javierito"), Collections.emptySet(),
                 Collections.emptySet(), Collections.emptyMap());
 
-        //at first we try with user that doesn't have rights
+        //at first, we try with user that doesn't have rights
         given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "admin")
