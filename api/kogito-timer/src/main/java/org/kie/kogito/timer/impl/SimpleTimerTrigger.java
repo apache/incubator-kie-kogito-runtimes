@@ -230,7 +230,7 @@ public class SimpleTimerTrigger implements Trigger {
         return repeatCount == INDEFINITELY;
     }
 
-    public int getRemainingRepetitions() {
+    public int computeRemainingRepetitions() {
         if (isIndefinitely()) {
             return -1;
         }
