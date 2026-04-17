@@ -134,7 +134,7 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
 
         //removing unnecessary parameter
         parameters.remove("TaskName");
-        parameters.remove("RestServiceCallTaskId");
+
         Class<?> targetInfo = getParamSupply(parameters, TARGET_TYPE, Class.class, () -> getTargetInfo(workItem));
         logger.debug("Using target {}", targetInfo);
 
