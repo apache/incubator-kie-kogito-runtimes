@@ -74,7 +74,7 @@ public class RestTaskDescriptor implements TaskDescriptor {
 
     @Override
     public Map<String, Expression> getCustomParams() {
-          return Collections.emptyMap();
+        return Collections.emptyMap();
     }
 
 }

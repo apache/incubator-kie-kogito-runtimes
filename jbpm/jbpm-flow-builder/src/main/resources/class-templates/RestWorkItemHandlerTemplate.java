@@ -22,7 +22,6 @@ import io.vertx.mutiny.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.mutiny.core.Vertx;
 import org.kogito.workitem.rest.RestWorkItemHandler;
-import org.kogito.workitem.rest.RestWorkItemHandlerConfig;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.sslWebClientOptions;
 
 
@@ -30,12 +29,12 @@ public class xxxRestWorkItemHandler extends RestWorkItemHandler {
 
     
     public xxxRestWorkItemHandler() {
-        this(Vertx.vertx(), sslWebClientOptions(), null);
+        this(Vertx.vertx(), sslWebClientOptions());
     }
 
     
-    public xxxRestWorkItemHandler(Vertx vertx, WebClientOptions sslOptions, RestWorkItemHandlerConfig config) {
-    	super(WebClient.create(vertx), WebClient.create(vertx, sslOptions), config);
+    public xxxRestWorkItemHandler(Vertx vertx, WebClientOptions sslOptions) {
+    	super(WebClient.create(vertx), WebClient.create(vertx, sslOptions));
     }
     
     @Override

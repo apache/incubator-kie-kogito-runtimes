@@ -119,19 +119,11 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
     protected final WebClient httpClient;
     protected final WebClient httpsClient;
     private Collection<RequestDecorator> requestDecorators;
-    private RestWorkItemHandlerConfig config;
-    private RestWorkItemHandlerConfigInjector configInjector;
 
     public RestWorkItemHandler(WebClient httpClient, WebClient httpsClient) {
-        this(httpClient, httpsClient, null);
-    }
-
-    public RestWorkItemHandler(WebClient httpClient, WebClient httpsClient, RestWorkItemHandlerConfig config) {
         this.httpClient = httpClient;
         this.httpsClient = httpsClient;
         this.requestDecorators = StreamSupport.stream(ServiceLoader.load(RequestDecorator.class).spliterator(), false).collect(Collectors.toList());
-        this.config = config;
-        this.configInjector = config != null ? new RestWorkItemHandlerConfigInjector(config) : null;
     }
 
     @Override
@@ -139,14 +131,6 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
 
         //retrieving parameters
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
-
-        // Inject configuration properties if available
-        if (configInjector != null) {
-            String processId = workItem.getProcessInstance().getProcessId();
-            // Use RestServiceCallTaskId if available, otherwise fall back to work item name
-            String taskName = (String) parameters.getOrDefault("RestServiceCallTaskId", workItem.getName());
-            configInjector.injectConfig(workItem, parameters, processId, taskName);
-        }
 
         //removing unnecessary parameter
         parameters.remove("TaskName");
@@ -212,7 +196,7 @@ public class RestWorkItemHandler extends DefaultKogitoWorkItemHandler {
         authDecorators.forEach(d -> d.decorate(workItem, parameters, request));
         paramsDecorator.decorate(workItem, parameters, request);
         Duration requestTimeout = getRequestTimeout(parameters);
-        HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT)
+        HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) || method.equals(HttpMethod.PATCH)
                 ? sendBody(request, bodyBuilder.apply(parameters), requestTimeout)
                 : send(request, requestTimeout);
         Object outputParams = resultHandler.apply(response, targetInfo, ContextFactory.fromItem(workItem));

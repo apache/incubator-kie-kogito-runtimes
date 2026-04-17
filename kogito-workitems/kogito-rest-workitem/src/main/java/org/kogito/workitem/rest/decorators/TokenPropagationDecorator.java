@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.process.workitems.impl.ConfigResolverHolder;
 import org.kogito.workitem.rest.auth.AuthDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,9 +81,8 @@ public class TokenPropagationDecorator implements AuthDecorator {
     Optional<String> getBearerToken(KogitoWorkItem item, Map<String, Object> parameters) {
         Object strategyParam = parameters.get(ACCESS_TOKEN_ACQUISITION_STRATEGY);
 
-
         if (strategyParam instanceof java.util.List) {
-            
+
             @SuppressWarnings("unchecked")
             java.util.List<String> strategies = (java.util.List<String>) strategyParam;
             for (String strategyName : strategies) {
@@ -95,7 +95,7 @@ public class TokenPropagationDecorator implements AuthDecorator {
             }
             return Optional.empty();
         } else if (strategyParam instanceof String) {
-          
+
             return tryStrategyWithFallback((String) strategyParam, item, parameters);
         } else {
             logger.debug("No token acquisition strategy specified, skipping authentication");
@@ -106,11 +106,10 @@ public class TokenPropagationDecorator implements AuthDecorator {
     private Optional<String> tryStrategyWithFallback(String strategyName, KogitoWorkItem item, Map<String, Object> parameters) {
         AccessTokenAcquisitionStrategy strategy = AccessTokenAcquisitionStrategy.fromName(strategyName);
 
-        
         return switch (strategy) {
             case PROPAGATE -> getPropagatedTokenFromHeaders(item)
-                    .or(() -> getConfiguredToken(parameters));
-            case CONFIGURED -> getConfiguredToken(parameters);
+                    .or(() -> getConfiguredToken(item, parameters));
+            case CONFIGURED -> getConfiguredToken(item, parameters);
             default -> {
                 logger.debug("Strategy {} is NONE or unknown, skipping", strategyName);
                 yield Optional.empty();
@@ -121,10 +120,9 @@ public class TokenPropagationDecorator implements AuthDecorator {
     private Optional<String> tryStrategyWithoutFallback(String strategyName, KogitoWorkItem item, Map<String, Object> parameters) {
         AccessTokenAcquisitionStrategy strategy = AccessTokenAcquisitionStrategy.fromName(strategyName);
 
-     
         return switch (strategy) {
             case PROPAGATE -> getPropagatedTokenFromHeaders(item);
-            case CONFIGURED -> getConfiguredToken(parameters);
+            case CONFIGURED -> getConfiguredToken(item, parameters);
             default -> {
                 logger.debug("Strategy {} is NONE or unknown, skipping", strategyName);
                 yield Optional.empty();
@@ -133,7 +131,7 @@ public class TokenPropagationDecorator implements AuthDecorator {
     }
 
     private Optional<String> getPropagatedTokenFromHeaders(KogitoWorkItem item) {
-       
+
         KogitoProcessInstance processInstance = item.getProcessInstance();
         if (processInstance == null) {
             logger.debug("No process instance available, cannot propagate token from headers");
@@ -152,7 +150,6 @@ public class TokenPropagationDecorator implements AuthDecorator {
             return Optional.empty();
         }
 
-        
         String authHeader = authHeaders.get(0);
         if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
             String token = authHeader.substring(BEARER_PREFIX.length());
@@ -164,9 +161,42 @@ public class TokenPropagationDecorator implements AuthDecorator {
         return Optional.empty();
     }
 
-    private Optional<String> getConfiguredToken(Map<String, Object> parameters) {
-        Optional<String> token = Optional.ofNullable((String) parameters.get(PROPAGATE_TOKEN_PARAM));
-        token.ifPresent(t -> logger.debug("Using configured token from parameters"));
-        return token;
+    private Optional<String> getConfiguredToken(KogitoWorkItem item, Map<String, Object> parameters) {
+        Optional<String> paramToken = Optional.ofNullable((String) parameters.get(PROPAGATE_TOKEN_PARAM));
+        if (paramToken.isPresent()) {
+            logger.debug("Using configured token from parameters (BPMN or injected)");
+            return paramToken;
+        }
+
+        try {
+            if (item.getProcessInstance() == null) {
+                logger.debug("No process instance available, cannot read from ConfigResolver");
+                return Optional.empty();
+            }
+
+            String processId = item.getProcessInstance().getProcessId();
+            String taskName = (String) parameters.getOrDefault("RestServiceCallTaskId", item.getName());
+
+            if (processId == null || taskName == null) {
+                logger.debug("Process ID or task name is null, cannot build configuration key");
+                return Optional.empty();
+            }
+
+            String configKey = String.format("kogito.processes.%s.%s.access_token", processId, taskName);
+
+            Optional<String> configToken = ConfigResolverHolder.getConfigResolver()
+                    .getConfigProperty(configKey, String.class);
+
+            if (configToken.isPresent()) {
+                logger.debug("Using configured token from ConfigResolver with key: {}", configKey);
+                return configToken;
+            } else {
+                logger.debug("No token found in ConfigResolver for key: {}", configKey);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to retrieve token from ConfigResolver", e);
+        }
+
+        return Optional.empty();
     }
 }
