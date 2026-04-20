@@ -125,31 +125,32 @@ public class DMNKogito {
     }
 
     static Optional<InputStream> getDMNModelStream(String path) {
-        logger.info("getDMNModelStream for {}", path);
+        logger.debug("getDMNModelStream for {}", path);
         InputStream toReturn = Application.class.getResourceAsStream(path);
         if (toReturn != null) {
             return Optional.of(toReturn);
         } else {
-            logger.warn("DMN model stream not found in Application.class.getResourceAsStream");
+            logger.debug("DMN model stream not found in Application.class.getResourceAsStream");
         }
         toReturn = Application.class.getClassLoader().getResourceAsStream(path);
         if (toReturn != null) {
             return Optional.of(toReturn);
         } else {
-            logger.warn("DMN model stream not found in Application.class.getClassLoader().getResourceAsStream");
+            logger.debug("DMN model stream not found in Application.class.getClassLoader().getResourceAsStream");
         }
         toReturn = org.drools.util.IoUtils.class.getClassLoader().getResourceAsStream(path);
         if (toReturn != null) {
             return Optional.of(toReturn);
         } else {
-            logger.warn("DMN model stream not found in org.drools.util.IoUtils.class.getClassLoader().getResourceAsStream");
+            logger.debug("DMN model stream not found in org.drools.util.IoUtils.class.getClassLoader().getResourceAsStream");
         }
         toReturn = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
         if (toReturn != null) {
             return Optional.of(toReturn);
         } else {
-            logger.warn("DMN model stream not found in Thread.currentThread().getContextClassLoader().getResourceAsStream");
+            logger.debug("DMN model stream not found in Thread.currentThread().getContextClassLoader().getResourceAsStream");
         }
+        logger.warn("DMN model stream not found!!!");
         return Optional.empty();
     }
 
