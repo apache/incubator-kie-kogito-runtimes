@@ -18,30 +18,62 @@
  */
 package org.kie.kogito.quarkus.common.deployment;
 
+import java.io.File;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
+import java.util.Properties;
 
+import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.codegen.api.context.KogitoApplicationPropertyProvider;
 
-import static java.util.stream.Collectors.toSet;
+import static org.drools.codegen.common.DroolsModelBuildContext.APPLICATION_PROPERTIES_YAML_FILE_NAME;
+import static org.drools.codegen.common.DroolsModelBuildContext.APPLICATION_PROPERTIES_YML_FILE_NAME;
+import static org.kie.kogito.codegen.api.context.impl.AbstractKogitoBuildContext.loadYmlProperties;
+import static org.kie.kogito.internal.utils.ConversionUtils.convert;
 
 public class KogitoQuarkusApplicationPropertiesProvider implements KogitoApplicationPropertyProvider {
 
+    private final Properties properties;
+
+    public KogitoQuarkusApplicationPropertiesProvider() {
+        this.properties = new Properties();
+        Config config = ConfigProvider.getConfig();
+        config.getPropertyNames().forEach(property -> {
+            Optional<String> storedProperty = config.getOptionalValue(property, String.class);
+            if (storedProperty.isPresent()) {
+                this.properties.put(property, storedProperty.get());
+            } else {
+                this.properties.put(property, "");
+            }
+        });
+        URL ymlResource = Thread.currentThread().getContextClassLoader().getResource(APPLICATION_PROPERTIES_YML_FILE_NAME);
+        if (ymlResource != null) {
+            File ymlFile = new File(ymlResource.getFile());
+            loadYmlProperties(ymlFile, properties);
+        }
+        URL yamlResource = Thread.currentThread().getContextClassLoader().getResource(APPLICATION_PROPERTIES_YAML_FILE_NAME);
+        if (yamlResource != null) {
+            File yamlFile = new File(yamlResource.getFile());
+            loadYmlProperties(yamlFile, properties);
+        }
+
+    }
+
     @Override
     public Optional<String> getApplicationProperty(String property) {
-        return ConfigProvider.getConfig().getOptionalValue(property, String.class);
+        return Optional.ofNullable(properties.getProperty(property));
     }
 
     @Override
     public Collection<String> getApplicationProperties() {
-        return StreamSupport.stream(ConfigProvider.getConfig().getPropertyNames().spliterator(), false).collect(toSet());
+        return properties.stringPropertyNames();
     }
 
     @Override
     public <T> Optional<T> getApplicationProperty(String property, Class<T> clazz) {
-        return ConfigProvider.getConfig().getOptionalValue(property, clazz);
+        return Optional.ofNullable(convert(properties.getProperty(property), clazz));
     }
 
     @Override

@@ -112,7 +112,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         return applicationProperties;
     }
 
-    protected static void loadYmlProperties(File ymlFile, Properties applicationProperties) {
+    public static void loadYmlProperties(File ymlFile, Properties applicationProperties) {
         Map<String, String> ymlMap = loadYmlStringMap(ymlFile);
         if (ymlMap != null) {
             applicationProperties.putAll(ymlMap);
