@@ -79,10 +79,12 @@ public class KogitoQuarkusApplicationPropertiesProvider implements KogitoApplica
     @Override
     public void setApplicationProperty(String key, String value) {
         System.setProperty(key, value);
+        properties.put(key, value);
     }
 
     @Override
     public void removeApplicationProperty(String key) {
         System.clearProperty(key);
+        properties.remove(key);
     }
 }
