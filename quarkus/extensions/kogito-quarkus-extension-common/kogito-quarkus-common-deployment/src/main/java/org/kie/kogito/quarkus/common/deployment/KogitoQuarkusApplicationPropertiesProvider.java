@@ -18,19 +18,22 @@
  */
 package org.kie.kogito.quarkus.common.deployment;
 
-import java.io.File;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.StreamSupport;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.kie.kogito.codegen.api.context.KogitoApplicationPropertyProvider;
 
 import static org.drools.codegen.common.DroolsModelBuildContext.APPLICATION_PROPERTIES_YAML_FILE_NAME;
 import static org.drools.codegen.common.DroolsModelBuildContext.APPLICATION_PROPERTIES_YML_FILE_NAME;
-import static org.kie.kogito.codegen.api.context.impl.AbstractKogitoBuildContext.loadYmlProperties;
+import static org.drools.codegen.common.context.ModelBuildContextUtils.loadYmlProperties;
 import static org.kie.kogito.internal.utils.ConversionUtils.convert;
 
 public class KogitoQuarkusApplicationPropertiesProvider implements KogitoApplicationPropertyProvider {
@@ -39,26 +42,29 @@ public class KogitoQuarkusApplicationPropertiesProvider implements KogitoApplica
 
     public KogitoQuarkusApplicationPropertiesProvider() {
         this.properties = new Properties();
-        Config config = ConfigProvider.getConfig();
-        config.getPropertyNames().forEach(property -> {
-            Optional<String> storedProperty = config.getOptionalValue(property, String.class);
-            if (storedProperty.isPresent()) {
-                this.properties.put(property, storedProperty.get());
-            } else {
-                this.properties.put(property, "");
+        try (InputStream ymlResourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(APPLICATION_PROPERTIES_YML_FILE_NAME)) {
+            if (ymlResourceStream != null) {
+                loadYmlProperties(ymlResourceStream, properties);
             }
-        });
-        URL ymlResource = Thread.currentThread().getContextClassLoader().getResource(APPLICATION_PROPERTIES_YML_FILE_NAME);
-        if (ymlResource != null) {
-            File ymlFile = new File(ymlResource.getFile());
-            loadYmlProperties(ymlFile, properties);
+        } catch (Exception e) {
+            // Ignore exception and continue loading properties from yaml file if present
         }
-        URL yamlResource = Thread.currentThread().getContextClassLoader().getResource(APPLICATION_PROPERTIES_YAML_FILE_NAME);
-        if (yamlResource != null) {
-            File yamlFile = new File(yamlResource.getFile());
-            loadYmlProperties(yamlFile, properties);
+        try (InputStream yamlResourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(APPLICATION_PROPERTIES_YAML_FILE_NAME)) {
+            if (yamlResourceStream != null) {
+                loadYmlProperties(yamlResourceStream, properties);
+            }
+        } catch (Exception e) {
+            // Ignore exception and continue loading properties from microprofile config
         }
-
+        Config config = ConfigProvider.getConfig();
+        // This is needed to preserve the correct property override order
+        List<ConfigSource> sortedSources = StreamSupport.stream(config.getConfigSources().spliterator(), false).sorted(new ConfigSourceSorted()).toList();
+        sortedSources.forEach(configSource -> configSource.getPropertyNames().forEach(property -> {
+            String value = configSource.getValue(property);
+            if (value != null) {
+                this.properties.put(property, value);
+            }
+        }));
     }
 
     @Override
@@ -86,5 +92,13 @@ public class KogitoQuarkusApplicationPropertiesProvider implements KogitoApplica
     public void removeApplicationProperty(String key) {
         System.clearProperty(key);
         properties.remove(key);
+    }
+
+    private static final class ConfigSourceSorted implements Comparator<ConfigSource> {
+
+        @Override
+        public int compare(ConfigSource o1, ConfigSource o2) {
+            return Integer.compare(o1.getOrdinal(), o2.getOrdinal());
+        }
     }
 }
