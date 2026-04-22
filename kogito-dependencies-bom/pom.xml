@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.kie</groupId>
-        <artifactId>kie-parent</artifactId>
+        <artifactId>kie-parent-drools</artifactId>
         <version>999-SNAPSHOT</version>
         <relativePath/>
     </parent>
@@ -62,13 +62,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.drools</groupId>
-                <artifactId>drools-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.jbpm</groupId>
                 <artifactId>jbpm-addons-mail</artifactId>
                 <version>${project.version}</version>
@@ -81,11 +74,6 @@
             <dependency>
                 <groupId>org.jbpm</groupId>
                 <artifactId>jbpm-addons-usertask-storage-jpa</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kie</groupId>
-                <artifactId>efesto-dependencies</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -218,39 +206,6 @@
             </dependency>
             <dependency>
                 <groupId>org.kie</groupId>
-                <artifactId>kie-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kie</groupId>
-                <artifactId>kie-core-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.kie</groupId>
-                <artifactId>kie-dmn-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.kie</groupId>
-                <artifactId>kie-efesto-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.kie</groupId>
-                <artifactId>kie-pmml-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.kie</groupId>
                 <artifactId>kogito-addons-jobs-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -264,6 +219,13 @@
                 <groupId>org.kie</groupId>
                 <artifactId>kogito-addons-knative-eventing</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kie</groupId>
+                <artifactId>kie-ddl-runtimes</artifactId>
+                <version>${project.version}</version>
+                <classifier>db-scripts</classifier>
+                <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.kie.kogito</groupId>
@@ -326,11 +288,6 @@
             <dependency>
                 <groupId>org.kie.kogito</groupId>
                 <artifactId>jobs-service-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kie.kogito</groupId>
-                <artifactId>kogito-addons-jobs-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!--  COMMON -->
@@ -657,7 +614,7 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- Those are needed due to exclusion in kie-parent-bom -->
+        <!-- Those are needed due to exclusion in kie-parent-drools -->
         <dependency>
             <groupId>org.eclipse.jetty.toolchain</groupId>
             <artifactId>jetty-jakarta-servlet-api</artifactId>

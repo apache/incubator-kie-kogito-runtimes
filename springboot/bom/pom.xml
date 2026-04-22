@@ -34,7 +34,7 @@
         <!-- Used to define which poms are allowed to have dependencyManagement sections. This is to enforce the convention that only the root pom should have dependencyManagement, and all other poms should inherit from it. -->
         <allowedPomsList>org.kie.kogito:kogito-spring-boot-bom</allowedPomsList>
         <version.jakarta.servlet>6.0.0</version.jakarta.servlet>
-        <!-- This is needed to override the default version inherited from kie-parent -->
+        <!-- This is needed to override the default version inherited from kie-parent-drools -->
         <version.mongodb-driver-sync>5.5.2</version.mongodb-driver-sync>
         <version.org.springdoc>2.8.13</version.org.springdoc>
         <version.org.springframework.cloud>2025.0.1</version.org.springframework.cloud>
