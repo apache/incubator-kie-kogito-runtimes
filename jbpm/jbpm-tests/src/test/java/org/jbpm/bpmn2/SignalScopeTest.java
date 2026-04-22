@@ -18,12 +18,16 @@
  */
 package org.jbpm.bpmn2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.signalscope.*;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
+import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.SignalFactory;
@@ -53,7 +57,7 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
 
     /**
      * Test that default scope broadcasts signal to all process instances.
-     * This verifies that project scope behaves identically to default scope.
+     * This verifies that the default scope broadcasts signals to waiting process instances.
      * Uses two separate processes: one that throws the signal, one that catches it.
      */
     @Test
@@ -66,12 +70,12 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         catcherInstance.start();
         assertThat(catcherInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
 
-        // Create thrower process instance that will send signal with project scope
+        // Create thrower process instance that will send signal with default scope
         Process<SignalScopeEmitDefaultModel> throwerProcess = SignalScopeEmitDefaultProcess.newProcess(app);
         ProcessInstance<SignalScopeEmitDefaultModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
 
-        // Thrower completes immediately (no user task), sending signal with project scope
+        // Thrower completes immediately (no user task), sending signal with default scope
         // Both processes should complete - thrower sent signal, catcher received it
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         assertInstanceWasCompleted(app, catcherInstance.id());
@@ -153,12 +157,12 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         assertThat(catcherInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         assertThat(handler.getWorkItems()).hasSize(1);
 
-        // Create thrower process instance that will send signal with project scope
+        // Create thrower process instance that will send signal with default scope
         Process<SignalScopeEmitDefaultModel> throwerProcess = SignalScopeEmitDefaultProcess.newProcess(app);
         ProcessInstance<SignalScopeEmitDefaultModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
 
-        // Thrower completes immediately (no user task), sending signal with project scope
+        // Thrower completes immediately (no user task), sending signal with default scope
         // Both processes should complete - thrower sent signal, catcher received it
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         assertInstanceWasCompleted(app, catcherInstance.id());
@@ -223,11 +227,113 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
     }
 
     // ========================================
+    // START EVENT TESTS
+    // ========================================
+
+    /**
+     * Test that default scope signal starts process.
+     */
+    @Test
+    public void testStartEventWithDefaultScope() {
+        Application app = ProcessTestHelper.newApplication();
+        final List<org.kie.api.runtime.process.ProcessInstance> startedProcesses = new ArrayList<>();
+        ProcessTestHelper.registerProcessEventListener(app, new DefaultKogitoProcessEventListener() {
+            @Override
+            public void beforeProcessStarted(org.kie.api.event.process.ProcessStartedEvent event) {
+                if (!event.getProcessInstance().getProcessId().contains("Emit")) { //we don't want thrower process to be saved
+                    startedProcesses.add(event.getProcessInstance());
+                }
+            }
+        });
+        TestWorkItemHandler handler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(app, "Human Task", handler);
+
+        // Create process that waits for signal to start instance
+        Process<SignalScopeStartEventModel> eventStartedProcess = SignalScopeStartEventProcess.newProcess(app);
+
+        // Create thrower process instance that will send signal with default scope
+        Process<SignalScopeEmitDefaultModel> throwerProcess = SignalScopeEmitDefaultProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitDefaultModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        throwerInstance.start();
+
+        // Thrower completes immediately (no user task), sending signal with default scope
+        assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        // Process invoked by startEvent should be waiting in the ACTIVE state
+        assertThat(startedProcesses).hasSize(1);
+        assertThat(startedProcesses).extracting(org.kie.api.runtime.process.ProcessInstance::getProcessId).containsExactly("SignalScopeStartEvent");
+        assertThat(startedProcesses.get(0).getState()).isEqualTo((org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE));
+    }
+
+    /**
+     * Test that project scope signal starts process.
+     */
+    @Test
+    public void testStartEventWithProjectScope() {
+        Application app = ProcessTestHelper.newApplication();
+        final List<org.kie.api.runtime.process.ProcessInstance> startedProcesses = new ArrayList<>();
+        ProcessTestHelper.registerProcessEventListener(app, new DefaultKogitoProcessEventListener() {
+            @Override
+            public void beforeProcessStarted(org.kie.api.event.process.ProcessStartedEvent event) {
+                if (!event.getProcessInstance().getProcessId().contains("Emit")) { //we don't want thrower process to be saved
+                    startedProcesses.add(event.getProcessInstance());
+                }
+            }
+        });
+        TestWorkItemHandler handler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(app, "Human Task", handler);
+
+        // Create process that waits for signal to start instance
+        Process<SignalScopeStartEventModel> eventStartedProcess = SignalScopeStartEventProcess.newProcess(app);
+
+        // Create thrower process instance that will send signal with project scope
+        Process<SignalScopeEmitProjectModel> throwerProcess = SignalScopeEmitProjectProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitProjectModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        throwerInstance.start();
+
+        // Thrower completes immediately (no user task), sending signal with project scope
+        assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        // Process invoked by startEvent should be waiting in the ACTIVE state
+        assertThat(startedProcesses).hasSize(1);
+        assertThat(startedProcesses).extracting(org.kie.api.runtime.process.ProcessInstance::getProcessId).containsExactly("SignalScopeStartEvent");
+        assertThat(startedProcesses.get(0).getState()).isEqualTo((org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE));
+    }
+
+    /**
+     * Test that processInstance scope signal does not start process.
+     */
+    @Test
+    public void testStartEventWithProcessInstanceScope() {
+        Application app = ProcessTestHelper.newApplication();
+        final List<org.kie.api.runtime.process.ProcessInstance> startedProcesses = new ArrayList<>();
+        ProcessTestHelper.registerProcessEventListener(app, new DefaultKogitoProcessEventListener() {
+            @Override
+            public void beforeProcessStarted(org.kie.api.event.process.ProcessStartedEvent event) {
+                if (!event.getProcessInstance().getProcessId().contains("Emit")) { //we don't want thrower process to be saved
+                    startedProcesses.add(event.getProcessInstance());
+                }
+            }
+        });
+
+        // Create process that waits for signal to start instance
+        Process<SignalScopeStartEventModel> eventStartedProcess = SignalScopeStartEventProcess.newProcess(app);
+
+        // Create thrower process instance that will send signal with processInstance scope
+        Process<SignalScopeEmitProcessInstanceModel> throwerProcess = SignalScopeEmitProcessInstanceProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitProcessInstanceModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        throwerInstance.start();
+
+        // Thrower completes immediately (no user task), sending signal with processInstance scope
+        assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        // No process instance should be started because of processInstance signal scope
+        assertThat(startedProcesses).hasSize(0);
+    }
+
+    // ========================================
     // MULTIPLE INSTANCES
     // ========================================
 
     /**
-     * Verify that project/default scope broadcasts to MULTIPLE process instances.
+     * Verify that broadcast signaling reaches MULTIPLE process instances.
      */
     @Test
     public void testProjectScopeBroadcastsToMultipleInstances() {
