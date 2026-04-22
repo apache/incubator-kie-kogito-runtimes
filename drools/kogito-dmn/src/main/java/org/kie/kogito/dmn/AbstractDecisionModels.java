@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractDecisionModels implements DecisionModels {
 
-    public static final String DMN_MODEL_PATHS_FILE = "modelPaths.txt";
+    public static final String DMN_MODEL_PATHS_FILE = "dmnModelPaths.txt";
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDecisionModels.class);
     private static final boolean CAN_PLATFORM_CLASSLOAD = org.kie.dmn.feel.util.ClassLoaderUtil.CAN_PLATFORM_CLASSLOAD;
     private static DMNRuntime dmnRuntime = null;

@@ -62,6 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.dmn.AbstractDecisionModels.DMN_MODEL_PATHS_FILE;
 import static org.kie.kogito.services.jobs.impl.StaticJobService.staticJobService;
 
 public abstract class AbstractCodegenIT {
@@ -200,7 +201,7 @@ public abstract class AbstractCodegenIT {
         String modelPathsFilePath = null;
         for (GeneratedFile entry : generatedFiles) {
             String fileName = entry.relativePath();
-            if (fileName.contains("modelPaths.txt")) {
+            if (fileName.contains(DMN_MODEL_PATHS_FILE)) {
                 Path fpath = temp.resolve(entry.relativePath());
                 fpath.getParent().toFile().mkdirs();
                 Files.write(fpath, entry.contents());
