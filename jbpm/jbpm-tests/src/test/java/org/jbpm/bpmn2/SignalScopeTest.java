@@ -35,19 +35,12 @@ import org.kie.kogito.process.SignalFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test class for signal scopes in Kogito, focusing on the new "project" scope.
- *
- * The "project" scope was added for backwards compatibility with jBPM v8, where it was used
- * to signal across all sessions in a deployment. In Kogito, it behaves identically to "default" scope.
+ * Test class for signal scopes in Kogito.
  *
  * Signal Scopes:
  * - default: Broadcasts to all process instances
  * - project: Broadcasts to all process instances (same as default, for jBPM backwards compatibility)
  * - processInstance: Signals only the current process instance
- *
- * Test Strategy:
- * - Intermediate and boundary event tests use separate thrower and catcher processes
- * - Multiple instances tests use process.send() to broadcast signals and verify broadcasting behavior
  */
 public class SignalScopeTest extends JbpmBpmn2TestCase {
 
@@ -70,12 +63,11 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         catcherInstance.start();
         assertThat(catcherInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
 
-        // Create thrower process instance that will send signal with default scope
-        Process<SignalScopeEmitDefaultModel> throwerProcess = SignalScopeEmitDefaultProcess.newProcess(app);
-        ProcessInstance<SignalScopeEmitDefaultModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        // Create thrower process instance that sends signal with default scope. Thrower completes immediately (no user task).
+        Process<SignalScopeEmitDefaultScopeSignalModel> throwerProcess = SignalScopeEmitDefaultScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitDefaultScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
 
-        // Thrower completes immediately (no user task), sending signal with default scope
         // Both processes should complete - thrower sent signal, catcher received it
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         assertInstanceWasCompleted(app, catcherInstance.id());
@@ -96,12 +88,11 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         catcherInstance.start();
         assertThat(catcherInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
 
-        // Create thrower process instance that will send signal with project scope
-        Process<SignalScopeEmitProjectModel> throwerProcess = SignalScopeEmitProjectProcess.newProcess(app);
-        ProcessInstance<SignalScopeEmitProjectModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        // Create thrower process instance that sends signal with project scope. Thrower completes immediately (no user task)
+        Process<SignalScopeEmitProjectScopeSignalModel> throwerProcess = SignalScopeEmitProjectScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitProjectScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
 
-        // Thrower completes immediately (no user task), sending signal with project scope
         // Both processes should complete - thrower sent signal, catcher received it
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         assertInstanceWasCompleted(app, catcherInstance.id());
@@ -122,17 +113,16 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         catcherInstance.start();
         assertThat(catcherInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
 
-        // Create thrower process that will send signal with processInstance scope
-        Process<SignalScopeEmitProcessInstanceModel> throwerProcess = SignalScopeEmitProcessInstanceProcess.newProcess(app);
-        ProcessInstance<SignalScopeEmitProcessInstanceModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        // Create thrower process that sends signal with processInstance scope. Thrower completes immediately (no user task)
+        Process<SignalScopeEmitProcessInstanceScopeSignalModel> throwerProcess = SignalScopeEmitProcessInstanceScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitProcessInstanceScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
 
-        // Thrower completes immediately (no user task), sending signal with processInstance scope
         // Thrower should complete, but catcher should still be waiting (signal didn't reach it)
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         assertThat(catcherInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
 
-        // Let's now programmatically send a signal from within catcherInstance. Instance should complete.
+        // Sending a signal programmatically from within catcherInstance. Instance should complete now.
         catcherInstance.send(SignalFactory.of("testSignal", "intermediate-data"));
         assertInstanceWasCompleted(app, catcherInstance.id());
     }
@@ -157,12 +147,11 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         assertThat(catcherInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         assertThat(handler.getWorkItems()).hasSize(1);
 
-        // Create thrower process instance that will send signal with default scope
-        Process<SignalScopeEmitDefaultModel> throwerProcess = SignalScopeEmitDefaultProcess.newProcess(app);
-        ProcessInstance<SignalScopeEmitDefaultModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        // Create thrower process instance that sends signal with default scope. Thrower completes immediately (no user task).
+        Process<SignalScopeEmitDefaultScopeSignalModel> throwerProcess = SignalScopeEmitDefaultScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitDefaultScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
 
-        // Thrower completes immediately (no user task), sending signal with default scope
         // Both processes should complete - thrower sent signal, catcher received it
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         assertInstanceWasCompleted(app, catcherInstance.id());
@@ -184,12 +173,11 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         assertThat(catcherInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         assertThat(handler.getWorkItems()).hasSize(1);
 
-        // Create thrower process instance that will send signal with project scope
-        Process<SignalScopeEmitProjectModel> throwerProcess = SignalScopeEmitProjectProcess.newProcess(app);
-        ProcessInstance<SignalScopeEmitProjectModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        // Create thrower process instance that will send signal with project scope. Thrower completes immediately (no user task).
+        Process<SignalScopeEmitProjectScopeSignalModel> throwerProcess = SignalScopeEmitProjectScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitProjectScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
 
-        // Thrower completes immediately (no user task), sending signal with project scope
         // Both processes should complete - thrower sent signal, catcher received it
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         assertInstanceWasCompleted(app, catcherInstance.id());
@@ -211,17 +199,16 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         assertThat(catcherInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         assertThat(handler.getWorkItems()).hasSize(1);
 
-        // Create thrower process that will send signal with processInstance scope
-        Process<SignalScopeEmitProcessInstanceModel> throwerProcess = SignalScopeEmitProcessInstanceProcess.newProcess(app);
-        ProcessInstance<SignalScopeEmitProcessInstanceModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        // Create thrower process that will send signal with processInstance scope. Thrower completes immediately (no user task).
+        Process<SignalScopeEmitProcessInstanceScopeSignalModel> throwerProcess = SignalScopeEmitProcessInstanceScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitProcessInstanceScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
 
-        // Thrower completes immediately (no user task), sending signal with processInstance scope
         // Thrower should complete, but catcher should still be waiting (signal didn't reach it)
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         assertThat(catcherInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
 
-        // Let's now programmatically send a signal from within catcherInstance. Instance should complete.
+        // Sending a signal programmatically from within catcherInstance. Instance should complete now.
         catcherInstance.send(SignalFactory.of("testSignal", "boundary-data"));
         assertInstanceWasCompleted(app, catcherInstance.id());
     }
@@ -251,13 +238,12 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         // Create process that waits for signal to start instance
         Process<SignalScopeStartEventModel> eventStartedProcess = SignalScopeStartEventProcess.newProcess(app);
 
-        // Create thrower process instance that will send signal with default scope
-        Process<SignalScopeEmitDefaultModel> throwerProcess = SignalScopeEmitDefaultProcess.newProcess(app);
-        ProcessInstance<SignalScopeEmitDefaultModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        // Create thrower process instance that will send signal with default scope. It completes immediately.
+        Process<SignalScopeEmitDefaultScopeSignalModel> throwerProcess = SignalScopeEmitDefaultScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitDefaultScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
-
-        // Thrower completes immediately (no user task), sending signal with default scope
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
         // Process invoked by startEvent should be waiting in the ACTIVE state
         assertThat(startedProcesses).hasSize(1);
         assertThat(startedProcesses).extracting(org.kie.api.runtime.process.ProcessInstance::getProcessId).containsExactly("SignalScopeStartEvent");
@@ -285,13 +271,12 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         // Create process that waits for signal to start instance
         Process<SignalScopeStartEventModel> eventStartedProcess = SignalScopeStartEventProcess.newProcess(app);
 
-        // Create thrower process instance that will send signal with project scope
-        Process<SignalScopeEmitProjectModel> throwerProcess = SignalScopeEmitProjectProcess.newProcess(app);
-        ProcessInstance<SignalScopeEmitProjectModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        // Create thrower process instance that will send signal with project scope. It completes immediately.
+        Process<SignalScopeEmitProjectScopeSignalModel> throwerProcess = SignalScopeEmitProjectScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitProjectScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
-
-        // Thrower completes immediately (no user task), sending signal with project scope
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
         // Process invoked by startEvent should be waiting in the ACTIVE state
         assertThat(startedProcesses).hasSize(1);
         assertThat(startedProcesses).extracting(org.kie.api.runtime.process.ProcessInstance::getProcessId).containsExactly("SignalScopeStartEvent");
@@ -299,7 +284,7 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
     }
 
     /**
-     * Test that processInstance scope signal does not start process.
+     * Test that processInstance scope signal does NOT start process.
      */
     @Test
     public void testStartEventWithProcessInstanceScope() {
@@ -317,13 +302,12 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         // Create process that waits for signal to start instance
         Process<SignalScopeStartEventModel> eventStartedProcess = SignalScopeStartEventProcess.newProcess(app);
 
-        // Create thrower process instance that will send signal with processInstance scope
-        Process<SignalScopeEmitProcessInstanceModel> throwerProcess = SignalScopeEmitProcessInstanceProcess.newProcess(app);
-        ProcessInstance<SignalScopeEmitProcessInstanceModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        // Create thrower process instance that will send signal with processInstance scope. It completes immediately.
+        Process<SignalScopeEmitProcessInstanceScopeSignalModel> throwerProcess = SignalScopeEmitProcessInstanceScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitProcessInstanceScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
         throwerInstance.start();
-
-        // Thrower completes immediately (no user task), sending signal with processInstance scope
         assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
         // No process instance should be started because of processInstance signal scope
         assertThat(startedProcesses).hasSize(0);
     }
@@ -333,7 +317,44 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
     // ========================================
 
     /**
-     * Verify that broadcast signaling reaches MULTIPLE process instances.
+     * Verify that broadcast signaling with default scope reaches multiple process instances.
+     */
+    @Test
+    public void testDefaultScopeBroadcastsToMultipleInstances() {
+        Application app = ProcessTestHelper.newApplication();
+        TestWorkItemHandler handler = new TestWorkItemHandler();
+        ProcessTestHelper.registerHandler(app, "Human Task", handler);
+
+        Process<SignalScopeCatchSignalBoundaryEventModel> process =
+                SignalScopeCatchSignalBoundaryEventProcess.newProcess(app);
+
+        // Start THREE instances - all should wait for the signal
+        ProcessInstance<SignalScopeCatchSignalBoundaryEventModel> instance1 = process.createInstance(process.createModel());
+        instance1.start();
+        ProcessInstance<SignalScopeCatchSignalBoundaryEventModel> instance2 = process.createInstance(process.createModel());
+        instance2.start();
+        ProcessInstance<SignalScopeCatchSignalBoundaryEventModel> instance3 = process.createInstance(process.createModel());
+        instance3.start();
+
+        assertThat(instance1.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        assertThat(instance2.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        assertThat(instance3.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        assertThat(handler.getWorkItems()).hasSize(3);
+
+        // Create thrower process instance that will send signal with project scope.
+        Process<SignalScopeEmitDefaultScopeSignalModel> throwerProcess = SignalScopeEmitDefaultScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitDefaultScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        throwerInstance.start();
+        assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+
+        // All three instances should complete
+        assertInstanceWasCompleted(app, instance1.id());
+        assertInstanceWasCompleted(app, instance2.id());
+        assertInstanceWasCompleted(app, instance3.id());
+    }
+
+    /**
+     * Verify that broadcast signaling with project scope reaches multiple process instances.
      */
     @Test
     public void testProjectScopeBroadcastsToMultipleInstances() {
@@ -357,8 +378,11 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         assertThat(instance3.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
         assertThat(handler.getWorkItems()).hasSize(3);
 
-        // Send signal - should reach ALL instances (sending from process => project scope == default scope)
-        process.send(SignalFactory.of("testSignal", "project-boundary-data"));
+        // Create thrower process instance that will send signal with project scope.
+        Process<SignalScopeEmitProjectScopeSignalModel> throwerProcess = SignalScopeEmitProjectScopeSignalProcess.newProcess(app);
+        ProcessInstance<SignalScopeEmitProjectScopeSignalModel> throwerInstance = throwerProcess.createInstance(throwerProcess.createModel());
+        throwerInstance.start();
+        assertThat(throwerInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
 
         // All three instances should complete
         assertInstanceWasCompleted(app, instance1.id());
@@ -391,7 +415,6 @@ public class SignalScopeTest extends JbpmBpmn2TestCase {
         instance1.send(SignalFactory.of("testSignal", "instance-boundary-data"));
 
         // Only instance1 should complete, instance2 should remain active
-        //assertInstanceWasCompleted(app, instance1.id());
         assertThat(instance1.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         assertThat(instance2.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
     }
