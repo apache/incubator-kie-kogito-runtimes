@@ -39,8 +39,10 @@ import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.InitializerDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -48,6 +50,8 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
@@ -60,6 +64,7 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     protected static final String PMML_FUNCTION = PMML_ABSTRACT_CLASS + ".kieRuntimeFactoryFunction";
     static final String MONITORED_DECISIONMODEL_TRANSFORMER = "org.kie.kogito.monitoring.core.common.decision.MonitoredDecisionModelTransformer";
     private static final String SECTION_CLASS_NAME = "DecisionModels";
+    private static final int CHUNK_SIZE = 1000;
 
     private final String applicationCanonicalName;
     private final Collection<CollectedResource> resources;
@@ -104,13 +109,42 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
         setupCustomDMNProfiles(initMethod, customDMNProfiles);
         setupEnableRuntimeTypeCheckOption(initMethod, enableRuntimeTypeCheckOption);
 
-        for (CollectedResource resource : resources) {
-            Optional<String> encoding = determineEncoding(resource);
-            MethodCallExpr getResAsStream = getReadResourceMethod(applicationClass, resource);
-            MethodCallExpr isr = new MethodCallExpr("readResource").addArgument(getResAsStream);
-            encoding.map(StringLiteralExpr::new).ifPresent(isr::addArgument);
-            initMethod.addArgument(isr);
+        List<CollectedResource> resourceList = new ArrayList<>(resources);
+        List<List<CollectedResource>> chunks = CodegenUtils.partitionList(resourceList, CHUNK_SIZE);
+
+        NodeList<Expression> chunkMethodCalls = new NodeList<>();
+
+        for (int i = 0; i < chunks.size(); i++) {
+            String methodName = "loadDmnResources_" + i;
+
+            MethodDeclaration chunkMethod = compilationUnit.getClassByName(SECTION_CLASS_NAME).get()
+                    .addMethod(methodName, Modifier.Keyword.PRIVATE, Modifier.Keyword.STATIC);
+
+            ClassOrInterfaceType listType = StaticJavaParser.parseClassOrInterfaceType("java.util.List<java.io.Reader>");
+            chunkMethod.setType(listType);
+
+            BlockStmt body = new BlockStmt();
+            body.addStatement("java.util.List<java.io.Reader> readers = new java.util.ArrayList<>();");
+
+            for (CollectedResource resource : chunks.get(i)) {
+                Optional<String> encoding = determineEncoding(resource);
+                MethodCallExpr getResAsStream = getReadResourceMethod(applicationClass, resource);
+                MethodCallExpr isr = new MethodCallExpr("readResource").addArgument(getResAsStream);
+                encoding.map(StringLiteralExpr::new).ifPresent(isr::addArgument);
+
+                body.addStatement(new MethodCallExpr(new NameExpr("readers"), "add").addArgument(isr));
+            }
+            body.addStatement(new ReturnStmt("readers"));
+            chunkMethod.setBody(body);
+
+            chunkMethodCalls.add(new MethodCallExpr(methodName));
         }
+
+        MethodCallExpr streamOf = new MethodCallExpr(new NameExpr("java.util.stream.Stream"), "of").setArguments(chunkMethodCalls);
+        MethodCallExpr flatMap = new MethodCallExpr(streamOf, "flatMap").addArgument(new NameExpr("java.util.Collection::stream"));
+        MethodCallExpr toArray = new MethodCallExpr(flatMap, "toArray").addArgument(new NameExpr("java.io.Reader[]::new"));
+
+        initMethod.addArgument(toArray);
 
         return compilationUnit;
     }

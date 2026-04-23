@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.jbpm.compiler.canonical.builtin.ReturnValueEvaluatorBuilderService;
 import org.jbpm.compiler.canonical.descriptors.ExpressionUtils;
@@ -53,6 +52,8 @@ import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
+import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
@@ -83,6 +84,7 @@ import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VISIBILITY;
 public class ProcessVisitor extends AbstractVisitor {
 
     public static final String DEFAULT_VERSION = "1.0";
+    private static final int CHUNK_SIZE = 100;
 
     private NodeVisitorBuilderService nodeVisitorService;
 
@@ -96,6 +98,9 @@ public class ProcessVisitor extends AbstractVisitor {
     public void visitProcess(WorkflowProcess process, MethodDeclaration processMethod, ProcessMetaData metadata) {
         BlockStmt body = new BlockStmt();
         processMethod.setBody(body);
+
+        ClassOrInterfaceDeclaration parentClass = processMethod.findAncestor(ClassOrInterfaceDeclaration.class)
+                .orElseThrow(() -> new IllegalStateException("Process method must be inside a class"));
 
         ClassOrInterfaceType processFactoryType = new ClassOrInterfaceType(null, RuleFlowProcessFactory.class.getSimpleName());
 
@@ -149,10 +154,10 @@ public class ProcessVisitor extends AbstractVisitor {
         for (org.kie.api.definition.process.Node procNode : process.getNodes()) {
             processNodes.add((Node) procNode);
         }
-        visitNodes(processNodes, body, variableScope, metadata);
-        //exception scope
-        visitExceptionScope(process, body);
-        visitConnections(process.getNodes(), body);
+        visitNodesChunked(processNodes, body, variableScope, metadata, parentClass);
+        Context rootExceptionContext = ((org.jbpm.workflow.core.WorkflowProcess) process).getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
+        visitContextExceptionScope(rootExceptionContext, body);
+        visitConnectionsChunked(process.getNodes(), body, parentClass);
 
         body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VALIDATE));
 
@@ -223,14 +228,46 @@ public class ProcessVisitor extends AbstractVisitor {
         }
     }
 
-    private <U extends org.kie.api.definition.process.Node> void visitNodes(List<U> nodes, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        for (U node : nodes) {
-            @SuppressWarnings("unchecked")
-            AbstractNodeVisitor<U> visitor = (AbstractNodeVisitor<U>) this.nodeVisitorService.findNodeVisitor(node.getClass());
-            if (visitor == null) {
-                throw new IllegalStateException("No visitor found for node " + node.getClass().getName());
+    private <U extends org.kie.api.definition.process.Node> void visitNodesChunked(
+            List<U> nodes, BlockStmt mainBody, VariableScope variableScope, ProcessMetaData metadata, ClassOrInterfaceDeclaration parentClass) {
+
+        List<List<U>> chunks = partitionList(nodes, CHUNK_SIZE);
+
+        for (int i = 0; i < chunks.size(); i++) {
+            String methodName = "buildNodes_" + i;
+
+            MethodDeclaration chunkMethod = parentClass.addMethod(methodName, Modifier.Keyword.PRIVATE);
+            chunkMethod.addParameter(RuleFlowProcessFactory.class, FACTORY_FIELD_NAME);
+
+            BlockStmt chunkBody = new BlockStmt();
+            chunkMethod.setBody(chunkBody);
+
+            for (U node : chunks.get(i)) {
+                @SuppressWarnings("unchecked")
+                AbstractNodeVisitor<U> visitor = (AbstractNodeVisitor<U>) this.nodeVisitorService.findNodeVisitor(node.getClass());
+                if (visitor == null) {
+                    throw new IllegalStateException("No visitor found for node " + node.getClass().getName());
+                }
+
+                visitor.visitNodeEntryPoint(null, node, chunkBody, variableScope, metadata);
+
+                // recursively process exception scopes for the node and its children
+                processNodeExceptionScope(node, chunkBody);
             }
-            visitor.visitNodeEntryPoint(null, node, body, variableScope, metadata);
+
+            mainBody.addStatement(new MethodCallExpr(methodName).addArgument(FACTORY_FIELD_NAME));
+        }
+    }
+
+    private void processNodeExceptionScope(org.kie.api.definition.process.Node node, BlockStmt body) {
+        if (node instanceof ContextContainer) {
+            Context context = ((ContextContainer) node).getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
+            visitContextExceptionScope(context, body);
+        }
+        if (node instanceof NodeContainer) {
+            for (org.kie.api.definition.process.Node child : ((NodeContainer) node).getNodes()) {
+                processNodeExceptionScope(child, body);
+            }
         }
     }
 
@@ -243,17 +280,39 @@ public class ProcessVisitor extends AbstractVisitor {
         return visitor != null ? visitor.getNodeId(((Node) contextContainer)) : FACTORY_FIELD_NAME;
     }
 
-    private void visitConnections(org.kie.api.definition.process.Node[] nodes, BlockStmt body) {
-
+    private void visitConnectionsChunked(org.kie.api.definition.process.Node[] nodes, BlockStmt mainBody, ClassOrInterfaceDeclaration parentClass) {
         List<Connection> connections = new ArrayList<>();
         for (org.kie.api.definition.process.Node node : nodes) {
             for (List<Connection> connectionList : node.getIncomingConnections().values()) {
                 connections.addAll(connectionList);
             }
         }
-        for (Connection connection : connections) {
-            visitConnection(connection, body);
+
+        List<List<Connection>> chunks = partitionList(connections, CHUNK_SIZE);
+
+        for (int i = 0; i < chunks.size(); i++) {
+            String methodName = "buildConnections_" + i;
+
+            MethodDeclaration chunkMethod = parentClass.addMethod(methodName, Modifier.Keyword.PRIVATE);
+            chunkMethod.addParameter(RuleFlowProcessFactory.class, FACTORY_FIELD_NAME);
+
+            BlockStmt chunkBody = new BlockStmt();
+            chunkMethod.setBody(chunkBody);
+
+            for (Connection connection : chunks.get(i)) {
+                visitConnection(connection, chunkBody);
+            }
+
+            mainBody.addStatement(new MethodCallExpr(methodName).addArgument(FACTORY_FIELD_NAME));
         }
+    }
+
+    private <T> List<List<T>> partitionList(List<T> list, int chunkSize) {
+        List<List<T>> partitions = new ArrayList<>();
+        for (int i = 0; i < list.size(); i += chunkSize) {
+            partitions.add(list.subList(i, Math.min(i + chunkSize, list.size())));
+        }
+        return partitions;
     }
 
     // KOGITO-1882 Finish implementation or delete completely
@@ -286,18 +345,6 @@ public class ProcessVisitor extends AbstractVisitor {
         }
     }
 
-    private void visitExceptionScope(Process process, BlockStmt body) {
-        if (!(process instanceof org.jbpm.workflow.core.WorkflowProcess)) {
-            return;
-        }
-        org.jbpm.workflow.core.WorkflowProcess workflowProcess = (org.jbpm.workflow.core.WorkflowProcess) process;
-        Context context = workflowProcess.getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
-        //root process
-        visitContextExceptionScope(context, body);
-        //visit sub-processes
-        visitSubExceptionScope(workflowProcess.getNodes(), body);
-    }
-
     private void visitContextExceptionScope(Context context, BlockStmt body) {
         if (context instanceof ExceptionScope) {
             ((ExceptionScope) context).getExceptionHandlers().entrySet().stream().forEach(e -> {
@@ -313,19 +360,5 @@ public class ProcessVisitor extends AbstractVisitor {
 
             });
         }
-    }
-
-    private void visitSubExceptionScope(org.kie.api.definition.process.Node[] nodes, BlockStmt body) {
-        Stream.of(nodes)
-                .peek(node -> {
-                    //recursively handle subprocesses exception scope
-                    if (node instanceof NodeContainer) {
-                        visitSubExceptionScope(((NodeContainer) node).getNodes(), body);
-                    }
-                })
-                .filter(ContextContainer.class::isInstance)
-                .map(ContextContainer.class::cast)
-                .map(container -> container.getDefaultContext(ExceptionScope.EXCEPTION_SCOPE))
-                .forEach(context -> visitContextExceptionScope(context, body));
     }
 }
