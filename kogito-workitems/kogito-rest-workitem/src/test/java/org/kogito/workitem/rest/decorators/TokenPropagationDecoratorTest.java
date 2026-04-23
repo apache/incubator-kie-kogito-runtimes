@@ -18,18 +18,23 @@
  */
 package org.kogito.workitem.rest.decorators;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.drools.core.common.InternalKnowledgeRuntime;
+import org.jbpm.process.instance.InternalProcessRuntime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kie.kogito.Application;
+import org.kie.kogito.Config;
+import org.kie.kogito.auth.AuthTokenProvider;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.process.ProcessConfig;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -63,22 +68,52 @@ public class TokenPropagationDecoratorTest {
     @Mock
     private KogitoProcessInstance processInstance;
 
+    @Mock
+    private org.jbpm.process.instance.ProcessInstance jbpmProcessInstance;
+
+    @Mock
+    private InternalKnowledgeRuntime knowledgeRuntime;
+
+    @Mock
+    private InternalProcessRuntime internalProcessRuntime;
+
+    @Mock
+    private KogitoProcessRuntime kogitoProcessRuntime;
+
+    @Mock
+    private Application application;
+
+    @Mock
+    private Config config;
+
+    @Mock
+    private ProcessConfig processConfig;
+
+    @Mock
+    private AuthTokenProvider authTokenProvider;
+
     private TokenPropagationDecorator decorator;
     private Map<String, Object> parameters;
-    private Map<String, List<String>> headers;
 
     @BeforeEach
     void setUp() {
         decorator = new TokenPropagationDecorator();
         parameters = new HashMap<>();
-        headers = new HashMap<>();
 
         lenient().when(workItem.getNodeInstance()).thenReturn(nodeInstance);
         lenient().when(nodeInstance.getId()).thenReturn("test-node-123");
         lenient().when(workItem.getName()).thenReturn("TestTask");
         lenient().when(workItem.getProcessInstance()).thenReturn(processInstance);
         lenient().when(processInstance.getProcessId()).thenReturn("testProcess");
-        lenient().when(processInstance.getHeaders()).thenReturn(headers);
+
+        // Setup the chain to access AuthTokenProvider
+        lenient().when(jbpmProcessInstance.getKnowledgeRuntime()).thenReturn(knowledgeRuntime);
+        lenient().when(knowledgeRuntime.getProcessRuntime()).thenReturn(internalProcessRuntime);
+        lenient().when(internalProcessRuntime.getKogitoProcessRuntime()).thenReturn(kogitoProcessRuntime);
+        lenient().when(kogitoProcessRuntime.getApplication()).thenReturn(application);
+        lenient().when(application.config()).thenReturn(config);
+        lenient().when(config.get(ProcessConfig.class)).thenReturn(processConfig);
+        lenient().when(processConfig.authTokenProvider()).thenReturn(authTokenProvider);
     }
 
     @Test
@@ -107,25 +142,13 @@ public class TokenPropagationDecoratorTest {
     @Test
     void testGetBearerToken_PropagateStrategy_WithPropagatedTokenFromHeaders() {
         parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
-        headers.put(AUTHORIZATION_HEADER, List.of(BEARER_PREFIX + PROPAGATED_TOKEN));
+        // Use jbpmProcessInstance directly as the process instance
+        when(workItem.getProcessInstance()).thenReturn((KogitoProcessInstance) jbpmProcessInstance);
+        when(authTokenProvider.getAuthToken()).thenReturn(Optional.of(PROPAGATED_TOKEN));
 
         Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
         assertThat(result).isPresent().contains(PROPAGATED_TOKEN);
-    }
-
-    @Test
-    void testGetBearerToken_PropagateStrategy_FallbackToConfigured() {
-        System.setProperty("kogito.processes.testProcess.TestTask.access_token", CONFIGURED_TOKEN);
-        try {
-            parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
-
-            Optional<String> result = decorator.getBearerToken(workItem, parameters);
-
-            assertThat(result).isPresent().contains(CONFIGURED_TOKEN);
-        } finally {
-            System.clearProperty("kogito.processes.testProcess.TestTask.access_token");
-        }
     }
 
     @Test
@@ -148,48 +171,27 @@ public class TokenPropagationDecoratorTest {
     }
 
     @Test
-    void testGetBearerToken_PropagateStrategy_EmptyHeaders() {
-        System.setProperty("kogito.processes.testProcess.TestTask.access_token", CONFIGURED_TOKEN);
-        try {
-            parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
-            when(processInstance.getHeaders()).thenReturn(Collections.emptyMap());
+    void testGetBearerToken_PropagateStrategy_EmptyToken() {
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
+        // Use jbpmProcessInstance directly as the process instance
+        when(workItem.getProcessInstance()).thenReturn((KogitoProcessInstance) jbpmProcessInstance);
+        when(authTokenProvider.getAuthToken()).thenReturn(Optional.empty());
 
-            Optional<String> result = decorator.getBearerToken(workItem, parameters);
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
-            assertThat(result).isPresent().contains(CONFIGURED_TOKEN);
-        } finally {
-            System.clearProperty("kogito.processes.testProcess.TestTask.access_token");
-        }
+        assertThat(result).isEmpty();
     }
 
     @Test
-    void testGetBearerToken_PropagateStrategy_NoAuthorizationHeader() {
-        System.setProperty("kogito.processes.testProcess.TestTask.access_token", CONFIGURED_TOKEN);
-        try {
-            parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
-            headers.put("Other-Header", List.of("some-value"));
+    void testGetBearerToken_PropagateStrategy_AuthTokenProviderNotAvailable() {
+        parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
+        // Use jbpmProcessInstance directly as the process instance
+        when(workItem.getProcessInstance()).thenReturn((KogitoProcessInstance) jbpmProcessInstance);
+        when(processConfig.authTokenProvider()).thenReturn(null);
 
-            Optional<String> result = decorator.getBearerToken(workItem, parameters);
+        Optional<String> result = decorator.getBearerToken(workItem, parameters);
 
-            assertThat(result).isPresent().contains(CONFIGURED_TOKEN);
-        } finally {
-            System.clearProperty("kogito.processes.testProcess.TestTask.access_token");
-        }
-    }
-
-    @Test
-    void testGetBearerToken_PropagateStrategy_NonBearerAuthorizationHeader() {
-        System.setProperty("kogito.processes.testProcess.TestTask.access_token", CONFIGURED_TOKEN);
-        try {
-            parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
-            headers.put(AUTHORIZATION_HEADER, List.of("Basic dXNlcjpwYXNz"));
-
-            Optional<String> result = decorator.getBearerToken(workItem, parameters);
-
-            assertThat(result).isPresent().contains(CONFIGURED_TOKEN);
-        } finally {
-            System.clearProperty("kogito.processes.testProcess.TestTask.access_token");
-        }
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -247,25 +249,13 @@ public class TokenPropagationDecoratorTest {
     @Test
     void testDecorate_PropagateStrategy_UsesPropagatedTokenFromHeaders() {
         parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
-        headers.put(AUTHORIZATION_HEADER, List.of(BEARER_PREFIX + PROPAGATED_TOKEN));
+        // Use jbpmProcessInstance directly as the process instance
+        when(workItem.getProcessInstance()).thenReturn((KogitoProcessInstance) jbpmProcessInstance);
+        when(authTokenProvider.getAuthToken()).thenReturn(Optional.of(PROPAGATED_TOKEN));
 
         decorator.decorate(workItem, parameters, httpRequest);
 
         verify(httpRequest).bearerTokenAuthentication(PROPAGATED_TOKEN);
-    }
-
-    @Test
-    void testDecorate_PropagateStrategy_FallsBackToConfiguredToken() {
-        System.setProperty("kogito.processes.testProcess.TestTask.access_token", CONFIGURED_TOKEN);
-        try {
-            parameters.put(ACCESS_TOKEN_ACQUISITION_STRATEGY, "propagated");
-
-            decorator.decorate(workItem, parameters, httpRequest);
-
-            verify(httpRequest).bearerTokenAuthentication(CONFIGURED_TOKEN);
-        } finally {
-            System.clearProperty("kogito.processes.testProcess.TestTask.access_token");
-        }
     }
 
     @Test

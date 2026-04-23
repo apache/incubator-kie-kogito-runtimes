@@ -37,11 +37,22 @@ public class NodeCreator<T extends NodeImpl> {
 
     public NodeCreator(NodeContainer nodeContainer, Class<T> clazz) {
         this.nodeContainer = nodeContainer;
-        this.constructor = (Constructor<T>) clazz.getConstructors()[0];
+        // Find the no-argument constructor
+        Constructor<T> noArgConstructor = null;
+        for (Constructor<?> c : clazz.getConstructors()) {
+            if (c.getParameterCount() == 0) {
+                noArgConstructor = (Constructor<T>) c;
+                break;
+            }
+        }
+        if (noArgConstructor == null) {
+            throw new IllegalArgumentException("Class " + clazz.getName() + " does not have a no-argument constructor");
+        }
+        this.constructor = noArgConstructor;
     }
 
     public T createNode(String name) throws Exception {
-        T result = this.constructor.newInstance(new Object[0]);
+        T result = this.constructor.newInstance();
         result.setId(WorkflowElementIdentifierFactory.fromExternalFormat(String.valueOf(idGen++)));
         result.setName(name);
         this.nodeContainer.addNode(result);

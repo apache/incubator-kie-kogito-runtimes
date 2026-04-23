@@ -24,6 +24,8 @@ import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.process.workitems.impl.ConfigResolver;
 import org.kie.kogito.process.workitems.impl.ConfigResolverHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.quarkus.runtime.StartupEvent;
 
@@ -33,18 +35,24 @@ import jakarta.enterprise.event.Observes;
 @ApplicationScoped
 public class QuarkusConfigResolver implements ConfigResolver {
 
+    private static final Logger logger = LoggerFactory.getLogger(QuarkusConfigResolver.class);
+
     private final Config config;
 
     public QuarkusConfigResolver() {
         this.config = ConfigProvider.getConfig();
+        logger.info("QuarkusConfigResolver instantiated");
     }
 
     void onStart(@Observes StartupEvent ev) {
         ConfigResolverHolder.setConfigResolver(this);
+        logger.info("QuarkusConfigResolver registered with ConfigResolverHolder");
     }
 
     @Override
     public <T> Optional<T> getConfigProperty(String name, Class<T> clazz) {
-        return config.getOptionalValue(name, clazz);
+        Optional<T> value = config.getOptionalValue(name, clazz);
+        logger.debug("ConfigResolver lookup: key='{}', found={}", name, value.isPresent());
+        return value;
     }
 }

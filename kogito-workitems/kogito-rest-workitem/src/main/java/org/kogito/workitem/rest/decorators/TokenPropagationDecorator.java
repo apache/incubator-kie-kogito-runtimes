@@ -19,12 +19,13 @@
 package org.kogito.workitem.rest.decorators;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.kie.kogito.auth.AuthTokenProvider;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
+import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.workitems.impl.ConfigResolverHolder;
 import org.kogito.workitem.rest.auth.AuthDecorator;
 import org.slf4j.Logger;
@@ -81,43 +82,12 @@ public class TokenPropagationDecorator implements AuthDecorator {
     Optional<String> getBearerToken(KogitoWorkItem item, Map<String, Object> parameters) {
         Object strategyParam = parameters.get(ACCESS_TOKEN_ACQUISITION_STRATEGY);
 
-        if (strategyParam instanceof java.util.List) {
-
-            @SuppressWarnings("unchecked")
-            java.util.List<String> strategies = (java.util.List<String>) strategyParam;
-            for (String strategyName : strategies) {
-                Optional<String> token = tryStrategyWithoutFallback(strategyName, item, parameters);
-                if (token.isPresent()) {
-                    logger.debug("Strategy {} succeeded from list, token acquired", strategyName);
-                    return token;
-                }
-                logger.debug("Strategy {} failed from list, trying next", strategyName);
-            }
-            return Optional.empty();
-        } else if (strategyParam instanceof String) {
-
-            return tryStrategyWithFallback((String) strategyParam, item, parameters);
-        } else {
+        if (!(strategyParam instanceof String)) {
             logger.debug("No token acquisition strategy specified, skipping authentication");
             return Optional.empty();
         }
-    }
 
-    private Optional<String> tryStrategyWithFallback(String strategyName, KogitoWorkItem item, Map<String, Object> parameters) {
-        AccessTokenAcquisitionStrategy strategy = AccessTokenAcquisitionStrategy.fromName(strategyName);
-
-        return switch (strategy) {
-            case PROPAGATE -> getPropagatedTokenFromHeaders(item)
-                    .or(() -> getConfiguredToken(item, parameters));
-            case CONFIGURED -> getConfiguredToken(item, parameters);
-            default -> {
-                logger.debug("Strategy {} is NONE or unknown, skipping", strategyName);
-                yield Optional.empty();
-            }
-        };
-    }
-
-    private Optional<String> tryStrategyWithoutFallback(String strategyName, KogitoWorkItem item, Map<String, Object> parameters) {
+        String strategyName = (String) strategyParam;
         AccessTokenAcquisitionStrategy strategy = AccessTokenAcquisitionStrategy.fromName(strategyName);
 
         return switch (strategy) {
@@ -134,31 +104,54 @@ public class TokenPropagationDecorator implements AuthDecorator {
 
         KogitoProcessInstance processInstance = item.getProcessInstance();
         if (processInstance == null) {
-            logger.debug("No process instance available, cannot propagate token from headers");
+            logger.debug("No process instance available, cannot propagate token");
             return Optional.empty();
         }
 
-        Map<String, List<String>> headers = processInstance.getHeaders();
-        if (headers == null || headers.isEmpty()) {
-            logger.debug("No headers available in process instance, cannot propagate token");
+        try {
+            // Cast to ProcessInstanceImpl to access getKnowledgeRuntime()
+            if (!(processInstance instanceof org.jbpm.process.instance.ProcessInstance)) {
+                logger.debug("Process instance is not a jBPM ProcessInstance, cannot access runtime");
+                return Optional.empty();
+            }
+
+            org.jbpm.process.instance.ProcessInstance jbpmProcessInstance =
+                    (org.jbpm.process.instance.ProcessInstance) processInstance;
+
+            // Get the AuthTokenProvider from the ProcessConfig via KogitoProcessRuntime
+            org.kie.kogito.internal.process.runtime.KogitoProcessRuntime processRuntime =
+                    ((org.jbpm.process.instance.InternalProcessRuntime) jbpmProcessInstance.getKnowledgeRuntime().getProcessRuntime())
+                            .getKogitoProcessRuntime();
+
+            if (processRuntime == null) {
+                logger.debug("KogitoProcessRuntime not available, cannot access AuthTokenProvider");
+                return Optional.empty();
+            }
+
+            ProcessConfig processConfig = processRuntime.getApplication().config().get(ProcessConfig.class);
+            if (processConfig == null) {
+                logger.debug("ProcessConfig not available, cannot access AuthTokenProvider");
+                return Optional.empty();
+            }
+
+            AuthTokenProvider authTokenProvider = processConfig.authTokenProvider();
+            if (authTokenProvider == null) {
+                logger.debug("AuthTokenProvider not available");
+                return Optional.empty();
+            }
+
+            Optional<String> token = authTokenProvider.getAuthToken();
+            if (token.isPresent()) {
+                logger.debug("Using propagated token from AuthTokenProvider");
+                return token;
+            } else {
+                logger.debug("No token available from AuthTokenProvider");
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to retrieve token from AuthTokenProvider", e);
             return Optional.empty();
         }
-
-        List<String> authHeaders = headers.get(AUTHORIZATION_HEADER);
-        if (authHeaders == null || authHeaders.isEmpty()) {
-            logger.debug("No Authorization header found in process instance headers");
-            return Optional.empty();
-        }
-
-        String authHeader = authHeaders.get(0);
-        if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
-            String token = authHeader.substring(BEARER_PREFIX.length());
-            logger.debug("Using propagated token from process instance headers");
-            return Optional.of(token);
-        }
-
-        logger.debug("Authorization header found but does not contain Bearer token");
-        return Optional.empty();
     }
 
     private Optional<String> getConfiguredToken(KogitoWorkItem item, Map<String, Object> parameters) {
