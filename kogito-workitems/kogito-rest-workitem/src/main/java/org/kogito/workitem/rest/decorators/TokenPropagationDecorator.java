@@ -36,7 +36,7 @@ import io.vertx.mutiny.ext.web.client.HttpRequest;
 enum AccessTokenAcquisitionStrategy {
     NONE("none"),
     CONFIGURED("configured"),
-    PROPAGATE("propagated");
+    PROPAGATED("propagated");
 
     private String name;
 
@@ -91,7 +91,7 @@ public class TokenPropagationDecorator implements AuthDecorator {
         AccessTokenAcquisitionStrategy strategy = AccessTokenAcquisitionStrategy.fromName(strategyName);
 
         return switch (strategy) {
-            case PROPAGATE -> getPropagatedTokenFromHeaders(item);
+            case PROPAGATED -> getPropagatedTokenFromHeaders(item);
             case CONFIGURED -> getConfiguredToken(item, parameters);
             default -> {
                 logger.debug("Strategy {} is NONE or unknown, skipping", strategyName);

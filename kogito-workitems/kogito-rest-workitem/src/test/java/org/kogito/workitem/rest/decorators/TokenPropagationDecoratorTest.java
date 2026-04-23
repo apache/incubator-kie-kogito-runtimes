@@ -262,7 +262,7 @@ public class TokenPropagationDecoratorTest {
     void testAccessTokenAcquisitionStrategy_FromName() {
         assertThat(AccessTokenAcquisitionStrategy.fromName("none")).isEqualTo(AccessTokenAcquisitionStrategy.NONE);
         assertThat(AccessTokenAcquisitionStrategy.fromName("configured")).isEqualTo(AccessTokenAcquisitionStrategy.CONFIGURED);
-        assertThat(AccessTokenAcquisitionStrategy.fromName("propagated")).isEqualTo(AccessTokenAcquisitionStrategy.PROPAGATE);
+        assertThat(AccessTokenAcquisitionStrategy.fromName("propagated")).isEqualTo(AccessTokenAcquisitionStrategy.PROPAGATED);
         assertThat(AccessTokenAcquisitionStrategy.fromName("invalid")).isEqualTo(AccessTokenAcquisitionStrategy.NONE);
         assertThat(AccessTokenAcquisitionStrategy.fromName(null)).isEqualTo(AccessTokenAcquisitionStrategy.NONE);
     }
