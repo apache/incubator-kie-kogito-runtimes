@@ -69,6 +69,13 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-enforcer-plugin</artifactId>
+              <dependencies>
+                <dependency>
+                  <groupId>org.commonjava.maven.enforcer</groupId>
+                  <artifactId>enforce-managed-deps-rule</artifactId>
+                  <version>${version.enforce-managed-deps-rule}</version>
+                </dependency>
+              </dependencies>
               <executions>
                 <execution>
                   <id>no-managed-deps</id>
