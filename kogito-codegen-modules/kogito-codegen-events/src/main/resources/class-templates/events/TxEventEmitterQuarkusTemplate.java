@@ -80,7 +80,7 @@ public class $ClassName$ extends AbstractQuarkusCloudEventEmitter<$Type$> {
         try {
             // Verify transaction was actually committed successfully
             int status = transactionManager.getStatus();
-            if (status != Status.STATUS_COMMITTED) {
+            if (status != Status.STATUS_COMMITTED && status != Status.STATUS_NO_TRANSACTION) {
                 logger.debug("Skipping event publication - transaction status is {} (not committed)", status);
                 return;
             }
