@@ -39,7 +39,7 @@
     <version.mongodb-driver-sync>5.5.2</version.mongodb-driver-sync>
     <version.org.springdoc>2.8.13</version.org.springdoc>
     <version.org.springframework.cloud>2025.0.1</version.org.springframework.cloud>
-    <version.org.springframework.boot>3.5.10</version.org.springframework.boot>
+    <version.org.springframework.boot>3.5.12</version.org.springframework.boot>
     <version.org.springframework>6.2.17</version.org.springframework>
   </properties>
   <dependencyManagement>
@@ -432,12 +432,12 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
-      <dependency>
+     <!-- <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
-      </dependency>
+      </dependency>-->
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-spring-boot-test-utils</artifactId>
