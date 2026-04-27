@@ -421,6 +421,12 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>integration-tests-springboot-processes-persistence-common</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -432,12 +438,6 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
-     <!-- <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>-->
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-spring-boot-test-utils</artifactId>
