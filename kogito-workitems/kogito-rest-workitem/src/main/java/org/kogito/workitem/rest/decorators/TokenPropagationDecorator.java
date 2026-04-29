@@ -62,10 +62,7 @@ public class TokenPropagationDecorator implements AuthDecorator {
 
     public static final String ACCESS_TOKEN_ACQUISITION_STRATEGY = "AccessTokenAcquisitionStrategy";
 
-    private static final String PROPAGATE_TOKEN_PARAM = "propagateToken";
-
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_PREFIX = "Bearer ";
+    private static final String REST_SERVICE_CALL_TASK_ID = "RestServiceCallTaskId";
 
     @Override
     public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
@@ -103,93 +100,61 @@ public class TokenPropagationDecorator implements AuthDecorator {
     private Optional<String> getPropagatedTokenFromHeaders(KogitoWorkItem item) {
 
         KogitoProcessInstance processInstance = item.getProcessInstance();
-        if (processInstance == null) {
-            logger.debug("No process instance available, cannot propagate token");
+
+        org.jbpm.process.instance.ProcessInstance jbpmProcessInstance =
+                (org.jbpm.process.instance.ProcessInstance) processInstance;
+
+        org.kie.kogito.internal.process.runtime.KogitoProcessRuntime processRuntime =
+                ((org.jbpm.process.instance.InternalProcessRuntime) jbpmProcessInstance.getKnowledgeRuntime().getProcessRuntime())
+                        .getKogitoProcessRuntime();
+
+        if (processRuntime == null) {
+            logger.debug("KogitoProcessRuntime not available, cannot access AuthTokenProvider");
             return Optional.empty();
         }
 
-        try {
-            // Cast to ProcessInstanceImpl to access getKnowledgeRuntime()
-            if (!(processInstance instanceof org.jbpm.process.instance.ProcessInstance)) {
-                logger.debug("Process instance is not a jBPM ProcessInstance, cannot access runtime");
-                return Optional.empty();
-            }
+        ProcessConfig processConfig = processRuntime.getApplication().config().get(ProcessConfig.class);
+        if (processConfig == null) {
+            logger.debug("ProcessConfig not available, cannot access AuthTokenProvider");
+            return Optional.empty();
+        }
 
-            org.jbpm.process.instance.ProcessInstance jbpmProcessInstance =
-                    (org.jbpm.process.instance.ProcessInstance) processInstance;
+        AuthTokenProvider authTokenProvider = processConfig.authTokenProvider();
+        if (authTokenProvider == null) {
+            logger.debug("AuthTokenProvider not available");
+            return Optional.empty();
+        }
 
-            // Get the AuthTokenProvider from the ProcessConfig via KogitoProcessRuntime
-            org.kie.kogito.internal.process.runtime.KogitoProcessRuntime processRuntime =
-                    ((org.jbpm.process.instance.InternalProcessRuntime) jbpmProcessInstance.getKnowledgeRuntime().getProcessRuntime())
-                            .getKogitoProcessRuntime();
-
-            if (processRuntime == null) {
-                logger.debug("KogitoProcessRuntime not available, cannot access AuthTokenProvider");
-                return Optional.empty();
-            }
-
-            ProcessConfig processConfig = processRuntime.getApplication().config().get(ProcessConfig.class);
-            if (processConfig == null) {
-                logger.debug("ProcessConfig not available, cannot access AuthTokenProvider");
-                return Optional.empty();
-            }
-
-            AuthTokenProvider authTokenProvider = processConfig.authTokenProvider();
-            if (authTokenProvider == null) {
-                logger.debug("AuthTokenProvider not available");
-                return Optional.empty();
-            }
-
-            Optional<String> token = authTokenProvider.getAuthToken();
-            if (token.isPresent()) {
-                logger.debug("Using propagated token from AuthTokenProvider");
-                return token;
-            } else {
-                logger.debug("No token available from AuthTokenProvider");
-                return Optional.empty();
-            }
-        } catch (Exception e) {
-            logger.warn("Failed to retrieve token from AuthTokenProvider", e);
+        Optional<String> token = authTokenProvider.getAuthToken();
+        if (token.isPresent()) {
+            logger.debug("Using propagated token from AuthTokenProvider");
+            return token;
+        } else {
+            logger.debug("No token available from AuthTokenProvider");
             return Optional.empty();
         }
     }
 
     private Optional<String> getConfiguredToken(KogitoWorkItem item, Map<String, Object> parameters) {
-        Optional<String> paramToken = Optional.ofNullable((String) parameters.get(PROPAGATE_TOKEN_PARAM));
-        if (paramToken.isPresent()) {
-            logger.debug("Using configured token from parameters (BPMN or injected)");
-            return paramToken;
+        String processId = item.getProcessInstance().getProcessId();
+        String taskName = (String) parameters.getOrDefault(REST_SERVICE_CALL_TASK_ID, item.getName());
+
+        if (processId == null || taskName == null) {
+            logger.debug("Process ID or task name is null, cannot build configuration key");
+            return Optional.empty();
         }
 
-        try {
-            if (item.getProcessInstance() == null) {
-                logger.debug("No process instance available, cannot read from ConfigResolver");
-                return Optional.empty();
-            }
+        String configKey = String.format("kogito.processes.%s.%s.access_token", processId, taskName);
 
-            String processId = item.getProcessInstance().getProcessId();
-            String taskName = (String) parameters.getOrDefault("RestServiceCallTaskId", item.getName());
+        Optional<String> configToken = ConfigResolverHolder.getConfigResolver()
+                .getConfigProperty(configKey, String.class);
 
-            if (processId == null || taskName == null) {
-                logger.debug("Process ID or task name is null, cannot build configuration key");
-                return Optional.empty();
-            }
-
-            String configKey = String.format("kogito.processes.%s.%s.access_token", processId, taskName);
-
-            Optional<String> configToken = ConfigResolverHolder.getConfigResolver()
-                    .getConfigProperty(configKey, String.class);
-
-            if (configToken.isPresent()) {
-                logger.debug("Using configured token from ConfigResolver with key: {}", configKey);
-                return configToken;
-            } else {
-                logger.debug("No token found in ConfigResolver for key: {}", configKey);
-            }
-        } catch (Exception e) {
-            logger.warn("Failed to retrieve token from ConfigResolver", e);
+        if (configToken.isPresent()) {
+            logger.debug("Using configured token from ConfigResolver with key: {}", configKey);
+            return configToken;
+        } else {
+            logger.debug("No token found in ConfigResolver for key: {}", configKey);
+            return Optional.empty();
         }
-
-        return Optional.empty();
     }
 }
