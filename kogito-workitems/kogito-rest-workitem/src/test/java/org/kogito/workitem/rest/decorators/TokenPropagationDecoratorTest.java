@@ -181,9 +181,8 @@ public class TokenPropagationDecoratorTest {
         when(workItem.getProcessInstance()).thenReturn((KogitoProcessInstance) jbpmProcessInstance);
         when(processConfig.authTokenProvider()).thenReturn(null);
 
-        Optional<String> result = decorator.getBearerToken(workItem, parameters);
-
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> decorator.getBearerToken(workItem, parameters))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test

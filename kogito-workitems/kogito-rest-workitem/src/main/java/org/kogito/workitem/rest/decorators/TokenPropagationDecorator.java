@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.kie.kogito.auth.AuthTokenProvider;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.workitem.KogitoWorkItem;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.workitems.impl.ConfigResolverHolder;
@@ -98,41 +97,23 @@ public class TokenPropagationDecorator implements AuthDecorator {
     }
 
     private Optional<String> getPropagatedTokenFromHeaders(KogitoWorkItem item) {
-
-        KogitoProcessInstance processInstance = item.getProcessInstance();
-
         org.jbpm.process.instance.ProcessInstance jbpmProcessInstance =
-                (org.jbpm.process.instance.ProcessInstance) processInstance;
+                (org.jbpm.process.instance.ProcessInstance) item.getProcessInstance();
 
         org.kie.kogito.internal.process.runtime.KogitoProcessRuntime processRuntime =
                 ((org.jbpm.process.instance.InternalProcessRuntime) jbpmProcessInstance.getKnowledgeRuntime().getProcessRuntime())
                         .getKogitoProcessRuntime();
 
-        if (processRuntime == null) {
-            logger.debug("KogitoProcessRuntime not available, cannot access AuthTokenProvider");
-            return Optional.empty();
-        }
-
         ProcessConfig processConfig = processRuntime.getApplication().config().get(ProcessConfig.class);
-        if (processConfig == null) {
-            logger.debug("ProcessConfig not available, cannot access AuthTokenProvider");
-            return Optional.empty();
-        }
-
         AuthTokenProvider authTokenProvider = processConfig.authTokenProvider();
-        if (authTokenProvider == null) {
-            logger.debug("AuthTokenProvider not available");
-            return Optional.empty();
-        }
 
         Optional<String> token = authTokenProvider.getAuthToken();
         if (token.isPresent()) {
             logger.debug("Using propagated token from AuthTokenProvider");
-            return token;
         } else {
             logger.debug("No token available from AuthTokenProvider");
-            return Optional.empty();
         }
+        return token;
     }
 
     private Optional<String> getConfiguredToken(KogitoWorkItem item, Map<String, Object> parameters) {
