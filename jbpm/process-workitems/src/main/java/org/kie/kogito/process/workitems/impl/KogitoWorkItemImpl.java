@@ -251,18 +251,7 @@ public class KogitoWorkItemImpl implements InternalKogitoWorkItem, Serializable 
             Map.Entry<String, Object> entry = iterator.next();
             b.append(entry.getKey());
             b.append("=");
-            Object value = entry.getValue();
-            // Mask sensitive token data for both legacy propagateToken and new AccessTokenAcquisitionStrategy
-            if (("propagateToken".equals(entry.getKey()) || "AccessTokenAcquisitionStrategy".equals(entry.getKey())) && value != null) {
-                String s = String.valueOf(value);
-                int keep = 10;
-                if (s.length() > keep) {
-                    s = s.substring(0, keep) + "...";
-                }
-                b.append(s);
-            } else {
-                b.append(value);
-            }
+            b.append(entry.getValue());
             if (iterator.hasNext()) {
                 b.append(", ");
             }
