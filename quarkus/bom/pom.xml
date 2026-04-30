@@ -971,50 +971,6 @@
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-definitions</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-definitions</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-definitions-deployment</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-definitions-deployment</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-dynamic</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-dynamic</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-dynamic-deployment</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-process-dynamic-deployment</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
         <artifactId>kie-addons-quarkus-process-instance-migration</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1133,35 +1089,6 @@
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-addons-quarkus-source-files-deployment</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <!--  Token Exchange addon    -->
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-token-exchange</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-token-exchange</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-token-exchange-deployment</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-token-exchange-deployment</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-addons-quarkus-token-exchange-deployment</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -1346,45 +1273,6 @@
         <artifactId>kogito-addons-quarkus-jobs-service-health</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kogito-addons-quarkus-knative-serving</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kogito-addons-quarkus-knative-serving</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kogito-addons-quarkus-knative-serving-deployment</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kogito-addons-quarkus-knative-serving-deployment</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kogito-addons-quarkus-microprofile-config-service-catalog</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kogito-addons-quarkus-microprofile-config-service-catalog</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kogito-addons-quarkus-microprofile-config-service-catalog-deployment</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.kie</groupId>
