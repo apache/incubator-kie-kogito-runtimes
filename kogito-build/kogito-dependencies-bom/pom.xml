@@ -1282,27 +1282,6 @@
         <artifactId>jackson-datatype-json-org</artifactId>
         <version>${version.com.fasterxml.jackson.datatype}</version>
       </dependency>
-      <!-- Serverless Workflow -->
-      <dependency>
-        <groupId>io.serverlessworkflow</groupId>
-        <artifactId>serverlessworkflow-api</artifactId>
-        <version>${version.io.serverlessworkflow}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.serverlessworkflow</groupId>
-        <artifactId>serverlessworkflow-spi</artifactId>
-        <version>${version.io.serverlessworkflow}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.serverlessworkflow</groupId>
-        <artifactId>serverlessworkflow-validation</artifactId>
-        <version>${version.io.serverlessworkflow}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.serverlessworkflow</groupId>
-        <artifactId>serverlessworkflow-diagram</artifactId>
-        <version>${version.io.serverlessworkflow}</version>
-      </dependency>
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-client</artifactId>
