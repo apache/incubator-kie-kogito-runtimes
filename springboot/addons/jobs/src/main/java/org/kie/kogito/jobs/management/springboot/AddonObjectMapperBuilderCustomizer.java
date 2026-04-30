@@ -19,15 +19,32 @@
 package org.kie.kogito.jobs.management.springboot;
 
 import org.kie.kogito.jobs.service.api.serialization.SerializationUtils;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+// TODO Jackson 3 migration: this BeanPostProcessor matches com.fasterxml.jackson.databind.ObjectMapper
+// (Jackson 2) because the Spring add-ons still expose a Jackson 2 ObjectMapper via
+// GlobalObjectMapperSpringTemplate. The original code used a Jackson2ObjectMapperBuilderCustomizer's
+// postConfigurer (removed in Spring Boot 4); BeanPostProcessor preserves the same
+// "register descriptors as part of ObjectMapper bean construction" timing. After the
+// kogito-dependencies-bom split lands and the Spring-side migrates to Jackson 3, port this to
+// tools.jackson.databind.ObjectMapper and remove this shim.
 @Configuration
 public class AddonObjectMapperBuilderCustomizer {
 
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer customizer() {
-        return builder -> builder.postConfigurer(SerializationUtils::registerDescriptors);
+    public static BeanPostProcessor addonObjectMapperPostProcessor() {
+        return new BeanPostProcessor() {
+            @Override
+            public Object postProcessAfterInitialization(Object bean, String beanName) {
+                if (bean instanceof ObjectMapper) {
+                    SerializationUtils.registerDescriptors((ObjectMapper) bean);
+                }
+                return bean;
+            }
+        };
     }
 }

@@ -20,12 +20,25 @@ package org.kie.kogito.addons.springboot.k8s;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootApplication(scanBasePackages = "org.kie.kogito.addons.springboot.k8s.**")
 public class App {
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
+    }
+
+    // TODO Jackson 3 migration: Spring Boot 4 autoconfigures only a Jackson 3 ObjectMapper
+    // (tools.jackson.*). Production apps using this addon get a Jackson 2 ObjectMapper from the
+    // Kogito-codegen GlobalObjectMapper. This sanity test bypasses codegen, so we define one
+    // directly. After the kogito-dependencies-bom split and Spring-side Jackson 3 migration,
+    // remove this @Bean — Jackson 3 ObjectMapper will be supplied by Spring Boot autoconfigure.
+    @Bean
+    ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 
 }

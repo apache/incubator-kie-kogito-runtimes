@@ -19,14 +19,16 @@
 package org.kie.kogito.jobs.management.springboot;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+// TODO Jackson 3 migration: switch to tools.jackson.databind.ObjectMapper (Jackson 3) once the
+// post-BOM-split Spring-side migration moves AddonObjectMapperBuilderCustomizer to Jackson 3.
 class AddonObjectMapperBuilderCustomizerTest {
     @Test
-    void customizer() {
-        Jackson2ObjectMapperBuilderCustomizer customizer = new AddonObjectMapperBuilderCustomizer().customizer();
-        assertThat(customizer).isNotNull();
+    void postProcessor() {
+        BeanPostProcessor postProcessor = AddonObjectMapperBuilderCustomizer.addonObjectMapperPostProcessor();
+        assertThat(postProcessor).isNotNull();
     }
 }

@@ -48,6 +48,13 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-actuator-autoconfigure</artifactId>
     </dependency>
+    <!-- TODO Spring Boot 4 split the actuator health classes into their own module
+         (org.springframework.boot.health.contributor.*). Move this to the Spring-specific
+         BOM after the kogito-dependencies-bom split lands. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-health</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-rest-workitem</artifactId>

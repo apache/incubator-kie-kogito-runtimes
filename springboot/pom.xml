@@ -34,6 +34,80 @@
   <name>Kogito :: Spring Boot</name>
   <packaging>pom</packaging>
 
+  <properties>
+    <!-- Spring Boot 4.0.5 ships Netty 4.2.12, and Infinispan 15.x's Hot Rod client calls
+         io.netty.channel.IoHandle (only present in Netty 4.2.x). The shared kogito-dependencies-bom
+         keeps Netty on the 4.1.x line for Quarkus / Vert.x 4.5.x compatibility (Vert.x's WebClient
+         trust-all TLS path regresses on Netty 4.2). The explicit per-artifact pins below override
+         the inherited shared-BOM 4.1.x entries for the Spring Boot inheritance chain only —
+         BOM imports cannot override inherited explicit-version dependencyManagement, so we list
+         each artifact directly. Only the artifacts SB modules actually pull in (and which the
+         shared BOM also pins) are listed; if a new netty-* artifact starts being resolved by SB
+         transitively, it must be added here too. Drop this block once the planned BOM split lands
+         and each runtime owns its own Netty pin. -->
+    <version.io.netty>4.2.12.Final</version.io.netty>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-buffer</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-dns</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http2</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-socks</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-common</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-handler</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-handler-proxy</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-resolver</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-resolver-dns</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <modules>
     <module>bom</module>
     <module>addons</module>

@@ -18,12 +18,11 @@
  */
 package org.kie.kogito.testcontainers.springboot;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.kie.kogito.test.resources.ConditionalSpringBootTestResource;
 import org.kie.kogito.testcontainers.KogitoMongoDBContainer;
-
-import static java.util.Collections.singletonMap;
 
 /**
  * MongoDB spring boot resource that works within the test lifecycle.
@@ -31,7 +30,12 @@ import static java.util.Collections.singletonMap;
  */
 public class MongoDBSpringBootTestResource extends ConditionalSpringBootTestResource<KogitoMongoDBContainer> {
 
+    // Spring Data MongoDB still reads spring.data.mongodb.uri (DataMongoProperties).
     public static final String MONGODB_CONNECTION_PROPERTY = "spring.data.mongodb.uri";
+    // Spring Boot 4 split the basic MongoClient autoconfigure into spring-boot-mongodb;
+    // MongoProperties now binds to the spring.mongodb prefix. Set both so MongoClient and
+    // Spring Data MongoDB resolve the same testcontainer URL.
+    public static final String MONGODB_BASIC_CONNECTION_PROPERTY = "spring.mongodb.uri";
 
     public MongoDBSpringBootTestResource() {
         super(new KogitoMongoDBContainer());
@@ -39,7 +43,11 @@ public class MongoDBSpringBootTestResource extends ConditionalSpringBootTestReso
 
     @Override
     protected Map<String, String> getProperties() {
-        return singletonMap(MONGODB_CONNECTION_PROPERTY, getTestResource().getReplicaSetUrl());
+        Map<String, String> props = new HashMap<>();
+        String uri = getTestResource().getReplicaSetUrl();
+        props.put(MONGODB_CONNECTION_PROPERTY, uri);
+        props.put(MONGODB_BASIC_CONNECTION_PROPERTY, uri);
+        return props;
     }
 
     public static class Conditional extends MongoDBSpringBootTestResource {
