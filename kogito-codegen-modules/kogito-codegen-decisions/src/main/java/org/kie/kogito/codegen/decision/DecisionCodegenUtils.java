@@ -362,7 +362,7 @@ public class DecisionCodegenUtils {
     }
 
     private static Optional<String> determineEncoding(CollectedResource resource) {
-        try (Reader reader = resource.resource().getReader()){
+        try (Reader reader = resource.resource().getReader()) {
             BufferedReader br = new BufferedReader(reader);
             StringBuilder sb = new StringBuilder(br.readLine());
             sb.append(br.readLine());
