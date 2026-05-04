@@ -27,12 +27,17 @@ import java.util.Optional;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
+import org.kie.kogito.usertask.UserTaskFilter;
+import org.kie.kogito.usertask.UserTaskInfo;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskService;
 import org.kie.kogito.usertask.UserTasks;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
 import org.kie.kogito.usertask.model.Attachment;
 import org.kie.kogito.usertask.model.Comment;
+import org.kie.kogito.usertask.model.ProcessInfo;
+import org.kie.kogito.usertask.view.UserTaskInputsView;
+import org.kie.kogito.usertask.view.UserTaskOutputsView;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
 import org.kie.kogito.usertask.view.UserTaskView;
 
@@ -52,6 +57,35 @@ public class UserTaskServiceImpl implements UserTaskService {
     @Override
     public List<UserTaskView> list(IdentityProvider identity) {
         return application.get(UserTasks.class).instances().findByIdentity(identity).stream().map(this::toUserTaskView).toList();
+    }
+
+    @Override
+    public List<UserTaskInfo> listTasks(IdentityProvider identity, UserTaskFilter filter) {
+        return application.get(UserTasks.class).instances()
+                .findByIdentityAndFilter(identity, filter)
+                .stream()
+                .map(this::toUserTaskInfo)
+                .toList();
+    }
+
+    private UserTaskInfo toUserTaskInfo(UserTaskInstance instance) {
+        UserTaskInfo info = new UserTaskInfo();
+        info.setId(instance.getId());
+        info.setUserTaskId(instance.getUserTaskId());
+        info.setTaskName(instance.getTaskName());
+        info.setTaskDescription(instance.getTaskDescription());
+        info.setTaskPriority(instance.getTaskPriority());
+        info.setStatus(instance.getStatus());
+        info.setActualOwner(instance.getActualOwner());
+
+        ProcessInfo processInfo = instance.getProcessInfo();
+        if (processInfo != null) {
+            info.setProcessId(processInfo.getProcessId());
+            info.setProcessInstanceId(processInfo.getProcessInstanceId());
+            info.setProcessVersion(processInfo.getProcessVersion());
+        }
+
+        return info;
     }
 
     private UserTaskView toUserTaskView(UserTaskInstance instance) {
@@ -74,6 +108,14 @@ public class UserTaskServiceImpl implements UserTaskService {
         view.setMetadata(instance.getMetadata());
         view.setExternalReferenceId(instance.getExternalReferenceId());
         return view;
+    }
+
+    private UserTaskInputsView toUserTaskInputsView(UserTaskInstance instance) {
+        return new UserTaskInputsView(instance.getId(), instance.getInputs());
+    }
+
+    private UserTaskOutputsView toUserTaskOutputsView(UserTaskInstance instance) {
+        return new UserTaskOutputsView(instance.getId(), instance.getOutputs());
     }
 
     @Override
@@ -114,7 +156,7 @@ public class UserTaskServiceImpl implements UserTaskService {
     }
 
     @Override
-    public Optional<UserTaskView> setOutputs(String taskId, Map<String, Object> data, IdentityProvider identity) {
+    public Optional<UserTaskOutputsView> setOutputs(String taskId, Map<String, Object> data, IdentityProvider identity) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
             Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
             if (userTaskInstance.isEmpty()) {
@@ -122,12 +164,12 @@ public class UserTaskServiceImpl implements UserTaskService {
             }
             UserTaskInstance ut = userTaskInstance.get();
             data.forEach(ut::setOutput);
-            return Optional.of(toUserTaskView(ut));
+            return Optional.of(toUserTaskOutputsView(ut));
         });
     }
 
     @Override
-    public Optional<UserTaskView> setInputs(String taskId, Map<String, Object> data, IdentityProvider identity) {
+    public Optional<UserTaskInputsView> setInputs(String taskId, Map<String, Object> data, IdentityProvider identity) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
             Optional<UserTaskInstance> userTaskInstance = application.get(UserTasks.class).instances().findById(taskId);
             if (userTaskInstance.isEmpty()) {
@@ -135,7 +177,7 @@ public class UserTaskServiceImpl implements UserTaskService {
             }
             UserTaskInstance ut = userTaskInstance.get();
             data.forEach(ut::setInput);
-            return Optional.of(toUserTaskView(ut));
+            return Optional.of(toUserTaskInputsView(ut));
         });
     }
 
