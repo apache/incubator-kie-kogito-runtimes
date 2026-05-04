@@ -90,11 +90,11 @@ public class DMNKogito {
                     if (modelStream.isPresent()) {
                         return readResource(modelStream.get(), modelPathEntry.getValue());
                     } else {
-                        logger.warn("DMN model stream not found for path: {}", modelPathEntry.getKey());
+                        String errorMessage = String.format("DMN model stream not found for path: %s", modelPathEntry.getKey());
+                        logger.error(errorMessage);
+                        throw new IllegalStateException(errorMessage);
                     }
-                    return null;
                 })
-                .filter(Objects::nonNull)
                 .map(ReaderResource::new).collect(Collectors.toList());
         return createGenericDMNRuntime(customDMNProfiles, enableRuntimeTypeCheckOption, resources);
     }

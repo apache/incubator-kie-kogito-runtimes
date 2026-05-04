@@ -57,7 +57,7 @@ class DecisionCodegenUtilsTest {
     }
 
     @Test
-    void generateDecisionsFiles() {
+    void generateModelPathsFile() {
         final Collection<CollectedResource> cResources = CollectedResourceProducer.fromPaths(
                 Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath(),
                 Paths.get("src/test/resources/decision/alltypes").toAbsolutePath());

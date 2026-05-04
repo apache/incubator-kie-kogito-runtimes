@@ -20,6 +20,7 @@
 package org.kie.kogito.codegen.decision;
 
 import java.io.BufferedReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
@@ -100,13 +101,13 @@ public class DecisionCodegenUtils {
 
     /**
      *
-     * @param generatedFiles ACt as accumulator for all generated files
+     * @param generatedFiles Act as accumulator for all generated files
      * @param classesForManualReflection
      * @param cResources
      * @param customDMNProfiles
      * @param runtimeTypeCheckOption
      * @param generator
-     * @return
+     * @return A Map.Entry with the dmn-specific generated files.
      */
     static Map.Entry<String, GeneratedResources> generateModelsFromResources(Collection<GeneratedFile> generatedFiles,
             List<String> classesForManualReflection,
@@ -361,8 +362,8 @@ public class DecisionCodegenUtils {
     }
 
     private static Optional<String> determineEncoding(CollectedResource resource) {
-        try {
-            BufferedReader br = new BufferedReader(resource.resource().getReader());
+        try (Reader reader = resource.resource().getReader()){
+            BufferedReader br = new BufferedReader(reader);
             StringBuilder sb = new StringBuilder(br.readLine());
             sb.append(br.readLine());
             String head = sb.toString();

@@ -113,8 +113,9 @@ public abstract class AbstractDecisionModels implements DecisionModels {
     static Map<String, String> getModelPaths(URL modelPathsUrl) {
         LOG.trace("getModelPaths {}", modelPathsUrl);
         if (modelPathsUrl == null) {
-            LOG.error("Failed to find {} with current thread classloader", DMN_MODEL_PATHS_FILE);
-            throw new IllegalStateException("Failed to find " + DMN_MODEL_PATHS_FILE);
+            String error = String.format("No URL provided for %s", DMN_MODEL_PATHS_FILE);
+            LOG.error(error);
+            throw new IllegalStateException(error);
         }
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(modelPathsUrl.openStream()))) {
             return reader.lines().collect(Collectors.toMap(

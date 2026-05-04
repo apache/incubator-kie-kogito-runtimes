@@ -19,6 +19,7 @@
 package org.kie.kogito.codegen;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.function.BiFunction;
 
@@ -194,23 +196,19 @@ public abstract class AbstractCodegenIT {
             sources.add("org/drools/project/model/ProjectRuntime.java");
             srcMfs.write("org/drools/project/model/ProjectRuntime.java", DUMMY_PROCESS_RUNTIME.getBytes());
         }
-
-        Path temp = Files.createTempDirectory("KOGITO_TESTS");
-        LOGGER.info("Dumping generated files in " + temp);
+        Path temp = null;
         URL modelPathsUrl = null;
         String modelPathsFilePath = null;
         for (GeneratedFile entry : generatedFiles) {
             String fileName = entry.relativePath();
             if (fileName.contains(DMN_MODEL_PATHS_FILE)) {
-                Path fpath = temp.resolve(entry.relativePath());
-                fpath.getParent().toFile().mkdirs();
-                Files.write(fpath, entry.contents());
+                TempPaths tempPaths = conditionallyDumpGeneratedFile(temp, entry);
+                temp = tempPaths.tempDir;
+                Path fpath = tempPaths.fpath;
                 modelPathsUrl = fpath.toUri().toURL();
                 modelPathsFilePath = entry.relativePath();
             } else if (LOGGER.isInfoEnabled()) {
-                Path fpath = temp.resolve(entry.relativePath());
-                fpath.getParent().toFile().mkdirs();
-                Files.write(fpath, entry.contents());
+                temp = conditionallyDumpGeneratedFile(temp, entry).tempDir;
             }
         }
         CompilationResult result = JAVA_COMPILER.compile(sources.toArray(new String[sources.size()]), srcMfs, trgMfs, ClassLoaderUtils.getDefaultClassLoader());
@@ -231,6 +229,16 @@ public abstract class AbstractCodegenIT {
         initTimer(application);
 
         return application;
+    }
+
+    private TempPaths conditionallyDumpGeneratedFile(Path temp, GeneratedFile entry) throws IOException {
+        Path tempDirectory = temp != null ? temp : Files.createTempDirectory("KOGITO_TESTS");
+        String relativePath = entry.relativePath();
+        LOGGER.info("Dumping generated file {} in {}", relativePath, temp);
+        Path fpath = tempDirectory.resolve(relativePath);
+        fpath.getParent().toFile().mkdirs();
+        Files.write(fpath, entry.contents());
+        return new TempPaths(tempDirectory, fpath);
     }
 
     private void initTimer(Application app) {
@@ -305,6 +313,13 @@ public abstract class AbstractCodegenIT {
         public URL findResource(String name) {
             URL url = customAddedResource.get(name);
             return url != null ? url : super.findResource(name);
+        }
+    }
+
+    private record TempPaths(Path tempDir, Path fpath) {
+        public TempPaths {
+            Objects.requireNonNull(tempDir);
+            Objects.requireNonNull(fpath);
         }
     }
 
