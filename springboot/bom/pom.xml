@@ -40,7 +40,7 @@
     <version.org.springdoc>2.8.13</version.org.springdoc>
     <version.org.springframework.cloud>2025.0.1</version.org.springframework.cloud>
     <version.org.springframework.boot>3.5.12</version.org.springframework.boot>
-    <version.org.springframework>6.2.17</version.org.springframework>
+    <version.org.springframework>6.2.18</version.org.springframework>
   </properties>
   <dependencyManagement>
     <dependencies>
