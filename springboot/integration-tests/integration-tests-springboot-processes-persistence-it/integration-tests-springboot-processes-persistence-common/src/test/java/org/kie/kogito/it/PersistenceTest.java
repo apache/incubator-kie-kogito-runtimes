@@ -56,10 +56,8 @@ public abstract class PersistenceTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    // TODO Spring Boot 4 perf: testParallelPersistence (parallel + optimistic-lock retry) takes
-    // ~12s in isolation post-SB-4 vs comfortably <10s on SB 3.5. Likely from Spring 7 tx /
-    // Hibernate 7 / newer JDBC-driver overhead. Bumped to 30s as the minimal change so the test
-    // converges reliably under loaded full builds; revisit once the per-tx overhead is profiled.
+    // testParallelPersistence (parallel + optimistic-lock retry) needs ~12s under loaded builds.
+    // TODO tighten back to 10s once the per-transaction overhead in Spring 7 + Hibernate 7 is profiled.
     public static final Duration TIMEOUT = Duration.ofSeconds(30);
     public static final String PROCESS_ID = "hello";
     public static final String PROCESS_ASYNC_WIH = "AsyncWIH";

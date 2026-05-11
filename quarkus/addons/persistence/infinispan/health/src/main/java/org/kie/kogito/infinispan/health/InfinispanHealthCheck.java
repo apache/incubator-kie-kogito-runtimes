@@ -33,15 +33,9 @@ import jakarta.enterprise.inject.Instance;
  * {@link RemoteCacheManager}. Performs a remote roundtrip against the cluster: if it succeeds the
  * server responds as Up, otherwise as Down.
  */
-// TODO Infinispan 15.x compat shim: the original implementation pinged each configured server
-// individually using the internal hotrod classes
-// org.infinispan.client.hotrod.impl.operations.{OperationsFactory,PingOperation} and
-// org.infinispan.client.hotrod.impl.transport.netty.ChannelFactory. Those classes were removed in
-// Infinispan 15.x, so the per-server probe is no longer expressible via the public API. The
-// roundtrip via RemoteCacheManager#getCacheNames() preserves the "cluster reachable / not
-// reachable" contract using a public, supported call. Revisit if Infinispan reintroduces a
-// per-server health probe in its public API, or after the kogito-dependencies-bom split lets
-// Quarkus and Spring Boot pin different Infinispan versions.
+// The "cluster reachable" probe uses RemoteCacheManager#getCacheNames() because Infinispan's
+// public hotrod API no longer exposes a per-server probe. Restore per-server probes if Infinispan
+// reintroduces them.
 public class InfinispanHealthCheck implements HealthCheck {
 
     private Optional<RemoteCacheManager> cacheManagerOptional;

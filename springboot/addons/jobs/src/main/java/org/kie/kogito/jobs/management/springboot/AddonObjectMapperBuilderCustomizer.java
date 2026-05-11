@@ -25,13 +25,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-// TODO Jackson 3 migration: this BeanPostProcessor matches com.fasterxml.jackson.databind.ObjectMapper
-// (Jackson 2) because the Spring add-ons still expose a Jackson 2 ObjectMapper via
-// GlobalObjectMapperSpringTemplate. The original code used a Jackson2ObjectMapperBuilderCustomizer's
-// postConfigurer (removed in Spring Boot 4); BeanPostProcessor preserves the same
-// "register descriptors as part of ObjectMapper bean construction" timing. After the
-// kogito-dependencies-bom split lands and the Spring-side migrates to Jackson 3, port this to
-// tools.jackson.databind.ObjectMapper and remove this shim.
+// TODO Jackson 3 migration: switch to tools.jackson.databind.ObjectMapper and remove this BeanPostProcessor.
 @Configuration
 public class AddonObjectMapperBuilderCustomizer {
 

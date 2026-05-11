@@ -35,16 +35,11 @@
   <packaging>pom</packaging>
 
   <properties>
-    <!-- Spring Boot 4.0.5 ships Netty 4.2.12, and Infinispan 15.x's Hot Rod client calls
-         io.netty.channel.IoHandle (only present in Netty 4.2.x). The shared kogito-dependencies-bom
-         keeps Netty on the 4.1.x line for Quarkus / Vert.x 4.5.x compatibility (Vert.x's WebClient
-         trust-all TLS path regresses on Netty 4.2). The explicit per-artifact pins below override
-         the inherited shared-BOM 4.1.x entries for the Spring Boot inheritance chain only —
-         BOM imports cannot override inherited explicit-version dependencyManagement, so we list
-         each artifact directly. Only the artifacts SB modules actually pull in (and which the
-         shared BOM also pins) are listed; if a new netty-* artifact starts being resolved by SB
-         transitively, it must be added here too. Drop this block once the planned BOM split lands
-         and each runtime owns its own Netty pin. -->
+    <!-- Override Netty to 4.2.x for SB modules. The shared kogito-dependencies-bom pins 4.1.x for
+         Quarkus/Vert.x, but Infinispan 15.x's Hot Rod client needs Netty 4.2 (uses io.netty.channel.IoHandle).
+         Per-artifact pins below are required because BOM-imported entries cannot override the parent-
+         imported BOM's explicit versions. Add any new netty-* artifacts SB pulls in transitively here too.
+         TODO drop this block after the planned BOM split lets each runtime own its own Netty pin. -->
     <version.io.netty>4.2.12.Final</version.io.netty>
   </properties>
 

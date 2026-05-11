@@ -40,9 +40,8 @@
       <groupId>org.kie</groupId>
       <artifactId>kie-addons-messaging</artifactId>
     </dependency>
-    <!-- TODO Spring Boot 4 split the Kafka autoconfigure classes into their own module
-         (org.springframework.boot.kafka.autoconfigure.*). Move version management to the
-         Spring-specific BOM after the kogito-dependencies-bom split lands. -->
+    <!-- spring-boot-kafka: hosts the Kafka auto-configure classes. TODO move version pin to the
+         Spring-specific BOM after the planned BOM split. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-kafka</artifactId>

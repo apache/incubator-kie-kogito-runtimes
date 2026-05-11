@@ -32,11 +32,7 @@ import java.util.TimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-// TODO Spring Boot 4 autoconfigures only a Jackson 3 (tools.jackson.*) ObjectMapper, while the
-// Spring add-ons here still autowire com.fasterxml.jackson.databind.ObjectMapper. This template
-// defines a Jackson 2 bean as a transition shim. After the kogito-dependencies-bom split lands
-// and the Spring-specific BOM is in place, port this template — and the Spring add-ons that
-// consume it — to Jackson 3 / JsonMapperBuilderCustomizer, and remove this shim.
+// TODO Jackson 3 migration: drop this Jackson 2 @Bean when the Spring add-ons move to tools.jackson.databind.*.
 @SpringBootConfiguration
 public class GlobalObjectMapper {
 
