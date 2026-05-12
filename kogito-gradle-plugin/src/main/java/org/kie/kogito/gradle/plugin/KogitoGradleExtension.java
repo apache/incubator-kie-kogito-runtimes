@@ -49,7 +49,8 @@ public class KogitoGradleExtension {
                         .toPath().resolve("classes").resolve("java").resolve("main").toFile());
 
         generatedSourcesDir = gradleProject.getObjects().property(File.class);
-        generatedSourcesDir.set(projectBuildOutputDirectory.get().toPath().resolve("generated").resolve("sources").resolve("kogito").toFile());
+        generatedSourcesDir.set(gradleProject.getLayout().getBuildDirectory().getAsFile().get()
+                .toPath().resolve("generated").resolve("sources").resolve("kogito").toFile());
 
         jsonSchemaVersion = gradleProject.getObjects().property(String.class);
         this.gradleProject = gradleProject;
