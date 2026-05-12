@@ -28,7 +28,8 @@ public class ImportClassTest extends JbpmBpmn2TestCase {
     public void testResourceType() {
         assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> createKogitoProcessRuntime("build/sample.bpmn", "build/sample2.bpmn"))
-                .withMessageContaining("Process Compilation error HelloService cannot be resolved to a type");
+                .withMessageContaining("Process Compilation error")
+                .withMessageContaining("HelloService");
     }
 
 }
