@@ -25,7 +25,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-// TODO Jackson 3 migration: switch to tools.jackson.databind.ObjectMapper and remove this BeanPostProcessor.
+// Jackson 2 BeanPostProcessor (registers cloud-events descriptors on the autowired ObjectMapper). Remove
+// together with https://github.com/apache/incubator-kie-drools/issues/6702 (Jackson 3 migration).
 @Configuration
 public class AddonObjectMapperBuilderCustomizer {
 

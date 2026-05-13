@@ -23,8 +23,8 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// TODO Jackson 3 migration: switch to tools.jackson.databind.ObjectMapper (Jackson 3) once the
-// post-BOM-split Spring-side migration moves AddonObjectMapperBuilderCustomizer to Jackson 3.
+// Jackson 2 test fixture for the BeanPostProcessor above. Remove together with
+// https://github.com/apache/incubator-kie-drools/issues/6702 (Jackson 3 migration).
 class AddonObjectMapperBuilderCustomizerTest {
     @Test
     void postProcessor() {

@@ -31,8 +31,8 @@ public class App {
         SpringApplication.run(App.class, args);
     }
 
-    // TODO Jackson 3 migration: drop this Jackson 2 @Bean when the Spring add-ons move to Jackson 3.
-    // Production apps get the bean from codegen GlobalObjectMapper; this fixture bypasses codegen.
+    // Jackson 2 @Bean (test fixture; production apps get this from the codegen GlobalObjectMapper).
+    // Remove together with https://github.com/apache/incubator-kie-drools/issues/6702 (Jackson 3 migration).
     @Bean
     ObjectMapper objectMapper() {
         return new ObjectMapper();

@@ -32,7 +32,8 @@ import java.util.TimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-// TODO Jackson 3 migration: drop this Jackson 2 @Bean when the Spring add-ons move to tools.jackson.databind.*.
+// Jackson 2 @Bean (codegen template — emitted into every Spring Boot kogito app). Remove together with
+// https://github.com/apache/incubator-kie-drools/issues/6702 (Jackson 3 migration).
 @SpringBootConfiguration
 public class GlobalObjectMapper {
 
