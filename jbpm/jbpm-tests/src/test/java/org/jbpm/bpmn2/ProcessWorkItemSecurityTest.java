@@ -78,19 +78,19 @@ public class ProcessWorkItemSecurityTest extends JbpmBpmn2TestCase {
 
         assertThat(assignedWorItems).hasSize(3);
 
-        WorkItem workItemTask1 = instance.workItem(task1WorkItemId, SecurityPolicy.of("john", Collections.emptyList()));
+        WorkItem task1WorkItem = instance.workItem(task1WorkItemId, SecurityPolicy.of("john", Collections.emptyList()));
 
-        assertThat(workItemTask1).isNotNull()
+        assertThat(task1WorkItem).isNotNull()
                 .hasFieldOrPropertyWithValue("id", task1WorkItemId);
 
-        WorkItem workItemTask2 = instance.workItem(task2WorkItemId, SecurityPolicy.of("john", Collections.emptyList()));
+        WorkItem task2WorkItem = instance.workItem(task2WorkItemId, SecurityPolicy.of("john", Collections.emptyList()));
 
-        assertThat(workItemTask2).isNotNull()
+        assertThat(task2WorkItem).isNotNull()
                 .hasFieldOrPropertyWithValue("id", task2WorkItemId);
 
-        WorkItem workItemTask3 = instance.workItem(task3WorkItemId, SecurityPolicy.of("john", Collections.emptyList()));
+        WorkItem task3WorkItem = instance.workItem(task3WorkItemId, SecurityPolicy.of("john", Collections.emptyList()));
 
-        assertThat(workItemTask3).isNotNull()
+        assertThat(task3WorkItem).isNotNull()
                 .hasFieldOrPropertyWithValue("id", task3WorkItemId);
 
         instance.abort();
@@ -133,9 +133,9 @@ public class ProcessWorkItemSecurityTest extends JbpmBpmn2TestCase {
         }).isInstanceOf(NotAuthorizedException.class)
                 .hasMessage("Identity 'alice' with roles '[]' is not allowed to access workItem '" + task2WorkItemId + "'");
 
-        WorkItem workItemTask3 = instance.workItem(task3WorkItemId, SecurityPolicy.of("alice", Collections.emptyList()));
+        WorkItem task3WorkItem = instance.workItem(task3WorkItemId, SecurityPolicy.of("alice", Collections.emptyList()));
 
-        assertThat(workItemTask3).isNotNull()
+        assertThat(task3WorkItem).isNotNull()
                 .hasFieldOrPropertyWithValue("id", task3WorkItemId);
 
         instance.abort();
