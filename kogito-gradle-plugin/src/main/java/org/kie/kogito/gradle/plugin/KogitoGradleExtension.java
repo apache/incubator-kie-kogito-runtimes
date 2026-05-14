@@ -39,18 +39,11 @@ public class KogitoGradleExtension {
         projectBaseDir = gradleProject.getObjects().property(File.class);
         projectBaseDir.set(gradleProject.getLayout().getProjectDirectory().getAsFile());
 
-        // kogito-codegen treats projectBuildOutputDirectory as the classpath directory where it
-        // writes generated resources (dmnModelPaths.txt, processModelPaths.txt, ...). Use Gradle's
-        // main-classes directory so those resources land on the runtime classpath, matching the
-        // Maven equivalent of ${project.build.outputDirectory} = target/classes.
         projectBuildOutputDirectory = gradleProject.getObjects().property(File.class);
-        projectBuildOutputDirectory.set(
-                gradleProject.getLayout().getBuildDirectory().getAsFile().get()
-                        .toPath().resolve("classes").resolve("java").resolve("main").toFile());
+        projectBuildOutputDirectory.set(gradleProject.getLayout().getBuildDirectory().getAsFile());
 
         generatedSourcesDir = gradleProject.getObjects().property(File.class);
-        generatedSourcesDir.set(gradleProject.getLayout().getBuildDirectory().getAsFile().get()
-                .toPath().resolve("generated").resolve("sources").resolve("kogito").toFile());
+        generatedSourcesDir.set(projectBuildOutputDirectory.get().toPath().resolve("generated").resolve("sources").resolve("kogito").toFile());
 
         jsonSchemaVersion = gradleProject.getObjects().property(String.class);
         this.gradleProject = gradleProject;
