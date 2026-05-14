@@ -22,14 +22,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.kie</groupId>
-    <artifactId>drools-build-parent</artifactId>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-build</artifactId>
     <version>999-SNAPSHOT</version>
     <relativePath/>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.kie.kogito</groupId>
   <artifactId>kogito-kie-bom</artifactId>
   <packaging>pom</packaging>
   <name>Kogito :: Kie7 BOM</name>
