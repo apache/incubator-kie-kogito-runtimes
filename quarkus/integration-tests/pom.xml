@@ -35,7 +35,6 @@
   </properties>
 
   <modules>
-    <module>integration-tests-quarkus-openapi-client</module>
     <!-- TODO:Figure out Kafka containers, ports, resources -->
     <module>integration-tests-quarkus-rules</module>
     <module>integration-tests-quarkus-legacy-rules</module>
@@ -48,6 +47,7 @@
     <module>integration-tests-quarkus-processes</module>
     <module>integration-tests-quarkus-processes-reactive</module>
     <module>integration-tests-quarkus-processes-persistence</module>
+    <module>integration-tests-quarkus-transactions</module>
     <module>integration-tests-quarkus-usertasks</module>
     <module>integration-tests-quarkus-usertask-listeners-rollback</module>
     <module>integration-tests-quarkus-wshumantasks</module>
