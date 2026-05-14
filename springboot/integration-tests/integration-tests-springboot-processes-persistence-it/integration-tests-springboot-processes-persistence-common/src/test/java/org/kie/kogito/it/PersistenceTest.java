@@ -56,9 +56,7 @@ public abstract class PersistenceTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    // testParallelPersistence (parallel + optimistic-lock retry) needs ~12s under loaded builds.
-    // TODO tighten back to 10s once the per-transaction overhead in Spring 7 + Hibernate 7 is profiled.
-    public static final Duration TIMEOUT = Duration.ofSeconds(30);
+    public static final Duration TIMEOUT = Duration.ofSeconds(10);
     public static final String PROCESS_ID = "hello";
     public static final String PROCESS_ASYNC_WIH = "AsyncWIH";
     public static final String PROCESS_EMBEDDED_ID = "embedded";
