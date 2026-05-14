@@ -30,11 +30,8 @@ import org.kie.kogito.testcontainers.KogitoMongoDBContainer;
  */
 public class MongoDBSpringBootTestResource extends ConditionalSpringBootTestResource<KogitoMongoDBContainer> {
 
-    // Spring Data MongoDB still reads spring.data.mongodb.uri (DataMongoProperties).
     public static final String MONGODB_CONNECTION_PROPERTY = "spring.data.mongodb.uri";
-    // Spring Boot 4 split the basic MongoClient autoconfigure into spring-boot-mongodb;
-    // MongoProperties now binds to the spring.mongodb prefix. Set both so MongoClient and
-    // Spring Data MongoDB resolve the same testcontainer URL.
+    // MongoClient and Spring Data MongoDB read different prefixes; set both.
     public static final String MONGODB_BASIC_CONNECTION_PROPERTY = "spring.mongodb.uri";
 
     public MongoDBSpringBootTestResource() {
