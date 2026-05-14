@@ -142,7 +142,7 @@
     <version.org.hamcrest>3.0</version.org.hamcrest> <!-- else old version coming from Mockito wins and breaks tests -->
     <!-- JUnit 4 API for legacy test classes that still use org.junit.* annotations.
          junit-vintage-engine (part of JUnit 6 below) runs them on the JUnit Platform. -->
-    <version.org.junit4>4.13.2</version.org.junit4>
+    <version.junit>4.13.2</version.junit>
     <!-- JUnit 6: single pin for jupiter + platform + vintage via junit-bom. -->
     <version.org.junit>6.0.3</version.org.junit>
     <version.org.mockito>5.18.0</version.org.mockito>
@@ -859,7 +859,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>${version.org.junit4}</version>
+        <version>${version.junit}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
