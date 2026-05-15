@@ -82,7 +82,7 @@
 
     <!-- TODO move to per-runtime BOMs after the planned BOM split. Pinned 4.1.x for Quarkus/Vert.x;
          SB modules need 4.2.x and override per-artifact in springboot/pom.xml. -->
-    <version.io.netty>4.1.132.Final</version.io.netty>
+    <version.io.netty>4.1.133.Final</version.io.netty>
 
     <version.io.cloudevents>3.0.0</version.io.cloudevents>
     <!--
