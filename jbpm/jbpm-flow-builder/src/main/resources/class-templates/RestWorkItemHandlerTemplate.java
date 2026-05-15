@@ -24,12 +24,15 @@ import io.vertx.mutiny.core.Vertx;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.sslWebClientOptions;
 
+
 public class xxxRestWorkItemHandler extends RestWorkItemHandler {
 
+    
     public xxxRestWorkItemHandler() {
         this(Vertx.vertx(), sslWebClientOptions());
     }
 
+    
     public xxxRestWorkItemHandler(Vertx vertx, WebClientOptions sslOptions) {
     	super(WebClient.create(vertx), WebClient.create(vertx, sslOptions));
     }
