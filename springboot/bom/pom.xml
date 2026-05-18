@@ -35,6 +35,8 @@
     <!-- Used to define which poms are allowed to have dependencyManagement sections. This is to enforce the convention that only the root pom should have dependencyManagement, and all other poms should inherit from it. -->
     <allowedPomsList>org.kie.kogito:kogito-spring-boot-bom</allowedPomsList>
     <version.com.github.docker-java>3.7.1</version.com.github.docker-java><!-- align with testcontainers ABI; Quarkus BOM pins older docker-java missing ImageHistoryCmd -->
+    <!-- Aligned with Spring Boot Cloud (spring-cloud-kubernetes-fabric8 5.0.1 declares fabric8 7.4.0) -->
+    <version.io.fabric8>7.4.0</version.io.fabric8>
     <version.io.netty>4.2.12.Final</version.io.netty>
     <version.jakarta.servlet>6.0.0</version.jakarta.servlet>
     <!-- This is needed to override the default version inherited from kie-parent-drools -->
@@ -42,7 +44,11 @@
     <version.org.springdoc>2.8.13</version.org.springdoc>
     <version.org.springframework>7.0.6</version.org.springframework>
     <version.org.springframework.boot>4.0.5</version.org.springframework.boot>
-    <version.org.springframework.cloud>2025.0.1</version.org.springframework.cloud>
+    <!-- Spring Boot Cloud aligned with Spring Boot Framework version. See: https://spring.io/projects/spring-cloud -->
+    <!-- 2025.1.x (Oakwood) is the first Spring Cloud train compatible with Spring Boot 4.0.x;
+         2025.1.1 specifically targets Spring Boot 4.0.1+. -->
+    <!-- https://github.com/spring-cloud/spring-cloud-release/wiki/Spring-Cloud-2025.1-Release-Notes -->
+    <version.org.springframework.cloud>2025.1.1</version.org.springframework.cloud>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -494,6 +500,12 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
         <version>${version.org.springframework}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
