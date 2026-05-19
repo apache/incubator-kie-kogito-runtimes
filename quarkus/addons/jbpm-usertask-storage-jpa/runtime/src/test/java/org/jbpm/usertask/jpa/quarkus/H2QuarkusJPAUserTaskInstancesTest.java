@@ -19,15 +19,31 @@
 
 package org.jbpm.usertask.jpa.quarkus;
 
+import org.jbpm.usertask.jpa.AbstractJPAUserTaskInstancesIT;
+import org.jbpm.usertask.jpa.JPAUserTaskInstances;
+import org.jbpm.usertask.jpa.repository.AttachmentRepository;
+import org.jbpm.usertask.jpa.repository.CommentRepository;
+import org.jbpm.usertask.jpa.repository.UserTaskInstanceRepository;
+
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 
+import jakarta.inject.Inject;
+
 @QuarkusTest
-@TestTransaction
-@QuarkusTestResource(value = H2DatabaseTestResource.class, restrictToAnnotatedClass = true)
+@QuarkusTestResource(value = H2DatabaseTestResource.class)
 @TestProfile(H2QuarkusTestProfile.class)
-public class H2QuarkusJPAUserTaskInstancesTest extends BaseQuarkusJPAUserTaskInstancesTest {
+@TestTransaction
+public class H2QuarkusJPAUserTaskInstancesTest extends AbstractJPAUserTaskInstancesIT {
+
+    @Inject
+    public H2QuarkusJPAUserTaskInstancesTest(JPAUserTaskInstances userTaskInstances,
+            UserTaskInstanceRepository userTaskInstanceRepository,
+            AttachmentRepository attachmentRepository,
+            CommentRepository commentRepository) {
+        super(userTaskInstances, userTaskInstanceRepository, attachmentRepository, commentRepository);
+    }
 }

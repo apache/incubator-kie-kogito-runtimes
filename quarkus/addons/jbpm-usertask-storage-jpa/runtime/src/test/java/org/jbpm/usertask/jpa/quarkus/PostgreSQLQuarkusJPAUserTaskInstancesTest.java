@@ -19,6 +19,11 @@
 
 package org.jbpm.usertask.jpa.quarkus;
 
+import org.jbpm.usertask.jpa.AbstractJPAUserTaskInstancesIT;
+import org.jbpm.usertask.jpa.JPAUserTaskInstances;
+import org.jbpm.usertask.jpa.repository.AttachmentRepository;
+import org.jbpm.usertask.jpa.repository.CommentRepository;
+import org.jbpm.usertask.jpa.repository.UserTaskInstanceRepository;
 import org.kie.kogito.testcontainers.quarkus.PostgreSqlQuarkusTestResource;
 
 import io.quarkus.test.TestTransaction;
@@ -26,10 +31,19 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 
+import jakarta.inject.Inject;
+
 @QuarkusTest
-@TestTransaction
 @QuarkusTestResource(value = PostgreSqlQuarkusTestResource.class, restrictToAnnotatedClass = true)
 @TestProfile(PostgreSQLQuarkusTestProfile.class)
-public class PostgreSQLQuarkusJPAUserTaskInstancesTest extends BaseQuarkusJPAUserTaskInstancesTest {
+@TestTransaction
+public class PostgreSQLQuarkusJPAUserTaskInstancesTest extends AbstractJPAUserTaskInstancesIT {
 
+    @Inject
+    public PostgreSQLQuarkusJPAUserTaskInstancesTest(JPAUserTaskInstances userTaskInstances,
+            UserTaskInstanceRepository userTaskInstanceRepository,
+            AttachmentRepository attachmentRepository,
+            CommentRepository commentRepository) {
+        super(userTaskInstances, userTaskInstanceRepository, attachmentRepository, commentRepository);
+    }
 }
