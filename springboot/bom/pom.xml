@@ -34,7 +34,6 @@
   <properties>
     <!-- Used to define which poms are allowed to have dependencyManagement sections. This is to enforce the convention that only the root pom should have dependencyManagement, and all other poms should inherit from it. -->
     <allowedPomsList>org.kie.kogito:kogito-spring-boot-bom</allowedPomsList>
-    <version.com.github.docker-java>3.7.1</version.com.github.docker-java><!-- align with testcontainers ABI; Quarkus BOM pins older docker-java missing ImageHistoryCmd -->
     <!-- Aligned with Spring Boot Cloud (spring-cloud-kubernetes-fabric8 5.0.1 declares fabric8 7.4.0) -->
     <version.io.fabric8>7.4.0</version.io.fabric8>
     <version.io.netty>4.2.12.Final</version.io.netty>
@@ -52,16 +51,6 @@
   </properties>
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>com.github.docker-java</groupId>
-        <artifactId>docker-java-api</artifactId>
-        <version>${version.com.github.docker-java}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.docker-java</groupId>
-        <artifactId>docker-java-transport-zerodep</artifactId>
-        <version>${version.com.github.docker-java}</version>
-      </dependency>
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>

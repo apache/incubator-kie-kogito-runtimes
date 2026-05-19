@@ -129,19 +129,6 @@
     <version.drools.util>${project.version}</version.drools.util>
   </properties>
 
-<!--  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        &lt;!&ndash; The Kogito BOM is inherited here to reuse all the version properties defined there and used across our internal modules. &ndash;&gt;
-        <artifactId>kogito-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>-->
-
   <build>
     <extensions>
       <extension>
