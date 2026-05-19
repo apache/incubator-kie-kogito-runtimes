@@ -26,6 +26,7 @@ import org.jbpm.usertask.jpa.mapper.UserTaskInstanceEntityMapper;
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
 import org.jbpm.usertask.jpa.repository.UserTaskInstanceRepository;
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.usertask.UserTaskFilter;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskInstances;
 import org.slf4j.Logger;
@@ -55,6 +56,15 @@ public class JPAUserTaskInstances implements UserTaskInstances {
     @Override
     public List<UserTaskInstance> findByIdentity(IdentityProvider identityProvider) {
         return userTaskInstanceRepository.findByIdentity(identityProvider)
+                .stream()
+                .map(userTaskInstanceEntityMapper::mapTaskEntityToInstance)
+                .map(reconnectUserTaskInstance)
+                .toList();
+    }
+
+    @Override
+    public List<UserTaskInstance> findByIdentityAndFilter(IdentityProvider identityProvider, UserTaskFilter filter) {
+        return userTaskInstanceRepository.findByIdentityAndFilter(identityProvider, filter)
                 .stream()
                 .map(userTaskInstanceEntityMapper::mapTaskEntityToInstance)
                 .map(reconnectUserTaskInstance)

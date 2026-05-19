@@ -20,6 +20,7 @@ package com.myspace.demo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -30,9 +31,15 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
+import org.kie.kogito.usertask.UserTaskFilter;
+import org.kie.kogito.usertask.UserTaskInfo;
+import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskService;
 import org.kie.kogito.usertask.impl.json.SimpleDeserializationProblemHandler;
 import org.kie.kogito.usertask.impl.json.SimplePolymorphicTypeValidator;
+import org.kie.kogito.usertask.lifecycle.UserTaskState;
+import org.kie.kogito.usertask.view.UserTaskInputsView;
+import org.kie.kogito.usertask.view.UserTaskOutputsView;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
 import org.kie.kogito.usertask.view.UserTaskView;
 import org.springframework.http.HttpStatus;
@@ -92,15 +99,54 @@ public class UserTasksResource {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.ALL_VALUE)
-    public List<UserTaskView> list(
-            @RequestParam(value = "user", required = false) String user, 
-            @RequestParam(value = "group", required = false) List<String> groups) {
-        return userTaskService.list(identityProviderFactory.getOrImpersonateIdentity(user, groups));
+    public Object list(
+            @RequestParam(value = "user", required = false) String user,
+            @RequestParam(value = "group", required = false) List<String> groups,
+            @RequestParam(value = "format", required = false) String format,
+            @RequestParam(value = "processId", required = false) String processId,
+            @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
+            @RequestParam(value = "status", required = false) List<String> status,
+            @RequestParam(value = "taskName", required = false) String taskName) {
+
+        // Build filter from query parameters
+        UserTaskFilter.Builder filterBuilder = UserTaskFilter.builder()
+                .processId(processId)
+                .processInstanceId(processInstanceId)
+                .taskName(taskName);
+        
+        // Handle multiple status values
+        if (status != null && !status.isEmpty()) {
+            List<UserTaskState> statusList = status.stream()
+                    .map(UserTaskState::of)
+                    .collect(java.util.stream.Collectors.toList());
+            filterBuilder.statuses(statusList);
+        }
+        
+        UserTaskFilter filter = filterBuilder.build();
+
+        // Return lightweight response when format=short
+        if ("short".equalsIgnoreCase(format)) {
+            return userTaskService.listTasks(
+                identityProviderFactory.getOrImpersonateIdentity(user, groups),
+                filter
+            );
+        }
+
+        // Return full view for format=long or default (no format specified)
+        // Get filtered list first, then fetch full views for each task
+        return userTaskService.listTasks(
+            identityProviderFactory.getOrImpersonateIdentity(user, groups),
+            filter
+        ).stream()
+        .map(info -> userTaskService.getUserTaskInstance(info.getId(), identityProviderFactory.getOrImpersonateIdentity(user, groups)))
+        .filter(java.util.Optional::isPresent)
+        .map(java.util.Optional::get)
+        .collect(java.util.stream.Collectors.toList());
     }
 
     @GetMapping(value = "/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.ALL_VALUE)
     public UserTaskView find(
-            @PathVariable("taskId") String taskId, 
+            @PathVariable("taskId") String taskId,
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "group", required = false) List<String> groups) {
         return userTaskService.getUserTaskInstance(taskId, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -125,7 +171,7 @@ public class UserTasksResource {
     }
 
     @PutMapping("/{taskId}/outputs")
-    public UserTaskView setOutput(
+    public UserTaskOutputsView setOutput(
             @PathVariable("taskId") String taskId,
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "group", required = false) List<String> groups,
@@ -135,7 +181,7 @@ public class UserTasksResource {
     }
 
     @PutMapping("/{taskId}/inputs")
-    public UserTaskView setInputs(
+    public UserTaskInputsView setInputs(
             @PathVariable("taskId") String taskId,
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "group", required = false) List<String> groups,
@@ -194,7 +240,7 @@ public class UserTasksResource {
         return userTaskService.removeComment(taskId, commentId, identityProviderFactory.getOrImpersonateIdentity(user, groups)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping(value = "/{taskId}/attachments",consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = "/{taskId}/attachments", consumes = MediaType.ALL_VALUE)
     public Collection<Attachment> getAttachments(
             @PathVariable("taskId") String taskId,
             @RequestParam(value = "user", required = false) String user,
