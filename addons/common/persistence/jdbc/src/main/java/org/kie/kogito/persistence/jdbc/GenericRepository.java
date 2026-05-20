@@ -18,10 +18,7 @@
  */
 package org.kie.kogito.persistence.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -30,6 +27,8 @@ import java.util.stream.StreamSupport;
 
 import javax.sql.DataSource;
 
+import org.kie.kogito.Model;
+import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,7 @@ public class GenericRepository extends Repository {
     }
 
     protected boolean isFilterByLocalProcess() {
-        Collection<String> processIds = getProcessIdsForFiltering();
+        Collection<Process<? extends Model>> processIds = getProcessIdsForFiltering();
         return processIds != null && !processIds.isEmpty();
     }
 
@@ -66,9 +65,9 @@ public class GenericRepository extends Repository {
      *
      * @return Collection of process IDs for CTE filtering, or null to skip filtering
      */
-    private Collection<String> getProcessIdsForFiltering() {
+    private Collection<Process<? extends Model>> getProcessIdsForFiltering() {
         if (processes != null) {
-            Collection<String> processIds = processes.processIds();
+            Collection<Process<? extends Model>> processIds = processes.processes();
             LOGGER.debug("Using process IDs from Processes bean for data isolation: {}", processIds);
             return processIds;
         }
@@ -84,24 +83,26 @@ public class GenericRepository extends Repository {
      * @param processIds Collection of process IDs to include in the CTE
      * @return The wrapped query with CTE and data isolation filtering
      */
-    private String buildQueryWithProcessFiltering(String baseQuery, Collection<String> processIds) {
+    private String buildQueryWithProcessFiltering(String baseQuery, Collection<Process<? extends Model>> processIds) {
         if (!isFilterByLocalProcess()) {
             return baseQuery;
         }
 
         String unionSelects = java.util.stream.IntStream.range(0, processIds.size())
-                .mapToObj(i -> "SELECT CAST(? AS VARCHAR(255)) AS process_id")
+                .mapToObj(i -> "SELECT CAST(? AS VARCHAR(255)) AS process_id, CAST(? AS VARCHAR(255)) AS process_version")
                 .collect(Collectors.joining(" UNION ALL "));
         String cte = "WITH allowed_processes AS (" + unionSelects + ") ";
 
         // Determine if we need WHERE or AND
         String whereClause = baseQuery.toLowerCase().contains(" where ") ? " AND " : " WHERE ";
 
-        // Add data isolation filter using EXISTS pattern (supports future tuple filtering)
+        // Add data isolation filter using EXISTS pattern
         String isolationFilter = whereClause +
-                "EXISTS (SELECT 1 FROM allowed_processes ap " +
-                "WHERE ap.process_id = process_instances.root_process_id " +
-                "OR (process_instances.root_process_id IS NULL AND ap.process_id = process_instances.process_id))";
+                "EXISTS (SELECT 1 FROM allowed_processes ap WHERE " +
+                "process_instances.process_version IS NULL " +
+                "OR (ap.process_id = process_instances.root_process_id AND (ap.process_version IS NULL AND process_instances.root_process_version IS NULL OR ap.process_version = process_instances.root_process_version)) "
+                +
+                "OR (process_instances.root_process_id IS NULL AND ap.process_id = process_instances.process_id AND (ap.process_version IS NULL AND process_instances.process_version IS NULL OR ap.process_version = process_instances.process_version)))";
 
         return cte + baseQuery + isolationFilter;
     }
@@ -114,20 +115,25 @@ public class GenericRepository extends Repository {
      * @param startIndex Starting parameter index (1-based)
      * @return The next available parameter index
      */
-    private int bindProcessIds(PreparedStatement statement, Collection<String> processIds, int startIndex) throws SQLException {
+    private int bindProcessIds(PreparedStatement statement, Collection<Process<? extends Model>> processIds, int startIndex) throws SQLException {
         if (!isFilterByLocalProcess()) {
             return startIndex;
         }
 
         int index = startIndex;
-        for (String processId : processIds) {
-            statement.setString(index++, processId);
+        for (Process<? extends Model> process : processIds) {
+            statement.setString(index++, process.id());
+            if (process.version() == null) {
+                statement.setNull(index++, Types.VARCHAR);
+            } else {
+                statement.setString(index++, process.version());
+            }
         }
         return index;
     }
 
     @Override
-    void insertInternal(String processId, String processVersion, String rootProcessId, UUID id, byte[] payload, String businessKey, String[] eventTypes) {
+    void insertInternal(String processId, String processVersion, String rootProcessId, String rootProcessVersion, UUID id, byte[] payload, String businessKey, String[] eventTypes) {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(INSERT);
                 PreparedStatement eventStatement = connection.prepareStatement(DELETE_ALL_WAITING_FOR_EVENT_TYPE);
@@ -148,7 +154,8 @@ public class GenericRepository extends Repository {
             statement.setString(3, processId);
             statement.setString(4, processVersion);
             statement.setString(5, rootProcessId);
-            statement.setLong(6, 0L);
+            statement.setString(6, rootProcessVersion);
+            statement.setLong(7, 0L);
             statement.executeUpdate();
             if (businessKey != null) {
                 try (PreparedStatement businessKeyStmt = connection.prepareStatement(INSERT_BUSINESS_KEY)) {
@@ -248,7 +255,7 @@ public class GenericRepository extends Repository {
 
     @Override
     Optional<Record> findByIdInternal(String processId, String processVersion, UUID id) {
-        Collection<String> processIds = getProcessIdsForFiltering();
+        Collection<Process<? extends Model>> processIds = getProcessIdsForFiltering();
         String baseQuery = sqlIncludingVersion(FIND_BY_ID, processVersion);
         String query = buildQueryWithProcessFiltering(baseQuery, processIds);
 
@@ -273,7 +280,7 @@ public class GenericRepository extends Repository {
 
     @Override
     Stream<Record> findAllInternalWaitingFor(String processId, String processVersion, String eventType) {
-        Collection<String> processIds = getProcessIdsForFiltering();
+        Collection<Process<? extends Model>> processIds = getProcessIdsForFiltering();
         String baseQuery = sqlIncludingVersion(FIND_ALL_WAITING_FOR_EVENT_TYPE, processVersion);
         String query = buildQueryWithProcessFiltering(baseQuery, processIds);
 
@@ -300,7 +307,7 @@ public class GenericRepository extends Repository {
 
     @Override
     Optional<Record> findByBusinessKey(String processId, String processVersion, String businessKey) {
-        Collection<String> processIds = getProcessIdsForFiltering();
+        Collection<Process<? extends Model>> processIds = getProcessIdsForFiltering();
         String baseQuery = sqlIncludingVersion(FIND_BY_BUSINESS_KEY, processVersion);
         String query = buildQueryWithProcessFiltering(baseQuery, processIds);
 
@@ -358,7 +365,7 @@ public class GenericRepository extends Repository {
 
     @Override
     Stream<Record> findAllInternal(String processId, String processVersion) {
-        Collection<String> processIds = getProcessIdsForFiltering();
+        Collection<Process<? extends Model>> processIds = getProcessIdsForFiltering();
         String baseQuery = sqlIncludingVersion(FIND_ALL, processVersion);
         String query = buildQueryWithProcessFiltering(baseQuery, processIds);
 

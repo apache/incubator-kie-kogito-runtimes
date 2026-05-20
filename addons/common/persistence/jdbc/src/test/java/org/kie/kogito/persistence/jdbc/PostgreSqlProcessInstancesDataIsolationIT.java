@@ -21,6 +21,7 @@ package org.kie.kogito.persistence.jdbc;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -71,6 +72,11 @@ public class PostgreSqlProcessInstancesDataIsolationIT extends AbstractProcessIn
                 // Return only LOCAL process IDs for data isolation filtering
                 // Remote_BPMN2_CallActivity is intentionally excluded
                 return AbstractProcessInstancesDataIsolationIT.localProcessIds();
+            }
+
+            @Override
+            public Collection<Process<? extends Model>> processes() {
+                return processMap.values().stream().filter(it -> localProcessIds().contains(it.process().getId())).collect(Collectors.toSet());
             }
 
             @Override

@@ -41,7 +41,7 @@ import org.springframework.test.context.ContextConfiguration;
 public class PostgreSQLSpringBootJPAUserTaskInstancesDataIsolationTest extends BaseSpringBootDataIsolationTest {
     @Autowired
     public PostgreSQLSpringBootJPAUserTaskInstancesDataIsolationTest(JPAUserTaskInstances userTaskInstances, UserTaskInstanceRepository userTaskInstanceRepository,
-            SpringBootUserTaskJPAContext context) {
-        super(userTaskInstances, userTaskInstanceRepository, context);
+            SpringBootUserTaskJPAContext context, Processes processes) {
+        super(userTaskInstances, userTaskInstanceRepository, context, processes);
     }
 }

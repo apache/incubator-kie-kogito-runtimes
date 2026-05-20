@@ -33,15 +33,35 @@ public class ProcessInstanceErrorDataEvent extends ProcessInstanceDataEvent<Proc
                 source,
                 body,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA),
-                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA),
                 addons,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA),
                 null,
                 identity);
+    }
+
+    public ProcessInstanceErrorDataEvent(ProcessInstanceDataEventState<ProcessInstanceErrorEventBody> state) {
+        super(state);
+    }
+
+    public static ProcessInstanceErrorDataEventBuilder builder() {
+        return new ProcessInstanceErrorDataEventBuilder();
+    }
+
+    public static class ProcessInstanceErrorDataEventBuilder extends AbstractProcessInstanceDataEventBuilder<ProcessInstanceErrorDataEventBuilder, ProcessInstanceErrorEventBody> {
+
+        public ProcessInstanceErrorDataEventBuilder() {
+            this.type = ERROR_TYPE;
+        }
+
+        public ProcessInstanceErrorDataEvent build() {
+            return new ProcessInstanceErrorDataEvent(this.toStateRecord());
+        }
     }
 }

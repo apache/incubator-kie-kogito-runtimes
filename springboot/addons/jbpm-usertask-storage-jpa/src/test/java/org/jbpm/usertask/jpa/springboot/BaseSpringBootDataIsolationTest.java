@@ -20,6 +20,7 @@
 package org.jbpm.usertask.jpa.springboot;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.jbpm.usertask.jpa.AbstractUserTaskInstancesDataIsolationIT;
 import org.jbpm.usertask.jpa.JPAUserTaskInstances;
@@ -34,10 +35,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public abstract class BaseSpringBootDataIsolationTest extends AbstractUserTaskInstancesDataIsolationIT {
 
-    public BaseSpringBootDataIsolationTest(JPAUserTaskInstances userTaskInstances, UserTaskInstanceRepository userTaskInstanceRepository, SpringBootUserTaskJPAContext context) {
-        super(userTaskInstances, userTaskInstanceRepository, context);
+    public BaseSpringBootDataIsolationTest(JPAUserTaskInstances userTaskInstances, UserTaskInstanceRepository userTaskInstanceRepository, SpringBootUserTaskJPAContext context, Processes processes) {
+        super(userTaskInstances, userTaskInstanceRepository, context, processes);
     }
 
     /**
@@ -110,12 +114,20 @@ public abstract class BaseSpringBootDataIsolationTest extends AbstractUserTaskIn
             return new Processes() {
                 @Override
                 public Collection<String> processIds() {
-                    return AbstractUserTaskInstancesDataIsolationIT.localProcessIds();
+                    return localProcessIds();
                 }
 
                 @Override
                 public Process<? extends Model> processById(String processId) {
-                    return null;
+                    Process<? extends Model> process = mock(Process.class);
+                    when(process.id()).thenReturn(processId);
+                    when(process.version()).thenReturn("1.0");
+                    return process;
+                }
+
+                @Override
+                public Collection<Process<? extends Model>> processes() {
+                    return localProcessIds().stream().map(this::processById).collect(Collectors.toSet());
                 }
             };
         }

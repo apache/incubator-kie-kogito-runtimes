@@ -47,11 +47,12 @@ public class ProcessInstanceVariableDataEvent extends ProcessInstanceDataEvent<P
                 source,
                 body,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA),
-                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA),
                 addons,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA),
@@ -84,5 +85,24 @@ public class ProcessInstanceVariableDataEvent extends ProcessInstanceDataEvent<P
     @Override
     protected boolean isInternalAttribute(String name) {
         return INTERNAL_EXTENSION_ATTRIBUTES.contains(name) || super.isInternalAttribute(name);
+    }
+
+    public ProcessInstanceVariableDataEvent(ProcessInstanceDataEventState<ProcessInstanceVariableEventBody> state) {
+        super(state);
+    }
+
+    public static ProcessInstanceVariableDataEventBuilder builder() {
+        return new ProcessInstanceVariableDataEventBuilder();
+    }
+
+    public static class ProcessInstanceVariableDataEventBuilder extends AbstractProcessInstanceDataEventBuilder<ProcessInstanceVariableDataEventBuilder, ProcessInstanceVariableEventBody> {
+
+        public ProcessInstanceVariableDataEventBuilder() {
+            this.type = VAR_TYPE;
+        }
+
+        public ProcessInstanceVariableDataEvent build() {
+            return new ProcessInstanceVariableDataEvent(this.toStateRecord());
+        }
     }
 }

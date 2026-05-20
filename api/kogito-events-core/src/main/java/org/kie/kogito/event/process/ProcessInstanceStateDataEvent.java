@@ -28,20 +28,41 @@ public class ProcessInstanceStateDataEvent extends ProcessInstanceDataEvent<Proc
         this.setType(STATE_TYPE);
     }
 
+    @Deprecated
     public ProcessInstanceStateDataEvent(String source, String addons, String identity, Map<String, Object> metaData, ProcessInstanceStateEventBody body) {
         super(STATE_TYPE,
                 source,
                 body,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA),
-                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA),
                 addons,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA),
                 null,
                 identity);
+    }
+
+    public ProcessInstanceStateDataEvent(ProcessInstanceDataEventState<ProcessInstanceStateEventBody> state) {
+        super(state);
+    }
+
+    public static ProcessInstanceStateDataEventBuilder builder() {
+        return new ProcessInstanceStateDataEventBuilder();
+    }
+
+    public static class ProcessInstanceStateDataEventBuilder extends AbstractProcessInstanceDataEventBuilder<ProcessInstanceStateDataEventBuilder, ProcessInstanceStateEventBody> {
+
+        public ProcessInstanceStateDataEventBuilder() {
+            this.type = STATE_TYPE;
+        }
+
+        public ProcessInstanceStateDataEvent build() {
+            return new ProcessInstanceStateDataEvent(this.toStateRecord());
+        }
     }
 }

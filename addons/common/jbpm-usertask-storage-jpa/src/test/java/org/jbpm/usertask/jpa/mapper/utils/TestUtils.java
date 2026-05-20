@@ -270,6 +270,7 @@ public class TestUtils {
         org.kie.kogito.usertask.model.ProcessInfo processInfo = org.kie.kogito.usertask.model.ProcessInfo.builder()
                 .withProcessId("orderProcess")
                 .withRootProcessId("orderProcess")
+                .withRootProcessVersion("1.0")
                 .withProcessInstanceId("test-process-instance")
                 .withProcessVersion("1.0")
                 .build();
@@ -359,6 +360,7 @@ public class TestUtils {
         org.jbpm.usertask.jpa.model.TaskProcessInfoEntity processInfo = new org.jbpm.usertask.jpa.model.TaskProcessInfoEntity();
         processInfo.setProcessId("orderProcess");
         processInfo.setRootProcessId("orderProcess");
+        processInfo.setRootProcessVersion("1.0");
         processInfo.setProcessInstanceId("test-process-instance");
         processInfo.setProcessVersion("1.0");
         instance.setProcessInfo(processInfo);

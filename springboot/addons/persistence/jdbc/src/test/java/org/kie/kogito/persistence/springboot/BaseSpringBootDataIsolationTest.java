@@ -21,6 +21,7 @@ package org.kie.kogito.persistence.springboot;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -78,6 +79,11 @@ public abstract class BaseSpringBootDataIsolationTest extends AbstractProcessIns
                 @Override
                 public Process<? extends Model> processById(String processId) {
                     return processMap.get(processId);
+                }
+
+                @Override
+                public Collection<Process<? extends Model>> processes() {
+                    return localProcessIds().stream().map(processMap::get).collect(Collectors.toSet());
                 }
             };
         }

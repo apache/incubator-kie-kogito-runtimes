@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class H2SpringBootDataIsolationTest extends BaseSpringBootDataIsolationTest {
     @Autowired
-    public H2SpringBootDataIsolationTest(JPAUserTaskInstances userTaskInstances, UserTaskInstanceRepository userTaskInstanceRepository, SpringBootUserTaskJPAContext context) {
-        super(userTaskInstances, userTaskInstanceRepository, context);
+    public H2SpringBootDataIsolationTest(JPAUserTaskInstances userTaskInstances, UserTaskInstanceRepository userTaskInstanceRepository, SpringBootUserTaskJPAContext context, Processes processes) {
+        super(userTaskInstances, userTaskInstanceRepository, context, processes);
     }
 }

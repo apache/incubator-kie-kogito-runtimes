@@ -21,6 +21,7 @@ package org.jbpm.usertask.jpa.quarkus;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jbpm.usertask.jpa.AbstractUserTaskInstancesDataIsolationIT;
 import org.jbpm.usertask.jpa.JPAUserTaskInstances;
@@ -39,6 +40,9 @@ import io.quarkus.test.junit.TestProfile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Alternative;
 import jakarta.inject.Inject;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * PostgreSQL variant of UserTask Storage data isolation test for Quarkus.
@@ -61,15 +65,23 @@ public class PostgreSQLQuarkusDataIsolationTest extends AbstractUserTaskInstance
 
         @Override
         public Process<? extends Model> processById(String processId) {
-            return null;
+            Process<? extends Model> process = mock(Process.class);
+            when(process.id()).thenReturn(processId);
+            when(process.version()).thenReturn("1.0");
+            return process;
+        }
+
+        @Override
+        public Collection<Process<? extends Model>> processes() {
+            return localProcessIds().stream().map(this::processById).collect(Collectors.toSet());
         }
     }
 
     @Inject
     public PostgreSQLQuarkusDataIsolationTest(JPAUserTaskInstances userTaskInstances,
             UserTaskInstanceRepository userTaskInstanceRepository,
-            QuarkusUserTaskJPAContext context) {
-        super(userTaskInstances, userTaskInstanceRepository, context);
+            QuarkusUserTaskJPAContext context, Processes processes) {
+        super(userTaskInstances, userTaskInstanceRepository, context, processes);
     }
 
     /**

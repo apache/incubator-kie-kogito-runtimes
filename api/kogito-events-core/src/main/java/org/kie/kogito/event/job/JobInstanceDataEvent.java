@@ -20,6 +20,7 @@
 package org.kie.kogito.event.job;
 
 import org.kie.kogito.event.AbstractDataEvent;
+import org.kie.kogito.event.DataEventState;
 
 public class JobInstanceDataEvent extends AbstractDataEvent<byte[]> {
 
@@ -29,9 +30,27 @@ public class JobInstanceDataEvent extends AbstractDataEvent<byte[]> {
             String kogitoProcessInstanceId,
             String kogitoRootProcessInstanceId,
             String kogitoProcessId,
+            String kogitoProcessVersion,
             String kogitoRootProcessId,
+            String kogitoRootProcessVersion,
             String kogitoIdentity) {
-        super(type, source, data, kogitoProcessInstanceId, kogitoRootProcessInstanceId, kogitoProcessId,
-                kogitoRootProcessId, null, kogitoIdentity);
+        super(type, source, data, kogitoProcessInstanceId, kogitoRootProcessInstanceId, kogitoProcessId, kogitoProcessVersion,
+                kogitoRootProcessId, kogitoRootProcessVersion, null, kogitoIdentity);
+    }
+
+    public JobInstanceDataEvent(DataEventState<byte[]> state) {
+        super(state);
+    }
+
+    public static JobInstanceDataEventBuilder builder() {
+        return new JobInstanceDataEventBuilder();
+    }
+
+    public static class JobInstanceDataEventBuilder
+            extends AbstractDataEventBuilder<JobInstanceDataEventBuilder, byte[]> {
+
+        public JobInstanceDataEvent build() {
+            return new JobInstanceDataEvent(this.toCommonStateRecord());
+        }
     }
 }

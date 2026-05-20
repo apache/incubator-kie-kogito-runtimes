@@ -28,16 +28,18 @@ public class ProcessInstanceNodeDataEvent extends ProcessInstanceDataEvent<Proce
         this.setType(NODE_TYPE);
     }
 
+    @Deprecated
     public ProcessInstanceNodeDataEvent(String source, String addons, String identity, Map<String, Object> metaData, ProcessInstanceNodeEventBody body) {
         super(NODE_TYPE,
                 source,
                 body,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA),
-                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA),
                 addons,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA),
@@ -45,4 +47,22 @@ public class ProcessInstanceNodeDataEvent extends ProcessInstanceDataEvent<Proce
                 identity);
     }
 
+    public ProcessInstanceNodeDataEvent(ProcessInstanceDataEventState<ProcessInstanceNodeEventBody> state) {
+        super(state);
+    }
+
+    public static ProcessInstanceNodeDataEventBuilder builder() {
+        return new ProcessInstanceNodeDataEventBuilder();
+    }
+
+    public static class ProcessInstanceNodeDataEventBuilder extends AbstractProcessInstanceDataEventBuilder<ProcessInstanceNodeDataEventBuilder, ProcessInstanceNodeEventBody> {
+
+        public ProcessInstanceNodeDataEventBuilder() {
+            this.type = NODE_TYPE;
+        }
+
+        public ProcessInstanceNodeDataEvent build() {
+            return new ProcessInstanceNodeDataEvent(this.toStateRecord());
+        }
+    }
 }

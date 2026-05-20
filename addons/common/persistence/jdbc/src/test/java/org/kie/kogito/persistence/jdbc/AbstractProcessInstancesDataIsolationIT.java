@@ -101,11 +101,11 @@ public abstract class AbstractProcessInstancesDataIsolationIT {
         String remoteId3 = insertRemoteProcessInstance();
 
         // Verify remote instances ARE in database (using unfiltered repository)
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId1)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId1)))
                 .as("Remote instance 1 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId2)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId2)))
                 .as("Remote instance 2 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId3)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId3)))
                 .as("Remote instance 3 should be in database").isPresent();
 
         // Verify local instances are found
@@ -144,13 +144,13 @@ public abstract class AbstractProcessInstancesDataIsolationIT {
         String remoteId4 = insertRemoteProcessInstance();
 
         // Verify remote instances ARE in database (using unfiltered repository)
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId1)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId1)))
                 .as("Remote instance 1 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId2)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId2)))
                 .as("Remote instance 2 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId3)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId3)))
                 .as("Remote instance 3 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId4)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId4)))
                 .as("Remote instance 4 should be in database").isPresent();
 
         // Verify stream includes only local instances (standalone + subprocesses from call activity)
@@ -181,9 +181,9 @@ public abstract class AbstractProcessInstancesDataIsolationIT {
         insertRemoteProcessInstanceWithBusinessKey(remoteBusinessKey2);
 
         // Verify remote instances ARE in database (using unfiltered repository)
-        assertThat(unfilteredRepo.findByBusinessKey("Remote_BPMN2_CallActivity", null, remoteBusinessKey1))
+        assertThat(unfilteredRepo.findByBusinessKey("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), remoteBusinessKey1))
                 .as("Remote instance with business key 1 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByBusinessKey("Remote_BPMN2_CallActivity", null, remoteBusinessKey2))
+        assertThat(unfilteredRepo.findByBusinessKey("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), remoteBusinessKey2))
                 .as("Remote instance with business key 2 should be in database").isPresent();
 
         // Should find only the local standalone instance
@@ -205,13 +205,13 @@ public abstract class AbstractProcessInstancesDataIsolationIT {
         String remoteId4 = insertRemoteProcessInstance();
 
         // Verify remote instances ARE in database (using unfiltered repository)
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId1)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId1)))
                 .as("Remote instance 1 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId2)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId2)))
                 .as("Remote instance 2 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId3)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId3)))
                 .as("Remote instance 3 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId4)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId4)))
                 .as("Remote instance 4 should be in database").isPresent();
 
         // All operations on processInstances should return empty results
@@ -233,13 +233,13 @@ public abstract class AbstractProcessInstancesDataIsolationIT {
         String remoteId3 = insertRemoteProcessInstanceWithBusinessKey("remote-business-key");
 
         // Verify remote instances ARE in database (using unfiltered repository)
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId1)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId1)))
                 .as("Remote instance 1 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId2)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId2)))
                 .as("Remote instance 2 should be in database").isPresent();
-        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", null, UUID.fromString(remoteId3)))
+        assertThat(unfilteredRepo.findByIdInternal("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), UUID.fromString(remoteId3)))
                 .as("Remote instance 3 with business key should be in database").isPresent();
-        assertThat(unfilteredRepo.findByBusinessKey("Remote_BPMN2_CallActivity", null, "remote-business-key"))
+        assertThat(unfilteredRepo.findByBusinessKey("Remote_BPMN2_CallActivity", processes.processById("Remote_BPMN2_CallActivity").version(), "remote-business-key"))
                 .as("Remote instance with business key should be in database").isPresent();
 
         // Verify these instances are NOT found by processInstances

@@ -19,9 +19,8 @@
 
 package org.kie.kogito.persistence.quarkus;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -80,6 +79,11 @@ public abstract class BaseQuarkusDataIsolationTest extends AbstractProcessInstan
             // Return only LOCAL process IDs for data isolation filtering
             // Remote_BPMN2_CallActivity is intentionally excluded
             return localProcessIds();
+        }
+
+        @Override
+        public Collection<Process<? extends Model>> processes() {
+            return processMap.values().stream().filter(it -> localProcessIds().contains(it.id())).collect(Collectors.toSet());
         }
 
         @Override

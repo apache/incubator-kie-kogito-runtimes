@@ -19,8 +19,10 @@
 package org.kie.kogito.event.process;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.kie.kogito.event.AbstractDataEvent;
+import org.kie.kogito.event.DataEventState;
 
 public class ProcessInstanceDataEvent<T> extends AbstractDataEvent<T> {
 
@@ -39,11 +41,12 @@ public class ProcessInstanceDataEvent<T> extends AbstractDataEvent<T> {
             String source,
             T body,
             String kogitoProcessInstanceId,
-            String kogitoProcessInstanceVersion,
             String kogitoParentProcessInstanceId,
             String kogitoRootProcessInstanceId,
             String kogitoProcessId,
+            String kogitoProcessVersion,
             String kogitoRootProcessId,
+            String kogitoRootProcessVersion,
             String kogitoProcessInstanceState,
             String kogitoAddons,
             String kogitoProcessType,
@@ -55,14 +58,60 @@ public class ProcessInstanceDataEvent<T> extends AbstractDataEvent<T> {
                 kogitoProcessInstanceId,
                 kogitoRootProcessInstanceId,
                 kogitoProcessId,
+                kogitoProcessVersion,
                 kogitoRootProcessId,
+                kogitoRootProcessVersion,
                 kogitoAddons,
                 kogitoIdentity);
-        setKogitoProcessInstanceVersion(kogitoProcessInstanceVersion);
         setKogitoParentProcessInstanceId(kogitoParentProcessInstanceId);
         setKogitoProcessInstanceState(kogitoProcessInstanceState);
         setKogitoReferenceId(kogitoReferenceId);
         setKogitoProcessType(kogitoProcessType);
     }
 
+    public ProcessInstanceDataEvent(ProcessInstanceDataEventState<T> processInstanceDataEventState) {
+        super(processInstanceDataEventState.baseState());
+    }
+
+    public static <T> ProcessInstanceDataEventBuilder<T> baseBuilder() {
+        return new ProcessInstanceDataEventBuilder<>();
+    }
+
+    public abstract static class AbstractProcessInstanceDataEventBuilder<B extends AbstractProcessInstanceDataEventBuilder<B, T>, T> extends AbstractDataEvent.AbstractDataEventBuilder<B, T> {
+
+        public AbstractProcessInstanceDataEventBuilder<B, T> metaData(Map<String, Object> metaData) {
+            if (metaData != null) {
+                this.kogitoProcessInstanceId = (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA);
+                this.kogitoParentProcessInstanceId = (String) metaData.get(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA);
+                this.kogitoRootProcessInstanceId = (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA);
+                this.kogitoProcessId = (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA);
+                this.kogitoProcessVersion = (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA);
+                this.kogitoRootProcessId = (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA);
+                this.kogitoRootProcessVersion = (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_VERSION_META_DATA);
+                this.kogitoProcessInstanceState = (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA);
+                this.kogitoProcessType = (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA);
+            }
+            return self();
+        }
+
+        protected ProcessInstanceDataEventState<T> toStateRecord() {
+            return new ProcessInstanceDataEventState<>(
+                    this.toCommonStateRecord());
+        }
+    }
+
+    public static class ProcessInstanceDataEventBuilder<T>
+            extends AbstractProcessInstanceDataEventBuilder<ProcessInstanceDataEventBuilder<T>, T> {
+
+        public ProcessInstanceDataEventBuilder() {
+        }
+
+        public ProcessInstanceDataEvent<T> build() {
+            return new ProcessInstanceDataEvent<>(this.toStateRecord());
+        }
+    }
+
+    public record ProcessInstanceDataEventState<E> (
+            DataEventState<E> baseState) {
+    }
 }

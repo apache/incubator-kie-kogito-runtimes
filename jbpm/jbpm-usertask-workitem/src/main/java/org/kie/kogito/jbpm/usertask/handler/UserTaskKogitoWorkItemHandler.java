@@ -90,6 +90,7 @@ public class UserTaskKogitoWorkItemHandler extends DefaultKogitoWorkItemHandler 
                 .withProcessVersion(workItem.getProcessInstance().getProcessVersion())
                 .withRootProcessInstanceId(workItem.getProcessInstance().getRootProcessInstanceId())
                 .withRootProcessId(workItem.getProcessInstance().getRootProcessId())
+                .withRootProcessVersion(workItem.getProcessInstance().getRootProcessVersion())
                 .withParentProcessInstanceId(workItem.getProcessInstance().getParentProcessInstanceId())
                 .build();
         instance.setProcessInfo(processInfo);

@@ -24,21 +24,25 @@ import org.kie.kogito.event.process.ProcessInstanceEventMetadata;
 
 public class UserTaskInstanceAttachmentDataEvent extends UserTaskInstanceDataEvent<UserTaskInstanceAttachmentEventBody> {
 
+    public static final String USER_TASK_INSTANCE_ATTACHMENT_DATA_EVENT = "UserTaskInstanceAttachmentDataEvent";
+
     public UserTaskInstanceAttachmentDataEvent() {
     }
 
+    @Deprecated
     public UserTaskInstanceAttachmentDataEvent(String source, String addons, String identity, Map<String, Object> metaData, UserTaskInstanceAttachmentEventBody body) {
-        super("UserTaskInstanceAttachmentDataEvent",
+        super(USER_TASK_INSTANCE_ATTACHMENT_DATA_EVENT,
                 source,
                 body,
                 (String) metaData.get(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_ID_META_DATA),
                 (String) metaData.get(UserTaskInstanceEventMetadata.USER_TASK_INSTANCE_STATE_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA),
-                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA),
                 addons,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA),
@@ -47,4 +51,22 @@ public class UserTaskInstanceAttachmentDataEvent extends UserTaskInstanceDataEve
 
     }
 
+    public UserTaskInstanceAttachmentDataEvent(UserTaskInstanceDataEventState<UserTaskInstanceAttachmentEventBody> state) {
+        super(state);
+    }
+
+    public static UserTaskInstanceAttachmentDataEventBuilder builder() {
+        return new UserTaskInstanceAttachmentDataEventBuilder();
+    }
+
+    public static class UserTaskInstanceAttachmentDataEventBuilder extends UserTaskInstanceDataEventBuilder<UserTaskInstanceAttachmentDataEventBuilder, UserTaskInstanceAttachmentEventBody> {
+
+        public UserTaskInstanceAttachmentDataEventBuilder() {
+            this.type = USER_TASK_INSTANCE_ATTACHMENT_DATA_EVENT;
+        }
+
+        public UserTaskInstanceAttachmentDataEvent build() {
+            return new UserTaskInstanceAttachmentDataEvent(this.toStateRecord());
+        }
+    }
 }

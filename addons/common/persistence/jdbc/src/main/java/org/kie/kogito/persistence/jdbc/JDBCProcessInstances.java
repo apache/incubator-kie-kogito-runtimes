@@ -80,7 +80,9 @@ public class JDBCProcessInstances<T extends Model> implements MutableProcessInst
         if (isActive(instance) || instance.status() == ProcessInstance.STATE_PENDING) {
             String[] eventTypes = getUniqueEvents(instance);
             String rootProcessId = ((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getRootProcessId();
-            repository.insertInternal(process.id(), process.version(), rootProcessId, UUID.fromString(id), marshaller.marshallProcessInstance(instance), instance.businessKey(), eventTypes);
+            String rootProcessVersion = ((AbstractProcessInstance<T>) instance).internalGetProcessInstance().getRootProcessVersion();
+            repository.insertInternal(process.id(), process.version(), rootProcessId, rootProcessVersion, UUID.fromString(id), marshaller.marshallProcessInstance(instance), instance.businessKey(),
+                    eventTypes);
             connectInstance(instance);
         } else {
             LOGGER.warn("Skipping create of process instance id: {}, state: {}", id, instance.status());

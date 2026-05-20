@@ -28,20 +28,41 @@ public class ProcessInstanceSLADataEvent extends ProcessInstanceDataEvent<Proces
         this.setType(SLA_TYPE);
     }
 
+    @Deprecated
     public ProcessInstanceSLADataEvent(String source, String addons, String identity, Map<String, Object> metaData, ProcessInstanceSLAEventBody body) {
         super(SLA_TYPE,
                 source,
                 body,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA),
-                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA),
                 addons,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA),
                 null,
                 identity);
+    }
+
+    public ProcessInstanceSLADataEvent(ProcessInstanceDataEventState<ProcessInstanceSLAEventBody> state) {
+        super(state);
+    }
+
+    public static ProcessInstanceSLADataEventBuilder builder() {
+        return new ProcessInstanceSLADataEventBuilder();
+    }
+
+    public static class ProcessInstanceSLADataEventBuilder extends AbstractProcessInstanceDataEventBuilder<ProcessInstanceSLADataEventBuilder, ProcessInstanceSLAEventBody> {
+
+        public ProcessInstanceSLADataEventBuilder() {
+            this.type = SLA_TYPE;
+        }
+
+        public ProcessInstanceSLADataEvent build() {
+            return new ProcessInstanceSLADataEvent(this.toStateRecord());
+        }
     }
 }

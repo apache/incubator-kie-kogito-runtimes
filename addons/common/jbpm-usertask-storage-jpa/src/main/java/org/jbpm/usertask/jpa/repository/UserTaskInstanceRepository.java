@@ -26,9 +26,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.jbpm.usertask.jpa.model.UserTaskInstanceEntity;
+import org.kie.kogito.Model;
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.process.Process;
 import org.kie.kogito.usertask.UserTaskFilter;
 
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
 import static org.jbpm.usertask.jpa.model.UserTaskInstanceEntity.BASE_IDENTITY_QUERY;
@@ -130,12 +133,12 @@ public class UserTaskInstanceRepository extends BaseRepository<UserTaskInstanceE
         return query.getResultList();
     }
 
-    protected Collection<String> getProcessIdsForFiltering() {
-        return context.getProcesses() != null ? context.getProcesses().processIds() : null;
+    protected Collection<Process<? extends Model>> getProcessIdsForFiltering() {
+        return context.getProcesses() != null ? context.getProcesses().processes() : null;
     }
 
     protected boolean isFilterByLocalProcess() {
-        Collection<String> processIds = getProcessIdsForFiltering();
+        Collection<Process<? extends Model>> processIds = getProcessIdsForFiltering();
         return processIds != null && !processIds.isEmpty();
     }
 
@@ -144,16 +147,17 @@ public class UserTaskInstanceRepository extends BaseRepository<UserTaskInstanceE
             return baseQuery;
         }
 
-        Collection<String> processIds = getProcessIdsForFiltering();
+        Collection<Process<? extends Model>> processIds = getProcessIdsForFiltering();
         String unionSelects = IntStream.range(0, processIds.size())
-                .mapToObj(i -> "SELECT CAST(:processId" + i + " AS STRING) AS processId")
+                .mapToObj(i -> "SELECT CAST(:processId" + i + " AS STRING) AS processId, CAST(:processVersion" + i + " AS STRING) AS processVersion")
                 .collect(Collectors.joining(" UNION ALL "));
         String cte = "WITH allowed_processes AS (" + unionSelects + ") ";
         String whereClause = baseQuery.toLowerCase().contains(" where ") ? " AND " : " WHERE ";
-        String existsClause = whereClause + String.format(
-                "EXISTS (SELECT 1 FROM allowed_processes ap WHERE ap.processId = %s.processInfo.rootProcessId OR (%s.processInfo.rootProcessId IS NULL AND ap.processId = %s.processInfo.processId))",
-                entityReference,
-                entityReference,
+        String existsClause = whereClause + String.format("EXISTS (SELECT 1 FROM allowed_processes ap WHERE " +
+                "%1$s.processInfo.processVersion IS NULL " +
+                "OR (ap.processId = %1$s.processInfo.rootProcessId AND (ap.processVersion IS NULL AND %1$s.processInfo.rootProcessVersion IS NULL OR ap.processVersion=%1$s.processInfo.rootProcessVersion)) "
+                +
+                "OR (%1$s.processInfo.rootProcessId IS NULL AND ap.processId = %1$s.processInfo.processId AND (ap.processVersion IS NULL AND %1$s.processInfo.processVersion IS NULL OR ap.processVersion=%1$s.processInfo.processVersion)))",
                 entityReference);
 
         return cte + baseQuery + existsClause;
@@ -161,9 +165,10 @@ public class UserTaskInstanceRepository extends BaseRepository<UserTaskInstanceE
 
     protected <Q extends Query> void bindProcessFilteringParameters(Q query) {
         if (isFilterByLocalProcess()) {
-            List<String> processIdList = List.copyOf(getProcessIdsForFiltering());
+            List<Process<? extends Model>> processIdList = List.copyOf(getProcessIdsForFiltering());
             for (int i = 0; i < processIdList.size(); i++) {
-                query.setParameter("processId" + i, processIdList.get(i));
+                query.setParameter("processId" + i, processIdList.get(i).id());
+                query.setParameter("processVersion" + i, processIdList.get(i).version());
             }
         }
     }
