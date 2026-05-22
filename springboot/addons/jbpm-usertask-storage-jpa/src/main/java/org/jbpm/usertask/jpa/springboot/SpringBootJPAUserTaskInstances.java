@@ -52,8 +52,8 @@ public class SpringBootJPAUserTaskInstances extends JPAUserTaskInstances {
     }
 
     @Override
-    public List<UserTaskInstance> findByIdentityAndFilter(IdentityProvider identityProvider, UserTaskFilter filter) {
-        return super.findByIdentityAndFilter(identityProvider, filter);
+    public List<UserTaskInstance> findByIdentity(IdentityProvider identityProvider, UserTaskFilter filter) {
+        return super.findByIdentity(identityProvider, filter);
     }
 
     @Override

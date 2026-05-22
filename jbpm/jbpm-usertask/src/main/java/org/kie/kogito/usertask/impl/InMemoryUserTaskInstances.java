@@ -103,7 +103,7 @@ public class InMemoryUserTaskInstances implements UserTaskInstances {
     }
 
     @Override
-    public List<UserTaskInstance> findByIdentityAndFilter(IdentityProvider identity, UserTaskFilter filter) {
+    public List<UserTaskInstance> findByIdentity(IdentityProvider identity, UserTaskFilter filter) {
         try {
             // Start with identity-based filtering
             List<UserTaskInstance> tasks = findByIdentity(identity);
@@ -129,24 +129,24 @@ public class InMemoryUserTaskInstances implements UserTaskInstances {
 
     private boolean matchesFilter(UserTaskInstance task, UserTaskFilter filter) {
         // Process ID filter (exact match)
-        if (filter.getProcessId() != null) {
+        if (filter.processId() != null) {
             ProcessInfo info = task.getProcessInfo();
-            if (info == null || !filter.getProcessId().equals(info.getProcessId())) {
+            if (info == null || !filter.processId().equals(info.getProcessId())) {
                 return false;
             }
         }
 
         // Process Instance ID filter (exact match)
-        if (filter.getProcessInstanceId() != null) {
+        if (filter.processInstanceId() != null) {
             ProcessInfo info = task.getProcessInfo();
-            if (info == null || !filter.getProcessInstanceId().equals(info.getProcessInstanceId())) {
+            if (info == null || !filter.processInstanceId().equals(info.getProcessInstanceId())) {
                 return false;
             }
         }
 
         // Status filter (match any of the provided statuses - case insensitive)
-        if (filter.getStatuses() != null && !filter.getStatuses().isEmpty()) {
-            boolean statusMatches = filter.getStatuses().stream()
+        if (filter.statuses() != null && !filter.statuses().isEmpty()) {
+            boolean statusMatches = filter.statuses().stream()
                     .anyMatch(status -> status.getName().equalsIgnoreCase(task.getStatus().getName()));
             if (!statusMatches) {
                 return false;
@@ -154,9 +154,9 @@ public class InMemoryUserTaskInstances implements UserTaskInstances {
         }
 
         // Task name filter (contains - case insensitive)
-        if (filter.getTaskName() != null) {
+        if (filter.taskName() != null) {
             String taskName = task.getTaskName();
-            if (taskName == null || !taskName.toLowerCase().contains(filter.getTaskName().toLowerCase())) {
+            if (taskName == null || !taskName.toLowerCase().contains(filter.taskName().toLowerCase())) {
                 return false;
             }
         }

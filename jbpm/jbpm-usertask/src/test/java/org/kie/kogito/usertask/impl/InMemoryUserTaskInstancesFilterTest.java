@@ -59,7 +59,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         instances.create(task2);
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         // Should return only recruiter's tasks
         assertThat(result).hasSize(1);
@@ -80,7 +80,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo("task1");
@@ -101,7 +101,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processInstanceId("pi1")
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo("task1");
@@ -122,7 +122,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .status(UserTaskState.of("Reserved"))
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo("task1");
@@ -143,7 +143,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .taskName("hr_interview")
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo("task1");
@@ -168,7 +168,7 @@ public class InMemoryUserTaskInstancesFilterTest {
                 .taskName("hr_interview")
                 .status(UserTaskState.of("Reserved"))
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo("task1");
@@ -185,7 +185,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .taskName("it_interview")
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).isEmpty();
     }
@@ -206,7 +206,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .taskName("hr_interview")
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo("task1");
@@ -229,7 +229,7 @@ public class InMemoryUserTaskInstancesFilterTest {
                 .status(UserTaskState.of("Reserved"))
                 .taskName("hr_interview")
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo("task1");
@@ -256,7 +256,7 @@ public class InMemoryUserTaskInstancesFilterTest {
                         UserTaskState.of("InProgress"),
                         UserTaskState.of("Completed")))
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).hasSize(3);
         assertThat(result).extracting(UserTaskInstance::getId)
@@ -278,7 +278,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .statuses(Collections.singletonList(UserTaskState.of("Reserved")))
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo("task1");
@@ -300,7 +300,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .status(UserTaskState.of("reserved"))
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         // Then - Should match case-insensitively
         assertThat(result).hasSize(1);
@@ -323,7 +323,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .status(UserTaskState.of("RESERVED"))
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         // Then - Should match case-insensitively
         assertThat(result).hasSize(1);
@@ -346,7 +346,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .status(UserTaskState.of("ReSeRvEd"))
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         // Then - Should match case-insensitively
         assertThat(result).hasSize(1);
@@ -373,7 +373,7 @@ public class InMemoryUserTaskInstancesFilterTest {
                         UserTaskState.of("reserved"),
                         UserTaskState.of("READY")))
                 .build();
-        List<UserTaskInstance> result = instances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         // Then - Should match both statuses case-insensitively
         assertThat(result).hasSize(2);

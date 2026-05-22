@@ -43,8 +43,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test class for JPAUserTaskInstances.findByIdentityAndFilter() method.
- * This test verifies that the method correctly delegates to the repository
+ * Test class for JPAUserTaskInstances.findByIdentity() method with filter parameter.
+ * This test verifies that the method correctly delegates to the repository's
+ * overloaded findByIdentity(IdentityProvider, UserTaskFilter) method
  * and maps the results using the entity mapper.
  */
 @ExtendWith(MockitoExtension.class)
@@ -75,7 +76,7 @@ public class JPAUserTaskInstancesFilterTest {
     }
 
     @Test
-    public void testFindByIdentityAndFilterDelegatesToRepository() {
+    public void testFindByIdentityWithFilterDelegatesToRepository() {
         // Given
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
@@ -87,7 +88,7 @@ public class JPAUserTaskInstancesFilterTest {
         entity2.setId("entity2");
         List<UserTaskInstanceEntity> entities = Arrays.asList(entity1, entity2);
 
-        when(repository.findByIdentityAndFilter(eq(identity), eq(filter)))
+        when(repository.findByIdentity(eq(identity), eq(filter)))
                 .thenReturn(entities);
         when(mapper.mapTaskEntityToInstance(any(UserTaskInstanceEntity.class)))
                 .thenAnswer(invocation -> {
@@ -96,33 +97,33 @@ public class JPAUserTaskInstancesFilterTest {
                 });
 
         // When
-        List<UserTaskInstance> result = jpaUserTaskInstances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = jpaUserTaskInstances.findByIdentity(identity, filter);
 
         // Then
         assertThat(result).hasSize(2);
         assertThat(result).containsExactly(userTaskInstance1, userTaskInstance2);
-        verify(repository).findByIdentityAndFilter(identity, filter);
+        verify(repository).findByIdentity(identity, filter);
     }
 
     @Test
-    public void testFindByIdentityAndFilterWithEmptyResult() {
+    public void testFindByIdentityWithFilterWithEmptyResult() {
         // Given
         UserTaskFilter filter = UserTaskFilter.builder().build();
         List<UserTaskInstanceEntity> entities = Collections.emptyList();
 
-        when(repository.findByIdentityAndFilter(eq(identity), eq(filter)))
+        when(repository.findByIdentity(eq(identity), eq(filter)))
                 .thenReturn(entities);
 
         // When
-        List<UserTaskInstance> result = jpaUserTaskInstances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = jpaUserTaskInstances.findByIdentity(identity, filter);
 
         // Then
         assertThat(result).isEmpty();
-        verify(repository).findByIdentityAndFilter(identity, filter);
+        verify(repository).findByIdentity(identity, filter);
     }
 
     @Test
-    public void testFindByIdentityAndFilterWithAllFilters() {
+    public void testFindByIdentityWithFilterWithAllFilters() {
         // Given
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
@@ -132,21 +133,21 @@ public class JPAUserTaskInstancesFilterTest {
                 .build();
 
         UserTaskInstanceEntity entity = new UserTaskInstanceEntity();
-        when(repository.findByIdentityAndFilter(eq(identity), eq(filter)))
+        when(repository.findByIdentity(eq(identity), eq(filter)))
                 .thenReturn(Collections.singletonList(entity));
         when(mapper.mapTaskEntityToInstance(entity)).thenReturn(userTaskInstance1);
 
         // When
-        List<UserTaskInstance> result = jpaUserTaskInstances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = jpaUserTaskInstances.findByIdentity(identity, filter);
 
         // Then
         assertThat(result).hasSize(1);
-        verify(repository).findByIdentityAndFilter(identity, filter);
+        verify(repository).findByIdentity(identity, filter);
         verify(mapper).mapTaskEntityToInstance(entity);
     }
 
     @Test
-    public void testFindByIdentityAndFilterWithMultipleStatuses() {
+    public void testFindByIdentityWithFilterWithMultipleStatuses() {
         // Given
         UserTaskFilter filter = UserTaskFilter.builder()
                 .statuses(Arrays.asList(
@@ -169,7 +170,7 @@ public class JPAUserTaskInstancesFilterTest {
 
         List<UserTaskInstanceEntity> entities = Arrays.asList(entity1, entity2, entity3);
 
-        when(repository.findByIdentityAndFilter(eq(identity), eq(filter)))
+        when(repository.findByIdentity(eq(identity), eq(filter)))
                 .thenReturn(entities);
         when(mapper.mapTaskEntityToInstance(any(UserTaskInstanceEntity.class)))
                 .thenAnswer(invocation -> {
@@ -182,15 +183,15 @@ public class JPAUserTaskInstancesFilterTest {
                 });
 
         // When
-        List<UserTaskInstance> result = jpaUserTaskInstances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = jpaUserTaskInstances.findByIdentity(identity, filter);
 
         // Then
         assertThat(result).hasSize(3);
-        verify(repository).findByIdentityAndFilter(identity, filter);
+        verify(repository).findByIdentity(identity, filter);
     }
 
     @Test
-    public void testFindByIdentityAndFilterWithSingleStatusUsingStatusesMethod() {
+    public void testFindByIdentityWithFilterWithSingleStatusUsingStatusesMethod() {
         // Given - Test backward compatibility: single status via statuses() method
         UserTaskFilter filter = UserTaskFilter.builder()
                 .statuses(Collections.singletonList(UserTaskState.of("Reserved")))
@@ -200,15 +201,15 @@ public class JPAUserTaskInstancesFilterTest {
         entity.setId("entity1");
         entity.setStatus("Reserved");
 
-        when(repository.findByIdentityAndFilter(eq(identity), eq(filter)))
+        when(repository.findByIdentity(eq(identity), eq(filter)))
                 .thenReturn(Collections.singletonList(entity));
         when(mapper.mapTaskEntityToInstance(entity)).thenReturn(userTaskInstance1);
 
         // When
-        List<UserTaskInstance> result = jpaUserTaskInstances.findByIdentityAndFilter(identity, filter);
+        List<UserTaskInstance> result = jpaUserTaskInstances.findByIdentity(identity, filter);
 
         // Then
         assertThat(result).hasSize(1);
-        verify(repository).findByIdentityAndFilter(identity, filter);
+        verify(repository).findByIdentity(identity, filter);
     }
 }

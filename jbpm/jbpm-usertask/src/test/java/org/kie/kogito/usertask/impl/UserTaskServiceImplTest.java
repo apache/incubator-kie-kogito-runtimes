@@ -62,19 +62,19 @@ public class UserTaskServiceImplTest {
 
     @Test
     public void testListTasksWithEmptyResult() {
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.emptyList());
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.emptyList());
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
         List<UserTaskInfo> result = service.listTasks(identity, filter);
 
         assertThat(result).isEmpty();
-        verify(instances).findByIdentityAndFilter(eq(identity), eq(filter));
+        verify(instances).findByIdentity(eq(identity), eq(filter));
     }
 
     @Test
     public void testListTasksWithSingleTask() {
         DefaultUserTaskInstance task = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.singletonList(task));
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
         List<UserTaskInfo> result = service.listTasks(identity, filter);
@@ -93,7 +93,7 @@ public class UserTaskServiceImplTest {
     public void testListTasksWithMultipleTasks() {
         DefaultUserTaskInstance task1 = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
         DefaultUserTaskInstance task2 = createTask("task2", "it_interview", "developer", "hiring", "pi2", "InProgress");
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Arrays.asList(task1, task2));
+        when(instances.findByIdentity(any(), any())).thenReturn(Arrays.asList(task1, task2));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
         List<UserTaskInfo> result = service.listTasks(identity, filter);
@@ -114,7 +114,7 @@ public class UserTaskServiceImplTest {
     @Test
     public void testListTasksWithProcessIdFilter() {
         DefaultUserTaskInstance task = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.singletonList(task));
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
@@ -128,7 +128,7 @@ public class UserTaskServiceImplTest {
     @Test
     public void testListTasksWithTaskNameFilter() {
         DefaultUserTaskInstance task = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.singletonList(task));
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder()
                 .taskName("hr_interview")
@@ -142,7 +142,7 @@ public class UserTaskServiceImplTest {
     @Test
     public void testListTasksWithStatusFilter() {
         DefaultUserTaskInstance task = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.singletonList(task));
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder()
                 .status(org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"))
@@ -156,7 +156,7 @@ public class UserTaskServiceImplTest {
     @Test
     public void testListTasksWithAllFilters() {
         DefaultUserTaskInstance task = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.singletonList(task));
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
@@ -179,7 +179,7 @@ public class UserTaskServiceImplTest {
     public void testListTasksConvertsUserTaskIdCorrectly() {
         DefaultUserTaskInstance task = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
         task.setUserTaskId("ut-123");
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.singletonList(task));
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
         List<UserTaskInfo> result = service.listTasks(identity, filter);
@@ -192,7 +192,7 @@ public class UserTaskServiceImplTest {
     public void testListTasksConvertsTaskDescriptionCorrectly() {
         DefaultUserTaskInstance task = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
         task.setTaskDescription("Interview with HR department");
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.singletonList(task));
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
         List<UserTaskInfo> result = service.listTasks(identity, filter);
@@ -205,7 +205,7 @@ public class UserTaskServiceImplTest {
     public void testListTasksConvertsTaskPriorityCorrectly() {
         DefaultUserTaskInstance task = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
         task.setTaskPriority("High");
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.singletonList(task));
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
         List<UserTaskInfo> result = service.listTasks(identity, filter);
@@ -222,7 +222,7 @@ public class UserTaskServiceImplTest {
                 .withProcessInstanceId("pi1")
                 .withProcessVersion("1.0")
                 .build());
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.singletonList(task));
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
         List<UserTaskInfo> result = service.listTasks(identity, filter);
@@ -243,7 +243,7 @@ public class UserTaskServiceImplTest {
         task.setStatus(UserTaskState.of("Ready"));
         // Leave other fields null
 
-        when(instances.findByIdentityAndFilter(any(), any())).thenReturn(Collections.singletonList(task));
+        when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
         List<UserTaskInfo> result = service.listTasks(identity, filter);

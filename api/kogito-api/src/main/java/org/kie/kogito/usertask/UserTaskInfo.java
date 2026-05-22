@@ -18,6 +18,8 @@
  */
 package org.kie.kogito.usertask;
 
+import java.util.Objects;
+
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -122,5 +124,31 @@ public class UserTaskInfo {
 
     public void setProcessVersion(String processVersion) {
         this.processVersion = processVersion;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserTaskInfo that = (UserTaskInfo) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(userTaskId, that.userTaskId) &&
+                Objects.equals(taskName, that.taskName) &&
+                Objects.equals(taskDescription, that.taskDescription) &&
+                Objects.equals(taskPriority, that.taskPriority) &&
+                Objects.equals(status, that.status) &&
+                Objects.equals(actualOwner, that.actualOwner) &&
+                Objects.equals(processId, that.processId) &&
+                Objects.equals(processInstanceId, that.processInstanceId) &&
+                Objects.equals(processVersion, that.processVersion);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userTaskId, taskName, taskDescription, taskPriority, status, actualOwner, processId, processInstanceId, processVersion);
     }
 }

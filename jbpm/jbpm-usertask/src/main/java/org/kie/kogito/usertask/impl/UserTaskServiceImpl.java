@@ -62,7 +62,7 @@ public class UserTaskServiceImpl implements UserTaskService {
     @Override
     public List<UserTaskInfo> listTasks(IdentityProvider identity, UserTaskFilter filter) {
         return application.get(UserTasks.class).instances()
-                .findByIdentityAndFilter(identity, filter)
+                .findByIdentity(identity, filter)
                 .stream()
                 .map(this::toUserTaskInfo)
                 .toList();

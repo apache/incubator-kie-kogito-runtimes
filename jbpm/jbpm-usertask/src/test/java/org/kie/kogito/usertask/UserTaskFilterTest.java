@@ -29,10 +29,10 @@ public class UserTaskFilterTest {
     public void testEmptyFilter() {
         UserTaskFilter filter = UserTaskFilter.builder().build();
 
-        assertThat(filter.getProcessId()).isNull();
-        assertThat(filter.getProcessInstanceId()).isNull();
-        assertThat(filter.getStatuses()).isNull();
-        assertThat(filter.getTaskName()).isNull();
+        assertThat(filter.processId()).isNull();
+        assertThat(filter.processInstanceId()).isNull();
+        assertThat(filter.statuses()).isNull();
+        assertThat(filter.taskName()).isNull();
     }
 
     @Test
@@ -41,10 +41,10 @@ public class UserTaskFilterTest {
                 .processId("hiring")
                 .build();
 
-        assertThat(filter.getProcessId()).isEqualTo("hiring");
-        assertThat(filter.getProcessInstanceId()).isNull();
-        assertThat(filter.getStatuses()).isNull();
-        assertThat(filter.getTaskName()).isNull();
+        assertThat(filter.processId()).isEqualTo("hiring");
+        assertThat(filter.processInstanceId()).isNull();
+        assertThat(filter.statuses()).isNull();
+        assertThat(filter.taskName()).isNull();
     }
 
     @Test
@@ -53,10 +53,10 @@ public class UserTaskFilterTest {
                 .processInstanceId("12345")
                 .build();
 
-        assertThat(filter.getProcessId()).isNull();
-        assertThat(filter.getProcessInstanceId()).isEqualTo("12345");
-        assertThat(filter.getStatuses()).isNull();
-        assertThat(filter.getTaskName()).isNull();
+        assertThat(filter.processId()).isNull();
+        assertThat(filter.processInstanceId()).isEqualTo("12345");
+        assertThat(filter.statuses()).isNull();
+        assertThat(filter.taskName()).isNull();
     }
 
     @Test
@@ -65,11 +65,11 @@ public class UserTaskFilterTest {
                 .status(UserTaskState.of("Reserved"))
                 .build();
 
-        assertThat(filter.getProcessId()).isNull();
-        assertThat(filter.getProcessInstanceId()).isNull();
-        assertThat(filter.getStatuses()).hasSize(1);
-        assertThat(filter.getStatuses().get(0).getName()).isEqualTo("Reserved");
-        assertThat(filter.getTaskName()).isNull();
+        assertThat(filter.processId()).isNull();
+        assertThat(filter.processInstanceId()).isNull();
+        assertThat(filter.statuses()).hasSize(1);
+        assertThat(filter.statuses().get(0).getName()).isEqualTo("Reserved");
+        assertThat(filter.taskName()).isNull();
     }
 
     @Test
@@ -78,10 +78,10 @@ public class UserTaskFilterTest {
                 .taskName("hr_interview")
                 .build();
 
-        assertThat(filter.getProcessId()).isNull();
-        assertThat(filter.getProcessInstanceId()).isNull();
-        assertThat(filter.getStatuses()).isNull();
-        assertThat(filter.getTaskName()).isEqualTo("hr_interview");
+        assertThat(filter.processId()).isNull();
+        assertThat(filter.processInstanceId()).isNull();
+        assertThat(filter.statuses()).isNull();
+        assertThat(filter.taskName()).isEqualTo("hr_interview");
     }
 
     @Test
@@ -93,11 +93,11 @@ public class UserTaskFilterTest {
                 .taskName("hr_interview")
                 .build();
 
-        assertThat(filter.getProcessId()).isEqualTo("hiring");
-        assertThat(filter.getProcessInstanceId()).isEqualTo("12345");
-        assertThat(filter.getStatuses()).hasSize(1);
-        assertThat(filter.getStatuses().get(0).getName()).isEqualTo("Reserved");
-        assertThat(filter.getTaskName()).isEqualTo("hr_interview");
+        assertThat(filter.processId()).isEqualTo("hiring");
+        assertThat(filter.processInstanceId()).isEqualTo("12345");
+        assertThat(filter.statuses()).hasSize(1);
+        assertThat(filter.statuses().get(0).getName()).isEqualTo("Reserved");
+        assertThat(filter.taskName()).isEqualTo("hr_interview");
     }
 
     @Test
@@ -108,10 +108,10 @@ public class UserTaskFilterTest {
                 .status(UserTaskState.of("Reserved"))
                 .build();
 
-        assertThat(filter.getProcessId()).isEqualTo("hiring");
-        assertThat(filter.getTaskName()).isEqualTo("hr_interview");
-        assertThat(filter.getStatuses()).hasSize(1);
-        assertThat(filter.getStatuses().get(0).getName()).isEqualTo("Reserved");
+        assertThat(filter.processId()).isEqualTo("hiring");
+        assertThat(filter.taskName()).isEqualTo("hr_interview");
+        assertThat(filter.statuses()).hasSize(1);
+        assertThat(filter.statuses().get(0).getName()).isEqualTo("Reserved");
     }
 
     @Test
@@ -122,11 +122,11 @@ public class UserTaskFilterTest {
         UserTaskFilter filter1 = builder.taskName("hr_interview").build();
         UserTaskFilter filter2 = builder.taskName("it_interview").build();
 
-        assertThat(filter1.getProcessId()).isEqualTo("hiring");
-        assertThat(filter1.getTaskName()).isEqualTo("hr_interview");
+        assertThat(filter1.processId()).isEqualTo("hiring");
+        assertThat(filter1.taskName()).isEqualTo("hr_interview");
 
-        assertThat(filter2.getProcessId()).isEqualTo("hiring");
-        assertThat(filter2.getTaskName()).isEqualTo("it_interview");
+        assertThat(filter2.processId()).isEqualTo("hiring");
+        assertThat(filter2.taskName()).isEqualTo("it_interview");
     }
 
     // Edge Case Tests
@@ -140,10 +140,10 @@ public class UserTaskFilterTest {
                 .taskName(null)
                 .build();
 
-        assertThat(filter.getProcessId()).isNull();
-        assertThat(filter.getProcessInstanceId()).isNull();
-        assertThat(filter.getStatuses()).isNull();
-        assertThat(filter.getTaskName()).isNull();
+        assertThat(filter.processId()).isNull();
+        assertThat(filter.processInstanceId()).isNull();
+        assertThat(filter.statuses()).isNull();
+        assertThat(filter.taskName()).isNull();
     }
 
     @Test
@@ -154,9 +154,9 @@ public class UserTaskFilterTest {
                 .taskName("")
                 .build();
 
-        assertThat(filter.getProcessId()).isEmpty();
-        assertThat(filter.getProcessInstanceId()).isEmpty();
-        assertThat(filter.getTaskName()).isEmpty();
+        assertThat(filter.processId()).isEmpty();
+        assertThat(filter.processInstanceId()).isEmpty();
+        assertThat(filter.taskName()).isEmpty();
     }
 
     @Test
@@ -166,8 +166,8 @@ public class UserTaskFilterTest {
                 .taskName("Task with spaces & special chars!@#")
                 .build();
 
-        assertThat(filter.getProcessId()).isEqualTo("process-with-dashes_and_underscores");
-        assertThat(filter.getTaskName()).isEqualTo("Task with spaces & special chars!@#");
+        assertThat(filter.processId()).isEqualTo("process-with-dashes_and_underscores");
+        assertThat(filter.taskName()).isEqualTo("Task with spaces & special chars!@#");
     }
 
     @Test
@@ -178,8 +178,8 @@ public class UserTaskFilterTest {
                 .taskName(longValue)
                 .build();
 
-        assertThat(filter.getProcessId()).hasSize(1000);
-        assertThat(filter.getTaskName()).hasSize(1000);
+        assertThat(filter.processId()).hasSize(1000);
+        assertThat(filter.taskName()).hasSize(1000);
     }
 
 }

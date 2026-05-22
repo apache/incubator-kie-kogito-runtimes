@@ -27,54 +27,11 @@ import org.kie.kogito.usertask.lifecycle.UserTaskState;
  * All filters are combined using AND logic.
  * Null filters are ignored (no filtering applied for that criterion).
  */
-public class UserTaskFilter {
-
-    private String processId;
-    private String processInstanceId;
-    private List<UserTaskState> statuses;
-    private String taskName;
-
-    public UserTaskFilter() {
-    }
-
-    private UserTaskFilter(Builder builder) {
-        this.processId = builder.processId;
-        this.processInstanceId = builder.processInstanceId;
-        this.statuses = builder.statuses;
-        this.taskName = builder.taskName;
-    }
-
-    public String getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(String processId) {
-        this.processId = processId;
-    }
-
-    public String getProcessInstanceId() {
-        return processInstanceId;
-    }
-
-    public void setProcessInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
-    }
-
-    public List<UserTaskState> getStatuses() {
-        return statuses;
-    }
-
-    public void setStatuses(List<UserTaskState> statuses) {
-        this.statuses = statuses;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
+public record UserTaskFilter(
+        String processId,
+        String processInstanceId,
+        List<UserTaskState> statuses,
+        String taskName) {
 
     public static Builder builder() {
         return new Builder();
@@ -85,7 +42,6 @@ public class UserTaskFilter {
         private String processInstanceId;
         private List<UserTaskState> statuses;
         private String taskName;
-        private String actualOwner;
 
         public Builder processId(String processId) {
             this.processId = processId;
@@ -112,13 +68,8 @@ public class UserTaskFilter {
             return this;
         }
 
-        public Builder actualOwner(String actualOwner) {
-            this.actualOwner = actualOwner;
-            return this;
-        }
-
         public UserTaskFilter build() {
-            return new UserTaskFilter(this);
+            return new UserTaskFilter(processId, processInstanceId, statuses, taskName);
         }
     }
 }
