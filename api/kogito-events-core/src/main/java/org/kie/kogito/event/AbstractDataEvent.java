@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://apache.org
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -78,7 +78,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     /**
      * String format for Kogito CloudEvents source fields.
      * Since this is a required field, the constructor will fill them with default value, e.g.: /process/travelagency
-     * See more about the source format: https://github.com
+     * See more about the source format: https://github.com/cloudevents/spec/blob/v1.0/spec.md#source-1
      */
     @KieInternal
     public static final String SOURCE_FORMAT = "/process/%s";
