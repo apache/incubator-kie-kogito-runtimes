@@ -48,6 +48,7 @@ public class ProcessInstanceVariableDataEvent extends ProcessInstanceDataEvent<P
                 source,
                 body,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA),
+                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA),
