@@ -42,6 +42,7 @@ public class ProcessInstanceDataEvent<T> extends AbstractDataEvent<T> {
             String source,
             T body,
             String kogitoProcessInstanceId,
+            String kogitoProcessVersion,
             String kogitoParentProcessInstanceId,
             String kogitoRootProcessInstanceId,
             String kogitoProcessId,
@@ -60,6 +61,7 @@ public class ProcessInstanceDataEvent<T> extends AbstractDataEvent<T> {
                 kogitoRootProcessId,
                 kogitoAddons,
                 kogitoIdentity);
+        setKogitoProcessVersion(kogitoProcessVersion);
         setKogitoParentProcessInstanceId(kogitoParentProcessInstanceId);
         setKogitoProcessInstanceState(kogitoProcessInstanceState);
         setKogitoReferenceId(kogitoReferenceId);
