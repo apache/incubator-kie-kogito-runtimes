@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.kie.api.definition.process.Node;
+import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 public class WorkItemRecordParameters {
@@ -76,7 +77,29 @@ public class WorkItemRecordParameters {
     }
 
     private static boolean shouldRecordParameters(Node node) {
-        return node != null && shouldRecordParameters(node.getMetaData().getOrDefault(RECORD_ARGS, false));
+        if (node == null) {
+            return false;
+        }
+
+        // Check node-level metadata (highest priority)
+        Object nodeValue = node.getMetaData().get(RECORD_ARGS);
+        if (nodeValue != null) {
+            return shouldRecordParameters(nodeValue);
+        }
+
+        // Check process-level metadata
+        if (node instanceof KogitoNode kogitoNode && kogitoNode.getParentContainer() != null) {
+            org.kie.api.definition.process.NodeContainer container = kogitoNode.getParentContainer();
+            if (container instanceof org.kie.api.definition.process.Process process) {
+                Object processValue = process.getMetaData().get(RECORD_ARGS);
+                if (processValue != null) {
+                    return shouldRecordParameters(processValue);
+                }
+            }
+        }
+
+        // Default to false
+        return false;
     }
 
     private static boolean shouldRecordParameters(Object value) {
