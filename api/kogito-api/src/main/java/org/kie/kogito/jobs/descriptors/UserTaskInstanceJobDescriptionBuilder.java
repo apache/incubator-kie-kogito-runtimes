@@ -73,7 +73,7 @@ public class UserTaskInstanceJobDescriptionBuilder {
         return this;
     }
 
-    public UserTaskInstanceJobDescriptionBuilder setProcessVersion(String processVersion) {
+    public UserTaskInstanceJobDescriptionBuilder processVersion(String processVersion) {
         this.processVersion = processVersion;
         return this;
     }
@@ -88,7 +88,7 @@ public class UserTaskInstanceJobDescriptionBuilder {
         return this;
     }
 
-    public UserTaskInstanceJobDescriptionBuilder setRootProcessVersion(String rootProcessVersion) {
+    public UserTaskInstanceJobDescriptionBuilder rootProcessVersion(String rootProcessVersion) {
         this.rootProcessVersion = rootProcessVersion;
         return this;
     }
