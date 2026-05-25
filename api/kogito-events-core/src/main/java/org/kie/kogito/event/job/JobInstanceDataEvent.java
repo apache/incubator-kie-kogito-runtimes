@@ -30,12 +30,9 @@ public class JobInstanceDataEvent extends AbstractDataEvent<byte[]> {
             String kogitoProcessInstanceId,
             String kogitoRootProcessInstanceId,
             String kogitoProcessId,
-            String kogitoProcessVersion,
             String kogitoRootProcessId,
-            String kogitoRootProcessVersion,
             String kogitoIdentity) {
-        super(type, source, data, kogitoProcessInstanceId, kogitoRootProcessInstanceId, kogitoProcessId, kogitoProcessVersion,
-                kogitoRootProcessId, kogitoRootProcessVersion, null, kogitoIdentity);
+        super(type, source, data, kogitoProcessInstanceId, kogitoRootProcessInstanceId, kogitoProcessId, kogitoRootProcessId, null, kogitoIdentity);
     }
 
     public JobInstanceDataEvent(DataEventState<byte[]> state) {

@@ -28,6 +28,7 @@ public class ProcessInstanceErrorDataEvent extends ProcessInstanceDataEvent<Proc
         this.setType(ERROR_TYPE);
     }
 
+    @Deprecated
     public ProcessInstanceErrorDataEvent(String source, String addons, String identity, Map<String, Object> metaData, ProcessInstanceErrorEventBody body) {
         super(ERROR_TYPE,
                 source,
@@ -36,9 +37,7 @@ public class ProcessInstanceErrorDataEvent extends ProcessInstanceDataEvent<Proc
                 (String) metaData.get(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA),
-                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA),
-                (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA),
                 addons,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA),

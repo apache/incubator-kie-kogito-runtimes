@@ -42,6 +42,7 @@ public class ProcessInstanceVariableDataEvent extends ProcessInstanceDataEvent<P
         this.setType(VAR_TYPE);
     }
 
+    @Deprecated
     public ProcessInstanceVariableDataEvent(String source, String addons, String identity, Map<String, Object> metaData, ProcessInstanceVariableEventBody body) {
         super(VAR_TYPE,
                 source,
@@ -50,9 +51,7 @@ public class ProcessInstanceVariableDataEvent extends ProcessInstanceDataEvent<P
                 (String) metaData.get(ProcessInstanceEventMetadata.PARENT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA),
-                (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA),
-                (String) metaData.get(ProcessInstanceEventMetadata.ROOT_PROCESS_VERSION_META_DATA),
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_INSTANCE_STATE_META_DATA),
                 addons,
                 (String) metaData.get(ProcessInstanceEventMetadata.PROCESS_TYPE_META_DATA),

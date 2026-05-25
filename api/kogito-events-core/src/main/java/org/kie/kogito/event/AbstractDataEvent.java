@@ -200,13 +200,10 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
             String kogitoProcessInstanceId,
             String kogitoRootProcessInstanceId,
             String kogitoProcessId,
-            String kogitoProcessVersion,
             String kogitoRootProcessId,
-            String kogitoRootProcessVersion,
             String kogitoAddons,
             String kogitoIdentity) {
-        this(type, source, body, kogitoProcessInstanceId, kogitoRootProcessInstanceId, kogitoProcessId, kogitoProcessVersion, kogitoRootProcessId, kogitoRootProcessVersion, kogitoAddons,
-                kogitoIdentity, null, DATA_CONTENT_TYPE, null);
+        this(type, source, body, kogitoProcessInstanceId, kogitoRootProcessInstanceId, kogitoProcessId, kogitoRootProcessId, kogitoAddons, kogitoIdentity, null, DATA_CONTENT_TYPE, null);
     }
 
     protected AbstractDataEvent(String type,
@@ -215,9 +212,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
             String kogitoProcessInstanceId,
             String kogitoRootProcessInstanceId,
             String kogitoProcessId,
-            String kogitoProcessVersion,
             String kogitoRootProcessId,
-            String kogitoRootProcessVersion,
             String kogitoAddons,
             String kogitoIdentity,
             String subject,
@@ -227,9 +222,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         setKogitoProcessInstanceId(kogitoProcessInstanceId);
         setKogitoRootProcessInstanceId(kogitoRootProcessInstanceId);
         setKogitoProcessId(kogitoProcessId);
-        setKogitoProcessVersion(kogitoProcessVersion);
         setKogitoRootProcessId(kogitoRootProcessId);
-        setKogitoRootProcessVersion(kogitoRootProcessVersion);
         setKogitoAddons(kogitoAddons);
         setKogitoIdentity(kogitoIdentity);
         this.subject = subject;

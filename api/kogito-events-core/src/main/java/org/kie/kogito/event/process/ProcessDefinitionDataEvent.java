@@ -37,8 +37,6 @@ public class ProcessDefinitionDataEvent extends AbstractDataEvent<ProcessDefinit
                 null,
                 null,
                 body.getId(),
-                body.getVersion(),
-                null,
                 null,
                 null,
                 null,

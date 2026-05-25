@@ -37,6 +37,7 @@ public class ProcessInstanceDataEvent<T> extends AbstractDataEvent<T> {
         super(type, source, body);
     }
 
+    @Deprecated
     public ProcessInstanceDataEvent(String type,
             String source,
             T body,
@@ -44,9 +45,7 @@ public class ProcessInstanceDataEvent<T> extends AbstractDataEvent<T> {
             String kogitoParentProcessInstanceId,
             String kogitoRootProcessInstanceId,
             String kogitoProcessId,
-            String kogitoProcessVersion,
             String kogitoRootProcessId,
-            String kogitoRootProcessVersion,
             String kogitoProcessInstanceState,
             String kogitoAddons,
             String kogitoProcessType,
@@ -58,9 +57,7 @@ public class ProcessInstanceDataEvent<T> extends AbstractDataEvent<T> {
                 kogitoProcessInstanceId,
                 kogitoRootProcessInstanceId,
                 kogitoProcessId,
-                kogitoProcessVersion,
                 kogitoRootProcessId,
-                kogitoRootProcessVersion,
                 kogitoAddons,
                 kogitoIdentity);
         setKogitoParentProcessInstanceId(kogitoParentProcessInstanceId);
