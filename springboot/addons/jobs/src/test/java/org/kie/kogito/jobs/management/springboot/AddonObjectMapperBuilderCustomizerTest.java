@@ -19,14 +19,16 @@
 package org.kie.kogito.jobs.management.springboot;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+// Jackson 2 test fixture for the BeanPostProcessor above. Remove together with
+// https://github.com/apache/incubator-kie-drools/issues/6702 (Jackson 3 migration).
 class AddonObjectMapperBuilderCustomizerTest {
     @Test
-    void customizer() {
-        Jackson2ObjectMapperBuilderCustomizer customizer = new AddonObjectMapperBuilderCustomizer().customizer();
-        assertThat(customizer).isNotNull();
+    void postProcessor() {
+        BeanPostProcessor postProcessor = AddonObjectMapperBuilderCustomizer.addonObjectMapperPostProcessor();
+        assertThat(postProcessor).isNotNull();
     }
 }
