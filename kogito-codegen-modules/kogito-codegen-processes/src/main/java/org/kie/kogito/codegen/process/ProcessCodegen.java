@@ -187,6 +187,30 @@ public class ProcessCodegen extends AbstractGenerator {
                 .ifPresent(notifier -> processes.forEach(p -> notifier.notify(new SourceFileCodegenBindEvent(p.getId(), resource.getSourcePath()))));
     }
 
+    /**
+     * Injects recordArgs metadata into a process if the global property is enabled.
+     * This allows the global property kogito.processes.service-tasks.record-io to control
+     * input/output argument recording for all service tasks in the process.
+     */
+    private void injectRecordArgsMetadataIfNeeded(WorkflowProcess process) {
+        // Property name for global service task I/O recording
+        String RECORD_SERVICE_TASK_ARGS_PROPERTY = "kogito.processes.service-tasks.record-io";
+        String RECORD_ARGS = "recordArgs";
+
+        boolean globalRecordArgs = context().getApplicationProperty(RECORD_SERVICE_TASK_ARGS_PROPERTY, Boolean.class)
+                .orElse(false);
+
+        if (!globalRecordArgs) {
+            return;
+        }
+
+        // Only inject if process doesn't already have recordArgs metadata
+        if (process.getMetaData().get(RECORD_ARGS) == null) {
+            ((WorkflowProcessImpl) process).setMetaData(RECORD_ARGS, true);
+            LOGGER.debug("Injected recordArgs=true metadata into process: {}", process.getId());
+        }
+    }
+
     private static void handleValidation(KogitoBuildContext context, Map<String, Throwable> processesErrors) {
         if (!processesErrors.isEmpty()) {
             ValidationLogDecorator decorator = new ValidationLogDecorator(processesErrors);
@@ -313,6 +337,9 @@ public class ProcessCodegen extends AbstractGenerator {
             if (isTransactionEnabled(this, context(), defaultTransactionEnabled)) {
                 ((WorkflowProcessImpl) workFlowProcess).setMetaData(WorkflowProcessParameters.WORKFLOW_PARAM_TRANSACTIONS.getName(), "true");
             }
+
+            // Inject recordArgs metadata if global property is enabled
+            injectRecordArgsMetadataIfNeeded(workFlowProcess);
 
             if (!skipModelGeneration(workFlowProcess)) {
                 ModelClassGenerator mcg = new ModelClassGenerator(context(), workFlowProcess);
