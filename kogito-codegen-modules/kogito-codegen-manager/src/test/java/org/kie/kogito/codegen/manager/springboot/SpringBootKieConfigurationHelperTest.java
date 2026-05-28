@@ -24,37 +24,25 @@ import java.util.Map;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.manager.exceptions.KogitoCodegenException;
-import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.kie.kogito.codegen.manager.CompilerHelper.RESOURCES;
 import static org.kie.kogito.codegen.manager.CompilerHelper.SOURCES;
 import static org.kie.kogito.codegen.manager.springboot.SpringBootKieConfigurationHelper.generateKieSpringBootConfiguration;
-import static org.mockito.Mockito.when;
 
 public class SpringBootKieConfigurationHelperTest {
 
-    KogitoBuildContext buildContext;
-
-    @BeforeEach
-    public void setup() {
-        buildContext = Mockito.mock(KogitoBuildContext.class);
-        when(buildContext.getClassLoader()).thenReturn(this.getClass().getClassLoader());
-        when(buildContext.getPackageName()).thenReturn("org.kie.kogito");
-    }
-
     @Test
     public void testCodegenForSpringBootContext() {
-
-        when(buildContext.name()).thenReturn(SpringBootKogitoBuildContext.CONTEXT_NAME);
+        KogitoBuildContext buildContext = SpringBootKogitoBuildContext.builder()
+                .build();
 
         Map<String, Collection<GeneratedFile>> generatedModelFiles = generateKieSpringBootConfiguration(buildContext);
 
@@ -70,7 +58,7 @@ public class SpringBootKieConfigurationHelperTest {
         assertThat(generatedFile)
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("type", GeneratedFileType.SOURCE)
-                .hasFieldOrPropertyWithValue("path", Path.of("org/kie/kogito/SpringBootKieConfiguration.java"))
+                .hasFieldOrPropertyWithValue("path", Path.of("org/kie/kogito/app/SpringBootKieConfiguration.java"))
                 .hasFieldOrProperty("contents");
     }
 
@@ -84,7 +72,8 @@ public class SpringBootKieConfigurationHelperTest {
 
     @Test
     public void testCodegenForQuarkusContext() {
-        when(buildContext.name()).thenReturn(QuarkusKogitoBuildContext.CONTEXT_NAME);
+        KogitoBuildContext buildContext = QuarkusKogitoBuildContext.builder()
+                .build();
 
         assertThatThrownBy(() -> generateKieSpringBootConfiguration(buildContext))
                 .isInstanceOf(KogitoCodegenException.class)
@@ -93,7 +82,8 @@ public class SpringBootKieConfigurationHelperTest {
 
     @Test
     public void testCodegenForJavaContext() {
-        when(buildContext.name()).thenReturn(JavaKogitoBuildContext.CONTEXT_NAME);
+        KogitoBuildContext buildContext = JavaKogitoBuildContext.builder()
+                .build();
 
         assertThatThrownBy(() -> generateKieSpringBootConfiguration(buildContext))
                 .isInstanceOf(KogitoCodegenException.class)
