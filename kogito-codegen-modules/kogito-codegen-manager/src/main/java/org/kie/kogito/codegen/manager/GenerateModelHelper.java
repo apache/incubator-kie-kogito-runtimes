@@ -125,7 +125,7 @@ public class GenerateModelHelper {
                     new CompilerHelper.CompileInfo(generatedSpringBootConfigFiles.get(SOURCES),
                             generatedSpringBootConfigFiles.get(RESOURCES), generateModelInfo);
 
-            /* 8. Persist the process extension code-generated source and resources files in target (maven) or gradle (build) */
+            /* 8. Persist the Spring Boot KIE configuration code-generated source and resources files in target (maven) or gradle (build) */
             GeneratedFileManager.dumpGeneratedFiles(generatedSpringBootConfigFiles.get(SOURCES), compileInfo.baseDir().toPath());
             GeneratedFileManager.dumpGeneratedFiles(generatedSpringBootConfigFiles.get(RESOURCES), compileInfo.baseDir().toPath());
 

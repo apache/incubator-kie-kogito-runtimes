@@ -74,6 +74,9 @@ public class SpringBootKieConfigurationHelper {
 
             return new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, KIE_SB_CONFIG_FILE_NAME, stream.readAllBytes());
         } catch (Exception ex) {
+            if (ex instanceof KogitoCodegenException kogitoCodegenException) {
+                throw kogitoCodegenException;
+            }
             LOGGER.error("Failed to load KIE Spring Boot Config Properties", ex);
             throw new KogitoCodegenException("Failed to load KIE Spring Boot Config Properties", ex);
         }
