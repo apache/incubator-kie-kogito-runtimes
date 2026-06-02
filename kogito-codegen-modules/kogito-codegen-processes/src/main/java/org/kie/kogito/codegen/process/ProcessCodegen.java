@@ -193,11 +193,10 @@ public class ProcessCodegen extends AbstractGenerator {
      * input/output argument recording for all service tasks in the process.
      */
     private void injectRecordArgsMetadataIfNeeded(WorkflowProcess process) {
-        // Property name for global service task I/O recording
-        String RECORD_SERVICE_TASK_ARGS_PROPERTY = "kogito.processes.service-tasks.record-io";
-        String RECORD_ARGS = "recordArgs";
+        final String recordServiceTaskArgsProperty = "kogito.processes.service-tasks.record-io";
+        final String recordArgs = "recordArgs";
 
-        boolean globalRecordArgs = context().getApplicationProperty(RECORD_SERVICE_TASK_ARGS_PROPERTY, Boolean.class)
+        boolean globalRecordArgs = context().getApplicationProperty(recordServiceTaskArgsProperty, Boolean.class)
                 .orElse(false);
 
         if (!globalRecordArgs) {
@@ -205,8 +204,8 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         // Only inject if process doesn't already have recordArgs metadata
-        if (process.getMetaData().get(RECORD_ARGS) == null) {
-            ((WorkflowProcessImpl) process).setMetaData(RECORD_ARGS, true);
+        if (process.getMetaData().get(recordArgs) == null) {
+            ((WorkflowProcessImpl) process).setMetaData(recordArgs, true);
             LOGGER.debug("Injected recordArgs=true metadata into process: {}", process.getId());
         }
     }

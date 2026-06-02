@@ -48,9 +48,6 @@ class WorkItemRecordParametersTest {
     @Mock
     private KogitoNode node;
 
-    @Mock
-    private NodeContainer processContainer;
-
     @Test
     void testRecordArgsConstant() {
         assertThat(RECORD_ARGS).isEqualTo("recordArgs");
