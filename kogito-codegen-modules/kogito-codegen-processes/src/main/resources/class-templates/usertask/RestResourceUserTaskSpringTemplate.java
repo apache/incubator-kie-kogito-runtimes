@@ -20,20 +20,11 @@ package com.myspace.demo;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.jbpm.util.JsonSchemaUtil;
 import org.kie.kogito.auth.IdentityProviderFactory;
-import org.kie.kogito.auth.SecurityPolicy;
-import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.process.SignalFactory;
-import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.usertask.UserTaskFilter;
-import org.kie.kogito.usertask.UserTaskInfo;
-import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskService;
 import org.kie.kogito.usertask.impl.json.SimpleDeserializationProblemHandler;
 import org.kie.kogito.usertask.impl.json.SimplePolymorphicTypeValidator;
@@ -58,16 +49,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
-import com.fasterxml.jackson.databind.cfg.MapperConfig;
-import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator.Validity;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import org.springframework.beans.factory.annotation.Autowired;

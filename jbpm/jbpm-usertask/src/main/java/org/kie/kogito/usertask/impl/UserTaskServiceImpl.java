@@ -28,7 +28,6 @@ import org.kie.kogito.Application;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.usertask.UserTaskFilter;
-import org.kie.kogito.usertask.UserTaskInfo;
 import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskService;
 import org.kie.kogito.usertask.UserTasks;
@@ -36,6 +35,7 @@ import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
 import org.kie.kogito.usertask.model.Attachment;
 import org.kie.kogito.usertask.model.Comment;
 import org.kie.kogito.usertask.model.ProcessInfo;
+import org.kie.kogito.usertask.view.UserTaskInfoView;
 import org.kie.kogito.usertask.view.UserTaskInputsView;
 import org.kie.kogito.usertask.view.UserTaskOutputsView;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
@@ -60,7 +60,7 @@ public class UserTaskServiceImpl implements UserTaskService {
     }
 
     @Override
-    public List<UserTaskInfo> listTasks(IdentityProvider identity, UserTaskFilter filter) {
+    public List<UserTaskInfoView> listTasks(IdentityProvider identity, UserTaskFilter filter) {
         return application.get(UserTasks.class).instances()
                 .findByIdentity(identity, filter)
                 .stream()
@@ -68,8 +68,8 @@ public class UserTaskServiceImpl implements UserTaskService {
                 .toList();
     }
 
-    private UserTaskInfo toUserTaskInfo(UserTaskInstance instance) {
-        UserTaskInfo info = new UserTaskInfo();
+    private UserTaskInfoView toUserTaskInfo(UserTaskInstance instance) {
+        UserTaskInfoView info = new UserTaskInfoView();
         info.setId(instance.getId());
         info.setUserTaskId(instance.getUserTaskId());
         info.setTaskName(instance.getTaskName());

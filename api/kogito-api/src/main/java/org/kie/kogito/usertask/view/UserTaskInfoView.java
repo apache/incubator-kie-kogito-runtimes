@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.usertask;
+package org.kie.kogito.usertask.view;
 
 import java.util.Objects;
 
@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Contains only essential task information without inputs, outputs, or metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserTaskInfo {
+public class UserTaskInfoView {
 
     private String id;
     private String userTaskId;
@@ -43,7 +43,7 @@ public class UserTaskInfo {
     private String processInstanceId;
     private String processVersion;
 
-    public UserTaskInfo() {
+    public UserTaskInfoView() {
     }
 
     public String getId() {
@@ -134,7 +134,7 @@ public class UserTaskInfo {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        UserTaskInfo that = (UserTaskInfo) o;
+        UserTaskInfoView that = (UserTaskInfoView) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(userTaskId, that.userTaskId) &&
                 Objects.equals(taskName, that.taskName) &&

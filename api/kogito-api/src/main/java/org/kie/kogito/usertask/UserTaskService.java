@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.usertask.model.Attachment;
 import org.kie.kogito.usertask.model.Comment;
+import org.kie.kogito.usertask.view.UserTaskInfoView;
 import org.kie.kogito.usertask.view.UserTaskInputsView;
 import org.kie.kogito.usertask.view.UserTaskOutputsView;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
@@ -36,7 +37,7 @@ public interface UserTaskService {
 
     List<UserTaskView> list(IdentityProvider identity);
 
-    List<UserTaskInfo> listTasks(IdentityProvider identity, UserTaskFilter filter);
+    List<UserTaskInfoView> listTasks(IdentityProvider identity, UserTaskFilter filter);
 
     Optional<UserTaskView> transition(String taskId, String transitionId, Map<String, Object> data, IdentityProvider identity);
 

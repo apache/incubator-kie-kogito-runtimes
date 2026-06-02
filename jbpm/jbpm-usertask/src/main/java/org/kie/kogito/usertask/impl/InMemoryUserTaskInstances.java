@@ -153,10 +153,10 @@ public class InMemoryUserTaskInstances implements UserTaskInstances {
             }
         }
 
-        // Task name filter (contains - case insensitive)
+        // Task name filter (exact match)
         if (filter.taskName() != null) {
             String taskName = task.getTaskName();
-            if (taskName == null || !taskName.toLowerCase().contains(filter.taskName().toLowerCase())) {
+            if (taskName == null || !taskName.equals(filter.taskName())) {
                 return false;
             }
         }

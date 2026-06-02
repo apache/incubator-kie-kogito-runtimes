@@ -27,10 +27,10 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.usertask.UserTaskFilter;
-import org.kie.kogito.usertask.UserTaskInfo;
 import org.kie.kogito.usertask.UserTaskInstances;
 import org.kie.kogito.usertask.UserTasks;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
+import org.kie.kogito.usertask.view.UserTaskInfoView;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,7 +65,7 @@ public class UserTaskServiceImplTest {
         when(instances.findByIdentity(any(), any())).thenReturn(Collections.emptyList());
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).isEmpty();
         verify(instances).findByIdentity(eq(identity), eq(filter));
@@ -77,10 +77,10 @@ public class UserTaskServiceImplTest {
         when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(1);
-        UserTaskInfo info = result.get(0);
+        UserTaskInfoView info = result.get(0);
         assertThat(info.getId()).isEqualTo("task1");
         assertThat(info.getTaskName()).isEqualTo("hr_interview");
         assertThat(info.getActualOwner()).isEqualTo("recruiter");
@@ -96,16 +96,16 @@ public class UserTaskServiceImplTest {
         when(instances.findByIdentity(any(), any())).thenReturn(Arrays.asList(task1, task2));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(2);
 
-        UserTaskInfo info1 = result.get(0);
+        UserTaskInfoView info1 = result.get(0);
         assertThat(info1.getId()).isEqualTo("task1");
         assertThat(info1.getTaskName()).isEqualTo("hr_interview");
         assertThat(info1.getStatus().getName()).isEqualTo("Reserved");
 
-        UserTaskInfo info2 = result.get(1);
+        UserTaskInfoView info2 = result.get(1);
         assertThat(info2.getId()).isEqualTo("task2");
         assertThat(info2.getTaskName()).isEqualTo("it_interview");
         assertThat(info2.getStatus().getName()).isEqualTo("InProgress");
@@ -119,7 +119,7 @@ public class UserTaskServiceImplTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
                 .build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getProcessId()).isEqualTo("hiring");
@@ -133,7 +133,7 @@ public class UserTaskServiceImplTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .taskName("hr_interview")
                 .build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getTaskName()).isEqualTo("hr_interview");
@@ -147,7 +147,7 @@ public class UserTaskServiceImplTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .status(org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"))
                 .build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getStatus().getName()).isEqualTo("Reserved");
@@ -164,10 +164,10 @@ public class UserTaskServiceImplTest {
                 .status(org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"))
                 .taskName("hr_interview")
                 .build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(1);
-        UserTaskInfo info = result.get(0);
+        UserTaskInfoView info = result.get(0);
         assertThat(info.getProcessId()).isEqualTo("hiring");
         assertThat(info.getProcessInstanceId()).isEqualTo("pi1");
         assertThat(info.getStatus().getName()).isEqualTo("Reserved");
@@ -182,7 +182,7 @@ public class UserTaskServiceImplTest {
         when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getUserTaskId()).isEqualTo("ut-123");
@@ -195,7 +195,7 @@ public class UserTaskServiceImplTest {
         when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getTaskDescription()).isEqualTo("Interview with HR department");
@@ -208,7 +208,7 @@ public class UserTaskServiceImplTest {
         when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getTaskPriority()).isEqualTo("High");
@@ -225,7 +225,7 @@ public class UserTaskServiceImplTest {
         when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getProcessVersion()).isEqualTo("1.0");
@@ -246,10 +246,10 @@ public class UserTaskServiceImplTest {
         when(instances.findByIdentity(any(), any())).thenReturn(Collections.singletonList(task));
 
         UserTaskFilter filter = UserTaskFilter.builder().build();
-        List<UserTaskInfo> result = service.listTasks(identity, filter);
+        List<UserTaskInfoView> result = service.listTasks(identity, filter);
 
         assertThat(result).hasSize(1);
-        UserTaskInfo info = result.get(0);
+        UserTaskInfoView info = result.get(0);
         assertThat(info.getId()).isEqualTo("task1");
         assertThat(info.getUserTaskId()).isNull();
         assertThat(info.getTaskDescription()).isNull();

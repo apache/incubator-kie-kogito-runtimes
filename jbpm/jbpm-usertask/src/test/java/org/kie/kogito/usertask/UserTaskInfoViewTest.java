@@ -20,14 +20,15 @@ package org.kie.kogito.usertask;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
+import org.kie.kogito.usertask.view.UserTaskInfoView;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserTaskInfoTest {
+public class UserTaskInfoViewTest {
 
     @Test
     public void testUserTaskInfoCreation() {
-        UserTaskInfo info = new UserTaskInfo();
+        UserTaskInfoView info = new UserTaskInfoView();
         info.setId("task-123");
         info.setUserTaskId("ut-456");
         info.setTaskName("hr_interview");
@@ -53,7 +54,7 @@ public class UserTaskInfoTest {
 
     @Test
     public void testUserTaskInfoWithNullValues() {
-        UserTaskInfo info = new UserTaskInfo();
+        UserTaskInfoView info = new UserTaskInfoView();
         info.setId("task-123");
         info.setUserTaskId("ut-456");
         info.setTaskName("hr_interview");
@@ -74,7 +75,7 @@ public class UserTaskInfoTest {
 
     @Test
     public void testUserTaskInfoMinimalData() {
-        UserTaskInfo info = new UserTaskInfo();
+        UserTaskInfoView info = new UserTaskInfoView();
         info.setId("task-123");
         info.setTaskName("task");
         info.setProcessId("process");
@@ -88,12 +89,12 @@ public class UserTaskInfoTest {
 
     @Test
     public void testUserTaskInfoEquality() {
-        UserTaskInfo info1 = new UserTaskInfo();
+        UserTaskInfoView info1 = new UserTaskInfoView();
         info1.setId("task-123");
         info1.setTaskName("hr_interview");
         info1.setProcessId("hiring");
 
-        UserTaskInfo info2 = new UserTaskInfo();
+        UserTaskInfoView info2 = new UserTaskInfoView();
         info2.setId("task-123");
         info2.setTaskName("hr_interview");
         info2.setProcessId("hiring");
@@ -105,11 +106,11 @@ public class UserTaskInfoTest {
 
     @Test
     public void testUserTaskInfoDifferentIds() {
-        UserTaskInfo info1 = new UserTaskInfo();
+        UserTaskInfoView info1 = new UserTaskInfoView();
         info1.setId("task-123");
         info1.setTaskName("hr_interview");
 
-        UserTaskInfo info2 = new UserTaskInfo();
+        UserTaskInfoView info2 = new UserTaskInfoView();
         info2.setId("task-456");
         info2.setTaskName("hr_interview");
 
@@ -119,7 +120,7 @@ public class UserTaskInfoTest {
 
     @Test
     public void testUserTaskInfoStatusUpdate() {
-        UserTaskInfo info = new UserTaskInfo();
+        UserTaskInfoView info = new UserTaskInfoView();
         info.setId("task-123");
         info.setStatus(UserTaskState.of("Ready"));
 
@@ -134,7 +135,7 @@ public class UserTaskInfoTest {
 
     @Test
     public void testUserTaskInfoOwnerUpdate() {
-        UserTaskInfo info = new UserTaskInfo();
+        UserTaskInfoView info = new UserTaskInfoView();
         info.setId("task-123");
         info.setActualOwner(null);
 

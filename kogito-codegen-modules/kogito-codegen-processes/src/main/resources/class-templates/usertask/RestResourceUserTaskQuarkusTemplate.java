@@ -19,7 +19,6 @@
 package com.myspace.demo;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.io.IOException;
@@ -42,11 +41,8 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.Consumes;
 
-import org.jbpm.util.JsonSchemaUtil;
 import org.kie.kogito.auth.IdentityProviderFactory;
 import org.kie.kogito.usertask.UserTaskFilter;
-import org.kie.kogito.usertask.UserTaskInfo;
-import org.kie.kogito.usertask.UserTaskInstance;
 import org.kie.kogito.usertask.UserTaskInstanceNotFoundException;
 import org.kie.kogito.usertask.UserTaskService;
 import org.kie.kogito.usertask.impl.json.SimpleDeserializationProblemHandler;
@@ -59,16 +55,8 @@ import org.kie.kogito.usertask.view.UserTaskTransitionView;
 
 import org.kie.kogito.usertask.model.*;
 
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
-import com.fasterxml.jackson.databind.cfg.MapperConfig;
-import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator.Validity;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Path("/usertasks/instance")

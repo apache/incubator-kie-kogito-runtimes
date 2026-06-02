@@ -137,11 +137,11 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
                 new Address("main street", "Boston", "10005", "US"));
         startProcessInstance(traveller);
 
-        // When - Query with taskName filter (case-insensitive partial match)
+        // When - Query with exact taskName filter
         given().contentType(ContentType.JSON)
                 .queryParam("user", "manager")
                 .queryParam("group", "department-managers")
-                .queryParam("taskName", "approval")
+                .queryParam("taskName", "firstLineApproval")
                 .when()
                 .get(USER_TASKS_ENDPOINT)
                 .then()
@@ -164,7 +164,7 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
                 .queryParam("processId", PROCESS_ID)
                 .queryParam("processInstanceId", pid)
                 .queryParam("status", "Reserved")
-                .queryParam("taskName", "firstLine")
+                .queryParam("taskName", "firstLineApproval")
                 .when()
                 .get(USER_TASKS_ENDPOINT)
                 .then()
@@ -202,7 +202,7 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
                 new Address("main street", "Boston", "10005", "US"));
         startProcessInstance(traveller);
 
-        // When - Query with uppercase taskName (should match case-insensitively)
+        // When - Query with uppercase taskName (should not match because filtering is exact and case-sensitive)
         given().contentType(ContentType.JSON)
                 .queryParam("user", "manager")
                 .queryParam("group", "department-managers")
@@ -211,8 +211,7 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
                 .get(USER_TASKS_ENDPOINT)
                 .then()
                 .statusCode(200)
-                .body("$.size()", is(1))
-                .body("[0].taskName", is("firstLineApproval"));
+                .body("$.size()", is(0));
     }
 
     @Test
@@ -394,66 +393,6 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
     }
 
     @Test
-    public void testFilterByTaskNamePartialMatchFromStart() {
-        // Given - Start a process instance with task name "firstLineApproval"
-        Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American",
-                new Address("main street", "Boston", "10005", "US"));
-        startProcessInstance(traveller);
-
-        // When - Query with partial match from start
-        given().contentType(ContentType.JSON)
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
-                .queryParam("taskName", "first")
-                .when()
-                .get(USER_TASKS_ENDPOINT)
-                .then()
-                .statusCode(200)
-                .body("$.size()", is(1))
-                .body("[0].taskName", is("firstLineApproval"));
-    }
-
-    @Test
-    public void testFilterByTaskNamePartialMatchFromMiddle() {
-        // Given - Start a process instance with task name "firstLineApproval"
-        Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American",
-                new Address("main street", "Boston", "10005", "US"));
-        startProcessInstance(traveller);
-
-        // When - Query with partial match from middle
-        given().contentType(ContentType.JSON)
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
-                .queryParam("taskName", "Line")
-                .when()
-                .get(USER_TASKS_ENDPOINT)
-                .then()
-                .statusCode(200)
-                .body("$.size()", is(1))
-                .body("[0].taskName", is("firstLineApproval"));
-    }
-
-    @Test
-    public void testFilterByTaskNamePartialMatchFromEnd() {
-        // Given - Start a process instance with task name "firstLineApproval"
-        Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American",
-                new Address("main street", "Boston", "10005", "US"));
-        startProcessInstance(traveller);
-
-        // When - Query with partial match from end
-        given().contentType(ContentType.JSON)
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
-                .queryParam("taskName", "Approval")
-                .when()
-                .get(USER_TASKS_ENDPOINT)
-                .then()
-                .statusCode(200)
-                .body("$.size()", is(1))
-                .body("[0].taskName", is("firstLineApproval"));
-    }
-
-    @Test
     public void testFilterByTaskNameExactMatch() {
         // Given - Start a process instance with task name "firstLineApproval"
         Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American",
@@ -474,25 +413,6 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
     }
 
     @Test
-    public void testFilterByTaskNameNoMatchWithSpace() {
-        // Given - Start a process instance with task name "firstLineApproval" (camelCase, no spaces)
-        Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American",
-                new Address("main street", "Boston", "10005", "US"));
-        startProcessInstance(traveller);
-
-        // When - Query with space (which doesn't exist in the stored camelCase name)
-        given().contentType(ContentType.JSON)
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
-                .queryParam("taskName", "first line")
-                .when()
-                .get(USER_TASKS_ENDPOINT)
-                .then()
-                .statusCode(200)
-                .body("$.size()", is(0)); // No match because space doesn't exist in "firstLineApproval"
-    }
-
-    @Test
     public void testFilterByTaskNameMixedCase() {
         // Given - Start a process instance with task name "firstLineApproval"
         Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American",
@@ -508,28 +428,7 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
                 .get(USER_TASKS_ENDPOINT)
                 .then()
                 .statusCode(200)
-                .body("$.size()", is(1))
-                .body("[0].taskName", is("firstLineApproval"));
-    }
-
-    @Test
-    public void testFilterByTaskNameEmptyString() {
-        // Given - Start a process instance
-        Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American",
-                new Address("main street", "Boston", "10005", "US"));
-        startProcessInstance(traveller);
-
-        // When - Query with empty string (should match all tasks)
-        given().contentType(ContentType.JSON)
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
-                .queryParam("taskName", "")
-                .when()
-                .get(USER_TASKS_ENDPOINT)
-                .then()
-                .statusCode(200)
-                .body("$.size()", is(1))
-                .body("[0].taskName", is("firstLineApproval"));
+                .body("$.size()", is(0));
     }
 
     @Test

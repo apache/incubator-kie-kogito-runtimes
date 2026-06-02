@@ -55,11 +55,7 @@ public class JPAUserTaskInstances implements UserTaskInstances {
 
     @Override
     public List<UserTaskInstance> findByIdentity(IdentityProvider identityProvider) {
-        return userTaskInstanceRepository.findByIdentity(identityProvider)
-                .stream()
-                .map(userTaskInstanceEntityMapper::mapTaskEntityToInstance)
-                .map(reconnectUserTaskInstance)
-                .toList();
+        return findByIdentity(identityProvider, null);
     }
 
     @Override

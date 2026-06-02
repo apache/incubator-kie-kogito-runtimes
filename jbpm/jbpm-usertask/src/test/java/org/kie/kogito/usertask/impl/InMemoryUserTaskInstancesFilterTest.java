@@ -380,6 +380,38 @@ public class InMemoryUserTaskInstancesFilterTest {
         assertThat(result).extracting(UserTaskInstance::getId).containsExactlyInAnyOrder("task1", "task2");
     }
 
+    @Test
+    public void testFindByIdentityAndFilterWithTaskNameDoesNotMatchPartialValue() {
+        when(identity.getName()).thenReturn("recruiter");
+        when(identity.getRoles()).thenReturn(Collections.emptyList());
+
+        DefaultUserTaskInstance task1 = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
+        instances.create(task1);
+
+        UserTaskFilter filter = UserTaskFilter.builder()
+                .taskName("interview")
+                .build();
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    public void testFindByIdentityAndFilterWithTaskNameIsCaseSensitive() {
+        when(identity.getName()).thenReturn("recruiter");
+        when(identity.getRoles()).thenReturn(Collections.emptyList());
+
+        DefaultUserTaskInstance task1 = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
+        instances.create(task1);
+
+        UserTaskFilter filter = UserTaskFilter.builder()
+                .taskName("HR_INTERVIEW")
+                .build();
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
+
+        assertThat(result).isEmpty();
+    }
+
     private DefaultUserTaskInstance createTask(String id, String taskName, String owner,
             String processId, String processInstanceId, String status) {
         DefaultUserTaskInstance task = new DefaultUserTaskInstance();

@@ -50,10 +50,10 @@ public class UserTaskInstanceEntity {
                     "and (cast(:processId as string) is null or userTask.processInfo.processId = :processId) " +
                     "and (cast(:processInstanceId as string) is null or userTask.processInfo.processInstanceId = :processInstanceId)";
 
-    // TaskName filter clause - case-insensitive (conditional to avoid bytea issues)
-    public static final String TASKNAME_FILTER_CLAUSE = " and lower(userTask.taskName) like lower(concat('%', :taskName, '%'))";
+    // TaskName filter clause
+    public static final String TASKNAME_FILTER_CLAUSE = " and userTask.taskName = :taskName";
 
-    // Status filter clause to append conditionally (case-insensitive)
+    // Status filter clause 
     public static final String STATUS_FILTER_CLAUSE = " and lower(userTask.status) in (:statusFilter)";
 
     @Id
