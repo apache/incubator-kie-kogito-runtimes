@@ -57,6 +57,16 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>process-workitems</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kogito-addons-external-signals-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kogito-addons-external-signals</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!--tests -->
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>

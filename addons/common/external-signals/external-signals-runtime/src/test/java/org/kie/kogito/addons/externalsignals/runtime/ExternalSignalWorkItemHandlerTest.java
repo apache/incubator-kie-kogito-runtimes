@@ -115,7 +115,6 @@ class ExternalSignalWorkItemHandlerTest {
         WorkflowElementIdentifier nodeId1 = mock(WorkflowElementIdentifier.class);
         when(nodeId1.toString()).thenReturn("10");
         when(nodeInstance.getNodeId()).thenReturn(nodeId1);
-        when(workItem.getId()).thenReturn(1L);
 
         Optional<WorkItemTransition> result = handler.activateWorkItemHandler(
                 workItemManager, handler, workItem, null);
@@ -159,7 +158,6 @@ class ExternalSignalWorkItemHandlerTest {
         WorkflowElementIdentifier nodeId2 = mock(WorkflowElementIdentifier.class);
         when(nodeId2.toString()).thenReturn("20");
         when(nodeInstance.getNodeId()).thenReturn(nodeId2);
-        when(workItem.getId()).thenReturn(2L);
 
         Optional<WorkItemTransition> result = handler.activateWorkItemHandler(
                 workItemManager, handler, workItem, null);
@@ -191,7 +189,6 @@ class ExternalSignalWorkItemHandlerTest {
         when(workItem.getParameter("SignalDeploymentId")).thenReturn(null);
         when(workItem.getProcessInstanceStringId()).thenReturn("process-003");
         when(workItem.getStringId()).thenReturn("workitem-003");
-        when(workItem.getId()).thenReturn(3L);
 
         Optional<WorkItemTransition> result = handler.activateWorkItemHandler(
                 workItemManager, handler, workItem, null);
@@ -212,7 +209,6 @@ class ExternalSignalWorkItemHandlerTest {
         // Work item without Signal parameter
         when(workItem.getPhaseStatus()).thenReturn("Activated");
         when(workItem.getParameter("Signal")).thenReturn(null);
-        when(workItem.getId()).thenReturn(4L);
 
         Optional<WorkItemTransition> result = handler.activateWorkItemHandler(
                 workItemManager, handler, workItem, null);
@@ -229,7 +225,6 @@ class ExternalSignalWorkItemHandlerTest {
     void testEmptySignalParameter() {
         when(workItem.getPhaseStatus()).thenReturn("Activated");
         when(workItem.getParameter("Signal")).thenReturn("   ");
-        when(workItem.getId()).thenReturn(5L);
 
         Optional<WorkItemTransition> result = handler.activateWorkItemHandler(
                 workItemManager, handler, workItem, null);
@@ -244,7 +239,6 @@ class ExternalSignalWorkItemHandlerTest {
     void testInvalidSignalParameterType() {
         when(workItem.getPhaseStatus()).thenReturn("Activated");
         when(workItem.getParameter("Signal")).thenReturn(12345);
-        when(workItem.getId()).thenReturn(6L);
 
         Optional<WorkItemTransition> result = handler.activateWorkItemHandler(
                 workItemManager, handler, workItem, null);
@@ -264,7 +258,6 @@ class ExternalSignalWorkItemHandlerTest {
         when(workItem.getParameter("SignalDeploymentId")).thenReturn(null);
         when(workItem.getProcessInstanceStringId()).thenReturn("process-007");
         when(workItem.getStringId()).thenReturn("workitem-007");
-        when(workItem.getId()).thenReturn(7L);
         when(workItem.getPhaseStatus()).thenReturn("Activated");
 
         doThrow(new ExternalSignalDispatchException("Dispatch failed"))
@@ -286,7 +279,6 @@ class ExternalSignalWorkItemHandlerTest {
         when(workItem.getParameter("SignalDeploymentId")).thenReturn(null);
         when(workItem.getProcessInstanceStringId()).thenReturn("process-008");
         when(workItem.getStringId()).thenReturn("workitem-008");
-        when(workItem.getId()).thenReturn(8L);
         when(workItem.getPhaseStatus()).thenReturn("Activated");
 
         doThrow(new RuntimeException("Unexpected error"))
@@ -309,7 +301,6 @@ class ExternalSignalWorkItemHandlerTest {
         when(workItem.getParameter("SignalDeploymentId")).thenReturn(null);
         when(workItem.getProcessInstanceStringId()).thenReturn("process-009");
         when(workItem.getStringId()).thenReturn("workitem-009");
-        when(workItem.getId()).thenReturn(9L);
 
         Optional<WorkItemTransition> result = handler.activateWorkItemHandler(
                 workItemManager, handler, workItem, null);
@@ -338,7 +329,6 @@ class ExternalSignalWorkItemHandlerTest {
         WorkflowElementIdentifier nodeId10 = mock(WorkflowElementIdentifier.class);
         when(nodeId10.toString()).thenReturn("100");
         when(nodeInstance.getNodeId()).thenReturn(nodeId10);
-        when(workItem.getId()).thenReturn(10L);
         when(workItem.getPhaseStatus()).thenReturn("Activated");
 
         handler.activateWorkItemHandler(workItemManager, handler, workItem, null);
@@ -367,7 +357,6 @@ class ExternalSignalWorkItemHandlerTest {
         when(workItem.getParameter("SignalDeploymentId")).thenReturn(null);
         when(workItem.getProcessInstanceStringId()).thenReturn("process-010");
         when(workItem.getStringId()).thenReturn("workitem-010");
-        when(workItem.getId()).thenReturn(11L);
         when(workItem.getPhaseStatus()).thenReturn("Activated");
 
         Instant before = Instant.now();
@@ -416,7 +405,6 @@ class ExternalSignalWorkItemHandlerTest {
         when(workItem.getParameter("SignalDeploymentId")).thenReturn(null);
         when(workItem.getProcessInstanceStringId()).thenReturn("process-011");
         when(workItem.getStringId()).thenReturn("workitem-011");
-        when(workItem.getId()).thenReturn(12L);
 
         Optional<WorkItemTransition> result = handler.activateWorkItemHandler(
                 workItemManager, handler, workItem, null);

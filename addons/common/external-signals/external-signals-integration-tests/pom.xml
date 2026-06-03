@@ -31,18 +31,16 @@
 
   <artifactId>kogito-addons-external-signals-integration-tests</artifactId>
   <name>Kogito :: Add-Ons :: External Signals :: Integration Tests</name>
-  <description>External Signal Scope Integration Tests (Phase 3)</description>
+  <description>External Signal Scope Integration Tests</description>
   <packaging>pom</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.kie</groupId>
-      <artifactId>kogito-addons-external-signals-runtime</artifactId>
-      <version>${project.version}</version>
+      <artifactId>kogito-addons-external-signals</artifactId>
       <scope>test</scope>
     </dependency>
-    
-    <!-- Kogito dependencies for work item testing -->
+
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-api</artifactId>
@@ -93,7 +91,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <!-- Integration tests enabled -->
           <skip>false</skip>
         </configuration>
       </plugin>

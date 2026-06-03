@@ -65,7 +65,7 @@ public interface ExternalSignalDispatcher {
      * <li>Emit the event using the appropriate EventEmitter</li>
      * </ol>
      * 
-     * This method operates in a fire-and-forget manner for Phase 1. The signal
+     * This method operates in a fire-and-forget manner. The signal
      * is dispatched asynchronously and the method returns immediately without
      * waiting for acknowledgment from the external system.
      *

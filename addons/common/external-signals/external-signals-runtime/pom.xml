@@ -29,7 +29,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>kogito-addons-external-signals-runtime</artifactId>
+  <artifactId>kogito-addons-external-signals</artifactId>
   <name>Kogito :: Add-Ons :: External Signals :: Runtime</name>
   <description>External Signal Scope Runtime Implementation</description>
 
@@ -41,7 +41,6 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kogito-addons-external-signals-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
