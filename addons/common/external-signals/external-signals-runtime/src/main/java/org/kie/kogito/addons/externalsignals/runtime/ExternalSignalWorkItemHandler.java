@@ -107,7 +107,7 @@ public class ExternalSignalWorkItemHandler extends DefaultKogitoWorkItemHandler 
 
         try {
             LOG.debug("Processing external signal work item: {} from process instance: {}",
-                    workItem.getId(), workItem.getProcessInstanceId());
+                    workItem.getStringId(), workItem.getProcessInstanceId());
 
             // Extract signal metadata from work item parameters
             String signalName = extractSignalName(workItem);
@@ -158,17 +158,17 @@ public class ExternalSignalWorkItemHandler extends DefaultKogitoWorkItemHandler 
             LOG.info("Successfully dispatched external signal '{}' with correlation ID '{}' from process instance '{}'",
                     signalName, correlationId, processInstanceId);
 
-            return Optional.of(completeTransition(workItem.getPhaseStatus(), Collections.emptyMap()));
+            return Optional.of(this.workItemLifeCycle.newTransition("complete", workItem.getPhaseStatus(), Collections.emptyMap()));
 
         } catch (IllegalArgumentException e) {
-            LOG.error("Invalid work item parameters for external signal: {}", e.getMessage());
+            LOG.error("Invalid work item parameters for external signal: {}", e.getMessage(), e);
             // Abort the work item on validation errors
-            return Optional.of(abortTransition(workItem.getPhaseStatus()));
+            return Optional.of(this.workItemLifeCycle.newTransition("abort", workItem.getPhaseStatus(), Collections.emptyMap()));
 
         } catch (Exception e) {
-            LOG.error("Error processing external signal work item: {}", workItem.getId(), e);
+            LOG.error("Error processing external signal work item: {}", workItem.getStringId(), e);
             // Abort the work item on dispatch errors
-            return Optional.of(abortTransition(workItem.getPhaseStatus()));
+            return Optional.of(this.workItemLifeCycle.newTransition("abort", workItem.getPhaseStatus(), Collections.emptyMap()));
         }
     }
 
