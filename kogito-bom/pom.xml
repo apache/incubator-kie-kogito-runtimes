@@ -1057,6 +1057,12 @@
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.wiremock</groupId>
+        <artifactId>wiremock-jetty12</artifactId>
+        <version>${version.org.wiremock}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
