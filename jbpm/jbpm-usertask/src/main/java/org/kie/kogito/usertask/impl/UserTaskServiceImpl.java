@@ -34,8 +34,6 @@ import org.kie.kogito.usertask.UserTasks;
 import org.kie.kogito.usertask.lifecycle.UserTaskTransition;
 import org.kie.kogito.usertask.model.Attachment;
 import org.kie.kogito.usertask.model.Comment;
-import org.kie.kogito.usertask.model.ProcessInfo;
-import org.kie.kogito.usertask.view.UserTaskInfoView;
 import org.kie.kogito.usertask.view.UserTaskInputsView;
 import org.kie.kogito.usertask.view.UserTaskOutputsView;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
@@ -60,32 +58,12 @@ public class UserTaskServiceImpl implements UserTaskService {
     }
 
     @Override
-    public List<UserTaskInfoView> listTasks(IdentityProvider identity, UserTaskFilter filter) {
+    public List<UserTaskView> listTasks(IdentityProvider identity, UserTaskFilter filter) {
         return application.get(UserTasks.class).instances()
                 .findByIdentity(identity, filter)
                 .stream()
-                .map(this::toUserTaskInfo)
+                .map(this::toUserTaskView)
                 .toList();
-    }
-
-    private UserTaskInfoView toUserTaskInfo(UserTaskInstance instance) {
-        UserTaskInfoView info = new UserTaskInfoView();
-        info.setId(instance.getId());
-        info.setUserTaskId(instance.getUserTaskId());
-        info.setTaskName(instance.getTaskName());
-        info.setTaskDescription(instance.getTaskDescription());
-        info.setTaskPriority(instance.getTaskPriority());
-        info.setStatus(instance.getStatus());
-        info.setActualOwner(instance.getActualOwner());
-
-        ProcessInfo processInfo = instance.getProcessInfo();
-        if (processInfo != null) {
-            info.setProcessId(processInfo.getProcessId());
-            info.setProcessInstanceId(processInfo.getProcessInstanceId());
-            info.setProcessVersion(processInfo.getProcessVersion());
-        }
-
-        return info;
     }
 
     private UserTaskView toUserTaskView(UserTaskInstance instance) {

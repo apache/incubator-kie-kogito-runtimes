@@ -20,8 +20,6 @@ package org.kie.kogito.usertask;
 
 import java.util.List;
 
-import org.kie.kogito.usertask.lifecycle.UserTaskState;
-
 /**
  * Filter criteria for querying user tasks.
  * All filters are combined using AND logic.
@@ -30,7 +28,7 @@ import org.kie.kogito.usertask.lifecycle.UserTaskState;
 public record UserTaskFilter(
         String processId,
         String processInstanceId,
-        List<UserTaskState> statuses,
+        List<String> statuses,
         String taskName) {
 
     public static Builder builder() {
@@ -40,7 +38,7 @@ public record UserTaskFilter(
     public static class Builder {
         private String processId;
         private String processInstanceId;
-        private List<UserTaskState> statuses;
+        private List<String> statuses;
         private String taskName;
 
         public Builder processId(String processId) {
@@ -53,13 +51,8 @@ public record UserTaskFilter(
             return this;
         }
 
-        public Builder statuses(List<UserTaskState> statuses) {
+        public Builder statuses(List<String> statuses) {
             this.statuses = statuses;
-            return this;
-        }
-
-        public Builder status(UserTaskState status) {
-            this.statuses = status != null ? List.of(status) : null;
             return this;
         }
 

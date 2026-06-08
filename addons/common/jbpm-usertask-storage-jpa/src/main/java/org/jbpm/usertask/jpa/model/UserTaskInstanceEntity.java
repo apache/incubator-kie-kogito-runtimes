@@ -36,7 +36,7 @@ import jakarta.persistence.*;
 public class UserTaskInstanceEntity {
     public static final String DELETE_BY_ID = "UserTaskInstanceEntity.DeleteById";
 
-    // Base query for finding instances by identity (without status filter)
+    // Base query for finding instances by identity
     public static final String BASE_IDENTITY_QUERY =
             "select userTask from UserTaskInstanceEntity userTask " +
                     "left join userTask.adminGroups adminGroup " +
@@ -46,15 +46,12 @@ public class UserTaskInstanceEntity {
                     "or userTask.actualOwner = :userId " +
                     "or (userTask.actualOwner is null " + // checking if task is not reserved, we cannot check by status since lifecycle can be customized
                     "and :userId not member of userTask.excludedUsers " +
-                    "and (:userId member of userTask.potentialUsers or potentialGroup in (:roles)))) " +
-                    "and (cast(:processId as string) is null or userTask.processInfo.processId = :processId) " +
-                    "and (cast(:processInstanceId as string) is null or userTask.processInfo.processInstanceId = :processInstanceId)";
+                    "and (:userId member of userTask.potentialUsers or potentialGroup in (:roles))))";
 
-    // TaskName filter clause
+    public static final String PROCESS_ID_FILTER_CLAUSE = " and userTask.processInfo.processId = :processId";
+    public static final String PROCESS_INSTANCE_ID_FILTER_CLAUSE = " and userTask.processInfo.processInstanceId = :processInstanceId";
     public static final String TASKNAME_FILTER_CLAUSE = " and userTask.taskName = :taskName";
-
-    // Status filter clause 
-    public static final String STATUS_FILTER_CLAUSE = " and lower(userTask.status) in (:statusFilter)";
+    public static final String STATUS_FILTER_CLAUSE = " and userTask.status in (:statusFilter)";
 
     @Id
     private String id;

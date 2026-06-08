@@ -120,13 +120,29 @@ public class InMemoryUserTaskInstancesFilterTest {
         instances.create(task2);
 
         UserTaskFilter filter = UserTaskFilter.builder()
-                .status(UserTaskState.of("Reserved"))
+                .statuses(List.of("Reserved"))
                 .build();
         List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo("task1");
         assertThat(result.get(0).getStatus().getName()).isEqualTo("Reserved");
+    }
+
+    @Test
+    public void testFindByIdentityAndFilterWithStatusMixedCaseDoesNotMatch() {
+        when(identity.getName()).thenReturn("recruiter");
+        when(identity.getRoles()).thenReturn(Collections.emptyList());
+
+        DefaultUserTaskInstance task1 = createTask("task1", "hr_interview", "recruiter", "hiring", "pi1", "Reserved");
+        instances.create(task1);
+
+        UserTaskFilter filter = UserTaskFilter.builder()
+                .statuses(List.of("reserved"))
+                .build();
+        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
+
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -166,7 +182,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
                 .taskName("hr_interview")
-                .status(UserTaskState.of("Reserved"))
+                .statuses(List.of("Reserved"))
                 .build();
         List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
@@ -226,7 +242,7 @@ public class InMemoryUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
                 .processInstanceId("pi1")
-                .status(UserTaskState.of("Reserved"))
+                .statuses(List.of("Reserved"))
                 .taskName("hr_interview")
                 .build();
         List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
@@ -252,9 +268,9 @@ public class InMemoryUserTaskInstancesFilterTest {
 
         UserTaskFilter filter = UserTaskFilter.builder()
                 .statuses(Arrays.asList(
-                        UserTaskState.of("Reserved"),
-                        UserTaskState.of("InProgress"),
-                        UserTaskState.of("Completed")))
+                        "Reserved",
+                        "InProgress",
+                        "Completed"))
                 .build();
         List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
@@ -276,7 +292,7 @@ public class InMemoryUserTaskInstancesFilterTest {
 
         // Test backward compatibility: single status via statuses() method
         UserTaskFilter filter = UserTaskFilter.builder()
-                .statuses(Collections.singletonList(UserTaskState.of("Reserved")))
+                .statuses(Collections.singletonList("Reserved"))
                 .build();
         List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
 
@@ -286,8 +302,7 @@ public class InMemoryUserTaskInstancesFilterTest {
     }
 
     @Test
-    public void testFilterByStatusCaseInsensitive() {
-        // Given - Create tasks with different statuses
+    public void testFilterByStatusIsCaseSensitive() {
         when(identity.getName()).thenReturn("john");
         when(identity.getRoles()).thenReturn(Collections.emptyList());
 
@@ -296,88 +311,23 @@ public class InMemoryUserTaskInstancesFilterTest {
         instances.create(task1);
         instances.create(task2);
 
-        // When - Filter with lowercase status
-        UserTaskFilter filter = UserTaskFilter.builder()
-                .status(UserTaskState.of("reserved"))
-                .build();
-        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
+        assertThat(instances.findByIdentity(identity, UserTaskFilter.builder()
+                .statuses(List.of("reserved"))
+                .build())).isEmpty();
 
-        // Then - Should match case-insensitively
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo("task1");
-        assertThat(result.get(0).getStatus().getName()).isEqualTo("Reserved");
-    }
+        assertThat(instances.findByIdentity(identity, UserTaskFilter.builder()
+                .statuses(List.of("RESERVED"))
+                .build())).isEmpty();
 
-    @Test
-    public void testFilterByStatusUpperCase() {
-        // Given - Create tasks with different statuses
-        when(identity.getName()).thenReturn("john");
-        when(identity.getRoles()).thenReturn(Collections.emptyList());
+        assertThat(instances.findByIdentity(identity, UserTaskFilter.builder()
+                .statuses(List.of("ReSeRvEd"))
+                .build())).isEmpty();
 
-        DefaultUserTaskInstance task1 = createTask("task1", "hr_interview", "john", "hiring", "proc1", "Reserved");
-        DefaultUserTaskInstance task2 = createTask("task2", "it_interview", "john", "hiring", "proc2", "Ready");
-        instances.create(task1);
-        instances.create(task2);
-
-        // When - Filter with uppercase status
-        UserTaskFilter filter = UserTaskFilter.builder()
-                .status(UserTaskState.of("RESERVED"))
-                .build();
-        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
-
-        // Then - Should match case-insensitively
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo("task1");
-        assertThat(result.get(0).getStatus().getName()).isEqualTo("Reserved");
-    }
-
-    @Test
-    public void testFilterByStatusMixedCase() {
-        // Given - Create tasks with different statuses
-        when(identity.getName()).thenReturn("john");
-        when(identity.getRoles()).thenReturn(Collections.emptyList());
-
-        DefaultUserTaskInstance task1 = createTask("task1", "hr_interview", "john", "hiring", "proc1", "Reserved");
-        DefaultUserTaskInstance task2 = createTask("task2", "it_interview", "john", "hiring", "proc2", "Ready");
-        instances.create(task1);
-        instances.create(task2);
-
-        // When - Filter with mixed case status
-        UserTaskFilter filter = UserTaskFilter.builder()
-                .status(UserTaskState.of("ReSeRvEd"))
-                .build();
-        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
-
-        // Then - Should match case-insensitively
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo("task1");
-        assertThat(result.get(0).getStatus().getName()).isEqualTo("Reserved");
-    }
-
-    @Test
-    public void testFilterByMultipleStatusesCaseInsensitive() {
-        // Given - Create tasks with different statuses
-        when(identity.getName()).thenReturn("john");
-        when(identity.getRoles()).thenReturn(Collections.emptyList());
-
-        DefaultUserTaskInstance task1 = createTask("task1", "hr_interview", "john", "hiring", "proc1", "Reserved");
-        DefaultUserTaskInstance task2 = createTask("task2", "it_interview", "john", "hiring", "proc2", "Ready");
-        DefaultUserTaskInstance task3 = createTask("task3", "tech_interview", "john", "hiring", "proc3", "InProgress");
-        instances.create(task1);
-        instances.create(task2);
-        instances.create(task3);
-
-        // When - Filter with multiple statuses in different cases
-        UserTaskFilter filter = UserTaskFilter.builder()
+        assertThat(instances.findByIdentity(identity, UserTaskFilter.builder()
                 .statuses(Arrays.asList(
-                        UserTaskState.of("reserved"),
-                        UserTaskState.of("READY")))
-                .build();
-        List<UserTaskInstance> result = instances.findByIdentity(identity, filter);
-
-        // Then - Should match both statuses case-insensitively
-        assertThat(result).hasSize(2);
-        assertThat(result).extracting(UserTaskInstance::getId).containsExactlyInAnyOrder("task1", "task2");
+                        "reserved",
+                        "READY"))
+                .build())).isEmpty();
     }
 
     @Test

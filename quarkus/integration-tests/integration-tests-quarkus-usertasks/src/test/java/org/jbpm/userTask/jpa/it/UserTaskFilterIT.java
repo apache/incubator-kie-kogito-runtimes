@@ -257,10 +257,10 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
                 .then()
                 .statusCode(200)
                 .body("$.size()", is(1))
-                // Verify it's the lightweight response (UserTaskInfo)
                 .body("[0].id", is(org.hamcrest.Matchers.notNullValue()))
                 .body("[0].taskName", is("firstLineApproval"))
-                .body("[0].status.name", is("Reserved"));
+                .body("[0].status.name", is("Reserved"))
+                .body("[0].processInfo.processId", is(PROCESS_ID));
     }
 
     @Test
@@ -386,10 +386,10 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
                 .then()
                 .statusCode(200)
                 .body("$.size()", is(1))
-                // Verify it's the lightweight response (UserTaskInfo)
                 .body("[0].id", is(org.hamcrest.Matchers.notNullValue()))
                 .body("[0].taskName", is("firstLineApproval"))
-                .body("[0].status.name", is("Reserved"));
+                .body("[0].status.name", is("Reserved"))
+                .body("[0].processInfo.processId", is(PROCESS_ID));
     }
 
     @Test
@@ -451,53 +451,13 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
     }
 
     @Test
-    public void testFilterByStatusCaseInsensitive() {
+    public void testFilterByStatusIsCaseSensitive() {
         // Given - Start a process instance (creates task in Reserved status)
         Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American",
                 new Address("main street", "Boston", "10005", "US"));
         startProcessInstance(traveller);
 
-        // When - Query with lowercase status (should match case-insensitively)
-        given().contentType(ContentType.JSON)
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
-                .queryParam("status", "reserved")
-                .when()
-                .get(USER_TASKS_ENDPOINT)
-                .then()
-                .statusCode(200)
-                .body("$.size()", is(1))
-                .body("[0].status.name", is("Reserved"));
-    }
-
-    @Test
-    public void testFilterByStatusUpperCase() {
-        // Given - Start a process instance (creates task in Reserved status)
-        Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American",
-                new Address("main street", "Boston", "10005", "US"));
-        startProcessInstance(traveller);
-
-        // When - Query with uppercase status (should match case-insensitively)
-        given().contentType(ContentType.JSON)
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
-                .queryParam("status", "RESERVED")
-                .when()
-                .get(USER_TASKS_ENDPOINT)
-                .then()
-                .statusCode(200)
-                .body("$.size()", is(1))
-                .body("[0].status.name", is("Reserved"));
-    }
-
-    @Test
-    public void testFilterByStatusMixedCase() {
-        // Given - Start a process instance (creates task in Reserved status)
-        Traveller traveller = new Traveller("John", "Doe", "john.doe@example.com", "American",
-                new Address("main street", "Boston", "10005", "US"));
-        startProcessInstance(traveller);
-
-        // When - Query with mixed case status (should match case-insensitively)
+        // When - Query with mixed case status (should not match because filtering is exact and case-sensitive)
         given().contentType(ContentType.JSON)
                 .queryParam("user", "manager")
                 .queryParam("group", "department-managers")
@@ -506,58 +466,7 @@ public class UserTaskFilterIT extends BaseUserTaskIT {
                 .get(USER_TASKS_ENDPOINT)
                 .then()
                 .statusCode(200)
-                .body("$.size()", is(1))
-                .body("[0].status.name", is("Reserved"));
+                .body("$.size()", is(0));
     }
 
-    @Test
-    public void testFilterByMultipleStatusesCaseInsensitive() {
-        // Given - Start two process instances
-        Traveller traveller1 = new Traveller("John", "Doe", "john.doe@example.com", "American",
-                new Address("main street", "Boston", "10005", "US"));
-        Traveller traveller2 = new Traveller("Jane", "Smith", "jane.smith@example.com", "Canadian",
-                new Address("second street", "Toronto", "20005", "CA"));
-
-        String pid1 = startProcessInstance(traveller1);
-        String pid2 = startProcessInstance(traveller2);
-
-        // Get task IDs
-        String taskId1 = given().contentType(ContentType.JSON)
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
-                .queryParam("processInstanceId", pid1)
-                .when()
-                .get(USER_TASKS_ENDPOINT)
-                .then()
-                .extract()
-                .jsonPath()
-                .getString("[0].id");
-
-        // Transition task1 to Ready status (using release transition)
-        given().contentType(ContentType.JSON)
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
-                .body("{\"transitionId\": \"release\"}")
-                .when()
-                .post("/usertasks/instance/{taskId}/transition", taskId1)
-                .then()
-                .statusCode(200);
-
-        // Now we have: task1=Ready, task2=Reserved
-
-        // When - Query with multiple statuses in different cases (should match case-insensitively)
-        given().contentType(ContentType.JSON)
-                .queryParam("user", "manager")
-                .queryParam("group", "department-managers")
-                .queryParam("status", "reserved")
-                .queryParam("status", "READY")
-                .when()
-                .get(USER_TASKS_ENDPOINT)
-                .then()
-                .statusCode(200)
-                .body("$.size()", is(2))
-                // Verify we get tasks with both Reserved and Ready statuses
-                .body("status.name", hasItem("Reserved"))
-                .body("status.name", hasItem("Ready"));
-    }
 }

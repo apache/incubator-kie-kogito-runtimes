@@ -110,7 +110,7 @@ public abstract class BaseSpringBootJPAUserTaskInstancesTest {
         UserTaskInstance task3 = createTaskWithName("task3", "Task 3", "Completed", "Homer");
 
         org.kie.kogito.usertask.UserTaskFilter filter = org.kie.kogito.usertask.UserTaskFilter.builder()
-                .status(org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"))
+                .statuses(Collections.singletonList("Reserved"))
                 .build();
 
         List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Homer"), filter);
@@ -134,8 +134,8 @@ public abstract class BaseSpringBootJPAUserTaskInstancesTest {
 
         org.kie.kogito.usertask.UserTaskFilter filter = org.kie.kogito.usertask.UserTaskFilter.builder()
                 .statuses(Arrays.asList(
-                        org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"),
-                        org.kie.kogito.usertask.lifecycle.UserTaskState.of("InProgress")))
+                        "Reserved",
+                        "InProgress"))
                 .build();
 
         List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Homer"), filter);
@@ -206,7 +206,7 @@ public abstract class BaseSpringBootJPAUserTaskInstancesTest {
 
         org.kie.kogito.usertask.UserTaskFilter filter = org.kie.kogito.usertask.UserTaskFilter.builder()
                 .taskName("Approve Request")
-                .status(org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"))
+                .statuses(Collections.singletonList("Reserved"))
                 .processId("hiring")
                 .processInstanceId("inst1")
                 .build();

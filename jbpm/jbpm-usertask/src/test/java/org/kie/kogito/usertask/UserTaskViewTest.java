@@ -20,15 +20,16 @@ package org.kie.kogito.usertask;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.usertask.lifecycle.UserTaskState;
-import org.kie.kogito.usertask.view.UserTaskInfoView;
+import org.kie.kogito.usertask.model.ProcessInfo;
+import org.kie.kogito.usertask.view.UserTaskView;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserTaskInfoViewTest {
+public class UserTaskViewTest {
 
     @Test
-    public void testUserTaskInfoCreation() {
-        UserTaskInfoView info = new UserTaskInfoView();
+    public void testUserTaskViewCreation() {
+        UserTaskView info = new UserTaskView();
         info.setId("task-123");
         info.setUserTaskId("ut-456");
         info.setTaskName("hr_interview");
@@ -36,9 +37,11 @@ public class UserTaskInfoViewTest {
         info.setTaskPriority("High");
         info.setStatus(UserTaskState.of("Reserved"));
         info.setActualOwner("recruiter");
-        info.setProcessId("hiring");
-        info.setProcessInstanceId("pi-789");
-        info.setProcessVersion("1.0");
+        info.setProcessInfo(ProcessInfo.builder()
+                .withProcessId("hiring")
+                .withProcessInstanceId("pi-789")
+                .withProcessVersion("1.0")
+                .build());
 
         assertThat(info.getId()).isEqualTo("task-123");
         assertThat(info.getUserTaskId()).isEqualTo("ut-456");
@@ -47,19 +50,21 @@ public class UserTaskInfoViewTest {
         assertThat(info.getTaskPriority()).isEqualTo("High");
         assertThat(info.getStatus().getName()).isEqualTo("Reserved");
         assertThat(info.getActualOwner()).isEqualTo("recruiter");
-        assertThat(info.getProcessId()).isEqualTo("hiring");
-        assertThat(info.getProcessInstanceId()).isEqualTo("pi-789");
-        assertThat(info.getProcessVersion()).isEqualTo("1.0");
+        assertThat(info.getProcessInfo().getProcessId()).isEqualTo("hiring");
+        assertThat(info.getProcessInfo().getProcessInstanceId()).isEqualTo("pi-789");
+        assertThat(info.getProcessInfo().getProcessVersion()).isEqualTo("1.0");
     }
 
     @Test
-    public void testUserTaskInfoWithNullValues() {
-        UserTaskInfoView info = new UserTaskInfoView();
+    public void testUserTaskViewWithNullValues() {
+        UserTaskView info = new UserTaskView();
         info.setId("task-123");
         info.setUserTaskId("ut-456");
         info.setTaskName("hr_interview");
-        info.setProcessId("hiring");
-        info.setProcessInstanceId("pi-789");
+        info.setProcessInfo(ProcessInfo.builder()
+                .withProcessId("hiring")
+                .withProcessInstanceId("pi-789")
+                .build());
 
         assertThat(info.getId()).isEqualTo("task-123");
         assertThat(info.getUserTaskId()).isEqualTo("ut-456");
@@ -68,49 +73,55 @@ public class UserTaskInfoViewTest {
         assertThat(info.getTaskPriority()).isNull();
         assertThat(info.getStatus()).isNull();
         assertThat(info.getActualOwner()).isNull();
-        assertThat(info.getProcessId()).isEqualTo("hiring");
-        assertThat(info.getProcessInstanceId()).isEqualTo("pi-789");
-        assertThat(info.getProcessVersion()).isNull();
+        assertThat(info.getProcessInfo().getProcessId()).isEqualTo("hiring");
+        assertThat(info.getProcessInfo().getProcessInstanceId()).isEqualTo("pi-789");
+        assertThat(info.getProcessInfo().getProcessVersion()).isNull();
     }
 
     @Test
-    public void testUserTaskInfoMinimalData() {
-        UserTaskInfoView info = new UserTaskInfoView();
+    public void testUserTaskViewMinimalData() {
+        UserTaskView info = new UserTaskView();
         info.setId("task-123");
         info.setTaskName("task");
-        info.setProcessId("process");
-        info.setProcessInstanceId("instance");
+        info.setProcessInfo(ProcessInfo.builder()
+                .withProcessId("process")
+                .withProcessInstanceId("instance")
+                .build());
 
         assertThat(info.getId()).isEqualTo("task-123");
         assertThat(info.getTaskName()).isEqualTo("task");
-        assertThat(info.getProcessId()).isEqualTo("process");
-        assertThat(info.getProcessInstanceId()).isEqualTo("instance");
+        assertThat(info.getProcessInfo().getProcessId()).isEqualTo("process");
+        assertThat(info.getProcessInfo().getProcessInstanceId()).isEqualTo("instance");
     }
 
     @Test
-    public void testUserTaskInfoEquality() {
-        UserTaskInfoView info1 = new UserTaskInfoView();
+    public void testUserTaskViewEquality() {
+        UserTaskView info1 = new UserTaskView();
         info1.setId("task-123");
         info1.setTaskName("hr_interview");
-        info1.setProcessId("hiring");
+        info1.setProcessInfo(ProcessInfo.builder()
+                .withProcessId("hiring")
+                .build());
 
-        UserTaskInfoView info2 = new UserTaskInfoView();
+        UserTaskView info2 = new UserTaskView();
         info2.setId("task-123");
         info2.setTaskName("hr_interview");
-        info2.setProcessId("hiring");
+        info2.setProcessInfo(ProcessInfo.builder()
+                .withProcessId("hiring")
+                .build());
 
         assertThat(info1.getId()).isEqualTo(info2.getId());
         assertThat(info1.getTaskName()).isEqualTo(info2.getTaskName());
-        assertThat(info1.getProcessId()).isEqualTo(info2.getProcessId());
+        assertThat(info1.getProcessInfo().getProcessId()).isEqualTo(info2.getProcessInfo().getProcessId());
     }
 
     @Test
-    public void testUserTaskInfoDifferentIds() {
-        UserTaskInfoView info1 = new UserTaskInfoView();
+    public void testUserTaskViewDifferentIds() {
+        UserTaskView info1 = new UserTaskView();
         info1.setId("task-123");
         info1.setTaskName("hr_interview");
 
-        UserTaskInfoView info2 = new UserTaskInfoView();
+        UserTaskView info2 = new UserTaskView();
         info2.setId("task-456");
         info2.setTaskName("hr_interview");
 
@@ -119,8 +130,8 @@ public class UserTaskInfoViewTest {
     }
 
     @Test
-    public void testUserTaskInfoStatusUpdate() {
-        UserTaskInfoView info = new UserTaskInfoView();
+    public void testUserTaskViewStatusUpdate() {
+        UserTaskView info = new UserTaskView();
         info.setId("task-123");
         info.setStatus(UserTaskState.of("Ready"));
 
@@ -134,8 +145,8 @@ public class UserTaskInfoViewTest {
     }
 
     @Test
-    public void testUserTaskInfoOwnerUpdate() {
-        UserTaskInfoView info = new UserTaskInfoView();
+    public void testUserTaskViewOwnerUpdate() {
+        UserTaskView info = new UserTaskView();
         info.setId("task-123");
         info.setActualOwner(null);
 

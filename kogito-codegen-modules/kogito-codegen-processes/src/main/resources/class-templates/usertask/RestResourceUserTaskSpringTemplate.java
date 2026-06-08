@@ -28,7 +28,6 @@ import org.kie.kogito.usertask.UserTaskFilter;
 import org.kie.kogito.usertask.UserTaskService;
 import org.kie.kogito.usertask.impl.json.SimpleDeserializationProblemHandler;
 import org.kie.kogito.usertask.impl.json.SimplePolymorphicTypeValidator;
-import org.kie.kogito.usertask.lifecycle.UserTaskState;
 import org.kie.kogito.usertask.view.UserTaskInputsView;
 import org.kie.kogito.usertask.view.UserTaskOutputsView;
 import org.kie.kogito.usertask.view.UserTaskTransitionView;
@@ -51,6 +50,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +82,7 @@ public class UserTasksResource {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.ALL_VALUE)
-    public Object list(
+    public List<UserTaskView> list(
             @RequestParam(value = "user", required = false) String user,
             @RequestParam(value = "group", required = false) List<String> groups,
             @RequestParam(value = "format", required = false) String format,
@@ -91,40 +91,25 @@ public class UserTasksResource {
             @RequestParam(value = "status", required = false) List<String> status,
             @RequestParam(value = "taskName", required = false) String taskName) {
 
-        // Build filter from query parameters
-        UserTaskFilter.Builder filterBuilder = UserTaskFilter.builder()
+        UserTaskFilter filter = UserTaskFilter.builder()
                 .processId(processId)
                 .processInstanceId(processInstanceId)
-                .taskName(taskName);
-        
-        // Handle multiple status values
-        if (status != null && !status.isEmpty()) {
-            List<UserTaskState> statusList = status.stream()
-                    .map(UserTaskState::of)
-                    .collect(java.util.stream.Collectors.toList());
-            filterBuilder.statuses(statusList);
-        }
-        
-        UserTaskFilter filter = filterBuilder.build();
+                .taskName(taskName)
+                .statuses(status)
+                .build();
 
-        // Return lightweight response when format=short
-        if ("short".equalsIgnoreCase(format)) {
-            return userTaskService.listTasks(
-                identityProviderFactory.getOrImpersonateIdentity(user, groups),
-                filter
-            );
-        }
-
-        // Return full view for format=long or default (no format specified)
-        // Get filtered list first, then fetch full views for each task
-        return userTaskService.listTasks(
+        List<UserTaskView> tasks = userTaskService.listTasks(
             identityProviderFactory.getOrImpersonateIdentity(user, groups),
             filter
-        ).stream()
-        .map(info -> userTaskService.getUserTaskInstance(info.getId(), identityProviderFactory.getOrImpersonateIdentity(user, groups)))
-        .filter(java.util.Optional::isPresent)
-        .map(java.util.Optional::get)
-        .collect(java.util.stream.Collectors.toList());
+        );
+
+        if (UserTaskView.SUMMARY_FORMAT.equalsIgnoreCase(format)) {
+            return tasks.stream()
+                    .map(UserTaskView::summaryOf)
+                    .toList();
+        }
+
+        return tasks;
     }
 
     @GetMapping(value = "/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.ALL_VALUE)

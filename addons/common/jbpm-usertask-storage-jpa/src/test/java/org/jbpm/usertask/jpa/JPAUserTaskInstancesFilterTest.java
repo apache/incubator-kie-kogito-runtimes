@@ -32,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.auth.IdentityProvider;
 import org.kie.kogito.usertask.UserTaskFilter;
 import org.kie.kogito.usertask.UserTaskInstance;
-import org.kie.kogito.usertask.lifecycle.UserTaskState;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -128,7 +127,7 @@ public class JPAUserTaskInstancesFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
                 .processInstanceId("instance123")
-                .status(UserTaskState.of("Reserved"))
+                .statuses(List.of("Reserved"))
                 .taskName("hr_interview")
                 .build();
 
@@ -151,9 +150,9 @@ public class JPAUserTaskInstancesFilterTest {
         // Given
         UserTaskFilter filter = UserTaskFilter.builder()
                 .statuses(Arrays.asList(
-                        UserTaskState.of("Reserved"),
-                        UserTaskState.of("InProgress"),
-                        UserTaskState.of("Completed")))
+                        "Reserved",
+                        "InProgress",
+                        "Completed"))
                 .build();
 
         UserTaskInstanceEntity entity1 = new UserTaskInstanceEntity();
@@ -191,10 +190,10 @@ public class JPAUserTaskInstancesFilterTest {
     }
 
     @Test
-    public void testFindByIdentityWithFilterWithSingleStatusUsingStatusesMethod() {
-        // Given - Test backward compatibility: single status via statuses() method
+    public void testFindByIdentityWithFilterWithSingleStatus() {
+        // Given
         UserTaskFilter filter = UserTaskFilter.builder()
-                .statuses(Collections.singletonList(UserTaskState.of("Reserved")))
+                .statuses(Collections.singletonList("Reserved"))
                 .build();
 
         UserTaskInstanceEntity entity = new UserTaskInstanceEntity();

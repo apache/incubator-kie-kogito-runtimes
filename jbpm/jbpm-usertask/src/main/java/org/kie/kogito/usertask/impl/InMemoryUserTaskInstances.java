@@ -144,10 +144,10 @@ public class InMemoryUserTaskInstances implements UserTaskInstances {
             }
         }
 
-        // Status filter (match any of the provided statuses - case insensitive)
+        // Status filter (exact match against persisted state name)
         if (filter.statuses() != null && !filter.statuses().isEmpty()) {
             boolean statusMatches = filter.statuses().stream()
-                    .anyMatch(status -> status.getName().equalsIgnoreCase(task.getStatus().getName()));
+                    .anyMatch(status -> status.equals(task.getStatus().getName()));
             if (!statusMatches) {
                 return false;
             }

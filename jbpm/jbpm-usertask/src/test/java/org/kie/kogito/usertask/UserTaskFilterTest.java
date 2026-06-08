@@ -18,8 +18,9 @@
  */
 package org.kie.kogito.usertask;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.usertask.lifecycle.UserTaskState;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,15 +61,14 @@ public class UserTaskFilterTest {
     }
 
     @Test
-    public void testFilterWithStatus() {
+    public void testFilterWithStatuses() {
         UserTaskFilter filter = UserTaskFilter.builder()
-                .status(UserTaskState.of("Reserved"))
+                .statuses(List.of("Reserved", "InProgress"))
                 .build();
 
         assertThat(filter.processId()).isNull();
         assertThat(filter.processInstanceId()).isNull();
-        assertThat(filter.statuses()).hasSize(1);
-        assertThat(filter.statuses().get(0).getName()).isEqualTo("Reserved");
+        assertThat(filter.statuses()).containsExactly("Reserved", "InProgress");
         assertThat(filter.taskName()).isNull();
     }
 
@@ -89,14 +89,14 @@ public class UserTaskFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
                 .processInstanceId("12345")
-                .status(UserTaskState.of("Reserved"))
+                .statuses(List.of("Reserved"))
                 .taskName("hr_interview")
                 .build();
 
         assertThat(filter.processId()).isEqualTo("hiring");
         assertThat(filter.processInstanceId()).isEqualTo("12345");
         assertThat(filter.statuses()).hasSize(1);
-        assertThat(filter.statuses().get(0).getName()).isEqualTo("Reserved");
+        assertThat(filter.statuses().get(0)).isEqualTo("Reserved");
         assertThat(filter.taskName()).isEqualTo("hr_interview");
     }
 
@@ -105,13 +105,13 @@ public class UserTaskFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId("hiring")
                 .taskName("hr_interview")
-                .status(UserTaskState.of("Reserved"))
+                .statuses(List.of("Reserved"))
                 .build();
 
         assertThat(filter.processId()).isEqualTo("hiring");
         assertThat(filter.taskName()).isEqualTo("hr_interview");
         assertThat(filter.statuses()).hasSize(1);
-        assertThat(filter.statuses().get(0).getName()).isEqualTo("Reserved");
+        assertThat(filter.statuses().get(0)).isEqualTo("Reserved");
     }
 
     @Test
@@ -136,7 +136,7 @@ public class UserTaskFilterTest {
         UserTaskFilter filter = UserTaskFilter.builder()
                 .processId(null)
                 .processInstanceId(null)
-                .status(null)
+                .statuses(null)
                 .taskName(null)
                 .build();
 

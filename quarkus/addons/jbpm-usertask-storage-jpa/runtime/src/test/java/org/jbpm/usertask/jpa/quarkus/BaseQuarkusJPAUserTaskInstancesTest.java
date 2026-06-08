@@ -507,15 +507,15 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
         UserTaskInstance task3 = createTaskWithName("task3", "Task 3", "Completed", "Homer");
 
         org.kie.kogito.usertask.UserTaskFilter filter = org.kie.kogito.usertask.UserTaskFilter.builder()
-                .status(org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"))
+                .statuses(Collections.singletonList("Reserved"))
                 .build();
 
         List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Homer"), filter);
 
         assertThat(result)
                 .hasSize(1)
-                .extracting(UserTaskInstance::getStatus)
-                .containsExactly(org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"));
+                .extracting(task -> task.getStatus().getName())
+                .containsExactly("Reserved");
 
         userTaskInstances.remove(task1);
         userTaskInstances.remove(task2);
@@ -530,19 +530,17 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
         UserTaskInstance task4 = createTaskWithName("task4", "Task 4", "Suspended", "Homer");
 
         org.kie.kogito.usertask.UserTaskFilter filter = org.kie.kogito.usertask.UserTaskFilter.builder()
-                .statuses(Arrays.asList(
-                        org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"),
-                        org.kie.kogito.usertask.lifecycle.UserTaskState.of("InProgress")))
+                .statuses(Arrays.<String> asList(
+                        "Reserved",
+                        "InProgress"))
                 .build();
 
         List<UserTaskInstance> result = userTaskInstances.findByIdentity(IdentityProviders.of("Homer"), filter);
 
         assertThat(result)
                 .hasSize(2)
-                .extracting(UserTaskInstance::getStatus)
-                .containsExactlyInAnyOrder(
-                        org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"),
-                        org.kie.kogito.usertask.lifecycle.UserTaskState.of("InProgress"));
+                .extracting(task -> task.getStatus().getName())
+                .containsExactlyInAnyOrder("Reserved", "InProgress");
 
         userTaskInstances.remove(task1);
         userTaskInstances.remove(task2);
@@ -603,7 +601,7 @@ public abstract class BaseQuarkusJPAUserTaskInstancesTest {
 
         org.kie.kogito.usertask.UserTaskFilter filter = org.kie.kogito.usertask.UserTaskFilter.builder()
                 .taskName("Approve Request")
-                .status(org.kie.kogito.usertask.lifecycle.UserTaskState.of("Reserved"))
+                .statuses(Collections.singletonList("Reserved"))
                 .processId("hiring")
                 .processInstanceId("inst1")
                 .build();
