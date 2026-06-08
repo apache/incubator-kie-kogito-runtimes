@@ -42,7 +42,7 @@
     <version.mongodb-driver-sync>5.6.4</version.mongodb-driver-sync>
     <version.org.springdoc>2.8.13</version.org.springdoc>
     <version.org.springframework>7.0.7</version.org.springframework>
-    <version.org.springframework.boot>4.0.5</version.org.springframework.boot>
+    <version.org.springframework.boot>4.0.6</version.org.springframework.boot>
     <!-- Spring Boot Cloud aligned with Spring Boot Framework version. See: https://spring.io/projects/spring-cloud -->
     <!-- 2025.1.x (Oakwood) is the first Spring Cloud train compatible with Spring Boot 4.0.x;
          2025.1.1 specifically targets Spring Boot 4.0.1+. -->
@@ -607,6 +607,12 @@
         <artifactId>spring-boot-starter-web</artifactId>
         <version>${version.org.springframework.boot}</version>
       </dependency>
+      <!-- Jackson 2 Spring configuration — remove together with https://github.com/apache/incubator-kie-drools/issues/6702 (Jackson 3 migration) -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-jackson2</artifactId>
+        <version>${version.org.springframework.boot}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -632,7 +638,11 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <scope>runtime</scope>
     </dependency>
-
+    <!-- Jackson 2 Spring configuration — remove together with https://github.com/apache/incubator-kie-drools/issues/6702 (Jackson 3 migration) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-jackson2</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <pluginManagement>
