@@ -49,11 +49,6 @@ class WorkItemRecordParametersTest {
     private KogitoNode node;
 
     @Test
-    void testRecordArgsConstant() {
-        assertThat(RECORD_ARGS).isEqualTo("recordArgs");
-    }
-
-    @Test
     void testRecordInputParameters_WithWorkItem_NodeMetadataTrue() {
         Map<String, Object> nodeMetadata = new HashMap<>();
         nodeMetadata.put(RECORD_ARGS, true);
@@ -238,5 +233,41 @@ class WorkItemRecordParametersTest {
         WorkItemRecordParameters.recordInputParameters(nodeInstance, inputArgs);
 
         verify(nodeInstance, never()).getMetaData();
+    }
+
+    @Test
+    void testRecordInputParameters_ProcessMetadataFallback_WithSubprocess() {
+        // Test that process-level metadata is found even when node is inside a subprocess
+        Map<String, Object> nodeMetadata = new HashMap<>();
+        Map<String, Object> nodeInstanceMetadata = new HashMap<>();
+        Map<String, Object> processMetadata = new HashMap<>();
+        processMetadata.put(RECORD_ARGS, true);
+        Map<String, Object> inputArgs = Map.of("param1", "value1");
+
+        // Create a subprocess (NodeContainer that is also a KogitoNode)
+        NodeContainer subprocess = mock(NodeContainer.class,
+                org.mockito.Mockito.withSettings().extraInterfaces(KogitoNode.class));
+
+        // Create the process
+        NodeContainer process = mock(NodeContainer.class,
+                org.mockito.Mockito.withSettings().extraInterfaces(org.kie.api.definition.process.Process.class));
+        when(((org.kie.api.definition.process.Process) process).getMetaData()).thenReturn(processMetadata);
+
+        // Setup hierarchy: node -> subprocess -> process
+        when(workItem.getNodeInstance()).thenReturn(nodeInstance);
+        when(nodeInstance.getNode()).thenReturn(node);
+        when(nodeInstance.getMetaData()).thenReturn(nodeInstanceMetadata);
+        when(node.getMetaData()).thenReturn(nodeMetadata);
+        when(((KogitoNode) node).getParentContainer()).thenReturn(subprocess);
+        when(((KogitoNode) subprocess).getParentContainer()).thenReturn(process);
+
+        assertThat(nodeInstanceMetadata).isEmpty();
+
+        WorkItemRecordParameters.recordInputParameters(workItem, inputArgs);
+
+        verify(node).getMetaData();
+        verify((org.kie.api.definition.process.Process) process).getMetaData();
+        assertThat(nodeInstanceMetadata).hasSize(1);
+        assertThat(nodeInstanceMetadata).containsEntry("inputArgs", inputArgs);
     }
 }

@@ -87,10 +87,10 @@ public class WorkItemRecordParameters {
             return shouldRecordParameters(nodeValue);
         }
 
-        // Check process-level metadata
-        if (node instanceof KogitoNode kogitoNode && kogitoNode.getParentContainer() != null) {
-            org.kie.api.definition.process.NodeContainer container = kogitoNode.getParentContainer();
-            if (container instanceof org.kie.api.definition.process.Process process) {
+        // Check process-level metadata by traversing up the container hierarchy
+        if (node instanceof KogitoNode kogitoNode) {
+            org.kie.api.definition.process.Process process = findProcess(kogitoNode);
+            if (process != null) {
                 Object processValue = process.getMetaData().get(RECORD_ARGS);
                 if (processValue != null) {
                     return shouldRecordParameters(processValue);
@@ -100,6 +100,22 @@ public class WorkItemRecordParameters {
 
         // Default to false
         return false;
+    }
+
+    private static org.kie.api.definition.process.Process findProcess(KogitoNode node) {
+        org.kie.api.definition.process.NodeContainer container = node.getParentContainer();
+        while (container != null) {
+            if (container instanceof org.kie.api.definition.process.Process process) {
+                return process;
+            }
+            // Traverse up if the container is also a KogitoNode (e.g., subprocess)
+            if (container instanceof KogitoNode kogitoContainerNode) {
+                container = kogitoContainerNode.getParentContainer();
+            } else {
+                break;
+            }
+        }
+        return null;
     }
 
     private static boolean shouldRecordParameters(Object value) {
