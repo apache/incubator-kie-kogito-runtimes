@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.kie.api.definition.process.Node;
+import org.kie.api.definition.process.NodeContainer;
+import org.kie.api.definition.process.Process;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
@@ -89,7 +91,7 @@ public class WorkItemRecordParameters {
 
         // Check process-level metadata by traversing up the container hierarchy
         if (node instanceof KogitoNode kogitoNode) {
-            org.kie.api.definition.process.Process process = findProcess(kogitoNode);
+            Process process = findProcess(kogitoNode);
             if (process != null) {
                 Object processValue = process.getMetaData().get(RECORD_ARGS);
                 if (processValue != null) {
@@ -102,10 +104,10 @@ public class WorkItemRecordParameters {
         return false;
     }
 
-    private static org.kie.api.definition.process.Process findProcess(KogitoNode node) {
-        org.kie.api.definition.process.NodeContainer container = node.getParentContainer();
+    private static Process findProcess(KogitoNode node) {
+        NodeContainer container = node.getParentContainer();
         while (container != null) {
-            if (container instanceof org.kie.api.definition.process.Process process) {
+            if (container instanceof Process process) {
                 return process;
             }
             // Traverse up if the container is also a KogitoNode (e.g., subprocess)
