@@ -31,6 +31,7 @@ import java.util.Optional;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.infinispan.protostream.FileDescriptorSource;
+import org.kie.api.annotations.KieProperty;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
@@ -70,6 +71,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     /**
      * Type of persistence
      */
+    @KieProperty
     public static final String FILESYSTEM_PERSISTENCE_TYPE = "filesystem";
     public static final String INFINISPAN_PERSISTENCE_TYPE = "infinispan";
     public static final String MONGODB_PERSISTENCE_TYPE = "mongodb";
@@ -85,16 +87,19 @@ public class PersistenceGenerator extends AbstractGenerator {
     /**
      * (boolean) enable/disable proto generation for DATA-INDEX; default to true
      */
+    @KieProperty
     public static final String KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION = "kogito.persistence.data-index.proto.generation";
     public static final String KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION_DEFAULT = "true";
     /**
      * (boolean) enable/disable proto marshaller generation; default to true
      */
+    @KieProperty
     public static final String KOGITO_PERSISTENCE_PROTO_MARSHALLER = "kogito.persistence.proto.marshaller";
     public static final String KOGITO_PERSISTENCE_PROTO_MARSHALLER_DEFAULT = "true";
     /**
      * (string) kind of persistence used; possible values: filesystem, infinispan, mongodb, postgresql, kafka, jdbc; default to infinispan
      */
+    @KieProperty
     public static final String KOGITO_PERSISTENCE_TYPE = "kogito.persistence.type";
 
     /**
@@ -106,6 +111,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     /**
      * Generic PersistenceGenerator constants
      */
+    @KieProperty
     public static final String GENERATOR_NAME = "persistence";
     protected static final String CLASS_TEMPLATES_PERSISTENCE = "/class-templates/persistence/";
     private final ProtoGenerator protoGenerator;

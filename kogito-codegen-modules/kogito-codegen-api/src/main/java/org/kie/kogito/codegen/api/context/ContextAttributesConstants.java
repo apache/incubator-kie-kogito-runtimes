@@ -18,16 +18,20 @@
  */
 package org.kie.kogito.codegen.api.context;
 
+import org.kie.api.annotations.KieProperty;
+
 public final class ContextAttributesConstants {
 
     /**
      * computes the triggers being generated
      */
+    @KieProperty
     public static final String PROCESS_TRIGGERS = "kogito.codegen.process.triggers";
 
     /**
      * OpenAPI Generator Descriptors with information of every REST client generated indexed by the spec resource file.
      */
+    @KieProperty
     public static final String OPENAPI_DESCRIPTORS = "openApiDescriptor";
 
     public static final String PROCESS_AUTO_SVG_MAPPING = "processAutoSVGMapping";

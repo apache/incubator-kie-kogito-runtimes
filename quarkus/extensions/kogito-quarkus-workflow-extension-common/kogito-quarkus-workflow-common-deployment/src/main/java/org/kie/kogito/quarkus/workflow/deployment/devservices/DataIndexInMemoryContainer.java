@@ -20,6 +20,7 @@ package org.kie.kogito.quarkus.workflow.deployment.devservices;
 
 import java.time.Duration;
 
+import org.kie.api.annotations.KieProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -39,6 +40,7 @@ public class DataIndexInMemoryContainer extends GenericContainer<DataIndexInMemo
     /**
      * This allows other applications to discover the running service and use it instead of starting a new instance.
      */
+    @KieProperty
     public static final String DEV_SERVICE_LABEL = "kogito-dev-service-data-index";
     public static final String LATEST = "latest";
     private static final Logger LOGGER = LoggerFactory.getLogger(DataIndexInMemoryContainer.class);

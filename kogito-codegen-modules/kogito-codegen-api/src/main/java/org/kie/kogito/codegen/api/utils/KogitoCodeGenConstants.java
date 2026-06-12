@@ -18,6 +18,8 @@
  */
 package org.kie.kogito.codegen.api.utils;
 
+import org.kie.api.annotations.KieProperty;
+
 public class KogitoCodeGenConstants {
 
     private KogitoCodeGenConstants() {
@@ -31,5 +33,6 @@ public class KogitoCodeGenConstants {
     /**
      * Property that controls whether Kogito Codegen should ignore hidden files. Defaults to true.
      */
+    @KieProperty
     public static final String IGNORE_HIDDEN_FILES_PROP = "kogito.codegen.ignoreHiddenFiles";
 }
