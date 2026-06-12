@@ -613,6 +613,12 @@
         <artifactId>spring-boot-jackson2</artifactId>
         <version>${version.org.springframework.boot}</version>
       </dependency>
+      <!-- Netty codec-compression - explicitly managed to fix CVE GHSA-mj4r-2hfc-f8p6 -->
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-compression</artifactId>
+        <version>${version.io.netty}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
