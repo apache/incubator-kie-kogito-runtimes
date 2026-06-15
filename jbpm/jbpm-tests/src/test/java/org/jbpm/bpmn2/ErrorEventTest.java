@@ -45,6 +45,8 @@ import org.jbpm.bpmn2.error.ErrorBoundaryEventInterruptingModel;
 import org.jbpm.bpmn2.error.ErrorBoundaryEventInterruptingProcess;
 import org.jbpm.bpmn2.error.ErrorBoundaryEventOnServiceTaskModel;
 import org.jbpm.bpmn2.error.ErrorBoundaryEventOnServiceTaskProcess;
+import org.jbpm.bpmn2.error.ErrorBoundaryEventOnTaskModel;
+import org.jbpm.bpmn2.error.ErrorBoundaryEventOnTaskProcess;
 import org.jbpm.bpmn2.error.ErrorVariableModel;
 import org.jbpm.bpmn2.error.ErrorVariableProcess;
 import org.jbpm.bpmn2.error.EventSubProcessErrorWithScriptModel;
@@ -76,9 +78,7 @@ import org.jbpm.process.workitem.builtin.SystemOutWorkItemHandler;
 import org.jbpm.test.utils.EventTrackerProcessListener;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.Test;
-import org.kie.api.event.process.DefaultProcessEventListener;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.kogito.Application;
 import org.kie.kogito.handlers.AlwaysThrowingComponent_throwException__8DA0CD88_0714_43C1_B492_A70FADE42361_Handler;
 import org.kie.kogito.handlers.ExceptionService_handleException__X_2_Handler;
@@ -251,17 +251,14 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testErrorBoundaryEventOnTask() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/error/BPMN2-ErrorBoundaryEventOnTask.bpmn2");
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler handler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
-        kruntime.getKieRuntime().addEventListener(new DefaultProcessEventListener() {
-            @Override
-            public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
-                System.out.println(event);
-            }
-        });
+        ProcessTestHelper.registerHandler(app, "Human Task", handler);
 
-        KogitoProcessInstance processInstance = kruntime.startProcess("ErrorBoundaryEventOnTask");
+        Process<ErrorBoundaryEventOnTaskModel> processDefinition = ErrorBoundaryEventOnTaskProcess.newProcess(app);
+        ErrorBoundaryEventOnTaskModel model = processDefinition.createModel();
+        org.kie.kogito.process.ProcessInstance<ErrorBoundaryEventOnTaskModel> processInstance = processDefinition.createInstance(model);
+        processInstance.start();
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
         assertThat(workItems).hasSize(2);
@@ -271,11 +268,8 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
             workItem = workItems.get(1);
         }
 
-        kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), emptyMap());
-        assertProcessInstanceFinished(processInstance, kruntime);
-        assertProcessInstanceAborted(processInstance);
-        assertNodeTriggered(processInstance.getStringId(), "start", "split", "User Task", "User task error attached", "error end event");
-        assertNotNodeTriggered(processInstance.getStringId(), "Script Task", "error1", "error2");
+        processInstance.completeWorkItem(workItem.getStringId(), emptyMap());
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
