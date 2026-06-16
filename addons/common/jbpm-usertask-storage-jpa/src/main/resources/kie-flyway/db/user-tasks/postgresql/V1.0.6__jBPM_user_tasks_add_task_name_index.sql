@@ -16,18 +16,5 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.process.impl.lock;
 
-public interface ProcessInstanceLockStrategy {
-
-    <T> T executeOperation(String processInstanceId, WorkflowAtomicExecutor<T> empty);
-
-    /**
-     * Checks if the current thread already holds the lock for the given process instance.
-     *
-     * @param processInstanceId the process instance id
-     * @return true if the current thread already holds the lock, false otherwise
-     */
-    boolean isLockedByCurrentThread(String processInstanceId);
-
-}
+create index if not exists idx_jbpm_user_tasks_tname on jbpm_user_tasks(task_name);

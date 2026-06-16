@@ -16,18 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.process.impl.lock;
 
-public interface ProcessInstanceLockStrategy {
+package org.jbpm.usertask.jpa.springboot;
 
-    <T> T executeOperation(String processInstanceId, WorkflowAtomicExecutor<T> empty);
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
-    /**
-     * Checks if the current thread already holds the lock for the given process instance.
-     *
-     * @param processInstanceId the process instance id
-     * @return true if the current thread already holds the lock, false otherwise
-     */
-    boolean isLockedByCurrentThread(String processInstanceId);
-
+@SpringBootTest(classes = TestApplication.class)
+@Transactional
+@ActiveProfiles("test-h2")
+public class H2SpringBootJPAUserTaskInstancesTest extends BaseSpringBootJPAUserTaskInstancesTest {
 }
