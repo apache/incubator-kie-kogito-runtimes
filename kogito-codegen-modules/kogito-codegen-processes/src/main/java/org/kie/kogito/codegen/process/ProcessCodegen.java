@@ -118,6 +118,7 @@ public class ProcessCodegen extends AbstractGenerator {
     public static final String SOURCE_FILE_PROVIDER_PRODUCER = "SourceFilesProviderProducer";
 
     private static final String IS_BUSINESS_CALENDAR_PRESENT = "isBusinessCalendarPresent";
+    private static final String RECORD_NODE_IO_GLOBAL_PROPERTY = "kogito.processes.service-tasks.record-io";
 
     static {
         ProcessValidatorRegistry.getInstance().registerAdditonalValidator(JavaRuleFlowProcessValidator.getInstance());
@@ -189,14 +190,13 @@ public class ProcessCodegen extends AbstractGenerator {
 
     /**
      * Injects recordArgs metadata into a process if the global property is enabled.
-     * This allows the global property kogito.processes.service-tasks.record-io to control
-     * input/output argument recording for all service tasks in the process.
+     * This allows the global property defined by RECORD_NODE_IO_GLOBAL_PROPERTY to control
+     * input/output argument recording for all nodes in the process.
      */
     private void injectRecordArgsMetadataIfNeeded(WorkflowProcess process) {
-        final String recordServiceTaskArgsProperty = "kogito.processes.service-tasks.record-io";
         final String recordArgs = "recordArgs";
 
-        boolean globalRecordArgs = context().getApplicationProperty(recordServiceTaskArgsProperty, Boolean.class)
+        boolean globalRecordArgs = context().getApplicationProperty(RECORD_NODE_IO_GLOBAL_PROPERTY, Boolean.class)
                 .orElse(false);
 
         if (!globalRecordArgs) {
