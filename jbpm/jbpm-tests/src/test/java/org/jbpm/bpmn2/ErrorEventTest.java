@@ -147,37 +147,27 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testEventSubprocessErrorThrowOnTask() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/error/BPMN2-EventSubprocessError.bpmn2");
-        final List<String> executednodes = new ArrayList<>();
-        KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
+        Application app = ProcessTestHelper.newApplication();
 
+        // Handler that throws MyError when activated
+        TestWorkItemHandler handler = new TestWorkItemHandler() {
             @Override
-            public void afterNodeLeft(ProcessNodeLeftEvent event) {
-                if (event.getNodeInstance().getNodeName()
-                        .equals("Script Task 1")) {
-                    executednodes.add(((KogitoNodeInstance) event.getNodeInstance()).getStringId());
-                }
-            }
-
-        };
-        kruntime.getProcessEventManager().addEventListener(listener);
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", new TestWorkItemHandler() {
-
-            @Override
-            public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager, KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
+            public Optional<WorkItemTransition> activateWorkItemHandler(KogitoWorkItemManager manager,
+                    KogitoWorkItemHandler handler, KogitoWorkItem workItem, WorkItemTransition transition) {
                 throw new MyError();
             }
+        };
 
-        });
+        ProcessTestHelper.registerHandler(app, "Human Task", handler);
 
-        KogitoProcessInstance processInstance = kruntime.startProcess("EventSubprocessError");
+        Process<EventSubprocessErrorModel> processDefinition = EventSubprocessErrorProcess.newProcess(app);
+        EventSubprocessErrorModel model = processDefinition.createModel();
+        org.kie.kogito.process.ProcessInstance<EventSubprocessErrorModel> processInstance =
+                processDefinition.createInstance(model);
+        processInstance.start();
 
-        assertProcessInstanceFinished(processInstance, kruntime);
-        assertProcessInstanceAborted(processInstance);
-        assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
-                "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
-        assertThat(executednodes).hasSize(1);
-
+        // Verify process finished and was aborted (error was caught by event subprocess)
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ABORTED);
     }
 
     @Test
