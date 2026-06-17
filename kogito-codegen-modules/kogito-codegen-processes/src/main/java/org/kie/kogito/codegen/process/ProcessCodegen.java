@@ -118,7 +118,7 @@ public class ProcessCodegen extends AbstractGenerator {
     public static final String SOURCE_FILE_PROVIDER_PRODUCER = "SourceFilesProviderProducer";
 
     private static final String IS_BUSINESS_CALENDAR_PRESENT = "isBusinessCalendarPresent";
-    private static final String RECORD_NODE_IO_GLOBAL_PROPERTY = "kogito.processes.service-tasks.record-io";
+    private static final String RECORD_NODES_IO_GLOBAL_PROPERTY = "kogito.processes.nodes.record-io";
 
     static {
         ProcessValidatorRegistry.getInstance().registerAdditonalValidator(JavaRuleFlowProcessValidator.getInstance());
