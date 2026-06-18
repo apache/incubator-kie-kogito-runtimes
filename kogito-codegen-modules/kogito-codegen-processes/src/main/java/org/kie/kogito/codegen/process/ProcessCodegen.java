@@ -190,13 +190,13 @@ public class ProcessCodegen extends AbstractGenerator {
 
     /**
      * Injects recordArgs metadata into a process if the global property is enabled.
-     * This allows the global property defined by RECORD_NODE_IO_GLOBAL_PROPERTY to control
+     * This allows the global property defined by RECORD_NODES_IO_GLOBAL_PROPERTY to control
      * input/output argument recording for all nodes in the process.
      */
     private void injectRecordArgsMetadataIfNeeded(WorkflowProcess process) {
         final String recordArgs = "recordArgs";
 
-        boolean globalRecordArgs = context().getApplicationProperty(RECORD_NODE_IO_GLOBAL_PROPERTY, Boolean.class)
+        boolean globalRecordArgs = context().getApplicationProperty(RECORD_NODES_IO_GLOBAL_PROPERTY, Boolean.class)
                 .orElse(false);
 
         if (!globalRecordArgs) {
