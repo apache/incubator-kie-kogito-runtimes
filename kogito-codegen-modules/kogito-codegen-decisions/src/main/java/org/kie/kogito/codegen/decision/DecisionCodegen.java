@@ -61,11 +61,13 @@ public class DecisionCodegen extends AbstractGenerator {
     /**
      * (boolean) generate java classes to support strongly typed input (default false)
      */
-    public static String STRONGLY_TYPED_CONFIGURATION_KEY = "kogito.decisions.stronglytyped";
+    @KieProperty
+    public static final String STRONGLY_TYPED_CONFIGURATION_KEY = "kogito.decisions.stronglytyped";
     /**
      * model validation strategy; possible values: ENABLED, DISABLED, IGNORE; (default ENABLED)
      */
-    public static String VALIDATION_CONFIGURATION_KEY = "kogito.decisions.validation";
+    @KieProperty
+    public static final String VALIDATION_CONFIGURATION_KEY = "kogito.decisions.validation";
 
     /**
      * (string) kafka bootstrap server address

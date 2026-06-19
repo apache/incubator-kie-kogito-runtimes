@@ -18,6 +18,7 @@
  */
 package org.kie.kogito.codegen.api.context;
 
+import org.kie.api.annotations.KieInternal;
 import org.kie.api.annotations.KieProperty;
 
 public final class ContextAttributesConstants {
@@ -31,7 +32,7 @@ public final class ContextAttributesConstants {
     /**
      * OpenAPI Generator Descriptors with information of every REST client generated indexed by the spec resource file.
      */
-    @KieProperty
+    @KieInternal
     public static final String OPENAPI_DESCRIPTORS = "openApiDescriptor";
 
     public static final String PROCESS_AUTO_SVG_MAPPING = "processAutoSVGMapping";

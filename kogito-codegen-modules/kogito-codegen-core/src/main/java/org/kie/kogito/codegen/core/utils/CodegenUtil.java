@@ -54,7 +54,7 @@ public final class CodegenUtil {
      * 
      * @param generator
      * @param propertyName
-     * @return returns the property for certain generator
+     * @return the property for certain generator
      */
     public static String generatorProperty(Generator generator, String propertyName) {
         return String.format("kogito.%s.%s", generator.name(), propertyName);

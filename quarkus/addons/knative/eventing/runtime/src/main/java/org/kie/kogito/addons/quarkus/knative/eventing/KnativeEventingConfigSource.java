@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.microprofile.config.spi.ConfigSource;
-import org.kie.api.annotations.KieProperty;
+import org.kie.api.annotations.KieInternal;
 
 /**
  * Provides the default configuration for a Kogito project that uses Knative Eventing as underling event platform
@@ -32,7 +32,7 @@ public class KnativeEventingConfigSource implements ConfigSource {
     /**
      * Environment variable injected by Knative
      */
-    @KieProperty
+    @KieInternal
     public static final String K_SINK = "K_SINK";
 
     static final Integer ORDINAL = Integer.MIN_VALUE;

@@ -20,6 +20,7 @@ package org.kie.kogito.quarkus.workflow.deployment.devservices;
 
 import java.time.Duration;
 
+import org.kie.api.annotations.KieInternal;
 import org.kie.api.annotations.KieProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class DataIndexInMemoryContainer extends GenericContainer<DataIndexInMemo
      */
     @KieProperty
     public static final String DEV_SERVICE_LABEL = "kogito-dev-service-data-index";
+    @KieInternal
     public static final String LATEST = "latest";
     private static final Logger LOGGER = LoggerFactory.getLogger(DataIndexInMemoryContainer.class);
 
