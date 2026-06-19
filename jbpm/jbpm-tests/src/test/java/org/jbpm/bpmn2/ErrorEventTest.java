@@ -79,6 +79,7 @@ import org.jbpm.test.utils.EventTrackerProcessListener;
 import org.jbpm.test.utils.ProcessTestHelper;
 import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
+import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.kogito.Application;
 import org.kie.kogito.handlers.AlwaysThrowingComponent_throwException__8DA0CD88_0714_43C1_B492_A70FADE42361_Handler;
 import org.kie.kogito.handlers.ExceptionService_handleException__X_2_Handler;
@@ -149,6 +150,17 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
     public void testEventSubprocessErrorThrowOnTask() throws Exception {
         Application app = ProcessTestHelper.newApplication();
 
+        // Track executed nodes
+        final List<String> executedNodes = new ArrayList<>();
+        KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
+            @Override
+            public void afterNodeLeft(ProcessNodeLeftEvent event) {
+                if (event.getNodeInstance().getNodeName().equals("Script Task 1")) {
+                    executedNodes.add(((KogitoNodeInstance) event.getNodeInstance()).getStringId());
+                }
+            }
+        };
+
         // Handler that throws MyError when activated
         TestWorkItemHandler handler = new TestWorkItemHandler() {
             @Override
@@ -158,6 +170,7 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
             }
         };
 
+        ProcessTestHelper.registerProcessEventListener(app, listener);
         ProcessTestHelper.registerHandler(app, "Human Task", handler);
 
         Process<EventSubprocessErrorModel> processDefinition = EventSubprocessErrorProcess.newProcess(app);
@@ -168,6 +181,9 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 
         // Verify process finished and was aborted (error was caught by event subprocess)
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ABORTED);
+
+        // Verify the event subprocess script task was executed
+        assertThat(executedNodes).hasSize(1);
     }
 
     @Test
@@ -242,6 +258,16 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testErrorBoundaryEventOnTask() throws Exception {
         Application app = ProcessTestHelper.newApplication();
+
+        final List<String> triggeredNodes = new ArrayList<>();
+        KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
+            @Override
+            public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
+                triggeredNodes.add(event.getNodeInstance().getNodeName());
+            }
+        };
+        ProcessTestHelper.registerProcessEventListener(app, listener);
+
         TestWorkItemHandler handler = new TestWorkItemHandler();
         ProcessTestHelper.registerHandler(app, "Human Task", handler);
 
@@ -259,7 +285,12 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         }
 
         processInstance.completeWorkItem(workItem.getStringId(), emptyMap());
+
+        // In v9, when error is caught by boundary event and handled, process completes successfully
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
+        assertThat(triggeredNodes).contains("start", "split", "User Task", "User task error attached",
+                "error end event", "Script Task", "error2");
+        assertThat(triggeredNodes).doesNotContain("error1");
     }
 
     @Test
@@ -341,6 +372,15 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
     public void testCatchErrorBoundaryEventOnTask() throws Exception {
         Application app = ProcessTestHelper.newApplication();
 
+        final List<String> executedNodes = new ArrayList<>();
+        KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
+            @Override
+            public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
+                executedNodes.add(event.getNodeInstance().getNodeName());
+            }
+        };
+        ProcessTestHelper.registerProcessEventListener(app, listener);
+
         // Custom handler that throws MyError when actor is "mary"
         TestWorkItemHandler handler = new TestWorkItemHandler() {
             @Override
@@ -368,6 +408,8 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
 
         // Verify process is still active (mary's task threw error, but john's task is still pending)
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
+        assertThat(executedNodes).contains("start", "split", "User Task", "User task error attached",
+                "Script Task", "error2");
     }
 
     @Test
