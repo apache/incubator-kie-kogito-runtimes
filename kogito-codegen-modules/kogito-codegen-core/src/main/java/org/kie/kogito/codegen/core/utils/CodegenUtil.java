@@ -36,13 +36,13 @@ public final class CodegenUtil {
     /**
      * Flag used to configure transaction enabling. Default to <code>true</code>
      */
-    @KieProperty
+    @KieProperty(type = "boolean", defaultValue = "true", allowedValues = "true,false")
     public static final String TRANSACTION_ENABLED = "transactionEnabled";
 
     /**
      * Flag used to configure fault tolerance enabling. Default to <code>true</code>
      */
-    @KieProperty
+    @KieProperty(type = "boolean", defaultValue = "true", allowedValues = "true,false")
     public static final String FAULT_TOLERANCE_ENABLED = "faultToleranceEnabled";
 
     private CodegenUtil() {

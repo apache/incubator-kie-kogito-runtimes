@@ -31,7 +31,7 @@ public interface IdentityProviderFactory {
     /**
      * Enables (true) using the application security context when resolving current User Identity. Defaults to false.
      */
-    @KieProperty
+    @KieProperty(type = "boolean", defaultValue = "false", allowedValues = "true,false")
     String KOGITO_SECURITY_AUTH_ENABLED = "kogito.security.auth.enabled";
 
     /**

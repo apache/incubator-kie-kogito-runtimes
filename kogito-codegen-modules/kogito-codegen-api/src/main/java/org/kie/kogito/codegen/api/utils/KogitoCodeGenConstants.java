@@ -38,6 +38,6 @@ public class KogitoCodeGenConstants {
     /**
      * Property that controls whether Kogito Codegen should ignore hidden files. Defaults to true.
      */
-    @KieProperty
+    @KieProperty(type = "boolean", defaultValue = "true", allowedValues = "true,false")
     public static final String IGNORE_HIDDEN_FILES_PROP = "kogito.codegen.ignoreHiddenFiles";
 }

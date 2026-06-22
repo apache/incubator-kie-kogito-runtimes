@@ -48,7 +48,7 @@ public class KogitoBeanProducer {
     /**
      * (string) strategy to resolve a Process version to use; possible values: project, workflow; if "project", requires project GAV; default is workflow
      */
-    @KieProperty
+    @KieProperty(type = "string", defaultValue = "workflow", allowedValues = "project,workflow")
     public static final String KOGITO_WORKFLOW_VERSION_STRATEGY = "kogito.workflow.version-strategy";
 
     @DefaultBean
