@@ -156,15 +156,20 @@ public class UserTaskInstanceRepository extends BaseRepository<UserTaskInstanceE
 
         String existsClause = whereClause +
 
-                // Pre-filter based on indexed processId
+        // Pre-filter based on indexed processId
                 String.format("%1$s.processInfo.processId IN (SELECT ap.processId FROM allowed_processes ap)", entityReference) +
                 " AND (" +
                 // Exact tuple checks wrapped inside their own isolated OR block
                 String.format("%1$s.processInfo.processVersion IS NULL", entityReference) +
                 " OR " +
-                String.format("EXISTS (SELECT 1 FROM allowed_processes ap1 WHERE ap1.processId = %1$s.processInfo.rootProcessId AND ap1.processVersion = %1$s.processInfo.rootProcessVersion)", entityReference) +
+                String.format("EXISTS (SELECT 1 FROM allowed_processes ap1 WHERE ap1.processId = %1$s.processInfo.rootProcessId AND ap1.processVersion = %1$s.processInfo.rootProcessVersion)",
+                        entityReference)
+                +
                 " OR " +
-                String.format("(%1$s.processInfo.rootProcessId IS NULL AND EXISTS (SELECT 1 FROM allowed_processes ap2 WHERE ap2.processId = %1$s.processInfo.processId AND ap2.processVersion = %1$s.processInfo.processVersion))", entityReference) +
+                String.format(
+                        "(%1$s.processInfo.rootProcessId IS NULL AND EXISTS (SELECT 1 FROM allowed_processes ap2 WHERE ap2.processId = %1$s.processInfo.processId AND ap2.processVersion = %1$s.processInfo.processVersion))",
+                        entityReference)
+                +
                 ")";
 
         return cte + baseQuery + existsClause;

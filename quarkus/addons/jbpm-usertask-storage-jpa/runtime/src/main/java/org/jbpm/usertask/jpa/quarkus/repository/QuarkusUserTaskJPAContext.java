@@ -51,6 +51,6 @@ public class QuarkusUserTaskJPAContext implements UserTaskJPAContext {
 
     @Override
     public Processes getProcesses() {
-        return  dataIsolationEnabled && processes.isResolvable() ? processes.get() : null;
+        return dataIsolationEnabled && processes.isResolvable() ? processes.get() : null;
     }
 }
