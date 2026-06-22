@@ -40,8 +40,9 @@ public class JDBCProcessInstancesFactory extends AbstractProcessInstancesFactory
             @ConfigProperty(name = "kogito.persistence.optimistic.lock", defaultValue = "false") Boolean lock,
             @ConfigProperty(name = "kogito.persistence.headers.enabled", defaultValue = "false") boolean headersEnabled,
             @ConfigProperty(name = "kogito.persistence.headers.excluded") Optional<List<String>> headersExcluded,
-            Instance<Processes> processes) {
-        super(dataSource, lock, HeadersPersistentConfig.of(headersEnabled, headersExcluded), processes.isResolvable() ? processes.get() : null);
+            Instance<Processes> processes,
+            @ConfigProperty(name = "kogito.persistence.data-isolation.enabled", defaultValue = "false") Boolean dataIsolationEnabled) {
+        super(dataSource, lock, HeadersPersistentConfig.of(headersEnabled, headersExcluded), dataIsolationEnabled && processes.isResolvable() ? processes.get() : null);
     }
 
     public JDBCProcessInstancesFactory() {

@@ -19,6 +19,7 @@
 
 package org.jbpm.usertask.jpa.quarkus.repository;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jbpm.usertask.jpa.repository.UserTaskJPAContext;
 import org.kie.kogito.process.Processes;
 
@@ -39,6 +40,10 @@ public class QuarkusUserTaskJPAContext implements UserTaskJPAContext {
     @Inject
     private Instance<Processes> processes;
 
+    @Inject
+    @ConfigProperty(name = "kogito.persistence.data-isolation.enabled", defaultValue = "false")
+    Boolean dataIsolationEnabled;
+
     @Override
     public EntityManager getEntityManager() {
         return em;
@@ -46,6 +51,6 @@ public class QuarkusUserTaskJPAContext implements UserTaskJPAContext {
 
     @Override
     public Processes getProcesses() {
-        return processes.isResolvable() ? processes.get() : null;
+        return  dataIsolationEnabled && processes.isResolvable() ? processes.get() : null;
     }
 }

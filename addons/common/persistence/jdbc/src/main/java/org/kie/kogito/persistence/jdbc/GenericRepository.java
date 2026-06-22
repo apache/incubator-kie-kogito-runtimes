@@ -88,10 +88,19 @@ public class GenericRepository extends Repository {
             return baseQuery;
         }
 
-        String unionSelects = java.util.stream.IntStream.range(0, processIds.size())
-                .mapToObj(i -> "SELECT CAST(? AS VARCHAR(255)) AS process_id, CAST(? AS VARCHAR(255)) AS process_version")
-                .collect(Collectors.joining(" UNION ALL "));
-        String cte = "WITH allowed_processes AS (" + unionSelects + ") ";
+        String valueTuples = java.util.stream.IntStream.range(0, processIds.size())
+                .mapToObj(i -> {
+                    if (i == 0) {
+                        return "(CAST(? AS VARCHAR(255)), CAST(? AS VARCHAR(255)))";
+                    } else {
+                        return "(?, ?)";
+                    }
+                })
+                .collect(Collectors.joining(", "));
+
+        String cte = "WITH allowed_processes (process_id, process_version) AS (" +
+                "  SELECT * FROM (VALUES " + valueTuples + ") AS temp(pid, pver)" +
+                ") ";
 
         // Determine if we need WHERE or AND
         String whereClause = baseQuery.toLowerCase().contains(" where ") ? " AND " : " WHERE ";

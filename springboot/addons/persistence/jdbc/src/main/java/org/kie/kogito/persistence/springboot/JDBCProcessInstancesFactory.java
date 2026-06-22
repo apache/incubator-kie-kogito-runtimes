@@ -34,15 +34,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class JDBCProcessInstancesFactory extends AbstractProcessInstancesFactory {
 
+    @Value("${kogito.persistence.data-isolation-enabled:false}")
+    private Boolean dataIsolationEnabled;
+
     @Autowired
     public JDBCProcessInstancesFactory(DataSource dataSource,
             @Value("${kogito.persistence.optimistic.lock:false}") Boolean lock,
             @Value("${kogito.persistence.headers.enabled:false}") Boolean headersEnabled,
             @Value("${kogito.persistence.headers.excluded:}") List<String> headersExcluded,
-            @Nullable Processes processes) {
+            @Nullable Processes processes,
+            @Value("${kogito.persistence.data-isolation.enabled:false}") Boolean dataIsolationEnabled) {
 
         // Wrap the original DataSource so operations use the transactional Connection
-        super(new TransactionAwareDataSourceProxy(dataSource), lock, new HeadersPersistentConfig(headersEnabled, headersExcluded), processes);
+        super(new TransactionAwareDataSourceProxy(dataSource), lock, new HeadersPersistentConfig(headersEnabled, headersExcluded), dataIsolationEnabled ? processes : null);
     }
 
 }

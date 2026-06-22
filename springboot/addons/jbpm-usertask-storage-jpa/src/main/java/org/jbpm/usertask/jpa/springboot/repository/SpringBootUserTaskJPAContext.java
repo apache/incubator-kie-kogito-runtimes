@@ -22,6 +22,7 @@ package org.jbpm.usertask.jpa.springboot.repository;
 import org.jbpm.usertask.jpa.repository.UserTaskJPAContext;
 import org.kie.kogito.process.Processes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,9 @@ public class SpringBootUserTaskJPAContext implements UserTaskJPAContext {
     @Autowired(required = false)
     private Processes processes;
 
+    @Value("${kogito.persistence.data-isolation.enabled:false}")
+    private Boolean dataIsolationEnabled;
+
     @Override
     public EntityManager getEntityManager() {
         return em;
@@ -45,6 +49,6 @@ public class SpringBootUserTaskJPAContext implements UserTaskJPAContext {
 
     @Override
     public Processes getProcesses() {
-        return processes;
+        return dataIsolationEnabled ? processes : null;
     }
 }

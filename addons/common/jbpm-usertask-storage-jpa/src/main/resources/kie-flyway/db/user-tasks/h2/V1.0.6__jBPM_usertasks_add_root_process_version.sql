@@ -17,4 +17,4 @@
  * under the License.
  */
 ALTER TABLE jbpm_user_tasks ADD COLUMN root_process_version VARCHAR(255);
-CREATE INDEX idx_jbpm_user_tasks_root_process_id ON jbpm_user_tasks (root_process_id, root_process_version);
+CREATE INDEX idx_jbpm_user_tasks_root_process_version ON jbpm_user_tasks (root_process_id, root_process_version);
