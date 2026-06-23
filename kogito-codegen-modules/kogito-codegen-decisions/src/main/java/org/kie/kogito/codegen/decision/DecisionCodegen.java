@@ -72,7 +72,7 @@ public class DecisionCodegen extends AbstractGenerator {
     /**
      * (string) kafka bootstrap server address
      */
-    @KieProperty(type = "string")
+    @KieProperty(type = "string", defaultValue = "")
     public static final String KOGITO_ADDON_TRACING_DECISION_KAFKA_BOOTSTRAPADDRESS = "kogito.addon.tracing.decision.kafka.bootstrapAddress";
     /**
      * (string) name of the decision topic; default to kogito-tracing-decision

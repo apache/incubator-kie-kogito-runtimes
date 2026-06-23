@@ -19,14 +19,13 @@
 package org.kie.kogito.codegen.api.context;
 
 import org.kie.api.annotations.KieInternal;
-import org.kie.api.annotations.KieProperty;
 
 public final class ContextAttributesConstants {
 
     /**
      * computes the triggers being generated
      */
-    @KieProperty
+    @KieInternal
     public static final String PROCESS_TRIGGERS = "kogito.codegen.process.triggers";
 
     /**
