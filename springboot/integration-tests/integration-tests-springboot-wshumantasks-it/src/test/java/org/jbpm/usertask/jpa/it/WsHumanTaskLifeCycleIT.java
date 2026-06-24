@@ -321,6 +321,32 @@ public class WsHumanTaskLifeCycleIT {
     }
 
     @Test
+    public void testBusinessAdminCanResumeSuspendedTask() {
+        var owner = "dave";
+        var admin = "carl";
+        var potentialUsers = new String[] { "john", "dave" };
+        var processId = "manager_admin_multiple_users";
+        var pid = startProcessInstance(processId);
+        var taskId = getTaskId(owner, pid);
+        verifyTask(processId, pid, taskId, owner, "Ready", potentialUsers);
+
+        suspend(taskId, owner);
+        resume(taskId, admin, "Ready");
+
+        claim(taskId, owner);
+        suspend(taskId, owner);
+        resume(taskId, admin, "Reserved");
+
+        start(taskId, owner);
+        suspend(taskId, owner);
+        resume(taskId, admin, "InProgress");
+
+        complete(taskId, owner);
+
+        isProcessCompleted(processId, pid);
+    }
+
+    @Test
     public void testSuspendUntilWithDuration() {
         var user = "dave";
         var potentialUsers = new String[] { "john", "dave" };
