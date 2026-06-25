@@ -20,6 +20,7 @@
 package org.jbpm.usertask.jpa.quarkus;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -91,6 +92,11 @@ public class H2QuarkusDataIsolationIT extends AbstractUserTaskInstancesDataIsola
         @Override
         public Set<Class<?>> getEnabledAlternatives() {
             return Set.of(MockProcesses.class);
+        }
+
+        @Override
+        public Map<String, String> getConfigOverrides() {
+            return Map.of("kogito.persistence.data-isolation.enabled", "true");
         }
     }
 }

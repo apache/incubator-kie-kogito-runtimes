@@ -19,6 +19,7 @@
 
 package org.kie.kogito.persistence.quarkus;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -55,6 +56,11 @@ public class PostgreSQLQuarkusDataIsolationIT extends BaseQuarkusDataIsolationIT
         @Override
         public Set<Class<?>> getEnabledAlternatives() {
             return Set.of(MockProcesses.class);
+        }
+
+        @Override
+        public Map<String, String> getConfigOverrides() {
+            return Map.of("kogito.persistence.data-isolation.enabled", "true");
         }
     }
 }

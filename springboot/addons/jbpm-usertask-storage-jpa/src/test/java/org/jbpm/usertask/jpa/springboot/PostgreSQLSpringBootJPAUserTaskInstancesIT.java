@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @SpringBootTest(classes = TestApplication.class)
 @ContextConfiguration(initializers = PostgreSqlSpringBootTestResource.class)
-@ActiveProfiles("postgresql")
+@ActiveProfiles("test-postgresql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Transactional
 public class PostgreSQLSpringBootJPAUserTaskInstancesIT extends BaseSpringBootJPAUserTaskInstancesIT {

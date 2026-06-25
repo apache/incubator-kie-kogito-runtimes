@@ -34,9 +34,9 @@ import org.springframework.test.context.ContextConfiguration;
  * PostgreSQL variant of UserTask Storage data isolation test for Spring Boot.
  * Tests that user tasks are properly filtered by local process IDs when Processes bean is available.
  */
-@SpringBootTest(classes = TestApplication.class)
+@SpringBootTest(classes = TestApplication.class, properties = { "kogito.persistence.data-isolation.enabled=true" })
 @ContextConfiguration(initializers = PostgreSqlSpringBootTestResource.class)
-@ActiveProfiles("postgresql")
+@ActiveProfiles("test-postgresql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PostgreSQLSpringBootJPAUserTaskInstancesDataIsolationIT extends BaseSpringBootDataIsolationIT {
     @Autowired

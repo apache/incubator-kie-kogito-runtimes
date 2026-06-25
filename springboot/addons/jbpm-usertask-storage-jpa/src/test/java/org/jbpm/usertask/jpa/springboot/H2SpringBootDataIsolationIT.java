@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  * H2 variant of UserTask Storage data isolation test for Spring Boot.
  * Tests that user tasks are properly filtered by local process IDs when Processes bean is available.
  */
-@SpringBootTest(classes = { TestApplication.class, BaseSpringBootDataIsolationIT.TestConfig.class })
+@SpringBootTest(classes = { TestApplication.class, BaseSpringBootDataIsolationIT.TestConfig.class }, properties = { "kogito.persistence.data-isolation.enabled=true" })
 @ActiveProfiles("test-h2")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Transactional
