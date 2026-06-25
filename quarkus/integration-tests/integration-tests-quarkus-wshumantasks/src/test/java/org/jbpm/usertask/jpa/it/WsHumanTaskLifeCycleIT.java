@@ -752,6 +752,7 @@ public class WsHumanTaskLifeCycleIT {
     public void testMultipleGroupsWithVariablesUserTaskLifeCycle() {
         // This test verifies the fix for multi-variable expressions in BPMN
         // The GroupId is defined as #{group1},#{group2},#{group3} in the BPMN
+        // and we pass the actual group names as process variables
         var user = "dave";
         var group = "engineering";
         var potentialGroups = new String[] { "hr", "engineering", "management" };
@@ -766,6 +767,7 @@ public class WsHumanTaskLifeCycleIT {
         var taskId = getTaskId(user, group, pid);
 
         // Verify all three groups are present in potentialGroups
+        // This would fail with the old implementation which only extracted the first variable
         given()
                 .contentType(ContentType.JSON)
                 .when()
@@ -858,6 +860,17 @@ public class WsHumanTaskLifeCycleIT {
                 .body("metadata.SuspendedJobId", equalTo(null));
     }
 
+    private void resumeNotAuthorized(String taskId, String user) {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .queryParam("user", user)
+                .body(new TransitionInfo("resume"))
+                .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
+                .then()
+                .statusCode(403);
+    }
+
     private void suspend(String taskId, String user) {
         given()
                 .contentType(ContentType.JSON)
@@ -870,17 +883,6 @@ public class WsHumanTaskLifeCycleIT {
                 .body("id", equalTo(taskId))
                 .body("status.name", equalTo("Suspended"))
                 .body("status.terminate", equalTo(null));
-    }
-
-    private void resumeNotAuthorized(String taskId, String user) {
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .queryParam("user", user)
-                .body(new TransitionInfo("resume"))
-                .post(USER_TASKS_INSTANCE_TRANSITION_ENDPOINT, taskId)
-                .then()
-                .statusCode(403);
     }
 
     private void fail(String taskId, String user) {
