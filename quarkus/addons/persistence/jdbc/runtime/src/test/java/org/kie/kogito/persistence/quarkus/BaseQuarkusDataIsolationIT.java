@@ -39,10 +39,10 @@ import jakarta.inject.Inject;
  * Base class for Quarkus JDBC persistence data isolation tests.
  * Provides common configuration and test method overrides.
  */
-public abstract class BaseQuarkusDataIsolationTest extends AbstractProcessInstancesDataIsolationIT {
+public abstract class BaseQuarkusDataIsolationIT extends AbstractProcessInstancesDataIsolationIT {
 
     @Inject
-    public BaseQuarkusDataIsolationTest(DataSource dataSource, Processes processes) {
+    public BaseQuarkusDataIsolationIT(DataSource dataSource, Processes processes) {
         super(dataSource, processes);
     }
 

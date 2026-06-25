@@ -37,10 +37,10 @@ import jakarta.inject.Inject;
 @QuarkusTestResource(value = H2DatabaseTestResource.class)
 @TestProfile(H2QuarkusTestProfile.class)
 @TestTransaction
-public class H2QuarkusJPAUserTaskInstancesTest extends AbstractJPAUserTaskInstancesIT {
+public class H2QuarkusJPAUserTaskInstancesIT extends AbstractJPAUserTaskInstancesIT {
 
     @Inject
-    public H2QuarkusJPAUserTaskInstancesTest(JPAUserTaskInstances userTaskInstances,
+    public H2QuarkusJPAUserTaskInstancesIT(JPAUserTaskInstances userTaskInstances,
             UserTaskInstanceRepository userTaskInstanceRepository,
             AttachmentRepository attachmentRepository,
             CommentRepository commentRepository) {

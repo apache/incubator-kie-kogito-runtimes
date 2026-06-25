@@ -30,10 +30,10 @@ import org.jbpm.usertask.jpa.repository.UserTaskInstanceRepository;
 import org.kie.kogito.Model;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
+import org.kie.kogito.testcontainers.quarkus.PostgreSqlQuarkusTestResource;
 
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 
@@ -45,14 +45,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * H2 variant of UserTask Storage data isolation test for Quarkus.
+ * PostgreSQL variant of UserTask Storage data isolation test for Quarkus.
  * Tests that user tasks are properly filtered by local process IDs when Processes bean is available.
  */
 @QuarkusTest
-@QuarkusTestResource(value = H2DatabaseTestResource.class)
-@TestProfile(H2QuarkusDataIsolationTest.DataIsolationProfile.class)
+@QuarkusTestResource(value = PostgreSqlQuarkusTestResource.class, restrictToAnnotatedClass = true)
+@TestProfile(PostgreSQLQuarkusDataIsolationIT.DataIsolationProfile.class)
 @TestTransaction
-public class H2QuarkusDataIsolationTest extends AbstractUserTaskInstancesDataIsolationIT {
+public class PostgreSQLQuarkusDataIsolationIT extends AbstractUserTaskInstancesDataIsolationIT {
 
     @Alternative
     @ApplicationScoped
@@ -78,7 +78,7 @@ public class H2QuarkusDataIsolationTest extends AbstractUserTaskInstancesDataIso
     }
 
     @Inject
-    public H2QuarkusDataIsolationTest(JPAUserTaskInstances userTaskInstances,
+    public PostgreSQLQuarkusDataIsolationIT(JPAUserTaskInstances userTaskInstances,
             UserTaskInstanceRepository userTaskInstanceRepository,
             QuarkusUserTaskJPAContext context, Processes processes) {
         super(userTaskInstances, userTaskInstanceRepository, context, processes);
@@ -87,7 +87,7 @@ public class H2QuarkusDataIsolationTest extends AbstractUserTaskInstancesDataIso
     /**
      * Test profile that enables the mock Processes bean for data isolation testing.
      */
-    public static class DataIsolationProfile extends H2QuarkusTestProfile {
+    public static class DataIsolationProfile extends PostgreSQLQuarkusTestProfile {
         @Override
         public Set<Class<?>> getEnabledAlternatives() {
             return Set.of(MockProcesses.class);

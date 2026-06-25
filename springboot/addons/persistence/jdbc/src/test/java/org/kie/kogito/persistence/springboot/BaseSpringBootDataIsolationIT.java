@@ -41,10 +41,10 @@ import org.springframework.transaction.annotation.Transactional;
  * Provides common configuration and test method overrides with Spring transaction management.
  */
 @Transactional
-public abstract class BaseSpringBootDataIsolationTest extends AbstractProcessInstancesDataIsolationIT {
+public abstract class BaseSpringBootDataIsolationIT extends AbstractProcessInstancesDataIsolationIT {
 
     @Autowired
-    public BaseSpringBootDataIsolationTest(DataSource dataSource, Processes processes) {
+    public BaseSpringBootDataIsolationIT(DataSource dataSource, Processes processes) {
         super(dataSource, processes);
     }
 

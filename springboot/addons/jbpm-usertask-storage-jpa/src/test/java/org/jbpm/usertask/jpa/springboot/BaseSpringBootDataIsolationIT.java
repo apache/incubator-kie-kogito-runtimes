@@ -38,9 +38,9 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public abstract class BaseSpringBootDataIsolationTest extends AbstractUserTaskInstancesDataIsolationIT {
+public abstract class BaseSpringBootDataIsolationIT extends AbstractUserTaskInstancesDataIsolationIT {
 
-    public BaseSpringBootDataIsolationTest(JPAUserTaskInstances userTaskInstances, UserTaskInstanceRepository userTaskInstanceRepository, SpringBootUserTaskJPAContext context, Processes processes) {
+    public BaseSpringBootDataIsolationIT(JPAUserTaskInstances userTaskInstances, UserTaskInstanceRepository userTaskInstanceRepository, SpringBootUserTaskJPAContext context, Processes processes) {
         super(userTaskInstances, userTaskInstanceRepository, context, processes);
     }
 

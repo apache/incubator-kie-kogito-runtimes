@@ -37,10 +37,10 @@ import jakarta.inject.Inject;
 @QuarkusTestResource(value = PostgreSqlQuarkusTestResource.class, restrictToAnnotatedClass = true)
 @TestProfile(PostgreSQLQuarkusTestProfile.class)
 @TestTransaction
-public class PostgreSQLQuarkusJPAUserTaskInstancesTest extends AbstractJPAUserTaskInstancesIT {
+public class PostgreSQLQuarkusJPAUserTaskInstancesIT extends AbstractJPAUserTaskInstancesIT {
 
     @Inject
-    public PostgreSQLQuarkusJPAUserTaskInstancesTest(JPAUserTaskInstances userTaskInstances,
+    public PostgreSQLQuarkusJPAUserTaskInstancesIT(JPAUserTaskInstances userTaskInstances,
             UserTaskInstanceRepository userTaskInstanceRepository,
             AttachmentRepository attachmentRepository,
             CommentRepository commentRepository) {

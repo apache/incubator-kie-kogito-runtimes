@@ -39,12 +39,12 @@ import jakarta.inject.Inject;
  */
 @QuarkusTest
 @QuarkusTestResource(value = PostgreSqlQuarkusTestResource.class, restrictToAnnotatedClass = true)
-@TestProfile(PostgreSQLQuarkusDataIsolationTest.DataIsolationProfile.class)
+@TestProfile(PostgreSQLQuarkusDataIsolationIT.DataIsolationProfile.class)
 @TestTransaction
-public class PostgreSQLQuarkusDataIsolationTest extends BaseQuarkusDataIsolationTest {
+public class PostgreSQLQuarkusDataIsolationIT extends BaseQuarkusDataIsolationIT {
 
     @Inject
-    public PostgreSQLQuarkusDataIsolationTest(DataSource dataSource, Processes processes) {
+    public PostgreSQLQuarkusDataIsolationIT(DataSource dataSource, Processes processes) {
         super(dataSource, processes);
     }
 

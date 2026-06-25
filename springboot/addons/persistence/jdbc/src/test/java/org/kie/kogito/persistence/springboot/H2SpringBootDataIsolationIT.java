@@ -16,32 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.kie.kogito.persistence.springboot;
 
-package org.jbpm.usertask.jpa.springboot;
+import javax.sql.DataSource;
 
-import org.jbpm.usertask.jpa.JPAUserTaskInstances;
-import org.jbpm.usertask.jpa.repository.UserTaskInstanceRepository;
-import org.jbpm.usertask.jpa.springboot.repository.SpringBootUserTaskJPAContext;
 import org.kie.kogito.process.Processes;
-import org.kie.kogito.testcontainers.springboot.PostgreSqlSpringBootTestResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 
 /**
- * PostgreSQL variant of UserTask Storage data isolation test for Spring Boot.
- * Tests that user tasks are properly filtered by local process IDs when Processes bean is available.
+ * H2 variant of JDBC persistence data isolation test for Spring Boot.
+ * Tests that process instances are properly filtered by local process IDs when Processes bean is available.
  */
-@SpringBootTest(classes = TestApplication.class)
-@ContextConfiguration(initializers = PostgreSqlSpringBootTestResource.class)
-@ActiveProfiles("postgresql")
+@SpringBootTest(classes = { TestApplication.class, BaseSpringBootDataIsolationIT.TestConfig.class })
+@ActiveProfiles("test-h2")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class PostgreSQLSpringBootJPAUserTaskInstancesDataIsolationTest extends BaseSpringBootDataIsolationTest {
+public class H2SpringBootDataIsolationIT extends BaseSpringBootDataIsolationIT {
+
     @Autowired
-    public PostgreSQLSpringBootJPAUserTaskInstancesDataIsolationTest(JPAUserTaskInstances userTaskInstances, UserTaskInstanceRepository userTaskInstanceRepository,
-            SpringBootUserTaskJPAContext context, Processes processes) {
-        super(userTaskInstances, userTaskInstanceRepository, context, processes);
+    public H2SpringBootDataIsolationIT(DataSource dataSource, Processes processes) {
+        super(dataSource, processes);
     }
 }

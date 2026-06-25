@@ -23,23 +23,25 @@ import org.jbpm.usertask.jpa.JPAUserTaskInstances;
 import org.jbpm.usertask.jpa.repository.UserTaskInstanceRepository;
 import org.jbpm.usertask.jpa.springboot.repository.SpringBootUserTaskJPAContext;
 import org.kie.kogito.process.Processes;
+import org.kie.kogito.testcontainers.springboot.PostgreSqlSpringBootTestResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
- * H2 variant of UserTask Storage data isolation test for Spring Boot.
+ * PostgreSQL variant of UserTask Storage data isolation test for Spring Boot.
  * Tests that user tasks are properly filtered by local process IDs when Processes bean is available.
  */
-@SpringBootTest(classes = { TestApplication.class, BaseSpringBootDataIsolationTest.TestConfig.class })
-@ActiveProfiles("test-h2")
+@SpringBootTest(classes = TestApplication.class)
+@ContextConfiguration(initializers = PostgreSqlSpringBootTestResource.class)
+@ActiveProfiles("postgresql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional
-public class H2SpringBootDataIsolationTest extends BaseSpringBootDataIsolationTest {
+public class PostgreSQLSpringBootJPAUserTaskInstancesDataIsolationIT extends BaseSpringBootDataIsolationIT {
     @Autowired
-    public H2SpringBootDataIsolationTest(JPAUserTaskInstances userTaskInstances, UserTaskInstanceRepository userTaskInstanceRepository, SpringBootUserTaskJPAContext context, Processes processes) {
+    public PostgreSQLSpringBootJPAUserTaskInstancesDataIsolationIT(JPAUserTaskInstances userTaskInstances, UserTaskInstanceRepository userTaskInstanceRepository,
+            SpringBootUserTaskJPAContext context, Processes processes) {
         super(userTaskInstances, userTaskInstanceRepository, context, processes);
     }
 }

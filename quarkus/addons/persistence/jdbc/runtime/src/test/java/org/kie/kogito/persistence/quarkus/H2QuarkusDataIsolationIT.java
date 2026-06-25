@@ -36,12 +36,12 @@ import jakarta.inject.Inject;
  * Tests that process instances are properly filtered by local process IDs when Processes bean is available.
  */
 @QuarkusTest
-@TestProfile(H2QuarkusDataIsolationTest.DataIsolationProfile.class)
+@TestProfile(H2QuarkusDataIsolationIT.DataIsolationProfile.class)
 @TestTransaction
-public class H2QuarkusDataIsolationTest extends BaseQuarkusDataIsolationTest {
+public class H2QuarkusDataIsolationIT extends BaseQuarkusDataIsolationIT {
 
     @Inject
-    public H2QuarkusDataIsolationTest(DataSource dataSource, Processes processes) {
+    public H2QuarkusDataIsolationIT(DataSource dataSource, Processes processes) {
         super(dataSource, processes);
     }
 

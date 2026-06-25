@@ -32,14 +32,14 @@ import org.springframework.test.context.ContextConfiguration;
  * PostgreSQL variant of JDBC persistence data isolation test for Spring Boot.
  * Tests that process instances are properly filtered by local process IDs when Processes bean is available.
  */
-@SpringBootTest(classes = { TestApplication.class, BaseSpringBootDataIsolationTest.TestConfig.class })
+@SpringBootTest(classes = { TestApplication.class, BaseSpringBootDataIsolationIT.TestConfig.class })
 @ContextConfiguration(initializers = PostgreSqlSpringBootTestResource.class)
 @ActiveProfiles("postgresql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class PostgreSQLSpringBootDataIsolationTest extends BaseSpringBootDataIsolationTest {
+public class PostgreSQLSpringBootDataIsolationIT extends BaseSpringBootDataIsolationIT {
 
     @Autowired
-    public PostgreSQLSpringBootDataIsolationTest(DataSource dataSource, Processes processes) {
+    public PostgreSQLSpringBootDataIsolationIT(DataSource dataSource, Processes processes) {
         super(dataSource, processes);
     }
 }
