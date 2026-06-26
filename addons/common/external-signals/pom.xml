@@ -24,42 +24,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.kie</groupId>
-    <artifactId>kogito-addons</artifactId>
+    <artifactId>kogito-addons-common-parent</artifactId>
     <version>999-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>kogito-addons-common-parent</artifactId>
-  <name>Kogito :: Add-Ons :: Common</name>
-  <description>Parent Module for the base Addons Commons</description>
+  <artifactId>kogito-addons-external-signals-parent</artifactId>
   <packaging>pom</packaging>
+  <name>Kogito :: Add-Ons :: External Signals :: Parent</name>
+  <description>External Signal Scope Support for Kogito - Parent Module</description>
 
-  <!-- Please keep in alphabetical order -->
   <modules>
-    <module>messaging</module>
-    <module>persistence</module>
-    <module>rest-exception-handler</module>
-    <module>process-svg</module>
-    <module>process-management</module>
-    <module>process-instance-migration</module>
-    <module>process-dynamic</module>
-    <module>knative</module>
-    <module>kubernetes</module>
-    <module>kubernetes-service-catalog</module>
-    <module>jobs</module>
-    <module>events</module>
-    <module>monitoring</module>
-    <module>explainability</module>
-    <module>human-task-prediction</module>
-    <module>mail</module>
-    <module>tracing</module>
-    <module>task-management</module>
-    <module>marshallers</module>
-    <module>flyway</module>
-    <module>jbpm-usertask-storage-jpa</module>
-    <module>source-files</module>
-    <module>external-signals</module>
+    <module>external-signals-api</module>
+    <module>external-signals-runtime</module>
+    <module>external-signals-integration-tests</module>
   </modules>
-
 
 </project>

@@ -24,42 +24,41 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.kie</groupId>
-    <artifactId>kogito-addons</artifactId>
+    <artifactId>kogito-addons-external-signals-parent</artifactId>
     <version>999-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>kogito-addons-common-parent</artifactId>
-  <name>Kogito :: Add-Ons :: Common</name>
-  <description>Parent Module for the base Addons Commons</description>
-  <packaging>pom</packaging>
+  <artifactId>kogito-addons-external-signals-api</artifactId>
+  <name>Kogito :: Add-Ons :: External Signals :: API</name>
+  <description>External Signal Scope API - Interfaces and Models</description>
 
-  <!-- Please keep in alphabetical order -->
-  <modules>
-    <module>messaging</module>
-    <module>persistence</module>
-    <module>rest-exception-handler</module>
-    <module>process-svg</module>
-    <module>process-management</module>
-    <module>process-instance-migration</module>
-    <module>process-dynamic</module>
-    <module>knative</module>
-    <module>kubernetes</module>
-    <module>kubernetes-service-catalog</module>
-    <module>jobs</module>
-    <module>events</module>
-    <module>monitoring</module>
-    <module>explainability</module>
-    <module>human-task-prediction</module>
-    <module>mail</module>
-    <module>tracing</module>
-    <module>task-management</module>
-    <module>marshallers</module>
-    <module>flyway</module>
-    <module>jbpm-usertask-storage-jpa</module>
-    <module>source-files</module>
-    <module>external-signals</module>
-  </modules>
+  <properties>
+    <java.module.name>org.kie.kogito.addons.externalsignals.api</java.module.name>
+  </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-events-api</artifactId>
+    </dependency>
+    
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>
+

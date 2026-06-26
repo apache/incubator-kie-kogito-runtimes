@@ -119,6 +119,7 @@ public class SignalProcessInstanceAction implements Action, Serializable {
             workItem.setNodeInstanceId(context.getNodeInstance().getStringId());
             workItem.setProcessInstanceId(context.getProcessInstance().getStringId());
             workItem.setProcessInstance(processInstance);
+            workItem.setNodeInstance(context.getNodeInstance());
             workItem.setNodeId(context.getNodeInstance().getNodeId());
 
             workItem.getParameters().putAll(inputSet);

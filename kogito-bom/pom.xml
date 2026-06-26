@@ -176,6 +176,17 @@
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
+      <!-- External signals Add-on-->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kogito-addons-external-signals-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kogito-addons-external-signals</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- Flyway Add-on-->
       <dependency>
         <groupId>org.kie</groupId>
