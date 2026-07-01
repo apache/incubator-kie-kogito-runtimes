@@ -16,6 +16,8 @@
 -- specific language governing permissions and limitations
 -- under the License.
 --
+
+ALTER TABLE process_instances ADD COLUMN IF NOT EXISTS root_process_id character varying(255);
 ALTER TABLE process_instances ADD COLUMN IF NOT EXISTS root_process_version character varying(255);
 
 CREATE INDEX IF NOT EXISTS idx_process_instances_root_process_version ON process_instances (root_process_id, root_process_version);
