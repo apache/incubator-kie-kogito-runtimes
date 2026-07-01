@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-ALTER TABLE jbpm_user_tasks ADD COLUMN root_process_version VARCHAR(255);
-CREATE INDEX idx_jbpm_user_tasks_process_id ON jbpm_user_tasks (process_id);
-CREATE INDEX idx_jbpm_user_tasks_process_version ON jbpm_user_tasks (process_id, process_version);
-CREATE INDEX idx_jbpm_user_tasks_root_process_version ON jbpm_user_tasks (root_process_id, root_process_version);
+ALTER TABLE jbpm_user_tasks ADD COLUMN IF NOT EXISTS root_process_version VARCHAR(255);
+CREATE INDEX IF NOT EXISTS idx_jbpm_user_tasks_process_id ON jbpm_user_tasks (process_id);
+CREATE INDEX IF NOT EXISTS idx_jbpm_user_tasks_process_version ON jbpm_user_tasks (process_id, process_version);
+CREATE INDEX IF NOT EXISTS idx_jbpm_user_tasks_root_process_version ON jbpm_user_tasks (root_process_id, root_process_version);
