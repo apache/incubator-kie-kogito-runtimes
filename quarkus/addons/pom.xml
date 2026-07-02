@@ -45,9 +45,9 @@
     <module>process-management</module>
     <module>source-files</module>
     <module>knative</module>
-    <module>fabric8-kubernetes-service-catalog</module>
     <module>kubernetes</module>
     <module>events</module>
+    <module>fabric8-kubernetes-service-catalog</module>
     <module>jobs</module>
     <module>explainability</module>
     <module>mail</module>
