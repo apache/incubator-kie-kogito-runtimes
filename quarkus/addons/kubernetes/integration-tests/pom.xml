@@ -99,7 +99,6 @@
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kogito-addons-quarkus-fabric8-kubernetes-service-catalog-deployment</artifactId>
-            <version>${project.version}</version>
             <type>pom</type>
             <scope>test</scope>
             <exclusions>
