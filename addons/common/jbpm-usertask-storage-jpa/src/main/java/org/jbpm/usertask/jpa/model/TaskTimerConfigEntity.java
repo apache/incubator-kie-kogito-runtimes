@@ -33,6 +33,7 @@ public abstract class TaskTimerConfigEntity<T> extends AbstractTaskEntity<T> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     protected Integer id;
 
     @ManyToOne(optional = false)
