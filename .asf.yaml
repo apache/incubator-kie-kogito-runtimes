@@ -16,7 +16,7 @@
 # under the License.
 
 github:
-  description: Kogito Runtimes is a cloud-native business automation technology for building cloud-ready business applications
+  description: Kogito Runtimes has moved to https://github.com/apache/incubator-kie-drools. This repository is archived. Kogito Runtimes is a cloud-native business automation technology for building cloud-ready business applications
   homepage: https://kie.apache.org
   labels:
     - apache
