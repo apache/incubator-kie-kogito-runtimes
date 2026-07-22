@@ -236,7 +236,10 @@ public class ModelMetaData {
             applyValidation(fd, tags);
             applyOpenApiSchemaAnnotation(fd);
 
-            fd.createGetter();
+            MethodDeclaration getter = fd.createGetter();
+            getter.addAnnotation(new NormalAnnotationExpr(new Name(JsonProperty.class.getCanonicalName()),
+                    NodeList.nodeList(new MemberValuePair("value", new StringLiteralExpr(varName)))));
+
             MethodDeclaration setter = fd.createSetter();
             if (isInputModel()) {
                 // Only Input setters run from request deserialization - Model/Output setters
@@ -245,7 +248,6 @@ public class ModelMetaData {
                         new MethodCallExpr(null, "markModified",
                                 NodeList.nodeList(new StringLiteralExpr(varName)))));
             }
-
         }
 
         Optional<MethodDeclaration> toMapMethod = modelClass.findFirst(MethodDeclaration.class, sl -> sl.getName().asString().equals("toMap"));
