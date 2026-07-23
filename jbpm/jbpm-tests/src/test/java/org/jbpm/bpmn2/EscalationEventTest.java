@@ -22,7 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jbpm.bpmn2.escalation.EscalationBoundaryEventInterruptingModel;
+import org.jbpm.bpmn2.escalation.EscalationBoundaryEventInterruptingProcess;
 import org.jbpm.bpmn2.escalation.EscalationBoundaryEventModel;
+import org.jbpm.bpmn2.escalation.EscalationBoundaryEventOnTaskInterruptingModel;
+import org.jbpm.bpmn2.escalation.EscalationBoundaryEventOnTaskInterruptingProcess;
 import org.jbpm.bpmn2.escalation.EscalationBoundaryEventProcess;
 import org.jbpm.bpmn2.escalation.EscalationBoundaryEventWithTaskModel;
 import org.jbpm.bpmn2.escalation.EscalationBoundaryEventWithTaskProcess;
@@ -52,7 +56,6 @@ import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.SignalEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.Application;
-import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
@@ -186,11 +189,16 @@ public class EscalationEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testEscalationBoundaryEventInterrupting() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/escalation/BPMN2-EscalationBoundaryEventInterrupting.bpmn2");
+        Application app = ProcessTestHelper.newApplication();
         TestWorkItemHandler handler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("MyTask", handler);
-        KogitoProcessInstance processInstance = kruntime.startProcess("EscalationBoundaryEventInterrupting");
-        assertProcessInstanceCompleted(processInstance);
+        ProcessTestHelper.registerHandler(app, "MyTask", handler);
+        org.kie.kogito.process.Process<EscalationBoundaryEventInterruptingModel> processDefinition = EscalationBoundaryEventInterruptingProcess.newProcess(app);
+        org.kie.kogito.process.ProcessInstance<EscalationBoundaryEventInterruptingModel> processInstance = processDefinition.createInstance(processDefinition.createModel());
+        processInstance.start();
+        KogitoWorkItem workItem = handler.getWorkItem();
+        assertThat(workItem).isNotNull();
+        ProcessTestHelper.completeWorkItem(processInstance, Collections.emptyMap(), "john");
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
@@ -238,12 +246,13 @@ public class EscalationEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testInterruptingEscalationBoundaryEventOnTask() throws Exception {
-        kruntime = createKogitoProcessRuntime("org/jbpm/bpmn2/escalation/BPMN2-EscalationBoundaryEventOnTaskInterrupting.bpmn2");
-
+        Application app = ProcessTestHelper.newApplication();
+        ProcessTestHelper.registerProcessEventListener(app, LOGGING_EVENT_LISTENER);
         TestUserTaskWorkItemHandler workItemHandler = new TestUserTaskWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
-        kruntime.getProcessEventManager().addEventListener(LOGGING_EVENT_LISTENER);
-        KogitoProcessInstance processInstance = kruntime.startProcess("EscalationBoundaryEventOnTaskInterrupting");
+        ProcessTestHelper.registerHandler(app, "Human Task", workItemHandler);
+        org.kie.kogito.process.Process<EscalationBoundaryEventOnTaskInterruptingModel> processDefinition = EscalationBoundaryEventOnTaskInterruptingProcess.newProcess(app);
+        org.kie.kogito.process.ProcessInstance<EscalationBoundaryEventOnTaskInterruptingModel> processInstance = processDefinition.createInstance(processDefinition.createModel());
+        processInstance.start();
 
         List<KogitoWorkItem> workItems = workItemHandler.getWorkItems();
         assertThat(workItems).hasSize(2);
@@ -253,8 +262,11 @@ public class EscalationEventTest extends JbpmBpmn2TestCase {
             workItem = workItems.get(1);
         }
 
-        kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), Collections.emptyMap(), SecurityPolicy.of("john", Collections.emptyList()));
-        assertProcessInstanceFinished(processInstance, kruntime);
+        // completing john's task throws escalation which interrupts mary's UserTask via boundary event
+        ProcessTestHelper.completeWorkItem(processInstance, Collections.emptyMap(), "john");
+        // mary's task is interrupted by the boundary event, completing remaining work item
+        ProcessTestHelper.completeWorkItem(processInstance, Collections.emptyMap(), "mary");
+        assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
     @Test
